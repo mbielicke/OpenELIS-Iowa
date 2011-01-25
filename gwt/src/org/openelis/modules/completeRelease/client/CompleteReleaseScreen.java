@@ -74,6 +74,7 @@ import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.modules.sample.client.TestPrepUtility;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -131,6 +132,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     private NoteViewDO               internalNote;
     private NoteManager              noteMan;
     private Confirm                  confirm;
+    
+    private TestPrepUtility          testPrepUtil;
 
     protected MenuItem               unreleaseAnalysis, historySample, historySampleSpec,
                                      historySampleProject, historySampleOrganization, historySampleItem,
@@ -612,6 +615,29 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
 
             public void onStateChange(StateChangeEvent<State> event) {
                 testResultsTab.setState(event.getState());
+            }
+        });
+
+        testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
+            @SuppressWarnings("unchecked")
+            public void onAction(ActionEvent<ResultTab.Action> event) {
+                if(event.getAction() == ResultTab.Action.REFLEX_ADDED) {
+                    if (testPrepUtil == null) {
+                        testPrepUtil = new TestPrepUtility();
+                        testPrepUtil.setScreen(completeScreen);
+    
+                        testPrepUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
+                            public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
+                            }
+                        });
+                    }
+    
+                    try {
+                        testPrepUtil.lookup((ArrayList<SampleDataBundle>)event.getData());
+                    } catch (Exception e) {
+                        Window.alert("loadFromEdit: " + e.getMessage());
+                    }
+                }
             }
         });
 

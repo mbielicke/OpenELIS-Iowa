@@ -61,8 +61,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class TestPrepLookupScreen extends Screen implements
-                                                HasActionHandlers<TestPrepLookupScreen.Action> {
+public class TestPrepLookupScreen extends Screen implements HasActionHandlers<TestPrepLookupScreen.Action> {
     public enum Action {
         SELECTED_PREP_ROW, CANCEL
     };
@@ -104,12 +103,16 @@ public class TestPrepLookupScreen extends Screen implements
                 TreeDataItem            row;
                 TestSectionManager      tsMan;
                 TestSectionViewDO       tsVDO;
-                //
-                //  
-                //
+                
                 row = prepTestTree.getRow(event.getRow());
                 if (row.leafType == "prepTest") {
                     if (event.getCol() == 1) {
+                        //
+                        // Since the dropdown contains the list of all sections
+                        // across the list of prep tests, we need to enable/disable
+                        // the appropriate ones for the prep test in the selected
+                        // row
+                        //
                         model = ((Dropdown<Integer>)prepTestTree.getColumns().get("prepTest").get(1).colWidget).getData();
                         tsMan = (TestSectionManager) ((ArrayList<Object>)row.data).get(1);
                         for (i = 0; i < model.size(); i++) {
@@ -125,6 +128,10 @@ public class TestPrepLookupScreen extends Screen implements
                                 tsRow.enabled = false;
                         }
                     } else if (event.getCol() == 2) {
+                        //
+                        // If the prep test is NOT optional, we need to prevent
+                        // the user from unchecking this item
+                        //
                         if ("N".equals(((TestPrepViewDO)((ArrayList<Object>)row.data).get(0)).getIsOptional()))
                             event.cancel();
                     } else {
@@ -177,10 +184,10 @@ public class TestPrepLookupScreen extends Screen implements
 
     @SuppressWarnings("unchecked")
     private void ok() {
-        int          i;
+        int                          i;
         ArrayList<ArrayList<Object>> selectedBundles;
-        ValidationErrorsList errorsList;
-        TreeDataItem item;
+        ValidationErrorsList         errorsList;
+        TreeDataItem                 item;
 
         if (validate()) {
             selectedBundles = new ArrayList<ArrayList<Object>>();
@@ -213,10 +220,6 @@ public class TestPrepLookupScreen extends Screen implements
         }
     }
 
-    public boolean validate() {
-        return super.validate();
-    }
-
     @SuppressWarnings("unchecked")
     private ArrayList<TreeDataItem> getTreeModel() {
         int                                i, j;
@@ -239,9 +242,8 @@ public class TestPrepLookupScreen extends Screen implements
             sModel = new ArrayList<TableDataRow>();
             for (i = 0; i < prepBundles.size(); i++) {
                 prepBundle = prepBundles.get(i);
-                if (prepBundle.size() != 2) {
+                if (prepBundle.size() != 2)
                     continue;
-                }
                 
                 bundle = (SampleDataBundle) prepBundle.get(0);
                 tpMan = (TestPrepManager) prepBundle.get(1);

@@ -26,10 +26,16 @@
 package org.openelis.modules.test.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.TestIdDupsVO;
+import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestReflexViewDO;
+import org.openelis.domain.TestSectionViewDO;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -39,27 +45,34 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.tree.TreeDataItem;
+import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.widget.tree.event.BeforeLeafCloseEvent;
+import org.openelis.gwt.widget.tree.event.BeforeLeafCloseHandler;
+import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleItemManager;
+import org.openelis.manager.TestManager;
+import org.openelis.manager.TestSectionManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class TestReflexLookupScreen extends Screen implements
-                                                  HasActionHandlers<TestReflexLookupScreen.Action> {
+public class TestReflexLookupScreen extends Screen implements HasActionHandlers<TestReflexLookupScreen.Action> {
     public enum Action {
-        SELECTED_REFLEX_ROW, CANCEL
+        SELECTED_REFLEX_ROW
     };
 
-    protected TableWidget               reflexTestTable;
-    private ArrayList<TestReflexViewDO> reflexTests;
-    private ArrayList<TestIdDupsVO>     returnList;
+    protected TreeWidget                 reflexTestTree;
+    private ArrayList<ArrayList<Object>> reflexBundles;
     
-    private Integer autoAddId, autoAddNonDupId, promptId, promptNonDupId;
+    private Integer autoAddId, autoAddNonDupId, promptNonDupId, testSectionDefaultId;
 
     public TestReflexLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(TestReflexLookupDef.class));
@@ -67,26 +80,78 @@ public class TestReflexLookupScreen extends Screen implements
         // Setup link between Screen and widget Handlers
         initialize();
         
-        initializeDropdowns();
-
         // Initialize Screen
         setState(State.DEFAULT);
+
+        initializeDropdowns();
     }
 
     private void initialize() {
-        reflexTestTable = (TableWidget)def.getWidget("reflexTestTable");
-        addScreenHandler(reflexTestTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        reflexTestTree = (TreeWidget)def.getWidget("reflexTestTree");
+        addScreenHandler(reflexTestTree, new ScreenEventHandler<ArrayList<TreeDataItem>>() {
             public void onDataChange(DataChangeEvent event) {
-                reflexTestTable.load(getTableModel());
+                reflexTestTree.load(getTreeModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reflexTestTable.enable(true);
+                reflexTestTree.enable(true);
             }
         });
 
-        reflexTestTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+        reflexTestTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            @SuppressWarnings("unchecked")
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                int                     i, j;
+                ArrayList<TableDataRow> model;
+                TableDataRow            tsRow;
+                TreeDataItem            row;
+                TestSectionManager      tsMan;
+                TestSectionViewDO       tsVDO;
+                //
+                //  
+                //
+                row = reflexTestTree.getRow(event.getRow());
+                if (row.leafType == "reflexTest") {
+                    if (event.getCol() == 1) {
+                        //
+                        // Since the dropdown contains the list of all sections
+                        // across the list of reflex tests, we need to enable/disable
+                        // the appropriate ones for the reflex test in the selected
+                        // row
+                        //
+                        model = ((Dropdown<Integer>)reflexTestTree.getColumns().get("reflexTest").get(1).colWidget).getData();
+                        tsMan = (TestSectionManager) ((ArrayList<Object>)row.data).get(2);
+                        for (i = 0; i < model.size(); i++) {
+                            tsRow = model.get(i);
+                            for (j = 0; j < tsMan.count(); j++) {
+                                tsVDO = tsMan.getSectionAt(j);
+                                if (tsVDO.getSectionId().equals(tsRow.key)) {
+                                    tsRow.enabled = true;
+                                    break;
+                                }
+                            }
+                            if (j == tsMan.count())
+                                tsRow.enabled = false;
+                        }
+                    } else if (event.getCol() == 2) {
+                        //
+                        // If the reflex test is of one of the two AUTO ADD types,
+                        // we need to prevent the user from unchecking this item
+                        //
+                        if (autoAddId.equals(((TestReflexViewDO)((ArrayList<Object>)row.data).get(1)).getFlagsId()) ||
+                            autoAddNonDupId.equals(((TestReflexViewDO)((ArrayList<Object>)row.data).get(1)).getFlagsId()))
+                            event.cancel();
+                    } else {
+                        event.cancel();
+                    }
+                } else {
+                    event.cancel();
+                }
+            }
+        });
+
+        reflexTestTree.addBeforeLeafCloseHandler(new BeforeLeafCloseHandler() {
+            public void onBeforeLeafClose(BeforeLeafCloseEvent event) {
                 event.cancel();
             }
         });
@@ -101,60 +166,169 @@ public class TestReflexLookupScreen extends Screen implements
                 okButton.enable(true);
             }
         });
-
-        final AppButton cancelButton = (AppButton)def.getWidget("cancel");
-        addScreenHandler(cancelButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                cancel();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                cancelButton.enable(true);
-            }
-        });
-
     }
 
-    private void ok() {
-        if (validate()) {
-            getReflexList();
-            window.close();
-
-            if (returnList != null && returnList.size() > 0)
-                ActionEvent.fire(this, Action.SELECTED_REFLEX_ROW, returnList);
-        }
-    }
-
-    private void cancel() {
-        if (validate()) {
-            window.close();
-            ActionEvent.fire(this, Action.CANCEL, null);
-        }
-    }
-
-    private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model;
-        TestReflexViewDO reflexDO;
-        TableDataRow row;
-        
-        model  = new ArrayList<TableDataRow>();
-        
-        if (reflexTests == null)
-            return model;
-
+    private void initializeDropdowns() {
         try {
-            for (int iter = 0; iter < reflexTests.size(); iter++ ) {
-                reflexDO = reflexTests.get(iter);
-                row = new TableDataRow(1);
+            autoAddId = DictionaryCache.getIdFromSystemName("reflex_auto");
+            autoAddNonDupId = DictionaryCache.getIdFromSystemName("reflex_auto_ndup");
+            promptNonDupId = DictionaryCache.getIdFromSystemName("reflex_prompt_ndup");
+            testSectionDefaultId = DictionaryCache.getIdFromSystemName("test_section_default");
+        } catch (Exception e) {
+            Window.alert("TestReflexUtility constructor: " + e.getMessage());
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void ok() {
+        int                          i;
+        ArrayList<Object>            selectedRow;
+        ArrayList<ArrayList<Object>> selectedBundles;
+        ValidationErrorsList         errorsList;
+        TreeDataItem                 item;
+
+        if (validate()) {
+            selectedBundles = new ArrayList<ArrayList<Object>>();
+            errorsList = new ValidationErrorsList();
+            for (i = 0; i < reflexTestTree.numRows(); i++) {
+                item = reflexTestTree.getRow(i);
+                if (item.leafType == "analysis")
+                    continue;
                 
-                if(promptId.equals(reflexDO.getFlagsId()) || promptNonDupId.equals(reflexDO.getFlagsId())){
-                    row.data = new TestIdDupsVO(reflexDO.getAddTestId(), promptNonDupId.equals(reflexDO.getFlagsId()));
-                    row.cells.get(0).value = reflexDO.getAddTestName() + ", " + reflexDO.getAddMethodName();
-                    model.add(row);
+                if ("Y".equals(item.cells.get(2).getValue())) {
+                    if (item.cells.get(1).value == null) {
+                        errorsList.add(new FormErrorException("reflexTestNeedsSection",
+                                                              (String)item.cells.get(0).getValue()));
+                    } else {
+                        selectedRow = new ArrayList<Object>();
+                        selectedRow.add(item.parent.data);
+                        selectedRow.add((ResultViewDO)((ArrayList<Object>)item.data).get(0));
+                        selectedRow.add((TestReflexViewDO)((ArrayList<Object>)item.data).get(1));
+                        selectedRow.add(item.cells.get(1).getValue());
+                        selectedBundles.add(selectedRow);
+                    }
                 }
             }
-        } catch (Exception e) {
+            
+            if (errorsList.size() > 0) {
+                showErrors(errorsList);
+            } else {
+                window.close();
+                ActionEvent.fire(this, Action.SELECTED_REFLEX_ROW, selectedBundles);
+            }
+        }
+    }
 
+    @SuppressWarnings("unchecked")
+    private ArrayList<TreeDataItem> getTreeModel() {
+        int                                i, j, anaReflexCount;
+        Integer                            defaultId;
+        ArrayList<Object>                  reflexBundle, dataObject;
+        ArrayList<TableDataRow>            sModel;
+        ArrayList<TestReflexViewDO>        reflexList;
+        ArrayList<TreeDataItem>            model;
+        HashMap<Integer,TestSectionViewDO> sections;
+        HashMap<ResultViewDO,ArrayList<TestReflexViewDO>> reflexMap;
+        Iterator<ResultViewDO>             iter;
+        TableDataRow                       sRow;
+        TreeDataItem                       aRow, rtRow;
+        AnalysisViewDO                     anDO;
+        ResultViewDO                       rVDO;
+        SampleDataBundle                   bundle;
+        SampleItemManager                  siMan;
+        TestManager                        tMan;
+        TestReflexViewDO                   reflexDO;
+        TestSectionManager                 tsMan;
+        TestSectionViewDO                  tsVDO;
+
+        model = new ArrayList<TreeDataItem>();
+        if (reflexBundles == null)
+            return model;
+
+        sections = new HashMap<Integer,TestSectionViewDO>();
+        try {
+            sModel = new ArrayList<TableDataRow>();
+            for (i = 0; i < reflexBundles.size(); i++) {
+                reflexBundle = reflexBundles.get(i);
+                if (reflexBundle.size() != 2)
+                    continue;
+                
+                bundle = (SampleDataBundle) reflexBundle.get(0);
+                reflexMap = (HashMap<ResultViewDO,ArrayList<TestReflexViewDO>>) reflexBundle.get(1);
+                anDO = bundle.getSampleManager().getSampleItems()
+                             .getAnalysisAt(bundle.getSampleItemIndex())
+                             .getAnalysisAt(bundle.getAnalysisIndex());
+
+                aRow = new TreeDataItem(3);
+                aRow.leafType = "analysis";
+                aRow.toggle();
+                aRow.key = anDO.getId();
+                aRow.cells.get(0).setValue(anDO.getTestName()+", "+anDO.getMethodName());
+                aRow.data = bundle;
+
+                anaReflexCount = 0;
+                iter = reflexMap.keySet().iterator();
+                while (iter.hasNext()) {
+                    rVDO = iter.next();
+                    reflexList = reflexMap.get(rVDO);
+                    for (j = 0; j < reflexList.size(); j++) {
+                        reflexDO = reflexList.get(j);
+                        
+                        if (promptNonDupId.equals(reflexDO.getFlagsId()) || autoAddNonDupId.equals(reflexDO.getFlagsId())) {
+                            siMan = bundle.getSampleManager().getSampleItems();
+                            if (duplicatePresent(siMan, reflexDO.getAddTestId()))
+                                continue;
+                        }
+                        
+                        rtRow = new TreeDataItem(3);
+                        rtRow.leafType = "reflexTest";
+                        rtRow.key = reflexDO.getAddTestId();
+                        rtRow.cells.get(0).setValue(reflexDO.getAddTestName()+", "+reflexDO.getAddMethodName());
+                        if (autoAddId.equals(reflexDO.getFlagsId()) || autoAddNonDupId.equals(reflexDO.getFlagsId()))
+                            rtRow.cells.get(2).setValue("Y");
+                        else
+                            rtRow.cells.get(2).setValue("N");
+                        
+                        defaultId = null;
+                        try {
+                            tMan = TestManager.fetchById(reflexDO.getAddTestId());
+                            tsMan = tMan.getTestSections();
+                            for (i = 0; i < tsMan.count(); i++) {
+                                tsVDO = tsMan.getSectionAt(i);
+                                if (testSectionDefaultId.equals(tsVDO.getFlagId()))
+                                    defaultId = tsVDO.getSectionId();
+                                if (!sections.containsKey(tsVDO.getSectionId())) {
+                                    sRow = new TableDataRow(1);
+                                    sRow.key = tsVDO.getSectionId();
+                                    sRow.cells.get(0).value = tsVDO.getSection();
+                                    sRow.data = tsVDO;
+                                    sModel.add(sRow);
+                                    sections.put(tsVDO.getSectionId(), tsVDO);
+                                }
+                            }
+                    
+                            if (defaultId != null)
+                                rtRow.cells.get(1).value = defaultId;
+    
+                            dataObject = new ArrayList<Object>();
+                            dataObject.add(rVDO);
+                            dataObject.add(reflexDO);
+                            dataObject.add(tsMan);
+                            rtRow.data = dataObject;
+                            
+                            aRow.addItem(rtRow);
+                            anaReflexCount++;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                
+                if (anaReflexCount > 0)
+                    model.add(aRow);
+            }
+            ((Dropdown<Integer>)reflexTestTree.getColumns().get("reflexTest").get(1).colWidget).setModel(sModel);
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -162,63 +336,29 @@ public class TestReflexLookupScreen extends Screen implements
         return model;
     }
     
-    private void initializeDropdowns(){
+    private boolean duplicatePresent(SampleItemManager itemMan, Integer testId) {
+        int             i, j;
+        AnalysisManager anMan;
+        AnalysisViewDO  anDO;
+        
         try {
-            autoAddId = DictionaryCache.getIdFromSystemName("reflex_auto");
-            autoAddNonDupId = DictionaryCache.getIdFromSystemName("reflex_auto_ndup");
-            promptId = DictionaryCache.getIdFromSystemName("reflex_prompt");
-            promptNonDupId = DictionaryCache.getIdFromSystemName("reflex_prompt_ndup");
-            
-            
+            for (i = 0; i < itemMan.count(); i++) {
+                anMan = itemMan.getAnalysisAt(i);
+                for (j = 0; j < anMan.count(); j++) {
+                    anDO = anMan.getAnalysisAt(j);
+                    if (testId.equals(anDO.getTestId()))
+                        return true;
+                }
+            }
         } catch (Exception e) {
-            Window.alert("ReflexTestUtility constructor: " + e.getMessage());
-        }
-    }
-    
-    public ArrayList<TestIdDupsVO> getReflexList(){
-        TestReflexViewDO reflexDO;
-        ArrayList<TableDataRow> selectedRows;
-        TableDataRow row;
-        int i,j;
-        
-        if(returnList == null){
-            returnList = new ArrayList<TestIdDupsVO>();
-            selectedRows = reflexTestTable.getSelections();
-                
-            //add non prompt reflex tests to the return list
-            for(i=0; i<reflexTests.size(); i++){
-                reflexDO = reflexTests.get(i);
-                
-                if(autoAddId.equals(reflexDO.getFlagsId()))
-                    returnList.add(new TestIdDupsVO(reflexDO.getAddTestId(), false));
-                else if (autoAddNonDupId.equals(reflexDO.getFlagsId()))
-                    returnList.add(new TestIdDupsVO(reflexDO.getAddTestId(), true));
-            }
-            
-            //add prompt reflex tests that are selected to the return list
-            for(j=0; j<selectedRows.size(); j++){
-                row = selectedRows.get(j);
-                returnList.add((TestIdDupsVO)row.data);
-            }
+            Window.alert("duplicatePresent: " + e.getMessage());
         }
         
-        return returnList;
-    }
-    
-    public boolean needToDrawPopup(){
-        TestReflexViewDO reflexDO;
-        for(int i=0; i<reflexTests.size(); i++){
-            reflexDO = reflexTests.get(i);
-            
-            if(promptId.equals(reflexDO.getFlagsId()) || promptNonDupId.equals(reflexDO.getFlagsId()))
-                return true;
-        }
         return false;
     }
 
-    public void setData(ArrayList<TestReflexViewDO> reflexTests) {
-        this.reflexTests = reflexTests;
-        returnList = null;
+    public void setBundles(ArrayList<ArrayList<Object>> bundles) {
+        reflexBundles = bundles;
 
         DataChangeEvent.fire(this);
     }
