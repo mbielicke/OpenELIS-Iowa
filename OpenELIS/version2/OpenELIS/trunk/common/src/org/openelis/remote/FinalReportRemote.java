@@ -14,4 +14,6 @@ public interface FinalReportRemote {
     public ArrayList<Prompt> getPromptsForSingle() throws Exception;
     
     public ReportStatus runReportForSingle(ArrayList<QueryData> paramList) throws Exception;
+    
+    public ReportStatus runReportForBatch(String loginName ,String printer) throws Exception;
 }

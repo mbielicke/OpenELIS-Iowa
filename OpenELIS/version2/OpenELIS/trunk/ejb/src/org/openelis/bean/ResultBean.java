@@ -360,6 +360,56 @@ public class ResultBean implements ResultLocal {
             ar.add(rdo);
         }
     }
+    
+    
+    public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer analysisId) throws Exception {
+        int i;
+        Integer j, rg;
+        ResultViewDO data;
+        ArrayList<ResultViewDO> ar;
+        List<ResultViewDO> list;
+        ArrayList<ArrayList<ResultViewDO>> results;
+        Query query;
+
+        list = null;
+        // get results by analysis id
+        query = manager.createNamedQuery("Result.FetchReportableByAnalysisId");
+        query.setParameter("id", analysisId);
+        list = query.getResultList();
+
+        // build the grid
+        j = -1;
+        ar = null;        
+
+        if (list == null || list.size() == 0)
+            throw new NotFoundException();
+
+        results = new ArrayList<ArrayList<ResultViewDO>>();
+        for (i = 0; i < list.size(); i++ ) {
+            data = list.get(i);
+            
+            rg = data.getRowGroup();
+
+            if (!DataBaseUtil.isSame(j,rg)) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(data);
+                results.add(ar);  
+                if (rg != null)
+                    j = rg;
+                continue;
+            }
+            if ("N".equals(data.getIsColumn())) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(data);
+                results.add(ar);
+                continue;
+            }
+
+            ar.add(data);
+        }
+        
+        return results;
+    }
 
     public ResultViewDO add(ResultViewDO data) {
         Result entity;

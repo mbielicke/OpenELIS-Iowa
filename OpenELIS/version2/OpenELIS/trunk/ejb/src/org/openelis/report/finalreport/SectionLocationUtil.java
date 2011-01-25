@@ -23,16 +23,23 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.report.finalreport;
 
-import javax.ejb.Local;
-
-import org.openelis.domain.SampleDO;
-import org.openelis.manager.SampleManager;
-
-@Local
-public interface SampleManagerLocal {
-    public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception;    
-    public SampleManager fetchForUpdate(Integer sampleId) throws Exception;
-    public SampleManager abortUpdate(Integer sampleId) throws Exception;
+public class SectionLocationUtil {
+    public static String getLocation (String name) {                                
+            if (name == null)
+                return name;
+            
+            name = name.trim();
+            
+            if (name.endsWith("-ank")) 
+                name = "Ankeny";
+            else if (name.endsWith("-ic")) 
+                name = "Iowa City";
+            else if (name.endsWith("-lk")) 
+                name = "Lakeside";
+                        
+            return name;
+          
+    }
 }

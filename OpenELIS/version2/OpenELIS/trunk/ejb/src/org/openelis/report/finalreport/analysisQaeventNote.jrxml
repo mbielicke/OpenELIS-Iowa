@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysesQaeventNote" language="groovy" pageWidth="550" pageHeight="572" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysesQaeventNote" language="groovy" pageWidth="550" pageHeight="572" whenNoDataType="AllSectionsNoDetail" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -8,9 +8,7 @@
 		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT text
-FROM test_trailer tt, test t, analysis a
-WHERE a.id = $P{ANALYSIS_ID} and a.test_id = t.id and tt.id = t.test_trailer_id]]>
+		<![CDATA[]]>
 	</queryString>
 	<field name="text" class="java.lang.String"/>
 	<variable name="QBUFF" class="java.lang.StringBuffer">
@@ -25,10 +23,10 @@ WHERE a.id = $P{ANALYSIS_ID} and a.test_id = t.id and tt.id = t.test_trailer_id]
 		<variableExpression><![CDATA[$V{TBUFF}]]></variableExpression>
 		<initialValueExpression><![CDATA[new StringBuffer()]]></initialValueExpression>
 	</variable>
-	<detail>
+	<pageHeader>
 		<band>
 			<subreport>
-				<reportElement x="30" y="0" width="520" height="0"/>
+				<reportElement x="0" y="0" width="520" height="0"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$P{ANALYSIS_ID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -39,7 +37,7 @@ WHERE a.id = $P{ANALYSIS_ID} and a.test_id = t.id and tt.id = t.test_trailer_id]
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaevent.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="30" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="REFERENCE_ID">
 					<subreportParameterExpression><![CDATA[$P{ANALYSIS_ID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -53,15 +51,18 @@ WHERE a.id = $P{ANALYSIS_ID} and a.test_id = t.id and tt.id = t.test_trailer_id]
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "note.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="30" y="0" width="520" height="0"/>
+				<reportElement x="0" y="0" width="520" height="0"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$P{ANALYSIS_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BUFF">
+					<subreportParameterExpression><![CDATA[$V{TBUFF}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "testTrailer.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
-	</detail>
+	</pageHeader>
 	<summary>
 		<band height="12">
 			<staticText>
@@ -69,28 +70,28 @@ WHERE a.id = $P{ANALYSIS_ID} and a.test_id = t.id and tt.id = t.test_trailer_id]
 					<printWhenExpression><![CDATA[$V{NBUFF}.length() > 0 || $V{QBUFF}.length() > 0 || $V{TBUFF}.length() > 0]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Note:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" mode="Transparent" x="30" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Times New Roman" isBold="true" pdfFontName="Times-Bold"/>
+					<font isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{QBUFF}.toString()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" mode="Transparent" x="30" y="1" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Times New Roman" isBold="false" pdfFontName="Times-Roman"/>
+					<font isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{NBUFF}.toString()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" mode="Transparent" x="30" y="2" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Times New Roman" isBold="false" pdfFontName="Times-Roman"/>
+					<font size="8" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{TBUFF}.toString()]]></textFieldExpression>
 			</textField>
