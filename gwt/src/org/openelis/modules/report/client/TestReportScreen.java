@@ -35,5 +35,4 @@ public class TestReportScreen extends ReportScreen {
         setName(consts.get("testReport"));
         service = new ScreenService("controller?service=org.openelis.modules.report.server.TestReportService");
     }
-
 }

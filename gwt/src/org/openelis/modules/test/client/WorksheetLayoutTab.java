@@ -128,7 +128,8 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                formatId.enable(true);
+                formatId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                .contains(event.getState()));
                 formatId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -153,7 +154,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                batchCapacity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                batchCapacity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 batchCapacity.setQueryMode(event.getState() == State.QUERY);
             }
@@ -180,7 +181,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                totalCapacity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                totalCapacity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
                 totalCapacity.setQueryMode(event.getState() == State.QUERY);
             }
@@ -208,7 +209,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                scriptlet.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                scriptlet.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                         .contains(event.getState()));
                 scriptlet.setQueryMode(event.getState() == State.QUERY);
             }
