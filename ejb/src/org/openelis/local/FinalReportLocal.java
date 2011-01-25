@@ -27,12 +27,9 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.SampleDO;
-import org.openelis.manager.SampleManager;
+import org.openelis.gwt.common.ReportStatus;
 
 @Local
-public interface SampleManagerLocal {
-    public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception;    
-    public SampleManager fetchForUpdate(Integer sampleId) throws Exception;
-    public SampleManager abortUpdate(Integer sampleId) throws Exception;
+public interface FinalReportLocal {
+    public ReportStatus runReportForBatch(String loginName, String printer) throws Exception;
 }

@@ -23,27 +23,37 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.utils;
+package org.openelis.report.finalreport;
 
-public class SectionLocationUtil {
-    public static String getLocation (String name) {                                
-        try {                                   
-            if (name == null)
-                return name;
-            
-            name = name.trim();
-            
-            if (name.endsWith("-ank")) 
-                name = "Ankeny";
-            else if (name.endsWith("-ic")) 
-                name = "Iowa City";
-            else if (name.endsWith("-lk")) 
-                name = "Lakeside";
-                        
-            return name;
-        } catch (Exception e) {            
-            e.printStackTrace();    
-            return null;
-        }   
+import net.sf.jasperreports.engine.JasperPrint;
+
+public class OrganizationInstance {
+    private Integer organizationId;
+    private String organizationName;
+    private JasperPrint jprint;
+      
+    public Integer getOrganizationId() {
+        return organizationId;
     }
+
+    public void setOrganizationId(Integer organizationId) {
+        this.organizationId = organizationId;
+    }
+    
+    public String getOrganizationName() {
+        return organizationName;
+    }
+
+    public void setOrganizationName(String organizationName) {
+        this.organizationName = organizationName;
+    }  
+
+    public JasperPrint getJprint() {
+        return jprint;
+    }
+
+    public void setJprint(JasperPrint jprint) {
+        this.jprint = jprint;
+    }    
+    
 }

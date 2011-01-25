@@ -45,6 +45,7 @@ public interface ResultLocal {
     public void fetchByAnalysisId(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results, 
                                   HashMap<Integer, TestResultDO> testResultList, HashMap<Integer, AnalyteDO> analyteList, 
                                   HashMap<Integer, TestAnalyteListItem> testAnalyteList, ArrayList<ResultValidator> resultValidators) throws Exception;
+    public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer analysisId) throws Exception;
     
     public ResultViewDO add(ResultViewDO data);
     public ResultViewDO update(ResultViewDO data);

@@ -289,7 +289,18 @@ public class SampleManagerProxy {
 
     public SampleManager update(SampleManager man) throws Exception {
         Integer sampleId;
+        SampleDO data;
 
+        data = man.getSample();
+        
+        /*
+         * a sample's status could get set to released because of the status of
+         * the analyses associated with its sample items all getting set to released,
+         * so we need to set the released date for the sample 
+         */
+        if (samReleasedId.equals(data.getStatusId()) && data.getReleasedDate() == null)
+            data.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+            
         sampleLocal().update(man.getSample());
         sampleId = man.getSample().getId();
 
