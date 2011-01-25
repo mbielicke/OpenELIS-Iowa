@@ -85,7 +85,8 @@ import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
-import org.openelis.modules.sample.client.ReflexTestUtility;
+import org.openelis.modules.sample.client.TestPrepUtility;
+import org.openelis.modules.sample.client.TestReflexUtility;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
@@ -100,7 +101,8 @@ public class WorksheetCompletionScreen extends Screen {
                               commitButton, abortButton, editWorksheetButton, loadFromEditButton,
                               loadFilePopupButton;
     private NotesTab          noteTab;
-    private ReflexTestUtility reflexTestUtil;
+    private TestPrepUtility   testPrepUtil;
+    private TestReflexUtility testReflexUtil;
     private Tabs              tab;
     private TabPanel          tabPanel;
     private TableWidget       table;
@@ -664,32 +666,69 @@ public class WorksheetCompletionScreen extends Screen {
     protected void loadFromEdit() {
         int                          i;
         ArrayList<Object>            tempBundle;
-        ArrayList<ArrayList<Object>> reflexBundles;
+        ArrayList<ResultViewDO>      reflexResults;
+        ArrayList<SampleDataBundle>  reflexBundles;
+        ArrayList<ArrayList<Object>> bundles;
+        HashMap<SampleDataBundle,ArrayList<ResultViewDO>> reflexMap;
+        SampleDataBundle             bundle;
+        
+        final WorksheetCompletionScreen wcs = this;
         
         window.setBusy("Loading worksheet from edited file");
         try {
             manager = service.call("loadFromEdit", manager);
             DataChangeEvent.fire(this);
 
-            if (reflexTestUtil == null){
-                reflexTestUtil = new ReflexTestUtility();
-                reflexTestUtil.setScreen(this);
+            if (testReflexUtil == null) {
+                testReflexUtil = new TestReflexUtility();
+
+                testReflexUtil.addActionHandler(new ActionHandler<TestReflexUtility.Action>() {
+                    @SuppressWarnings("unchecked")
+                    public void onAction(ActionEvent<TestReflexUtility.Action> event) {
+                        if (testPrepUtil == null) {
+                            testPrepUtil = new TestPrepUtility();
+                            testPrepUtil.setScreen(wcs);
+
+                            testPrepUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
+                                public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
+                                    window.setDone("Worksheet loaded");
+                                }
+                            });
+                        }
+
+                        try {
+                            testPrepUtil.lookup((ArrayList<SampleDataBundle>)event.getData());
+                        } catch (Exception e) {
+                            Window.alert("loadFromEdit: " + e.getMessage());
+                        }
+                    }
+                });
             }
 
-            reflexBundles = manager.getReflexBundles();
-            for (i = 0; i < reflexBundles.size(); i++) {
-                tempBundle = reflexBundles.get(i);
-                reflexTestUtil.resultEntered((SampleDataBundle)tempBundle.get(0),
-                                             (ResultViewDO)tempBundle.get(1));
+            testReflexUtil.setScreen(this);
+            
+            bundles = manager.getReflexBundles();
+            reflexBundles = new ArrayList<SampleDataBundle>();
+            reflexMap = new HashMap<SampleDataBundle,ArrayList<ResultViewDO>>();
+            for (i = 0; i < bundles.size(); i++) {
+                tempBundle = bundles.get(i);
+                bundle = (SampleDataBundle) tempBundle.get(0);
+                reflexResults = reflexMap.get(bundle);
+                if (reflexResults == null) {
+                    reflexResults = new ArrayList<ResultViewDO>();
+                    reflexBundles.add(bundle);
+                }
+                reflexResults.add((ResultViewDO)tempBundle.get(1));
+                reflexMap.put(bundle, reflexResults);
             }
-            reflexBundles.clear();
-
-            window.setDone("Worksheet loaded");
+            testReflexUtil.resultsEntered(reflexBundles, reflexMap);
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception anyE) {
             Window.alert(anyE.getMessage());
             window.clearStatus();
+        } finally {
+            manager.getReflexBundles().clear();
         }
     }
 

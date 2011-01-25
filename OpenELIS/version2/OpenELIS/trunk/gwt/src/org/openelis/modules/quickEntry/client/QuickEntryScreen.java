@@ -26,7 +26,6 @@
 package org.openelis.modules.quickEntry.client;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -45,7 +44,6 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -96,26 +94,26 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class QuickEntryScreen extends Screen {
 
-    protected DateField                     recDate;
-    protected boolean                       useCurrentTime, printLabelsOnTheFly, close;
-    protected TestPrepUtility               testLookup;
-    protected Confirm                       windowCloseConfirm, receivedDateNotTodayConfirm;
+    protected DateField            recDate;
+    protected boolean              useCurrentTime, printLabelsOnTheFly, close;
+    protected TestPrepUtility      testLookup;
+    protected Confirm              windowCloseConfirm, receivedDateNotTodayConfirm;
     
-    private CalendarLookUp                  receivedDate;
-    private TextBox                         entry, tubeNumber;
-    private TextBox<Integer>                accessionNumber;
-    private CheckBox                        currentDateTime, printLabels;
-    private AppButton                       commitButton, removeRowButton;
-    private Dropdown<String>                testMethodSampleType, testSection, printer;
-    private TableWidget                     quickEntryTable;
-    private TableDataRow                    rowToBeAdded;
+    private CalendarLookUp         receivedDate;
+    private TextBox                entry, tubeNumber;
+    private TextBox<Integer>       accessionNumber;
+    private CheckBox               currentDateTime, printLabels;
+    private AppButton              commitButton, removeRowButton;
+    private Dropdown<String>       testMethodSampleType, testSection, printer;
+    private TableWidget            quickEntryTable;
+    private TableDataRow           rowToBeAdded;
 
-    private Integer                         sampleLoggedInId, testSectionDefaultId;
-    private Datetime                        todaysDate;
-    private AccessionNumberUtility          accNumUtil;
-    private ScreenService                   calendarService, panelService;
-    private ModulePermission                userPermission;
-    private HashMap<Integer, SampleManager> managers;
+    private Integer                sampleLoggedInId, testSectionDefaultId;
+    private Datetime               todaysDate;
+    private AccessionNumberUtility accNumUtil;
+    private ScreenService          calendarService, panelService;
+    private ModulePermission       userPermission;
+    private HashMap<Integer, Item> managers;
 
     public QuickEntryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QuickEntryDef.class));
@@ -148,7 +146,7 @@ public class QuickEntryScreen extends Screen {
     }
 
     private void initialize() {
-        managers = new HashMap<Integer, SampleManager>();
+        managers = new HashMap<Integer, Item>();
         close = false;
         
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
@@ -374,7 +372,7 @@ public class QuickEntryScreen extends Screen {
 
         quickEntryTable.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                rowDeleted(event.getIndex(), event.getRow());
+                rowDeleted(event.getRow());
             }
         });
         
@@ -416,45 +414,51 @@ public class QuickEntryScreen extends Screen {
     }
 
     private void commit() {
-        Collection<SampleManager> manList;
-        Iterator<SampleManager> itr;
-        SampleManager manager;
+        int                  i;
+        ArrayList<Integer>   removables;
+        Item                 item;
+        Iterator<Item>       itr;
+        SampleManager        manager;
         ValidationErrorsList errorsList;
         
         setFocus(null);
         window.setBusy(consts.get("adding"));
         
-        manList = managers.values();
-        itr = manList.iterator();
+        itr = managers.values().iterator();
         errorsList = new ValidationErrorsList();
         manager = null;
-        while(itr.hasNext()){
-            try{
-            manager = itr.next();
-            manager.getSample().setStatusId(sampleLoggedInId);
-            
-            if(manager.getSample().getId() == null)
-                manager.add();
-            else{
-                manager.update();
-            }
-            
-            managers.remove(manager.getSample().getAccessionNumber());
-            }catch(ValidationErrorsList e){
+        removables = new ArrayList<Integer>();
+        while (itr.hasNext()) {
+            try {
+                item = itr.next();
+                manager = item.sampleManager;
+                manager.getSample().setStatusId(sampleLoggedInId);
+                
+                if(manager.getSample().getId() == null)
+                    manager.add();
+                else
+                    manager.update();
+
+                if (--item.count == 0)
+                    removables.add(manager.getSample().getAccessionNumber());
+            } catch (ValidationErrorsList e) {
                 errorsList.add(new FormErrorException("quickCommitError"));
-                for(int i=0; i<e.size(); i++)
+                for(i = 0; i < e.size(); i++)
                     errorsList.add(new FormErrorException("rowError", 
                                manager.getSample().getAccessionNumber().toString(), e.getErrorList().get(i).getLocalizedMessage()));
-            }catch(Exception e){
+            } catch (Exception e) {
                 errorsList.add(new FormErrorException("quickCommitError"));
                 errorsList.add(new FormErrorException("rowError", 
                                manager.getSample().getAccessionNumber().toString(), e.getMessage()));
             }
         }
-           
-        if(errorsList.size() > 0)
+        
+        for (i = 0; i < removables.size(); i++)
+            managers.remove(removables.get(i));
+        
+        if (errorsList.size() > 0) {
             showErrors(errorsList);
-        else{
+        } else {
             setState(Screen.State.DEFAULT);
             window.clearStatus();
         }
@@ -464,7 +468,7 @@ public class QuickEntryScreen extends Screen {
 
     private void entryChanged() {
         int           index;
-        String        val;
+        String        val, valParts[];
         Integer       accessionNum;
         SampleDO      sampleDO;
         SampleManager sampleMan;
@@ -515,9 +519,7 @@ public class QuickEntryScreen extends Screen {
             tubeNumber.setValue(val);
 
             // new accession #
-        } else if (val.matches("NEW")) { // FIXME for now this is my new
-                                         // accession string. change this to
-                                         // what they want
+        } else if (val.matches("NEW")) {
             if (validateFields()) {
                 if (accNumUtil == null)
                     accNumUtil = new AccessionNumberUtility();
@@ -535,55 +537,51 @@ public class QuickEntryScreen extends Screen {
             }
 
             // accession #
-        } else if (val.matches("[0-9]+") || val.matches("[0-9]+-[0-9]+")) {
-            if (validateFields()) {
-                if (accNumUtil == null)
-                    accNumUtil = new AccessionNumberUtility();
-
-                //
-                // Trim the Sample Item ID from the end of the bar coded
-                // accession number
-                //
-                index = val.indexOf("-");
-                if (index != -1)
-                    val = val.substring(0, index);
-
-                try {
-                    sampleDO = new SampleDO();
-                    sampleDO.setAccessionNumber(Integer.valueOf(val));
-                    sampleMan = accNumUtil.accessionNumberEntered(sampleDO);
-
-                    // if this sample has been entered as quick entry before
-                    // then add it to the manager hash for reuse, if it hasnt
-                    // been already
-                    if (sampleMan != null &&
-                        managers.get(sampleMan.getSample().getAccessionNumber()) == null)
-                        managers.put(sampleMan.getSample().getAccessionNumber(), sampleMan);
-
-                    accessionNumber.setValue(val);
-                    addAnalysisRow();
-                } catch (NumberFormatException e) {
-                    LocalizedException ex = new LocalizedException("invalidEntryException", val);
-                    window.setError(ex.getMessage());
-                } catch (ValidationErrorsList e) {
-                    FieldErrorException fe;
-                    ValidationErrorsList newE = new ValidationErrorsList();
-
-                    // convert all the field errors to form errors
-                    for (int i = 0; i < e.size(); i++ ) {
-                        fe = (FieldErrorException)e.getErrorList().get(i);
-                        newE.add(new FormErrorException(fe.getKey()));
-                    }
-
-                    showErrors(newE);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-
         } else {
-            LocalizedException e = new LocalizedException("invalidEntryException", val);
-            window.setError(e.getMessage());
+            valParts = val.split("-");
+            if (valParts.length > 0 && valParts.length < 3) {
+                val = valParts[0];
+                if (validateFields()) {
+                    if (accNumUtil == null)
+                        accNumUtil = new AccessionNumberUtility();
+    
+                    try {
+                        sampleDO = new SampleDO();
+                        sampleDO.setAccessionNumber(Integer.valueOf(val));
+                        sampleMan = accNumUtil.accessionNumberEntered(sampleDO);
+    
+                        // if this sample has been entered as quick entry before
+                        // then add it to the manager hash for reuse, if it hasnt
+                        // been already
+                        if (sampleMan != null &&
+                            managers.get(sampleMan.getSample().getAccessionNumber()) == null)
+                            managers.put(sampleMan.getSample().getAccessionNumber(),
+                                         new Item(sampleMan, 1));
+    
+                        accessionNumber.setValue(val);
+                        addAnalysisRow();
+                    } catch (NumberFormatException e) {
+                        LocalizedException ex = new LocalizedException("invalidEntryException", val);
+                        window.setError(ex.getMessage());
+                    } catch (ValidationErrorsList e) {
+                        FieldErrorException fe;
+                        ValidationErrorsList newE = new ValidationErrorsList();
+    
+                        // convert all the field errors to form errors
+                        for (int i = 0; i < e.size(); i++ ) {
+                            fe = (FieldErrorException)e.getErrorList().get(i);
+                            newE.add(new FormErrorException(fe.getKey()));
+                        }
+    
+                        showErrors(newE);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
+                }
+            } else {
+                LocalizedException e = new LocalizedException("invalidEntryException", val);
+                window.setError(e.getMessage());
+            }
         }
         entry.setValue(null);
         recDate.exceptions = null;
@@ -601,6 +599,7 @@ public class QuickEntryScreen extends Screen {
             testLookup.setScreen(this);
 
             testLookup.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
+                @SuppressWarnings("unchecked")
                 public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
                     testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
                 }
@@ -612,11 +611,8 @@ public class QuickEntryScreen extends Screen {
         else
             type = TestPrepUtility.Type.TEST;
 
-        testLookup.setManager(manager);
-
         try {
             testLookup.lookup(analysisBundle, type, id, tsVDO);
-
         } catch (Exception e) {
             Window.alert("analysisTestChanged: " + e.getMessage());
         }
@@ -624,8 +620,9 @@ public class QuickEntryScreen extends Screen {
 
     public void testLookupFinished(ArrayList<SampleDataBundle> bundles) {
         int numOfRows;
-        window.setBusy();
         TableDataRow newRow;
+
+        window.setBusy();
 
         numOfRows = 0;
         if (bundles.size() == 0)
@@ -660,34 +657,36 @@ public class QuickEntryScreen extends Screen {
         window.clearStatus();
     }
 
-    private void rowDeleted(int index, TableDataRow deletedRow) {
-        window.setBusy();
-        SampleDataBundle bundle;
-        SampleManager man;
+    private void rowDeleted(TableDataRow deletedRow) {
+        Item              item;
+        AnalysisManager   anMan;
+        SampleDataBundle  bundle;
         SampleItemManager itemMan;
-        AnalysisManager anMan;
+        SampleManager     man;
 
+        window.setBusy();
         try {
             bundle = (SampleDataBundle)deletedRow.data;
             man = bundle.getSampleManager();
             itemMan = man.getSampleItems();
             anMan = itemMan.getAnalysisAt(bundle.getSampleItemIndex());
+            item = managers.get(man.getSample().getAccessionNumber());
+            
+            item.count--;
 
-            if(man.getSample().getId() != null && !accessionNumExistsInTable(man.getSample().getAccessionNumber())){
+            if (item.count < 1 && man.getSample().getId() != null) {
                 man.abortUpdate();
-                managers.remove(man.getSample().getAccessionNumber());
-            }else{
+            } else {
                 anMan.removeAnalysisAt(bundle.getAnalysisIndex());
-                // if its the last analysis remove the manager
+                // if it's the last analysis remove the manager
                 if (anMan.count() == 0)
                     itemMan.removeSampleItemAt(bundle.getSampleItemIndex());
-    
-                // if its the last item remove the manager from the hash
-                if (itemMan.count() == 0)
-                    managers.remove(man.getSample().getAccessionNumber());
             }
             
-            if(quickEntryTable.numRows() == 0)
+            if (item.count < 1)
+                managers.remove(man.getSample().getAccessionNumber());
+
+            if (quickEntryTable.numRows() == 0)
                 setState(State.DEFAULT);
             
             window.clearStatus();
@@ -697,39 +696,45 @@ public class QuickEntryScreen extends Screen {
     }
 
     private void addAnalysisRow() {
-        TableDataRow row;
+        int                    sampleItemIndex, analysisAddedIndex;
+        Integer                id, accessionNum;
+        String                 tubeNum;
+        Item                   item;
+        TableDataRow           row;
+        AnalysisManager        anMan;
+        SampleDataBundle       anBundle;
+        SampleItemManager      itemMan;
+        SampleManager          sampleMan;
         TestMethodSampleTypeVO typeDO;
-        TestSectionViewDO tsVDO;
-        Integer id;
-        SampleManager sampleMan;
-        SampleItemManager itemMan;
-        AnalysisManager anMan;
-        int sampleItemIndex, analysisAddedIndex;
-        SampleDataBundle anBundle;
-        Integer accessionNum, sectionId;
+        TestSectionViewDO      tsVDO;
 
         typeDO = (TestMethodSampleTypeVO)testMethodSampleType.getSelection().data;
         accessionNum = Integer.valueOf(accessionNumber.getValue());
+        tubeNum = tubeNumber.getValue();
         tsVDO = (TestSectionViewDO)testSection.getSelection().data;
         row = new TableDataRow(6);
 
         try {
-            sampleMan = managers.get(accessionNum);
+            item = managers.get(accessionNum);
 
             // if the sample manager is new, create it
-            if (sampleMan == null) {
+            if (item == null) {
                 sampleMan = SampleManager.getInstance();
-                managers.put(accessionNum, sampleMan);
+                managers.put(accessionNum, new Item(sampleMan, 1));
 
                 sampleMan.getSample().setDomain(SampleManager.QUICK_ENTRY);
                 sampleMan.setDefaults();
                 sampleMan.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
                 sampleMan.getSample().setAccessionNumber(accessionNum);
                 sampleMan.getSample().setReceivedDate(receivedDate.getValue());
+            } else {
+                sampleMan = item.sampleManager;
+                item.count++;
             }
 
             itemMan = sampleMan.getSampleItems();
             sampleItemIndex = getSampleItemIndex(typeDO.getSampleTypeId(), itemMan);
+            itemMan.getSampleItemAt(sampleItemIndex).setContainerReference(tubeNum);
             itemMan.getSampleItemAt(sampleItemIndex).setTypeOfSampleId(typeDO.getSampleTypeId());
             itemMan.getSampleItemAt(sampleItemIndex).setTypeOfSample(typeDO.getSampleType());
             anMan = itemMan.getAnalysisAt(sampleItemIndex);
@@ -773,10 +778,10 @@ public class QuickEntryScreen extends Screen {
             quickEntryTable.setCell(index, 2, anDO.getTestName());
             quickEntryTable.setCell(index, 3, anDO.getMethodName());
             quickEntryTable.setCell(index, 4, itemDO.getTypeOfSample());
-            // FIXME this code is not there.
-            // have no specs to put it in either quickEntryTable.setCell(index,
-            // 5, value);
-
+            // TODO: Need to add value for Tube Number in this cell when we get
+            // the specs for where it will be stored.  For now we will store it
+            // in sample_item.container_reference.
+            quickEntryTable.setCell(index, 5, itemDO.getContainerReference());
         } catch (Exception e) {
             Window.alert("updateQuickEntryRowFromBundle: " + e.getMessage());
         }
@@ -823,58 +828,49 @@ public class QuickEntryScreen extends Screen {
         return true;
     }
     
-    private boolean accessionNumExistsInTable(Integer accessionNumber){
-        TableDataRow row;
-        
-        for(int i=0; i<quickEntryTable.numRows(); i++){
-            row = quickEntryTable.getRow(i);
-            
-            if(accessionNumber.equals(row.cells.get(0).value))
-                return true;
-        }
-        
-        return false;
-    }
-    
     private ArrayList<TableDataRow> getTableModel() {
-        Collection<SampleManager> manList;
-        Iterator<SampleManager> itr;
-        SampleManager manager;
-        SampleItemManager itemMan;
-        AnalysisManager anMan;
-        SampleDO sampleDO;
-        SampleItemViewDO itemDO;
-        AnalysisViewDO anDO;
-        TableDataRow row;
-        OrganizationContactDO data;
+        int                     i, j;
         ArrayList<TableDataRow> model;
+        Item                    item;
+        Iterator<Item>          itr;
+        TableDataRow            row;
+        AnalysisManager         anMan;
+        AnalysisViewDO          anDO;
+        OrganizationContactDO   data;
+        SampleDO                sampleDO;
+        SampleItemManager       itemMan;
+        SampleItemViewDO        itemDO;
+        SampleManager           manager;
         
         model = new ArrayList<TableDataRow>();
         if (managers.size() == 0)
             return model;
 
         try {
-            manList = managers.values();
-            itr = manList.iterator();
-            while(itr.hasNext()){       //samples
-                manager = itr.next();
+            itr = managers.values().iterator();
+            while (itr.hasNext()) {       //samples
+                item = itr.next();
+                manager = item.sampleManager;
                 sampleDO = manager.getSample();
                 
-                for(int i=0; i<manager.getSampleItems().count(); i++){ //items
+                for (i = 0; i < manager.getSampleItems().count(); i++) { //items
                     itemMan = manager.getSampleItems();
                     anMan = itemMan.getAnalysisAt(i);
                     itemDO = itemMan.getSampleItemAt(i);
                     
-                    for(int j=0; j<anMan.count(); j++){   //analyses
+                    for(j = 0; j < anMan.count(); j++) {   //analyses
                         anDO = anMan.getAnalysisAt(j);
-                        if(anDO.getId() < 0){
+                        if (anDO.getId() < 0) {
                             row = new TableDataRow(6);
                             row.cells.get(0).value = sampleDO.getAccessionNumber();
                             row.cells.get(1).value = sampleDO.getReceivedDate();
                             row.cells.get(2).value = anDO.getTestName();
                             row.cells.get(3).value = anDO.getMethodName();
                             row.cells.get(4).value = itemDO.getTypeOfSample();
-                            //TODO not here yet row.cells.get(5).value = "";
+                            // TODO: Need to add value for Tube Number in this cell
+                            // when we get the specs for where it will be stored.
+                            // For now we will store it in sample_item.container_reference.
+                            row.cells.get(5).value = itemDO.getContainerReference();
                             model.add(row);
                         }
                     }
@@ -944,5 +940,15 @@ public class QuickEntryScreen extends Screen {
                                              Window.alert(caught.getMessage());
                                          }
                                      });
+    }
+    
+    private class Item {
+        private SampleManager sampleManager;
+        private int           count;
+
+        public Item(SampleManager man, int count) {
+            this.sampleManager = man;
+            this.count = count;
+        }
     }
 }

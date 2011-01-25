@@ -244,8 +244,6 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         else
             type = TestPrepUtility.Type.TEST;
 
-        testLookup.setManager(manager);
-        
         try {
             selectedRow = itemsTree.getSelection();
             
@@ -275,8 +273,6 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             });
         }
         
-        testLookup.setManager(manager);
-        
         try {
             testLookup.lookup(analysisBundleList);
 
@@ -300,7 +296,6 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             });
         }
 
-        testLookup.setManager(manager);
         analysisBundle = (SampleDataBundle)itemsTree.getSelection().data;
 
         try {

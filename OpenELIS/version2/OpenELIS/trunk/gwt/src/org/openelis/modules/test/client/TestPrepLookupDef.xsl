@@ -1,5 +1,3 @@
-
-
 <!--
 		Exhibit A - UIRF Open-source Based Public Software License. The
 		contents of this file are subject to the UIRF Open-source Based Public
@@ -40,7 +38,7 @@
           <tree key="prepTestTree" width="auto" maxRows="10" showScroll="ALWAYS">
         	<header>
               <col width="500" header="{resource:getString($constants,'analysisPrepTestMethod')}" />
-              <col width="200" header="{resource:getString($constants,'section')}" />
+              <col width="220" header="{resource:getString($constants,'section')}" />
               <col width="100" header="{resource:getString($constants,'select')}" />
         	</header>
         	<leaf key="analysis">

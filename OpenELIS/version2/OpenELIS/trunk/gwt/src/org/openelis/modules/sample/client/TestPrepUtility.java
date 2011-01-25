@@ -32,7 +32,6 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.TestPrepViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -61,12 +60,11 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         DONE
     };
 
-    protected SampleManager             manager;
+//    protected SampleManager             manager;
     protected Integer                   anInPrepId;
     protected Screen                    screen;
 
-    private SampleDataBundle            analysisDataBundle;
-    private ArrayList<SampleDataBundle> bundles;
+    private ArrayList<SampleDataBundle> bundles, analysisDataBundles;
     private ScreenService               panelService;
     private ValidationErrorsList        errorsList;
 
@@ -81,13 +79,13 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         }
     }
 
-    public SampleManager getManager() {
-        return manager;
-    }
-
-    public void setManager(SampleManager manager) {
-        this.manager = manager;
-    }
+//    public SampleManager getManager() {
+//        return manager;
+//    }
+//
+//    public void setManager(SampleManager manager) {
+//        this.manager = manager;
+//    }
 
     public Screen getScreen() {
         return screen;
@@ -121,12 +119,14 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id, TestSectionViewDO tsVDO) throws Exception {
         ArrayList<IdVO> testIds;
 
-        assert manager != null : "manager is null";
+//        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
 
-        errorsList = new ValidationErrorsList();
-        this.analysisDataBundle = analysisDataBundle;
         bundles = new ArrayList<SampleDataBundle>();
+        errorsList = new ValidationErrorsList();
+
+        analysisDataBundles = new ArrayList<SampleDataBundle>();
+        analysisDataBundles.add(analysisDataBundle);
 
         // we need to expand a panel to test ids
         if (type == Type.PANEL)
@@ -147,12 +147,13 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
      * @throws Exception
      */
     public void lookup(ArrayList<SampleDataBundle> analysisBundles) throws Exception {
-        assert manager != null : "manager is null";
+//        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
         
-        errorsList = new ValidationErrorsList();
-        this.analysisDataBundle = analysisBundles.get(0);
         bundles = new ArrayList<SampleDataBundle>();
+        errorsList = new ValidationErrorsList();
+
+        this.analysisDataBundles = analysisBundles;
 
         checkPrepTests(analysisBundles);
     }
@@ -168,12 +169,14 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         ArrayList<IdVO> testIds;
         OrderTestViewDO testDO;
 
-        assert manager != null : "manager is null";
+//        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
 
-        errorsList = new ValidationErrorsList();
-        this.analysisDataBundle = analysisDataBundle;
         bundles = new ArrayList<SampleDataBundle>();
+        errorsList = new ValidationErrorsList();
+
+        analysisDataBundles = new ArrayList<SampleDataBundle>();
+        analysisDataBundles.add(analysisDataBundle);
 
         testIds = new ArrayList<IdVO>();
         for(int i=0; i<orderTestList.size(); i++){
@@ -189,15 +192,18 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     }
 
     private void processTestListAndCheckPrepTests(ArrayList<IdVO> testIds, TestSectionViewDO tsVDO) throws Exception {
-        IdVO idVO;
-        ArrayList<Object> prepBundle;
+        int                          addedIndex;
+        IdVO                         idVO;
+        ArrayList<Object>            prepBundle;
         ArrayList<ArrayList<Object>> prepBundles;
-        AnalysisManager anMan;
-        SampleDataBundle anBundle;
-        TestManager testMan;
-        TestPrepManager prepMan;
-        int addedIndex;
+        AnalysisManager              anMan;
+        SampleDataBundle             anBundle, analysisDataBundle;
+        SampleManager                manager;
+        TestManager                  testMan;
+        TestPrepManager              prepMan;
 
+        analysisDataBundle = analysisDataBundles.get(0);
+        manager = analysisDataBundle.getSampleManager();
         anMan = manager.getSampleItems().getAnalysisAt(analysisDataBundle.getSampleItemIndex());
 
         prepBundles = new ArrayList<ArrayList<Object>>();
@@ -258,6 +264,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     }
     
     private void drawTestPrepScreen(ArrayList<ArrayList<Object>> prepBundles) {
+        ScreenWindow         modal;
         TestPrepLookupScreen prepPickerScreen;
         
         try {
@@ -279,6 +286,8 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                         }
                         
                         fireFinished();
+                    } else if (event.getAction() == TestPrepLookupScreen.Action.CANCEL) {
+                        fireCancelled();
                     }
                 }
             });
@@ -288,7 +297,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             return;
         }
 
-        ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
         modal.setContent(prepPickerScreen);
         modal.setName(consts.get("prepTestPicker"));
         prepPickerScreen.setBundles(prepBundles);
@@ -387,12 +396,14 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         ArrayList<ArrayList<Object>> prepBundles;
         AnalysisManager              anMan;
         SampleDataBundle             bundle;
+        SampleManager                manager;
         TestPrepManager              prepMan;
         TestManager                  testMan;
         
         prepBundles = new ArrayList<ArrayList<Object>>();
         for (i = 0; i < analysisBundles.size(); i++) {
             bundle = analysisBundles.get(i);
+            manager = bundle.getSampleManager();
             anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
             testMan = anMan.getTestAt(bundle.getAnalysisIndex());
 
@@ -414,6 +425,8 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
 
         if (prepBundles.size() > 0)
             drawTestPrepScreen(prepBundles);
+        else
+            fireFinished();
     }
 
     private void fireFinished() {
@@ -421,5 +434,26 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         
         if (errorsList.size() > 0)
             screen.showErrors(errorsList);
+    }
+
+    private void fireCancelled() {
+        int              i;
+        SampleDataBundle anBundle;
+        AnalysisManager  anMan;
+        SampleManager    manager;
+        
+        try {
+            for (i = 0; i < analysisDataBundles.size(); i++) {
+                anBundle = analysisDataBundles.get(i);
+                manager = anBundle.getSampleManager();
+                anMan = manager.getSampleItems().getAnalysisAt(anBundle.getSampleItemIndex());
+                anMan.removeTestAt(anBundle.getAnalysisIndex());
+            }
+            analysisDataBundles.clear();
+            bundles.clear();
+            ActionEvent.fire(this, Action.DONE, bundles);
+        } catch (Exception anyE) {
+            Window.alert(consts.get("prepTestCancelledCleanupException"));
+        }
     }
 }

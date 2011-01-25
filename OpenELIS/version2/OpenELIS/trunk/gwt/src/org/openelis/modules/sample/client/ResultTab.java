@@ -110,7 +110,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                                                     typeDictionary;
     private String                                  addedAnalyteName;
 
-    private ReflexTestUtility                       reflexTestUtil;
+    private TestReflexUtility                       reflexTestUtil;
 
     public ResultTab(ScreenDefInt def, ScreenWindow window, Screen parentScreen) {
         setDefinition(def);
@@ -275,10 +275,10 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                             testResultsTable.setCell(row, col, val);
 
                         if (reflexTestUtil == null) {
-                            reflexTestUtil = new ReflexTestUtility();
+                            reflexTestUtil = new TestReflexUtility();
 
-                            reflexTestUtil.addActionHandler(new ActionHandler<ReflexTestUtility.Action>() {
-                                public void onAction(ActionEvent<ReflexTestUtility.Action> event) {
+                            reflexTestUtil.addActionHandler(new ActionHandler<TestReflexUtility.Action>() {
+                                public void onAction(ActionEvent<TestReflexUtility.Action> event) {
                                     ActionEvent.fire(resultTab, Action.REFLEX_ADDED,
                                                      event.getData());
                                 }

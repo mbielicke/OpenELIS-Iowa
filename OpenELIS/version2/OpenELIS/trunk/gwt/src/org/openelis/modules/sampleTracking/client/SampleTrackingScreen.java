@@ -82,6 +82,7 @@ import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.sample.client.SDWISTab;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
+import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleTreeUtility;
@@ -1216,9 +1217,24 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         treeUtil.addActionHandler(new ActionHandler() {
             public void onAction(ActionEvent event) {
-                ActionEvent.fire(trackingScreen, event.getAction(), event.getData());
+                if (event.getAction() == SampleItemAnalysisTreeTab.Action.REFRESH_TABS) {
+                    SampleDataBundle data;
+                    
+                    data = (SampleDataBundle)event.getData();
+                    sampleItemTab.setData(data);
+                    analysisTab.setData(data);
+                    testResultsTab.setData(data);
+                    analysisNotesTab.setData(data);
+                    storageTab.setData(data);
+                    qaEventsTab.setData(data);
+
+                    drawTabs();
+                } else {
+                    ActionEvent.fire(trackingScreen, event.getAction(), event.getData());
+                }
             }
         });
+
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
