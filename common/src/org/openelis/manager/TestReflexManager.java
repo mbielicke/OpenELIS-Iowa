@@ -96,16 +96,19 @@ public class TestReflexManager implements RPC {
         }        
     }
     
-    public ArrayList<TestReflexViewDO> getReflexListByTestResultId(Integer testResultId){
+    public ArrayList<TestReflexViewDO> getReflexListByTestAnalyteIdTestResultId(Integer testAnalyteId,
+                                                                                Integer testResultId) {
+        int                         i;
         ArrayList<TestReflexViewDO> reflexList;
-        TestReflexViewDO reflexDO;
+        TestReflexViewDO            reflexDO;
         
         reflexList = new ArrayList<TestReflexViewDO>();
         
-        if(testResultId != null){
-            for(int i=0; i<count(); i++){
+        if (testResultId != null) {
+            for (i = 0; i < count(); i++) {
                 reflexDO = getReflexAt(i);
-                if(testResultId.equals(reflexDO.getTestResultId()))
+                if (testAnalyteId.equals(reflexDO.getTestAnalyteId()) &&
+                    testResultId.equals(reflexDO.getTestResultId()))
                     reflexList.add(reflexDO);
             }
         }
