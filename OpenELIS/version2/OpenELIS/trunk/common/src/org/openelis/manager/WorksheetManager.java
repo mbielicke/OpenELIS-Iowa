@@ -60,7 +60,6 @@ public class WorksheetManager implements RPC, HasNotesInt {
         notes            = null;
         sampleManagers   = new HashMap<Integer,SampleManager>();
         lockedManagers   = new HashMap<Integer,SampleManager>();
-        reflexBundles    = new ArrayList<ArrayList<Object>>();
     }
 
     /**
@@ -143,6 +142,9 @@ public class WorksheetManager implements RPC, HasNotesInt {
     
     public void addReflexBundle(SampleDataBundle bundle, ResultViewDO rVDO) {
         ArrayList<Object> newBundle;
+
+        if (reflexBundles == null)
+            reflexBundles = new ArrayList<ArrayList<Object>>();
         
         newBundle = new ArrayList<Object>();
         newBundle.add(bundle);
@@ -209,6 +211,9 @@ public class WorksheetManager implements RPC, HasNotesInt {
     }
     
     public ArrayList<ArrayList<Object>> getReflexBundles() {
+        if (reflexBundles == null)
+            reflexBundles = new ArrayList<ArrayList<Object>>();
+        
         return reflexBundles;
     }
     
