@@ -8,6 +8,7 @@
 	<property name="src.resources" value="${basedir}/src/resources" />
 
 	<target name="ejbjar">
+		<mkdir dir="build"/>
 		<delete file="build/openelis.jar" />
 		<jar jarfile="build/openelis.jar">
 			<fileset dir="bin">
@@ -38,7 +39,9 @@
 				<include name="org/openelis/utilcommon/*.class" />
 			</fileset>
 		</jar>
+		<!--
 		<copy file="../OpenELIS-Security-EJB/security-client.jar" todir="./lib" overwrite="true" />
+		-->
         <copy file="../OpenELIS-Lib/openelis-lib.jar" todir="./lib" overwrite="true" />
 		<delete file="build/openelis.ear" />
 		<ear destfile="build/openelis.ear" appxml="${src.resources}/META-INF/application.xml">

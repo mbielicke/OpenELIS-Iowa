@@ -33,7 +33,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.sql.Connection;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.ejb.SessionContext;
@@ -44,6 +47,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SystemVariableLocal;
 
@@ -96,6 +100,35 @@ public class ReportUtil {
         return null;
     }
 
+    /**
+     * Returns the Datetime object with specified start and end range. The string date needs
+     * to be in [yyyy-mm-dd hh:mm:ss.SSS] format.
+     */
+    public static Datetime getDatetime(byte startCode, byte endCode, String strDate) {
+    	Date date;
+        SimpleDateFormat format;
+        String formats[][] = 
+		        {{"yyyy","yyyy-MM","yyyy-MM-dd","yyyy-MM-dd HH","yyyy-MM-dd HH:mm","yyyy-MM-dd HH:mm:ss","yyyy-MM-dd HH:mm:ss.SSS"},
+		         {"",    "MM",     "MM-dd",     "MM-dd HH",     "MM-dd HH:mm",     "MM-dd HH:mm:ss",     "MM-dd HH:mm:ss.SSS"},
+		         {"",    "",       "dd",        "dd HH",        "dd HH:mm",        "dd HH:mm:ss",        "dd HH:mm:ss.SSS"},
+		         {"",    "",       "",          "HH",           "HH:mm",           "HH:mm:ss",           "HH:mm:ss.SSS"},
+		         {"",    "",       "",          "",             "mm",              "mm:ss",              "mm:ss.SSS"},
+		         {"",    "",       "",          "",             "",                "ss",                 "ss.SSS"},
+		         {"",    "",       "",          "",             "",                "",                   "SSS"}};
+        
+        if (strDate == null || strDate.trim().length() == 0)
+            return null;
+
+        format = new SimpleDateFormat(formats[startCode][endCode]);
+        try {
+			date = format.parse(strDate);
+		} catch (ParseException e) {
+			return null;
+		}
+    	
+    	return Datetime.getInstance(startCode, endCode, date);
+    }
+    
     /**
      * Returns the URL for the specified jasper report. Use this method to find
      * the jasper report within the J2EE ear structure.
@@ -161,9 +194,9 @@ public class ReportUtil {
             sb.append(' ').append(file); // file to print
 
             exec(sb.toString());
-            status = "file " + file + " queued to " + destination;
+            status = "print queued to " + destination;
         } catch (Exception e) {
-            throw e;
+            throw new Exception("Could not print to queue "+destination+"; "+e.getMessage());
         } finally {
             file.delete();
         }
@@ -204,18 +237,16 @@ public class ReportUtil {
         String value;
         InitialContext ctx;
         SystemVariableLocal local;
-        ArrayList<SystemVariableDO> sysVars;
+        SystemVariableDO data;
 
         value = null;
         try {
             ctx = new InitialContext();
             local = (SystemVariableLocal)ctx.lookup("openelis/SystemVariableBean/local");
-
-            sysVars = local.fetchByName(variableName, 1);
-            if (sysVars.size() != 1)
-                System.out.println("Could not find one System Variable with name="+variableName);
-            value = ((SystemVariableDO)sysVars.get(0)).getValue();
+            data = local.fetchByName(variableName);
+            value = data.getValue();
         } catch (Exception e) {
+            System.out.println("Could not find one System Variable with name="+variableName);
             e.printStackTrace();
         }
 
