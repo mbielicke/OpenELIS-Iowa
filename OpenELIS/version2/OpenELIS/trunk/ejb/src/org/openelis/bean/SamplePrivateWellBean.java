@@ -132,7 +132,10 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         } else {
             if (data.getLocationAddress().isChanged()) {
                 entity.setAuditLocationAddressId(true);
-                addressBean.update(data.getLocationAddress());
+                if (data.getLocationAddress().getId() != null)
+                    addressBean.update(data.getLocationAddress());
+                else
+                    addressBean.add(data.getLocationAddress());
             }
         }
 
