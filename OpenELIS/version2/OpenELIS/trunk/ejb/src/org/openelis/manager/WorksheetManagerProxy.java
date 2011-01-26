@@ -33,6 +33,7 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.LockLocal;
 import org.openelis.local.WorksheetLocal;
 
 public class WorksheetManagerProxy {
@@ -82,6 +83,7 @@ public class WorksheetManagerProxy {
     public WorksheetManager add(WorksheetManager manager) throws Exception {
         Integer                 id;
         Iterator<SampleManager> iter;
+        LockLocal               lock;
         SampleManager           sManager;
         WorksheetLocal          local;
 
@@ -89,6 +91,7 @@ public class WorksheetManagerProxy {
         local.add(manager.getWorksheet());
         id = manager.getWorksheet().getId();
 
+        lock = lockLocal();
         if (manager.items != null) {
             manager.getItems().setWorksheetId(id);
             manager.getItems().add();
@@ -96,7 +99,12 @@ public class WorksheetManagerProxy {
             iter = manager.getSampleManagers().values().iterator();
             while (iter.hasNext()) {
                 sManager = (SampleManager) iter.next();
-                sManager.update();
+                if (manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
+                    lock.validateLock(ReferenceTable.SAMPLE, sManager.getSample().getId());
+                    sManager.update();
+                    lock.unlock(ReferenceTable.SAMPLE, sManager.getSample().getId());  
+                    manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
+                }
             }
         }
         
@@ -112,6 +120,7 @@ public class WorksheetManagerProxy {
     public WorksheetManager update(WorksheetManager manager) throws Exception {
         Integer                 id;
         Iterator<SampleManager> iter;
+        LockLocal               lock;
         SampleManager           sManager;
         WorksheetLocal          local;
 
@@ -119,6 +128,7 @@ public class WorksheetManagerProxy {
         local.update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
         
+        lock = lockLocal();
         if (manager.items != null) {
             manager.getItems().setWorksheetId(id);
             manager.getItems().update();
@@ -127,7 +137,9 @@ public class WorksheetManagerProxy {
             while (iter.hasNext()) {
                 sManager = (SampleManager) iter.next();
                 if (manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
+                    lock.validateLock(ReferenceTable.SAMPLE, sManager.getSample().getId());
                     sManager.update();
+                    lock.unlock(ReferenceTable.SAMPLE, sManager.getSample().getId());  
                     manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
                 }
             }
@@ -179,6 +191,18 @@ public class WorksheetManagerProxy {
         try {
             ctx = new InitialContext();
             return (WorksheetLocal)ctx.lookup("openelis/WorksheetBean/local");
+        } catch(Exception e) {
+             System.out.println(e.getMessage());
+             return null;
+        }
+    }
+
+    private LockLocal lockLocal(){
+        InitialContext ctx;
+        
+        try {
+            ctx = new InitialContext();
+            return (LockLocal)ctx.lookup("openelis/LockBean/local");
         } catch(Exception e) {
              System.out.println(e.getMessage());
              return null;
