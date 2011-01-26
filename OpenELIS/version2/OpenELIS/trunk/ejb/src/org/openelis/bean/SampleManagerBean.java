@@ -226,6 +226,8 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                     errorsList.add(new FieldErrorException("accessionNumberDuplicate", SampleMeta.getAccessionNumber()));
                 }
             }
+        } catch (NotFoundException ignE) {
+            // ignore not found because it means they entered an unused accession number
         } catch (Exception e) {
             if(!(e.getCause() instanceof NoResultException))
                 throw e;

@@ -504,7 +504,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         waManager.setBundleAt(newBundle, a);
                         bundle = newBundle;
                         newSampleLock = true;
-                        break;
                     } else {
                         newSampleLock = false;
                     }
@@ -651,8 +650,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     if (anaModified) {
                         if (statusLocked) {
                             errorList.add(new FormErrorException("wrongStatusNoModify",
-                            String.valueOf(wiDO.getPosition()),
-                            String.valueOf(a+1)));
+                                                                 String.valueOf(wiDO.getPosition()),
+                                                                 String.valueOf(a+1)));
                             if (newSampleLock)
                                 sManager.abortUpdate();
                         } else if (permLocked) {
