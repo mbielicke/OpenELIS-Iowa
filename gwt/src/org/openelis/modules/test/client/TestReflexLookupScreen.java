@@ -221,7 +221,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
 
     @SuppressWarnings("unchecked")
     private ArrayList<TreeDataItem> getTreeModel() {
-        int                                i, j, anaReflexCount;
+        int                                i, j, k, anaReflexCount;
         Integer                            defaultId;
         ArrayList<Object>                  reflexBundle, dataObject;
         ArrayList<TableDataRow>            sModel;
@@ -293,8 +293,8 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                         try {
                             tMan = TestManager.fetchById(reflexDO.getAddTestId());
                             tsMan = tMan.getTestSections();
-                            for (i = 0; i < tsMan.count(); i++) {
-                                tsVDO = tsMan.getSectionAt(i);
+                            for (k = 0; k < tsMan.count(); k++) {
+                                tsVDO = tsMan.getSectionAt(k);
                                 if (testSectionDefaultId.equals(tsVDO.getFlagId()))
                                     defaultId = tsVDO.getSectionId();
                                 if (!sections.containsKey(tsVDO.getSectionId())) {
