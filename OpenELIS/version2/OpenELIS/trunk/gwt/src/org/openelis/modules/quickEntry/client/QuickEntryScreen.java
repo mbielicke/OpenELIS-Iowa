@@ -212,29 +212,28 @@ public class QuickEntryScreen extends Screen {
         receivedDate = (CalendarLookUp)def.getWidget("receivedDate");
         addScreenHandler(receivedDate, new ScreenEventHandler<Datetime>() {
             public void onValueChange(ValueChangeEvent<Datetime> event) {
-                if(todaysDate.after(event.getValue())){
-                        LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", event.getValue().toString());
-                        receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                            consts.get("recievedDateNotTodayExceptionTitle"),
-                                                            ex.getMessage(),
-                                                            "No", "Yes");
-                        receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
-                            public void onSelection(SelectionEvent<Integer> event) {
-                                switch (event.getSelectedItem().intValue()) {
-                                    case 0:
-                                        receivedDate.setValue(null);
-                                        setFocus(entry);
-                                        break;
-                                    case 1:
-                                        setFocus(entry);
-                                        break;
-                                }
+                if (todaysDate.after(event.getValue())) {
+                    LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", event.getValue().toString());
+                    receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                        consts.get("recievedDateNotTodayExceptionTitle"),
+                                                        ex.getMessage(),
+                                                        "No", "Yes");
+                    receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                        public void onSelection(SelectionEvent<Integer> event) {
+                            switch (event.getSelectedItem().intValue()) {
+                                case 0:
+                                    receivedDate.setValue(null);
+                                    setFocus(entry);
+                                    break;
+                                case 1:
+                                    setFocus(entry);
+                                    break;
                             }
-                        });
+                        }
+                    });
 
                     receivedDateNotTodayConfirm.show();
-                    
-                    }
+                }
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
@@ -556,7 +555,7 @@ public class QuickEntryScreen extends Screen {
                         if (sampleMan != null &&
                             managers.get(sampleMan.getSample().getAccessionNumber()) == null)
                             managers.put(sampleMan.getSample().getAccessionNumber(),
-                                         new Item(sampleMan, 1));
+                                         new Item(sampleMan, 0));
     
                         accessionNumber.setValue(val);
                         addAnalysisRow();
@@ -620,7 +619,10 @@ public class QuickEntryScreen extends Screen {
 
     public void testLookupFinished(ArrayList<SampleDataBundle> bundles) {
         int numOfRows;
+        Item         item;
         TableDataRow newRow;
+        SampleDataBundle bundle;
+        SampleManager    sManager;
 
         window.setBusy();
 
@@ -633,20 +635,27 @@ public class QuickEntryScreen extends Screen {
             quickEntryTable.fireEvents(false);
 
             for (int i = 0; i < bundles.size(); i++ ) {
+                bundle = bundles.get(i);
                 if (i == 0) {
                     quickEntryTable.addRow(rowToBeAdded);
                     newRow = rowToBeAdded;
                     rowToBeAdded = null;
-                    newRow.data = bundles.get(i);
+                    newRow.data = bundle;
                 } else {
                     newRow = new TableDataRow(6);
-                    newRow.data = bundles.get(i);
+                    newRow.data = bundle;
                     quickEntryTable.addRow(newRow);
                 }
+                
+                sManager = bundle.getSampleManager();
+                item = managers.get(sManager.getSample().getAccessionNumber());
+                if (item == null)
+                    managers.put(sManager.getSample().getAccessionNumber(), new Item(sManager, 1));
+                else
+                    item.count++;
 
                 updateQuickEntryRowFromBundle(quickEntryTable.numRows() - 1);
             }
-            
 
             quickEntryTable.fireEvents(true);
         }

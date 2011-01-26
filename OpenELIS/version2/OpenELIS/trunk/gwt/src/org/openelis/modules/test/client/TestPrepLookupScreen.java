@@ -258,9 +258,14 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 row.cells.get(0).setValue(anDO.getTestName()+", "+anDO.getMethodName());
                 row.data = prepBundle;
                 
-                for (j = 0; j < tpMan.count(); j++) {
-                    tpVDO = tpMan.getPrepAt(j);
+                tpVDO = tpMan.getRequiredTestPrep();
+                if (tpVDO != null) {
                     addPrepItem(row, tpVDO, sections, sModel);
+                } else {
+                    for (j = 0; j < tpMan.count(); j++) {
+                        tpVDO = tpMan.getPrepAt(j);
+                        addPrepItem(row, tpVDO, sections, sModel);
+                    }
                 }
                 model.add(row);
             }
@@ -283,6 +288,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
         TreeDataItem       row;
         TestManager        tMan;
         TestPrepManager    tpMan;
+        TestPrepViewDO     tpVDO2;
         TestSectionManager tsMan;
         TestSectionViewDO  tsVDO;
 
@@ -319,9 +325,14 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
             tpMan = tMan.getPrepTests();
             if (tpMan.count() > 0) {
                 row.toggle();
-                for (i = 0; i < tpMan.count(); i++) {
-                    tpVDO = tpMan.getPrepAt(i);
-                    addPrepItem(row, tpVDO, sections, sModel);
+                tpVDO2 = tpMan.getRequiredTestPrep();
+                if (tpVDO2 != null) {
+                    addPrepItem(row, tpVDO2, sections, sModel);
+                } else {
+                    for (i = 0; i < tpMan.count(); i++) {
+                        tpVDO2 = tpMan.getPrepAt(i);
+                        addPrepItem(row, tpVDO2, sections, sModel);
+                    }
                 }
             }
             
