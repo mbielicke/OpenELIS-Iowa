@@ -55,11 +55,11 @@ public class WorksheetManager implements RPC, HasNotesInt {
      * allocation.
      */
     protected WorksheetManager() {
-        worksheet        = null;
-        items            = null;
-        notes            = null;
-        sampleManagers   = new HashMap<Integer,SampleManager>();
-        lockedManagers   = new HashMap<Integer,SampleManager>();
+        worksheet      = null;
+        items          = null;
+        notes          = null;
+        sampleManagers = new HashMap<Integer,SampleManager>();
+        lockedManagers = new HashMap<Integer,SampleManager>();
     }
 
     /**

@@ -236,6 +236,10 @@ public class WorksheetAnalysisManager implements RPC {
         sampleManagers = managers;
     }
     
+    HashMap<Integer,SampleManager> getLockedManagers() {
+        return lockedManagers;
+    }
+    
     void setLockedManagers(HashMap<Integer,SampleManager> managers) {
         lockedManagers = managers;
     }
