@@ -196,21 +196,20 @@ public class WorksheetAnalysisManagerProxy {
     }
 
     public void add(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
-        boolean                        doBreak;
-        int                            j, k;
-        String                         qcAccessionNumber;
-        HashMap<Integer,SampleManager> sManagers;
-        AnalysisViewDO                 aVDO;
-        AnalysisManager                aManager;
-        AnalysisResultManager          arManager;
-        QcManager                      qcManager;
-        SampleDO                       sample;
-        SampleItemManager              siManager;
-        SampleManager                  sManager;
-        WorksheetAnalysisListItem      listItem;
-        WorksheetAnalysisLocal         local;
-        WorksheetQcResultManager       wqrManager;
-        WorksheetResultManager         wrManager;
+        boolean                   doBreak;
+        int                       j, k;
+        String                    qcAccessionNumber;
+        AnalysisViewDO            aVDO;
+        AnalysisManager           aManager;
+        AnalysisResultManager     arManager;
+        QcManager                 qcManager;
+        SampleDO                  sample;
+        SampleItemManager         siManager;
+        SampleManager             sManager;
+        WorksheetAnalysisListItem listItem;
+        WorksheetAnalysisLocal    local;
+        WorksheetQcResultManager  wqrManager;
+        WorksheetResultManager    wrManager;
         
         local = local();
 
@@ -239,12 +238,12 @@ public class WorksheetAnalysisManagerProxy {
             // sample to avoid update collisions for multiple analyses on the
             // same sample
             //
-            sManagers = manager.getSampleManagers();
-            sManager = sManagers.get(Integer.valueOf(analysis.getAccessionNumber()));
+            sManager = manager.getLockedManagers().get(Integer.valueOf(analysis.getAccessionNumber()));
             if (sManager == null) {
                 sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
                 sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
-                sManagers.put(sample.getAccessionNumber(), sManager);
+                manager.getLockedManagers().put(sample.getAccessionNumber(), sManager);
+                manager.getSampleManagers().put(sample.getAccessionNumber(), sManager);
             }
             siManager = sManager.getSampleItems();
             for (j = 0; j < siManager.count(); j++) {
@@ -289,16 +288,15 @@ public class WorksheetAnalysisManagerProxy {
     }
 
     public void update(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
-        boolean                        doBreak;
-        int                            /*j, */k, l;
-        HashMap<Integer,SampleManager> sManagers;
-        AnalysisViewDO                 aVDO;
-        AnalysisManager                aManager;
-        SampleDO                       sample;
-        SampleItemManager              siManager;
-        SampleManager                  sManager;
-        WorksheetAnalysisListItem      listItem;
-        WorksheetAnalysisLocal         local;
+        boolean                   doBreak;
+        int                       k, l;
+        AnalysisViewDO            aVDO;
+        AnalysisManager           aManager;
+        SampleDO                  sample;
+        SampleItemManager         siManager;
+        SampleManager             sManager;
+        WorksheetAnalysisListItem listItem;
+        WorksheetAnalysisLocal    local;
         
         local = local();
         
@@ -312,12 +310,12 @@ public class WorksheetAnalysisManagerProxy {
                 // sample to avoid update collisions for multiple analyses on the
                 // same sample
                 //
-                sManagers = manager.getSampleManagers();
-                sManager = sManagers.get(Integer.valueOf(analysis.getAccessionNumber()));
+                sManager = manager.getLockedManagers().get(Integer.valueOf(analysis.getAccessionNumber()));
                 if (sManager == null) {
                     sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
                     sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
-                    sManagers.put(sample.getAccessionNumber(), sManager);
+                    manager.getLockedManagers().put(sample.getAccessionNumber(), sManager);
+                    manager.getSampleManagers().put(sample.getAccessionNumber(), sManager);
                 }
                 siManager = sManager.getSampleItems();
                 for (k = 0; k < siManager.count(); k++) {
@@ -367,7 +365,6 @@ public class WorksheetAnalysisManagerProxy {
             try {
                 local.validate(manager.getWorksheetAnalysisAt(i));
             } catch (Exception e) {
-//                DataBaseUtil.mergeException(errorList, e, "itemTable", i);
                 DataBaseUtil.mergeException(errorList, e);
             }
             
@@ -569,7 +566,6 @@ public class WorksheetAnalysisManagerProxy {
             wqrVDO.setQcAnalyteId(qcaVDO.getId());
             wqrVDO.setAnalyteName(qcaVDO.getAnalyteName());
             wqrVDO.setTypeId(qcaVDO.getTypeId());
-//            wqrVDO.setValue(qcaVDO.getValue());
             wqrManager.addWorksheetQcResult(wqrVDO);
         }
     }
