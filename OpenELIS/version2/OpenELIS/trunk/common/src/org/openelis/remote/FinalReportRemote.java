@@ -15,5 +15,5 @@ public interface FinalReportRemote {
     
     public ReportStatus runReportForSingle(ArrayList<QueryData> paramList) throws Exception;
     
-    public ReportStatus runReportForBatch(String loginName ,String printer) throws Exception;
+    public ReportStatus runReportForBatch(ArrayList<QueryData> paramList) throws Exception;
 }
