@@ -22,9 +22,9 @@ WHERE
 	<field name="name" class="java.lang.String"/>
 	<field name="address_id" class="java.lang.Integer"/>
 	<detail>
-		<band height="12" splitType="Stretch">
+		<band height="60" splitType="Stretch">
 			<subreport>
-				<reportElement x="0" y="0" width="250" height="12"/>
+				<reportElement x="0" y="0" width="250" height="60" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="ADDRESS_ID">
 					<subreportParameterExpression><![CDATA[$F{address_id}]]></subreportParameterExpression>
 				</subreportParameter>

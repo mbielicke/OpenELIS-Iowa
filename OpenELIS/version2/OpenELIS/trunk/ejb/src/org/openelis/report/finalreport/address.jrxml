@@ -28,7 +28,7 @@ WHERE
 		<band height="12">
 			<printWhenExpression><![CDATA[$P{ATTENTION} != null && $P{ATTENTION}.length() > 0]]></printWhenExpression>
 			<textField>
-				<reportElement x="0" y="0" width="250" height="12"/>
+				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
@@ -36,24 +36,17 @@ WHERE
 			</textField>
 		</band>
 		<band height="48">
-			<textField>
-				<reportElement x="0" y="24" width="250" height="12"/>
-				<textElement>
-					<font pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{street_address}]]></textFieldExpression>
+			<textField isBlankWhenNull="false">
+				<reportElement positionType="Float" x="0" y="0" width="250" height="0"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ORGANIZATION_INSTANCE}.setOrganizationName($P{NAME})]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="0" width="250" height="12"/>
+				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{NAME}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="false">
-				<reportElement x="0" y="0" width="0" height="0"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{ORGANIZATION_INSTANCE}.setOrganizationName($P{NAME})]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement positionType="Float" x="0" y="12" width="250" height="12" isRemoveLineWhenBlank="true"/>
@@ -63,7 +56,14 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{multiple_unit}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="0" y="36" width="250" height="12"/>
+				<reportElement positionType="Float" x="0" y="24" width="250" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{street_address}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="36" width="250" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>

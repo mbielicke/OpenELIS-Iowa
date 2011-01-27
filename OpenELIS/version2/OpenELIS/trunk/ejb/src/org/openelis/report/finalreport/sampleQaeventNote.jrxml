@@ -23,7 +23,7 @@
 	<pageHeader>
 		<band>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="0" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -34,7 +34,7 @@
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleQaevent.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="0" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="REFERENCE_ID">
 					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -51,12 +51,11 @@
 	</pageHeader>
 	<summary>
 		<band height="12">
+			<printWhenExpression><![CDATA[$V{NBUFF}.length() > 0 || $V{QBUFF}.length() > 0]]></printWhenExpression>
 			<staticText>
-				<reportElement x="0" y="0" width="30" height="12">
-					<printWhenExpression><![CDATA[$V{NBUFF}.length() > 0 || $V{QBUFF}.length() > 0]]></printWhenExpression>
-				</reportElement>
+				<reportElement x="0" y="0" width="30" height="12"/>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Note:]]></text>
 			</staticText>

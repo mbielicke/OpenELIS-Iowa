@@ -25,11 +25,14 @@
 */
 package org.openelis.local;
 
+import java.util.ArrayList;
+
 import javax.ejb.Local;
 
 import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.QueryData;
 
 @Local
 public interface FinalReportLocal {
-    public ReportStatus runReportForBatch(String loginName, String printer) throws Exception;
+    public ReportStatus runReportForBatch(ArrayList<QueryData> paramList) throws Exception;
 }

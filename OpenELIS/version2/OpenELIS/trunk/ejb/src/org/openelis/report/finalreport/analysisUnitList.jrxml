@@ -16,7 +16,7 @@ WHERE
 	<columnHeader>
 		<band height="12" splitType="Stretch">
 			<staticText>
-				<reportElement mode="Opaque" x="163" y="0" width="223" height="12" backcolor="#EDE6E6"/>
+				<reportElement mode="Opaque" x="112" y="0" width="310" height="12" backcolor="#C0C0C0"/>
 				<textElement textAlignment="Center">
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
@@ -35,7 +35,4 @@ WHERE
 			</textField>
 		</band>
 	</detail>
-	<summary>
-		<band height="12" splitType="Stretch"/>
-	</summary>
 </jasperReport>

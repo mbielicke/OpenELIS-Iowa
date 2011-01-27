@@ -5,7 +5,7 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[]]>
@@ -26,7 +26,7 @@
 	<pageHeader>
 		<band>
 			<subreport>
-				<reportElement x="0" y="0" width="520" height="0"/>
+				<reportElement x="0" y="0" width="550" height="0"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$P{ANALYSIS_ID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -37,7 +37,7 @@
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaevent.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="0" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="REFERENCE_ID">
 					<subreportParameterExpression><![CDATA[$P{ANALYSIS_ID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -51,7 +51,7 @@
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "note.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="0" y="0" width="520" height="0"/>
+				<reportElement x="0" y="0" width="550" height="0"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$P{ANALYSIS_ID}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -64,34 +64,33 @@
 		</band>
 	</pageHeader>
 	<summary>
-		<band height="12">
+		<band height="24">
+			<printWhenExpression><![CDATA[$V{QBUFF}.length() > 0 || $V{NBUFF}.length() > 0 || $V{TBUFF}.length() > 0]]></printWhenExpression>
 			<staticText>
-				<reportElement x="0" y="0" width="30" height="12">
-					<printWhenExpression><![CDATA[$V{NBUFF}.length() > 0 || $V{QBUFF}.length() > 0 || $V{TBUFF}.length() > 0]]></printWhenExpression>
-				</reportElement>
+				<reportElement x="0" y="11" width="30" height="12"/>
 				<textElement>
-					<font size="10" isItalic="true" pdfFontName="Times-Roman"/>
+					<font size="10" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Note:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" mode="Transparent" x="30" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" mode="Transparent" x="30" y="10" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{QBUFF}.toString()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" mode="Transparent" x="30" y="1" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" mode="Transparent" x="30" y="11" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{NBUFF}.toString()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" mode="Transparent" x="30" y="2" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" mode="Transparent" x="30" y="12" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font size="8" isBold="false" pdfFontName="Times-Roman"/>
+					<font size="8" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{TBUFF}.toString()]]></textFieldExpression>
 			</textField>

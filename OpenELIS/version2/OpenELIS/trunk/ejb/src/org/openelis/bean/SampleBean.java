@@ -152,7 +152,7 @@ public class SampleBean implements SampleLocal, SampleRemote {
     
     public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         Query query = manager.createNamedQuery("Sample.FetchByAccessionNumber");
-        query.setParameter("id", accessionNumber);
+        query.setParameter("accession", accessionNumber);
         
         try {
             return (SampleDO)query.getSingleResult();
