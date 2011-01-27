@@ -35,11 +35,30 @@
     <screen id="PrepTestPicker" name="{resource:getString($constants,'prepTestPicker')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <VerticalPanel padding="0" spacing="0">
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+          <HorizontalPanel>
+            <HorizontalPanel width="250" />
+            <appButton key="copyToEmptyButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel style="EditMultipleButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'copyToEmpty')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+            <appButton key="copyToAllButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel style="EditMultipleButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'copyToAll')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+          </HorizontalPanel>
           <tree key="prepTestTree" width="auto" maxRows="10" showScroll="ALWAYS">
         	<header>
-              <col width="500" header="{resource:getString($constants,'analysisPrepTestMethod')}" />
-              <col width="220" header="{resource:getString($constants,'section')}" />
-              <col width="100" header="{resource:getString($constants,'select')}" />
+              <col width="250" header="{resource:getString($constants,'analysisPrepTestMethod')}" />
+              <col width="200" header="{resource:getString($constants,'section')}" />
+              <col width="50" header="{resource:getString($constants,'select')}" />
         	</header>
         	<leaf key="analysis">
               <col>

@@ -99,7 +99,7 @@ public class WorksheetCreationScreen extends Screen {
     private boolean                               hasErrors, isTemplateLoaded,
                                                   isSaved, wasExitCalled;
     private int                                   tempId, qcStartIndex;
-    private Integer                               formatId, formatBatch, formatTotal,
+    private Integer                               formatId, formatTotal,
                                                   qcDup, statusWorking, typeFixed,
                                                   typeRand, typeLastWell, typeLastRun,
                                                   typeLastBoth;
@@ -416,7 +416,6 @@ public class WorksheetCreationScreen extends Screen {
         ArrayList<TableDataRow> model;
 
         try {
-            formatBatch = DictionaryCache.getIdFromSystemName("wsheet_num_format_batch");
             formatTotal = DictionaryCache.getIdFromSystemName("wformat_total");
             qcDup = DictionaryCache.getIdFromSystemName("qc_duplicate");
             statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
@@ -567,7 +566,7 @@ public class WorksheetCreationScreen extends Screen {
         wDO.setSystemUserId(OpenELIS.getSystemUserPermission().getSystemUserId());
         wDO.setStatusId(statusWorking);
         wDO.setFormatId(testWorksheetDO.getFormatId());
-        if (formatBatch.equals(wDO.getFormatId()))
+//        if (formatBatch.equals(wDO.getFormatId()))
             wDO.setBatchCapacity(testWorksheetDO.getBatchCapacity());
         if (relatedWorksheetId.getFieldValue() != null)
             wDO.setRelatedWorksheetId(relatedWorksheetId.getFieldValue());
@@ -584,9 +583,9 @@ public class WorksheetCreationScreen extends Screen {
             
             wiDO = new WorksheetItemDO();
             position = row.cells.get(0).value;
-            if (formatBatch.equals(wDO.getFormatId()))
-                wiDO.setPosition(parseBatchPosition(position, testWorksheetDO.getBatchCapacity()));
-            else
+//            if (formatBatch.equals(wDO.getFormatId()))
+//                wiDO.setPosition(parseBatchPosition(position, testWorksheetDO.getBatchCapacity()));
+//            else
                 wiDO.setPosition(Integer.valueOf((String)position));
             wiManager.addWorksheetItem(wiDO);
             
@@ -1213,17 +1212,17 @@ public class WorksheetCreationScreen extends Screen {
     }
 
     private String getPositionNumber(int position) {
-        int    major, minor;
+//        int    major, minor;a
         String positionNumber;
         
         positionNumber = "";
-        if (formatBatch.equals(testWorksheetDO.getFormatId())) {
-            major = getPositionMajorNumber(position+1);
-            minor = getPositionMinorNumber(position+1);
-            positionNumber = major+"-"+minor;
-        } else {
+//        if (formatBatch.equals(testWorksheetDO.getFormatId())) {
+//            major = getPositionMajorNumber(position+1);
+//            minor = getPositionMinorNumber(position+1);
+//            positionNumber = major+"-"+minor;
+//        } else {
             positionNumber = String.valueOf(position + 1);
-        }
+//        }
         
         return positionNumber;
     }
@@ -1232,28 +1231,28 @@ public class WorksheetCreationScreen extends Screen {
      * Parses the position number and returns the major number
      * for batch numbering.
      */
-   private int getPositionMajorNumber(int position) {
-       return (int) (position / (double)testWorksheetDO.getBatchCapacity() + .99);
-   }
+//   private int getPositionMajorNumber(int position) {
+//       return (int) (position / (double)testWorksheetDO.getBatchCapacity() + .99);
+//   }
 
    /**
      * Parses the position number and returns the minor number
      * for batch numbering.
      */
-   private int getPositionMinorNumber(int position) {
-       return position - (getPositionMajorNumber(position) - 1) * testWorksheetDO.getBatchCapacity();
-   }
+//   private int getPositionMinorNumber(int position) {
+//       return position - (getPositionMajorNumber(position) - 1) * testWorksheetDO.getBatchCapacity();
+//   }
    
-   private Integer parseBatchPosition(Object position, Integer batchCapacity) {
-       int major, minor, splitIndex;
-       
-       splitIndex = ((String)position).indexOf("-");
-       
-       major = Integer.parseInt(((String)position).substring(0, splitIndex));
-       minor = Integer.parseInt(((String)position).substring(splitIndex + 1));
-       
-       return new Integer(major * batchCapacity.intValue() + minor);
-   }
+//   private Integer parseBatchPosition(Object position, Integer batchCapacity) {
+//       int major, minor, splitIndex;
+//       
+//       splitIndex = ((String)position).indexOf("-");
+//       
+//       major = Integer.parseInt(((String)position).substring(0, splitIndex));
+//       minor = Integer.parseInt(((String)position).substring(splitIndex + 1));
+//       
+//       return new Integer(major * batchCapacity.intValue() + minor);
+//   }
    
    private int getNextTempId() {
        return --tempId;

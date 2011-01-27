@@ -32,6 +32,7 @@ import java.util.Iterator;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.FormErrorException;
@@ -61,6 +62,8 @@ import org.openelis.manager.TestSectionManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
@@ -70,9 +73,11 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
     };
 
     protected TreeWidget                 reflexTestTree;
-    private ArrayList<ArrayList<Object>> reflexBundles;
     
-    private Integer autoAddId, autoAddNonDupId, promptNonDupId, testSectionDefaultId;
+    private Integer                      autoAddId, autoAddNonDupId, promptNonDupId,
+                                         testSectionDefaultId;
+    private ArrayList<ArrayList<Object>> reflexBundles;
+    private AppButton                    copyToEmptyButton, copyToAllButton;
 
     public TestReflexLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(TestReflexLookupDef.class));
@@ -95,6 +100,22 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
 
             public void onStateChange(StateChangeEvent<State> event) {
                 reflexTestTree.enable(true);
+            }
+        });
+
+        reflexTestTree.addSelectionHandler(new SelectionHandler<TreeDataItem>() {
+            public void onSelection(SelectionEvent<TreeDataItem> event) {
+                boolean      enable;
+                TreeDataItem selection;
+
+                selection = event.getSelectedItem();
+                if (selection != null && "reflexTest".equals(selection.leafType))
+                    enable = true;
+                else
+                    enable = false;
+
+                copyToEmptyButton.enable(enable);
+                copyToAllButton.enable(enable);
             }
         });
 
@@ -166,6 +187,90 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                 okButton.enable(true);
             }
         });
+
+        copyToEmptyButton = (AppButton)def.getWidget("copyToEmptyButton");
+        addScreenHandler(copyToEmptyButton, new ScreenEventHandler<Object>() {
+            @SuppressWarnings("unchecked")
+            public void onClick(ClickEvent event) {
+                int                i, j;
+                Integer            sectionId;
+                TreeDataItem       item, selection;
+                TestSectionManager tsMan;
+                TestSectionViewDO  tsVDO;
+                
+                reflexTestTree.finishEditing();
+                selection = reflexTestTree.getSelection();
+                sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                if (sectionId == null) {
+                    Window.alert("Cannot copy blank section");
+                } else {
+                    for (i = 0; i < reflexTestTree.numRows(); i++) {
+                        item = reflexTestTree.getRow(i);
+                        if (item.leafType == "reflexTest") {
+                            if (item.cells.get(1).getValue() != null) {
+                                if (item.cells.get(1).getValue() instanceof ArrayList) {
+                                    if (((ArrayList<Object>)item.cells.get(1).getValue()).get(0) != null)
+                                        continue;
+                                } else {
+                                    continue;
+                                }
+                            }
+                            tsMan = (TestSectionManager) ((ArrayList<Object>)item.data).get(2);
+                            for (j = 0; j < tsMan.count(); j++) {
+                                tsVDO = tsMan.getSectionAt(j);
+                                if (sectionId.equals(tsVDO.getSectionId())) {
+                                    item.cells.get(1).setValue(sectionId);
+                                    reflexTestTree.refresh(i, 1);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                copyToEmptyButton.enable(false);
+            }
+        });
+
+        copyToAllButton = (AppButton)def.getWidget("copyToAllButton");
+        addScreenHandler(copyToAllButton, new ScreenEventHandler<Object>() {
+            @SuppressWarnings("unchecked")
+            public void onClick(ClickEvent event) {
+                int                i, j;
+                Integer            sectionId;
+                TreeDataItem       item, selection;
+                TestSectionManager tsMan;
+                TestSectionViewDO  tsVDO;
+                
+                reflexTestTree.finishEditing();
+                selection = reflexTestTree.getSelection();
+                sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                if (sectionId == null) {
+                    Window.alert("Cannot copy blank section");
+                } else {
+                    for (i = 0; i < reflexTestTree.numRows(); i++) {
+                        item = reflexTestTree.getRow(i);
+                        if (item.leafType == "reflexTest") {
+                            tsMan = (TestSectionManager) ((ArrayList<Object>)item.data).get(2);
+                            for (j = 0; j < tsMan.count(); j++) {
+                                tsVDO = tsMan.getSectionAt(j);
+                                if (sectionId.equals(tsVDO.getSectionId())) {
+                                    item.cells.get(1).setValue(sectionId);
+                                    reflexTestTree.refresh(i, 1);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                copyToAllButton.enable(false);
+            }
+        });
     }
 
     private void initializeDropdowns() {
@@ -235,6 +340,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
         AnalysisViewDO                     anDO;
         ResultViewDO                       rVDO;
         SampleDataBundle                   bundle;
+        SampleDO                           sDO;
         SampleItemManager                  siMan;
         TestManager                        tMan;
         TestReflexViewDO                   reflexDO;
@@ -248,6 +354,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
         sections = new HashMap<Integer,TestSectionViewDO>();
         try {
             sModel = new ArrayList<TableDataRow>();
+            sModel.add(new TableDataRow(null, ""));
             for (i = 0; i < reflexBundles.size(); i++) {
                 reflexBundle = reflexBundles.get(i);
                 if (reflexBundle.size() != 2)
@@ -255,6 +362,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                 
                 bundle = (SampleDataBundle) reflexBundle.get(0);
                 reflexMap = (HashMap<ResultViewDO,ArrayList<TestReflexViewDO>>) reflexBundle.get(1);
+                sDO = bundle.getSampleManager().getSample();
                 anDO = bundle.getSampleManager().getSampleItems()
                              .getAnalysisAt(bundle.getSampleItemIndex())
                              .getAnalysisAt(bundle.getAnalysisIndex());
@@ -263,7 +371,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                 aRow.leafType = "analysis";
                 aRow.toggle();
                 aRow.key = anDO.getId();
-                aRow.cells.get(0).setValue(anDO.getTestName()+", "+anDO.getMethodName());
+                aRow.cells.get(0).setValue(sDO.getAccessionNumber()+": "+anDO.getTestName()+", "+anDO.getMethodName());
                 aRow.data = bundle;
 
                 anaReflexCount = 0;
@@ -300,7 +408,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                                 if (!sections.containsKey(tsVDO.getSectionId())) {
                                     sRow = new TableDataRow(1);
                                     sRow.key = tsVDO.getSectionId();
-                                    sRow.cells.get(0).value = tsVDO.getSection();
+                                    sRow.cells.get(0).setValue(tsVDO.getSection());
                                     sRow.data = tsVDO;
                                     sModel.add(sRow);
                                     sections.put(tsVDO.getSectionId(), tsVDO);
@@ -308,7 +416,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                             }
                     
                             if (defaultId != null)
-                                rtRow.cells.get(1).value = defaultId;
+                                rtRow.cells.get(1).setValue(defaultId);
     
                             dataObject = new ArrayList<Object>();
                             dataObject.add(rVDO);
