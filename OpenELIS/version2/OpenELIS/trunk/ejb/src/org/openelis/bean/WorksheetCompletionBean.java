@@ -157,7 +157,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             formatVDO = dictionaryLocal.fetchById(manager.getWorksheet().getFormatId());
         } catch (NotFoundException nfE) {
             formatVDO = new DictionaryViewDO();
-            formatVDO.setLocalAbbrev("Total");
+            formatVDO.setEntry("DefaultTotal");
             formatVDO.setSystemName("wformat_total");
         } catch (Exception anyE) {
             System.out.println("Error retrieving worksheet format: "+anyE.getMessage());
@@ -1068,17 +1068,17 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     }
     
     private String getPositionNumber(int position, String format, Integer batchCapacity) {
-        int    major, minor;
+//        int    major, minor;
         String positionNumber;
         
         positionNumber = "";
-        if ("wsheet_num_format_batch".equals(format)) {
-            major = getPositionMajorNumber(position, batchCapacity);
-            minor = getPositionMinorNumber(position, batchCapacity);
-            positionNumber = major+"-"+minor;
-        } else {
+//        if ("wformat_batch".equals(format)) {
+//            major = getPositionMajorNumber(position, batchCapacity);
+//            minor = getPositionMinorNumber(position, batchCapacity);
+//            positionNumber = major+"-"+minor;
+//        } else {
             positionNumber = String.valueOf(position);
-        }
+//        }
         
         return positionNumber;
     }
@@ -1087,17 +1087,17 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
      * Parses the position number and returns the major number
      * for batch numbering.
      */
-    private int getPositionMajorNumber(int position, Integer batchCapacity) {
-        return (int) (position / (double)batchCapacity + .99);
-    }
+//    private int getPositionMajorNumber(int position, Integer batchCapacity) {
+//        return (int) (position / (double)batchCapacity + .99);
+//    }
 
     /**
       * Parses the position number and returns the minor number
       * for batch numbering.
       */
-    private int getPositionMinorNumber(int position, Integer batchCapacity) {
-        return position - (getPositionMajorNumber(position, batchCapacity) - 1) * batchCapacity;
-    }
+//    private int getPositionMinorNumber(int position, Integer batchCapacity) {
+//        return position - (getPositionMajorNumber(position, batchCapacity) - 1) * batchCapacity;
+//    }
 
     private String formatTooltip(String ranges[]) {
         int          i;

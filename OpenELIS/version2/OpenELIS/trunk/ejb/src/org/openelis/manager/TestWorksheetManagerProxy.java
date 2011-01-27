@@ -46,33 +46,13 @@ import org.openelis.meta.TestMeta;
 
 public class TestWorksheetManagerProxy {
 
-    private static int typeBatch, typeTotal, typeFixed, typeDupl;
+    private static int typeFixed, typeDupl;
 
     public TestWorksheetManagerProxy() {
         DictionaryDO data;
         DictionaryLocal dl;
 
         dl = dictLocal();
-
-        if (typeBatch == 0) {
-            try {
-                data = dl.fetchBySystemName("wsheet_num_format_batch");
-                typeBatch = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeBatch = 0;
-            }
-        }
-
-        if (typeTotal == 0) {
-            try {
-                data = dl.fetchBySystemName("wsheet_num_format_total");
-                typeTotal = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeTotal = 0;
-            }
-        }
 
         if (typeFixed == 0) {
             try {
@@ -389,12 +369,12 @@ public class TestWorksheetManagerProxy {
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                     checkPosition = false;
-                } else if (bc != null && DataBaseUtil.isSame(typeBatch, formatId) && position > bc) {
+                } else if (bc != null && position > bc) {
                     list.add(new TableFieldErrorException("posExcBatchCapacityException", i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                     checkPosition = false;
-                } else if (tc != null && DataBaseUtil.isSame(typeTotal, formatId) && position > tc) {
+                } else if (tc != null && position > tc) {
                     list.add(new TableFieldErrorException("posExcTotalCapacityException", i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
