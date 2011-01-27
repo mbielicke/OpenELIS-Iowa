@@ -3,13 +3,13 @@
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<import value="org.openelis.report.finalreport.OrganizationInstance"/>
+	<import value="org.openelis.report.finalreport.OrganizationPrint"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ORGANIZATION_INSTANCE" class="org.openelis.report.finalreport.OrganizationInstance" isForPrompting="false"/>
+	<parameter name="ORGANIZATION_PRINT" class="org.openelis.report.finalreport.OrganizationPrint" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT
      s.received_date s_received_date,
@@ -57,7 +57,7 @@ WHERE
 				<text><![CDATA[Project]]></text>
 			</staticText>
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement x="434" y="36" width="60" height="12"/>
+				<reportElement x="434" y="36" width="49" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -126,7 +126,7 @@ WHERE
 				<text><![CDATA[Collection Site]]></text>
 			</staticText>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
-				<reportElement x="494" y="36" width="49" height="12">
+				<reportElement x="483" y="36" width="49" height="12">
 					<printWhenExpression><![CDATA[$F{s_collection_time} != null]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -210,8 +210,8 @@ WHERE
 				<subreportParameter name="NAME">
 					<subreportParameterExpression><![CDATA[$F{pw_report_to_name}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="ORGANIZATION_INSTANCE">
-					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_INSTANCE}]]></subreportParameterExpression>
+				<subreportParameter name="ORGANIZATION_PRINT">
+					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ATTENTION">
 					<subreportParameterExpression><![CDATA[$F{pw_report_to_attention}]]></subreportParameterExpression>
@@ -226,8 +226,8 @@ WHERE
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="ORGANIZATION_INSTANCE">
-					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_INSTANCE}]]></subreportParameterExpression>
+				<subreportParameter name="ORGANIZATION_PRINT">
+					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ORGANIZATION_ID">
 					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>
@@ -248,8 +248,8 @@ WHERE
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="ORGANIZATION_INSTANCE">
-					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_INSTANCE}]]></subreportParameterExpression>
+				<subreportParameter name="ORGANIZATION_PRINT">
+					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="TYPE_SYSTEM_NAME">
 					<subreportParameterExpression><![CDATA["org_second_report_to"]]></subreportParameterExpression>

@@ -11,7 +11,7 @@
 	<parameter name="TYPE_SYSTEM_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ORGANIZATION_INSTANCE" class="org.openelis.report.finalreport.OrganizationInstance" isForPrompting="false"/>
+	<parameter name="ORGANIZATION_PRINT" class="org.openelis.report.finalreport.OrganizationPrint" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT
      organization_attention, organization_id
@@ -31,8 +31,8 @@ WHERE
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="ORGANIZATION_INSTANCE">
-					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_INSTANCE}]]></subreportParameterExpression>
+				<subreportParameter name="ORGANIZATION_PRINT">
+					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ORGANIZATION_ID">
 					<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>

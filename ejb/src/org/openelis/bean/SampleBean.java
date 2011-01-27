@@ -178,6 +178,14 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
+    public ArrayList<Object[]> fetchSamplesForFinalReportPreview(Integer sampleId) throws Exception {
+        Query query;
+               
+        query = manager.createNamedQuery("Sample.FetchSamplesForFinalReportPreview");
+        query.setParameter("sampleId", sampleId);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public SampleDO add(SampleDO data) {
         Sample entity;
         

@@ -44,15 +44,11 @@ public class AnalysisUnitList {
         StringBuffer str;
                       
         str = new StringBuffer();
-        str.append("(");
-        
         for (i = 0; i < unitList.size(); i++ ) {
             if (i != 0)
                 str.append(",");
             str.append(unitList.get(i));
         }
-        
-        str.append(")");
         return str.toString();
     }        
 }
