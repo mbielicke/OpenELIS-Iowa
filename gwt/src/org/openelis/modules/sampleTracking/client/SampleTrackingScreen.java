@@ -1326,6 +1326,13 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             return;
         }
         
+        if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
+            if (! withUnrelease) {
+                window.setError(consts.get("cantUpdateReleasedException"));
+                return;
+            }
+        } 
+
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
@@ -1340,7 +1347,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             setState(State.DISPLAY);
             trackingTree.select(topLevelIndex);
             window.clearStatus();
-            
             setState(State.UPDATE);
             
             //
@@ -1355,7 +1361,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     return;
                 }
             } 
-            
+
             DataChangeEvent.fire(this);
             setFocus(collectedDate);
             window.clearStatus();

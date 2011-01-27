@@ -141,8 +141,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
     public PrivateWellWaterSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.sample.server.SampleService");
+        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("sampleprivatewell");
         if (userPermission == null)
@@ -948,14 +947,10 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
             DataChangeEvent.fire(this);
             setFocus(orderNumber);
-            window.clearStatus();
-
-        } catch (EntityLockedException e) {
-            window.clearStatus();
-            Window.alert(e.getMessage());
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
+        window.clearStatus();
     }
 
     protected void commit() {
@@ -986,7 +981,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-
                 if ( !e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
@@ -1004,11 +998,11 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-
                 if ( !e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
             }
         }
     }
@@ -1043,6 +1037,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 showErrors(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
             }
         }
     }
@@ -1058,14 +1053,12 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
-
         } else if (state == State.ADD) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("addAborted"));
-
         } else if (state == State.UPDATE) {
             try {
                 manager = manager.abortUpdate();
@@ -1074,19 +1067,15 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                     setState(State.DEFAULT);
                     manager = SampleManager.getInstance();
                     manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
-
                 } else {
                     setState(State.DISPLAY);
                 }
-
                 DataChangeEvent.fire(this);
                 window.clearStatus();
-
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 window.clearStatus();
             }
-
         } else {
             window.clearStatus();
         }
