@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<import value="org.openelis.report.finalreport.OrganizationInstance"/>
+	<import value="org.openelis.report.finalreport.OrganizationPrint"/>
 	<parameter name="SAMPLE_ID" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -17,7 +17,7 @@
 	<parameter name="SYSTEM_NAME" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA['org_report_to']]></parameterDescription>
 	</parameter>
-	<parameter name="ORGANIZATION_INSTANCE" class="org.openelis.report.finalreport.OrganizationInstance" isForPrompting="false"/>
+	<parameter name="ORGANIZATION_PRINT" class="org.openelis.report.finalreport.OrganizationPrint" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT
      s.id s_id,
@@ -37,6 +37,10 @@ WHERE
 		<variableExpression><![CDATA[$V{PAGE_COUNTER}]]></variableExpression>
 		<initialValueExpression><![CDATA[new org.openelis.utils.PageCounter($P{REPORT_TYPE})]]></initialValueExpression>
 	</variable>
+	<variable name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList">
+		<variableExpression><![CDATA[$V{UNIT_LIST}]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.report.finalreport.AnalysisUnitList()]]></initialValueExpression>
+	</variable>
 	<group name="Sample_Organization" isStartNewPage="true" isResetPageNumber="true">
 		<groupExpression><![CDATA[$P{ORGANIZATION_ID}+"-"+$F{s_id}]]></groupExpression>
 		<groupHeader>
@@ -51,8 +55,8 @@ WHERE
 					<subreportParameter name="SAMPLE_ID">
 						<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 					</subreportParameter>
-					<subreportParameter name="ORGANIZATION_INSTANCE">
-						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_INSTANCE}]]></subreportParameterExpression>
+					<subreportParameter name="ORGANIZATION_PRINT">
+						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="ORGANIZATION_ID">
 						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>
@@ -170,6 +174,9 @@ WHERE
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="UNIT_LIST">
+					<subreportParameterExpression><![CDATA[$V{UNIT_LIST}]]></subreportParameterExpression>
+				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysis.jasper"]]></subreportExpression>
 			</subreport>
@@ -177,6 +184,9 @@ WHERE
 				<reportElement positionType="Float" x="0" y="72" width="550" height="12"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="UNIT_LIST">
+					<subreportParameterExpression><![CDATA[$V{UNIT_LIST}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisUnitList.jasper"]]></subreportExpression>

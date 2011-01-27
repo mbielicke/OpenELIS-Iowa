@@ -182,6 +182,72 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 	}
 
 	/**
+	 * Final report for a single or reprint. The report is printed for the
+	 * primary or secondary organization(s) ordered by organization.
+	 */
+	public ReportStatus runReportForPreview(ArrayList<QueryData> paramList) throws Exception {
+		SampleDO data;
+		Integer orgId;
+		ReportStatus status;
+		OrganizationPrint orgPrint;
+		String orgParam, accession, printer;
+		HashMap<String, QueryData> param;
+		Object[] result;
+		ArrayList<Object[]> results;
+		ArrayList<OrganizationPrint> orgPrintList;
+
+		/*
+		 * push status into session so we can query it while the report is
+		 * running
+		 */
+		status = new ReportStatus();
+		session.setAttribute("FinalReport", status);
+
+		/*
+		 * Recover all the parameters and build a specific where clause
+		 */
+		param = ReportUtil.parameterMap(paramList);
+		accession = ReportUtil.getSingleParameter(param, "ACCESSION_NUMBER");
+
+		/*
+		 * find the sample
+		 */
+		try {
+			data = sampleBean.fetchByAccessionNumber(Integer.parseInt(accession));
+		} catch (NotFoundException e) {
+			throw new NotFoundException("A sample with accession number " + accession + " is not valid or does not exists");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		/*
+		 * find all the report to organizations for given sample
+		 */
+		orgPrintList = new ArrayList<OrganizationPrint>();
+		try {
+			results = sampleBean.fetchSamplesForFinalReportPreview(data.getId());
+			status.setMessage("Initializing report");
+
+			if (results.size() < 1)
+				throw new InconsistencyException("Final report for accession number "+ accession+ " has incorrect status,\nmissing information, or has no analysis ready to be printed");
+
+			result = results.get(0);
+			orgPrint = new OrganizationPrint();
+			orgPrint.setOrganizationId((Integer)result[1]);
+			orgPrint.setSampleIds("= "+data.getId());
+			orgPrintList.add(orgPrint);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+
+		print(orgPrintList, "P", status, "-view-");
+
+		return status;
+	}
+
+	/**
 	 * Prints final reports for all ready to be printed samples. The routine
 	 * time stamps all the analyses' printed date with current time and groups
 	 * the output by organization.
