@@ -76,9 +76,9 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+//import org.openelis.gwt.widget.table.TableWidget;
+//import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+//import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.meta.WorksheetCompletionMeta;
@@ -92,7 +92,7 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup;
-    private Integer              formatBatch, statusWorking, statusFailedRun, origStatus;
+    private Integer              statusWorking, statusFailedRun, origStatus;
     private ScreenService        instrumentService, sysVarService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
@@ -105,7 +105,7 @@ public class WorksheetCompletionScreen extends Screen {
     private TestReflexUtility testReflexUtil;
     private Tabs              tab;
     private TabPanel          tabPanel;
-    private TableWidget       table;
+//    private TableWidget       table;
 
     protected Integer                   userId;
     protected String                    outputFileDirectory, worksheetFileName,
@@ -482,7 +482,6 @@ public class WorksheetCompletionScreen extends Screen {
         ArrayList<TableDataRow> model;
 
         try {
-            formatBatch = DictionaryCache.getIdFromSystemName("wsheet_num_format_batch");
             statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
             statusFailedRun = DictionaryCache.getIdFromSystemName("worksheet_failed");
         } catch (Exception e) {
@@ -1036,17 +1035,17 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     private Object getPositionNumber(int position) {
-        int    major, minor;
+//        int    major, minor;
         Object positionNumber;
         
         positionNumber = "";
-        if (formatBatch.equals(manager.getWorksheet().getFormatId())) {
-            major = getPositionMajorNumber(position);
-            minor = getPositionMinorNumber(position);
-            positionNumber = major+"-"+minor;
-        } else {
+//        if (formatBatch.equals(manager.getWorksheet().getFormatId())) {
+//            major = getPositionMajorNumber(position);
+//            minor = getPositionMinorNumber(position);
+//            positionNumber = major+"-"+minor;
+//        } else {
             positionNumber = position;
-        }
+//        }
         
         return positionNumber;
     }

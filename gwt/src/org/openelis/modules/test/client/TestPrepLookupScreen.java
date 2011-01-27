@@ -58,6 +58,8 @@ import org.openelis.manager.TestSectionManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
@@ -67,8 +69,10 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
     };
 
     protected TreeWidget      prepTestTree;
-    private   Integer         testSectionDefaultId;
-    private   ArrayList<ArrayList<Object>> prepBundles;
+
+    private Integer                      testSectionDefaultId;
+    private ArrayList<ArrayList<Object>> prepBundles;
+    private AppButton                    copyToEmptyButton, copyToAllButton;
 
     public TestPrepLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(TestPrepLookupDef.class));
@@ -91,6 +95,22 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
 
             public void onStateChange(StateChangeEvent<State> event) {
                 prepTestTree.enable(true);
+            }
+        });
+
+        prepTestTree.addSelectionHandler(new SelectionHandler<TreeDataItem>() {
+            public void onSelection(SelectionEvent<TreeDataItem> event) {
+                boolean      enable;
+                TreeDataItem selection;
+
+                selection = event.getSelectedItem();
+                if (selection != null && "prepTest".equals(selection.leafType))
+                    enable = true;
+                else
+                    enable = false;
+
+                copyToEmptyButton.enable(enable);
+                copyToAllButton.enable(enable);
             }
         });
 
@@ -171,6 +191,89 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
             }
         });
 
+        copyToEmptyButton = (AppButton)def.getWidget("copyToEmptyButton");
+        addScreenHandler(copyToEmptyButton, new ScreenEventHandler<Object>() {
+            @SuppressWarnings("unchecked")
+            public void onClick(ClickEvent event) {
+                int                i, j;
+                Integer            sectionId;
+                TreeDataItem       item, selection;
+                TestSectionManager tsMan;
+                TestSectionViewDO  tsVDO;
+                
+                prepTestTree.finishEditing();
+                selection = prepTestTree.getSelection();
+                sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                if (sectionId == null) {
+                    Window.alert("Cannot copy blank section");
+                } else {
+                    for (i = 0; i < prepTestTree.numRows(); i++) {
+                        item = prepTestTree.getRow(i);
+                        if (item.leafType == "reflexTest") {
+                            if (item.cells.get(1).getValue() != null) {
+                                if (item.cells.get(1).getValue() instanceof ArrayList) {
+                                    if (((ArrayList<Object>)item.cells.get(1).getValue()).get(0) != null)
+                                        continue;
+                                } else {
+                                    continue;
+                                }
+                            }
+                            tsMan = (TestSectionManager) ((ArrayList<Object>)item.data).get(2);
+                            for (j = 0; j < tsMan.count(); j++) {
+                                tsVDO = tsMan.getSectionAt(j);
+                                if (sectionId.equals(tsVDO.getSectionId())) {
+                                    item.cells.get(1).setValue(sectionId);
+                                    prepTestTree.refresh(i, 1);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                copyToEmptyButton.enable(false);
+            }
+        });
+
+        copyToAllButton = (AppButton)def.getWidget("copyToAllButton");
+        addScreenHandler(copyToAllButton, new ScreenEventHandler<Object>() {
+            @SuppressWarnings("unchecked")
+            public void onClick(ClickEvent event) {
+                int                i, j;
+                Integer            sectionId;
+                TreeDataItem       item, selection;
+                TestSectionManager tsMan;
+                TestSectionViewDO  tsVDO;
+                
+                prepTestTree.finishEditing();
+                selection = prepTestTree.getSelection();
+                sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                if (sectionId == null) {
+                    Window.alert("Cannot copy blank section");
+                } else {
+                    for (i = 0; i < prepTestTree.numRows(); i++) {
+                        item = prepTestTree.getRow(i);
+                        if (item.leafType == "reflexTest") {
+                            tsMan = (TestSectionManager) ((ArrayList<Object>)item.data).get(2);
+                            for (j = 0; j < tsMan.count(); j++) {
+                                tsVDO = tsMan.getSectionAt(j);
+                                if (sectionId.equals(tsVDO.getSectionId())) {
+                                    item.cells.get(1).setValue(sectionId);
+                                    prepTestTree.refresh(i, 1);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                copyToAllButton.enable(false);
+            }
+        });
     }
 
     private void initializeDropdowns() {
@@ -312,7 +415,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 if (!sections.containsKey(tsVDO.getSectionId())) {
                     sRow = new TableDataRow(1);
                     sRow.key = tsVDO.getSectionId();
-                    sRow.cells.get(0).value = tsVDO.getSection();
+                    sRow.cells.get(0).setValue(tsVDO.getSection());
                     sRow.data = tsVDO;
                     sModel.add(sRow);
                     sections.put(tsVDO.getSectionId(), tsVDO);
@@ -320,7 +423,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
             }
     
             if (defaultId != null)
-                row.cells.get(1).value = defaultId;
+                row.cells.get(1).setValue(defaultId);
     
             tpMan = tMan.getPrepTests();
             if (tpMan.count() > 0) {
