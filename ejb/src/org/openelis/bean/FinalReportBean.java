@@ -33,6 +33,7 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
@@ -42,478 +43,419 @@ import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.report.finalreport.OrganizationInstance;
+import org.openelis.report.finalreport.OrganizationPrint;
 import org.openelis.report.finalreport.StatsDataSource;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
-
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
-          mappedName = "java:/OpenELISDS")
+@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
 public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
-    @EJB
-    private SessionCacheInt session;
+	@EJB
+	private SessionCacheInt session;
 
-    @EJB
-    private SampleLocal     sampleBean;
+	@EJB
+	private SampleLocal sampleBean;
 
-    @EJB
-    private LockLocal       lockBean;
+	@EJB
+	private LockLocal lockBean;
 
-    @EJB
-    private AnalysisLocal   analysisBean;
+	@EJB
+	private AnalysisLocal analysisBean;
 
-    @Resource
-    private SessionContext  ctx;
+	@Resource
+	private SessionContext ctx;
 
-    private static int      UNFOLDABLE_PAGE_COUNT = 6;
+	private static int UNFOLDABLE_PAGE_COUNT = 6;
 
-    /**
-     * Returns the prompt for a single re-print
-     */
-    public ArrayList<Prompt> getPromptsForSingle() throws Exception {
-        ArrayList<OptionListItem> prn;
-        ArrayList<Prompt> p;
+	/**
+	 * Returns the prompt for a single re-print
+	 */
+	public ArrayList<Prompt> getPromptsForSingle() throws Exception {
+		ArrayList<OptionListItem> prn;
+		ArrayList<Prompt> p;
 
-        try {
-            p = new ArrayList<Prompt>();
+		try {
+			p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("ACCESSION_NUMBER", Prompt.Type.INTEGER).setPrompt("Accession Number:")
-                                                                     .setWidth(150)
-                                                                     .setRequired(true));
+			p.add(new Prompt("ACCESSION_NUMBER", Prompt.Type.INTEGER)
+					.setPrompt("Accession Number:").setWidth(75)
+					.setRequired(true));
+			/*
+			 * p.add(new Prompt("ORGANIZATION_ID",
+			 * Prompt.Type.INTEGER).setPrompt("Organization Id:")
+			 * .setWidth(150));
+			 */
+			prn = PrinterList.getInstance().getListByType("pdf");
+			prn.add(0, new OptionListItem("-view-", "View PDF"));
+			p.add(new Prompt("PRINTER", Prompt.Type.ARRAY)
+					.setPrompt("Printer:").setWidth(200).setOptionList(prn)
+					.setMutiSelect(false).setRequired(true));
+			return p;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
+	}
 
-            p.add(new Prompt("ORGANIZATION_ID", Prompt.Type.INTEGER).setPrompt("Organization Id:")
-                                                                    .setWidth(150));
+	/**
+	 * Final report for a single or reprint. The report is printed for the
+	 * primary or secondary organization(s) ordered by organization.
+	 */
+	public ReportStatus runReportForSingle(ArrayList<QueryData> paramList) throws Exception {
+		SampleDO data;
+		Integer orgId;
+		ReportStatus status;
+		OrganizationPrint orgPrint;
+		String orgParam, accession, printer;
+		HashMap<String, QueryData> param;
+		ArrayList<Object[]> results;
+		ArrayList<OrganizationPrint> orgPrintList;
 
-            prn = PrinterList.getInstance().getListByType("pdf");
-            prn.add(0, new OptionListItem("-view-", "View PDF"));
-            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
-                                                          .setWidth(200)
-                                                          .setOptionList(prn)
-                                                          .setMutiSelect(false)
-                                                          .setRequired(true));
-            return p;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
+		/*
+		 * push status into session so we can query it while the report is
+		 * running
+		 */
+		status = new ReportStatus();
+		session.setAttribute("FinalReport", status);
 
-    /**
-     * Execute the report and send its output to specified location
-     */
-    public ReportStatus runReportForSingle(ArrayList<QueryData> paramList) throws Exception {
-        int i, numPages;
-        boolean needBlank;
-        URL url;
-        File tempFile;
-        HashMap<String, QueryData> param;
-        Connection con;
-        ReportStatus status;
-        JasperReport jreport;
-        JRExporter jexport;
-        String orgParam, accession, printer, printstat;
-        SampleDO data;
-        OrganizationInstance orgInstance;
-        ArrayList<Object[]> results;
-        ArrayList<OrganizationInstance> orgInstanceList;
-        List tempPages;
-        Integer orgId;
-        JasperPrint masterJprint, blankJprint;        
-        
+		/*
+		 * Recover all the parameters and build a specific where clause
+		 */
+		param = ReportUtil.parameterMap(paramList);
 
-        /*
-         * push status into session so we can query it while the report is
-         * running
-         * 
-         */
-        status = new ReportStatus();
-        session.setAttribute("FinalReport", status);
+		accession = ReportUtil.getSingleParameter(param, "ACCESSION_NUMBER");
+		orgParam = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
+		printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
-        /*
-         * Recover all the parameters and build a specific where clause
-         */
-        param = ReportUtil.parameterMap(paramList);
+		/*
+		 * find the sample
+		 */
+		try {
+			data = sampleBean.fetchByAccessionNumber(Integer.parseInt(accession));
+		} catch (NotFoundException e) {
+			throw new NotFoundException("A sample with accession number " + accession + " is not valid or does not exists");
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 
-        accession = ReportUtil.getSingleParameter(param, "ACCESSION_NUMBER");
-        orgParam = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+		/*
+		 * find all the report to organizations for given sample
+		 */
+		orgPrintList = new ArrayList<OrganizationPrint>();
+		try {
+			results = sampleBean.fetchSamplesForFinalReportSingle(data.getId());
+			status.setMessage("Initializing report");
+			/*
+			 * if the user didn't specify an id for an organization then a
+			 * report is created for all the organizations associated with the
+			 * sample, otherwise a report is created for the organization, the
+			 * id for which is specified by the user if it can be found in the
+			 * list of organizations for that sample
+			 */
+			orgId = null;
+			if (orgParam != null)
+				orgId = Integer.parseInt(orgParam);
 
-        /*
-         * start the report
-         */
-        con = null;
-        
-        try {
-            data = sampleBean.fetchByAccessionNumber(Integer.parseInt(accession));
-            results = sampleBean.fetchSamplesForFinalReportSingle(data.getId());
-            
-            status.setMessage("Initializing report");
-            orgInstanceList = new ArrayList<OrganizationInstance>();
-            
-            /*
-             * if the user didn't specify an id for an organization then a report
-             * is created for all the organizations associated with the sample,
-             * otherwise a report is created for the organization, the id for
-             * which is specified by the user if it can be found in the list of
-             * organizations for that sample    
-             */
-            for (Object[] result : results) {
-                if (orgParam != null) {
-                    orgId = Integer.parseInt(orgParam);
-                    if (DataBaseUtil.isSame(orgId, result[1]))
-                        orgId = (Integer)result[1];
-                    else   
-                        continue;
-                } else {
-                    orgId = (Integer)result[1];
-                }
+			for (Object[] result : results) {
+				if (orgId == null || DataBaseUtil.isSame(orgId, result[1])) {
+					orgPrint = new OrganizationPrint();
+					orgPrint.setOrganizationId((Integer)result[1]);
+					orgPrint.setSampleIds("= "+data.getId());
+					orgPrintList.add(orgPrint);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw e;
+		}
 
-                orgInstance = fillReport(" = " + data.getId(), orgId);
-                orgInstanceList.add(orgInstance);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-            
-        if (orgInstanceList.size() == 0)
-            throw new NotFoundException("noRecordsFound");
-        
-            needBlank = true;
-            url = ReportUtil.getResourceURL("org/openelis/report/finalreport/blank.jasper");
-            jreport = (JasperReport)JRLoader.loadObject(url);
-            blankJprint = JasperFillManager.fillReport(jreport, null);
-            masterJprint = JasperFillManager.fillReport(jreport, null);
-            
-            for (OrganizationInstance org : orgInstanceList) {
-                tempPages = org.getJprint().getPages();
-                numPages = tempPages.size();
-                if (numPages >= UNFOLDABLE_PAGE_COUNT && needBlank) {
-                    masterJprint.addPage((JRPrintPage)blankJprint.getPages().get(0));
-                    needBlank = false;
-                }
+		if (orgPrintList.size() == 0)
+			throw new InconsistencyException("Final report for accession number "+ accession+ " has incorrect status,\nmissing information, or has no analysis ready to be printed");
 
-                /*
-                 * Add blank page to delimit end of autofolded section.
-                 */
-                for (i = 0; i < numPages; i++ )
-                    masterJprint.addPage((JRPrintPage)tempPages.get(i));
-            }
-            
-            masterJprint.removePage(0);                       
-            
-            try {
+		print(orgPrintList, "S", status, printer);
 
-                jexport = new JRPdfExporter();
+		return status;
+	}
 
-                tempFile = File.createTempFile("finalreportsingle", ".pdf", new File("/tmp"));
-                jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
-                jexport.setParameter(JRExporterParameter.JASPER_PRINT, masterJprint);
+	/**
+	 * Prints final reports for all ready to be printed samples. The routine
+	 * time stamps all the analyses' printed date with current time and groups
+	 * the output by organization.
+	 * 
+	 * Additionally, because we use automatic folding machine, the report sorts
+	 * the entire output by the # of pages for each organization. A BLANK page
+	 * is inserted between all the reports that have less than 6 pages and the
+	 * remaining reports to stop the folding process.
+	 */
+	@RolesAllowed("r_final-select")
+	public ReportStatus runReportForBatch(ArrayList<QueryData> paramList) throws Exception {
+		int i;
+		String printer;
+		Datetime timeStamp;
+		ReportStatus status;
+		Object[] result, list;
+		StringBuffer sampleIds;
+		ArrayList<Integer> lockList;
+		ArrayList<Object[]> resultList;
+		ArrayList<OrganizationPrint> orgPrintList;
+		HashMap<String, QueryData> param;
+		HashMap<Integer, HashMap<Integer, Integer>> orgMap;
+		HashMap<Integer, Integer> anaMap, samMap;
+		Integer samId, prevSamId, orgId, anaId;
+		Iterator<Integer> orgIter;
+		OrganizationPrint orgPrint;
 
-                status.setMessage("Outputing report").setPercentComplete(20);
+		/*
+		 * Recover the printer
+		 */
+		param = ReportUtil.parameterMap(paramList);
+		printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
-                jexport.exportReport();
+		/*
+		 * obtain the list of sample ids, organization ids and analysis ids
+		 */
+		samMap = null;
+		prevSamId = null;
+		anaMap = new HashMap<Integer, Integer>();
+		lockList = new ArrayList<Integer>();
+		orgMap = new HashMap<Integer, HashMap<Integer, Integer>>();
 
-                status.setPercentComplete(100);
+		status = new ReportStatus();
+		status.setMessage("Initializing report");
+		session.setAttribute("FinalReport", status);
 
-                if (ReportUtil.isPrinter(printer)) {
-                    printstat = ReportUtil.print(tempFile, printer, 1);
-                    status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
-                } else {
-                    tempFile = ReportUtil.saveForUpload(tempFile);
-                    status.setMessage(tempFile.getName())
-                          .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
-                          .setStatus(ReportStatus.Status.SAVED);
-                }
+		/*
+		 * loop through the list and lock all the samples obtained from
+		 * resultList that can be locked; the ones that can't be locked and the
+		 * organizations associated with them are excluded from the report being
+		 * generated
+		 */
+		resultList = sampleBean.fetchSamplesForFinalReportBatch();
+		for (i = 0; i < resultList.size(); i++) {
+			result = resultList.get(i);
+			samId = (Integer) result[0];
+			orgId = (Integer) result[1];
+			anaId = (Integer) result[2];
 
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw e;
-            } finally {
-                try {
-                    if (con != null)
-                        con.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        
-        return status;
-    }
-    
-    @RolesAllowed("r_final-select")
-    public ReportStatus runReportForBatch(String loginName, String printer) throws Exception {
-        int i, numPages;
-        boolean needBlank;
-        URL url;
-        Connection con;
-        JasperReport jreport;
-        JasperPrint masterJprint, blankJprint, statsJprint;
-        JRExporter jexport;
-        String printstat, sparam;
-        File tempFile;
-        List tempPages;
-        ReportStatus status;
-        ArrayList<Object[]> resultList;
-        Integer sampleId, prevSampleId, orgId, anaId;
-        Datetime timeStamp;
-        ArrayList<Integer> lockedSampleList;
-        HashMap<Integer, HashMap<Integer, Integer>> orgInstanceMap;
-        HashMap<Integer, Integer> anaMap, sampleMap;
-        HashMap<String, Object> jparam;
-        Object[] result, list;
-        Iterator<Integer> orgIter;
-        OrganizationInstance orgInstance;
-        ArrayList<OrganizationInstance> orgInstanceList;
-        StatsDataSource sds;
+			if (!samId.equals(prevSamId)) {
+				try {
+					lockBean.lock(ReferenceTable.SAMPLE, samId);
+					lockList.add(samId);
+				} catch (Exception e) {
+					/*
+					 * skip all the samples that can't be locked.
+					 */
+					while (samId.equals(resultList.get(i)[0]))
+						i++;
+					prevSamId = null;
+					continue;
+				}
+			}
+			/*
+			 * we are adding this sample id to the list of samples maintained
+			 * for this organization
+			 */
+			samMap = orgMap.get(orgId);
+			if (samMap == null) {
+				samMap = new HashMap<Integer, Integer>();
+				orgMap.put(orgId, samMap);
+			}
+			/*
+			 * keep a unique analysis id list for update
+			 */
+			samMap.put(samId, samId);
+			anaMap.put(anaId, anaId);
+			prevSamId = samId;
+		}
 
-        //
-        // obtain the list of sample ids, organization ids and analysis ids
-        //
-        resultList = sampleBean.fetchSamplesForFinalReportBatch();
-        sampleId = null;
-        prevSampleId = null;
-        orgInstanceMap = new HashMap<Integer, HashMap<Integer, Integer>>();
-        anaMap = new HashMap<Integer, Integer>();
-        lockedSampleList = new ArrayList<Integer>();
-        sampleMap = null;
+		/*
+		 * update all the analyses with date printed
+		 */
+		timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+		for (Integer key : anaMap.keySet())
+			analysisBean.updatePrintedDate(key, timeStamp);
 
-        /*
-         * loop through the list and lock all the samples obtained from
-         * resultList that can be locked; the ones that can't be locked and the
-         * organizations associated with them are excluded from the report being
-         * generated
-         */
-        for (i = 0; i < resultList.size(); i++ ) {
-            result = resultList.get(i);
-            sampleId = (Integer)result[0];
-            orgId = (Integer)result[1];
-            anaId = (Integer)result[2];
+		/*
+		 * start the report
+		 */
+		orgPrintList = new ArrayList<OrganizationPrint>();
+		orgIter = orgMap.keySet().iterator();
+		while (orgIter.hasNext()) {
+			orgId = orgIter.next();
+			samMap = orgMap.get(orgId);
+			list = samMap.values().toArray();
+			/*
+			 * samples with null organizations (such as private well) are
+			 * managed as single print rather then a batch for null organization
+			 */
+			if (orgId == null) {
+				for (i = 0; i < list.length; i++) {
+					orgPrint = new OrganizationPrint();
+					orgPrint.setOrganizationId(orgId);
+					orgPrint.setSampleIds("="+list[i]);
+					orgPrintList.add(orgPrint);
+				}
+			} else {
+				sampleIds = new StringBuffer();
+				sampleIds.append("in (");
+				for (i = 0; i < list.length; i++) {
+					if (i != 0)
+						sampleIds.append(",");
+					sampleIds.append(list[i]);
+				}
+				sampleIds.append(")");
+				orgPrint = new OrganizationPrint();
+				orgPrint.setOrganizationId(orgId);
+				orgPrint.setSampleIds(sampleIds.toString());
+				orgPrintList.add(orgPrint);
+			}
+		}
+		print(orgPrintList, "B", status, printer);
 
-            if ( !sampleId.equals(prevSampleId)) {
-                try {
-                    lockBean.lock(ReferenceTable.SAMPLE, sampleId);
-                    System.out.println("locked sample id " + sampleId);
-                    lockedSampleList.add(sampleId);
-                } catch (Exception e) {
-                    while (sampleId.equals(resultList.get(i)[0]))
-                        i++ ;
-                    prevSampleId = sampleId;
-                    continue;
-                }
-            }
+		/*
+		 * unlock all the samples
+		 */
+		for (Integer id : lockList)
+			lockBean.unlock(ReferenceTable.SAMPLE, id);
 
-            sampleMap = orgInstanceMap.get(orgId);
+		return status;
+	}
 
-            if (sampleMap == null)
-                sampleMap = new HashMap<Integer, Integer>();
+	private void print(ArrayList<OrganizationPrint> orgPrintList,
+			String reportType, ReportStatus status, String printer) throws Exception {
+		int i, n;
+		URL url;
+		File tempFile;
+		Connection con;
+		boolean needBlank;
+		JasperReport jreport;
+		JRExporter jexport;
+		String dir, printstat;
+		List<JRPrintPage> pages;
+		HashMap<String, Object> jparam;
+		JasperPrint masterJprint, blankJprint, statsJprint;
+		StatsDataSource ds;
 
-            sampleMap.put(sampleId, sampleId);
-            orgInstanceMap.put(orgId, sampleMap);
-            anaMap.put(anaId, sampleId);
+		con = null;
+		try {
+			con = ReportUtil.getConnection(ctx);
+			/*
+			 * get all the report instances
+			 */
+			url = ReportUtil.getResourceURL("org/openelis/report/finalreport/blank.jasper");			
+			jreport = (JasperReport) JRLoader.loadObject(url);
+			blankJprint = JasperFillManager.fillReport(jreport, null);
+			masterJprint = JasperFillManager.fillReport(jreport, null);
 
-            prevSampleId = sampleId;
-        }
+			dir = ReportUtil.getResourcePath(url);
+			jparam = new HashMap<String, Object>();
+			jparam.put("REPORT_TYPE", reportType);
+			jparam.put("SUBREPORT_DIR", dir);
+			jparam.put("LOGNAME", ctx.getCallerPrincipal().getName());
+			
+			url = ReportUtil.getResourceURL("org/openelis/report/finalreport/main.jasper");
+			jreport = (JasperReport) JRLoader.loadObject(url);
+			/*
+			 * for each organization, print all the samples 
+			 */
+			for (OrganizationPrint o : orgPrintList) {
+				jparam.put("ORGANIZATION_ID", o.getOrganizationId());
+				jparam.put("SAMPLE_ID", o.getSampleIds());
+				jparam.put("ORGANIZATION_INSTANCE", o);
+				o.setJprint(JasperFillManager.fillReport(jreport, jparam, con));
+			}
 
-        timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
-        for (Integer key : anaMap.keySet()) {
-            System.out.println("updating analysis id " + key + " with time " + timeStamp);
-            analysisBean.updatePrintedDate(key, timeStamp);
-        }
+			try {
+				con.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			con = null;
+		
+			/*
+			 * Sort the print by # of pages.
+			 */
+			if (orgPrintList.size() > 1)
+				Collections.sort(orgPrintList, new MyComparator());
 
-        System.out.println("printing report .....");
+			/*
+			 * assemble all the pages and put in a blank page between 6 and more
+			 * pages
+			 */
+			needBlank = true;
+			for (OrganizationPrint o : orgPrintList) {
+				pages = o.getJprint().getPages();
+				n = pages.size();
+				if (n >= UNFOLDABLE_PAGE_COUNT && needBlank) {
+					masterJprint.addPage((JRPrintPage) blankJprint.getPages().get(0));
+					needBlank = false;
+				}
+				for (i = 0; i < n; i++)
+					masterJprint.addPage((JRPrintPage) pages.get(i));
+			}
+		
+			/*
+			 * the stat page at the end will list all the organizations printed in
+			 * this run.
+			 */
+			if ("B".equals(reportType)) {
+				ds = new StatsDataSource();
+				ds.setStats(orgPrintList);
+				url = ReportUtil.getResourceURL("org/openelis/report/finalreport/stats.jasper");
+				statsJprint = JasperFillManager.fillReport((JasperReport) JRLoader.loadObject(url), jparam, ds);
 
-        status = new ReportStatus();
-        session.setAttribute("FinalReport", status);
+				pages = statsJprint.getPages();
+				n = pages.size();
+				for (i = 0; i < n; i++)
+					masterJprint.addPage((JRPrintPage) pages.get(i));
+			}
+		
+			/*
+			 * Finally, print the pages
+			 */
+			masterJprint.removePage(0);
+			jexport = new JRPdfExporter();
+			tempFile = File.createTempFile("finalreport", ".pdf", new File("/tmp"));
+			jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
+			jexport.setParameter(JRExporterParameter.JASPER_PRINT, masterJprint);
 
-        status.setMessage("Initializing report");
+			status.setMessage("Outputing report").setPercentComplete(20);
 
-        /*
-         * start the report
-         */
-        con = null;
+			jexport.exportReport();
 
-        orgInstanceList = new ArrayList<OrganizationInstance>();
-        orgIter = orgInstanceMap.keySet().iterator();
+			status.setPercentComplete(100);
 
-        while (orgIter.hasNext()) {
-            orgId = orgIter.next();
-            sampleMap = orgInstanceMap.get(orgId);
-            list = sampleMap.values().toArray();            
-            
-            if (orgId == null) {
-                for (i = 0; i < list.length; i++ ) {
-                    sparam = " = " + list[i];
-                    orgInstance = fillReport(sparam, orgId);
-                    orgInstanceList.add(orgInstance);
-                }
-            } else {  
-                if (list.length == 1) {
-                    sparam = " = " + list[0];
-                } else {
-                    sparam = " in (";
-                    for (i = 0; i < list.length - 1; i++ )
-                        sparam += list[i] + ", ";
-                    sparam += list[i] + " )";
-                }
-                orgInstance = fillReport(sparam, orgId);
-                orgInstanceList.add(orgInstance);
-            }
-        }
+			if (ReportUtil.isPrinter(printer)) {
+				printstat = ReportUtil.print(tempFile, printer, 1);
+				status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
+			} else {
+				tempFile = ReportUtil.saveForUpload(tempFile);
+				status.setMessage(tempFile.getName())
+				      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+					  .setStatus(ReportStatus.Status.SAVED);
+			}
+		} catch (Exception e) {
+			try {
+				if (con != null)
+					con.close();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			con = null;
+			throw e;
+		}			
+	}
 
-        Collections.sort(orgInstanceList, new MyComparator());
-
-        needBlank = true;
-        url = ReportUtil.getResourceURL("org/openelis/report/finalreport/blank.jasper");
-        jreport = (JasperReport)JRLoader.loadObject(url);
-        blankJprint = JasperFillManager.fillReport(jreport, null);
-        masterJprint = JasperFillManager.fillReport(jreport, null);
-
-        for (OrganizationInstance org : orgInstanceList) {
-            tempPages = org.getJprint().getPages();
-            numPages = tempPages.size();
-            if (numPages >= UNFOLDABLE_PAGE_COUNT && needBlank) {
-                masterJprint.addPage((JRPrintPage)blankJprint.getPages().get(0));
-                needBlank = false;
-            }
-
-            /*
-             * Add blank page to delimit end of autofolded section.
-             */
-            for (i = 0; i < numPages; i++ )
-                masterJprint.addPage((JRPrintPage)tempPages.get(i));
-        }
-
-        sds = new StatsDataSource();
-        sds.setStats(orgInstanceList);
-        url = ReportUtil.getResourceURL("org/openelis/report/finalreport/stats.jasper");
-        jreport = (JasperReport)JRLoader.loadObject(url);
-        jparam = new HashMap<String, Object>();
-        jparam.put("LOGNAME", loginName);
-        statsJprint = JasperFillManager.fillReport(jreport, jparam, sds);
-
-        masterJprint.removePage(0);
-        tempPages = statsJprint.getPages();
-        numPages = tempPages.size();
-        for (i = 0; i < numPages; i++ )
-            masterJprint.addPage((JRPrintPage)tempPages.get(i));
-
-        try {
-
-            jexport = new JRPdfExporter();
-
-            tempFile = File.createTempFile("finalreportbatch", ".pdf", new File("/tmp"));
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
-            jexport.setParameter(JRExporterParameter.JASPER_PRINT, masterJprint);
-
-            status.setMessage("Outputing report").setPercentComplete(20);
-
-            jexport.exportReport();
-
-            status.setPercentComplete(100);
-
-            if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
-                status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
-            } else {
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
-                      .setStatus(ReportStatus.Status.SAVED);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        } finally {
-            try {
-                if (con != null)
-                    con.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        for (Integer value : lockedSampleList) {
-            lockBean.unlock(ReferenceTable.SAMPLE, value);
-            System.out.println("unlocked sample id " + value);
-        }
-
-        return status;
-    }    
-    
-    private OrganizationInstance fillReport(String sampleId, Integer orgId) throws Exception {
-        OrganizationInstance orgInstance;
-        URL url;        
-        HashMap<String, Object> jparam;
-        Connection con;
-        JasperReport jreport;
-        JasperPrint jprint;
-        String dir;
-        
-        orgInstance = null;
-        con = null;
-        try {            
-            
-            con = ReportUtil.getConnection(ctx);
-            url = ReportUtil.getResourceURL("org/openelis/report/finalreport/main.jasper");
-            dir = ReportUtil.getResourcePath(url);
-            
-            orgInstance = new OrganizationInstance();
-            orgInstance.setOrganizationId(orgId);
-            
-            jparam = new HashMap<String, Object>();
-            jparam.put("REPORT_TYPE", "S");
-            jparam.put("SAMPLE_ID", sampleId);
-            jparam.put("ORGANIZATION_ID", orgId);
-            
-            //
-            // this parameter is used to show the names of the organizations/
-            // report to(s) with the number of pages in the report showing statistics
-            //            
-            jparam.put("ORGANIZATION_INSTANCE", orgInstance);
-            jparam.put("SUBREPORT_DIR", dir);          
-
-            jreport = (JasperReport)JRLoader.loadObject(url);
-            jprint = JasperFillManager.fillReport(jreport, jparam, con); 
-            
-            orgInstance.setJprint(jprint);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        } finally {
-            try {
-                if (con != null)
-                    con.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        
-        return orgInstance;
-    }
-    
-
-    class MyComparator implements Comparator<OrganizationInstance> {
-        
-        public int compare(OrganizationInstance o1, OrganizationInstance o2) {
-            OrganizationInstance rp1, rp2;
-            JasperPrint    jp1,  jp2;
-            List<JasperPrint> jpl1, jpl2;
-            
-            rp1 = (OrganizationInstance) o1;
-            rp2 = (OrganizationInstance) o2;
-            jp1 = (JasperPrint) rp1.getJprint();
-            jp2 = (JasperPrint) rp2.getJprint();           
-            jpl1 = jp1.getPages();
-            jpl2 = jp2.getPages();
-            
-            return jpl1.size() - jpl2.size();
-        }
-    }
-        
+	/*
+	 * 
+	 */
+	class MyComparator implements Comparator<OrganizationPrint> {
+		public int compare(OrganizationPrint o1, OrganizationPrint o2) {
+			return o1.getJprint().getPages().size() - o2.getJprint().getPages().size();
+		}
+	}
 }

@@ -21,37 +21,37 @@
 	<group name="headerGroup">
 		<groupExpression><![CDATA[$F{rowGroup}]]></groupExpression>
 		<groupHeader>
-			<band height="12">
+			<band height="24">
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Opaque" x="0" y="0" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="0" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
 						<font pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header0}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Opaque" x="110" y="0" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="110" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
 						<font pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header1}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Opaque" x="220" y="0" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="220" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
 						<font pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header2}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Opaque" x="330" y="0" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="330" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
 						<font pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header3}]]></textFieldExpression>
 				</textField>
 				<textField isBlankWhenNull="true">
-					<reportElement mode="Opaque" x="440" y="0" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="440" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
 						<font pdfFontName="Times-Roman"/>
 					</textElement>
@@ -99,7 +99,4 @@
 			</textField>
 		</band>
 	</detail>
-	<summary>
-		<band height="12"/>
-	</summary>
 </jasperReport>

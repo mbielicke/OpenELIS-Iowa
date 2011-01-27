@@ -6,7 +6,7 @@
 	<parameter name="SAMPLE_ACCESSION_NUMBER" class="java.lang.Integer"/>
 	<parameter name="SAMPLE_ORGANIZATION_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<queryString>

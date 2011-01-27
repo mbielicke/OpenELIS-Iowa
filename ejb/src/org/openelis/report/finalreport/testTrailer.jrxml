@@ -9,7 +9,7 @@
 		<![CDATA[SELECT
      tt.text AS tt_text
 FROM
-     analysis a,  test t, outer  test_trailer tt
+     analysis a,  test t, test_trailer tt
 WHERE
      a.id = $P{ANALYSIS_ID} AND a.test_id = t.id AND  t.test_trailer_id = tt.id]]>
 	</queryString>
@@ -21,7 +21,7 @@ WHERE
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{BUFF}.append($F{tt_text}).append(' ') ? null : null]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{BUFF}.append($F{tt_text})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

@@ -15,16 +15,16 @@
 	<group name="headerGroup" isStartNewPage="true">
 		<groupExpression><![CDATA[$F{rowGroup}]]></groupExpression>
 		<groupHeader>
-			<band height="12">
+			<band height="24">
 				<textField>
-					<reportElement mode="Opaque" x="0" y="0" width="275" height="12" isPrintInFirstWholeBand="true" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="0" y="12" width="275" height="12" isPrintInFirstWholeBand="true" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
 						<font pdfFontName="Times-Roman"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[$F{header0}]]></textFieldExpression>
 				</textField>
 				<textField>
-					<reportElement mode="Opaque" x="275" y="0" width="275" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+					<reportElement mode="Opaque" x="275" y="12" width="275" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>
 						<font pdfFontName="Times-Roman"/>
 					</textElement>
@@ -51,7 +51,4 @@
 			</textField>
 		</band>
 	</detail>
-	<summary>
-		<band height="12"/>
-	</summary>
 </jasperReport>

@@ -12,12 +12,13 @@
 FROM
      analysis a, sample_item si, test t, method m, sample s
 WHERE
-     si.sample_id = $P{SAMPLE_ID} AND a.sample_item_id = si.id AND si.sample_id = s.id AND a.is_reportable = 'Y'
-     AND a.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_cancelled')
-     AND a.test_id = t.id AND t.method_id = m.id  AND (a.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_released')
-     OR (a.status_id IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'sample_released')
-     AND s.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'analysis_released')
-     AND t.reporting_method_id IN (SELECT d2.id FROM dictionary d2 where d2.system_name = 'complete_sample_only')))]]>
+     si.sample_id = $P{SAMPLE_ID} AND
+     a.sample_item_id = si.id AND
+     si.sample_id = s.id AND
+     a.is_reportable = 'Y' AND
+     a.test_id = t.id AND
+     t.method_id = m.id   AND
+     a.status_id NOT IN (SELECT d2.id FROM dictionary d2 where d2.system_name in ('analysis_cancelled', 'analysis_released'))]]>
 	</queryString>
 	<field name="t_reporting_description" class="java.lang.String"/>
 	<field name="m_reporting_description" class="java.lang.String"/>
@@ -25,25 +26,38 @@ WHERE
 		<variableExpression><![CDATA[$V{PENDING_ANALYSIS_TEXT}]]></variableExpression>
 		<initialValueExpression><![CDATA[org.openelis.utils.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></initialValueExpression>
 	</variable>
+	<pageHeader>
+		<band height="24">
+			<staticText>
+				<reportElement positionType="Float" x="0" y="5" width="550" height="14"/>
+				<box bottomPadding="0"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true" pdfFontName="Times-Bold"/>
+				</textElement>
+				<text><![CDATA[Pending Analyses]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement mode="Transparent" x="0" y="0" width="550" height="12" backcolor="#FFFFFF"/>
+				<reportElement mode="Transparent" x="87" y="0" width="463" height="12" backcolor="#FFFFFF"/>
 				<textElement>
 					<font isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.Concat.concatWithSeparator($F{t_reporting_description},", ", $F{m_reporting_description})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<noData>
-		<band height="12">
+		<band height="24">
 			<staticText>
-				<reportElement x="0" y="0" width="550" height="12"/>
+				<reportElement positionType="Float" x="0" y="5" width="550" height="14"/>
+				<box bottomPadding="0"/>
 				<textElement textAlignment="Center">
-					<font pdfFontName="Times-Roman"/>
+					<font size="12" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
-				<text><![CDATA[No pending analysis]]></text>
+				<text><![CDATA[No Pending Analyses]]></text>
 			</staticText>
 		</band>
 	</noData>

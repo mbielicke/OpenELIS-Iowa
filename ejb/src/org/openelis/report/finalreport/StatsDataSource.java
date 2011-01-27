@@ -4,26 +4,26 @@ import java.util.*;
 import net.sf.jasperreports.engine.*;
 
 public class StatsDataSource implements JRDataSource {
-    protected ArrayList<OrganizationInstance> stats;
-    protected Iterator<OrganizationInstance> iter;
+    protected ArrayList<OrganizationPrint> stats;
+    protected Iterator<OrganizationPrint> iter;
     protected String           organizationName;
     protected Integer          pageCount, organizationId;
     
-    public ArrayList<OrganizationInstance> getStats() {
+    public ArrayList<OrganizationPrint> getStats() {
         return stats;
     }
-    public void setStats(ArrayList<OrganizationInstance> stats) {
+    public void setStats(ArrayList<OrganizationPrint> stats) {
         this.stats = stats;
     }
     
     public boolean next() throws JRException {
-        OrganizationInstance ci;
+        OrganizationPrint ci;
         
         if (iter == null && stats != null)
             iter = stats.iterator();
         
         if (iter.hasNext()) {
-            ci          = (OrganizationInstance) iter.next();
+            ci          = (OrganizationPrint) iter.next();
             organizationName = ci.getOrganizationName();
             pageCount  = ci.getJprint().getPages().size();
             organizationId   = ci.getOrganizationId();
