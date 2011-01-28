@@ -104,16 +104,14 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <menuItem key="unreleaseAnalysis" description="" enable="false" icon="unreleaseIcon" label="Unrelease Analysis" />
-                <menuItem key="finalReport" description="" enable="false" icon="unreleaseIcon" label="Preview Final Report" >
-  					<!-- <menuDisplay>
+                <menuItem key="unreleaseAnalysis" description="" enable="false" icon="unreleaseIcon" label="{resource:getString($constants,'unreleaseAnalysisCaption')}" />
+                <menuItem key="previewFinalReport" enable="true" description="" icon="unreleaseIcon">
+  					<menuDisplay>
   						<HorizontalPanel>
-     					<check key="previewReport"/>
-     					<text style="Prompt">
-                  Preview Final Report
-                </text>
+     					<check key="autoPreview"/>
+     					<label field = "String" key="autoPreviewText" style="Prompt" text = "{resource:getString($constants,'previewFinalReport')}"/>
      					</HorizontalPanel>
- 					</menuDisplay> -->
+ 					</menuDisplay> 
  				</menuItem>
                	 <html>&lt;hr/&gt;</html>
                   <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />

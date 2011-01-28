@@ -21,6 +21,7 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -95,6 +96,7 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
@@ -127,7 +129,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private AppButton            prevPage, nextPage, similarButton, expandButton, collapseButton,
                                  queryButton, updateButton, commitButton, abortButton, addTestButton,
                                  cancelTestButton;
-    private MenuItem             envMenuQuery, wellMenuQuery, sdwisMenuQuery, unreleaseSample, historySample,
+    private MenuItem             envMenuQuery, wellMenuQuery, sdwisMenuQuery, unreleaseSample,previewFinalReport,historySample,
                                  historySampleSpec, historySampleProject, historySampleOrganization,
                                  historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
                                  historySampleQA, historyAnalysisQA, historyAuxData;
@@ -142,6 +144,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private Integer              analysisLoggedInId,  sampleErrorStatusId, 
                                  sampleReleasedId;
     private Query                query;
+    
+    private ScreenService        finalReportService;
 
     public enum Tabs {
         BLANK, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -151,6 +155,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     public SampleTrackingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
+        finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("sampletracking");
         unreleasePermission = OpenELIS.getSystemUserPermission().getModule("sampleunrelease");
@@ -346,6 +351,17 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 unreleaseSample.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) && unreleasePermission.hasSelectPermission());
+            }
+        });
+        
+        previewFinalReport = (MenuItem)def.getWidget("previewFinalReport");
+        addScreenHandler(previewFinalReport, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                viewFinalReport();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                previewFinalReport.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -1418,7 +1434,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         wellTab.clearErrors();
         sdwisTab.clearErrors();
         
-        manager.getSample().setStatusId(sampleErrorStatusId);
+        manager.setStatusWithError(true);
 
         if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
@@ -2007,6 +2023,38 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 }
             }
         });
+    }
+    
+    private void viewFinalReport() {
+        Query query;
+        QueryData field;
+
+        query = new Query();
+        field = new QueryData();
+        field.key = "ACCESSION_NUMBER";
+        field.query = manager.getSample().getAccessionNumber().toString();
+        field.type = QueryData.Type.STRING;
+
+        query.setFields(field);
+
+        window.setBusy(consts.get("genReportMessage"));
+
+        finalReportService.call("runReportForSingle", query, new AsyncCallback<ReportStatus>() {
+            public void onSuccess(ReportStatus status) {
+                String url;
+
+                url = "report?file=" + status.getMessage();
+                Window.open(URL.encode(url), consts.get("finalReportSingleReprint"), null);
+                window.setDone(consts.get("done"));
+            }
+
+            public void onFailure(Throwable caught) {
+                window.setError("Failed");
+                caught.printStackTrace();
+                Window.alert(caught.getMessage());
+            }
+        });
+
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {

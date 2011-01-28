@@ -176,10 +176,10 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                     <autoComplete key="{meta:getWellOrganizationName()}" width="180" case="UPPER" popWidth="auto" tab="{meta:getWellOrganizationId()},{meta:getClientReference()}" field="String">
-                      <col width="200" header="Name" />
-                      <col width="130" header="Street" />
-                      <col width="120" header="City" />
-                      <col width="20" header="St" />
+                      <col width="200" header="{resource:getString($constants,'name')}" />
+                      <col width="130" header="{resource:getString($constants,'street')}" />
+                      <col width="120" header="{resource:getString($constants,'city')}" />
+                      <col width="20" header="{resource:getString($constants,'st')}" />
                     </autoComplete>
                   </widget>
                   <text style="Prompt">

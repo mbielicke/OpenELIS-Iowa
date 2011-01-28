@@ -142,7 +142,7 @@ import org.openelis.utils.Auditable;
             		  		  query = "select s.id s_id, so.organization_id o_id, a.id a_id"
                 		  			+ " from sample s, sample_item si, analysis a, sample_organization so where s.id = :sampleId and s.domain != 'W' and s.status_id in (select id from dictionary where system_name = 'sample_released') and si.sample_id = s.id and a.sample_item_id = si.id and"
                 		  			+ " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y' and"
-                		  			+ " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_report_to'))"
+                		  			+ " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_report_to')"
                 		  			+ " union "
                 		  			+ "select s.id s_id, so.organization_id o_id, a.id a_id"
                 		  			+ " from sample s, sample_item si, analysis a, sample_organization so where s.id = :sampleId and s.domain != 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error')) and si.sample_id = s.id and a.sample_item_id = si.id and"  
