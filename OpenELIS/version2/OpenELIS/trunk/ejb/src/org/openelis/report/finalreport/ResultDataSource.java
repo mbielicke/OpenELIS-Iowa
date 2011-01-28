@@ -182,7 +182,7 @@ public class ResultDataSource implements JRDataSource {
         // add the text for the headers / column analytes
         //
         row.put("header0", "Analyte");
-        row.put("header1", "Value");
+        row.put("header1", "Result");
         for (i = 2; i < list.size() + 1; i++) 
             row.put("header" + i, list.get(i - 1).getAnalyte());        
         
