@@ -251,9 +251,6 @@ WHERE
 				<subreportParameter name="ORGANIZATION_PRINT">
 					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
-				<subreportParameter name="TYPE_SYSTEM_NAME">
-					<subreportParameterExpression><![CDATA["org_second_report_to"]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="ORGANIZATION_ID">
 					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>
 				</subreportParameter>

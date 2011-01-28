@@ -39,8 +39,8 @@ public class AnalysisUnitList {
         unitList.add(unitId);
     }
     
-    public boolean isEmpty() {
-    	return unitList.size() == 0;
+    public int size() {
+    	return unitList.size();
     }
     
     public String toString() {
@@ -53,6 +53,8 @@ public class AnalysisUnitList {
                 str.append(",");
             str.append(unitList.get(i));
         }
+        if (str.length() == 0)
+        	str.append("0");
         return str.toString();
     }        
 }
