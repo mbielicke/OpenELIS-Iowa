@@ -39,6 +39,10 @@ public class AnalysisUnitList {
         unitList.add(unitId);
     }
     
+    public boolean isEmpty() {
+    	return unitList.size() == 0;
+    }
+    
     public String toString() {
         int i;
         StringBuffer str;

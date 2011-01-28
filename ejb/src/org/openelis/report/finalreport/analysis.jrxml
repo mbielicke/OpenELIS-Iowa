@@ -13,34 +13,39 @@
 	<parameter name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList" isForPrompting="false">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
+	<parameter name="REPORT_TYPE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT 1 sorting_method, t.reporting_sequence,
      t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
-     d1.entry unit_name, d1.id unit_id,
+     u.entry unit_name, u.id unit_id,
      a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, s.name s_name,
      pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description
 FROM
-     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary d1
+     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary u
 WHERE
-     si.sample_id = $P{SAMPLE_ID} AND a.sample_item_id = si.id AND a.is_reportable = 'Y'
-     AND a.section_id = s.id AND a.test_id = t.id AND t.method_id = m.id AND d.id = t.test_format_id AND a.pre_analysis_id = pa.id
-     AND pa.test_id = pat.id AND pat.method_id = pam.id AND a.unit_of_measure_id = d1.id
-     AND a.status_id = (select id from dictionary where system_name = 'analysis_released')
-     AND t.sorting_method_id in (select id from dictionary where system_name = 'analyses_complete')
+     si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
+     a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
+     a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
+     a.status_id = (select id from dictionary where ($P{REPORT_TYPE} = "C" and system_name = 'analysis_completed') or
+                                                    ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released')) and
+     t.sorting_method_id in (select id from dictionary where system_name = 'analyses_complete')
 UNION
 SELECT 2 sorting_method, t.reporting_sequence,
      t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
-     d1.entry unit_name, d1.id unit_id,
+     u.entry unit_name, u.id unit_id,
      a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, s.name s_name,
      pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description
 FROM
-     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary d1
+     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary u
 WHERE
-     si.sample_id = $P{SAMPLE_ID} AND a.sample_item_id = si.id AND a.is_reportable = 'Y'
-     AND a.section_id = s.id AND a.test_id = t.id AND t.method_id = m.id AND d.id = t.test_format_id AND a.pre_analysis_id = pa.id
-     AND pa.test_id = pat.id AND pat.method_id = pam.id AND a.unit_of_measure_id = d1.id
-     AND a.status_id = (select id from dictionary where system_name = 'analysis_released')
-     AND t.sorting_method_id in (select id from dictionary where system_name = 'test_sequence')
+     si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
+     a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
+     a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
+     a.status_id = (select id from dictionary where ($P{REPORT_TYPE} = "C" and system_name = 'analysis_completed') or
+                                                    ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released')) and
+     t.sorting_method_id in (select id from dictionary where system_name = 'test_sequence')
 ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 	</queryString>
 	<field name="sorting_method" class="java.lang.Integer"/>
