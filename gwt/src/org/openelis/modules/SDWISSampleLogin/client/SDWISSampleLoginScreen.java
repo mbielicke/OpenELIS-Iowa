@@ -117,8 +117,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     protected AccessionNumberUtility  accessionNumUtil;
     protected SampleHistoryUtility    historyUtility;
 
-    protected TextBox                 accessionNumber, clientReference;
-    protected TextBox<Integer>        orderNumber;
+    protected TextBox                 clientReference;
+    protected TextBox<Integer>        accessionNumber, orderNumber;
     protected TextBox<Datetime>       collectedTime;
     protected Dropdown<Integer>       statusId;
     protected CalendarLookUp          collectedDate, receivedDate;
@@ -417,29 +417,17 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
         });
 
-        accessionNumber = (TextBox)def.getWidget(SampleMeta.getAccessionNumber());
-        addScreenHandler(accessionNumber, new ScreenEventHandler<String>() {
+        accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
+        addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
             }
 
-            public void onValueChange(final ValueChangeEvent<String> event) {
-                int           index;
-                String        val;
+            public void onValueChange(final ValueChangeEvent<Integer> event) {
                 SampleManager quickEntryMan;
 
                 try {
-                    val = event.getValue();
-                    //
-                    // Trim the Sample Item ID from the end of the bar coded
-                    // accession number
-                    //
-                    index = val.indexOf("-");
-                    if (index != -1)
-                        val = val.substring(0, index);
-                    accessionNumber.setValue(val);
-
-                    manager.getSample().setAccessionNumber(Integer.valueOf(val));
+                    manager.getSample().setAccessionNumber(event.getValue());
 
                     if (accessionNumUtil == null)
                         accessionNumUtil = new AccessionNumberUtility();
@@ -1178,27 +1166,11 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     public ArrayList<QueryData> getQueryFields() {
-        int                  i, index;
+        int                  i;
         ArrayList<QueryData> fields, auxFields;
         QueryData field;
 
         fields = super.getQueryFields();
-        for (i = 0; i < fields.size(); i++) {
-            field = fields.get(i);
-            if (field.key == SampleMeta.getAccessionNumber()) {
-                if (field.query.matches("[0-9]+-[0-9]+")) {
-                    //
-                    // Trim the Sample Item ID from the end of the bar coded
-                    // accession number
-                    //
-                    index = field.query.indexOf("-");
-                    if (index != -1)
-                        field.query = field.query.substring(0, index);
-                }
-                field.type = QueryData.Type.INTEGER;
-                break;
-            }
-        }
 
         // add aux data values if necessary
         auxFields = auxDataTab.getQueryFields();

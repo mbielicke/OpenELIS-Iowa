@@ -467,7 +467,7 @@ public class QuickEntryScreen extends Screen {
 
     private void entryChanged() {
         int           index;
-        String        val, valParts[];
+        String        val;
         Integer       accessionNum;
         SampleDO      sampleDO;
         SampleManager sampleMan;
@@ -477,36 +477,31 @@ public class QuickEntryScreen extends Screen {
 
         // date recieved
         recDate.setStringValue(val);
+        recDate.validate();
         if (recDate.exceptions == null) {
-            recDate.validate();
-            if (recDate.exceptions == null){
-                if(todaysDate.after(recDate.getValue())){
-                    LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", recDate.getValue().toString());
-                    receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
-                                                        consts.get("recievedDateNotTodayExceptionTitle"),
-                                                        ex.getMessage(),
-                                                        "No", "Yes");
-                    receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
-                        public void onSelection(SelectionEvent<Integer> event) {
-                            switch (event.getSelectedItem().intValue()) {
-                                case 0:
-                                    //do nothing
-                                    break;
-                                case 1:
-                                    receivedDate.setValue(recDate.getValue());
-                                    break;
-                            }
+            if (todaysDate.after(recDate.getValue())) {
+                LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", recDate.getValue().toString());
+                receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
+                                                    consts.get("recievedDateNotTodayExceptionTitle"),
+                                                    ex.getMessage(),
+                                                    "No", "Yes");
+                receivedDateNotTodayConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                    public void onSelection(SelectionEvent<Integer> event) {
+                        switch (event.getSelectedItem().intValue()) {
+                            case 0:
+                                //do nothing
+                                break;
+                            case 1:
+                                receivedDate.setValue(recDate.getValue());
+                                break;
                         }
-                    });
-                
-                    receivedDateNotTodayConfirm.show();
-                
-                }else
-                    receivedDate.setValue(recDate.getValue());
-                
+                    }
+                });
+            
+                receivedDateNotTodayConfirm.show();
+            
             } else {
-                LocalizedException e = new LocalizedException("invalidEntryException", val);
-                window.setError(e.getMessage());
+                receivedDate.setValue(recDate.getValue());
             }
 
             // test/panel
@@ -536,51 +531,55 @@ public class QuickEntryScreen extends Screen {
             }
 
             // accession #
-        } else {
-            valParts = val.split("-");
-            if (valParts.length > 0 && valParts.length < 3) {
-                val = valParts[0];
-                if (validateFields()) {
-                    if (accNumUtil == null)
-                        accNumUtil = new AccessionNumberUtility();
-    
-                    try {
-                        sampleDO = new SampleDO();
-                        sampleDO.setAccessionNumber(Integer.valueOf(val));
-                        sampleMan = accNumUtil.accessionNumberEntered(sampleDO);
-    
-                        // if this sample has been entered as quick entry before
-                        // then add it to the manager hash for reuse, if it hasnt
-                        // been already
-                        if (sampleMan != null &&
-                            managers.get(sampleMan.getSample().getAccessionNumber()) == null)
-                            managers.put(sampleMan.getSample().getAccessionNumber(),
-                                         new Item(sampleMan, 0));
-    
-                        accessionNumber.setValue(val);
-                        addAnalysisRow();
-                    } catch (NumberFormatException e) {
-                        LocalizedException ex = new LocalizedException("invalidEntryException", val);
-                        window.setError(ex.getMessage());
-                    } catch (ValidationErrorsList e) {
-                        FieldErrorException fe;
-                        ValidationErrorsList newE = new ValidationErrorsList();
-    
-                        // convert all the field errors to form errors
-                        for (int i = 0; i < e.size(); i++ ) {
-                            fe = (FieldErrorException)e.getErrorList().get(i);
-                            newE.add(new FormErrorException(fe.getKey()));
-                        }
-    
-                        showErrors(newE);
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
+        } else if (val.matches("[0-9]+") || val.matches("[0-9]+-[0-9]+")) {
+            if (validateFields()) {
+                if (accNumUtil == null)
+                    accNumUtil = new AccessionNumberUtility();
+
+                //
+                // Trim the Sample Item ID from the end of the bar coded
+                // accession number
+                //
+                index = val.indexOf("-");
+                if (index != -1)
+                    val = val.substring(0, index);
+
+                try {
+                    sampleDO = new SampleDO();
+                    sampleDO.setAccessionNumber(Integer.valueOf(val));
+                    sampleMan = accNumUtil.accessionNumberEntered(sampleDO);
+
+                    // if this sample has been entered as quick entry before
+                    // then add it to the manager hash for reuse, if it hasnt
+                    // been already
+                    if (sampleMan != null &&
+                        managers.get(sampleMan.getSample().getAccessionNumber()) == null)
+                        managers.put(sampleMan.getSample().getAccessionNumber(),
+                                     new Item(sampleMan, 0));
+
+                    accessionNumber.setValue(val);
+                    addAnalysisRow();
+                } catch (NumberFormatException e) {
+                    LocalizedException ex = new LocalizedException("invalidEntryException", val);
+                    window.setError(ex.getMessage());
+                } catch (ValidationErrorsList e) {
+                    FieldErrorException fe;
+                    ValidationErrorsList newE = new ValidationErrorsList();
+
+                    // convert all the field errors to form errors
+                    for (int i = 0; i < e.size(); i++ ) {
+                        fe = (FieldErrorException)e.getErrorList().get(i);
+                        newE.add(new FormErrorException(fe.getKey()));
                     }
+
+                    showErrors(newE);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
-            } else {
-                LocalizedException e = new LocalizedException("invalidEntryException", val);
-                window.setError(e.getMessage());
             }
+        } else {
+            LocalizedException e = new LocalizedException("invalidEntryException", val);
+            window.setError(e.getMessage());
         }
         entry.setValue(null);
         recDate.exceptions = null;

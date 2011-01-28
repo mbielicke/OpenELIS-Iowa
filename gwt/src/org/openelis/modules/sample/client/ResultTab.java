@@ -279,8 +279,9 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
                             reflexTestUtil.addActionHandler(new ActionHandler<TestReflexUtility.Action>() {
                                 public void onAction(ActionEvent<TestReflexUtility.Action> event) {
-                                    ActionEvent.fire(resultTab, Action.REFLEX_ADDED,
-                                                     event.getData());
+                                    if (((ArrayList<SampleDataBundle>)event.getData()).size() > 0)
+                                        ActionEvent.fire(resultTab, Action.REFLEX_ADDED,
+                                                         event.getData());
                                 }
                             });
                         }
