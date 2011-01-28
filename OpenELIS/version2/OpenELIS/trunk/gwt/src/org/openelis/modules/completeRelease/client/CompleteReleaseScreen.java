@@ -1151,32 +1151,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         return bundle;
     }
 
-    public ArrayList<QueryData> getQueryFields() {
-        int                  i, index;
-        ArrayList<QueryData> fields;
-        QueryData field;
-        
-        fields = super.getQueryFields();
-        for (i = 0; i < fields.size(); i++) {
-            field = fields.get(i);
-            if (field.key == SampleMeta.getAccessionNumber()) {
-                if (field.query.matches("[0-9]+-[0-9]+")) {
-                    //
-                    // Trim the Sample Item ID from the end of the bar coded
-                    // accession number
-                    //
-                    index = field.query.indexOf("-");
-                    if (index != -1)
-                        field.query = field.query.substring(0, index);
-                }
-                field.type = QueryData.Type.INTEGER;
-                break;
-            }
-        }
-        
-        return fields;
-    }
-
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         window.clearStatus();
@@ -1676,7 +1650,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                               "Cancel", "OK");
             confirm.addSelectionHandler(this);
         }
-        confirm.show();           
+        confirm.show();
     }
-        
 }
