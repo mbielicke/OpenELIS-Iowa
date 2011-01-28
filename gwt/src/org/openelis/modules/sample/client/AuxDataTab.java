@@ -141,6 +141,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 }
             }
         });
+        
         auxValsTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
@@ -157,7 +158,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 data = null;
 
                 if (state == State.QUERY){
-                    if(val == null || "".equals(val))
+                    if(DataBaseUtil.isEmpty(equals(val)))
                         queryFieldEntered = false;
                     else
                         queryFieldEntered = true;
@@ -526,6 +527,13 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             df.setBegin(Datetime.YEAR);
             df.setEnd(Datetime.MINUTE);
             df.setFormat(consts.get("dateTimePattern"));
+            df.setValue( ((Datetime)value));
+            return  df.toString().replaceAll("-", "/");
+        } else if (timeId.equals(typeId)) {
+            df = new DateField();
+            df.setBegin(Datetime.HOUR);
+            df.setEnd(Datetime.MINUTE);
+            df.setFormat(consts.get("timePattern"));
             df.setValue( ((Datetime)value));
             return  df.toString().replaceAll("-", "/");
         } else if (dictionaryId.equals(typeId))

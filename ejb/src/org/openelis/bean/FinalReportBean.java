@@ -187,10 +187,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 	 */
 	public ReportStatus runReportForPreview(ArrayList<QueryData> paramList) throws Exception {
 		SampleDO data;
-		Integer orgId;
 		ReportStatus status;
 		OrganizationPrint orgPrint;
-		String orgParam, accession, printer;
+		String accession;
 		HashMap<String, QueryData> param;
 		Object[] result;
 		ArrayList<Object[]> results;

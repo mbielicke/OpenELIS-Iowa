@@ -20,6 +20,7 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -37,8 +38,10 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
@@ -82,7 +85,9 @@ import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
@@ -105,6 +110,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     protected TreeWidget             itemsTree;
     protected AppButton              removeRow, releaseButton, reportButton, completeButton,
                                      addItem, addAnalysis, queryButton, updateButton, commitButton, abortButton;
+    protected CheckBox               autoPreview;
+    protected Label<String>          autoPreviewText;
 
     protected CalendarLookUp         collectedDate, receivedDate;
 
@@ -135,11 +142,13 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     
     private TestPrepUtility          testPrepUtil;
 
-    protected MenuItem               unreleaseAnalysis, historySample, historySampleSpec,
+    protected MenuItem               unreleaseAnalysis, previewFinalReport, historySample, historySampleSpec,
                                      historySampleProject, historySampleOrganization, historySampleItem,
                                      historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
                                      historyAnalysisQA, historyAuxData;
 
+    private ScreenService            finalReportService;
+    
     private enum Tabs {
         BLANK, SAMPLE, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
         ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA
@@ -148,7 +157,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     public CompleteReleaseScreen() throws Exception {
         super((ScreenDefInt)GWT.create(CompleteReleaseDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.completeRelease.server.CompleteReleaseService");
-
+        finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
+        
         userPermission = OpenELIS.getSystemUserPermission().getModule("samplecompleterelease");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Complete and Release Screen");
@@ -291,6 +301,39 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
 
             public void onStateChange(StateChangeEvent<State> event) {
                 unreleaseAnalysis.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        previewFinalReport = (MenuItem)def.getWidget("previewFinalReport");
+        addScreenHandler(previewFinalReport, new ScreenEventHandler<Object>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                previewFinalReport.enable(true);
+            }
+        });
+        
+        autoPreview = (CheckBox)def.getWidget("autoPreview");
+        addScreenHandler(autoPreview, new ScreenEventHandler<String>() {
+            public void onValueChange(ValueChangeEvent<String> event) {
+                if ("Y".equals(event.getValue()) && state == State.DISPLAY)
+                    previewFinalReport();
+            }
+            
+            public void onDataChange(DataChangeEvent event) {
+                if ("Y".equals(autoPreview.getValue()) && state == State.DISPLAY &&
+                                completeReleaseTable.getSelectedRows().length == 1)
+                    previewFinalReport();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                autoPreview.enable(true);
+            }
+        });
+        
+        autoPreviewText = (Label<String>)def.getWidget("autoPreviewText");
+        addScreenHandler(autoPreviewText, new ScreenEventHandler<String>() {                       
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                autoPreviewText.setStyleName("enabled");
             }
         });
 
@@ -466,12 +509,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             public void onUnselection(UnselectionEvent<TableDataRow> event) {
                 if (state == State.UPDATE)
                     event.cancel();
-            }
-        });
-
-        completeReleaseTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
-                // always allow
             }
         });
 
@@ -721,7 +758,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 }
             }
         });
-
     }
 
     private void executeQuery(final Query query) {
@@ -959,6 +995,38 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         } else {
             window.clearStatus();
         }
+    }
+    
+    private void previewFinalReport() {
+        Query query;
+        QueryData field;
+
+        query = new Query();
+        field = new QueryData();
+        field.key = "ACCESSION_NUMBER";
+        field.query = manager.getSample().getAccessionNumber().toString();
+        field.type = QueryData.Type.STRING;
+
+        query.setFields(field);
+
+        window.setBusy(consts.get("genReportMessage"));
+
+        finalReportService.call("runReportForPreview", query, new AsyncCallback<ReportStatus>() {
+            public void onSuccess(ReportStatus status) {
+                String url;
+                
+                url = "report?file=" + status.getMessage();
+                Window.open(URL.encode(url), consts.get("finalReportSingleReprint"), null);
+                window.setDone(consts.get("done"));
+            }
+
+            public void onFailure(Throwable caught) {
+                window.setError("Failed");
+                caught.printStackTrace();
+                Window.alert(caught.getMessage());
+            }
+        });
+
     }
 
     private void resetScreen() {
@@ -1608,7 +1676,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                               "Cancel", "OK");
             confirm.addSelectionHandler(this);
         }
-        confirm.show();   
-        
+        confirm.show();           
     }
+        
 }

@@ -283,10 +283,6 @@ public class ReportScreen extends Screen {
 	 */
 	protected void runReport() {
 		Query query;
-		ReportStatus st;
-		Dropdown<String> d;
-		TableDataRow r;
-		String key;
 
 		if (!validate()) {
 			window.setError(consts.get("correctErrors"));
