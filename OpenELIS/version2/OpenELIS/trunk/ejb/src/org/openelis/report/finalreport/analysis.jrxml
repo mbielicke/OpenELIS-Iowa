@@ -28,8 +28,8 @@ WHERE
      si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
      a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
      a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
-     a.status_id = (select id from dictionary where ($P{REPORT_TYPE} = "C" and system_name = 'analysis_completed') or
-                                                    ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released')) and
+     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released') or
+                                                                             ($P{REPORT_TYPE} = "C" and system_name in ('analysis_completed','analysis_released'))) and
      t.sorting_method_id in (select id from dictionary where system_name = 'analyses_complete')
 UNION
 SELECT 2 sorting_method, t.reporting_sequence,
@@ -43,8 +43,8 @@ WHERE
      si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
      a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
      a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
-     a.status_id = (select id from dictionary where ($P{REPORT_TYPE} = "C" and system_name = 'analysis_completed') or
-                                                    ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released')) and
+     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released') or
+                                                                             ($P{REPORT_TYPE} = "C" and system_name in ('analysis_completed','analysis_released'))) and
      t.sorting_method_id in (select id from dictionary where system_name = 'test_sequence')
 ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 	</queryString>
@@ -64,7 +64,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 	<field name="pam_reporting_description" class="java.lang.String"/>
 	<variable name="RESULT_DATASOURCE" class="org.openelis.report.finalreport.ResultDataSource" resetType="Group" resetGroup="analysisGroup" calculation="System">
 		<variableExpression><![CDATA[$V{RESULT_DATASOURCE}]]></variableExpression>
-		<initialValueExpression><![CDATA[ResultDataSource.getInstance($F{a_id}, false)]]></initialValueExpression>
+		<initialValueExpression><![CDATA[ResultDataSource.getInstance($P{SAMPLE_ID},$F{a_id}, false)]]></initialValueExpression>
 	</variable>
 	<group name="analysisGroup">
 		<groupExpression><![CDATA[$F{a_id}]]></groupExpression>
@@ -103,21 +103,21 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<reportElement x="135" y="24" width="1" height="36"/>
 			</line>
 			<staticText>
-				<reportElement x="270" y="24" width="90" height="12"/>
+				<reportElement x="289" y="24" width="71" height="12"/>
 				<textElement textAlignment="Right">
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Analyzed In]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="270" y="36" width="90" height="12"/>
+				<reportElement x="289" y="36" width="71" height="12"/>
 				<textElement textAlignment="Right">
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Date Verified]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="270" y="48" width="90" height="12"/>
+				<reportElement x="289" y="48" width="71" height="12"/>
 				<textElement textAlignment="Right">
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
@@ -127,26 +127,23 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<reportElement x="365" y="24" width="1" height="36"/>
 			</line>
 			<textField isBlankWhenNull="true">
-				<reportElement x="140" y="24" width="120" height="12"/>
+				<reportElement x="140" y="24" width="149" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="140" y="36" width="120" height="12"/>
+				<reportElement x="140" y="36" width="149" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_started_date}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="140" y="48" width="120" height="12"/>
+				<reportElement x="140" y="48" width="149" height="12"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="SYSTEM_NAME">
-					<subreportParameterExpression><![CDATA['an_user_ac_completed']]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analyst.jasper"]]></subreportExpression>
@@ -159,14 +156,14 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[SectionLocationUtil.getLocation($F{s_name})]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="370" y="36" width="80" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="370" y="36" width="109" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_released_date}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="450" y="36" width="87" height="12">
+				<reportElement mode="Transparent" x="452" y="36" width="98" height="12">
 					<printWhenExpression><![CDATA[$F{a_revision} > 0]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Left">
@@ -201,7 +198,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<text><![CDATA[Analysis Prep]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="140" y="0" width="407" height="12"/>
+				<reportElement x="140" y="0" width="410" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>

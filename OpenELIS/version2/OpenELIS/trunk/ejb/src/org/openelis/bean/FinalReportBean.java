@@ -45,6 +45,7 @@ import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.report.finalreport.OrganizationPrint;
 import org.openelis.report.finalreport.StatsDataSource;
+import org.openelis.utils.PermissionInterceptor;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
@@ -176,7 +177,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 		if (orgPrintList.size() == 0)
 			throw new InconsistencyException("Final report for accession number "+ accession+ " has incorrect status,\nmissing information, or has no analysis ready to be printed");
 
-		print(orgPrintList, "S", status, printer);
+		print(orgPrintList, "R", status, printer);
 
 		return status;
 	}
@@ -241,7 +242,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 			throw e;
 		}
 
-		print(orgPrintList, "P", status, "-view-");
+		print(orgPrintList, "C", status, "-view-");
 
 		return status;
 	}
@@ -379,7 +380,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 				orgPrintList.add(orgPrint);
 			}
 		}
-		print(orgPrintList, "B", status, printer);
+		print(orgPrintList, "R", status, printer);
 
 		/*
 		 * unlock all the samples
@@ -420,7 +421,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 			jparam = new HashMap<String, Object>();
 			jparam.put("REPORT_TYPE", reportType);
 			jparam.put("SUBREPORT_DIR", dir);
-			jparam.put("LOGNAME", ctx.getCallerPrincipal().getName());
+			jparam.put("LOGNAME", PermissionInterceptor.getSystemUserName());
 			
 			url = ReportUtil.getResourceURL("org/openelis/report/finalreport/main.jasper");
 			jreport = (JasperReport) JRLoader.loadObject(url);

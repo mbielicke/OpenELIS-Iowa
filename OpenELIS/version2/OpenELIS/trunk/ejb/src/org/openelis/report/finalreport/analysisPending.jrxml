@@ -24,7 +24,7 @@ WHERE
 	<field name="m_reporting_description" class="java.lang.String"/>
 	<variable name="PENDING_ANALYSIS_TEXT" class="java.lang.String">
 		<variableExpression><![CDATA[$V{PENDING_ANALYSIS_TEXT}]]></variableExpression>
-		<initialValueExpression><![CDATA[org.openelis.utils.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></initialValueExpression>
+		<initialValueExpression><![CDATA[org.openelis.utils.JasperUtil.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></initialValueExpression>
 	</variable>
 	<pageHeader>
 		<band height="24">
@@ -45,7 +45,7 @@ WHERE
 				<textElement>
 					<font isBold="false" isItalic="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.Concat.concatWithSeparator($F{t_reporting_description},", ", $F{m_reporting_description})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.JasperUtil.concatWithSeparator($F{t_reporting_description},", ", $F{m_reporting_description})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

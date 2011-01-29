@@ -57,7 +57,7 @@ WHERE
 				<text><![CDATA[Project]]></text>
 			</staticText>
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement x="434" y="36" width="49" height="12"/>
+				<reportElement x="434" y="36" width="80" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -256,6 +256,17 @@ WHERE
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleOrganization.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="434" y="24" width="142" height="12"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleProject.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 	</detail>
