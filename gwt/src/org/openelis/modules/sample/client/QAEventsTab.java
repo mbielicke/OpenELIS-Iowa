@@ -128,18 +128,21 @@ public class QAEventsTab extends Screen {
 
         sampleQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if ( (state == State.ADD || state == State.UPDATE) && !canEditSampleQA()) {
-                    event.cancel();
-                    removeSampleQAButton.enable(false);
-                    sampleQAPicker.enable(false);
-                } else {
-                    removeSampleQAButton.enable(true);
-                    sampleQAPicker.enable(true);
+            	if (state == State.ADD || state == State.UPDATE) {
+                	if (canEditSampleQA()) {
+                        removeSampleQAButton.enable(true);
+                        sampleQAPicker.enable(true);
+                	} else {
+                		removeSampleQAButton.enable(false);
+                		sampleQAPicker.enable(false);
+                		window.setError(consts.get("cantUpdateSampleQAEvent"));
+                		event.cancel();
+                		return;
+                	}
                 }
-
-                if (event.getCol() == 0 || !Window.confirm(consts.get("qaEventEditConfirm"))) {
+            	// we want confirmation every time they change any data
+                if (event.getCol() == 0 || !Window.confirm(consts.get("qaEventEditConfirm")))
                     event.cancel();
-                }
             }
         });
 
@@ -147,21 +150,19 @@ public class QAEventsTab extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
+                SampleQaEventViewDO data;
 
                 r = event.getRow();
                 c = event.getCol();
-
-                val = sampleQATable.getRow(r).cells.get(c).value;
-
-                SampleQaEventViewDO qaDO;
-                qaDO = sampleQAManager.getSampleQAAt(r);
+                val = sampleQATable.getObject(r,c);
+                data = sampleQAManager.getSampleQAAt(r);
 
                 switch (c) {
                     case 1:
-                        qaDO.setTypeId((Integer)val);
+                        data.setTypeId((Integer)val);
                         break;
                     case 2:
-                        qaDO.setIsBillable((String)val);
+                        data.setIsBillable((String)val);
                         break;
                 }
             }
@@ -194,7 +195,6 @@ public class QAEventsTab extends Screen {
                 if (qaEventScreen == null) {
                     createQaEventPickerScreen();
                 }
-
                 ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
                 modal.setName(consts.get("qaEventSelection"));
                 qaEventScreen.setType(QaeventLookupScreen.Type.SAMPLE);
@@ -203,8 +203,11 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleQAPicker.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
+            	boolean enable;
+            	
+            	enable = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
+            			 canEditSampleQA();
+                sampleQAPicker.enable(enable);
             }
         });
 
@@ -215,13 +218,14 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisQATable.enable( (State.QUERY == event.getState()) ||
-                                       (canEditAnalysisQA() &&
-                                        (SampleDataBundle.Type.ANALYSIS == type) &&
-                                        anDO.getTestId() != null && EnumSet.of(State.ADD,
-                                                                               State.UPDATE)
-                                                                           .contains(
-                                                                                     event.getState())));
+            	boolean enable;
+            	
+            	enable = event.getState() == State.QUERY ||
+            			 (EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
+    					  SampleDataBundle.Type.ANALYSIS == type &&
+            			  anDO.getTestId() != null && 
+            			  canEditAnalysisQA());
+                analysisQATable.enable(enable); 
                 analysisQATable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -234,7 +238,7 @@ public class QAEventsTab extends Screen {
 
         analysisQATable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
-                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state))
                     removeAnalysisQAButton.enable(true);
             }
         });
@@ -250,21 +254,19 @@ public class QAEventsTab extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
+                AnalysisQaEventViewDO data;
 
                 r = event.getRow();
                 c = event.getCol();
-
-                val = sampleQATable.getRow(r).cells.get(c).value;
-
-                AnalysisQaEventViewDO qaDO;
-                qaDO = analysisQAManager.getAnalysisQAAt(r);
+                val = sampleQATable.getObject(r,c);
+                data = analysisQAManager.getAnalysisQAAt(r);
 
                 switch (c) {
                     case 1:
-                        qaDO.setTypeId((Integer)val);
+                        data.setTypeId((Integer)val);
                         break;
                     case 2:
-                        qaDO.setIsBillable((String)val);
+                        data.setIsBillable((String)val);
                         break;
                 }
             }

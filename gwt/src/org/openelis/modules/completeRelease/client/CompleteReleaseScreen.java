@@ -81,8 +81,6 @@ import org.openelis.modules.sample.client.TestPrepUtility;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -148,6 +146,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                                      historyAnalysisQA, historyAuxData;
 
     private ScreenService            finalReportService;
+    private boolean                  redrawFinalPreview;
     
     private enum Tabs {
         BLANK, SAMPLE, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -320,7 +319,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             
             public void onDataChange(DataChangeEvent event) {
                 if ("Y".equals(autoPreview.getValue()) && state == State.DISPLAY &&
-                                completeReleaseTable.getSelectedRows().length == 1)
+                	redrawFinalPreview && completeReleaseTable.getSelectedRows().length == 1)
                     previewFinalReport();
             }
             
@@ -760,87 +759,44 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
     }
 
-    private void executeQuery(final Query query) {
-        window.setBusy(consts.get("querying"));
+    private void initializeDropdowns() {
+	    ArrayList<TableDataRow> model;
+	    window.clearStatus();
+	
+	    // preload dictionary models and single entries, close the window if an
+	    // error is found
+	    try {
+	        sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
+	        sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
+	        sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+	        analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
+	        analysisCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
+	
+	    } catch (Exception e) {
+	        Window.alert(e.getMessage());
+	        window.close();
+	    }
+	
+	    // sample status dropdown
+	    model = new ArrayList<TableDataRow>();
+	    model.add(new TableDataRow(null, ""));
+	    for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
+	        model.add(new TableDataRow(d.getId(), d.getEntry()));
+	
+	    ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
+	    ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getStatusId())).setModel(model);
+	
+	    // analysis status dropdown
+	    model = new ArrayList<TableDataRow>();
+	    model.add(new TableDataRow(null, ""));
+	    for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+	        model.add(new TableDataRow(d.getId(), d.getEntry()));
+	
+	    ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getAnalysisStatusId())).setModel(model);
+	
+	}
 
-        service.callList("query", query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
-            public void onSuccess(ArrayList<SampleDataBundle> result) {
-                manager = null;
-
-                if (result.size() > 0)
-                    setState(State.DISPLAY);
-                else
-                    setState(State.DEFAULT);
-
-                completeReleaseTable.load(getModel(result));
-
-                if (result.size() > 0)
-                    completeReleaseTable.selectRow(0, true);
-
-                window.clearStatus();
-            }
-
-            public void onFailure(Throwable error) {
-                int page;
-
-                if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));
-                    completeReleaseTable.clear();
-                    setState(State.DEFAULT);
-                } else if (error instanceof LastPageException) {
-                    page = query.getPage();
-                    query.setPage(page - 1);
-                    window.setError(consts.get("noMoreRecordInDir"));
-                } else {
-                    completeReleaseTable.clear();
-                    Window.alert("Error: envsample call query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
-                }
-            }
-        });
-    }
-
-    public ArrayList<TableDataRow> getModel(ArrayList<SampleDataBundle> result) {
-        ArrayList<TableDataRow> model;
-        TableDataRow analysis;
-        SampleManager sampleMan;
-        SampleDO sample;
-        AnalysisViewDO data;
-
-        model = new ArrayList<TableDataRow>();
-
-        if (result == null)
-            return model;
-
-        try {
-            for (SampleDataBundle bundle : result) {
-                sampleMan = bundle.getSampleManager();
-                sample = sampleMan.getSample();
-                data = sampleMan.getSampleItems()
-                                .getAnalysisAt(bundle.getSampleItemIndex())
-                                .getAnalysisAt(bundle.getAnalysisIndex());
-                analysis = new TableDataRow();
-
-                analysis.cells.add(new TableDataCell(sample.getAccessionNumber()));
-                analysis.cells.add(new TableDataCell(data.getTestName()));
-                analysis.cells.add(new TableDataCell(data.getMethodName()));
-                analysis.cells.add(new TableDataCell(data.getStatusId()));
-                analysis.cells.add(new TableDataCell(sample.getStatusId()));
-                analysis.data = bundle;
-                model.add(analysis);
-            }
-        } catch (Exception e) {
-            Window.alert("getModel: " + e.getMessage());
-        }
-
-        return model;
-    }
-
-    private boolean canEdit() {
-        return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
-    }
-
-    protected void query() {
+	protected void query() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
         dataBundle = null;
@@ -918,7 +874,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             qd.type = QueryData.Type.STRING;
             query.setFields(qd);
             executeQuery(query);
-
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
@@ -940,6 +895,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 e.printStackTrace();
             }
         }
+
+        redrawFinalPreview = true;
     }
 
     protected void commitWithWarnings() {
@@ -962,6 +919,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 Window.alert("commitUpdate(): " + e.getMessage());
             }
         }
+
+        redrawFinalPreview = true;
     }
 
     public void abort() {
@@ -997,7 +956,89 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         }
     }
     
-    private void previewFinalReport() {
+    public ArrayList<TableDataRow> getModel(ArrayList<SampleDataBundle> result) {
+	    ArrayList<TableDataRow> model;
+	    TableDataRow analysis;
+	    SampleManager sampleMan;
+	    SampleDO sample;
+	    AnalysisViewDO data;
+	
+	    model = new ArrayList<TableDataRow>();
+	
+	    if (result == null)
+	        return model;
+	
+	    try {
+	        for (SampleDataBundle bundle : result) {
+	            sampleMan = bundle.getSampleManager();
+	            sample = sampleMan.getSample();
+	            data = sampleMan.getSampleItems()
+	                            .getAnalysisAt(bundle.getSampleItemIndex())
+	                            .getAnalysisAt(bundle.getAnalysisIndex());
+	            analysis = new TableDataRow();
+	
+	            analysis.cells.add(new TableDataCell(sample.getAccessionNumber()));
+	            analysis.cells.add(new TableDataCell(data.getTestName()));
+	            analysis.cells.add(new TableDataCell(data.getMethodName()));
+	            analysis.cells.add(new TableDataCell(data.getStatusId()));
+	            analysis.cells.add(new TableDataCell(sample.getStatusId()));
+	            analysis.data = bundle;
+	            model.add(analysis);
+	        }
+	    } catch (Exception e) {
+	        Window.alert("getModel: " + e.getMessage());
+	    }
+
+	    redrawFinalPreview = true;
+
+	    return model;
+	}
+
+	private boolean canEdit() {
+	    return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
+	}
+
+	private void executeQuery(final Query query) {
+	    window.setBusy(consts.get("querying"));
+	
+	    service.callList("query", query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
+	        public void onSuccess(ArrayList<SampleDataBundle> result) {
+	            manager = null;
+	
+	            if (result.size() > 0)
+	                setState(State.DISPLAY);
+	            else
+	                setState(State.DEFAULT);
+	
+	            completeReleaseTable.load(getModel(result));
+	
+	            if (result.size() > 0)
+	                completeReleaseTable.selectRow(0, true);
+	
+	            window.clearStatus();
+	        }
+	
+	        public void onFailure(Throwable error) {
+	            int page;
+	
+	            if (error instanceof NotFoundException) {
+	                window.setDone(consts.get("noRecordsFound"));
+	                completeReleaseTable.clear();
+	                setState(State.DEFAULT);
+	            } else if (error instanceof LastPageException) {
+	                page = query.getPage();
+	                query.setPage(page - 1);
+	                window.setError(consts.get("noMoreRecordInDir"));
+	            } else {
+	                completeReleaseTable.clear();
+	                Window.alert("Error: envsample call query failed; " + error.getMessage());
+	                window.setError(consts.get("queryFailed"));
+	            }
+	        }
+	    });
+	}
+
+	private void previewFinalReport() {
         Query query;
         QueryData field;
 
@@ -1018,6 +1059,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 url = "report?file=" + status.getMessage();
                 Window.open(URL.encode(url), consts.get("finalReportSingleReprint"), null);
                 window.setDone(consts.get("done"));
+                redrawFinalPreview = false;
             }
 
             public void onFailure(Throwable caught) {
@@ -1149,43 +1191,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             bundle = getAnalysisBundle(analysisId);
 
         return bundle;
-    }
-
-    private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
-        window.clearStatus();
-
-        // preload dictionary models and single entries, close the window if an
-        // error is found
-        try {
-            sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-            sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
-            analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
-            analysisCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
-
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-
-        // sample status dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-
-        ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
-        ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getStatusId())).setModel(model);
-
-        // analysis status dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-
-        ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getAnalysisStatusId())).setModel(model);
-
     }
 
     private void drawTabs() {
@@ -1563,16 +1568,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         completeReleaseTable.setCell(row, 4, sample.getStatusId());
     }
 
-    private class Item {
-        private SampleManager sampleManager;
-        private int           count;
-
-        public Item(SampleManager man, int count) {
-            this.sampleManager = man;
-            this.count = count;
-        }
-    }
-    
     private void showNote() {                        
         final int index = dataBundle.getSampleItemIndex();        
         ScreenWindow modal;
@@ -1652,4 +1647,14 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         }
         confirm.show();
     }
+
+	private class Item {
+	    private SampleManager sampleManager;
+	    private int           count;
+	
+	    public Item(SampleManager man, int count) {
+	        this.sampleManager = man;
+	        this.count = count;
+	    }
+	}
 }
