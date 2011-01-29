@@ -63,7 +63,7 @@ public class ResultBean implements ResultLocal {
     @EJB
     private DictionaryLocal dictionary;
 
-    private static Integer supplementalTypeId, epaMethodId;
+    private static Integer supplementalTypeId, epaMethodId, qaEventOverrideId;
     private static HashMap<Integer, Type> types;
 
     @PostConstruct
@@ -83,6 +83,7 @@ public class ResultBean implements ResultLocal {
                 types.put(dictionary.fetchBySystemName("test_res_type_default").getId(), Type.DEFAULT);
 
                 supplementalTypeId = dictionary.fetchBySystemName("test_analyte_suplmtl").getId();
+                qaEventOverrideId = dictionary.fetchBySystemName("qaevent_override").getId();
                 epaMethodId = dictionary.fetchBySystemName("round_epa").getId();
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -361,8 +362,11 @@ public class ResultBean implements ResultLocal {
         }
     }
     
-    
-    public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer analysisId) throws Exception {
+    /**
+     * Fetches results for analysis that are reportable and do not have sample or analysis level
+     * QA event override.
+     */
+    public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer sampleId, Integer analysisId) throws Exception {
         int i;
         Integer j, rg;
         ResultViewDO data;
@@ -374,7 +378,9 @@ public class ResultBean implements ResultLocal {
         list = null;
         // get results by analysis id
         query = manager.createNamedQuery("Result.FetchReportableByAnalysisId");
-        query.setParameter("id", analysisId);
+        query.setParameter("sid", sampleId);
+        query.setParameter("aid", analysisId);
+        query.setParameter("overrideid", qaEventOverrideId);
         list = query.getResultList();
 
         // build the grid
