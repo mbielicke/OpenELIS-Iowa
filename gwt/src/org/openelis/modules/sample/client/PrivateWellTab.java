@@ -640,32 +640,46 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = projectName.getSelection();
-                SampleProjectViewDO projectDO = null;
+                TableDataRow row;
+                SampleProjectViewDO data;
+
+                row = projectName.getSelection();
+                data = null;
                 try {
-                    if (selectedRow.key != null) {
-                        projectDO = new SampleProjectViewDO();
-                        projectDO.setIsPermanent("Y");
-                        projectDO.setProjectId((Integer)selectedRow.key);
-                        projectDO.setProjectName((String)selectedRow.cells.get(0).value);
-                        projectDO.setProjectDescription((String)selectedRow.cells.get(1).value);
-                    }
+                    /*
+                     * if a project was not selected and it there were permanent
+                     * projects present then we delete the first permanent project
+                     * and set the next permanent one as the first project in the list;  
+                     * otherwise we modify the first existing permanent project
+                     * or create a new one if none existed
+                     */
+                    if (row == null || row.key == null) {                        
+                        manager.getProjects().removeFirstPermanentProject();
+                        data = manager.getProjects().getFirstPermanentProject();
+                        if (data != null) {
+                            manager.getProjects().setProjectAt(data, 0);
+                            projectName.setSelection(data.getProjectId(), data.getProjectName());
+                        } else {
+                            projectName.setSelection(null, "");                            
+                        }
+                    } else {
+                        data = manager.getProjects().getFirstPermanentProject();
+                        if (data == null) {
+                            data = new SampleProjectViewDO();
+                            data.setIsPermanent("Y");                            
+                            manager.getProjects().addProjectAt(data, 0);
+                        }
+                        data.setProjectId((Integer)row.key);
+                        data.setProjectName((String)row.cells.get(0).getValue());
+                        data.setProjectDescription((String)row.cells.get(1).getValue());
 
-                    manager.getProjects().addFirstPermanentProject(projectDO);
-
-                    projectDO = manager.getProjects().getFirstPermanentProject();
-
-                    if (projectDO != null)
-                        projectName.setSelection(projectDO.getProjectId(),
-                                                 projectDO.getProjectName());
-                    else
-                        projectName.setSelection(null, "");
+                        projectName.setSelection(data.getProjectId(), data.getProjectName());
+                    } 
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 projectName.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
@@ -725,7 +739,7 @@ public class PrivateWellTab extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleOrganizationViewDO billToOrg = manager.getOrganizations()
-                                                                .getFirstBillTo();
+                                                                .getBillTo();
 
                     if (billToOrg != null)
                         billTo.setSelection(billToOrg.getOrganizationId(),
@@ -739,26 +753,31 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = billTo.getSelection();
-                SampleOrganizationViewDO billToOrg = null;
+                TableDataRow selectedRow;
+                SampleOrganizationViewDO data;
+
+                selectedRow = billTo.getSelection();
+
                 try {
-                    if (selectedRow.key != null) {
-                        billToOrg = new SampleOrganizationViewDO();
-                        billToOrg.setOrganizationId((Integer)selectedRow.key);
-                        billToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
-                        billToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                        billToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    if (selectedRow == null || selectedRow.key == null) {
+                        manager.getOrganizations().removeBillTo();
+                        billTo.setSelection(null, "");
+                        return;
                     }
 
-                    manager.getOrganizations().setBillTo(billToOrg);
+                    data = manager.getOrganizations().getBillTo();
+                    if (data == null) {
+                        data = new SampleOrganizationViewDO();
+                        manager.getOrganizations().setBillTo(data);
+                    }
 
-                    billToOrg = manager.getOrganizations().getFirstBillTo();
+                    data.setOrganizationId((Integer)selectedRow.key);
+                    data.setOrganizationName((String)selectedRow.cells.get(0).value);
+                    data.setOrganizationCity((String)selectedRow.cells.get(2).value);
+                    data.setOrganizationState((String)selectedRow.cells.get(3).value);
 
-                    if (billToOrg != null)
-                        billTo.setSelection(billToOrg.getOrganizationId(),
-                                            billToOrg.getOrganizationName());
-                    else
-                        billTo.setSelection(null, "");
+                    billTo.setSelection(data.getOrganizationId(),
+                                        data.getOrganizationName());
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());

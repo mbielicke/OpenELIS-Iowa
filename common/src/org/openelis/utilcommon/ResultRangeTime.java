@@ -26,8 +26,6 @@
 
 package org.openelis.utilcommon;
 
-import java.util.Date;
-
 import org.openelis.exception.ParseException;
 
 public class ResultRangeTime implements ResultRange {
@@ -43,19 +41,25 @@ public class ResultRangeTime implements ResultRange {
 
     public void contains(String time) throws ParseException {
         String st[];
-        
-        time = "";
+        int hrs, min;
 
         if (time == null)
             return;
 
         try {
+                   
+            //
+            // we don't allow milliseconds, so the time cannot have more than 3 colons 
+            //            
             st = time.split(":");
-            if (st.length == 3)
-                new Date(0, 11, 31, Integer.parseInt(st[0]), Integer.parseInt(st[1]), Integer.parseInt(st[2]));
-            else
-                new Date(0, 11, 31, Integer.parseInt(st[0]), Integer.parseInt(st[1]));
+            if (st.length != 2 || st[0].length() != 2 || st[1].length() != 2)
+                throw new IllegalArgumentException();
             
+            hrs = Integer.parseInt(st[0]);
+            min = Integer.parseInt(st[1]);            
+            
+            if ((0 > hrs || 23 < hrs) || (0 > min || 59 < min)) 
+                throw new IllegalArgumentException();
             this.time = time;
             
         } catch (IllegalArgumentException ex) {

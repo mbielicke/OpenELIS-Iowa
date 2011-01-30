@@ -37,6 +37,24 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleOrganizationLocal;
 
 public class SampleOrganizationManagerProxy {
+    
+    protected static Integer orgBillToId,orgReportToId;
+    
+    public SampleOrganizationManagerProxy() {
+        DictionaryLocal l;
+        if (orgBillToId == null) {
+            l = dictionaryLocal();
+
+            try {
+                orgBillToId = l.fetchBySystemName("org_bill_to").getId();
+                orgReportToId = l.fetchBySystemName("org_report_to").getId();                
+            } catch (Exception e) {
+                e.printStackTrace();
+                orgBillToId = null;
+            }
+        }
+    }
+    
     public SampleOrganizationManager fetchBySampleId(Integer sampleId) throws Exception {
         ArrayList<SampleOrganizationViewDO> orgs;
         SampleOrganizationManager som;
@@ -93,13 +111,10 @@ public class SampleOrganizationManagerProxy {
     }
     
     public void validate(SampleOrganizationManager man, boolean validateReportTo, ValidationErrorsList errorsList) throws Exception {
-        int numBillTo, numReportTo;
-        Integer orgBillToId, orgReportToId;
+        int numBillTo, numReportTo;        
         
         numBillTo = 0;
-        numReportTo = 0;
-        orgBillToId = dictionaryLocal().fetchBySystemName("org_bill_to").getId();
-        orgReportToId = dictionaryLocal().fetchBySystemName("org_report_to").getId();
+        numReportTo = 0;        
         
         for(int i=0; i<man.count(); i++){
             SampleOrganizationDO orgDO = man.getOrganizationAt(i);

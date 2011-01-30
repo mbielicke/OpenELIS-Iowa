@@ -67,6 +67,7 @@ import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.HasAuxDataInt;
 import org.openelis.meta.SampleMeta;
+import org.openelis.utilcommon.ResultRangeTime;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.Type;
 
@@ -90,6 +91,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     protected boolean               queryFieldEntered;
     protected HasAuxDataInt         parentMan;
     protected AuxDataManager        manager;
+    protected ResultRangeTime       timeRange;
 
     public AuxDataTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
@@ -145,6 +147,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         auxValsTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
+                String value;
                 TableDataRow row;
                 Object val;
                 AuxDataViewDO data;
@@ -181,29 +184,24 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         adb = (AuxDataBundle)row.data;
                         rv = adb.validator;
                         fieldDO = (AuxFieldViewDO)adb.fieldDO;
-                        data.setValue(getCorrectManValueByType(val, fieldDO.getTypeId()));
-
-                        if (rv != null && getCorrectManValueByType(val, fieldDO.getTypeId()) != null) {
-                            try {
+                        value = getCorrectManValueByType(val, fieldDO.getTypeId());
+                                                                       
+                        try {
+                            if (numericId.equals(fieldDO.getTypeId())) {
                                 auxValsTable.clearCellExceptions(r, c);
-                                
-                                if(!DataBaseUtil.isEmpty(val)) 
-                                    rv.validate(null, getCorrectManValueByType(val, fieldDO.getTypeId()));                                                                                                   
-                            } catch (ParseException e) {
-                                auxValsTable.setCellException(r, c, e);
-                            } catch (Exception e) {
-                                Window.alert(e.getMessage());
+                                rv.validate(null, value);                                
+                            } else if (timeId.equals(fieldDO.getTypeId())) {
+                                auxValsTable.clearCellExceptions(r, c);
+                                timeRange.contains(value);                                  
                             }
+                        } catch (ParseException e) {
+                            auxValsTable.setCellException(r, c, e);
+                            value = null;
                         }
 
+                        data.setValue(value);                        
                         break;
                 }
-            }
-        });
-
-        auxValsTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
-            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
-                // always allow selection
             }
         });
 
@@ -315,6 +313,15 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 auxDesc.enable(false);
             }
         });
+        
+        //
+        // this field is used to validate time values since they cannot be
+        // validated using a validator because there are no predefined ranges 
+        // specified for the values of this type on Auxiliary screen and a Calendar
+        // is not used to show them in the table either like it is for values of
+        // type Date and Date-Time
+        //
+        timeRange = new ResultRangeTime();
     }
 
     private ArrayList<TableDataRow> getTableModel() {
@@ -340,11 +347,11 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 val = values.get(0);
 
                 row = new TableDataRow(3);
-                row.cells.get(0).value = data.getIsReportable();
-                row.cells.get(1).value = field.getAnalyteName();
-                row.cells.get(2).value = getCorrectColValueByType(data.getValue(),
+                row.cells.get(0).setValue(data.getIsReportable());
+                row.cells.get(1).setValue(field.getAnalyteName());
+                row.cells.get(2).setValue(getCorrectColValueByType(data.getValue(),
                                                                   data.getDictionary(),
-                                                                  val.getTypeId());
+                                                                  val.getTypeId()));
 
                 field.setTypeId(val.getTypeId());
 
@@ -398,6 +405,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         row.cells.get(0).value = fieldDO.getIsReportable();
                         row.cells.get(1).value = fieldDO.getAnalyteName();
 
+                        
                         validatorItem = getDataItemForRow(valueDO.getTypeId(), values);
                         adb = new AuxDataBundle(validatorItem, fieldDO);
                         row.data = adb;
@@ -422,22 +430,16 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                                     if (value == null)
                                         throw new Exception();
                                     else
-                                        row.cells.get(2).value = getCorrectColValueByType(
-                                                                                          value,
+                                        row.cells.get(2).value = getCorrectColValueByType(value,
                                                                                           dictionary,
                                                                                           valueDO.getTypeId());
 
                                 } else
-                                    row.cells.get(2).value = getCorrectColValueByType(
-                                                                                      defaultValue.getValue(),
-                                                                                      null,
-                                                                                      valueDO.getTypeId());
+                                    row.cells.get(2).value = getCorrectColValueByType(defaultValue.getValue(),
+                                                                                      null, valueDO.getTypeId());
 
                             } catch (Exception e) {
-                                row.cells.get(2)
-                                         .addException(
-                                                       new LocalizedException(
-                                                                              "illegalDefaultValueException"));
+                                row.cells.get(2).addException(new LocalizedException( "illegalDefaultValueException"));
                             }
                         }
                         auxValsTable.addRow(row);
@@ -483,39 +485,37 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     private ResultValidator getDataItemForRow(Integer typeId, ArrayList<AuxFieldValueViewDO> values) {
         ResultValidator rv;
         AuxFieldValueViewDO af;
-
+        
+        if (!numericId.equals(typeId))
+            return null;
+        
         rv = new ResultValidator();
-        // we only need to validate numerics and times because the widget will
-        // validate everything else
-        if (numericId.equals(typeId) || timeId.equals(typeId)) {
-            try {
-                for (int i = 0; i < values.size(); i++ ) {
-                    af = values.get(i);
-                    if (numericId.equals(typeId))
-                        rv.addResult(af.getId(), null, Type.NUMERIC, null, null, af.getValue(), null);
-                    else
-                        rv.addResult(af.getId(), null, Type.TIME, null, null, af.getValue(), null);
-                }
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                return null;
+        //
+        // we only need to validate numerics because the widgets will validate
+        // everything else except time, which won't have a default value specified
+        // so it will have to be validated based solely on format
+        //
+        try {
+            for (int i = 0; i < values.size(); i++ ) {
+                af = values.get(i);           
+                if (numericId.equals(typeId))
+                    rv.addResult(af.getId(), null, Type.NUMERIC, null, null, af.getValue(), null);                    
             }
-        } else
-            rv = null;
-
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+                
         return rv;
     }
 
     private String getCorrectManValueByType(Object value, Integer typeId) {
         DateField df;
         if (alphaLowerId.equals(typeId) || alphaUpperId.equals(typeId) ||
-            alphaMixedId.equals(typeId) || timeId.equals(typeId))
+            alphaMixedId.equals(typeId) || timeId.equals(typeId)) {
             return (String)value;
-        
-        else if(numericId.equals(typeId))
+        } else if (numericId.equals(typeId) && value != null) {
             return ((Integer)value).toString();
-
-        else if (dateId.equals(typeId)) {
+        } else if (dateId.equals(typeId)) {
             df = new DateField();
             df.setBegin(Datetime.YEAR);
             df.setEnd(Datetime.DAY);
@@ -528,14 +528,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             df.setEnd(Datetime.MINUTE);
             df.setFormat(consts.get("dateTimePattern"));
             df.setValue( ((Datetime)value));
-            return  df.toString().replaceAll("-", "/");
+            return df.toString().replaceAll("-", "/");
         } else if (timeId.equals(typeId)) {
-            df = new DateField();
-            df.setBegin(Datetime.HOUR);
-            df.setEnd(Datetime.MINUTE);
-            df.setFormat(consts.get("timePattern"));
-            df.setValue( ((Datetime)value));
-            return  df.toString().replaceAll("-", "/");
+            return (String)value;
         } else if (dictionaryId.equals(typeId))
             return ((TableDataRow)value).key.toString();
 

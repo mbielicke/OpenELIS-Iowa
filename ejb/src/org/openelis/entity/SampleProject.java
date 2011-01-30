@@ -51,7 +51,7 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "SampleProject.FetchBySampleId",
                 query = "select new org.openelis.domain.SampleProjectViewDO(sp.id, sp.sampleId, sp.projectId, sp.isPermanent, p.name, p.description)"
-                      + " from SampleProject sp LEFT JOIN sp.project p where sp.sampleId = :id order by sp.isPermanent DESC, p.name")})
+                      + " from SampleProject sp left join sp.project p where sp.sampleId = :id order by sp.isPermanent desc, sp.id asc")})
 @Entity
 @Table(name = "sample_project")
 @EntityListeners( {AuditUtil.class})

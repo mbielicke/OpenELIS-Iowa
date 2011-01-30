@@ -130,8 +130,7 @@ public class SampleItemAnalysisTreeTab extends Screen
         };
 
         treeUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
-            public void onAction(ActionEvent<TestPrepUtility.Action> event) {
-                
+            public void onAction(ActionEvent<TestPrepUtility.Action> event) {                
                 ActionEvent.fire(treeTab, Action.REFRESH_TABS, event.getData());
             }
         });
@@ -285,6 +284,10 @@ public class SampleItemAnalysisTreeTab extends Screen
         addAnalysis = (AppButton)def.getWidget("addAnalysisButton");
         addScreenHandler(addAnalysis, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                if(itemsTree.getSelectedRow() == -1 && itemsTree.numRows() > 1) {
+                    window.setError(consts.get("sampleItemSelectedToAddAnalysis"));
+                    return;
+                }
                 treeUtil.onAddAnalysisButtonClick();
             }
 
