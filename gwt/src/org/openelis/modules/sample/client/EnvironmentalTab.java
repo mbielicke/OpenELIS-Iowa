@@ -210,13 +210,13 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(project, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
-                    SampleProjectViewDO projectDO = manager.getProjects()
+                    SampleProjectViewDO data = manager.getProjects()
                                                            .getFirstPermanentProject();
 
-                    if (projectDO != null)
-                        project.setSelection(projectDO.getProjectId(), projectDO.getProjectName());
+                    if (data != null)
+                        project.setSelection(new TableDataRow(data.getProjectId(), data.getProjectName(), data.getProjectDescription()));
                     else
-                        project.setSelection(null, "");
+                        project.setSelection(new TableDataRow(null, "", ""));
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -242,9 +242,10 @@ public class EnvironmentalTab extends Screen {
                         data = manager.getProjects().getFirstPermanentProject();
                         if (data != null) {
                             manager.getProjects().setProjectAt(data, 0);
-                            project.setSelection(data.getProjectId(), data.getProjectName());
+                            
+                            project.setSelection(new TableDataRow(data.getProjectId(), data.getProjectName(), data.getProjectDescription()));
                         } else {
-                            project.setSelection(null, "");                            
+                            project.setSelection(new TableDataRow(null, "", ""));                            
                         }
                     } else {
                         data = manager.getProjects().getFirstPermanentProject();
@@ -255,11 +256,8 @@ public class EnvironmentalTab extends Screen {
                         }
                         data.setProjectId((Integer)row.key);
                         data.setProjectName((String)row.cells.get(0).getValue());
-                        data.setProjectDescription((String)row.cells.get(1).getValue());
-
-                        project.setSelection(data.getProjectId(), data.getProjectName());
+                        data.setProjectDescription((String)row.cells.get(1).getValue());                        
                     } 
-
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }

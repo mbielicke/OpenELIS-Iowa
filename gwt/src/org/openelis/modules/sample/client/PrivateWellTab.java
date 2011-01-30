@@ -78,7 +78,7 @@ public class PrivateWellTab extends Screen {
     private AutoComplete<String>           orgName;
     private AutoComplete<Integer>          billTo;
     private Dropdown<String>               addressState, locationAddrState;
-    private AutoComplete<Integer>          projectName;
+    private AutoComplete<Integer>          project;
     private AppButton                      projectLookup, billToLookup;
 
     private SampleProjectLookupScreen      projectScreen;
@@ -621,18 +621,17 @@ public class PrivateWellTab extends Screen {
             }
         });
 
-        projectName = (AutoComplete<Integer>)def.getWidget(SampleMeta.getProjectName());
-        addScreenHandler(projectName, new ScreenEventHandler<String>() {
+        project = (AutoComplete<Integer>)def.getWidget(SampleMeta.getProjectName());
+        addScreenHandler(project, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
-                    SampleProjectViewDO projectDO = manager.getProjects()
+                    SampleProjectViewDO data = manager.getProjects()
                                                            .getFirstPermanentProject();
 
-                    if (projectDO != null)
-                        projectName.setSelection(projectDO.getProjectId(),
-                                                 projectDO.getProjectName());
+                    if (data != null)
+                        project.setSelection(new TableDataRow(data.getProjectId(), data.getProjectName(), data.getProjectDescription()));
                     else
-                        projectName.setSelection(null, "");
+                        project.setSelection(new TableDataRow(null, "", ""));
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -643,7 +642,7 @@ public class PrivateWellTab extends Screen {
                 TableDataRow row;
                 SampleProjectViewDO data;
 
-                row = projectName.getSelection();
+                row = project.getSelection();
                 data = null;
                 try {
                     /*
@@ -658,9 +657,10 @@ public class PrivateWellTab extends Screen {
                         data = manager.getProjects().getFirstPermanentProject();
                         if (data != null) {
                             manager.getProjects().setProjectAt(data, 0);
-                            projectName.setSelection(data.getProjectId(), data.getProjectName());
+                            
+                            project.setSelection(new TableDataRow(data.getProjectId(), data.getProjectName(), data.getProjectDescription()));
                         } else {
-                            projectName.setSelection(null, "");                            
+                            project.setSelection(new TableDataRow(null, "", ""));                            
                         }
                     } else {
                         data = manager.getProjects().getFirstPermanentProject();
@@ -671,23 +671,20 @@ public class PrivateWellTab extends Screen {
                         }
                         data.setProjectId((Integer)row.key);
                         data.setProjectName((String)row.cells.get(0).getValue());
-                        data.setProjectDescription((String)row.cells.get(1).getValue());
-
-                        projectName.setSelection(data.getProjectId(), data.getProjectName());
+                        data.setProjectDescription((String)row.cells.get(1).getValue());                        
                     } 
-
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                projectName.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                project.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
-                projectName.setQueryMode(event.getState() == State.QUERY);
+                project.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        projectName.addGetMatchesHandler(new GetMatchesHandler() {
+        project.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 TableDataRow row;
@@ -713,7 +710,7 @@ public class PrivateWellTab extends Screen {
 
                         model.add(row);
                     }
-                    projectName.showAutoMatches(model);
+                    project.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
@@ -848,7 +845,7 @@ public class PrivateWellTab extends Screen {
                 projectScreen.addActionHandler(new ActionHandler<SampleProjectLookupScreen.Action>() {
                     public void onAction(ActionEvent<SampleProjectLookupScreen.Action> event) {
                         if (event.getAction() == SampleProjectLookupScreen.Action.OK) {
-                            DataChangeEvent.fire(env, projectName);
+                            DataChangeEvent.fire(env, project);
 
                         }
                     }
