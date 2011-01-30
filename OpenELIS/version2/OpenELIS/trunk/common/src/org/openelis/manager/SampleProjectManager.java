@@ -67,19 +67,33 @@ public class SampleProjectManager implements RPC {
         else
             projects.add(i, project);
     }
+    
+    public void removeProject(SampleProjectViewDO data) {
+        if (projects == null)
+            return;
+
+        projects.remove(data);
+
+        if (data.getId() != null) {
+            if (deletedList == null)
+                deletedList = new ArrayList<SampleProjectViewDO>();
+            deletedList.add(data);
+        }
+    }
 
     public void removeProjectAt(int i) {
+        SampleProjectViewDO data;
         if (projects == null || i >= projects.size())
             return;
 
-        SampleProjectViewDO tmpDO = projects.remove(i);
+        data = projects.remove(i);        
 
-        if (deletedList == null)
-            deletedList = new ArrayList<SampleProjectViewDO>();
-
-        if (tmpDO.getId() != null)
-            deletedList.add(tmpDO);
-    }
+        if (data.getId() != null) {
+            if (deletedList == null)
+                deletedList = new ArrayList<SampleProjectViewDO>();
+            deletedList.add(data);
+        }
+    }   
 
     //
     //helper methods
@@ -106,7 +120,16 @@ public class SampleProjectManager implements RPC {
         } else if (oldProject != null && newProject != null) { // update
             setProjectAt(newProject, 0);
         }
+    }   
+    
+    public void removeFirstPermanentProject() {
+        SampleProjectViewDO data;
+        
+        data = getFirstPermanentProject();
+        if (data != null)
+            removeProject(data);                
     }
+   
 
     public int count() {
         if (projects == null)

@@ -58,8 +58,12 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         newRow.toggle();
 
         selectedIndex = itemsTree.getSelectedRow();
-        if (selectedIndex == -1)
-            onAddItemButtonClick();
+        if (selectedIndex == -1) {
+            if (itemsTree.numRows() == 0)
+                onAddItemButtonClick();
+            else
+                itemsTree.select(0); 
+        }
 
         selectedIndex = itemsTree.getSelectedRow();
         selectedRow = itemsTree.getRow(selectedIndex);

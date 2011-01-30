@@ -289,7 +289,7 @@ public class SDWISTab extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleOrganizationViewDO reportToOrg = manager.getOrganizations()
-                                                                  .getFirstReportTo();
+                                                                  .getReportTo();
 
                     if (reportToOrg != null)
                         reportTo.setSelection(reportToOrg.getOrganizationId(),
@@ -303,26 +303,30 @@ public class SDWISTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = reportTo.getSelection();
-                SampleOrganizationViewDO reportToOrg = null;
+                TableDataRow selectedRow;
+                SampleOrganizationViewDO data;                              
+
+                selectedRow = reportTo.getSelection();
                 try {
-                    if (selectedRow.key != null) {
-                        reportToOrg = new SampleOrganizationViewDO();
-                        reportToOrg.setOrganizationId((Integer)selectedRow.key);
-                        reportToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
-                        reportToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                        reportToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    if (selectedRow == null || selectedRow.key == null) {
+                        manager.getOrganizations().removeReportTo();
+                        reportTo.setSelection(null, "");
+                        return;
                     }
 
-                    manager.getOrganizations().setReportTo(reportToOrg);
+                    data = manager.getOrganizations().getReportTo();
+                    if (data == null) {
+                        data = new SampleOrganizationViewDO();
+                        manager.getOrganizations().setReportTo(data);
+                    }
 
-                    reportToOrg = manager.getOrganizations().getFirstReportTo();
+                    data.setOrganizationId((Integer)selectedRow.key);
+                    data.setOrganizationName((String)selectedRow.cells.get(0).value);
+                    data.setOrganizationCity((String)selectedRow.cells.get(2).value);
+                    data.setOrganizationState((String)selectedRow.cells.get(3).value);
 
-                    if (reportToOrg != null)
-                        reportTo.setSelection(reportToOrg.getOrganizationId(),
-                                              reportToOrg.getOrganizationName());
-                    else
-                        reportTo.setSelection(null, "");
+                    reportTo.setSelection(data.getOrganizationId(),
+                                        data.getOrganizationName());
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -348,7 +352,7 @@ public class SDWISTab extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleOrganizationViewDO billToOrg = manager.getOrganizations()
-                                                                .getFirstBillTo();
+                                                                .getBillTo();
 
                     if (billToOrg != null)
                         billTo.setSelection(billToOrg.getOrganizationId(),
@@ -362,26 +366,31 @@ public class SDWISTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow = billTo.getSelection();
-                SampleOrganizationViewDO billToOrg = null;
+                TableDataRow selectedRow;
+                SampleOrganizationViewDO data;
+
+                selectedRow = billTo.getSelection();
+
                 try {
-                    if (selectedRow.key != null) {
-                        billToOrg = new SampleOrganizationViewDO();
-                        billToOrg.setOrganizationId((Integer)selectedRow.key);
-                        billToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
-                        billToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                        billToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    if (selectedRow == null || selectedRow.key == null) {
+                        manager.getOrganizations().removeBillTo();
+                        billTo.setSelection(null, "");
+                        return;
                     }
 
-                    manager.getOrganizations().setBillTo(billToOrg);
+                    data = manager.getOrganizations().getBillTo();
+                    if (data == null) {
+                        data = new SampleOrganizationViewDO();
+                        manager.getOrganizations().setBillTo(data);
+                    }
 
-                    billToOrg = manager.getOrganizations().getFirstBillTo();
+                    data.setOrganizationId((Integer)selectedRow.key);
+                    data.setOrganizationName((String)selectedRow.cells.get(0).value);
+                    data.setOrganizationCity((String)selectedRow.cells.get(2).value);
+                    data.setOrganizationState((String)selectedRow.cells.get(3).value);
 
-                    if (billToOrg != null)
-                        billTo.setSelection(billToOrg.getOrganizationId(),
-                                            billToOrg.getOrganizationName());
-                    else
-                        billTo.setSelection(null, "");
+                    billTo.setSelection(data.getOrganizationId(),
+                                        data.getOrganizationName());
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());

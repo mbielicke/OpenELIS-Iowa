@@ -70,6 +70,7 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
 
     private SampleProjectManager manager;
     protected AppButton projectRemoveButton;
+    protected AutoComplete<Integer> project;
     
     public enum Action {
         OK
@@ -115,7 +116,7 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
             }
         });
 
-        final AutoComplete<Integer> project = ((AutoComplete<Integer>)sampleProjectTable.getColumns().get(0).colWidget);
+        project = ((AutoComplete<Integer>)sampleProjectTable.getColumns().get(0).colWidget);
         sampleProjectTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
@@ -192,7 +193,11 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
         
         sampleProjectTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                manager.addProject(new SampleProjectViewDO());
+                SampleProjectViewDO data;
+                
+                data = new SampleProjectViewDO();
+                data.setIsPermanent("N");
+                manager.addProject(data);
                 projectRemoveButton.enable(true);
             }
         });
