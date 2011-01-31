@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.ResultViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryLocal;
@@ -57,15 +55,17 @@ public class ResultDataSource implements JRDataSource {
 	private ResultDataSource(Integer sampleId, Integer analysisId, boolean byGroup) throws Exception {
 		ArrayList<ArrayList<ResultViewDO>> results;
 		HashMap<String, String> row;
-		InitialContext ctx;
 
 		try {
-			ctx = new InitialContext();
+			javax.naming.InitialContext ctx;
+
+			ctx = new javax.naming.InitialContext();
 			rl = (ResultLocal) ctx.lookup("openelis/ResultBean/local");
 			dl = (DictionaryLocal) ctx.lookup("openelis/DictionaryBean/local");
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
-			throw e;
+			rows = null;
+			return;
 		}
 
 		try {
