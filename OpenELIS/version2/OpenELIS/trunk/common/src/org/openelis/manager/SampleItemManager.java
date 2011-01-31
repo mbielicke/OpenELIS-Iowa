@@ -206,7 +206,6 @@ public class SampleItemManager implements RPC {
             if (item.sampleItem != null && item.sampleItem.getId() != null) {
                 try {
                     item.analysis = AnalysisManager.fetchBySampleItemId(item.sampleItem.getId());
-
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {

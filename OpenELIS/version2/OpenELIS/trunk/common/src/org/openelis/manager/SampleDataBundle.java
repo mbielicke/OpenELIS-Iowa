@@ -28,68 +28,69 @@ package org.openelis.manager;
 import org.openelis.gwt.common.RPC;
 
 public class SampleDataBundle implements RPC {
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    public enum Type {
-        SAMPLE, SAMPLE_ITEM, ANALYSIS
-    };
+	public enum Type {
+		SAMPLE, SAMPLE_ITEM, ANALYSIS
+	};
 
-    protected Type             type;
-    protected int              index;
-    protected SampleManager    sampleManager;
-    protected SampleDataBundle parent;
+	protected Type type;
+	protected int index;
+	protected SampleManager sampleManager;
+	protected SampleDataBundle parent;
 
-    protected SampleDataBundle(){}
-    
-    protected SampleDataBundle(Type type, SampleManager sampleManager, SampleDataBundle parent, int index) {
-        setType(type);
-        setSampleManager(sampleManager);
-        setParent(parent);
-        setIndex(index);
-    }
+	protected SampleDataBundle() {
+	}
 
-    public Type getType() {
-        return type;
-    }
+	protected SampleDataBundle(Type type, SampleManager sampleManager, SampleDataBundle parent, int index) {
+		setType(type);
+		setSampleManager(sampleManager);
+		setParent(parent);
+		setIndex(index);
+	}
 
-    protected void setType(Type type) {
-        this.type = type;
-    }
+	public Type getType() {
+		return type;
+	}
 
-    protected void setIndex(int index) {
-        this.index = index;
-    }
+	protected void setType(Type type) {
+		this.type = type;
+	}
 
-    public SampleDataBundle getParent() {
-        return parent;
-    }
+	protected void setIndex(int index) {
+		this.index = index;
+	}
 
-    protected void setParent(SampleDataBundle parent) {
-        this.parent = parent;
-    }
-    
-    public SampleManager getSampleManager() {
-        return sampleManager;
-    }
+	public SampleDataBundle getParent() {
+		return parent;
+	}
 
-    protected void setSampleManager(SampleManager sampleManager) {
-        this.sampleManager = sampleManager;
-    }
+	protected void setParent(SampleDataBundle parent) {
+		this.parent = parent;
+	}
 
-    public int getSampleItemIndex() {
-        if (type == Type.SAMPLE_ITEM)
-            return index;
+	public SampleManager getSampleManager() {
+		return sampleManager;
+	}
 
-        if (parent != null)
-            return parent.getSampleItemIndex();
+	protected void setSampleManager(SampleManager sampleManager) {
+		this.sampleManager = sampleManager;
+	}
 
-        return -1;
-    }
+	public int getSampleItemIndex() {
+		if (type == Type.SAMPLE_ITEM)
+			return index;
 
-    public int getAnalysisIndex() {
-        if (type == Type.ANALYSIS)
-            return index;
+		if (parent != null)
+			return parent.getSampleItemIndex();
 
-        return -1;
-    }    
+		return -1;
+	}
+
+	public int getAnalysisIndex() {
+		if (type == Type.ANALYSIS)
+			return index;
+
+		return -1;
+	}
 }

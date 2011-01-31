@@ -33,6 +33,7 @@ import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.QaEventVO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.SectionPermission;
@@ -87,6 +88,7 @@ public class QAEventsTab extends Screen {
     protected AnalysisManager        anMan;
     protected AnalysisViewDO         anDO;
     protected Integer                analysisCancelledId, analysisReleasedId;
+	protected Integer				 qaInternal, qaWarning, qaOverride;
 
     protected QaeventLookupScreen    qaEventScreen;
 
@@ -100,6 +102,9 @@ public class QAEventsTab extends Screen {
     }
 
     private void initialize() {
+    	/*
+    	 * sample qa
+    	 */
         sampleQATable = (TableWidget)def.getWidget("sampleQATable");
         addScreenHandler(sampleQATable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -119,30 +124,22 @@ public class QAEventsTab extends Screen {
             }
         });
 
-        sampleQATable.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
-                if(EnumSet.of(State.ADD, State.UPDATE).contains(state))
-                    removeSampleQAButton.enable(true);
-            }
-        });
+		sampleQATable.addSelectionHandler(new SelectionHandler<TableRow>() {
+			public void onSelection(SelectionEvent<TableRow> event) {
+				if (EnumSet.of(State.ADD, State.UPDATE).contains(state))
+					removeSampleQAButton.enable(true);
+			}
+		});
 
         sampleQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
             	if (state == State.ADD || state == State.UPDATE) {
-                	if (canEditSampleQA()) {
-                        removeSampleQAButton.enable(true);
-                        sampleQAPicker.enable(true);
-                	} else {
-                		removeSampleQAButton.enable(false);
-                		sampleQAPicker.enable(false);
+                	if (! canEditSampleQA()) {
                 		window.setError(consts.get("cantUpdateSampleQAEvent"));
                 		event.cancel();
-                		return;
-                	}
+                	} else
+                		window.clearStatus();
                 }
-            	// we want confirmation every time they change any data
-                if (event.getCol() == 0 || !Window.confirm(consts.get("qaEventEditConfirm")))
-                    event.cancel();
             }
         });
 
@@ -156,14 +153,25 @@ public class QAEventsTab extends Screen {
                 c = event.getCol();
                 val = sampleQATable.getObject(r,c);
                 data = sampleQAManager.getSampleQAAt(r);
-
-                switch (c) {
-                    case 1:
-                        data.setTypeId((Integer)val);
-                        break;
-                    case 2:
-                        data.setIsBillable((String)val);
-                        break;
+                
+                if (!Window.confirm(consts.get("qaEventEditConfirm"))) {
+                    switch (c) {
+                        case 1:
+                            sampleQATable.setCell(r,c, data.getTypeId());
+                            break;
+                        case 2:
+                            sampleQATable.setCell(r,c, data.getIsBillable());
+                            break;
+                    }
+                } else {                		
+	                switch (c) {
+	                    case 1:
+	                        data.setTypeId((Integer)val);
+	                        break;
+	                    case 2:
+	                        data.setIsBillable((String)val);
+	                        break;
+	                }
                 }
             }
         });
@@ -178,10 +186,21 @@ public class QAEventsTab extends Screen {
         removeSampleQAButton = (AppButton)def.getWidget("removeSampleQAButton");
         addScreenHandler(removeSampleQAButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = sampleQATable.getSelectedRow();
-                if (selectedRow > -1 && sampleQATable.numRows() > 0) {
-                    sampleQATable.deleteRow(selectedRow);
-                }
+				int r;
+                SampleQaEventViewDO data;
+
+                r = sampleQATable.getSelectedRow();
+                if (r < 0)
+                	return;
+                data = sampleQAManager.getSampleQAAt(r);
+                /*
+                 * allow removal of only internal qa events if any analysis is released
+                 */
+        		window.clearStatus();
+                if (data.getTypeId() != qaInternal && !canEditSampleQA())
+					window.setError(consts.get("cantUpdateSampleQAEvent"));
+				else
+					sampleQATable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -192,25 +211,19 @@ public class QAEventsTab extends Screen {
         sampleQAPicker = (AppButton)def.getWidget("sampleQAPicker");
         addScreenHandler(sampleQAPicker, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                if (qaEventScreen == null) {
-                    createQaEventPickerScreen();
-                }
-                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(consts.get("qaEventSelection"));
+                createQaEventPickerScreen();
                 qaEventScreen.setType(QaeventLookupScreen.Type.SAMPLE);
                 qaEventScreen.draw();
-                modal.setContent(qaEventScreen);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-            	boolean enable;
-            	
-            	enable = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
-            			 canEditSampleQA();
-                sampleQAPicker.enable(enable);
+            	sampleQAPicker.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
+        /*
+         * analysis qa
+         */
         analysisQATable = (TableWidget)def.getWidget("analysisQATable");
         addScreenHandler(analysisQATable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -245,8 +258,13 @@ public class QAEventsTab extends Screen {
 
         analysisQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if (event.getCol() == 0 || !Window.confirm(consts.get("qaEventEditConfirm")))
-                    event.cancel();
+            	if (state == State.ADD || state == State.UPDATE) {
+                	if (! canEditAnalysisQA()) {
+                		window.setError(consts.get("cantUpdateAnalysisQAEvent"));
+                		event.cancel();
+                	} else
+                		window.clearStatus();
+                }
             }
         });
 
@@ -258,16 +276,27 @@ public class QAEventsTab extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = sampleQATable.getObject(r,c);
+                val = analysisQATable.getObject(r,c);
                 data = analysisQAManager.getAnalysisQAAt(r);
 
-                switch (c) {
-                    case 1:
-                        data.setTypeId((Integer)val);
-                        break;
-                    case 2:
-                        data.setIsBillable((String)val);
-                        break;
+                if (!Window.confirm(consts.get("qaEventEditConfirm"))) {
+                    switch (c) {
+                        case 1:
+                        	analysisQATable.setCell(r,c, data.getTypeId());
+                            break;
+                        case 2:
+                        	analysisQATable.setCell(r,c, data.getIsBillable());
+                            break;
+                    }
+                } else {                		
+	                switch (c) {
+	                    case 1:
+	                        data.setTypeId((Integer)val);
+	                        break;
+	                    case 2:
+	                        data.setIsBillable((String)val);
+	                        break;
+	                }
                 }
             }
         });
@@ -282,11 +311,21 @@ public class QAEventsTab extends Screen {
         removeAnalysisQAButton = (AppButton)def.getWidget("removeAnalysisQAButton");
         addScreenHandler(removeAnalysisQAButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int selectedRow = analysisQATable.getSelectedRow();
+				int r;
+                AnalysisQaEventViewDO data;
 
-                if (selectedRow > -1 && analysisQATable.numRows() > 0) {
-                    analysisQATable.deleteRow(selectedRow);
-                }
+                r = analysisQATable.getSelectedRow();
+                if (r < 0)
+                	return;
+                data = analysisQAManager.getAnalysisQAAt(r);
+                /*
+                 * allow removal of only internal qa events if any analysis is released
+                 */
+        		window.clearStatus();
+                if (data.getTypeId() != qaInternal && !canEditAnalysisQA())
+					window.setError(consts.get("cantUpdateAnalysisQAEvent"));
+				else
+					analysisQATable.deleteRow(r);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -297,23 +336,18 @@ public class QAEventsTab extends Screen {
         analysisQAPicker = (AppButton)def.getWidget("analysisQAPicker");
         addScreenHandler(analysisQAPicker, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                if (qaEventScreen == null)
-                    createQaEventPickerScreen();
-
-                ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-                modal.setName(consts.get("qaEventSelection"));
+            	createQaEventPickerScreen();
                 qaEventScreen.setType(QaeventLookupScreen.Type.ANALYSIS);
                 qaEventScreen.setTestId(anDO.getTestId());
                 qaEventScreen.draw();
-                modal.setContent(qaEventScreen);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisQAPicker.enable(canEditAnalysisQA() &&
-                                        (SampleDataBundle.Type.ANALYSIS == type) &&
-                                        anDO.getTestId() != null &&
-                                        EnumSet.of(State.ADD, State.UPDATE)
-                                               .contains(event.getState()));
+            	boolean enable;
+            	
+            	enable = SampleDataBundle.Type.ANALYSIS == type && anDO.getTestId() != null &&
+    					 EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
+                analysisQAPicker.enable(enable);
             }
         });
 
@@ -330,10 +364,9 @@ public class QAEventsTab extends Screen {
         try {
             for (int iter = 0; iter < sampleQAManager.count(); iter++ ) {
                 qa = sampleQAManager.getSampleQAAt(iter);
-                model.add(createQaTableRow(qa.getQaEventId(), qa.getQaEventName(), qa.getTypeId(),
+                model.add(new TableDataRow(qa.getQaEventId(), qa.getQaEventName(), qa.getTypeId(),
                                            qa.getIsBillable()));
             }
-
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -353,7 +386,7 @@ public class QAEventsTab extends Screen {
         try {
             for (int iter = 0; iter < analysisQAManager.count(); iter++ ) {
                 qa = analysisQAManager.getAnalysisQAAt(iter);
-                model.add(createQaTableRow(qa.getQaeventId(), qa.getQaEventName(), qa.getTypeId(),
+                model.add(new TableDataRow(qa.getQaeventId(), qa.getQaEventName(), qa.getTypeId(),
                                            qa.getIsBillable()));
             }
         } catch (Exception e) {
@@ -364,82 +397,81 @@ public class QAEventsTab extends Screen {
         return model;
     }
 
-    private TableDataRow createQaTableRow(Integer id, String name, Integer type, String billable) {
-        TableDataRow row;
-
-        row = new TableDataRow(3);
-        row.cells.get(0).value = name;
-        row.cells.get(1).value = type;
-        row.cells.get(2).value = billable;
-
-        return row;
-    }
-
     private void createQaEventPickerScreen() {
-        try {
-            qaEventScreen = new QaeventLookupScreen();
-            qaEventScreen.addActionHandler(new ActionHandler<QaeventLookupScreen.Action>() {
-                public void onAction(ActionEvent<QaeventLookupScreen.Action> event) {
-                    ArrayList<TableDataRow> selections = (ArrayList<TableDataRow>)event.getData();
+    	ScreenWindow modal;
+    	
+        if (qaEventScreen == null) {
+	    	try {
+	            qaEventScreen = new QaeventLookupScreen();
 
-                    if (qaEventScreen.getType() == QaeventLookupScreen.Type.SAMPLE) {
-                        sampleQATable.fireEvents(false);
-                        for (int i = 0; i < selections.size(); i++ ) {
-                            TableDataRow row = selections.get(i);
-                            SampleQaEventViewDO qaEvent = new SampleQaEventViewDO();
+	            qaEventScreen.addActionHandler(new ActionHandler<QaeventLookupScreen.Action>() {
+	            	public void onAction(ActionEvent<QaeventLookupScreen.Action> event) {
+	                	boolean nonInte, canEdit;
+	                	QaEventVO data;
+	                	TableDataRow row;
+	                    ArrayList<TableDataRow> list;
+	                    
+	                    if (qaEventScreen.getType() == QaeventLookupScreen.Type.SAMPLE) {
+	                    	nonInte = false;
+	                    	canEdit = canEditSampleQA();
+	                        sampleQATable.fireEvents(false);
+	                    } else { 
+	                    	nonInte = false;
+	                    	canEdit = canEditAnalysisQA();
+	                    	analysisQATable.fireEvents(false);
+	                    }
+	                    	
+	                    list = (ArrayList<TableDataRow>)event.getData();
+	                    for (TableDataRow r: list) {
+	                    	data = (QaEventVO) r.data;
+	                    	if (!canEdit && data.getTypeId() != qaInternal) {
+	                    		nonInte = true;
+	                    		continue;
+	                    	}
+	                    	row = new TableDataRow(data.getId(), data.getName(), data.getTypeId(),
+	                    						   data.getIsBillable());
+		                    if (qaEventScreen.getType() == QaeventLookupScreen.Type.SAMPLE) {
+			                	SampleQaEventViewDO qaEvent;
 
-                            qaEvent.setIsBillable((String)row.cells.get(3).value);
-                            qaEvent.setQaEventId((Integer)row.key);
-                            qaEvent.setQaEventName((String)row.cells.get(0).value);
-                            qaEvent.setTypeId((Integer)row.cells.get(2).value);
-
-                            sampleQAManager.addSampleQA(qaEvent);
-                            sampleQATable.addRow(createQaTableRow(qaEvent.getQaEventId(),
-                                                                  qaEvent.getQaEventName(),
-                                                                  qaEvent.getTypeId(),
-                                                                  qaEvent.getIsBillable()));
-                        }
-                        sampleQATable.fireEvents(true);
-
-                    } else if (qaEventScreen.getType() == QaeventLookupScreen.Type.ANALYSIS) {
-                        analysisQATable.fireEvents(false);
-                        for (int i = 0; i < selections.size(); i++ ) {
-                            TableDataRow row = selections.get(i);
-                            AnalysisQaEventViewDO qaEvent = new AnalysisQaEventViewDO();
-
-                            qaEvent.setIsBillable((String)row.cells.get(3).value);
-                            qaEvent.setQaEventId((Integer)row.key);
-                            qaEvent.setQaEventName((String)row.cells.get(0).value);
-                            qaEvent.setTypeId((Integer)row.cells.get(2).value);
-
-                            analysisQAManager.addAnalysisQA(qaEvent);
-                            analysisQATable.addRow(createQaTableRow(qaEvent.getQaEventId(),
-                                                                    qaEvent.getQaEventName(),
-                                                                    qaEvent.getTypeId(),
-                                                                    qaEvent.getIsBillable()));
-                        }
-                        analysisQATable.fireEvents(true);
-                    }
-                }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert("error: " + e.getMessage());
-            return;
+			                	qaEvent = new SampleQaEventViewDO();
+	                            qaEvent.setQaEventId(data.getId());
+	                            qaEvent.setQaEventName(data.getName());
+	                            qaEvent.setTypeId(data.getTypeId());	                    	
+	                            qaEvent.setIsBillable(data.getIsBillable());
+	                            sampleQAManager.addSampleQA(qaEvent);
+	                            sampleQATable.addRow(row);
+		                        sampleQATable.fireEvents(true);
+		                    } else {
+		                    	AnalysisQaEventViewDO qaEvent;
+		                    	
+		                    	qaEvent = new AnalysisQaEventViewDO();
+	                            qaEvent.setQaEventId(data.getId());
+	                            qaEvent.setQaEventName(data.getName());
+	                            qaEvent.setTypeId(data.getTypeId());	                    	
+	                            qaEvent.setIsBillable(data.getIsBillable());
+	                            analysisQAManager.addAnalysisQA(qaEvent);
+	                            analysisQATable.addRow(row);
+		                        analysisQATable.fireEvents(true);
+		                    }
+	                    }
+	                    if (nonInte)
+	                    	window.setError(consts.get("cantAddQAEvent"));
+	                    else
+	                    	window.clearStatus();
+	                }
+	            });
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	            Window.alert("error: " + e.getMessage());
+	            return;
+	        }
         }
+        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal.setName(consts.get("qaEventSelection"));
+        modal.setContent(qaEventScreen);
     }
 
     private void initializeDropdowns() {
-        try {
-            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-
         ArrayList<TableDataRow> model;
 
         // qa event type dropdown
@@ -450,6 +482,17 @@ public class QAEventsTab extends Screen {
 
         ((Dropdown<Integer>)sampleQATable.getColumns().get(1).getColumnWidget()).setModel(model);
         ((Dropdown<Integer>)analysisQATable.getColumns().get(1).getColumnWidget()).setModel(model);
+
+        try {
+            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            qaInternal = DictionaryCache.getIdFromSystemName("qaevent_internal");
+            qaWarning = DictionaryCache.getIdFromSystemName("qaevent_warning");
+            qaOverride = DictionaryCache.getIdFromSystemName("qaevent_override");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
     }
 
     private boolean canEditSampleQA() {
@@ -485,7 +528,6 @@ public class QAEventsTab extends Screen {
                 anDO = new AnalysisViewDO();
                 anMan = null;
                 type = SampleDataBundle.Type.SAMPLE_ITEM;
-
             } else {
                 anMan = data.getSampleManager()
                             .getSampleItems()
@@ -493,10 +535,8 @@ public class QAEventsTab extends Screen {
                 anDO = anMan.getAnalysisAt(data.getAnalysisIndex());
                 type = data.getType();
             }
-
             bundle = data;
             loaded = false;
-
         } catch (Exception e) {
             Window.alert("qaEventsTab setData: " + e.getMessage());
         }

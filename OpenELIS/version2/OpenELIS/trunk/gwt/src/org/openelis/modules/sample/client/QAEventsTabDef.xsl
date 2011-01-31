@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
         <row>
           <table key="sampleQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
             <col key="{meta:getSampleSubQaName()}" width="172" header="{resource:getString($constants,'sampleQAEvent')}">
-              <textbox field="String" />
+              <label field="String" />
             </col>
             <col key="{meta:getSampleQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
               <dropdown width="90" field="Integer" />
@@ -57,7 +57,7 @@ UIRF Software License are applicable instead of those above.
           </widget>
           <table key="analysisQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
             <col key="{meta:getAnalysisSubQaName()}" width="172" header="{resource:getString($constants,'analysisQAEvent')}">
-              <textbox field="String" />
+              <label field="String" />
             </col>
             <col key="{meta:getAnalysisQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
               <dropdown width="90" field="Integer" />
