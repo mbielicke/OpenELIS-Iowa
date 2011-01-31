@@ -371,7 +371,6 @@ public class AnalysisManager implements RPC {
         try {
             // add an analysis user record
             getAnalysisUserAt(index).addReleaseRecord();
-
         } catch (Exception e) {
             // do nothing
         }

@@ -5,20 +5,21 @@
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.utils.JasperUtil"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<parameter name="REPORT_TYPE" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[SELECT
      t.reporting_description t_reporting_description,
      m.reporting_description m_reporting_description
 FROM
-     analysis a, sample_item si, test t, method m, sample s
+     analysis a, sample_item si, test t, method m
 WHERE
-     si.sample_id = $P{SAMPLE_ID} AND
-     a.sample_item_id = si.id AND
-     si.sample_id = s.id AND
-     a.is_reportable = 'Y' AND
-     a.test_id = t.id AND
-     t.method_id = m.id   AND
-     a.status_id NOT IN (SELECT id FROM dictionary where system_name in ('analysis_cancelled', 'analysis_released'))]]>
+     si.sample_id = $P{SAMPLE_ID} and
+     a.sample_item_id = si.id and
+     a.is_reportable = 'Y' and
+     a.test_id = t.id and
+     t.method_id = m.id and
+     (($P{REPORT_TYPE} = "R" and a.status_id not in (SELECT id FROM dictionary where system_name in ('analysis_cancelled', 'analysis_released'))) or
+      ($P{REPORT_TYPE} = "C" and a.status_id not in (SELECT id FROM dictionary where system_name in ('analysis_cancelled', 'analysis_completed', 'analysis_released'))))]]>
 	</queryString>
 	<field name="t_reporting_description" class="java.lang.String"/>
 	<field name="m_reporting_description" class="java.lang.String"/>

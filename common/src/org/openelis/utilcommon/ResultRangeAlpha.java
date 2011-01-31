@@ -23,49 +23,52 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
- package org.openelis.utilcommon;
+package org.openelis.utilcommon;
 
 import org.openelis.exception.ParseException;
 
 public class ResultRangeAlpha implements ResultRange {
-    private static final long serialVersionUID = 1L;
-    
-    public enum Type {
-      LOWER, MIXED, UPPER  
-    };
-    
-    protected Type type;
-    protected String value;
-    
-    public ResultRangeAlpha(){
-        
-    }
-    
-    public ResultRangeAlpha(Type type){
-        this.type = type;
-    }
-    
-    public void setRange(String range) throws ParseException {
-        value = range;
-        //always valid
-    }
+	private static final long serialVersionUID = 1L;
 
-    public void contains(String alpha) throws ParseException {
-        //always valid
-    }
+	protected Type type;
+	protected String value;
 
-    public boolean intersects(ResultRange range) {
-        return false;
-    }
+	public enum Type {
+		LOWER, MIXED, UPPER
+	};
 
-    public String toString() {
-        if(type == Type.LOWER)
-            return value.toLowerCase();
-        else if(type == Type.MIXED)
-            return value;
-        else if(type == Type.UPPER)
-            return value.toUpperCase();
-        
-        return "";
-    }
+	public ResultRangeAlpha() {
+		type = Type.MIXED;
+	}
+
+	public ResultRangeAlpha(Type type) {
+		this.type = type;
+	}
+
+	public void setRange(String range) throws ParseException {
+		if (range == null) {
+			value = null;
+			return;
+		}
+
+		switch (type) {
+			case LOWER:
+				value = range.toLowerCase();
+			case UPPER:
+				value = range.toUpperCase();
+			default:
+				value = range;
+		}
+	}
+
+	public void contains(String alpha) throws ParseException {
+	}
+
+	public boolean intersects(ResultRange range) {
+		return false;
+	}
+
+	public String toString() {
+		return value;
+	}
 }
