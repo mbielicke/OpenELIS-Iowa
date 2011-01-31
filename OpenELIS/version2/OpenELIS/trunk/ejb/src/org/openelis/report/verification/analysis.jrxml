@@ -28,35 +28,35 @@ WHERE
 			<staticText>
 				<reportElement x="526" y="0" width="56" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<text><![CDATA[Analyzed In:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="440" y="0" width="86" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{d1_entry}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="418" y="0" width="22" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<text><![CDATA[Unit:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="false">
 				<reportElement x="582" y="0" width="100" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.SectionLocationBean.getLocation($P{REPORT_CONNECTION},  $F{a_section_id})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement mode="Transparent" x="22" y="0" width="396" height="12" backcolor="#FFFFFF"/>
 				<textElement>
-					<font fontName="Times New Roman" isBold="false" isItalic="false"/>
+					<font isBold="false" isItalic="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.report.util.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
 			</textField>
@@ -71,21 +71,21 @@ WHERE
 			<staticText>
 				<reportElement x="682" y="0" width="49" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<text><![CDATA[Reportable:]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="731" y="0" width="21" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_is_reportable}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="0" y="0" width="22" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<text><![CDATA[Test:]]></text>
 			</staticText>

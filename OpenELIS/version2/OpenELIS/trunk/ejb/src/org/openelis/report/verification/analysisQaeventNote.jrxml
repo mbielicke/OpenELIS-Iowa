@@ -15,14 +15,14 @@
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement positionType="Float" mode="Transparent" x="30" y="0" width="762" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Times New Roman" isBold="true"/>
+					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.QaeventUtil.getAnalysisQaeventText($P{ANALYSIS_ID},Boolean.FALSE)]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement positionType="Float" x="0" y="0" width="30" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true"/>
+					<font size="10" isBold="false" isItalic="true"/>
 				</textElement>
 				<text><![CDATA[Note:]]></text>
 			</staticText>
