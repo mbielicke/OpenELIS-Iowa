@@ -321,9 +321,7 @@ public class ContainerTab extends Screen {
 
                         model.add(row);
                     }
-
                     test.showAutoMatches(model);
-
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }

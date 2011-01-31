@@ -146,8 +146,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testResultsTable.enable(canEdit() &&
-                                        EnumSet.of(State.ADD, State.UPDATE)
+                testResultsTable.enable(EnumSet.of(State.ADD, State.UPDATE)
                                                .contains(event.getState()));
             }
         });
@@ -158,6 +157,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 TableDataRow row;
 
                 if (analysis.getUnitOfMeasureId() == null) {
+                	window.setError(consts.get("unitOfMeasureException"));
                     addResultButton.enable(false);
                     removeResultButton.enable(false);
                 }
@@ -196,8 +196,12 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 int r, c;
                 TableDataRow row;
                 ResultViewDO data;
+                SectionViewDO section;
                 TestAnalyteViewDO testAnalyte;
+                SectionPermission perm;
 
+                perm = null;
+                section = null;
                 isHeaderRow = false;
                 enableButton = true;
 
@@ -206,7 +210,30 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 row = testResultsTable.getRow(r);
                 isHeaderRow = ((Boolean)row.data).booleanValue();
 
+                if (analysis.getSectionId() != null) {
+                	try {
+                		section = SectionCache.getSectionFromId(analysis.getSectionId());
+                		perm = OpenELIS.getSystemUserPermission().getSection(section.getName());
+                	} catch (Exception e) {
+                		section = null;
+                		perm = null;
+                	}
+                }
+                
                 if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r)) {
+                    event.cancel();
+                    enableButton = false;
+                } else if (section == null) { 
+					window.setError(consts.get("noSectionsForTest"));
+                    event.cancel();
+                    enableButton = false;
+                } else if (perm == null || !perm.hasCompletePermission()) {
+                	window.setError(consts.get("noCompleteTestPermission"));
+                    event.cancel();
+                    enableButton = false;
+                } else if (analysisCancelledId.equals(analysis.getStatusId()) ||
+                		   analysisReleasedId.equals(analysis.getStatusId())) {
+                	window.setError(consts.get("analysisCancledOrReleased"));
                     event.cancel();
                     enableButton = false;
                 } else {
@@ -682,7 +709,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
             modal.setContent(resultPopoutScreen);
             resultPopoutScreen.setData(bundle);
-            resultPopoutScreen.setScreenState(state);
+            resultPopoutScreen.setState(state);
             resultPopoutScreen.draw();
 
             modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
@@ -732,37 +759,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             postHeader = (Boolean)testResultsTable.getRow(index + 1).data;
 
         return prevHeader && postHeader;
-    }
-
-    private boolean canEdit() {
-        SectionPermission perm;
-        SectionViewDO sectionVDO;
-
-        if (analysis != null && analysis.getSectionId() != null) {
-            try {
-                sectionVDO = SectionCache.getSectionFromId(analysis.getSectionId());
-                perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
-                return !analysisCancelledId.equals(analysis.getStatusId()) &&
-                       !analysisReleasedId.equals(analysis.getStatusId()) && perm != null &&
-                       (perm.hasAssignPermission() || perm.hasCompletePermission());
-            } catch (Exception anyE) {
-                Window.alert("canEdit:" + anyE.getMessage());
-            }
-        }
-        return false;
-    }
-
-    /*private String formatValue(TestResultDO testResultDO, String value) {
-        if (typeAlphaUpper.equals(testResultDO.getTypeId()))
-            return value.toUpperCase();
-        else if (typeAlphaLower.equals(testResultDO.getTypeId()))
-            return value.toLowerCase();
-        else
-            return value;
-    }*/
-
-    public void setScreenState(State state) {
-        setState(state);
     }
 
     public void setData(SampleDataBundle data) {
