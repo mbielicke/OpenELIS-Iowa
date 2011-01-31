@@ -24,7 +24,7 @@ WHERE
 			<textField>
 				<reportElement x="0" y="0" width="20" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{initials}]]></textFieldExpression>
 			</textField>

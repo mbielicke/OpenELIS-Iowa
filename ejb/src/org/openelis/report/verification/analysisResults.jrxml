@@ -31,7 +31,7 @@ ORDER BY
 					<bottomPen lineWidth="0.5" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="10" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Result]]></text>
 			</staticText>
@@ -41,7 +41,7 @@ ORDER BY
 					<bottomPen lineWidth="0.5" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="10" isBold="true"/>
+					<font size="10" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
@@ -52,14 +52,14 @@ ORDER BY
 			<textField isBlankWhenNull="true">
 				<reportElement x="190" y="0" width="190" height="12"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{r_value}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="180" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}.trim()]]></textFieldExpression>
 			</textField>
@@ -68,14 +68,14 @@ ORDER BY
 			<textField>
 				<reportElement x="32" y="0" width="148" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}.trim()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="190" y="0" width="190" height="12"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman"/>
+					<font />
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{r_value}]]></textFieldExpression>
 			</textField>
