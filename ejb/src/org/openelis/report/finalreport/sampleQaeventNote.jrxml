@@ -10,8 +10,6 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="reporting_sequence" class="java.lang.Integer"/>
-	<field name="reporting_text" class="java.lang.String"/>
 	<variable name="QBUFF" class="java.lang.StringBuffer">
 		<variableExpression><![CDATA[$V{QBUFF}]]></variableExpression>
 		<initialValueExpression><![CDATA[new StringBuffer()]]></initialValueExpression>
@@ -60,18 +58,11 @@
 				<text><![CDATA[Note:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" mode="Transparent" x="30" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
-				<textElement>
-					<font isBold="true" pdfFontName="Times-Bold"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{QBUFF}.toString()]]></textFieldExpression>
-			</textField>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" mode="Transparent" x="30" y="1" width="520" height="0" isRemoveLineWhenBlank="true"/>
-				<textElement>
+				<reportElement positionType="Float" mode="Transparent" x="30" y="0" width="520" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement markup="styled">
 					<font isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$V{NBUFF}.toString()]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["<style pdfFontName='Times-Bold'>"+$V{QBUFF}.toString()+"</style>"+($V{QBUFF}.length()>0 && $V{NBUFF}.length()>0 ? "\n" : "" )+$V{NBUFF}.toString()]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
