@@ -15,7 +15,7 @@ public interface SampleLoginLabelReportRemote {
     
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception;
 
-    public ArrayList<Prompt> getReprintPrompts() throws Exception;
+    public ArrayList<Prompt> getAdditionalPrompts() throws Exception;
     
-    public ReportStatus runReprintReport(ArrayList<QueryData> paramList) throws Exception;
+    public ReportStatus runAdditionalReport(ArrayList<QueryData> paramList) throws Exception;
 }
