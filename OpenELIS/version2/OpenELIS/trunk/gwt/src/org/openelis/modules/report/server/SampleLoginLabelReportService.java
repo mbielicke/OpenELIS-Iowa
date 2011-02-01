@@ -43,12 +43,12 @@ public class SampleLoginLabelReportService {
         return remote().runReport(query.getFields());
     }
     
-    public ArrayList<Prompt> getReprintPrompts() throws Exception{
-        return remote().getReprintPrompts();      
+    public ArrayList<Prompt> getAdditionalPrompts() throws Exception{
+        return remote().getAdditionalPrompts();      
     }
     
-    public ReportStatus runReprintReport(Query query) throws Exception { 
-        return remote().runReprintReport(query.getFields());
+    public ReportStatus runAdditionalReport(Query query) throws Exception { 
+        return remote().runAdditionalReport(query.getFields());
     }
     
     private SampleLoginLabelReportRemote remote() {

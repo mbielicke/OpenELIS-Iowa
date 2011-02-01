@@ -64,7 +64,7 @@ import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelReportScreen;
-import org.openelis.modules.report.client.SampleLoginLabelReprintReportScreen;
+import org.openelis.modules.report.client.SampleLoginLabelAdditionalReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.modules.report.client.VerificationReportScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
@@ -1079,12 +1079,12 @@ public class OpenELIS extends Screen {
             }
         });
 
-        addClickHandler("sampleLoginLabelReprintReport", new ClickHandler() {
+        addClickHandler("sampleLoginLabelAdditionalReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SampleLoginLabelReprintReportScreen());
+                            browser.addScreen(new SampleLoginLabelAdditionalReportScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

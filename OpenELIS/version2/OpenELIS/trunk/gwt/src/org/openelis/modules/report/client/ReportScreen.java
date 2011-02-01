@@ -313,7 +313,6 @@ public class ReportScreen extends Screen {
 
 					public void onFailure(Throwable caught) {
 						window.setError("Failed");
-						caught.printStackTrace();
 						Window.alert(caught.getMessage());
 					}
 				});
