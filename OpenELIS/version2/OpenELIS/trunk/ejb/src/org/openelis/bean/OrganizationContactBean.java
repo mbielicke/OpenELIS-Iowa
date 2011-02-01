@@ -79,11 +79,11 @@ public class OrganizationContactBean implements OrganizationContactLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
 
         addressBean.add(data.getAddress());
-        entity = new OrganizationContact();
-        entity.setAddressId(data.getAddress().getId());
+        entity = new OrganizationContact();        
         entity.setOrganizationId(data.getOrganizationId());
         entity.setContactTypeId(data.getContactTypeId());
         entity.setName(data.getName());
+        entity.setAddressId(data.getAddress().getId());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -94,16 +94,18 @@ public class OrganizationContactBean implements OrganizationContactLocal {
     public OrganizationContactDO update(OrganizationContactDO data) throws Exception {
         OrganizationContact entity;
 
-        if ( !data.isChanged())
+        if ( !data.isChanged() && !data.getAddress().isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-
-        addressBean.update(data.getAddress());
         entity = manager.find(OrganizationContact.class, data.getId());
         entity.setContactTypeId(data.getContactTypeId());
         entity.setName(data.getName());
 
+        if (data.getAddress().isChanged()) {
+            entity.setAuditAddressId(true);
+            addressBean.update(data.getAddress());
+        }
         return data;
     }
 

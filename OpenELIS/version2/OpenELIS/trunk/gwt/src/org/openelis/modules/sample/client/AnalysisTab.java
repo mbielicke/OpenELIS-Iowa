@@ -665,11 +665,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 analysisUserTable.load(getAnalysisUserTableModel());
             }
 
-            public void onValueChange(ValueChangeEvent<TableDataRow> event) {
-
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
+                
                 analysisUserTable.enable(canEdit() &&
                                          EnumSet.of(State.ADD, State.UPDATE)
                                          .contains(event.getState()));
@@ -1125,7 +1122,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 Window.alert("canEdit:" + anyE.getMessage());
             }
         }
-        return false;
+        return false;       
     }
 
     private String formatTreeString(String val) {

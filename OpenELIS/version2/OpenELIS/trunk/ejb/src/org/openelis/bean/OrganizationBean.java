@@ -153,9 +153,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        // first insert the address so we can reference its id
-        addressBean.add(data.getAddress());
-        
+        addressBean.add(data.getAddress());        
         entity = new Organization();
         entity.setIsActive(data.getIsActive());
         entity.setParentOrganizationId(data.getParentOrganizationId());
@@ -171,7 +169,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     public OrganizationViewDO update(OrganizationViewDO data) throws Exception {
         Organization entity;
 
-        if (! data.isChanged() && !data.getAddress().isChanged())
+        if (!data.isChanged() && !data.getAddress().isChanged())
             return data;
         
         manager.setFlushMode(FlushModeType.COMMIT);

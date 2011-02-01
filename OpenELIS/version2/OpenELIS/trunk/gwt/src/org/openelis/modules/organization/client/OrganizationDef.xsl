@@ -230,19 +230,19 @@ UIRF Software License are applicable instead of those above.
                       <dropdown width="110" field="String" />
                     </col>
                     <col key="{meta:getContactAddressWorkPhone()}" width="100" header="{resource:getString($constants,'workNumber')}">
-                      <textbox field="String" />
+                      <textbox max="21" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" field="String" />
                     </col>
                     <col key="{meta:getContactAddressHomePhone()}" width="90" header="{resource:getString($constants,'homeNumber')}">
-                      <textbox field="String" />
+                      <textbox max="16" mask="{resource:getString($constants,'phonePattern')}" field="String"/>
                     </col>
                     <col key="{meta:getContactAddressCellPhone()}" width="90" header="{resource:getString($constants,'cellNumber')}">
-                      <textbox field="String" />
+                      <textbox max="16" mask="{resource:getString($constants,'phonePattern')}" field="String"/>
                     </col>
                     <col key="{meta:getContactAddressFaxPhone()}" width="90" header="{resource:getString($constants,'faxNumber')}">
-                      <textbox field="String" />
+                      <textbox max="16" field="String" mask="{resource:getString($constants,'phonePattern')}"/>
                     </col>
                     <col key="{meta:getContactAddressEmail()}" width="150" header="{resource:getString($constants,'email')}">
-                      <textbox field="String" />
+                      <textbox max="80" field="String" />
                     </col>
                   </table>
                   <widget style="TableButtonFooter">
