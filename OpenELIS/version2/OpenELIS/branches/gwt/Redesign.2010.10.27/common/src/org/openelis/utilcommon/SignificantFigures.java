@@ -405,7 +405,7 @@ public class SignificantFigures extends Number {
             return original;
         StringBuffer digits = new StringBuffer(this.digits.toString());
         int length = digits.length();
-        if (mantissa <= -4 || mantissa >= 7 ||
+        if (mantissa <= -8 || mantissa >= 7 ||
             (mantissa >= length && digits.charAt(digits.length() - 1) == '0') ||
             (isZero && mantissa != 0)) {
             // use scientific notation.

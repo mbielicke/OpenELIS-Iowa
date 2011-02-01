@@ -31,7 +31,6 @@ import java.util.HashMap;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
@@ -490,6 +489,13 @@ public class AnalysisManager implements RPC {
     public AnalysisListItem getItemAt(int i) {
         return items.get(i);
     }
+    
+    void addItem(AnalysisListItem item) {
+        items.add(item);
+        item.bundle = new SampleDataBundle(SampleDataBundle.Type.ANALYSIS,
+                                           sampleItemManager.sampleManager,
+                                           sampleItemBundle, items.size() - 1);
+    }
 
     //
     // other managers
@@ -831,12 +837,11 @@ public class AnalysisManager implements RPC {
     //
 
     protected void updateAnalysisStatusAt(int itemIndex, int anaIndex, Integer sampleTypeId) throws Exception {
-        int i, numPreCompl;
+        int i;
         TestManager testMan;
         boolean error;
         AnalysisViewDO data;
-        Integer currentStatusId, preAnalysisId;
-        ArrayList<AnalysisViewDO> preAnaList;
+        Integer currentStatusId;
         SampleDataBundle bundle;
         SampleItemManager siMan;
         AnalysisManager anaMan;        
@@ -856,7 +861,6 @@ public class AnalysisManager implements RPC {
         // and if that is the case then this analysis's status should be set to
         // "Logged In"
         //
-        numPreCompl = 0;
         
         if (currentStatusId.equals(proxy().anCompletedId)) {
             bundle = getItemAt(anaIndex).bundle;
