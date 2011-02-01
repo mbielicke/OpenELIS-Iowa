@@ -63,131 +63,30 @@ public class ResultBean implements ResultLocal {
     @EJB
     private DictionaryLocal dictionary;
 
-    private static int  typeDictionary, typeNumeric, typeTiter, typeDate, typeDateTime, typeTime,
-                        typeDefault, typeAlphaLower, typeAlphaUpper, typeAlphaMixed, supplementalTypeId,
-                        epaMethodId;
+    private static Integer supplementalTypeId, epaMethodId, qaEventOverrideId;
+    private static HashMap<Integer, Type> types;
 
     @PostConstruct
     public void init() {
-        DictionaryDO data;
+        if (types == null) {
+            types = new HashMap<Integer, Type>();
+            try {
+                types.put(dictionary.fetchBySystemName("test_res_type_dictionary").getId(), Type.DICTIONARY);
+                types.put(dictionary.fetchBySystemName("test_res_type_numeric").getId(), Type.NUMERIC);
+                types.put(dictionary.fetchBySystemName("test_res_type_titer").getId(), Type.TITER);
+                types.put(dictionary.fetchBySystemName("test_res_type_date").getId(), Type.DATE);
+                types.put(dictionary.fetchBySystemName("test_res_type_date_time").getId(), Type.DATE_TIME);
+                types.put(dictionary.fetchBySystemName("test_res_type_time").getId(), Type.TIME);
+                types.put(dictionary.fetchBySystemName("test_res_type_alpha_lower").getId(), Type.ALPHA_LOWER);
+                types.put(dictionary.fetchBySystemName("test_res_type_alpha_upper").getId(), Type.ALPHA_UPPER);
+                types.put(dictionary.fetchBySystemName("test_res_type_alpha_mixed").getId(), Type.ALPHA_MIXED);
+                types.put(dictionary.fetchBySystemName("test_res_type_default").getId(), Type.DEFAULT);
 
-        if (typeDictionary == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_dictionary");
-                typeDictionary = data.getId();
+                supplementalTypeId = dictionary.fetchBySystemName("test_analyte_suplmtl").getId();
+                qaEventOverrideId = dictionary.fetchBySystemName("qaevent_override").getId();
+                epaMethodId = dictionary.fetchBySystemName("round_epa").getId();
             } catch (Throwable e) {
                 e.printStackTrace();
-                typeDictionary = 0;
-            }
-        }
-
-        if (typeNumeric == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_numeric");
-                typeNumeric = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeNumeric = 0;
-            }
-        }
-
-        if (typeTiter == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_titer");
-                typeTiter = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeTiter = 0;
-            }
-        }
-
-        if (typeDate == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_date");
-                typeDate = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDate = 0;
-            }
-        }
-
-        if (typeDateTime == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_date_time");
-                typeDateTime = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDateTime = 0;
-            }
-        }
-
-        if (typeTime == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_time");
-                typeTime = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeTime = 0;
-            }
-        }
-
-        if (typeAlphaLower == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_alpha_lower");
-                typeAlphaLower = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeAlphaLower = 0;
-            }
-        }
-
-        if (typeAlphaUpper == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_alpha_upper");
-                typeAlphaUpper = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeAlphaUpper = 0;
-            }
-        }
-
-        if (typeAlphaMixed == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_alpha_mixed");
-                typeAlphaMixed = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeAlphaMixed = 0;
-            }
-        }
-        
-        if (typeDefault == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_default");
-                typeDefault = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDefault = 0;
-            }
-        } 
-        
-        if (supplementalTypeId == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_analyte_suplmtl");
-                supplementalTypeId = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                supplementalTypeId = 0;
-            }
-        }
-        
-        if (epaMethodId == 0) {
-            try {
-                data = dictionary.fetchBySystemName("round_epa");
-                epaMethodId = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                epaMethodId = 0;
             }
         }
     }
@@ -462,6 +361,60 @@ public class ResultBean implements ResultLocal {
             ar.add(rdo);
         }
     }
+    /**
+     * Fetches results for analysis that are reportable and do not have sample or analysis level
+     * QA event override.
+     */
+    public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer sampleId, Integer analysisId) throws Exception {
+        int i;
+        Integer j, rg;
+        ResultViewDO data;
+        ArrayList<ResultViewDO> ar;
+        List<ResultViewDO> list;
+        ArrayList<ArrayList<ResultViewDO>> results;
+        Query query;
+
+        list = null;
+        // get results by analysis id
+        query = manager.createNamedQuery("Result.FetchReportableByAnalysisId");
+        query.setParameter("sid", sampleId);
+        query.setParameter("aid", analysisId);
+        query.setParameter("overrideid", qaEventOverrideId);
+        list = query.getResultList();
+
+        // build the grid
+        j = -1;
+        ar = null;        
+
+        if (list == null || list.size() == 0)
+            throw new NotFoundException();
+
+        results = new ArrayList<ArrayList<ResultViewDO>>();
+        for (i = 0; i < list.size(); i++ ) {
+            data = list.get(i);
+            
+            rg = data.getRowGroup();
+
+            if (!DataBaseUtil.isSame(j,rg)) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(data);
+                results.add(ar);  
+                if (rg != null)
+                    j = rg;
+                continue;
+            }
+            if ("N".equals(data.getIsColumn())) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(data);
+                results.add(ar);
+                continue;
+            }
+
+            ar.add(data);
+        }
+        
+        return results;
+    }
 
     public ResultViewDO add(ResultViewDO data) {
         Result entity;
@@ -519,10 +472,9 @@ public class ResultBean implements ResultLocal {
 
     private void createTestResultHash(List<TestResultDO> testResultList,
                                       ArrayList<ResultValidator> resultValidators) {
-        Integer rg, typeId, rndgMethodId;
-        String validRange;
+        Integer rg;
+        String dictEntry;
         ResultValidator rv;
-        TestResultDO data;
         Type type;
         RoundingMethod method;
         DictionaryDO dict;
@@ -530,64 +482,27 @@ public class ResultBean implements ResultLocal {
         
         rg = null;
         rv = null;
-        type = null;
-        validRange = null;
         try {
-            for (int i = 0; i < testResultList.size(); i++ ) {
-                data = testResultList.get(i);
+            for (TestResultDO data: testResultList) {
+                dictEntry = null;
+                method = null;
 
                 if ( !DataBaseUtil.isSame(data.getResultGroup(), rg)) {
                     rv = new ResultValidator();
                     rg = data.getResultGroup();
-                    
                     resultValidators.add(rv);
                 }
-
-                // need to figure this out by type id
-                typeId = data.getTypeId();
                 
-                if(DataBaseUtil.isSame(typeDictionary, typeId)) {
-                    type = Type.DICTIONARY;
-                    
-                    // need to lookup the entry
-                    dict = dictionary.fetchById(new Integer(data.getValue()));
-                    validRange = dict.getEntry();
-                } else if(DataBaseUtil.isSame(typeNumeric, typeId)) {
-                    type = Type.NUMERIC;
-                    validRange = data.getValue();
-                } else if(DataBaseUtil.isSame(typeTiter, typeId)){
-                    type = Type.TITER;
-                    validRange = data.getValue();
-                } else if(DataBaseUtil.isSame(typeDate, typeId)){
-                    type = Type.DATE;
-                    validRange = data.getValue();
-                } else if(DataBaseUtil.isSame(typeDateTime, typeId)){                        
-                    type = Type.DATE_TIME;
-                    validRange = data.getValue();
-                } else if(DataBaseUtil.isSame(typeTime, typeId)){                        
-                    type = Type.TIME;
-                    validRange = data.getValue();
-                } else if(DataBaseUtil.isSame(typeDefault, typeId)){
-                    type = Type.DEFAULT;
-                    validRange = data.getValue();
-                } else if(DataBaseUtil.isSame(typeAlphaLower, typeId)){
-                    type = Type.ALPHA_LOWER;
-                    validRange = data.getValue();
-                } else if(DataBaseUtil.isSame(typeAlphaMixed, typeId)){
-                    type = Type.ALPHA_MIXED;
-                    validRange = data.getValue();
-                } else if(DataBaseUtil.isSame(typeAlphaUpper, typeId)){
-                    type = Type.ALPHA_UPPER;
-                    validRange = data.getValue();
-                }
-                
-                method = null;
-                rndgMethodId = data.getRoundingMethodId(); 
-                if (DataBaseUtil.isSame(epaMethodId, rndgMethodId))
+                if (DataBaseUtil.isSame(epaMethodId, data.getRoundingMethodId()))
                     method = RoundingMethod.EPA_METHOD;
                 
+                type = types.get(data.getTypeId());
+                if (type == Type.DICTIONARY) {
+                    dict = dictionary.fetchById(new Integer(data.getValue()));
+                    dictEntry = dict.getEntry();
+                }
                 rv.addResult(data.getId(), data.getUnitOfMeasureId(), type, method, 
-                             data.getSignificantDigits(), validRange);
+                             data.getSignificantDigits(), data.getValue(), dictEntry);
             }
         } catch (Exception e) {
             resultValidators.clear();

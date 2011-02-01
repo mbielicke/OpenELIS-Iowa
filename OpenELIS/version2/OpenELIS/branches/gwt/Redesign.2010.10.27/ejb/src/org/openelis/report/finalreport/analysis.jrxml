@@ -1,106 +1,206 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analyses" language="groovy" pageWidth="550" pageHeight="572" orientation="Landscape" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analyses" language="groovy" pageWidth="550" pageHeight="572" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<import value="org.openelis.report.finalreport.ResultDataSource"/>
+	<import value="org.openelis.report.finalreport.SectionLocationUtil"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
+<<<<<<< .working
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+=======
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="REPORT_TYPE" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+>>>>>>> .merge-right.r4881
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT 1 sorting_method, t.reporting_sequence,
-     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d1.entry d1_entry,
-     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, a.section_id a_section_id,
+<<<<<<< .working
+     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
+     d1.entry unit_name, d1.id unit_id,
+     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, s.name s_name,
+=======
+     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
+     u.entry unit_name, u.id unit_id,
+     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, s.name s_name,
+>>>>>>> .merge-right.r4881
      pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description
 FROM
-     analysis a, sample_item si, test t, method m, outer (analysis pa, test pat, method pam), outer dictionary d1, dictionary d2
+<<<<<<< .working
+     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary d1
+=======
+     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary u
+>>>>>>> .merge-right.r4881
 WHERE
+<<<<<<< .working
      si.sample_id = $P{SAMPLE_ID} AND a.sample_item_id = si.id AND a.is_reportable = 'Y'
-     AND a.test_id = t.id AND t.method_id = m.id AND a.pre_analysis_id = pa.id
+     AND a.section_id = s.id AND a.test_id = t.id AND t.method_id = m.id AND d.id = t.test_format_id AND a.pre_analysis_id = pa.id
      AND pa.test_id = pat.id AND pat.method_id = pam.id AND a.unit_of_measure_id = d1.id
-     AND a.status_id = d2.id AND d2.system_name = 'analysis_released'
+     AND a.status_id = (select id from dictionary where system_name = 'analysis_released')
      AND t.sorting_method_id in (select id from dictionary where system_name = 'analyses_complete')
+=======
+     si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
+     a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
+     a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
+     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released') or
+                                                                             ($P{REPORT_TYPE} = "C" and system_name in ('analysis_completed','analysis_released'))) and
+     t.sorting_method_id in (select id from dictionary where system_name = 'analyses_complete')
+>>>>>>> .merge-right.r4881
 UNION
 SELECT 2 sorting_method, t.reporting_sequence,
-     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d1.entry d1_entry,
-     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, a.section_id a_section_id,
+<<<<<<< .working
+     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
+     d1.entry unit_name, d1.id unit_id,
+     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, s.name s_name,
+=======
+     t.reporting_description t_reporting_description, m.reporting_description m_reporting_description, d.system_name test_format,
+     u.entry unit_name, u.id unit_id,
+     a.id a_id, a.released_date a_released_date, a.started_date a_started_date, a.revision a_revision, s.name s_name,
+>>>>>>> .merge-right.r4881
      pat.reporting_description pat_reporting_description, pam.reporting_description pam_reporting_description
 FROM
-     analysis a, sample_item si, test t, method m, outer (analysis pa, test pat, method pam), outer dictionary d1, dictionary d2
+<<<<<<< .working
+     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary d1
+=======
+     analysis a, sample_item si, test t, method m, outer section s, outer dictionary d, outer (analysis pa, test pat, method pam), outer dictionary u
+>>>>>>> .merge-right.r4881
 WHERE
+<<<<<<< .working
      si.sample_id = $P{SAMPLE_ID} AND a.sample_item_id = si.id AND a.is_reportable = 'Y'
-     AND a.test_id = t.id AND t.method_id = m.id AND a.pre_analysis_id = pa.id
+     AND a.section_id = s.id AND a.test_id = t.id AND t.method_id = m.id AND d.id = t.test_format_id AND a.pre_analysis_id = pa.id
      AND pa.test_id = pat.id AND pat.method_id = pam.id AND a.unit_of_measure_id = d1.id
-     AND a.status_id = d2.id AND d2.system_name = 'analysis_released'
+     AND a.status_id = (select id from dictionary where system_name = 'analysis_released')
      AND t.sorting_method_id in (select id from dictionary where system_name = 'test_sequence')
+=======
+     si.sample_id = $P{SAMPLE_ID} and a.sample_item_id = si.id and a.is_reportable = 'Y' and
+     a.section_id = s.id and a.test_id = t.id and t.method_id = m.id and d.id = t.test_format_id and
+     a.pre_analysis_id = pa.id and pa.test_id = pat.id and pat.method_id = pam.id and a.unit_of_measure_id = u.id and
+     a.status_id in (select id from dictionary where ($P{REPORT_TYPE} = "R" and system_name = 'analysis_released') or
+                                                                             ($P{REPORT_TYPE} = "C" and system_name in ('analysis_completed','analysis_released'))) and
+     t.sorting_method_id in (select id from dictionary where system_name = 'test_sequence')
+>>>>>>> .merge-right.r4881
 ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 	</queryString>
 	<field name="sorting_method" class="java.lang.Integer"/>
 	<field name="reporting_sequence" class="java.lang.Integer"/>
 	<field name="t_reporting_description" class="java.lang.String"/>
 	<field name="m_reporting_description" class="java.lang.String"/>
-	<field name="d1_entry" class="java.lang.String"/>
+	<field name="test_format" class="java.lang.String"/>
+	<field name="unit_name" class="java.lang.String"/>
+	<field name="unit_id" class="java.lang.Integer"/>
 	<field name="a_id" class="java.lang.Integer"/>
 	<field name="a_released_date" class="java.sql.Timestamp"/>
 	<field name="a_started_date" class="java.sql.Timestamp"/>
 	<field name="a_revision" class="java.lang.Integer"/>
-	<field name="a_section_id" class="java.lang.Integer"/>
+	<field name="s_name" class="java.lang.String"/>
 	<field name="pat_reporting_description" class="java.lang.String"/>
 	<field name="pam_reporting_description" class="java.lang.String"/>
+<<<<<<< .working
+	<variable name="RESULT_DATASOURCE" class="org.openelis.report.finalreport.ResultDataSource" resetType="Group" resetGroup="analysisGroup" calculation="System">
+		<variableExpression><![CDATA[$V{RESULT_DATASOURCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[ResultDataSource.getInstance($F{a_id}, false)]]></initialValueExpression>
+	</variable>
+	<group name="analysisGroup">
+		<groupExpression><![CDATA[$F{a_id}]]></groupExpression>
+	</group>
+=======
+	<variable name="RESULT_DATASOURCE" class="org.openelis.report.finalreport.ResultDataSource" resetType="Group" resetGroup="analysisGroup" calculation="System">
+		<variableExpression><![CDATA[$V{RESULT_DATASOURCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[ResultDataSource.getInstance($P{SAMPLE_ID},$F{a_id}, false)]]></initialValueExpression>
+	</variable>
+	<group name="analysisGroup">
+		<groupExpression><![CDATA[$F{a_id}]]></groupExpression>
+	</group>
+>>>>>>> .merge-right.r4881
 	<detail>
-		<band height="120" splitType="Stretch">
+		<band height="60" splitType="Stretch">
 			<textField>
-				<reportElement mode="Opaque" x="112" y="12" width="309" height="12" backcolor="#EDE6E6"/>
+				<reportElement mode="Opaque" x="120" y="0" width="310" height="12" backcolor="#C0C0C0"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true" isItalic="true"/>
+					<font isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
+<<<<<<< .working
+<<<<<<< .working
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.Concat.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></textFieldExpression>
+=======
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{t_reporting_description},", ", $F{m_reporting_description})]]></textFieldExpression>
+>>>>>>> .merge-right.r4872
+=======
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{t_reporting_description},", ", $F{m_reporting_description})]]></textFieldExpression>
+>>>>>>> .merge-right.r4881
 			</textField>
 			<staticText>
-				<reportElement x="81" y="36" width="60" height="12"/>
+				<reportElement x="40" y="24" width="90" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Units]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="81" y="48" width="60" height="12"/>
+				<reportElement x="40" y="36" width="90" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Date Analyzed]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="81" y="60" width="60" height="12"/>
+				<reportElement x="40" y="48" width="90" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Analyst]]></text>
 			</staticText>
+			<line>
+				<reportElement x="135" y="24" width="1" height="36"/>
+			</line>
 			<staticText>
-				<reportElement x="314" y="36" width="56" height="12"/>
+<<<<<<< .working
+				<reportElement x="270" y="24" width="90" height="12"/>
+=======
+				<reportElement x="289" y="24" width="71" height="12"/>
+>>>>>>> .merge-right.r4881
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Analyzed In]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="314" y="60" width="56" height="12"/>
+<<<<<<< .working
+				<reportElement x="270" y="36" width="90" height="12"/>
+=======
+				<reportElement x="289" y="36" width="71" height="12"/>
+>>>>>>> .merge-right.r4881
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<text><![CDATA[Verifier]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="314" y="48" width="56" height="12"/>
-				<textElement textAlignment="Right">
-					<font fontName="Times New Roman"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Date Verified]]></text>
 			</staticText>
+			<staticText>
+<<<<<<< .working
+				<reportElement x="270" y="48" width="90" height="12"/>
+=======
+				<reportElement x="289" y="48" width="71" height="12"/>
+>>>>>>> .merge-right.r4881
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Verifier]]></text>
+			</staticText>
 			<line>
-				<reportElement x="146" y="36" width="1" height="48"/>
+				<reportElement x="365" y="24" width="1" height="36"/>
 			</line>
+<<<<<<< .working
+<<<<<<< .working
 			<line>
 				<reportElement x="375" y="36" width="1" height="36"/>
 			</line>
@@ -108,82 +208,87 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<reportElement x="81" y="72" width="60" height="12"/>
 				<textElement textAlignment="Right">
 					<font fontName="Times New Roman"/>
+=======
+			<textField isBlankWhenNull="true">
+				<reportElement x="140" y="24" width="149" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+>>>>>>> .merge-right.r4881
 				</textElement>
-				<text><![CDATA[Analysis Prep]]></text>
-			</staticText>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="140" y="36" width="149" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_started_date}]]></textFieldExpression>
+			</textField>
 			<subreport>
-				<reportElement x="81" y="96" width="469" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="140" y="48" width="149" height="12"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisResults.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analyst.jasper"]]></subreportExpression>
 			</subreport>
-			<staticText>
-				<reportElement x="482" y="48" width="45" height="12">
-					<printWhenExpression><![CDATA[$F{a_revision} > 0]]></printWhenExpression>
-				</reportElement>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<text><![CDATA[Revision]]></text>
-			</staticText>
 			<textField isBlankWhenNull="false">
+<<<<<<< .working
 				<reportElement x="382" y="36" width="100" height="12"/>
 				<textElement>
 					<font fontName="Times New Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.SectionLocationUtil.getLocation($F{a_section_id})]]></textFieldExpression>
 			</textField>
+=======
+>>>>>>> .merge-right.r4872
 			<textField isBlankWhenNull="true">
-				<reportElement x="153" y="36" width="100" height="12"/>
+				<reportElement x="140" y="24" width="120" height="12"/>
+=======
+				<reportElement x="370" y="24" width="180" height="12"/>
+>>>>>>> .merge-right.r4881
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{d1_entry}]]></textFieldExpression>
+<<<<<<< .working
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit_name}]]></textFieldExpression>
+=======
+				<textFieldExpression class="java.lang.String"><![CDATA[SectionLocationUtil.getLocation($F{s_name})]]></textFieldExpression>
+>>>>>>> .merge-right.r4881
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="153" y="48" width="100" height="12"/>
+<<<<<<< .working
+				<reportElement x="140" y="36" width="120" height="12"/>
+=======
+				<reportElement x="370" y="36" width="109" height="12" isRemoveLineWhenBlank="true"/>
+>>>>>>> .merge-right.r4881
 				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_started_date}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="153" y="72" width="397" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.ReportUtil.concatWithSeparator($F{pat_reporting_description}," , ", $F{pam_reporting_description})]]></textFieldExpression>
-			</textField>
-			<subreport>
-				<reportElement x="153" y="60" width="100" height="12"/>
-				<subreportParameter name="ANALYSIS_ID">
-					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="SYSTEM_NAME">
-					<subreportParameterExpression><![CDATA['an_user_ac_completed']]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analyst.jasper"]]></subreportExpression>
-			</subreport>
-			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="382" y="48" width="100" height="12" isRemoveLineWhenBlank="true"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{a_released_date}]]></textFieldExpression>
 			</textField>
+<<<<<<< .working
+			<textField>
+				<reportElement mode="Transparent" x="452" y="36" width="98" height="12">
+					<printWhenExpression><![CDATA[$F{a_revision} > 0]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
+				</textElement>
+<<<<<<< .working
+				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.ReportUtil.concatWithSeparator($F{pat_reporting_description}," , ", $F{pam_reporting_description})]]></textFieldExpression>
+=======
+				<textFieldExpression class="java.lang.String"><![CDATA["Revision "+$F{a_revision}]]></textFieldExpression>
+>>>>>>> .merge-right.r4881
+			</textField>
+=======
+>>>>>>> .merge-right.r4872
 			<subreport>
-				<reportElement positionType="Float" x="0" y="108" width="550" height="12" isRemoveLineWhenBlank="true"/>
-				<subreportParameter name="ANALYSIS_ID">
-					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaeventNote.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement x="382" y="60" width="100" height="12"/>
+<<<<<<< .working
+				<reportElement x="140" y="48" width="120" height="12"/>
+=======
+				<reportElement x="370" y="48" width="180" height="12"/>
+>>>>>>> .merge-right.r4881
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -193,15 +298,171 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisVerifier.jasper"]]></subreportExpression>
 			</subreport>
+<<<<<<< .working
+			<textField isBlankWhenNull="false">
+				<reportElement x="370" y="24" width="180" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[SectionLocationUtil.getLocation($F{s_name})]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="370" y="36" width="80" height="12" isRemoveLineWhenBlank="true"/>
+=======
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="12" width="163" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{UNIT_LIST}.add($F{unit_id})]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<printWhenExpression><![CDATA[$F{pat_reporting_description} != null]]></printWhenExpression>
+			<staticText>
+				<reportElement x="40" y="0" width="90" height="12"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Analysis Prep]]></text>
+			</staticText>
 			<textField>
-				<reportElement x="527" y="48" width="23" height="12">
+				<reportElement x="140" y="0" width="410" height="12"/>
+>>>>>>> .merge-right.r4881
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{pat_reporting_description},", ", $F{pam_reporting_description})]]></textFieldExpression>
+			</textField>
+<<<<<<< .working
+			<textField>
+				<reportElement x="450" y="36" width="87" height="12">
 					<printWhenExpression><![CDATA[$F{a_revision} > 0]]></printWhenExpression>
 				</reportElement>
-				<textElement>
-					<font fontName="Times New Roman"/>
+				<textElement textAlignment="Left">
+					<font isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{a_revision}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Revision "+$F{a_revision}]]></textFieldExpression>
 			</textField>
+=======
+			<line>
+				<reportElement x="135" y="0" width="1" height="12"/>
+			</line>
+		</band>
+		<band height="24">
+			<printWhenExpression><![CDATA[$F{test_format} != null]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_two_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "twoColumn.jasper"]]></subreportExpression>
+			</subreport>
+>>>>>>> .merge-right.r4881
+			<subreport>
+<<<<<<< .working
+				<reportElement x="370" y="48" width="180" height="12"/>
+=======
+				<reportElement x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_three_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "threeColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_four_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fourColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_five_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fiveColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="12" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+>>>>>>> .merge-right.r4881
+				<subreportParameter name="ANALYSIS_ID">
+					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaeventNote.jasper"]]></subreportExpression>
+			</subreport>
+<<<<<<< .working
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="12" width="163" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{UNIT_LIST}.add($F{unit_id})]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="12">
+			<printWhenExpression><![CDATA[$F{pat_reporting_description} != null]]></printWhenExpression>
+			<staticText>
+				<reportElement x="40" y="0" width="90" height="12"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Analysis Prep]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="140" y="0" width="407" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{pat_reporting_description},", ", $F{pam_reporting_description})]]></textFieldExpression>
+			</textField>
+=======
+>>>>>>> .merge-right.r4881
+			<line>
+				<reportElement x="135" y="0" width="1" height="12"/>
+			</line>
+		</band>
+		<band height="24">
+			<printWhenExpression><![CDATA[$F{test_format} != null]]></printWhenExpression>
+			<subreport>
+				<reportElement x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_two_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "twoColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_three_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "threeColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_four_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fourColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA["test_format_five_column".equals($F{test_format})]]></printWhenExpression>
+				</reportElement>
+				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fiveColumn.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="12" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ANALYSIS_ID">
+					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaeventNote.jasper"]]></subreportExpression>
+			</subreport>
 		</band>
 	</detail>
 	<summary>

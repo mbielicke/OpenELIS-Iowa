@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.Local;
 
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.gwt.common.Datetime;
 
 
 @Local
@@ -40,6 +41,7 @@ public interface AnalysisLocal {
     
     public AnalysisViewDO add(AnalysisViewDO data) throws Exception;
     public AnalysisViewDO update(AnalysisViewDO data) throws Exception;
+    public void updatePrintedDate(Integer id, Datetime timeStamp) throws Exception;
     public void delete(AnalysisViewDO data) throws Exception;
     
 }

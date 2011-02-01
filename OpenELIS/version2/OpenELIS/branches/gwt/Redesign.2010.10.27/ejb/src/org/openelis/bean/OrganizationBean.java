@@ -125,7 +125,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
-        List list;
+        List list = null;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
@@ -146,6 +146,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
             throw new LastPageException();
 
         return (ArrayList<IdNameVO>)list;
+        
     }
 
     public OrganizationViewDO add(OrganizationViewDO data) throws Exception {

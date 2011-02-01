@@ -1,26 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testTrailer" language="groovy" pageWidth="520" pageHeight="572" orientation="Landscape" columnWidth="520" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="testTrailer" language="groovy" pageWidth="520" pageHeight="572" columnWidth="520" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
+	<parameter name="BUFF" class="java.lang.StringBuffer"/>
 	<queryString>
 		<![CDATA[SELECT
      tt.text AS tt_text
 FROM
-     analysis a,  test t, outer  test_trailer tt
+     analysis a,  test t, test_trailer tt
 WHERE
      a.id = $P{ANALYSIS_ID} AND a.test_id = t.id AND  t.test_trailer_id = tt.id]]>
 	</queryString>
 	<field name="tt_text" class="java.lang.String"/>
 	<detail>
-		<band height="12" splitType="Stretch">
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="520" height="12"/>
+		<band splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="0" width="520" height="0" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Times New Roman" size="8"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{tt_text}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{BUFF}.append($F{tt_text})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

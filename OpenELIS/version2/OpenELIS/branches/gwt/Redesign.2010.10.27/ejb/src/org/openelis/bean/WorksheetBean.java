@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
@@ -68,6 +69,9 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 
 	@PersistenceContext(unitName = "openelis")
     private EntityManager manager;
+	
+	@EJB
+	private AnalysisLocal analysisLocal;
 	
     private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
     
@@ -171,7 +175,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                 for (k = 0; k < waManager.count(); k++) {
                     analysisId = waManager.getWorksheetAnalysisAt(k).getAnalysisId();
                     if (analysisId != null) {
-                        aVDO = analysisLocal().fetchById(analysisId);
+                        aVDO = analysisLocal.fetchById(analysisId);
                         testId = aVDO.getTestId();
                         methodId = aVDO.getMethodId();
                         if (!analysisMap.containsKey(testId+","+methodId)) {
@@ -248,17 +252,5 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 
         if (list.size() > 0)
             throw list;
-    }
-
-    private AnalysisLocal analysisLocal() {
-        InitialContext ctx;
-        
-        try {
-            ctx = new InitialContext();
-            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
-        }
     }
 }

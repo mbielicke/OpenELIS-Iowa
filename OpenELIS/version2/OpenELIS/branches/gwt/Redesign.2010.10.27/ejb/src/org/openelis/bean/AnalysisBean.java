@@ -40,13 +40,14 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.entity.Analysis;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisLocal;
 
 @Stateless
 
 @SecurityDomain("openelis")
-public class AnalysisBean implements AnalysisLocal{
+public class AnalysisBean implements AnalysisLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
@@ -149,6 +150,15 @@ public class AnalysisBean implements AnalysisLocal{
         entity.setPrintedDate(data.getPrintedDate());
         
         return data;
+    }
+    
+    public void updatePrintedDate(Integer id, Datetime timeStamp) throws Exception {
+        Analysis entity;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = manager.find(Analysis.class, id);
+        entity.setPrintedDate(timeStamp);
     }
     
     public void delete(AnalysisViewDO data) {

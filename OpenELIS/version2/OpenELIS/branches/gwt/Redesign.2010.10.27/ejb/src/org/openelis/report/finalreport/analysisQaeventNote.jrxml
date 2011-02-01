@@ -1,51 +1,62 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysesQaeventNote" language="groovy" pageWidth="550" pageHeight="572" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analysesQaeventNote" language="groovy" pageWidth="550" pageHeight="572" whenNoDataType="AllSectionsNoDetail" columnWidth="550" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/finalreport/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<queryString language="SQL">
+	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="analysis_qaevent_id" class="java.lang.Integer"/>
-	<field name="analysis_qaevent_analysis_id" class="java.lang.Integer"/>
-	<field name="analysis_qaevent_qaevent_id" class="java.lang.Integer"/>
-	<field name="analysis_qaevent_type_id" class="java.lang.Integer"/>
-	<field name="analysis_qaevent_is_billable" class="java.lang.String"/>
+	<field name="text" class="java.lang.String"/>
+	<variable name="QBUFF" class="java.lang.StringBuffer">
+		<variableExpression><![CDATA[$V{QBUFF}]]></variableExpression>
+		<initialValueExpression><![CDATA[new StringBuffer()]]></initialValueExpression>
+	</variable>
+	<variable name="NBUFF" class="java.lang.StringBuffer">
+		<variableExpression><![CDATA[$V{NBUFF}]]></variableExpression>
+		<initialValueExpression><![CDATA[new StringBuffer()]]></initialValueExpression>
+	</variable>
+	<variable name="TBUFF" class="java.lang.StringBuffer">
+		<variableExpression><![CDATA[$V{TBUFF}]]></variableExpression>
+		<initialValueExpression><![CDATA[new StringBuffer()]]></initialValueExpression>
+	</variable>
 	<pageHeader>
-		<band height="36">
-			<staticText>
-				<reportElement positionType="Float" x="0" y="0" width="30" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="true"/>
-				</textElement>
-				<text><![CDATA[Note:]]></text>
-			</staticText>
-			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement positionType="Float" mode="Transparent" x="30" y="0" width="520" height="12" isRemoveLineWhenBlank="true"/>
-				<textElement>
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[org.openelis.utils.QaeventUtil.getAnalysisQaeventText($P{ANALYSIS_ID},Boolean.TRUE)]]></textFieldExpression>
-			</textField>
+		<band>
 			<subreport>
-				<reportElement positionType="Float" x="30" y="12" width="520" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="0" y="0" width="550" height="0"/>
+				<subreportParameter name="ANALYSIS_ID">
+					<subreportParameterExpression><![CDATA[$P{ANALYSIS_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BUFF">
+					<subreportParameterExpression><![CDATA[$V{QBUFF}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaevent.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="0" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="REFERENCE_ID">
 					<subreportParameterExpression><![CDATA[$P{ANALYSIS_ID}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="REFERENCE_TABLE_ID">
 					<subreportParameterExpression><![CDATA[15]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="BUFF">
+					<subreportParameterExpression><![CDATA[$V{NBUFF}]]></subreportParameterExpression>
+				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "note.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="30" y="24" width="520" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="0" y="0" width="550" height="0"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$P{ANALYSIS_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="BUFF">
+					<subreportParameterExpression><![CDATA[$V{TBUFF}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "testTrailer.jasper"]]></subreportExpression>
@@ -53,6 +64,36 @@
 		</band>
 	</pageHeader>
 	<summary>
-		<band height="12"/>
+		<band height="24">
+			<printWhenExpression><![CDATA[$V{QBUFF}.length() > 0 || $V{NBUFF}.length() > 0 || $V{TBUFF}.length() > 0]]></printWhenExpression>
+			<staticText>
+				<reportElement x="0" y="11" width="30" height="12"/>
+				<textElement>
+					<font size="10" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Note:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" mode="Transparent" x="30" y="10" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font isBold="true" pdfFontName="Times-Bold"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{QBUFF}.toString()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" mode="Transparent" x="30" y="11" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{NBUFF}.toString()]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement positionType="Float" mode="Transparent" x="30" y="12" width="520" height="0" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="8" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{TBUFF}.toString()]]></textFieldExpression>
+			</textField>
+		</band>
 	</summary>
 </jasperReport>

@@ -25,6 +25,8 @@
  */
 package org.openelis.bean;
 
+import java.util.Iterator;
+
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -38,6 +40,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
+import org.openelis.manager.SampleManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
@@ -74,6 +77,10 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
         return WorksheetManager.fetchWithNotes(id);
     }
 
+    public WorksheetManager fetchWithItemsAndNotes(Integer id) throws Exception {
+        return WorksheetManager.fetchWithItemsAndNotes(id);
+    }
+
     public WorksheetManager add(WorksheetManager man) throws Exception {
         UserTransaction ut;
         
@@ -88,6 +95,7 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            man.getLockedManagers().clear();
             throw e;
         }
 
@@ -95,7 +103,9 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
     }
 
     public WorksheetManager update(WorksheetManager man) throws Exception {
+        Iterator<SampleManager> iter;
         UserTransaction ut;
+        SampleManager sMan;
 
         checkSecurity(ModuleFlags.UPDATE);
 
@@ -110,6 +120,12 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            iter = man.getLockedManagers().values().iterator();
+            while (iter.hasNext()) {
+                sMan = iter.next();
+                lockBean.unlock(ReferenceTable.SAMPLE, sMan.getSample().getId());
+            }
+            man.getLockedManagers().clear();
             throw e;
         }
 

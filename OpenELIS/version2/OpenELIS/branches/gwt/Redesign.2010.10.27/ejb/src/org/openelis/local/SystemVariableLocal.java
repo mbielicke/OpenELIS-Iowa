@@ -33,5 +33,22 @@ import org.openelis.domain.SystemVariableDO;
 
 @Local
 public interface SystemVariableLocal {
+
+    public SystemVariableDO fetchById(Integer id) throws Exception;
+
+    public SystemVariableDO fetchByName(String name) throws Exception;
+
     public ArrayList<SystemVariableDO> fetchByName(String name, int max) throws Exception;
+
+    public SystemVariableDO add(SystemVariableDO data) throws Exception;
+
+    public SystemVariableDO update(SystemVariableDO data) throws Exception;
+
+    public SystemVariableDO fetchForUpdate(Integer id) throws Exception;
+
+    public SystemVariableDO fetchForUpdateByName(String name) throws Exception;
+    
+    public SystemVariableDO abortUpdate(Integer id) throws Exception;
+
+    public void delete(SystemVariableDO data) throws Exception;
 }

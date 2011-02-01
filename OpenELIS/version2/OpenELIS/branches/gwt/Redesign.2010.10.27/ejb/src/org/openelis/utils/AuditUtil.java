@@ -72,7 +72,7 @@ public class AuditUtil {
             audit = ((Auditable)entity).getAudit();
 
             data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
-                                 new Date(), 2, getSystemUserId(), audit.getXML(true));
+                                 new Date(), 2, getSystemUserId(), audit.getXML(false));
             local().add(data);
         }
     }
@@ -86,7 +86,7 @@ public class AuditUtil {
             audit = ((Auditable)entity).getAudit();
 
             data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
-                                 new Date(), 3, getSystemUserId(), audit.getXML(false));
+                                 new Date(), 3, getSystemUserId(), audit.getXML(true));
             local().add(data);
         }
     }

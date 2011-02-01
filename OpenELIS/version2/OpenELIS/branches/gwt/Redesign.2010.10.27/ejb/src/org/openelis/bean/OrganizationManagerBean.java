@@ -46,7 +46,7 @@ import org.openelis.utils.PermissionInterceptor;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("organization-select")
+//@RolesAllowed("organization-select")
 @TransactionManagement(TransactionManagementType.BEAN)
 
 public class OrganizationManagerBean implements OrganizationManagerRemote {

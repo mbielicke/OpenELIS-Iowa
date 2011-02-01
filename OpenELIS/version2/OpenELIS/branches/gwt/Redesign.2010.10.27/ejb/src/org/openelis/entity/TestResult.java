@@ -29,12 +29,6 @@ package org.openelis.entity;
  * TestResult Entity POJO for database
  */
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.util.XMLUtil;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -45,6 +39,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -61,7 +57,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "TestResult.FetchByAnalysisId",
                 query = "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup," +
                         "tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"
-                      + " from Analysis a LEFT JOIN a.test t LEFT JOIN t.testResult tr where a.id = :analysisId order by tr.resultGroup, tr.sortOrder "),
+                      + " from Analysis a, TestResult tr where a.testId = tr.testId and a.id = :analysisId order by tr.resultGroup, tr.sortOrder "),
    @NamedQuery( name =  "TestResult.FetchByValue",
                query =  "select distinct new org.openelis.domain.TestResultDO(tr.id,tr.testId,tr.resultGroup," +
                         "tr.sortOrder,tr.unitOfMeasureId,tr.typeId,tr.value,tr.significantDigits,tr.roundingMethodId,tr.flagsId)"

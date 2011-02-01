@@ -49,7 +49,7 @@ import org.openelis.meta.OrganizationMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("organization-select")
+//@RolesAllowed("organization-select")
 public class OrganizationContactBean implements OrganizationContactLocal {
 
     @PersistenceContext(unitName = "openelis")
