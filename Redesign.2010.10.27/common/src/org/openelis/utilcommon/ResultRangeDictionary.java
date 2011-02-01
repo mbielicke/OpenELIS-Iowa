@@ -23,55 +23,49 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-
 package org.openelis.utilcommon;
 
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.DataBaseUtil;
 
-public class ResultRangeTime implements ResultRange {
+/**
+ * This class is used to manage a dictionary entry having a string representation and
+ * an entry id.
+ */
+public class ResultRangeDictionary implements ResultRange {
     private static final long serialVersionUID = 1L;
+
+    protected Integer id;
+    protected String entry;
+
+    public void setId(Integer dictId) throws ParseException {
+        id = dictId;
+    }
+
+    public Integer getId() {
+        return id;
+    }
     
-    protected String time;
-
-    public void setRange(String range) throws ParseException {
-        //
-        // this is not currently implemented
-        // 
+    public void setRange(String entry) throws ParseException {
+        this.entry = entry;
     }
 
-    public void contains(String time) throws ParseException {
-        String st[];
-        int hrs, min;
-
-        if (time == null)
-            return;
-
-        try {
-                   
-            //
-            // we don't allow milliseconds, so the time cannot have more than 3 colons 
-            //            
-            st = time.split(":");
-            if (st.length != 2 || st[0].length() != 2 || st[1].length() != 2)
-                throw new IllegalArgumentException();
-            
-            hrs = Integer.parseInt(st[0]);
-            min = Integer.parseInt(st[1]);            
-            
-            if ((0 > hrs || 23 < hrs) || (0 > min || 59 < min)) 
-                throw new IllegalArgumentException();
-            this.time = time;
-            
-        } catch (IllegalArgumentException ex) {
-            throw new ParseException("illegalTimeValueException");
-        }
+    public void contains(String value) throws ParseException {
+        if(DataBaseUtil.isDifferent(value, entry) && (id != null && DataBaseUtil.isDifferent(value, id.toString())))
+            throw new ParseException("illegalDictionaryValueException");
     }
+    
+    public boolean intersects(ResultRange value) {
+        if (value instanceof ResultRangeDictionary && entry != null && id != null)
+            return DataBaseUtil.isSame(entry, ((ResultRangeDictionary)value).entry) &&
+                   DataBaseUtil.isSame(id, ((ResultRangeDictionary)value).id);
 
-    public boolean intersects(ResultRange range) {
         return false;
     }
 
     public String toString() {
-        return time;
+        if (entry != null)
+            return entry;
+        return "";
     }
 }

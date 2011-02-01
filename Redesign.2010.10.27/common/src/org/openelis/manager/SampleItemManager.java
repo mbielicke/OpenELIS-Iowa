@@ -33,6 +33,7 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
 public class SampleItemManager implements RPC {
     private static final long                         serialVersionUID = 1L;
@@ -237,7 +238,7 @@ public class SampleItemManager implements RPC {
                                                                                             throws Exception {
         int toItemIndex, fromItemIndex, fromAnalysisIndex;
         AnalysisManager fromMan, toMan;
-        AnalysisViewDO analysisDO;
+        AnalysisListItem analysisItem;
 
         assert fromAnalysisBundle.getType() == SampleDataBundle.Type.ANALYSIS : "from bundle needs to be analysis bundle";
 
@@ -248,9 +249,9 @@ public class SampleItemManager implements RPC {
         fromMan = getAnalysisAt(fromItemIndex);
         toMan = getAnalysisAt(toItemIndex);
 
-        analysisDO = fromMan.getAnalysisAt(fromAnalysisIndex);
+        analysisItem = fromMan.getItemAt(fromAnalysisIndex);
         fromMan.removeAnalysisAtNoDelete(fromAnalysisIndex);
-        toMan.addAnalysis(analysisDO);
+        toMan.addItem(analysisItem);
     }
 
     public void setAnalysisAt(AnalysisManager analysis, int i) {

@@ -25,10 +25,13 @@
  */
 package org.openelis.manager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -38,7 +41,9 @@ public class WorksheetManager implements RPC, HasNotesInt {
 
     private static final long      serialVersionUID = 1L;
 
+    protected ArrayList<ArrayList<Object>>   reflexBundles;
     protected HashMap<Integer,SampleManager> sampleManagers, lockedManagers;
+    protected HashMap<Integer,SectionViewDO> analysisSections;
     protected NoteManager                    notes;
     protected WorksheetDO                    worksheet;
     protected WorksheetItemManager           items;
@@ -91,6 +96,10 @@ public class WorksheetManager implements RPC, HasNotesInt {
         return proxy().fetchWithNotes(id);
     }
 
+    public static WorksheetManager fetchWithItemsAndNotes(Integer id) throws Exception {
+        return proxy().fetchWithItemsAndNotes(id);
+    }
+
     public WorksheetManager add() throws Exception {
         return proxy().add(this);
 
@@ -116,6 +125,7 @@ public class WorksheetManager implements RPC, HasNotesInt {
             manager.abortUpdate();
         }
         getLockedManagers().clear();
+        getReflexBundles().clear();
         
         return proxy().abortUpdate(worksheet.getId());
     }
@@ -128,6 +138,19 @@ public class WorksheetManager implements RPC, HasNotesInt {
         
         if (errorList.size() > 0)
             throw errorList;
+    }
+    
+    public void addReflexBundle(SampleDataBundle bundle, ResultViewDO rVDO) {
+        ArrayList<Object> newBundle;
+
+        if (reflexBundles == null)
+            reflexBundles = new ArrayList<ArrayList<Object>>();
+        
+        newBundle = new ArrayList<Object>();
+        newBundle.add(bundle);
+        newBundle.add(rVDO);
+        
+        reflexBundles.add(newBundle);
     }
 
     //
@@ -173,12 +196,25 @@ public class WorksheetManager implements RPC, HasNotesInt {
         return notes;
     }
 
+    public HashMap<Integer,SampleManager> getSampleManagers() {
+        return sampleManagers;
+    }
+    
     public HashMap<Integer,SampleManager> getLockedManagers() {
         return lockedManagers;
     }
     
-    public HashMap<Integer,SampleManager> getSampleManagers() {
-        return sampleManagers;
+    public HashMap<Integer,SectionViewDO> getAnalysisSections() throws Exception {
+        if (analysisSections == null)
+            analysisSections = getItems().getAnalysisSections();
+        return analysisSections;
+    }
+    
+    public ArrayList<ArrayList<Object>> getReflexBundles() {
+        if (reflexBundles == null)
+            reflexBundles = new ArrayList<ArrayList<Object>>();
+        
+        return reflexBundles;
     }
     
     private static WorksheetManagerProxy proxy() {

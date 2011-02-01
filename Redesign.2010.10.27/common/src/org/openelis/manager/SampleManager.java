@@ -437,7 +437,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
         //
         // change the sample status to lowest
         //
-        if (e > 0 || statusWithError)
+        if (statusWithError || e > 0)
             statusId = proxy().samErrorId;
         else if (l > 0)
             statusId = proxy().samLoggedInId;
