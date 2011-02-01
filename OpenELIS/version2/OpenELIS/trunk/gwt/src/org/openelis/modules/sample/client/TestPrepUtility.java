@@ -125,14 +125,14 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         bundles = new ArrayList<SampleDataBundle>();
         errorsList = new ValidationErrorsList();
 
-        analysisDataBundles = new ArrayList<SampleDataBundle>();
+        analysisDataBundles = new ArrayList<SampleDataBundle>(1);
         analysisDataBundles.add(analysisDataBundle);
 
         // we need to expand a panel to test ids
         if (type == Type.PANEL)
             testIds = panelService.callList("fetchTestIdsByPanelId", id);
         else {
-            testIds = new ArrayList<IdVO>();
+            testIds = new ArrayList<IdVO>(1);
             testIds.add(new IdVO(id));
         }
 
@@ -166,6 +166,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
      * @throws Exception
      */
     public void lookup(SampleDataBundle analysisDataBundle, ArrayList<OrderTestViewDO> orderTestList) throws Exception {
+        int             i;
         ArrayList<IdVO> testIds;
         OrderTestViewDO testDO;
 
@@ -175,11 +176,11 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         bundles = new ArrayList<SampleDataBundle>();
         errorsList = new ValidationErrorsList();
 
-        analysisDataBundles = new ArrayList<SampleDataBundle>();
+        analysisDataBundles = new ArrayList<SampleDataBundle>(1);
         analysisDataBundles.add(analysisDataBundle);
 
-        testIds = new ArrayList<IdVO>();
-        for(int i=0; i<orderTestList.size(); i++){
+        testIds = new ArrayList<IdVO>(orderTestList.size());
+        for (i = 0; i < orderTestList.size(); i++){
             testDO = orderTestList.get(i);
             testIds.add(new IdVO(testDO.getTestId()));
         }
@@ -231,7 +232,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                     try {
                         prepMan = testMan.getPrepTests();
                         if (prepMan.count() > 0) {
-                            prepBundle = new ArrayList<Object>();
+                            prepBundle = new ArrayList<Object>(2);
                             prepBundle.add(anBundle);
                             prepBundle.add(prepMan);
                             prepBundles.add(prepBundle);
@@ -413,7 +414,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             try {
                 prepMan = testMan.getPrepTests();
                 if (prepMan.count() > 0) {
-                    prepBundle = new ArrayList<Object>();
+                    prepBundle = new ArrayList<Object>(2);
                     prepBundle.add(bundle);
                     prepBundle.add(prepMan);
                     prepBundles.add(prepBundle);
