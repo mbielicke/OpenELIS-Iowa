@@ -1357,7 +1357,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             //
             if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
                 if (withUnrelease) {
-                    manager.unrelease();
+                    manager.unrelease(true);
                 } else {
                     abort();
                     window.setError(consts.get("cantUpdateReleasedException"));
