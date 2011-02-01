@@ -131,6 +131,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 		orgParam = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
 		printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
+		if (DataBaseUtil.isEmpty(accession) || DataBaseUtil.isEmpty(printer))
+			throw new InconsistencyException("You must specify the accession number and printer for this report");
 		/*
 		 * find the sample
 		 */
