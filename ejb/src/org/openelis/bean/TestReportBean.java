@@ -27,6 +27,7 @@ import org.openelis.domain.OptionListItem;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SectionLocal;
@@ -126,12 +127,15 @@ public class TestReportBean implements TestReportRemote {
          */
         param = ReportUtil.parameterMap(paramList);
 
-        detail = ReportUtil.getSingleParameter(param, "DETAIL");
         section = ReportUtil.getListParameter(param, "SECTION");
         test = ReportUtil.getListParameter(param, "TEST");
+        detail = ReportUtil.getSingleParameter(param, "DETAIL");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
-        if ( !DataBaseUtil.isEmpty(section))
+		if (DataBaseUtil.isEmpty(detail) || DataBaseUtil.isEmpty(printer))
+			throw new InconsistencyException("You must specify the detail selection and printer for this report");
+
+		if ( !DataBaseUtil.isEmpty(section))
             section = " and s.id " + section;
         else
             section = "";
