@@ -312,13 +312,17 @@ public class TestBean implements TestRemote, TestLocal {
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getTimeTaWarning()));
         
+        if (DataBaseUtil.isEmpty(data.getTestFormatId()))
+            exceptionList.add(new FieldErrorException("fieldRequiredException",
+                                                      TestMeta.getTestFormatId()));
+            
         if (DataBaseUtil.isEmpty(data.getReportingMethodId())) 
             exceptionList.add(new FieldErrorException("fieldRequiredException",
                                                       TestMeta.getReportingMethodId()));
         
         if (DataBaseUtil.isEmpty(data.getSortingMethodId())) 
             exceptionList.add(new FieldErrorException("fieldRequiredException",
-                                                      TestMeta.getSortingMethodId()));
+                                                      TestMeta.getSortingMethodId()));                
 
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) {
             exceptionList.add(new FieldErrorException("fieldRequiredException",

@@ -1,6 +1,9 @@
 package org.openelis.bean;
 
+import java.util.Arrays;
 import java.util.HashMap;
+
+import net.sf.ehcache.CacheManager;
 
 import org.jboss.ejb3.annotation.Service;
 
@@ -16,6 +19,7 @@ public class ApplicationCache implements ApplicationCacheInt {
 
     public ApplicationCache() {
         cache = new HashMap<String, HashMap<Object, Object>>();
+        System.out.println(CacheManager.getInstance().getCacheNames().toString());
     }
 
     /**
@@ -58,4 +62,5 @@ public class ApplicationCache implements ApplicationCacheInt {
         }
         return s;
     }
+
 }

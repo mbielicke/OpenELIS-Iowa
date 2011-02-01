@@ -197,7 +197,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                 if(SampleManager.QUICK_ENTRY.equals(checkSample.getDomain())){
                     quickEntryMan = fetchForUpdate(checkSample.getId());
                     
-                    //since the record is a quick entry it doesnt have result records at this point.
+                    //since the record is a quick entry it doesn't have result records at this point.
                     //we need to add the result records for all the analyses on this sample at this point
                     for(int i=0; i<quickEntryMan.getSampleItems().count(); i++){
                         anMan = quickEntryMan.getSampleItems().getAnalysisAt(i);
@@ -226,6 +226,8 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                     errorsList.add(new FieldErrorException("accessionNumberDuplicate", SampleMeta.getAccessionNumber()));
                 }
             }
+        } catch (NotFoundException ignE) {
+            // ignore not found because it means they entered an unused accession number
         } catch (Exception e) {
             if(!(e.getCause() instanceof NoResultException))
                 throw e;

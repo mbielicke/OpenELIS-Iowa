@@ -28,10 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -48,9 +46,9 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SystemVariableLocal;
@@ -67,16 +65,10 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     @PersistenceContext(unitName = "openelis")
     private EntityManager                      manager;
 
-    @Resource
-    private SessionContext                     ctx;
-
     @EJB
     private LockLocal                          lockBean;
 
     private static final SystemVariableMeta meta = new SystemVariableMeta();
-
-    public SystemVariableBean() {
-    }
 
     public SystemVariableDO fetchById(Integer id) throws Exception {
         Query query;
@@ -84,6 +76,23 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
 
         query = manager.createNamedQuery("SystemVariable.FetchById");
         query.setParameter("id", id);
+        try {
+            data = (SystemVariableDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+
+    @SuppressWarnings("unchecked")
+    public SystemVariableDO fetchByName(String name) throws Exception {
+        Query query;
+        SystemVariableDO data;
+
+        query = manager.createNamedQuery("SystemVariable.FetchByName");
+        query.setParameter("name", name);
         try {
             data = (SystemVariableDO)query.getSingleResult();
         } catch (NoResultException e) {
@@ -179,18 +188,18 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     }
     
     public SystemVariableDO fetchForUpdateByName(String name) throws Exception {
-        ArrayList<SystemVariableDO> list;
-        list = fetchByName(name, 1);
+        SystemVariableDO data;
+
+        try {
+        	data = fetchByName(name);
+        } catch (Exception e) {
+        	return null;
+        }
+        lockBean.lock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
         
-        if(list.size() == 0)
-            return null;
-            
-        lockBean.lock(ReferenceTable.SYSTEM_VARIABLE, list.get(0).getId());
-        
-        return list.get(0);
+        return data;
     }
     
-
     public SystemVariableDO abortUpdate(Integer id) throws Exception {
         lockBean.unlock(ReferenceTable.SYSTEM_VARIABLE, id);
         return fetchById(id);

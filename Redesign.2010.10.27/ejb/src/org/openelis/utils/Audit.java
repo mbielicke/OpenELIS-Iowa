@@ -94,17 +94,17 @@ public class Audit {
      * that the field value points to.
      */
     public Audit setField(String fieldName, Object currentValue, Object originalValue, Integer linkedTableId) {
-        Field field;
+        Field f;
 
-        field = new Field();
-        field.changed = isDifferent(currentValue, originalValue);
-        field.linkedTableId = linkedTableId;
-        field.name = fieldName;
-        field.value = originalValue;
+        f = new Field();
+        f.changed = isDifferent(originalValue, currentValue);
+        f.linkedTableId = linkedTableId;
+        f.name = fieldName;
+        f.value = originalValue;
 
         if (fields == null)
             fields = new ArrayList<Field>();
-        fields.add(field);
+        fields.add(f);
 
         return this;
     }
@@ -114,7 +114,7 @@ public class Audit {
      * certain fields. The withDifferences flag indicates that elements should be
      * created regardless of whether or not the field was changed.
      */
-    public String getXML(boolean withDifferences) {
+    public String getXML(boolean allNodes) {
         Document doc;
         Element root, elem;
 
@@ -124,11 +124,11 @@ public class Audit {
                 root = doc.getDocumentElement();
 
                 for (Field f : fields) {
-                    if ( (f.changed || !withDifferences) && f.value != null) {
+                    if (f.changed || allNodes) {
                         elem = doc.createElement(f.name);
                         if (f.linkedTableId != null)
                             elem.setAttribute("refTable", f.linkedTableId.toString());
-                        elem.appendChild(doc.createTextNode(f.value.toString()));
+                        elem.appendChild(doc.createTextNode((f.value==null)?"":f.value.toString()));
                         doc.getDocumentElement().appendChild(elem);
                     }
                 }

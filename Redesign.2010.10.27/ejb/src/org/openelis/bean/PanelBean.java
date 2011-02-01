@@ -195,6 +195,7 @@ public class PanelBean implements PanelRemote, PanelLocal {
             
             query.setParameter("name", panelItem.getTestName());
             query.setParameter("methodName", panelItem.getMethodName());
+            query.setParameter("isActive", "Y");
             try{
                 testDO = (TestViewDO)query.getSingleResult();
                 idVO = new IdVO();

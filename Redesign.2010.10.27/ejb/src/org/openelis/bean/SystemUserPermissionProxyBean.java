@@ -33,6 +33,9 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
 
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
@@ -58,7 +61,7 @@ public class SystemUserPermissionProxyBean implements SystemUserPermissionProxyR
         InitialContext rctx;
         SystemUserPermission perm;
         SystemUserPermissionRemote user;
-
+        
         try {
             rctx = new InitialContext();
             user = (SystemUserPermissionRemote) rctx.lookup("security/SystemUserPermissionBean/remote");

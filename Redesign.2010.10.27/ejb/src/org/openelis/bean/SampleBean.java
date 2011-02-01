@@ -33,6 +33,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -41,6 +42,7 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.entity.Sample;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
@@ -138,17 +140,52 @@ public class SampleBean implements SampleLocal, SampleRemote {
     public SampleDO fetchById(Integer sampleId) throws Exception {
         Query query = manager.createNamedQuery("Sample.FetchById");
         query.setParameter("id", sampleId);
+        try {
+            return (SampleDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
         
-        return (SampleDO)query.getSingleResult();
     }
     
     public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         Query query = manager.createNamedQuery("Sample.FetchByAccessionNumber");
-        query.setParameter("id", accessionNumber);
+        query.setParameter("accession", accessionNumber);
         
-        return (SampleDO)query.getSingleResult();
+        try {
+            return (SampleDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException("noRecordsFound");
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
     }
     
+    public ArrayList<Object[]> fetchSamplesForFinalReportBatch() throws Exception {
+        Query query;
+               
+        query = manager.createNamedQuery("Sample.FetchSamplesForFinalReportBatch");              
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<Object[]> fetchSamplesForFinalReportSingle(Integer sampleId) throws Exception {
+        Query query;
+               
+        query = manager.createNamedQuery("Sample.FetchSamplesForFinalReportSingle");
+        query.setParameter("sampleId", sampleId);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<Object[]> fetchSamplesForFinalReportPreview(Integer sampleId) throws Exception {
+        Query query;
+               
+        query = manager.createNamedQuery("Sample.FetchSamplesForFinalReportPreview");
+        query.setParameter("sampleId", sampleId);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public SampleDO add(SampleDO data) {
         Sample entity;
         
@@ -223,7 +260,7 @@ public class SampleBean implements SampleLocal, SampleRemote {
             try {
             	qField.parse(field.getQuery());
             }catch(Exception e) {
-            	
+            	e.printStackTrace();
             }
             
             if (wellOrgFieldMap.get(field.getKey()) != null) {

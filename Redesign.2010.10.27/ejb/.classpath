@@ -4,9 +4,10 @@
 	<classpathentry kind="lib" path="/usr/local/java/jboss/common/lib/ejb3-persistence.jar"/>
 	<classpathentry kind="lib" path="/usr/local/java/jboss/common/lib/jboss-javaee.jar"/>
 	<classpathentry kind="lib" path="/usr/local/java/jboss-5.1.0.GA/client/jboss-ejb3-ext-api.jar"/>
+	<classpathentry kind="lib" path="lib/ehcache-core-2.3.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
-	<classpathentry kind="lib" path="/OpenELIS-Security-EJB/security-client.jar"/>
+	<classpathentry kind="lib" path="lib/security-client.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.6-20091214.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-3.7.4.jar"/>
 	<classpathentry kind="src" path="src"/>

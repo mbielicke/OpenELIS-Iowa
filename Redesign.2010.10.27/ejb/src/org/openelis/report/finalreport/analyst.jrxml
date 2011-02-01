@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analyst" language="groovy" columnCount="5" pageWidth="100" pageHeight="572" orientation="Landscape" columnWidth="20" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="3.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="analyst" language="groovy" pageWidth="120" pageHeight="572" columnWidth="120" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
-	<parameter name="SYSTEM_NAME" class="java.lang.String"/>
 	<queryString>
-		<![CDATA[SELECT
-      first 5 au.*, s.*
+		<![CDATA[SELECT first 5
+      s.initials initial
 FROM
       security_dev:system_user s, analysis_user au
 WHERE
-      s.id = au.system_user_id AND au.analysis_id  = $P{ANALYSIS_ID}
-     AND au.action_id IN (select id from dictionary d where d.system_name = $P{SYSTEM_NAME})]]>
+     au.analysis_id  = $P{ANALYSIS_ID} and
+      s.id = au.system_user_id and
+     au.action_id IN (select id from dictionary d where d.system_name = "an_user_ac_completed")]]>
 	</queryString>
-	<field name="id" class="java.lang.Integer"/>
-	<field name="initials" class="java.lang.String"/>
-	<columnHeader>
-		<band/>
-	</columnHeader>
+	<field name="initial" class="java.lang.String"/>
+	<variable name="INITIALS" class="java.util.List">
+		<variableExpression><![CDATA[$V{INITIALS}]]></variableExpression>
+		<initialValueExpression><![CDATA[new java.util.ArrayList()]]></initialValueExpression>
+	</variable>
 	<detail>
-		<band height="12" splitType="Stretch">
+		<band splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="20" height="12"/>
+				<reportElement x="0" y="0" width="120" height="0"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{initials}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{INITIALS}.add($F{initial})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
+	<summary>
+		<band height="12">
+			<textField>
+				<reportElement x="0" y="0" width="120" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($V{INITIALS}, ", ")]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
 </jasperReport>

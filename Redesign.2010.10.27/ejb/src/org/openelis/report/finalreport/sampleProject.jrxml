@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleProject" language="groovy" pageWidth="150" pageHeight="572" orientation="Landscape" columnWidth="150" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleProject" language="groovy" pageWidth="142" pageHeight="572" orientation="Landscape" columnWidth="142" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<queryString>
-		<![CDATA[SELECT
-     project.name AS project_name
+		<![CDATA[SELECT first 1
+     sp.id sp_id, p.description project_description
 FROM
-     sample_project sample_project,
-     project project
+     sample_project sp,
+     project p
 WHERE
-     sample_project.sample_id = $P{SAMPLE_ID} AND sample_project.project_id = project.id AND
-     sample_project.is_permanent = 'Y']]>
+     sp.sample_id = $P{SAMPLE_ID} and
+     sp.project_id = p.id and
+     sp.is_permanent = 'Y'
+ORDER BY sp_id]]>
 	</queryString>
-	<field name="project_name" class="java.lang.String"/>
+	<field name="sp_id" class="java.lang.Integer"/>
+	<field name="project_description" class="java.lang.String"/>
 	<detail>
-		<band height="15" splitType="Stretch">
+		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="0" width="150" height="15"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_name}]]></textFieldExpression>
+				<reportElement x="0" y="0" width="142" height="12"/>
+				<textElement>
+					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_description}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
