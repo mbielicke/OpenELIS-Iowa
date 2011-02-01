@@ -239,7 +239,7 @@ UIRF Software License are applicable instead of those above.
                     <menuItem key="sampleLoginLabelReport" description="" icon="" enable="true" label="{resource:getString($constants,'loginBarcode')}" />
                     <code>}</code>
 	                <code>if(OpenELIS.getSystemUserPermission().hasModule("r_loginlabelrep","SELECT")){</code>
-                    <menuItem key="sampleLoginLabelReprintReport" description="" icon="" enable="true" label="{resource:getString($constants,'loginBarcodeRep')}" />
+                    <menuItem key="sampleLoginLabelAdditionalReport" description="" icon="" enable="true" label="{resource:getString($constants,'loginBarcodeAdd')}" />
 					<code>}</code>                    
                     <menuItem key="verificationReport" description="" icon="" enable="true" label="{resource:getString($constants,'verificationReport')}" />
                     <menuItem key="testRequestFormReport" description="" icon="" enable="false" label="{resource:getString($constants,'TRFReport')}" />
