@@ -382,13 +382,13 @@ public class AnalysisManager implements RPC {
         ValidationErrorsList errorsList;
         SampleManager man;
         SystemUserPermission perm;
-        NoteManager internalNotes; 
+        NoteManager intenotes, samNotes; 
         AnalysisListItem item;
         
         item = getItemAt(index);
 
         data = item.analysis;        
-        internalNotes = getInternalNotesAt(index);
+        intenotes = getInternalNotesAt(index);
         errorsList = new ValidationErrorsList();
         
         if ( !proxy().anReleasedId.equals(data.getStatusId()))             
@@ -402,7 +402,7 @@ public class AnalysisManager implements RPC {
             errorsList.add(new FormErrorException("insufficientPrivilegesUnreleaseAnalysis",
                                                   data.getTestName(), data.getMethodName()));        
 
-        if (internalNotes == null || !internalNotes.hasEditingNote()) 
+        if (intenotes == null || !intenotes.hasEditingNote()) 
             errorsList.add(new FormErrorException("unreleaseNoNoteException"));
         
         if (errorsList.size() > 0)
@@ -413,9 +413,10 @@ public class AnalysisManager implements RPC {
         data.setPrintedDate(null);
         data.setRevision(data.getRevision() + 1);
         
+        // every unreleased sample needs an internal comment describing the reason
         man = sampleItemBundle.getSampleManager();
         if (proxy().sampleReleasedId.equals(man.getSample().getStatusId()))
-            man.unrelease();                        
+            man.unrelease(false);                                          
     }
 
     public int count() {

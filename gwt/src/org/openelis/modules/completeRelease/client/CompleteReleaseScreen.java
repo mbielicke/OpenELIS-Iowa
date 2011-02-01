@@ -830,7 +830,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             manager = manager.fetchForUpdate();
 
             // update row data
-            updateTableRow(completeReleaseTable.getSelectedRow());
+            //updateTableRow(completeReleaseTable.getSelectedRow());
+            updateAllRows(manager.getSample().getAccessionNumber());
 
             setState(State.UPDATE);
 
@@ -1200,7 +1201,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     protected void commitWithWarnings() {
         clearErrors();
 
-        manager.getSample().setStatusId(sampleErrorStatusId);
+        manager.setStatusWithError(true);
 
         if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
@@ -1435,17 +1436,27 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         /*
          * change all the rows that need to be updated
          */
-        for (i = 0; i < completeReleaseTable.numRows(); i++) {
-        	bundle = (SampleDataBundle) completeReleaseTable.getRow(i).data;
-    		man = bundle.getSampleManager();
-        	item = hash.get(man.getSample().getId());
-        	if (item != null)
-        		try {
-        			updateTableRowCells(i, man.getSample(), man.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex()));
-        		} catch (Exception e) {
-        			window.setError(e.getMessage());
-        			e.printStackTrace();
-        		}
+        for (i = 0; i < completeReleaseTable.numRows(); i++ ) {
+            row = completeReleaseTable.getRow(i);
+            bundle = (SampleDataBundle)row.data;
+            man = bundle.getSampleManager();
+            item = hash.get(man.getSample().getId());
+            if (item == null)
+                continue;
+            try {
+                if (man != item.sampleManager) {
+                    bundle = getCurrentRowBundle(bundle, item.sampleManager);
+                    row.data = bundle;
+                    man = item.sampleManager;
+                }
+                updateTableRowCells(i, man.getSample(), man.getSampleItems()
+                                       .getAnalysisAt(bundle.getSampleItemIndex())
+                                       .getAnalysisAt(bundle.getAnalysisIndex()));
+            } catch (Exception e) {
+                window.setError(e.getMessage());
+                e.printStackTrace();
+            }
+
         }
 
         // if the tabs are showing data we need to make sure to refresh them
@@ -1550,10 +1561,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
 	}
 
 	private void showNote() {                        
-        final int index = dataBundle.getSampleItemIndex();        
+        final int index;        
         ScreenWindow modal;
         AnalysisManager man;
-        
+                
+        index = dataBundle.getSampleItemIndex();
         try {
             man = dataBundle.getSampleManager().getSampleItems()
                                     .getAnalysisAt(index);
