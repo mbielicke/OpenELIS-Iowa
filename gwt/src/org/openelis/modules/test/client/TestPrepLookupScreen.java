@@ -293,16 +293,16 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
         TreeDataItem                 item;
 
         if (validate()) {
-            selectedBundles = new ArrayList<ArrayList<Object>>();
+            selectedBundles = new ArrayList<ArrayList<Object>>(prepTestTree.numRows());
             errorsList = new ValidationErrorsList();
             for (i = 0; i < prepTestTree.numRows(); i++) {
                 item = prepTestTree.getRow(i);
-                if (item.leafType == "prepTest")
-                    continue;
-                if (!addPrepTestToSelection(item, (SampleDataBundle)((ArrayList<Object>)item.data).get(0),
-                                            selectedBundles, errorsList))
-                    errorsList.add(new FormErrorException("prepTestRequiredForTestException",
-                                                          (String)item.cells.get(0).getValue()));
+                if (item.leafType == "analysis") {
+                    if (!addPrepTestToSelection(item, (SampleDataBundle)((ArrayList<Object>)item.data).get(0),
+                                                selectedBundles, errorsList, i))
+                        errorsList.add(new FormErrorException("prepTestRequiredForTestException",
+                                                              (String)item.cells.get(0).getValue()));
+                }
             }
             
             if (errorsList.size() > 0) {
@@ -439,7 +439,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 }
             }
             
-            dataObject = new ArrayList<Object>();
+            dataObject = new ArrayList<Object>(2);
             dataObject.add(tpVDO);
             dataObject.add(tsMan);
             row.data = dataObject;
@@ -453,40 +453,35 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
     @SuppressWarnings("unchecked")
     private boolean addPrepTestToSelection(TreeDataItem parentItem, Object parentBundle,
                                            ArrayList<ArrayList<Object>> selectedBundles,
-                                           ValidationErrorsList errorsList) {
-        int                  i, depth;
-        ArrayList<Object>    selectedRow;
-        TreeDataItem         item;
-        ValidationErrorsList tempErrors;
+                                           ValidationErrorsList errorsList, int index) {
+        int               depth;
+        ArrayList<Object> selectedRow;
+        TreeDataItem      item;
 
-        tempErrors = new ValidationErrorsList();
         depth = parentItem.depth + 1;
-        for (i = parentItem.childIndex + 1; i < prepTestTree.numRows(); i++) {
-            item = prepTestTree.getRow(i);
+        for (index++; index < prepTestTree.numRows(); index++) {
+            item = prepTestTree.getRow(index);
             if (item.depth < depth) {
                 return false;
-            } else if (item.depth > depth) {
-                continue;
-            } else if ("Y".equals(item.cells.get(2).getValue())) {
+            } else if (item.depth == depth && "Y".equals(item.cells.get(2).getValue())) {
                 if (item.cells.get(1).value == null) {
-                    tempErrors.add(new FormErrorException("prepTestNeedsSection",
+                    errorsList.add(new FormErrorException("prepTestNeedsSection",
                                                           (String)item.cells.get(0).getValue()));
+                    break;
                 } else {
-                    selectedRow = new ArrayList<Object>();
+                    selectedRow = new ArrayList<Object>(3);
                     selectedRow.add(parentBundle);
                     selectedRow.add(((TestPrepViewDO)((ArrayList<Object>)item.data).get(0)).getPrepTestId());
                     selectedRow.add(item.cells.get(1).getValue());
                     selectedBundles.add(selectedRow);
                     if (item.hasChildren())
-                        return addPrepTestToSelection(item, selectedRow,
-                                                      selectedBundles, errorsList);
+                        return addPrepTestToSelection(item, selectedRow, selectedBundles,
+                                                      errorsList, index);
                     else
                         return true;
                 }
             }
         }
-        if (tempErrors.size() > 0)
-            errorsList.add(tempErrors);
         return false;
     }
 
