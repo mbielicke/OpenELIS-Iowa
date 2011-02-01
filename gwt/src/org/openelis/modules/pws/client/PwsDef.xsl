@@ -277,7 +277,7 @@ UIRF Software License are applicable instead of those above.
                       <textbox field="String" />
                     </col>
                     <col key="{meta:getAddressPhoneNumber()}" width="90" header="{resource:getString($constants,'phone')}">
-                      <textbox field="String" />
+                      <textbox mask="{resource:getString($constants,'phoneWithExtensionPattern')}" field="String" />
                     </col>
                   </table>
                 </VerticalPanel>

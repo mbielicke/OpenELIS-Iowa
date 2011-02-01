@@ -204,16 +204,16 @@ UIRF Software License are applicable instead of those above.
                         <dropdown width="130" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressWorkPhone()}" width="90" header="{resource:getString($constants,'workNumber')}">
-                        <textbox max="21" field="String" />
+                        <textbox max="21" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressHomePhone()}" width="90" header="{resource:getString($constants,'homeNumber')}">
-                        <textbox max="16" field="String" />
+                        <textbox max="16" mask="{resource:getString($constants,'phonePattern')}" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressCellPhone()}" width="90" header="{resource:getString($constants,'cellNumber')}">
-                        <textbox max="16" field="String" />
+                        <textbox max="16" mask="{resource:getString($constants,'phonePattern')}" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressFaxPhone()}" width="150" header="{resource:getString($constants,'faxNumber')}">
-                        <textbox max="16" field="String" />
+                        <textbox max="16" mask="{resource:getString($constants,'phonePattern')}" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressEmail()}" width="145" header="{resource:getString($constants,'email')}">
                         <textbox max="80" field="String" />
