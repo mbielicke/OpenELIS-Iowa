@@ -27,7 +27,7 @@ import org.openelis.util.QueryBuilderV2;
 @Stateless
 
 @SecurityDomain("openelis")
-@RolesAllowed("sample-select")
+@RolesAllowed("samplecompleterelease-select")
 public class CompleteReleaseBean implements CompleteReleaseRemote {
 
 	@PersistenceContext(unitName = "openelis")
