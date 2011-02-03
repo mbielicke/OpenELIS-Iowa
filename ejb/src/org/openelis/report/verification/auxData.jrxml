@@ -17,7 +17,8 @@ WHERE
      aux_data.reference_id  = $P{REFERENCE_ID}
      AND aux_data.reference_table_id = $P{REFERENCE_TABLE_ID}
      AND aux_data.aux_field_id = aux_field.id
-     AND aux_field.analyte_id = analyte.id]]>
+     AND aux_field.analyte_id = analyte.id
+     AND aux_data.value is not null]]>
 	</queryString>
 	<field name="analyte_name" class="java.lang.String"/>
 	<field name="aux_data_value" class="java.lang.String"/>

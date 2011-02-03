@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reportToOrganization" language="groovy" pageWidth="355" pageHeight="572" orientation="Landscape" columnWidth="355" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="secondaryReportToOrganizations" language="groovy" columnCount="2" pageWidth="752" pageHeight="572" orientation="Landscape" columnWidth="376" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.utils.JasperUtil"/>
-	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     name, address_id
+     o.name, o.address_id
 FROM
-     organization o
+     organization o, sample_organization so
 WHERE
-     o.id = $P{ORGANIZATION_ID}]]>
+     so.sample_id = $P{SAMPLE_ID}
+     AND so.type_id in (select id from dictionary where system_name = 'org_second_report_to')
+     AND o.id = so.organization_id]]>
 	</queryString>
 	<field name="name" class="java.lang.String"/>
 	<field name="address_id" class="java.lang.Integer"/>
+	<pageHeader>
+		<band height="12"/>
+	</pageHeader>
 	<detail>
 		<band height="24" splitType="Prevent">
 			<staticText>
-				<reportElement key="reportToName.label" x="0" y="0" width="100" height="12" forecolor="#404040"/>
+				<reportElement key="secondaryReportToName.label" x="0" y="0" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Report To:]]></text>
+				<text><![CDATA[Secondary Report To:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="organizationName" x="105" y="0" width="250" height="12"/>
