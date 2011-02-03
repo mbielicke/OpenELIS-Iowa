@@ -325,6 +325,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         
         autoPreviewText = (Label<String>)def.getWidget("autoPreviewText");
         addScreenHandler(autoPreviewText, new ScreenEventHandler<String>() {                       
+            public void onClick(ClickEvent event) {
+               if ("N".equals(autoPreview.getValue()))
+                   autoPreview.setValue("Y", true);                               
+                
+            }
             
             public void onStateChange(StateChangeEvent<State> event) {
                 autoPreviewText.setStyleName("enabled");
