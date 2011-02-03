@@ -60,6 +60,7 @@ WHERE
 	</columnHeader>
 	<detail>
 		<band height="12" splitType="Stretch">
+			<printWhenExpression><![CDATA[! "Y".equals($F{ta_is_column})]]></printWhenExpression>
 			<textField isBlankWhenNull="true">
 				<reportElement x="383" y="0" width="45" height="12"/>
 				<box>
@@ -102,6 +103,7 @@ WHERE
 			</textField>
 		</band>
 		<band height="12">
+			<printWhenExpression><![CDATA["Y".equals($F{ta_is_column})]]></printWhenExpression>
 			<textField isBlankWhenNull="true">
 				<reportElement x="20" y="0" width="312" height="12"/>
 				<box>
