@@ -19,7 +19,7 @@
 		<initialValueExpression><![CDATA[new StringBuffer()]]></initialValueExpression>
 	</variable>
 	<pageHeader>
-		<band>
+		<band height="12">
 			<subreport>
 				<reportElement key="qaevents.builder" positionType="Float" x="0" y="0" width="752" height="0" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
@@ -51,21 +51,27 @@
 		<band height="12">
 			<printWhenExpression><![CDATA[$V{NBUFF}.length() > 0 || $V{QBUFF}.length() > 0]]></printWhenExpression>
 			<staticText>
-				<reportElement key="note.label" x="0" y="0" width="30" height="12"/>
+				<reportElement key="note.label" x="0" y="0" width="30" height="12" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$V{NBUFF}.length() > 0 || $V{QBUFF}.length() > 0]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font size="10" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Note:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement key="qaevents" positionType="Float" mode="Transparent" x="30" y="0" width="722" height="0" isRemoveLineWhenBlank="true"/>
+				<reportElement key="qaevents" positionType="Float" mode="Transparent" x="30" y="0" width="722" height="0" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$V{QBUFF}.length() > 0]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{QBUFF}.toString()]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
-				<reportElement key="notes" positionType="Float" mode="Transparent" x="30" y="1" width="722" height="0" isRemoveLineWhenBlank="true"/>
+				<reportElement key="notes" positionType="Float" mode="Transparent" x="30" y="1" width="722" height="0" isRemoveLineWhenBlank="true">
+					<printWhenExpression><![CDATA[$V{NBUFF}.length() > 0]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
