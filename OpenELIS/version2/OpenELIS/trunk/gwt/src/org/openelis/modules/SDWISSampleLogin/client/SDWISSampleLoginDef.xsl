@@ -106,7 +106,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
-              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},billTo" field="Integer" required="true" />
+              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},sampleItemTabPanel" field="Integer" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'orderNum')" />:
               </text>
@@ -189,7 +189,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'pointDesc')" />:
                 </text>
-                <textbox key="{meta:getSDWISLocation()}" width="250" max="20" tab="itemsTestsTree,{meta:getSDWISSamplePointId()}" field="String" />
+                <textbox key="{meta:getSDWISLocation()}" width="250" max="20" tab="{meta:getSDWISCollector()},{meta:getSDWISSamplePointId()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>
@@ -200,7 +200,7 @@ UIRF Software License are applicable instead of those above.
               </text>
               <TablePanel padding="0" spacing="0">
                 <row>
-                  <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="{meta:getSDWISCollector()},{meta:getSDWISLocation()}">
+                  <tree key="itemsTestsTree" width="auto" maxRows="4" showScroll="ALWAYS" tab="sampleItemTabPanel,{meta:getBillTo()}">
                     <header>
                       <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
                       <col width="130" header="{resource:getString($constants,'typeStatus')}" />
@@ -272,7 +272,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'collector')" />:
                 </text>
-                <textbox key="{meta:getSDWISCollector()}" width="162" max="20" tab="{meta:getOrgName()},itemsTestsTree" field="String" />
+                <textbox key="{meta:getSDWISCollector()}" width="162" max="20" tab="{meta:getOrgName()},{meta:getSDWISLocation()}" field="String" />
                 </row>
                 <row>
                   <text style="Prompt">
@@ -298,7 +298,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                     <HorizontalPanel>
-                      <autoComplete key="{meta:getBillTo()}" width="179" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getOrgName()}" field="Integer">
+                      <autoComplete key="{meta:getBillTo()}" width="179" case="UPPER" popWidth="auto" tab="itemsTestsTree,{meta:getOrgName()}" field="Integer">
                         <col width="200" header="{resource:getString($constants,'name')}" />
                         <col width="130" header="{resource:getString($constants,'street')}" />
                         <col width="120" header="{resource:getString($constants,'city')}" />
