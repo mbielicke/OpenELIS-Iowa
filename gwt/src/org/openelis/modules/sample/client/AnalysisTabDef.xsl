@@ -43,7 +43,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'test')" />:
           </text>
-          <autoComplete key="{meta:getAnalysisTestName()}" width="150" case="LOWER" popWidth="auto" field="Integer">
+          <autoComplete key="{meta:getAnalysisTestName()}" width="150" case="LOWER" tab="{meta:getAnalysisStatusId()},analysisUserTable" popWidth="auto" field="Integer">
             <col width="170" header="{resource:getString($constants,'test')}" />
             <col width="150" header="{resource:getString($constants,'method')}" />
             <col width="290" header="{resource:getString($constants,'description')}" />
@@ -59,13 +59,13 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'started')" />:
           </text>
-          <calendar key="{meta:getAnalysisStartedDate()}" width="125" begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          <calendar key="{meta:getAnalysisStartedDate()}" width="125" begin="0" end="4" tab="{meta:getAnalysisCompletedDate()},{meta:getAnalysisSamplePrep()}" pattern="{resource:getString($constants,'dateTimePattern')}" />
           </row>
         <row>
         <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'status')" />:
           </text>
-          <dropdown key="{meta:getAnalysisStatusId()}" width="150" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getAnalysisStatusId()}" width="150" popWidth="150" tab="{meta:getAnalysisSectionId()},{meta:getAnalysisTestName()}" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'revision')" />:
           </text>
@@ -73,22 +73,22 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'testReportable')" />:
           </text>
-          <check key="{meta:getAnalysisIsReportable()}" />
+          <check key="{meta:getAnalysisIsReportable()}" tab = "{meta:getAnalysisUnitOfMeasureId()},{meta:getAnalysisSectionId()}"/>
            <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'completed')" />:
           </text>
-          <calendar key="{meta:getAnalysisCompletedDate()}" width="125" begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
+          <calendar key="{meta:getAnalysisCompletedDate()}" width="125" begin="0" end="4" tab = "worksheetTable,{meta:getAnalysisStartedDate()}" pattern="{resource:getString($constants,'dateTimePattern')}" />
           </row>
           <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'section')" />:
           </text>
-          <dropdown key="{meta:getAnalysisSectionId()}" width="151" case="LOWER" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getAnalysisSectionId()}" tab = "{meta:getAnalysisIsReportable()},{meta:getAnalysisStatusId()}" width="151" case="LOWER" popWidth="150" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'unit')" />:
           </text>
           <widget colspan="3">
-          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getAnalysisUnitOfMeasureId()}" width="150" popWidth="150" tab = "{meta:getAnalysisSamplePrep()},{meta:getAnalysisIsReportable()}" field="Integer" />
           </widget>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'released')" />:
@@ -100,7 +100,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'samplePrep')" />:
           </text>
           <widget colspan="5">
-          <autoComplete key="{meta:getAnalysisSamplePrep()}" width="365" popWidth="auto" field="Integer">
+          <autoComplete key="{meta:getAnalysisSamplePrep()}"  width="365" tab = "{meta:getAnalysisStartedDate()},{meta:getAnalysisUnitOfMeasureId()}" popWidth="auto" field="Integer">
             <col width="350" header="Name" />
           </autoComplete>
           </widget>
@@ -112,7 +112,7 @@ UIRF Software License are applicable instead of those above.
       </TablePanel>
       <HorizontalPanel spacing="0" padding="0">
                    <VerticalPanel spacing="0" padding="0">
-            <table key="worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
+            <table key="worksheetTable" style="ScreenTableWithSides" width="auto" tab = "analysisUserTable,{meta:getAnalysisCompletedDate()}" maxRows="3" showScroll="ALWAYS" title="">
             	<col width="70" header="Worksheet">
               		<label field="Integer"/>
             	</col>
@@ -139,7 +139,7 @@ UIRF Software License are applicable instead of those above.
                   </VerticalPanel>
             <AbsolutePanel style="Divider" />
                   <VerticalPanel spacing="0" padding="0">
-      		<table key="analysisUserTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
+      		<table key="analysisUserTable" tab = "{meta:getAnalysisTestName()},worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
             	<col width="115" header="User">
               		<autoComplete width="100" case="LOWER" field="Integer"/>
             	</col>

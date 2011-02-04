@@ -1998,14 +1998,24 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private void viewFinalReport() {
         Query query;
         QueryData field;
+        ArrayList<QueryData> fields;
 
-        query = new Query();
+        query = new Query();      
+        fields = new ArrayList<QueryData>();
+        
         field = new QueryData();
         field.key = "ACCESSION_NUMBER";
         field.query = manager.getSample().getAccessionNumber().toString();
+        field.type = QueryData.Type.STRING;        
+        fields.add(field);
+        
+        field = new QueryData();
+        field.key = "PRINTER";
+        field.query = "-view-";
         field.type = QueryData.Type.STRING;
-
-        query.setFields(field);
+        fields.add(field);
+        
+        query.setFields(fields);
 
         window.setBusy(consts.get("genReportMessage"));
 

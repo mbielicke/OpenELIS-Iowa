@@ -420,7 +420,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                billTo.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
                 billTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
