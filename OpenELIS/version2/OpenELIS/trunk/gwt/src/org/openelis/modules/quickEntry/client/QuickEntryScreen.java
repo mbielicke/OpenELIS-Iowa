@@ -438,11 +438,11 @@ public class QuickEntryScreen extends Screen {
                 else
                     manager.update();
 
-                if (--item.count == 0)
-                    removables.add(manager.getSample().getAccessionNumber());
+                removables.add(manager.getSample().getAccessionNumber());
+                item.count = 0;
             } catch (ValidationErrorsList e) {
                 errorsList.add(new FormErrorException("quickCommitError"));
-                for(i = 0; i < e.size(); i++)
+                for (i = 0; i < e.size(); i++)
                     errorsList.add(new FormErrorException("rowError", 
                                manager.getSample().getAccessionNumber().toString(), e.getErrorList().get(i).getLocalizedMessage()));
             } catch (Exception e) {
@@ -459,7 +459,7 @@ public class QuickEntryScreen extends Screen {
             showErrors(errorsList);
         } else {
             setState(Screen.State.DEFAULT);
-            window.clearStatus();
+            window.setDone(consts.get("addingComplete"));
         }
         
         DataChangeEvent.fire(this);
