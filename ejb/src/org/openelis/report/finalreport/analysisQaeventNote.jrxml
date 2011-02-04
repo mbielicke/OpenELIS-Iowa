@@ -82,7 +82,7 @@
 ($V{QBUFF}.length()>0 && $V{NBUFF}.length()>0 ? "\n" : "" )+
 $V{NBUFF}.toString()+
 ($V{NBUFF}.length()>0 && $V{TBUFF}.length()>0 ? "\n" : "" )+
-"<style pdfFontName='Times-Italic' size='8'>"+$V{QBUFF}.toString()+"</style>"]]></textFieldExpression>
+"<style pdfFontName='Times-Italic' size='8'>"+$V{TBUFF}.toString()+"</style>"]]></textFieldExpression>
 			</textField>
 		</band>
 	</summary>
