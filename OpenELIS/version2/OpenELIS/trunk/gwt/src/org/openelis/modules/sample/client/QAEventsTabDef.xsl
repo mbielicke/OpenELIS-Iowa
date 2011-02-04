@@ -41,7 +41,7 @@ UIRF Software License are applicable instead of those above.
     <VerticalPanel padding="0" spacing="0">
       <TablePanel height="100%" padding="0" spacing="0" style="TabSubForm">
         <row>
-          <table key="sampleQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+          <table key="sampleQATable" width="auto" tab = "analysisQATable,analysisQATable" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
             <col key="{meta:getSampleSubQaName()}" width="172" header="{resource:getString($constants,'sampleQAEvent')}">
               <label field="String" />
             </col>
@@ -55,7 +55,7 @@ UIRF Software License are applicable instead of those above.
           <widget rowspan="3">
             <AbsolutePanel style="Divider" />
           </widget>
-          <table key="analysisQATable" width="auto" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+          <table key="analysisQATable" width="auto"  tab = "sampleQATable,sampleQATable" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
             <col key="{meta:getAnalysisSubQaName()}" width="172" header="{resource:getString($constants,'analysisQAEvent')}">
               <label field="String" />
             </col>

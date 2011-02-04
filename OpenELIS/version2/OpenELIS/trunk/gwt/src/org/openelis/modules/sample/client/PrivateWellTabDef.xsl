@@ -50,11 +50,11 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'reportTo')" />:
                   </text>
                   <widget colspan="3">
-                    <autoComplete key="{meta:getWellOrganizationName()}" width="180" case="UPPER" max="30" popWidth="auto" tab="{meta:getWellOrganizationId()},{meta:getClientReference()}" field="String">
-                      <col width="180" header="Name" />
-                      <col width="110" header="Street" />
-                      <col width="100" header="City" />
-                      <col width="20" header="St" />
+                    <autoComplete key="{meta:getWellOrganizationName()}" width="180" case="UPPER" popWidth="auto" tab="{meta:getWellOrganizationId()},{meta:getBillTo()}" field="String">                      
+                      <col width="180" header="{resource:getString($constants,'name')}" />
+                      <col width="110" header="{resource:getString($constants,'street')}" />
+                      <col width="100" header="{resource:getString($constants,'city')}" />
+                      <col width="20" header="{resource:getString($constants,'st')}" />
                     </autoComplete>
                   </widget>
                   <text style="Prompt">
@@ -73,7 +73,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getWellReportToAddressMultipleUnit()}" width="180" case="UPPER" max="30" tab="{meta:getWellReportToAddressStreetAddress()},{meta:getWellOrganizationId()}" field="String" />
+                    <textbox key="{meta:getWellReportToAddressMultipleUnit()}" width="180" case="UPPER" max="30" tab="{meta:getWellReportToAttention()},{meta:getWellOrganizationId()}" field="String" />
                   </widget>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"attn")' />:
@@ -152,7 +152,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="5">
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getProjectName()}" width="182" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getWellWellNumber()}" field="Integer">
+                    <autoComplete key="{meta:getProjectName()}" width="182" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getWellWellNumber()}" field="Integer">
                       <col width="115" header="{resource:getString($constants,'name')}" />
                       <col width="190" header="{resource:getString($constants,'desc')}" />
                     </autoComplete>
@@ -174,7 +174,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="5">
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getBillTo()}" width="182" case="UPPER" popWidth="auto" tab="sampleItemTabPanel,{meta:getProjectName()}" field="Integer">
+                    <autoComplete key="{meta:getBillTo()}" width="182" case="UPPER" popWidth="auto" tab="{meta:getWellOrganizationName()},{meta:getProjectName()}" field="Integer">
                       <col width="200" header="{resource:getString($constants,'name')}" />
                       <col width="130" header="{resource:getString($constants,'street')}" />
                       <col width="120" header="{resource:getString($constants,'city')}" />

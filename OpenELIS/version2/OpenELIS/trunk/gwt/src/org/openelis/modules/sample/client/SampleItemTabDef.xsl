@@ -44,37 +44,37 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'sampleType')" />:
           </text>
-          <dropdown key="{meta:getItemTypeOfSampleId()}" width="150" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getItemTypeOfSampleId()}" tab="{meta:getItemSourceOfSampleId()},{meta:getItemUnitOfMeasureId()}" width="150" popWidth="150" field="Integer" />
         </row>
         <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'source')" />:
           </text>
-          <dropdown key="{meta:getItemSourceOfSampleId()}" width="150" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getItemSourceOfSampleId()}" tab="{meta:getItemSourceOther()},{meta:getItemTypeOfSampleId()}" width="150" popWidth="150" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'sourceOther')" />:
           </text>
-          <textbox key="{meta:getItemSourceOther()}" width="215" max="40" field="String" />
+          <textbox key="{meta:getItemSourceOther()}" tab="{meta:getItemContainerId()},{meta:getItemSourceOfSampleId()}" width="215" max="40" field="String" />
         </row>
         <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'container')" />:
           </text>
-          <dropdown key="{meta:getItemContainerId()}" width="225" popWidth="225" field="Integer" />
+          <dropdown key="{meta:getItemContainerId()}" tab="{meta:getItemContainerReference()},{meta:getItemSourceOther()}" width="225" popWidth="225" field="Integer" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'containerReference')" />:
           </text>
-          <textbox key="{meta:getItemContainerReference()}" width="215" max="10" field="String" />
+          <textbox key="{meta:getItemContainerReference()}" tab="{meta:getItemQuantity()},{meta:getItemContainerId()}" width="215" max="10" field="String" />
         </row>
         <row>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'qty')" />:
           </text>
-          <textbox key="{meta:getItemQuantity()}" width="150" field="Double" />
+          <textbox key="{meta:getItemQuantity()}" tab="{meta:getItemUnitOfMeasureId()},{meta:getItemContainerReference()}" width="150" field="Double" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'unit')" />:
           </text>
-          <dropdown key="{meta:getItemUnitOfMeasureId()}" width="150" popWidth="150" field="Integer" />
+          <dropdown key="{meta:getItemUnitOfMeasureId()}" tab="{meta:getItemTypeOfSampleId()},{meta:getItemQuantity()}" width="150" popWidth="150" field="Integer" />
         </row>
       </TablePanel>
     </VerticalPanel>
