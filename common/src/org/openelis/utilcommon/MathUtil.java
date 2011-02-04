@@ -36,9 +36,9 @@ public class MathUtil {
         dv = Math.log(value);
         db = Math.log(base);
         //
-        // we can't use the operator "%" here because for floating point 
-        // numbers the result of the operation may not be zero even if the result
-        // of using the operator "/" on the same numbers has significant digits
+        // we can't use the operator "%" here because, for floating point 
+        // numbers, the result of the operation may not be zero even if the result
+        // of using the "/" on the same numbers has significant digits
         // only to the left of the decimal point
         //
         quotient = dv/db;
@@ -48,9 +48,6 @@ public class MathUtil {
         // so if the following test succeeds then we know that "dv" is a multiple  
         // of "db" 
         //
-        if (Math.floor(quotient) == quotient)
-            return true;
-        
-        return false;
+        return Math.floor(quotient) == quotient;
     }
 }
