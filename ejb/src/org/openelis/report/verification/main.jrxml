@@ -197,7 +197,7 @@ ORDER BY
 				<text><![CDATA[Collection Date/Time:]]></text>
 			</staticText>
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement key="collectionDate" mode="Transparent" x="435" y="0" width="60" height="12" backcolor="#FFFFFF"/>
+				<reportElement key="collectionDate" mode="Transparent" x="435" y="0" width="65" height="12" backcolor="#FFFFFF"/>
 				<textElement verticalAlignment="Bottom">
 					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
 				</textElement>
