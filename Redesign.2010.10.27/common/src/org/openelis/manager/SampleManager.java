@@ -55,7 +55,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
                                                   PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W",
                                                   QUICK_ENTRY = "Q";
 
-    protected transient boolean                   unreleaseSample;
+    protected transient boolean                   unreleaseWithNotes;
     protected transient static SampleManagerProxy proxy;
 
     /**
@@ -166,7 +166,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
         statusWithError = withError;
     }
 
-    public void unrelease() throws Exception {
+    public void unrelease(boolean unreleaseWithNotes) throws Exception {
         ValidationErrorsList errorsList;
 
         if ( !proxy().samReleasedId.equals(sample.getStatusId())) {
@@ -177,9 +177,9 @@ public class SampleManager implements RPC, HasAuxDataInt {
 
         sample.setStatusId(proxy().samCompletedId);
         sample.setReleasedDate(null);
-        sample.setRevision(sample.getRevision() + 1);
-        unreleaseSample = true;
-    }
+        sample.setRevision(sample.getRevision() + 1);     
+        this.unreleaseWithNotes = unreleaseWithNotes;
+    }   
 
     public SampleDataBundle getBundle() {
         if (bundle == null)

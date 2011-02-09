@@ -33,10 +33,7 @@ public class ResultRangeTime implements ResultRange {
     
     protected String time;
 
-    public void setRange(String range) throws ParseException {
-        //
-        // this is not currently implemented
-        // 
+    public void setRange(String format) throws ParseException {
     }
 
     public void contains(String time) throws ParseException {
@@ -47,21 +44,16 @@ public class ResultRangeTime implements ResultRange {
             return;
 
         try {
-                   
-            //
-            // we don't allow milliseconds, so the time cannot have more than 3 colons 
-            //            
             st = time.split(":");
-            if (st.length != 2 || st[0].length() != 2 || st[1].length() != 2)
-                throw new IllegalArgumentException();
+            if (st.length != 2)
+            	throw new ParseException("illegalTimeValueException");
             
             hrs = Integer.parseInt(st[0]);
             min = Integer.parseInt(st[1]);            
-            
-            if ((0 > hrs || 23 < hrs) || (0 > min || 59 < min)) 
-                throw new IllegalArgumentException();
-            this.time = time;
-            
+            if (hrs < 0 || hrs > 23 || min < 0 || min > 59) 
+            	throw new ParseException("illegalTimeValueException");
+
+            this.time = d2(hrs) + ":" + d2(min); 
         } catch (IllegalArgumentException ex) {
             throw new ParseException("illegalTimeValueException");
         }
@@ -73,5 +65,11 @@ public class ResultRangeTime implements ResultRange {
 
     public String toString() {
         return time;
+    }
+    
+    private String d2(int n) {
+    	if (n < 10)
+    		return "0"+n;
+    	return String.valueOf(n);
     }
 }
