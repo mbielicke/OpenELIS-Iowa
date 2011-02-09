@@ -39,6 +39,7 @@ public class ResultValidator implements RPC {
 
     private HashMap<Integer, ArrayList<Item>> units;
     private HashMap<Integer, String>          defaults;
+    private boolean                           hasOnlyDictionary;
 
     public enum Type {
         DATE, DATE_TIME, TIME, DICTIONARY, NUMERIC, TITER, ALPHA_LOWER, ALPHA_MIXED, ALPHA_UPPER,
@@ -52,6 +53,7 @@ public class ResultValidator implements RPC {
     public ResultValidator() {
         units = new HashMap<Integer, ArrayList<Item>>();
         defaults = new HashMap<Integer, String>();
+        hasOnlyDictionary = true;
     }
 
     /**
@@ -100,34 +102,42 @@ public class ResultValidator implements RPC {
             case NUMERIC:
                 item.value = new ResultRangeNumeric();
                 item.value.setRange(value);
+                hasOnlyDictionary = false;
                 break;
             case TITER:
                 item.value = new ResultRangeTiter();
                 item.value.setRange(value);
+                hasOnlyDictionary = false;
                 break;
             case DATE:
                 item.value = new ResultRangeDate();
                 item.value.setRange(value);
+                hasOnlyDictionary = false;
                 break;
             case DATE_TIME:
                 item.value = new ResultRangeDateTime();
                 item.value.setRange(value);
+                hasOnlyDictionary = false;
                 break;
             case TIME:
                 item.value = new ResultRangeTime();
                 item.value.setRange(value);
+                hasOnlyDictionary = false;
                 break;
             case ALPHA_LOWER:
                 item.value = new ResultRangeAlpha(ResultRangeAlpha.Type.LOWER);
                 item.value.setRange(value);
+                hasOnlyDictionary = false;
                 break;
             case ALPHA_MIXED:
                 item.value = new ResultRangeAlpha(ResultRangeAlpha.Type.MIXED);
                 item.value.setRange(value);
+                hasOnlyDictionary = false;
                 break;
             case ALPHA_UPPER:
                 item.value = new ResultRangeAlpha(ResultRangeAlpha.Type.UPPER);
                 item.value.setRange(value);
+                hasOnlyDictionary = false;
                 break;
         }
         list = units.get(unitId);
@@ -156,13 +166,14 @@ public class ResultValidator implements RPC {
 
         id = null;
         list = getUnits(unitId);
-        
+
         // match the first range
         if (list != null) {
             for (Item item : list) {
                 try {
                     item.value.contains(value);
                     id = item.id;
+                    break;
                 } catch (Exception e) {
                     // ignore it
                 }
@@ -198,7 +209,7 @@ public class ResultValidator implements RPC {
                             return value.toUpperCase();
                         case ALPHA_LOWER:
                             return value.toLowerCase();
-                        case NUMERIC:                  
+                        case NUMERIC:
                             compOp = null;
                             if (value.startsWith(">") || value.startsWith("<")) {
                                 compOp = value.substring(0, 1);
@@ -234,32 +245,47 @@ public class ResultValidator implements RPC {
 
         list = getUnits(unitId);
         opt = new ArrayList<OptionItem>();
-        if (list != null)
+        if (list != null) {
             for (Item item : list) {
                 if (item.type == Type.DICTIONARY)
-                    opt.add(new OptionItem("option"+item.type, item.value.toString(),
+                    opt.add(new OptionItem("option" + item.type,
+                                           item.value.toString(),
                                            ((ResultRangeDictionary)item.value).getId()));
                 else
-                    opt.add(new OptionItem("option"+item.type, item.value.toString(), null));
+                    opt.add(new OptionItem("option" + item.type, item.value.toString(), null));
             }
+        }
 
         return opt;
     }
 
+    /**
+     * Returns the "default" for specified unit.
+     */
     public String getDefault(Integer unitId) {
         return defaults.get(unitId == null ? 0 : unitId);
     }
 
+    /**
+     * Returns true if no unit was specified for the result group, false otherwise
+     */
     public boolean noUnitsSpecified() {
         int unitsSize, defaultsSize;
 
         unitsSize = units.size();
         defaultsSize = defaults.size();
 
-        return ( unitsSize == 0 || (unitsSize == 1 && units.containsKey(0))) &&
-               ( defaultsSize == 0 || (defaultsSize == 1 && defaults.containsKey(0)));
+        return (unitsSize == 0 || (unitsSize == 1 && units.containsKey(0))) &&
+               (defaultsSize == 0 || (defaultsSize == 1 && defaults.containsKey(0)));
     }
 
+    /**
+     * Returns true if all the results for this result group are of type dictionary, false otherwise
+     */
+    public boolean hasOnlyDictionary() {
+        return hasOnlyDictionary;
+    }
+    
     private ArrayList<Item> getUnits(Integer unitId) {
         ArrayList<Item> list;
         //
@@ -269,10 +295,10 @@ public class ResultValidator implements RPC {
         list = units.get(unitId == null ? 0 : unitId);
         if (list == null)
             list = units.get(0);
-        
+
         return list;
     }
-    
+
     /**
      * Class to hold all our result validator objects
      */
@@ -286,18 +312,19 @@ public class ResultValidator implements RPC {
     }
 
     /**
-     * Simple class to carry suggestions and dropdown options for dictionary entries.
+     * Simple class to carry suggestions and dropdown options for dictionary
+     * entries.
      */
     public class OptionItem {
         private Integer id;
-        private String property, value;
+        private String  property, value;
 
         OptionItem(String property, String value, Integer id) {
             this.property = property;
             this.value = value;
             this.id = id;
         }
-        
+
         public String getProperty() {
             return property;
         }
