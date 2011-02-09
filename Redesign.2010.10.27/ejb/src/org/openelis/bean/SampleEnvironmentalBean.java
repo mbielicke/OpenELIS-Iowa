@@ -76,13 +76,10 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
         entity = new SampleEnvironmental();
         
         // first insert the address so we can reference its id        
-        if (addressBean.isEmpty(data.getLocationAddress())) {             
-            data.getLocationAddress().setId(null);            
-            entity.setLocationAddressId(null);                
-        } else { 
-            addressBean.add(data.getLocationAddress());
-            entity.setLocationAddressId(data.getLocationAddress().getId());
-        }
+        if (addressBean.isEmpty(data.getLocationAddress()))     
+            data.getLocationAddress().setId(null);                                       
+        else  
+            addressBean.add(data.getLocationAddress());                    
         
         entity.setCollector(data.getCollector());
         entity.setCollectorPhone(data.getCollectorPhone());
@@ -91,7 +88,8 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
         entity.setPriority(data.getPriority());
         entity.setSampleId(data.getSampleId());
         entity.setLocation(data.getLocation());
-
+        entity.setLocationAddressId(data.getLocationAddress().getId());
+        
         manager.persist(entity);
         data.setId(entity.getId());
         
@@ -108,13 +106,17 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
         entity = manager.find(SampleEnvironmental.class, data.getId());
         if (addressBean.isEmpty(data.getLocationAddress())) {
             if (data.getLocationAddress().getId() != null) {
-                addressBean.delete(data.getLocationAddress());
-                entity.setLocationAddressId(null);
+                addressBean.delete(data.getLocationAddress());                
                 data.getLocationAddress().setId(null);
             }
         } else {
-            addressBean.update(data.getLocationAddress());
-            entity.setLocationAddressId(data.getLocationAddress().getId());            
+            if (data.getLocationAddress().isChanged()) {
+                entity.setAuditLocationAddressId(true);
+                if (data.getLocationAddress().getId() != null)
+                    addressBean.update(data.getLocationAddress());
+                else
+                    addressBean.add(data.getLocationAddress());
+            }                       
         }
         
         entity.setCollector(data.getCollector());
@@ -124,6 +126,7 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
         entity.setPriority(data.getPriority());
         entity.setSampleId(data.getSampleId());
         entity.setLocation(data.getLocation());
+        entity.setLocationAddressId(data.getLocationAddress().getId());
         return data;
     }
 

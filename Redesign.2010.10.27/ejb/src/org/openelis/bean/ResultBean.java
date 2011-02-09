@@ -361,6 +361,7 @@ public class ResultBean implements ResultLocal {
             ar.add(rdo);
         }
     }
+    
     /**
      * Fetches results for analysis that are reportable and do not have sample or analysis level
      * QA event override.

@@ -527,7 +527,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         permLocked = true;
                     else
                         permLocked = false;
-
+                    
                     value = getValueFromCellByName(wb.getSheet("Worksheet"), "analysis_status."+i+"."+a);
                     if (!statusMap.get(aVDO.getStatusId()).equals(value)) {
                         for (s = 0; s < statusList.size(); s++) {
@@ -606,7 +606,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
                                     value = getValueFromCellByName(wb.getSheet("Worksheet"), "final_value."+i+"."+a+"."+r);
                                 } else {
-                                   try {
+                                    try {
                                         aDO = analyteLocal.fetchById(rVDO.getAnalyteId());
                                         cell = getCellForName(wb.getSheet("Worksheet"), aDO.getExternalId()+"."+i+"."+a+"."+r);
                                         if (cell == null)
@@ -638,7 +638,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                     anaModified = true;
                                 }
                             } catch (ParseException parE) {
-                               if (!statusLocked && !permLocked)
+                                if (!statusLocked && !permLocked)
                                     errorList.add(new FormErrorException("illegalResultValueFormException",
                                                                          String.valueOf(wiDO.getPosition()),
                                                                          wrVDO.getAnalyteName(),
@@ -669,19 +669,13 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     wqrManager = waManager.getWorksheetQcResultAt(a);
                     for (r = 0; r < wqrManager.count(); r++, rowIndex++) {
                         wqrVDO = wqrManager.getWorksheetQcResultAt(r);
-						for (c = 0; c < 30; c++) {
+                        for (c = 0; c < 30; c++) {
                             value = getValueFromCellByCoords(wb.getSheet("Worksheet"), rowIndex, 9 + c);
                             if (value != null/* && !permLocked*/)
                                 wqrVDO.setValueAt(c, value.toString());
                         }
                     }
                 }
-                
-                //
-                // increment rowIndex if there are no result records for the
-                // analysis
-                if (r == 0)
-                    rowIndex++;
             }
             //
             // increment rowIndex if there were no result records for the
@@ -1046,6 +1040,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         } catch (Exception anyE) {
             throw new Exception("Error retrieving temp directory variable: "+anyE.getMessage());
         }
+
         userVO = null;
         try {
             userVO = systemUserLocal.fetchById(userId);
@@ -1223,7 +1218,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         
         return value;
     }
-
+    
     private SampleDataBundle lockManagerIfNeeded(WorksheetManager manager, WorksheetAnalysisDO waDO,
                                                  SampleDataBundle bundle) throws Exception {
         int               i, j;
