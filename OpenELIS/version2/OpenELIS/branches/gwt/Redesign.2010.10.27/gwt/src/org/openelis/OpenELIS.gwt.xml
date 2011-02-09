@@ -103,8 +103,8 @@ UIRF Software License are applicable instead of those above.
     <define-property name="props" values="org_openelis_constants_OpenELISConstants"/>
     <set-property name="props" value="org_openelis_constants_OpenELISConstants"/>
  
- <!-- 
+ 
     <set-property name="user.agent" value="gecko1_8" />
-   -->
+ 
 
 </module>

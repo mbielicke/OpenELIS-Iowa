@@ -49,7 +49,7 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'hazardous')" />:
                         </text>
-                        <check key="{meta:getEnvIsHazardous()}" tab="{meta:getEnvPriority()},{meta:getClientReference()}" />
+                        <check key="{meta:getEnvIsHazardous()}" tab="{meta:getEnvPriority()},{meta:getBillTo()}" />
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'priority')" />:
                         </text>
@@ -113,7 +113,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select="resource:getString($constants,'billTo')" />:
                         </text>
                         <HorizontalPanel>
-                          <autoComplete case="UPPER" key="{meta:getBillTo()}" tab="{meta:getAccessionNumber()},{meta:getOrgName()}" width="175px">
+                          <autoComplete case="UPPER" key="{meta:getBillTo()}" tab="{meta:getEnvIsHazardous()},{meta:getOrgName()}" width="175px">
                             <col header="{resource:getString($constants,'name')}" width="180" />
                             <col header="{resource:getString($constants,'street')}" width="110" />
                             <col header="{resource:getString($constants,'city')}" width="100" />

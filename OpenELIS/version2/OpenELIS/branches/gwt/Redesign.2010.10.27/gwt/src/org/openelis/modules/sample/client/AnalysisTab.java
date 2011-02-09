@@ -34,19 +34,26 @@ import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeGetMatchesEvent;
+import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -72,6 +79,8 @@ import org.openelis.gwt.widget.table.Row;
 import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -80,11 +89,14 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisUserManager;
+import org.openelis.manager.PanelManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
+import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -97,13 +109,14 @@ import com.google.gwt.event.shared.HandlerRegistration;
 
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
     public enum Action {
-        ANALYSIS_ADDED, PANEL_ADDED, ORDER_LIST_ADDED, CHANGED_DONT_CHECK_PREPS, ITEM_CHANGED
+        ANALYSIS_ADDED, PANEL_ADDED, ORDER_LIST_ADDED, CHANGED_DONT_CHECK_PREPS,
+        ITEM_CHANGED, SAMPLE_TYPE_CHANGED
     };
 
     private boolean                                     loaded;
 
     protected AutoComplete                              test, method, samplePrep;
-    protected Dropdown<Integer>                         sectionId, unitOfMeasureId, statusId,userActionId;
+    protected Dropdown<Integer>                         sectionId, unitOfMeasureId, statusId, userActionId;
     protected CheckBox                                  isReportable;
     protected TextBox                                   revision;
     protected Calendar                                  startedDate, completedDate, releasedDate,
@@ -130,12 +143,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                                         actionReleasedId;
 
     private Confirm                                     changeTestConfirm;
-    protected ScreenService                             panelService, userService,
-                                                        worksheetService;
+    protected ScreenService                             panelService, testService,
+                                                        userService, worksheetService;
 
     public AnalysisTab(ScreenDefInt def, Window window) {
         service = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
+        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
@@ -188,25 +202,98 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onStateChange(StateChangeEvent<State> event) {
                 test.setEnabled(canEdit() &&
-                            EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                            EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                    .contains(event.getState()));
                 test.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
+        test.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
+            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
+                int                     i;
+                Integer                 sampleType, testPanelId, sepIndex;
+                String                  value, flag;
+                ArrayList<Item<Integer>> model;
+                FormErrorException      feE;
+                Item<Integer>           row;
+                DictionaryDO            stDO;
+                PanelDO                 pDO;
+                PanelManager            pMan;
+                TestManager             tMan;
+                TestTypeOfSampleDO      ttosDO;
+                TestTypeOfSampleManager ttosMan;
+                TestViewDO              tVDO;
+
+                value = event.getMatch();
+                if (value.matches("[tp][0-9]*\\-[0-9]*")) {
+                    flag = value.substring(0, 1);
+                    sepIndex = value.indexOf("-");
+                    testPanelId = Integer.valueOf(value.substring(1, sepIndex));
+                    sampleType = Integer.valueOf(value.substring(sepIndex + 1));
+                    try {
+                        if (sampleItem.getTypeOfSampleId() == null) {
+                            stDO = DictionaryCache.getEntryFromId(sampleType);
+                            sampleItem.setTypeOfSampleId(stDO.getId());
+                            sampleItem.setTypeOfSample(stDO.getEntry());
+                            ActionEvent.fire(anTab, Action.SAMPLE_TYPE_CHANGED, null);
+                        }
+
+                        row = new Item<Integer>(3);
+                        if ("t".equals(flag)) {
+                            tMan = testService.call("fetchById", testPanelId);
+                            tVDO = tMan.getTest();
+                            ttosMan = tMan.getSampleTypes();
+                            for (i = 0; i < ttosMan.count(); i++) {
+                                ttosDO = ttosMan.getTypeAt(i);
+                                if (ttosDO.getTypeOfSampleId().equals(sampleItem.getTypeOfSampleId())) {
+                                    row.setKey(tVDO.getId());
+                                    row.setCell(0,tVDO.getName());
+                                    row.setCell(1,tVDO.getMethodName());
+                                    row.setCell(2,tVDO.getDescription());
+                                    row.setData(tVDO.getMethodId());
+                                    break;
+                                }
+                            }
+                            if (i == ttosMan.count()) {
+                                feE = new FormErrorException("testMethodSampleTypeMismatch",
+                                                             tVDO.getName()+", "+tVDO.getMethodName(),
+                                                             sampleItem.getTypeOfSample());
+                                com.google.gwt.user.client.Window.alert(feE.getMessage());
+                            }
+                        } else if ("p".equals(flag)) {
+                            pMan = panelService.call("fetchById", testPanelId);
+                            pDO = pMan.getPanel();
+                            row.setKey(pDO.getId());
+                            row.setCell(0,pDO.getName());
+                            row.setCell(2,pDO.getDescription());
+                        }
+                        model = new ArrayList<Item<Integer>>();
+                        model.add(row);
+                        test.setModel(model);
+                        test.setSelectedIndex(0);
+                        test.validateValue();
+                    } catch (Exception e) {
+                        com.google.gwt.user.client.Window.alert(e.getMessage());
+                    }
+                    event.cancel();
+                }
+            }
+        });
+
         test.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                Query query;
-                QueryData field;
-                QueryFieldUtil parser;
-                ArrayList<QueryData> fields;
-                ArrayList<TestMethodVO> autoList;
-                TestMethodVO autoDO;
+                int                     i;
+                Integer                 sampleType;
+                ArrayList<QueryData>    fields;
                 ArrayList<Item<Integer>> model;
-                Integer sampleType;
+                ArrayList<TestMethodVO> autoList;
+                Query                   query;
+                QueryData               field;
+                QueryFieldUtil          parser;
+                Item<Integer>           row;
+                TestMethodVO            autoDO;
 
                 sampleType = sampleItem.getTypeOfSampleId();
-
                 if (sampleType == null) {
                     window.setError(consts.get("sampleItemTypeRequired"));
                     return;
@@ -235,10 +322,10 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     autoList = service.callList("getTestMethodMatches", query);
                     model = new ArrayList<Item<Integer>>();
 
-                    for (int i = 0; i < autoList.size(); i++ ) {
+                    for (i = 0; i < autoList.size(); i++ ) {
                         autoDO = autoList.get(i);
 
-                        Item<Integer> row = new Item<Integer>(autoDO.getTestId(),
+                        row = new Item<Integer>(autoDO.getTestId(),
                                                               autoDO.getTestName(),
                                                               autoDO.getMethodName(),
                                                               autoDO.getTestDescription());
@@ -344,7 +431,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
             public void onStateChange(StateChangeEvent<State> event) {
                 isReportable.setEnabled(canEdit() &&
-                                    EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                    EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
                 isReportable.setQueryMode(event.getState() == State.QUERY);
             }
@@ -556,15 +643,13 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(worksheetTable, new ScreenEventHandler<Row>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetTable.setModel(getWorksheetTableModel());
-
             }
 
             public void onValueChange(ValueChangeEvent<Row> event) {
-
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetTable.setEnabled(false);
+                worksheetTable.setEnabled(true);
             }
         });
 
@@ -585,10 +670,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         addScreenHandler(analysisUserTable, new ScreenEventHandler<Row>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisUserTable.setModel(getAnalysisUserTableModel());
-            }
-
-            public void onValueChange(ValueChangeEvent<Row> event) {
-
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1022,7 +1103,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 row.setCell(0,new AutoCompleteValue(userDO.getSystemUserId(),
                                                           userDO.getSystemUser()));
                 row.setCell(1,userDO.getActionId());
-
+                
                 model.add(row);
             }
         } catch (Exception e) {
@@ -1034,7 +1115,25 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     }
 
     private boolean canEdit() {
-        return (analysis != null && !analysisCancelledId.equals(analysis.getStatusId()) && !analysisReleasedId.equals(analysis.getStatusId()));
+        SectionPermission perm;
+        SectionViewDO     sectionVDO;
+        
+        if (analysis != null) {
+            if (analysis.getSectionId() == null)
+                return true;
+            
+            try {
+                sectionVDO = SectionCache.getSectionFromId(analysis.getSectionId());
+                perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                return !analysisCancelledId.equals(analysis.getStatusId()) &&
+                       !analysisReleasedId.equals(analysis.getStatusId()) &&
+                       perm != null &&
+                       (perm.hasAssignPermission() || perm.hasCompletePermission());
+            } catch (Exception anyE) {
+                com.google.gwt.user.client.Window.alert("canEdit:" + anyE.getMessage());
+            }
+        }
+        return false;
     }
 
     private String formatTreeString(String val) {

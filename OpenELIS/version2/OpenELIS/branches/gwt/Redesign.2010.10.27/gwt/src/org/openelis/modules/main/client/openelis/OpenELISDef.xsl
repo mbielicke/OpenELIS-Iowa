@@ -70,16 +70,9 @@ UIRF Software License are applicable instead of those above.
               <menuItem key="Logout" description="{resource:getString($constants,'logoutDescription')}" icon="logoutIcon" display="{resource:getString($constants,'logout')}" />
             </menu>
             <menu display="{resource:getString($constants,'sample')}">
-<!--				
-<menuItem key="fullLogin" icon="fullLoginIcon" label="{resource:getString($constants,'fullLogin')}" description="{resource:getString($constants,'fullLoginDescription')}"/>
-  -->
- <code>if(OpenELIS.getSystemUserPermission().hasModule("quickentry","SELECT")){</code>
+				 <code>if(OpenELIS.getSystemUserPermission().hasModule("quickentry","SELECT")){</code>
                 <menuItem key="quickEntry" description="{resource:getString($constants,'quickEntryDescription')}" icon="quickEntryIcon" display="{resource:getString($constants,'quickEntry')}" />
-<code>}</code>
-<!--				
-<menuItem key="secondEntry" icon="secondEntryIcon" label="{resource:getString($constants,'secondEntry')}" description="{resource:getString($constants,'secondEntryDescription')}"/>
-  -->
-
+				<code>}</code>
                 <menuItem key="tracking" description="{resource:getString($constants,'trackingDescription')}" icon="trackingIcon" display="{resource:getString($constants,'tracking')}" />
                 <separator/>
                 <code>if(OpenELIS.getSystemUserPermission().hasModule("sampleenvironmental","SELECT")){</code>
@@ -95,11 +88,6 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="newbornScreeningSampleLogin" description="{resource:getString($constants,'newbornScreeningSampleLoginDescription')}" enabled="false" icon="newbornScreeningSampleLoginIcon" display="{resource:getString($constants,'newbornScreeningSampleLogin')}" />
                 <menuItem key="animalSampleLogin" description="{resource:getString($constants,'animalSampleLoginDescription')}" enabled="false" icon="animalSampleLoginIcon" display="{resource:getString($constants,'animalSampleLogin')}" />
                 <menuItem key="ptSampleLogin" description="{resource:getString($constants,'ptSampleLoginDescription')}" enabled="false" icon="ptSampleLoginIcon" display="{resource:getString($constants,'ptSampleLogin')}" />
-                
-<!-- 
-<menuItem key="sampleManagement" icon="sampleManagementIcon" label="{resource:getString($constants,'sampleManagement')}" description="{resource:getString($constants,'sampleManagementDescription')}"/>
-  -->
-
                 <separator/>
                 <menuItem key="project" description="{resource:getString($constants,'projectDescription')}" icon="projectIcon" display="{resource:getString($constants,'project')}" />
                 <code>if(OpenELIS.getSystemUserPermission().hasModule("provider","SELECT")){</code>
@@ -214,32 +202,35 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="pws" description="{resource:getString($constants,'pwsInformationDescription')}" icon="sdwisSampleLoginIcon" display="{resource:getString($constants,'pwsInformation')}" />
                 <code>}</code>
             </menu>
-            <menu display="{resource:getString($constants,'report')}">
-            	<code>if(OpenELIS.getSystemUserPermission().hasModule("test","SELECT")){</code>  
-                <menuItem key="testReport" description="{resource:getString($constants,'testReportDescription')}" enabled="true" icon="testReportIcon" display="{resource:getString($constants,'testReport')}" />
-                <code>}</code>
-                <code>if(OpenELIS.getSystemUserPermission().hasModule("reportfinal","SELECT")){</code>
-                <menuItem key="finalReport" description="{resource:getString($constants,'finalReportDescription')}" enabled="false" icon="finalReportIcon" display="{resource:getString($constants,'finalReport')}" />
-                <code>}</code>
-                <menuItem key="sampleDataExport" description="{resource:getString($constants,'sampleDataExportDescription')}" enabled="false" icon="sampleDataExportIcon" display="{resource:getString($constants,'sampleDataExport')}" />
-                <menuItem key="loginLabel" description="{resource:getString($constants,'loginLabelDescription')}" enabled="false" icon="loginLabelIcon" display="{resource:getString($constants,'loginLabel')}" />
-                <separator/>
-                <menu description="" icon="referenceIcon" display="{resource:getString($constants,'reference')}">
-                    <menuItem key="organizationRef" description="{resource:getString($constants,'organizationDescription')}" enabled="false" icon="organizationIcon" display="{resource:getString($constants,'organization')}" />
-                    <menuItem key="testRef" description="{resource:getString($constants,'testDescription')}" enabled="false" icon="testIconRef" display="{resource:getString($constants,'test')}" />
-                    <menuItem key="QAEventRef" description="{resource:getString($constants,'QAEventDescription')}" enabled="false" icon="QAEventIconRef" display="{resource:getString($constants,'QAEvent')}" />
+           <menu display="{resource:getString($constants,'report')}">
+                <menu  description="" icon="" display="{resource:getString($constants,'login')}">
+	                <code>if(OpenELIS.getSystemUserPermission().hasModule("r_loginlabel","SELECT")){</code>
+                    <menuItem key="sampleLoginLabelReport" description="" icon="" enabled="true" display="{resource:getString($constants,'loginBarcode')}" />
+                    <code>}</code>
+	                <code>if(OpenELIS.getSystemUserPermission().hasModule("r_loginlabelrep","SELECT")){</code>
+                    <menuItem key="sampleLoginLabelAdditionalReport" description="" icon="" enabled="true" display="{resource:getString($constants,'loginBarcodeAdd')}" />
+					<code>}</code>                    
+                    <menuItem key="verificationReport" description="" icon="" enabled="true" display="{resource:getString($constants,'verificationReport')}" />
+                    <menuItem key="testRequestFormReport" description="" icon="" enabled="false" display="{resource:getString($constants,'TRFReport')}" />
                 </menu>
-                <menu description="" icon="summaryIcon" display="{resource:getString($constants,'summary')}">
-                    <menuItem key="QAByOrganization" description="{resource:getString($constants,'QAByOrganizationDescription')}" enabled="false" icon="QAByOrganizationIcon" display="{resource:getString($constants,'QAByOrganization')}" />
-                    <menuItem key="testCountByFacility" description="{resource:getString($constants,'testCountByFacilityDescription')}" enabled="false" icon="testCountByFacilityIcon" display="{resource:getString($constants,'testCountByFacility')}" />
-                    <menuItem key="turnaround" description="{resource:getString($constants,'turnaroundDescription')}" enabled="false" icon="turnaroundIcon" display="{resource:getString($constants,'turnaround')}" />
-                    <menuItem key="positiveTestCount" description="{resource:getString($constants,'positiveTestCountDescription')}" enabled="false" icon="positiveTestCountIcon" display="{resource:getString($constants,'positiveTestCount')}" />
+                <menu description="" icon="" display="{resource:getString($constants,'reference')}">
+                    <menuItem key="testReport" description="" icon="" enabled="true" display="{resource:getString($constants,'testReport')}" />
+                    <menuItem key="qaEventReport" description="" icon="" enabled="false" display="{resource:getString($constants,'QAEventReport')}" />
+                    <menuItem key="organizationRef" description="" icon="" enabled="false" display="{resource:getString($constants,'organization')}" />
+                </menu>
+                <menu description="" icon="" display="{resource:getString($constants,'summary')}">
+                    <menuItem key="sampleInhouseReport" description="" icon="" enabled="false" display="{resource:getString($constants,'sampleInhouseReport')}" />
+	                <menuItem key="sampleDataExport" description="" icon="" enabled="false" display="{resource:getString($constants,'sampleDataExport')}" />
+                    <menuItem key="QAByOrganization" description="" icon="" enabled="false" display="{resource:getString($constants,'QAByOrganization')}" />
+                    <menuItem key="testCountByFacility" description="" icon="" enabled="false" display="{resource:getString($constants,'testCountByFacility')}" />
+                    <menuItem key="turnaround" description="" icon="" enabled="false" display="{resource:getString($constants,'turnaround')}" />
+                    <menuItem key="finalReport" description="" icon="" enabled="true" display="{resource:getString($constants,'finalReport')}" />
                 </menu>
             </menu>
           </menuBar>
         </AbsolutePanel>
         <HorizontalPanel>
-          <VerticalPanel key="favoritesPanel" width="230px" style="favoritesMenuContainer" visible="false">
+          <VerticalPanel key="favoritesPanel" height="100%" width="230px" style="favoritesMenuContainer" visible="false">
             <HorizontalPanel width="100%" height="20px" style="FavHeader">
               <text style="ScreenWindowLabel">Favorites</text>
               <widget halign="right">

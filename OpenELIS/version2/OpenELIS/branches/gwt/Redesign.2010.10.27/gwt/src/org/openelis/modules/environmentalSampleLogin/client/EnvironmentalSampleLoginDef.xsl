@@ -97,7 +97,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>
-              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},billTo" field="Integer" required="true" />
+              <textbox key="{meta:getAccessionNumber()}" width="75" tab="{meta:getOrderId()},sampleItemTabPanel" field="Integer" required="true" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'orderNum')" />:
               </text>
@@ -156,7 +156,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'phone')" />:
                 </text>
-                <textbox key="{meta:getEnvCollectorPhone()}" width="120" max="21" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}" field="String" />
+                <textbox key="{meta:getEnvCollectorPhone()}" width="120" max="21" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" field="String" />
               </row>
               <row>
                 <text style="Prompt">
@@ -171,7 +171,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'desc')" />:
                 </text>
-                <textbox key="{meta:getEnvDescription()}" width="315" max="40" tab="itemsTestsTree,{meta:getEnvLocation()}" field="String" />
+                <textbox key="{meta:getEnvDescription()}" width="315" max="40" tab="{meta:getProjectName()},{meta:getEnvLocation()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>
@@ -182,7 +182,7 @@ UIRF Software License are applicable instead of those above.
               </text>
               <TablePanel padding="0" spacing="0">
                 <row>
-                  <tree key="itemsTestsTree" rows="4" vscroll="ALWAYS" hscroll="ALWAYS" tab="{meta:getProjectName()},{meta:getEnvDescription()}">
+                  <tree key="itemsTestsTree" rows="4" vscroll="ALWAYS" hscroll="ALWAYS" tab="sampleItemTabPanel,{meta:getBillTo()}">
                     <columns>
                       <col width="280" header="{resource:getString($constants,'itemAnalyses')}" />
                       <col width="130" header="{resource:getString($constants,'typeStatus')}" />
@@ -227,7 +227,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'project')" />:
                   </text>
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getProjectName()}" width="175" case="LOWER" tab="{meta:getOrgName()},itemsTestsTree">
+                    <autoComplete key="{meta:getProjectName()}" width="175" case="LOWER" tab="{meta:getOrgName()},{meta:getEnvDescription()}">
                       <col width="150" header="{resource:getString($constants,'name')}" />
                       <col width="275" header="{resource:getString($constants,'description')}" />
                     </autoComplete>
@@ -257,7 +257,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'billTo')" />:
                   </text>
                   <HorizontalPanel>
-                    <autoComplete key="{meta:getBillTo()}" width="175" case="UPPER" tab="sampleItemTabPanel,{meta:getOrgName()}" >
+                    <autoComplete key="{meta:getBillTo()}" width="175" case="UPPER" tab="itemsTestsTree,{meta:getOrgName()}" >
                       <col width="200" header="{resource:getString($constants,'name')}" />
                       <col width="130" header="{resource:getString($constants,'street')}" />
                       <col width="120" header="{resource:getString($constants,'city')}" />

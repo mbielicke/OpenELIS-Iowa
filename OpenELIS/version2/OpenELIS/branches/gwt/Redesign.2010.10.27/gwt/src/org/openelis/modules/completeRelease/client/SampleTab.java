@@ -21,11 +21,11 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
 public class SampleTab extends Screen {
 	
-	TextBox<Integer> accessionNumber, orderNumber;
+	TextBox<Integer> orderNumber;
 	TextBox<Datetime> collectedTime;
 	Calendar collectedDate,receivedDate;
 	Dropdown<Integer> statusId;
-	TextBox clientReference;
+	TextBox accessionNumber, clientReference;
 	
 	SampleManager manager;
 	
@@ -39,19 +39,28 @@ public class SampleTab extends Screen {
 	}
 	
 	public void initialize() {
-        accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
-        addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
+        accessionNumber = (TextBox)def.getWidget(SampleMeta.getAccessionNumber());
+        addScreenHandler(accessionNumber, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumber.setValue(manager.getSample().getAccessionNumber());
             }
 
-            public void onValueChange(final ValueChangeEvent<Integer> event) {
-                try {
-                    manager.getSample().setAccessionNumber(event.getValue());
-                    //manager.validateAccessionNumber(manager.getSample());
+            public void onValueChange(final ValueChangeEvent<String> event) {
+                int    index;
+                String val;
 
-                //} catch (ValidationErrorsList e) {
-                 //   showErrors(e);
+                try {
+                    val = event.getValue();
+                    //
+                    // Trim the Sample Item ID from the end of the bar coded
+                    // accession number
+                    //
+                    index = val.indexOf("-");
+                    if (index != -1)
+                        val = val.substring(0, index);
+                    accessionNumber.setValue(val);
+
+                    manager.getSample().setAccessionNumber(Integer.valueOf(val));
                 } catch (Exception e) {
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }

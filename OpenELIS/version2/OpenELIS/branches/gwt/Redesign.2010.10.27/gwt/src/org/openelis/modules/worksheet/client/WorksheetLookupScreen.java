@@ -324,7 +324,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
             for (i = 0; i < list.size(); i++) {
                 worksheetRow = list.get(i);
                 
-                row = new Row(11);
+                row = new Row(6);
                 //row.key = worksheetRow.getId();
                 row.setCell(0,worksheetRow.getId());
                 row.setCell(1,worksheetRow.getSystemUser());

@@ -62,6 +62,24 @@ UIRF Software License are applicable instead of those above.
     <servlet-class>org.openelis.gwt.server.ScreenControllerServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
+<<<<<<< .working
+
+=======
+  
+>>>>>>> .merge-right.r4911
+  <servlet>
+    <servlet-name>ReportServlet</servlet-name>
+    <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+<<<<<<< .working
+
+  <servlet> 
+      <servlet-name>remoteLoggingServiceImpl</servlet-name>
+      <load-on-startup></load-on-startup>
+      <servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class>
+  </servlet>
+=======
 
   <servlet>
     <servlet-name>ReportServlet</servlet-name>
@@ -74,6 +92,7 @@ UIRF Software License are applicable instead of those above.
       <load-on-startup></load-on-startup>
       <servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class>
   </servlet>
+>>>>>>> .merge-right.r4911
 
   <servlet-mapping>
     <servlet-name>OpenELISServlet</servlet-name>
@@ -86,9 +105,20 @@ UIRF Software License are applicable instead of those above.
   </servlet-mapping>
   
   <servlet-mapping>
+<<<<<<< .working
     <!-- we need to define this again because FF uses "/report" and GC uses "/openelis/report" -->
     <servlet-name>ReportServlet</servlet-name>
     <url-pattern>/openelis/report</url-pattern>
+=======
+    <servlet-name>ReportServlet</servlet-name>
+    <url-pattern>/report</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <!-- we need to define this again because FF uses "/report" and GC uses "/openelis/report" -->
+    <servlet-name>ReportServlet</servlet-name>
+    <url-pattern>/openelis/report</url-pattern>
+>>>>>>> .merge-right.r4911
   </servlet-mapping>
 
   <servlet-mapping>

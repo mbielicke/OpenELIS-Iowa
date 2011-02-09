@@ -36,7 +36,6 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestDO;
@@ -56,10 +55,10 @@ import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -77,7 +76,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
@@ -1944,7 +1942,7 @@ public class TestScreen extends Screen {
             if (size > 0) {
                 commit = com.google.gwt.user.client.Window.confirm(consts.get("resultGroupsEmpty"));
                 if (commit) {
-                    for (i = 0; i < size; i++ ) {
+                    for (i = size-1; i >= 0 ; i-- ) {
                         manager.getTestResults().removeResultGroup(list.get(i));
                     }
                 }

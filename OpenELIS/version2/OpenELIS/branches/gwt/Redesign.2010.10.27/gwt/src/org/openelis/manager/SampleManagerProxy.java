@@ -146,7 +146,7 @@ public class SampleManagerProxy {
         }
         
         // every unreleased sample needs an internal comment describing the reason
-        if (man.unreleaseSample) {
+        if (man.unreleaseWithNotes) {
             noteMan = man.getInternalNotes();
             if (noteMan == null || noteMan.count() == 0)
                 errorsList.add(new FormErrorException("unreleaseNoNoteException"));

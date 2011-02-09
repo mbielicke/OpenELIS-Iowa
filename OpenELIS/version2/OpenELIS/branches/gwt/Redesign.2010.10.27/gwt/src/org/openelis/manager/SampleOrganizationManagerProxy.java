@@ -89,9 +89,6 @@ public class SampleOrganizationManagerProxy {
             errorsList.add(new FormErrorException("multipleReportToException"));
         
         if(validateReportTo && numReportTo == 0)
-            errorsList.add(new FieldErrorWarning("reportToMissingWarning", SampleMeta.getOrgName()));
-            
-        if(numBillTo == 0)
-            errorsList.add(new FieldErrorWarning("billToMissingWarning", SampleMeta.getBillTo()));
+            errorsList.add(new FieldErrorWarning("reportToMissingWarning", SampleMeta.getOrgName()));           
     }
 }

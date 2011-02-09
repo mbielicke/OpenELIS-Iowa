@@ -29,12 +29,15 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -66,6 +69,7 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
 
 import com.google.gwt.core.client.GWT;
@@ -84,7 +88,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     private boolean                                 loaded;
 
     protected Button                                addResultButton, removeResultButton,
-                                                    suggestionsButton, popoutTable;
+                    suggestionsButton, popoutTable;
     protected Table                                 testResultsTable;
     private ArrayList<Column>                       resultTableCols;
 
@@ -102,16 +106,16 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private Integer                                 analysisCancelledId, analysisReleasedId,
                                                     testAnalyteReadOnlyId, testAnalyteRequiredId,
-                                                    addedTestAnalyteId, addedAnalyteId,
-                                                    typeAlphaLower, typeAlphaUpper;
+                                                    addedTestAnalyteId, addedAnalyteId, 
+                                                    typeDictionary;
     private String                                  addedAnalyteName;
 
-    private ReflexTestUtility                       reflexTestUtil;
+    private TestReflexUtility                       reflexTestUtil;
 
     public ResultTab(ScreenDefInt def, Window window, Screen parentScreen) {
         setDefinition(def);
         setWindow(window);
-        
+
         this.parentScreen = parentScreen;
 
         initialize();
@@ -131,7 +135,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private void initialize() {
         final ResultTab resultTab = this;
-        
+
         testResultsTable = (Table)def.getWidget("testResultsTable");
         addScreenHandler(testResultsTable, new ScreenEventHandler<ArrayList<Row>>() {
             public void onDataChange(DataChangeEvent event) {
@@ -142,8 +146,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testResultsTable.setEnabled(canEdit() &&
-                                        EnumSet.of(State.ADD, State.UPDATE)
+                testResultsTable.setEnabled(EnumSet.of(State.ADD, State.UPDATE)
                                                .contains(event.getState()));
             }
         });
@@ -152,8 +155,9 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
                 boolean isHeader;
                 Row row;
-                
+
                 if (analysis.getUnitOfMeasureId() == null) {
+                	window.setError(consts.get("unitOfMeasureException"));
                     addResultButton.setEnabled(false);
                     removeResultButton.setEnabled(false);
                 }
@@ -188,13 +192,17 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
         testResultsTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                boolean           isHeaderRow, enableButton;
-                int               r, c;
-                Row               row;
-                ResultViewDO      data;
+                boolean isHeaderRow, enableButton;
+                int r, c;
+                Row row;
+                ResultViewDO data;
+                SectionViewDO section;
                 TestAnalyteViewDO testAnalyte;
+                SectionPermission perm;
 
-                isHeaderRow  = false;
+                perm = null;
+                section = null;
+                isHeaderRow = false;
                 enableButton = true;
 
                 r = event.getRow();
@@ -202,7 +210,30 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 row = testResultsTable.getRowAt(r);
                 isHeaderRow = ((Boolean)row.getData()).booleanValue();
 
+                if (analysis.getSectionId() != null) {
+                	try {
+                		section = SectionCache.getSectionFromId(analysis.getSectionId());
+                		perm = OpenELIS.getSystemUserPermission().getSection(section.getName());
+                	} catch (Exception e) {
+                		section = null;
+                		perm = null;
+                	}
+                }
+                
                 if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r)) {
+                    event.cancel();
+                    enableButton = false;
+                } else if (section == null) { 
+					window.setError(consts.get("noSectionsForTest"));
+                    event.cancel();
+                    enableButton = false;
+                } else if (perm == null || !perm.hasCompletePermission()) {
+                	window.setError(consts.get("noCompleteTestPermission"));
+                    event.cancel();
+                    enableButton = false;
+                } else if (analysisCancelledId.equals(analysis.getStatusId()) ||
+                		   analysisReleasedId.equals(analysis.getStatusId())) {
+                	window.setError(consts.get("analysisCancledOrReleased"));
                     event.cancel();
                     enableButton = false;
                 } else {
@@ -210,17 +241,19 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         data = displayManager.getObjectAt(r, 0);
                     else
                         data = displayManager.getObjectAt(r, c - 2);
-                    
-                    testAnalyte = manager.getTestAnalyte(data.getRowGroup(), data.getTestAnalyteId());
+
+                    testAnalyte = manager.getTestAnalyte(data.getRowGroup(),
+                                                         data.getTestAnalyteId());
                     if (testAnalyte == null) {
                         window.setError(consts.get("testAnalyteDefinitionChanged"));
                         event.cancel();
                         enableButton = false;
-                    } else if (testAnalyteReadOnlyId.equals(testAnalyte.getTypeId()) && c > 0) {                        
+                    } else if (testAnalyteReadOnlyId.equals(testAnalyte.getTypeId()) && c > 0) {
                         event.cancel();
                         enableButton = false;
-                    } else if (analysis.getUnitOfMeasureId() == null &&                   
-                               !manager.getResultValidator(data.getResultGroup()).noUnitsSpecified()) {
+                    } else if (analysis.getUnitOfMeasureId() == null &&
+                               !manager.getResultValidator(data.getResultGroup())
+                                       .noUnitsSpecified()) {
                         window.setError(consts.get("unitOfMeasureException"));
                         event.cancel();
                         enableButton = false;
@@ -233,132 +266,147 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         });
 
         testResultsTable.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int row, col;
-                String val;
-                ResultViewDO data;
-                Integer testResultId;
-                TestResultDO testResult;
+        	public void onCellUpdated(CellEditedEvent event) {
+        		int row, col;
+        		String val;
+        		ResultViewDO data;
+        		Integer testResultId;
+        		TestResultDO testResult;
 
-                row = event.getRow();
-                col = event.getCol();
-                data = null;
+        		row = event.getRow();
+        		col = event.getCol();
+        		data = null;
 
-                val = (String)testResultsTable.getValueAt(row, col);
+        		val = (String)testResultsTable.getValueAt(row, col);
+        		if (col == 0) {
+        			data = displayManager.getObjectAt(row, 0);
+        			data.setIsReportable(val);
+        		} else if ( !DataBaseUtil.isEmpty(val)) {
+        			data = displayManager.getObjectAt(row, col - 2);
 
-                if (col == 0)
-                    data = displayManager.getObjectAt(row, 0);
-                else
-                    data = displayManager.getObjectAt(row, col - 2);
+        			if (col == 0) {
+		       			data = displayManager.getObjectAt(row, 0);
+        				data.setIsReportable(val);
+        			} else if ( !DataBaseUtil.isEmpty(val)) {
+            			data = displayManager.getObjectAt(row, col - 2);
+        				
+        				try {
+        					testResultId = manager.validateResultValue(data.getResultGroup(),
+        							                                   analysis.getUnitOfMeasureId(),
+        							                                   val);
+        					testResult = manager.getTestResultList().get(testResultId);
 
-                if (col == 0) {
-                    data.setIsReportable(val);
+        					data.setTypeId(testResult.getTypeId());
+        					data.setTestResultId(testResult.getId());
 
-                } else if ( !DataBaseUtil.isEmpty(val)) {
-                    try {
-                        testResultId = manager.validateResultValue(data.getResultGroup(),
-                                                                   analysis.getUnitOfMeasureId(), val);
-                        testResult = manager.getTestResultList().get(testResultId);
+        					val = manager.formatResultValue(data.getResultGroup(),
+        							                        analysis.getUnitOfMeasureId(),
+        							                        testResultId, val);
+        					data.setValue(val);
 
-                        data.setTypeId(testResult.getTypeId());
-                        data.setTestResultId(testResult.getId());
-                        //if it's alpha we need to set it to the right case                        
-                        val = manager.formatResultValue(data.getResultGroup(),
-                                                          analysis.getUnitOfMeasureId(), testResultId, val);
-                        //val = formatValue(testResult, val);
-                        data.setValue(val);
-                        testResultsTable.setValueAt(row, col, val);
+        					if ( !typeDictionary.equals(testResult.getTypeId()))
+        						testResultsTable.setValueAt(row, col, val);
 
-                        if (reflexTestUtil == null){
-                            reflexTestUtil = new ReflexTestUtility();
-                        
-                            reflexTestUtil.addActionHandler(new ActionHandler<ReflexTestUtility.Action>(){
-                                public void onAction(ActionEvent<ReflexTestUtility.Action> event) {
-                                    ActionEvent.fire(resultTab, Action.REFLEX_ADDED, event.getData());
-                                }
-                            });
-                        }
+        					if (reflexTestUtil == null) {
+        						reflexTestUtil = new TestReflexUtility();
 
-                        reflexTestUtil.setScreen(parentScreen);
-                        reflexTestUtil.resultEntered(bundle, data);
+        						reflexTestUtil.addActionHandler(new ActionHandler<TestReflexUtility.Action>() {
+        							public void onAction(ActionEvent<TestReflexUtility.Action> event) {
+        								if (((ArrayList<SampleDataBundle>)event.getData()).size() > 0)
+        									ActionEvent.fire(resultTab, Action.REFLEX_ADDED,
+        											event.getData());
+        							}
+        						});
+        					}
 
-                    } catch (ParseException e) {
-                        testResultsTable.clearExceptions(row, col);
-                        testResultsTable.addException(row, col, e);
-                        data.setTypeId(null);
-                        data.setTestResultId(null);
-                    } catch (Exception e) {
-                        com.google.gwt.user.client.Window.alert(e.getMessage());
-                    }
-                } else {
-                    testResultsTable.clearExceptions(row, col);
-                    data.setValue(val);
-                    data.setTypeId(null);
-                    data.setTestResultId(null);
-                }
-            }
+        					reflexTestUtil.setScreen(parentScreen);
+        					reflexTestUtil.resultEntered(bundle, data);
+
+        				} catch (ParseException e) {
+        					testResultsTable.clearExceptions(row, col);
+        					testResultsTable.addException(row, col, e);
+        					data.setTypeId(null);
+        					data.setTestResultId(null);
+        				} catch (Exception e) {
+        					com.google.gwt.user.client.Window.alert(e.getMessage());
+        				}
+        			} else {
+        				testResultsTable.clearExceptions(row, col);
+        				data = displayManager.getObjectAt(row, col - 2);
+        				data.setValue(val);
+        				data.setTypeId(null);
+        				data.setTestResultId(null);
+        			}
+        		}
+        	}
         });
 
         testResultsTable.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
-                int index, prowIndex, numCols;
-                Integer rowGroup;
-                String val;
-                Row    row;
-                ResultViewDO data;
-                TestResultDO testResult;
+        	public void onRowAdded(RowAddedEvent event) {
+        		int index, prowIndex, numCols;
+        		Integer rowGroup;
+        		String val;
+        		Row    row;
+        		ResultViewDO data;
+        		TestResultDO testResult;
 
-                index = event.getIndex();
-                row = event.getRow();
-                prowIndex = index - 1;
+        		index = event.getIndex();
+        		row = event.getRow();
+        		prowIndex = index - 1;
 
-                rowGroup = displayManager.getObjectAt(prowIndex, 0).getRowGroup();
+        		rowGroup = displayManager.getObjectAt(prowIndex, 0).getRowGroup();
 
-                manager.addRowAt(displayManager.getIndexAt(prowIndex) + 1, rowGroup,
-                                 addedTestAnalyteId, addedAnalyteId, addedAnalyteName);
+        		manager.addRowAt(displayManager.getIndexAt(prowIndex) + 1, rowGroup,
+        				addedTestAnalyteId, addedAnalyteId, addedAnalyteName);
 
-                addedTestAnalyteId = null;
-                addedAnalyteId = null;
-                addedAnalyteName = null;
+        		addedTestAnalyteId = null;
+        		addedAnalyteId = null;
+        		addedAnalyteName = null;
 
-                displayManager.setDataGrid(manager.getResults());
+        		displayManager.setDataGrid(manager.getResults());
 
-                data = null;
-                numCols = displayManager.columnCount(index);
-                manager.setDefaultsLoaded(false);
-                for (int i = 2; i < numCols; i++ ) {
-                    data = displayManager.getObjectAt(index, i - 2);
-                    row.setData(data.getId());
-                    try {
-                        val = getDefaultValue(data, analysis.getUnitOfMeasureId());
-                        testResultsTable.setValueAt(index, i, val);   
-                        
-                        if (!DataBaseUtil.isEmpty(val)) {
-                            data.setValue(val);
-                            displayManager.validateResultValue(manager, data,
-                                                               analysis.getUnitOfMeasureId());
-                            
-                            testResult = displayManager.validateResultValue(manager, data,
-                                                               analysis.getUnitOfMeasureId());
-                            //val = formatValue(testResult, val);
-                            val = manager.formatResultValue(data.getResultGroup(),
-                                                            analysis.getUnitOfMeasureId(),
-                                                            testResult.getId(), val);
-                            data.setValue(val);
-                            testResultsTable.setValueAt(index, i, val);   
-                        }
-                    } catch (ParseException e) {
-                        testResultsTable.clearExceptions(index, i);
-                        testResultsTable.addException(index, i, e);
-                        data.setTypeId(null);
-                        data.setTestResultId(null);
+        		data = null;
+        		numCols = displayManager.columnCount(index);
+        		manager.setDefaultsLoaded(false);
+        		for (int i = 2; i < numCols; i++ ) {
+        			data = displayManager.getObjectAt(index, i - 2);
+        			row.setData(data.getId());
+        			try {
+        				val = getDefaultValue(data, analysis.getUnitOfMeasureId());
+        				testResultsTable.setValueAt(index, i, val);
 
-                    } catch (Exception e) {
-                        com.google.gwt.user.client.Window.alert(e.getMessage());
-                    }
-                }
-                manager.setDefaultsLoaded(true);
-            }
+        				if ( !DataBaseUtil.isEmpty(val)) {
+        					// data.setValue(val);
+        					// displayManager.validateResultValue(manager, data,
+        					// analysis.getUnitOfMeasureId());
+
+        					testResult = displayManager.validateResultValue(manager,
+        							                                        data,
+        							                                        analysis.getUnitOfMeasureId());
+        					val = manager.formatResultValue(data.getResultGroup(),
+        							                        analysis.getUnitOfMeasureId(),
+        							                        testResult.getId(), val);
+        					data.setValue(val);
+
+        					if (typeDictionary.equals(testResult.getTypeId()))
+        						val = DictionaryCache.getEntryFromId(Integer.parseInt(val))
+        						.getEntry();
+
+        					testResultsTable.setValueAt(index, i, val);
+
+        				}
+        			} catch (ParseException e) {
+        				testResultsTable.clearExceptions(index, i);
+        				testResultsTable.addException(index, i, e);
+        				data.setTypeId(null);
+        				data.setTestResultId(null);
+
+        			} catch (Exception e) {
+        				com.google.gwt.user.client.Window.alert(e.getMessage());
+        			}
+        		}
+        		manager.setDefaultsLoaded(true);
+        	}
         });
 
         testResultsTable.addRowDeletedHandler(new RowDeletedHandler() {
@@ -483,9 +531,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         ArrayList<Row> model;
         Row hrow, row;
         ResultViewDO resultDO;
-        boolean headerFilled;
-        String val;
-        boolean validateResults;
+        boolean headerFilled, validateResults;
+        String val, entry;
 
         //
         // we are assuming there will be at least 1 non supplemental
@@ -525,15 +572,26 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     }
 
                     val = resultDO.getValue();
+                    entry = null;
+                    if (typeDictionary.equals(resultDO.getTypeId())) {
+                        val = DictionaryCache.getEntryFromId(Integer.parseInt(val)).getEntry();
+                        entry = val;
+                    }
                     row.setCell(c + 2,val);
 
                     if (validateResults && !DataBaseUtil.isEmpty(val)) {
+                        //resultDO.setValue(val);
+                        testResult = displayManager.validateResultValue(manager,
+                                                                        resultDO,
+                                                                        analysis.getUnitOfMeasureId());
+                        val = manager.formatResultValue(resultDO.getResultGroup(),
+                                                              analysis.getUnitOfMeasureId(),
+                                                              testResult.getId(), val);
                         resultDO.setValue(val);
-                        testResult = displayManager.validateResultValue(manager, resultDO,
-                                                           analysis.getUnitOfMeasureId());
-                        val = formatValue(testResult, val);
-                        resultDO.setValue(val);
-                        row.setCell(c + 2,val);
+                        if (!typeDictionary.equals(resultDO.getTypeId()))
+                            row.setCell(c + 2,val); 
+                        else
+                            row.setCell(c + 2,entry); 
                     }
                 } catch (ParseException e) {
                     //row.cells.get(c + 2).clearExceptions();
@@ -670,7 +728,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
             modal.setContent(resultPopoutScreen);
             resultPopoutScreen.setData(bundle);
-            resultPopoutScreen.setScreenState(state);
+            resultPopoutScreen.setState(state);
             resultPopoutScreen.draw();
 
             modal.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
@@ -698,9 +756,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
             testAnalyteReadOnlyId = DictionaryCache.getIdFromSystemName("test_analyte_read_only");
             testAnalyteRequiredId = DictionaryCache.getIdFromSystemName("test_analyte_req");
-            typeAlphaLower = DictionaryCache.getIdFromSystemName("test_res_type_alpha_lower");
-            typeAlphaUpper = DictionaryCache.getIdFromSystemName("test_res_type_alpha_upper");
-
+            typeDictionary = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
         } catch (Exception e) {
             com.google.gwt.user.client.Window.alert(e.getMessage());
             window.close();
@@ -710,7 +766,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     private boolean onlyRowUnderHeading(int index) {
         boolean prevHeader, postHeader;
         int size;
-        
+
         size = testResultsTable.getRowCount();
         if (index == 0)
             prevHeader = false;
@@ -720,25 +776,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             postHeader = true;
         else
             postHeader = (Boolean)testResultsTable.getRowAt(index + 1).getData();
-                    
+
         return prevHeader && postHeader;
-    }
-
-    private boolean canEdit() {
-        return (analysis != null && !analysisCancelledId.equals(analysis.getStatusId()) && !analysisReleasedId.equals(analysis.getStatusId()));
-    }
-    
-    private String formatValue(TestResultDO testResultDO, String value){
-        if(typeAlphaUpper.equals(testResultDO.getTypeId()))
-            return value.toUpperCase();
-        else if(typeAlphaLower.equals(testResultDO.getTypeId()))
-            return value.toLowerCase();
-        else
-            return value;
-    }
-
-    public void setScreenState(State state) {
-        setState(state);
     }
 
     public void setData(SampleDataBundle data) {

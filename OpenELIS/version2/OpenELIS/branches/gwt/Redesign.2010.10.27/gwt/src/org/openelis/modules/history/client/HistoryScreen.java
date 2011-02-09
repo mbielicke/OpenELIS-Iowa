@@ -250,7 +250,8 @@ public class HistoryScreen extends Screen {
                         refTable = node.getAttributes().getNamedItem("refTable");                        
                         child = new Node(2);                        
                         child.setCell(0,node.getNodeName());
-                        child.setCell(1,node.getFirstChild().getNodeValue());
+                        if(node.getFirstChild() != null)
+	                        child.setCell(1,node.getFirstChild().getNodeValue());
                         if (refTable != null) { 
                             child.setData(refTable.getNodeValue());          
                             child.setType("linkfields");

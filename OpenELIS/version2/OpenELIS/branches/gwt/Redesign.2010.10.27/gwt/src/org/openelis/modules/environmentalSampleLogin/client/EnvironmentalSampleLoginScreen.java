@@ -992,12 +992,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             
             DataChangeEvent.fire(this);
             setFocus(orderNumber);
-            window.clearStatus();
-
         } catch (Exception e) {
             com.google.gwt.user.client.Window.alert(e.getMessage());
         }
-
         window.clearStatus();
     }
 
@@ -1031,7 +1028,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-
                 if ( !e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
@@ -1049,11 +1045,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-
                 if ( !e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
                 com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
             }
         }
     }
@@ -1088,6 +1084,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 showErrors(e);
             } catch (Exception e) {
                 com.google.gwt.user.client.Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
             }
         }
     }
@@ -1112,30 +1109,26 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             window.setDone(consts.get("addAborted"));
 
         } else if (state == State.UPDATE) {
-            try {
-                manager = manager.abortUpdate();
-                
-                if(SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())){
-                    setState(State.DEFAULT);
-                    manager = SampleManager.getInstance();
-                    manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-                    
-                }else{
-                    setState(State.DISPLAY);
-                }
-                
-                DataChangeEvent.fire(this);
-                window.clearStatus();
+			try {
+				manager = manager.abortUpdate();
 
-            } catch (Exception e) {
-                com.google.gwt.user.client.Window.alert(e.getMessage());
-                window.clearStatus();
-            }
-
-        } else {
-            window.clearStatus();
-        }
-    }
+				if (SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) {
+					setState(State.DEFAULT);
+					manager = SampleManager.getInstance();
+					manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+				} else {
+					setState(State.DISPLAY);
+				}
+				DataChangeEvent.fire(this);
+				window.clearStatus();
+			} catch (Exception e) {
+				com.google.gwt.user.client.Window.alert(e.getMessage());
+				window.clearStatus();
+			}
+		} else {
+			window.clearStatus();
+		}
+	}
     
     protected void onOrderLookupClick() {
         Integer id;
@@ -1213,6 +1206,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
     
     public ArrayList<QueryData> getQueryFields() {
+        int                  i;
         ArrayList<QueryData> fields, auxFields;
         QueryData field;
         
@@ -1231,7 +1225,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             fields.add(field);
             
             // add aux fields
-            for (int i = 0; i < auxFields.size(); i++ ) {                
+            for (i = 0; i < auxFields.size(); i++ ) {                
                 fields.add(auxFields.get(i));            
             } 
         }

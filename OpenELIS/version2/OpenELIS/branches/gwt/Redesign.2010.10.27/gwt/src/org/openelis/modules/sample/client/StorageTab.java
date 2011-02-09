@@ -29,11 +29,14 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -318,23 +321,31 @@ public class StorageTab extends Screen {
     }
 
     public boolean canEdit() {
-        try{
-        AnalysisViewDO anDO;
+        AnalysisViewDO    anDO;
+        SectionPermission perm;
+        SectionViewDO     sectionVDO;
+
         if (bundle != null) {
             if (SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())) {
-                anDO = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex());
-                
-                return (anDO != null &&
-                        !analysisCancelledId.equals(anDO.getStatusId()) && !analysisReleasedId.equals(anDO.getStatusId()));
-            } else
+                try {
+                    anDO = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex());
+                    if (anDO != null && anDO.getSectionId() != null) {
+                        sectionVDO = SectionCache.getSectionFromId(anDO.getSectionId());
+                        perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                        return !analysisCancelledId.equals(anDO.getStatusId()) &&
+                               perm != null &&
+                               (perm.hasAssignPermission() || perm.hasCompletePermission());
+                    }
+                } catch(Exception e) {
+                    com.google.gwt.user.client.Window.alert("storageTab canEdit: "+e.getMessage());
+                    return false;
+                }
+            } else {
                 return true;
+            }
         }
-        
+            
         return false;
-        }catch(Exception e){
-            com.google.gwt.user.client.Window.alert("storageTab canEdit: "+e.getMessage());
-            return false;
-        }
     }
 
     private void initializeDropdowns() {

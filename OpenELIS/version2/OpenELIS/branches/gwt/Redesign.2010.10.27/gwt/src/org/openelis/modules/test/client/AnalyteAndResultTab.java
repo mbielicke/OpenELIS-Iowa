@@ -1864,16 +1864,17 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         TestResultManager man;
         
         man = null;
-        try {
-           man = manager.getTestResults();
-        } catch (Exception e) {
-            com.google.gwt.user.client.Window.alert(e.getMessage());
-            e.printStackTrace();
-        }
         model = new ArrayList<Row>();
 
         if (manager == null)
             return model;
+        
+        try {
+            man = manager.getTestResults();
+         } catch (Exception e) {
+             com.google.gwt.user.client.Window.alert(e.getMessage());
+             e.printStackTrace();
+         }
 
         size = man.getResultGroupSize(group + 1);
         for (int i = 0; i < size; i++ ) {

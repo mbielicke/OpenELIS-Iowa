@@ -89,17 +89,17 @@ UIRF Software License are applicable instead of those above.
                     </Grid>
                   </button>
                 </menuDisplay>
-                <menuItem key="unreleaseAnalysis" enabled="false" icon="unreleaseIcon" display="Unrelease Analysis" />
-                <menu>
+                <menuItem key="unreleaseAnalysis" enabled="false" icon="unreleaseIcon" display="{resource:getString($constants,'unreleaseAnalysisCaption')}" />
+                <menuItem key="previewFinalReport" enabled="true" description="" icon="unreleaseIcon">
   					<menuDisplay>
   				    	<Grid cols="2">
   				    	  <row>
-     				    	<check key="previewReport"/>
-     						<text style="Prompt">Preview Final Report</text>
+     				    	<check key="autoPreview"/>
+     						<label field = "String" key="autoPreviewText" style="Prompt" text = "{resource:getString($constants,'previewFinalReport')}"/>
      					  </row>
      					</Grid>
  					</menuDisplay>
- 				</menu>
+ 				</menuItem>
                 <separator/>
                 <menuItem key="historySample" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySample')}" />
                 <menuItem key="historySampleSpec" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleSpec')}" />

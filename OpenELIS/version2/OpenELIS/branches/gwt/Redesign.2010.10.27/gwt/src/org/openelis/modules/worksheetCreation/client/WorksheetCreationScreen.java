@@ -96,7 +96,7 @@ public class WorksheetCreationScreen extends Screen {
     private boolean                               hasErrors, isTemplateLoaded,
                                                   isSaved, wasExitCalled;
     private int                                   tempId, qcStartIndex;
-    private Integer                               formatId, formatBatch, formatTotal,
+    private Integer                               formatId, formatTotal,
                                                   qcDup, statusWorking, typeFixed,
                                                   typeRand, typeLastWell, typeLastRun,
                                                   typeLastBoth;
@@ -337,7 +337,7 @@ public class WorksheetCreationScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                insertQCLookupButton.setEnabled(false);
+                insertQCLookupButton.setEnabled(true);
             }
         });
 
@@ -415,8 +415,7 @@ public class WorksheetCreationScreen extends Screen {
         ArrayList<Item<Integer>> model;
 
         try {
-            formatBatch = DictionaryCache.getIdFromSystemName("wsheet_num_format_batch");
-            formatTotal = DictionaryCache.getIdFromSystemName("wsheet_num_format_total");
+            formatTotal = DictionaryCache.getIdFromSystemName("wformat_total");
             qcDup = DictionaryCache.getIdFromSystemName("qc_duplicate");
             statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
             typeFixed = DictionaryCache.getIdFromSystemName("pos_fixed");
@@ -520,8 +519,6 @@ public class WorksheetCreationScreen extends Screen {
                                 isSaved = false;
                                 saveButton.setEnabled(true);
                                 worksheetItemTable.setEnabled(true);
-                                insertQCWorksheetButton.setEnabled(true);
-                                insertQCLookupButton.setEnabled(true);
                             }
                         }
                     }
@@ -538,7 +535,7 @@ public class WorksheetCreationScreen extends Screen {
     
     @SuppressWarnings("unchecked")
     protected void save() {
-        int                      i;
+        int                      i,j;
         Object                   position;
         Item<Integer>            row;
         WorksheetDO              wDO;
@@ -568,7 +565,7 @@ public class WorksheetCreationScreen extends Screen {
         wDO.setSystemUserId(OpenELIS.getSystemUserPermission().getSystemUserId());
         wDO.setStatusId(statusWorking);
         wDO.setFormatId(testWorksheetDO.getFormatId());
-        if (formatBatch.equals(wDO.getFormatId()))
+//        if (formatBatch.equals(wDO.getFormatId()))
             wDO.setBatchCapacity(testWorksheetDO.getBatchCapacity());
         if (relatedWorksheetId.getValue() != null)
             wDO.setRelatedWorksheetId(relatedWorksheetId.getValue());
@@ -585,9 +582,9 @@ public class WorksheetCreationScreen extends Screen {
             
             wiDO = new WorksheetItemDO();
             position = row.getCell(0);
-            if (formatBatch.equals(wDO.getFormatId()))
-                wiDO.setPosition(parseBatchPosition(position, testWorksheetDO.getBatchCapacity()));
-            else
+//            if (formatBatch.equals(wDO.getFormatId()))
+//                wiDO.setPosition(parseBatchPosition(position, testWorksheetDO.getBatchCapacity()));
+//            else
                 wiDO.setPosition(Integer.valueOf((String)position));
             wiManager.addWorksheetItem(wiDO);
             
@@ -610,14 +607,43 @@ public class WorksheetCreationScreen extends Screen {
                 if (row.getData() instanceof ArrayList && ((ArrayList<Object>)row.getData()).size() == 3) {
                     wqrManager = (WorksheetQcResultManager) ((ArrayList<Object>)row.getData()).get(2);
                     newWqrManager = waManager.getWorksheetQcResultAt(waManager.count() - 1);
-                    for (int j = 0; j < wqrManager.count(); j++) {
+                    for (j = 0; j < wqrManager.count(); j++) {
                         wqrVDO = wqrManager.getWorksheetQcResultAt(j);
                         newWqrVDO = new WorksheetQcResultViewDO();
                         newWqrVDO.setSortOrder(wqrVDO.getSortOrder());
                         newWqrVDO.setQcAnalyteId(wqrVDO.getQcAnalyteId());
                         newWqrVDO.setAnalyteName(wqrVDO.getAnalyteName());
                         newWqrVDO.setTypeId(wqrVDO.getTypeId());
-                        newWqrVDO.setValue(wqrVDO.getValue());
+                        newWqrVDO.setValueAt(0, wqrVDO.getValueAt(0));
+                        newWqrVDO.setValueAt(1, wqrVDO.getValueAt(1));
+                        newWqrVDO.setValueAt(2, wqrVDO.getValueAt(2));
+                        newWqrVDO.setValueAt(3, wqrVDO.getValueAt(3));
+                        newWqrVDO.setValueAt(4, wqrVDO.getValueAt(4));
+                        newWqrVDO.setValueAt(5, wqrVDO.getValueAt(5));
+                        newWqrVDO.setValueAt(6, wqrVDO.getValueAt(6));
+                        newWqrVDO.setValueAt(7, wqrVDO.getValueAt(7));
+                        newWqrVDO.setValueAt(8, wqrVDO.getValueAt(8));
+                        newWqrVDO.setValueAt(9, wqrVDO.getValueAt(9));
+                        newWqrVDO.setValueAt(10, wqrVDO.getValueAt(10));
+                        newWqrVDO.setValueAt(11, wqrVDO.getValueAt(11));
+                        newWqrVDO.setValueAt(12, wqrVDO.getValueAt(12));
+                        newWqrVDO.setValueAt(13, wqrVDO.getValueAt(13));
+                        newWqrVDO.setValueAt(14, wqrVDO.getValueAt(14));
+                        newWqrVDO.setValueAt(15, wqrVDO.getValueAt(15));
+                        newWqrVDO.setValueAt(16, wqrVDO.getValueAt(16));
+                        newWqrVDO.setValueAt(17, wqrVDO.getValueAt(17));
+                        newWqrVDO.setValueAt(18, wqrVDO.getValueAt(18));
+                        newWqrVDO.setValueAt(19, wqrVDO.getValueAt(19));
+                        newWqrVDO.setValueAt(20, wqrVDO.getValueAt(20));
+                        newWqrVDO.setValueAt(21, wqrVDO.getValueAt(21));
+                        newWqrVDO.setValueAt(22, wqrVDO.getValueAt(22));
+                        newWqrVDO.setValueAt(23, wqrVDO.getValueAt(23));
+                        newWqrVDO.setValueAt(24, wqrVDO.getValueAt(24));
+                        newWqrVDO.setValueAt(25, wqrVDO.getValueAt(25));
+                        newWqrVDO.setValueAt(26, wqrVDO.getValueAt(26));
+                        newWqrVDO.setValueAt(27, wqrVDO.getValueAt(27));
+                        newWqrVDO.setValueAt(28, wqrVDO.getValueAt(28));
+                        newWqrVDO.setValueAt(29, wqrVDO.getValueAt(29));
                         newWqrManager.addWorksheetQcResult(newWqrVDO);
                     }
                 }
@@ -676,7 +702,6 @@ public class WorksheetCreationScreen extends Screen {
 
     private void loadQCTemplate() {
         int                  i, j;
-//        String               message;
         ArrayList<Object>    dataList;
         ArrayList<QcDO>      list;
         QcDO                 qcDO = null;
@@ -896,7 +921,8 @@ public class WorksheetCreationScreen extends Screen {
         }
 
         //
-        // If last batch contains only QC items, remove it
+        // If last batch contains only QC items and this is not a QC only worksheet,
+        // remove it
         //
         if (analysisItems.size() > 0) {
             for (i--; i > -1 && items.get(i).getData() instanceof ArrayList; i--) {
@@ -1112,7 +1138,7 @@ public class WorksheetCreationScreen extends Screen {
                                 }
                                 
                                 for (i = 0; i < list.size(); i++) {
-                                    if (qcItems[r+i] != null) {
+                                    if (qcItems != null && qcItems[r+i] != null) {
                                         com.google.gwt.user.client.Window.alert("Fixed QC already designated for position "+(r+i+1)+
                                                      "; Please select a different position or "+
                                                      "a shorter list of QCs to add");
@@ -1185,17 +1211,17 @@ public class WorksheetCreationScreen extends Screen {
     }
 
     private String getPositionNumber(int position) {
-        int    major, minor;
+//        int    major, minor;a
         String positionNumber;
         
         positionNumber = "";
-        if (formatBatch.equals(testWorksheetDO.getFormatId())) {
-            major = getPositionMajorNumber(position+1);
-            minor = getPositionMinorNumber(position+1);
-            positionNumber = major+"-"+minor;
-        } else {
+//        if (formatBatch.equals(testWorksheetDO.getFormatId())) {
+//            major = getPositionMajorNumber(position+1);
+//            minor = getPositionMinorNumber(position+1);
+//            positionNumber = major+"-"+minor;
+//        } else {
             positionNumber = String.valueOf(position + 1);
-        }
+//        }
         
         return positionNumber;
     }
@@ -1204,28 +1230,28 @@ public class WorksheetCreationScreen extends Screen {
      * Parses the position number and returns the major number
      * for batch numbering.
      */
-   private int getPositionMajorNumber(int position) {
-       return (int) (position / (double)testWorksheetDO.getBatchCapacity() + .99);
-   }
+//   private int getPositionMajorNumber(int position) {
+//       return (int) (position / (double)testWorksheetDO.getBatchCapacity() + .99);
+//   }
 
    /**
      * Parses the position number and returns the minor number
      * for batch numbering.
      */
-   private int getPositionMinorNumber(int position) {
-       return position - (getPositionMajorNumber(position) - 1) * testWorksheetDO.getBatchCapacity();
-   }
+//   private int getPositionMinorNumber(int position) {
+//       return position - (getPositionMajorNumber(position) - 1) * testWorksheetDO.getBatchCapacity();
+//   }
    
-   private Integer parseBatchPosition(Object position, Integer batchCapacity) {
-       int major, minor, splitIndex;
-       
-       splitIndex = ((String)position).indexOf("-");
-       
-       major = Integer.parseInt(((String)position).substring(0, splitIndex));
-       minor = Integer.parseInt(((String)position).substring(splitIndex + 1));
-       
-       return new Integer(major * batchCapacity.intValue() + minor);
-   }
+//   private Integer parseBatchPosition(Object position, Integer batchCapacity) {
+//       int major, minor, splitIndex;
+//       
+//       splitIndex = ((String)position).indexOf("-");
+//       
+//       major = Integer.parseInt(((String)position).substring(0, splitIndex));
+//       minor = Integer.parseInt(((String)position).substring(splitIndex + 1));
+//       
+//       return new Integer(major * batchCapacity.intValue() + minor);
+//   }
    
    private int getNextTempId() {
        return --tempId;

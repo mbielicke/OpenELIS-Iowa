@@ -59,8 +59,12 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         newRow.setOpen(true);
 
         selectedIndex = itemsTree.getSelectedNode();
-        if (selectedIndex == -1)
-            onAddItemButtonClick();
+        if (selectedIndex == -1) {
+            if (itemsTree.getRowCount() == 0)
+                onAddItemButtonClick();
+            else
+                itemsTree.selectNodeAt(0); 
+        }
 
         selectedIndex = itemsTree.getSelectedNode();
         selectedRow = itemsTree.getNodeAt(selectedIndex);
@@ -245,8 +249,6 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         else
             type = TestPrepUtility.Type.TEST;
 
-        testLookup.setManager(manager);
-        
         try {
             selectedRow = itemsTree.getNodeAt(itemsTree.getSelectedNode());
             
@@ -276,8 +278,6 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             });
         }
         
-        testLookup.setManager(manager);
-        
         try {
             testLookup.lookup(analysisBundleList);
 
@@ -301,7 +301,6 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             });
         }
 
-        testLookup.setManager(manager);
         analysisBundle = (SampleDataBundle)itemsTree.getNodeAt(itemsTree.getSelectedNode()).getData();
 
         try {

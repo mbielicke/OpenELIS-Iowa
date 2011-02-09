@@ -83,7 +83,8 @@ import org.openelis.modules.main.client.openelis.OpenELIS;
 public class WorksheetCreationLookupScreen extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
 
-    private Integer                 statusReleased, statusCancelled;
+    private Integer                 statusErrorInPrep, statusInPrep, statusReleased,
+                                    statusCancelled;
     private ScreenService           testService;
     private ModulePermission        userPermission;
 
@@ -335,8 +336,10 @@ public class WorksheetCreationLookupScreen extends Screen
         ArrayList<Item<Integer>> model;
 
         try {
-            statusReleased  = DictionaryCache.getIdFromSystemName("analysis_released");
-            statusCancelled = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            statusErrorInPrep = DictionaryCache.getIdFromSystemName("analysis_error_inprep");
+            statusInPrep      = DictionaryCache.getIdFromSystemName("analysis_inprep");
+            statusReleased    = DictionaryCache.getIdFromSystemName("analysis_released");
+            statusCancelled   = DictionaryCache.getIdFromSystemName("analysis_cancelled");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -541,7 +544,9 @@ public class WorksheetCreationLookupScreen extends Screen
         if (analysisRow != null) {
             editable = canAddTest(analysisRow) &&
                        Boolean.FALSE.equals(analysisRow.getHasQaOverride()) &&
-                       (!statusReleased.equals(analysisRow.getStatusId()) ||
+                       (!statusErrorInPrep.equals(analysisRow.getStatusId()) ||
+                        !statusInPrep.equals(analysisRow.getStatusId()) ||
+                        !statusReleased.equals(analysisRow.getStatusId()) ||
                         !statusCancelled.equals(analysisRow.getStatusId()));
         }
         return editable;

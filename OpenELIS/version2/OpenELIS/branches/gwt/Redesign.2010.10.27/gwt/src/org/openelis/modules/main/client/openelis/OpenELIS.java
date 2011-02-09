@@ -34,48 +34,51 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Browser;
 import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.MenuItem;
-import org.openelis.modules.dictionary.client.DictionaryScreen;
-import org.openelis.modules.favorites.client.FavoritesScreen;
-import org.openelis.modules.organization.client.OrganizationScreen;
-import org.openelis.modules.provider.client.ProviderScreen;
-import org.openelis.modules.project.client.ProjectScreen;
-import org.openelis.modules.pws.client.PwsScreen;
-import org.openelis.modules.method.client.MethodScreen;
-import org.openelis.modules.panel.client.PanelScreen;
-import org.openelis.modules.qaevent.client.QaEventScreen;
-import org.openelis.modules.section.client.SectionScreen;
+import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
 import org.openelis.modules.analyte.client.AnalyteScreen;
 import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
-import org.openelis.modules.label.client.LabelScreen;
-import org.openelis.modules.standardnote.client.StandardNoteScreen;
-import org.openelis.modules.testTrailer.client.TestTrailerScreen;
-import org.openelis.modules.systemvariable.client.SystemVariableScreen;
+import org.openelis.modules.buildKits.client.BuildKitsScreen;
+import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
+import org.openelis.modules.dictionary.client.DictionaryScreen;
+import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
+import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.instrument.client.InstrumentScreen;
-import org.openelis.modules.storageLocation.client.StorageLocationScreen;
-import org.openelis.modules.storageunit.client.StorageUnitScreen;
-import org.openelis.modules.test.client.TestScreen;
-import org.openelis.modules.order.client.InternalOrderScreen;
-import org.openelis.modules.qc.client.QcScreen;
-import org.openelis.modules.storage.client.StorageScreen;
-import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentScreen;
 import org.openelis.modules.inventoryItem.client.InventoryItemScreen;
+import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
-import org.openelis.modules.buildKits.client.BuildKitsScreen;
-import org.openelis.modules.shipping.client.ShippingScreen;
-import org.openelis.modules.order.client.VendorOrderScreen;
+import org.openelis.modules.label.client.LabelScreen;
+import org.openelis.modules.method.client.MethodScreen;
+import org.openelis.modules.order.client.InternalOrderScreen;
 import org.openelis.modules.order.client.SendoutOrderScreen;
+import org.openelis.modules.order.client.VendorOrderScreen;
 import org.openelis.modules.orderFill.client.OrderFillScreen;
-import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
+import org.openelis.modules.organization.client.OrganizationScreen;
+import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
-import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
+import org.openelis.modules.project.client.ProjectScreen;
+import org.openelis.modules.provider.client.ProviderScreen;
+import org.openelis.modules.pws.client.PwsScreen;
+import org.openelis.modules.qaevent.client.QaEventScreen;
+import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
-import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
-import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
-import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
-import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
-import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
+import org.openelis.modules.report.client.SampleLoginLabelAdditionalReportScreen;
+import org.openelis.modules.report.client.SampleLoginLabelReportScreen;
+import org.openelis.modules.report.client.TestReportScreen;
+import org.openelis.modules.report.client.VerificationReportScreen;
+import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
+import org.openelis.modules.section.client.SectionScreen;
+import org.openelis.modules.shipping.client.ShippingScreen;
+import org.openelis.modules.standardnote.client.StandardNoteScreen;
+import org.openelis.modules.storage.client.StorageScreen;
+import org.openelis.modules.storageLocation.client.StorageLocationScreen;
+import org.openelis.modules.storageunit.client.StorageUnitScreen;
+import org.openelis.modules.systemvariable.client.SystemVariableScreen;
+import org.openelis.modules.test.client.TestScreen;
+import org.openelis.modules.testTrailer.client.TestTrailerScreen;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
+import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -118,6 +121,7 @@ public class OpenELIS extends Screen {
         addCommand("FavoritesMenu", new Command() {
             public void execute() {
                 VerticalPanel fmp = (VerticalPanel)def.getWidget("favoritesPanel");
+                fmp.setHeight((browser.getOffsetHeight())+"px");
                 if (fmp.getWidgetCount() == 1) {
                     try {
                         fv = new FavoritesScreen(def);
@@ -1075,6 +1079,47 @@ public class OpenELIS extends Screen {
                         Window.alert(caught.getMessage());
                     }
                 });
+
+            }
+        });
+        
+        addCommand("sampleLoginLabelReport", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new SampleLoginLabelReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addCommand("sampleLoginLabelAdditionalReport", new Command() {
+            public void execute() {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new SampleLoginLabelAdditionalReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
             }
         });
         
@@ -1097,14 +1142,24 @@ public class OpenELIS extends Screen {
                 });
             }
         });
-        addCommand("sampleDataExport", new Command() {
+        
+        addCommand("verificationReport", new Command() {
             public void execute() {
-                // browser.addScreen(new )
-            }
-        });
-        addCommand("loginLabel", new Command() {
-            public void execute() {
-                // browser.addScreen(new )
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new VerificationReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
             }
         });
         

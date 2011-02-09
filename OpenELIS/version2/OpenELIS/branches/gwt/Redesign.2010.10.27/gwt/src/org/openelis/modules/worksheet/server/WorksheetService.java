@@ -59,6 +59,10 @@ public class WorksheetService {
         return remoteManager().fetchWithNotes(id);
     }
 
+    public WorksheetManager fetchWithItemsAndNotes(Integer id) throws Exception {
+        return remoteManager().fetchWithItemsAndNotes(id);
+    }
+
     public WorksheetManager add(WorksheetManager manager) throws Exception {
         return remoteManager().add(manager);
     }
