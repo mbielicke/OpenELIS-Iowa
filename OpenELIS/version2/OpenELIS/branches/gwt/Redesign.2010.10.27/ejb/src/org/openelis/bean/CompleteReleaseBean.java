@@ -27,7 +27,7 @@ import org.openelis.util.QueryBuilderV2;
 @Stateless
 
 @SecurityDomain("openelis")
-@RolesAllowed("sample-select")
+@RolesAllowed("samplecompleterelease-select")
 public class CompleteReleaseBean implements CompleteReleaseRemote {
 
 	@PersistenceContext(unitName = "openelis")
@@ -63,29 +63,27 @@ public class CompleteReleaseBean implements CompleteReleaseRemote {
 		builder.setQueryParams(query, fields);
 
 		list = query.getResultList();
+		if (list.isEmpty())
+			throw new NotFoundException();
 
-        if (list.isEmpty())
-            throw new NotFoundException();
-        voList = (ArrayList<CompleteReleaseVO>)DataBaseUtil.subList(list, first, max);
-        if (voList == null)
-            throw new LastPageException();
-        
-        managerHash = new HashMap<Integer, SampleManager>();
-        bundleList = new ArrayList<SampleDataBundle>();
-        for(int i = 0; i < voList.size(); i++){
-            vo = voList.get(i);
-            
-            man = managerHash.get(vo.getSampleId());
-            
-            if(man == null){
-                man = SampleManager.fetchWithItemsAnalyses(vo.getSampleId());
-                managerHash.put(vo.getSampleId(), man);
-            }
-            
-            bundleList.add(getAnalysisBundle(man, vo.getAnalysisId()));
-        }
-        
-        return bundleList;
+		voList = (ArrayList<CompleteReleaseVO>) DataBaseUtil.subList(list,
+				first, max);
+		if (voList == null)
+			throw new LastPageException();
+
+		managerHash = new HashMap<Integer, SampleManager>();
+		bundleList = new ArrayList<SampleDataBundle>();
+		for (int i = 0; i < voList.size(); i++) {
+			vo = voList.get(i);
+			man = managerHash.get(vo.getSampleId());
+			if (man == null) {
+				man = SampleManager.fetchWithItemsAnalyses(vo.getSampleId());
+				managerHash.put(vo.getSampleId(), man);
+			}
+			bundleList.add(getAnalysisBundle(man, vo.getAnalysisId()));
+		}
+
+		return bundleList;
 	}
 	
 	 private SampleDataBundle getAnalysisBundle(SampleManager man, Integer id) throws Exception {

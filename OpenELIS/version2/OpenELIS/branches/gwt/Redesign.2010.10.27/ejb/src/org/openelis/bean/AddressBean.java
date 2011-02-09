@@ -113,13 +113,8 @@ public class AddressBean implements AddressRemote, AddressLocal {
     }
 
     public void delete(AddressDO data) throws Exception {
-        Address entity;
-        
-        manager.setFlushMode(FlushModeType.COMMIT);
-
-        entity = manager.find(Address.class, data.getId());
-
-        manager.remove(entity);
+        if (data.getId() != null)
+            delete(data.getId());        
     }
     
     public void delete(Integer id) throws Exception {
@@ -128,8 +123,8 @@ public class AddressBean implements AddressRemote, AddressLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(Address.class, id);
-
-        manager.remove(entity);
+        if (entity != null)
+            manager.remove(entity);
     }
 
     public boolean isEmpty(AddressDO data) throws Exception {

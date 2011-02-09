@@ -5,143 +5,127 @@
 	<property name="ireport.y" value="0"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["/auto/home/akampoow/workspace/OpenELIS-EJB/src/org/openelis/report/verification/"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     d1.entry d1_entry, d2.entry d2_entry,
-     d3.entry d3_entry, si.source_other si_source_other,
-     si.quantity si_quantity, d4.entry d4_entry,
-     si.container_reference si_container_reference
+     si.id si_id, si.item_sequence, d1.entry type_of_sample, d2.entry source_of_sample, si.source_other,
+     si.quantity, d3.entry container, si.container_reference, d4.entry unit
 FROM
-     sample_item si, outer dictionary d1,  outer dictionary d2 ,
-     outer dictionary d3, outer dictionary d4
- WHERE
-      si.sample_id = $P{SAMPLE_ID} AND si.type_of_sample_id = d1.id AND si.container_id = d2.id AND
-      si.source_of_sample_id = d3.id  AND si.unit_of_measure_id  = d4.id]]>
+     sample_item si, outer dictionary d1, outer dictionary d2, outer dictionary d3, outer dictionary d4
+WHERE
+     si.sample_id = $P{SAMPLE_ID}
+     AND si.type_of_sample_id = d1.id
+     AND si.source_of_sample_id = d2.id
+     AND si.container_id = d3.id
+     AND si.unit_of_measure_id = d4.id
+ORDER BY si.item_sequence]]>
 	</queryString>
-	<field name="d1_entry" class="java.lang.String"/>
-	<field name="d2_entry" class="java.lang.String"/>
-	<field name="d3_entry" class="java.lang.String"/>
-	<field name="si_source_other" class="java.lang.String"/>
-	<field name="si_quantity" class="java.lang.Double"/>
-	<field name="d4_entry" class="java.lang.String"/>
-	<field name="si_container_reference" class="java.lang.String"/>
+	<field name="si_id" class="java.lang.Integer"/>
+	<field name="item_sequence" class="java.lang.Integer"/>
+	<field name="type_of_sample" class="java.lang.String"/>
+	<field name="source_of_sample" class="java.lang.String"/>
+	<field name="source_other" class="java.lang.String"/>
+	<field name="quantity" class="java.lang.Double"/>
+	<field name="container" class="java.lang.String"/>
+	<field name="container_reference" class="java.lang.String"/>
+	<field name="unit" class="java.lang.String"/>
 	<detail>
-		<band height="60" splitType="Stretch">
-			<staticText>
-				<reportElement x="0" y="0" width="54" height="12"/>
+		<band height="96" splitType="Stretch">
+			<rectangle>
+				<reportElement x="188" y="12" width="376" height="12" backcolor="#C0C0C0"/>
+				<graphicElement>
+					<pen lineWidth="0.0"/>
+				</graphicElement>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement key="sampleItem.title" x="331" y="12" width="90" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman"/>
+					<font isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
-				<text><![CDATA[Sample type:]]></text>
+				<textFieldExpression class="java.lang.String"><![CDATA["Sample Item #"+$F{item_sequence}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="typeOfSample.label" x="0" y="36" width="120" height="12"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Sample Type:]]></text>
 			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="typeOfSample" x="125" y="36" width="180" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_of_sample}]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="159" y="0" width="38" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
+				<reportElement key="sourceOfSample.label" x="310" y="36" width="60" height="12"/>
+				<textElement textAlignment="Right"/>
 				<text><![CDATA[Source:]]></text>
 			</staticText>
-			<staticText>
-				<reportElement x="159" y="12" width="45" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<text><![CDATA[Container:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="12" width="47" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<text><![CDATA[Quantity:]]></text>
-			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="54" y="0" width="100" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{d1_entry}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="47" y="12" width="64" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.Double"><![CDATA[$F{si_quantity}]]></textFieldExpression>
+				<reportElement key="sourceOfSample" x="375" y="36" width="180" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_of_sample}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="401" y="12" width="88" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<text><![CDATA[Container Reference:]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="489" y="12" width="152" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{si_container_reference}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="401" y="0" width="65" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
+				<reportElement key="sourceOther.label" x="285" y="48" width="85" height="12"/>
+				<textElement textAlignment="Right"/>
 				<text><![CDATA[Source Other:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="466" y="0" width="175" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{si_source_other}]]></textFieldExpression>
+				<reportElement key="sourceOther" x="375" y="48" width="377" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_other}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="645" y="12" width="25" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
+				<reportElement key="quantity.label" x="0" y="60" width="120" height="12"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Quantity:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="quantity" x="125" y="60" width="120" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$F{quantity}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="container.label" x="310" y="60" width="60" height="12"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Container:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="container" x="375" y="60" width="377" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{container}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="containerReference.label" x="0" y="72" width="120" height="12"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Container Reference:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="containerReference" x="125" y="72" width="120" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{container_reference}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="unit.label" x="310" y="72" width="60" height="12"/>
+				<textElement textAlignment="Right"/>
 				<text><![CDATA[Unit:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="670" y="12" width="82" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{d4_entry}]]></textFieldExpression>
+				<reportElement key="unit" x="375" y="72" width="120" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="0" y="48" width="752" height="12"/>
-				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				<reportElement key="analyses" x="0" y="84" width="752" height="12"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SAMPLE_ITEM_ID">
+					<subreportParameterExpression><![CDATA[$F{si_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysis.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"analysis.jasper"]]></subreportExpression>
 			</subreport>
-			<staticText>
-				<reportElement x="326" y="36" width="100" height="12"/>
-				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" isBold="true"/>
-				</textElement>
-				<text><![CDATA[Analyses]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="197" y="0" width="200" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{d3_entry}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="204" y="12" width="193" height="12"/>
-				<textElement>
-					<font fontName="Times New Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{d2_entry}]]></textFieldExpression>
-			</textField>
 		</band>
 	</detail>
 </jasperReport>

@@ -202,7 +202,7 @@ public class SampleEnvironmental implements Auditable, Cloneable {
     /*
      * Audit support
      */
-    public void setLocationAuditAddressId(boolean changed) {
+    public void setAuditLocationAddressId(boolean changed) {
         auditLocationAddressId = changed;
     }
     

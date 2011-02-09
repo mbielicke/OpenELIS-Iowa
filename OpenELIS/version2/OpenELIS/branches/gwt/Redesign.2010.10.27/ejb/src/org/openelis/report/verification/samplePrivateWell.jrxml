@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="samplePrivateWell" language="groovy" pageWidth="752" pageHeight="572" orientation="Landscape" columnWidth="752" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     organization_id, report_to_name, report_to_attention, report_to_address_id,
+     location, location_address_id, owner, collector, well_number
+FROM
+     sample_private_well
+WHERE
+     sample_id = $P{SAMPLE_ID}]]>
+	</queryString>
+	<field name="organization_id" class="java.lang.Integer"/>
+	<field name="report_to_name" class="java.lang.String"/>
+	<field name="report_to_attention" class="java.lang.String"/>
+	<field name="report_to_address_id" class="java.lang.Integer"/>
+	<field name="location" class="java.lang.String"/>
+	<field name="location_address_id" class="java.lang.Integer"/>
+	<field name="owner" class="java.lang.String"/>
+	<field name="collector" class="java.lang.String"/>
+	<field name="well_number" class="java.lang.Integer"/>
+	<detail>
+		<band height="72" splitType="Stretch">
+			<staticText>
+				<reportElement key="reportToAttention.label" x="0" y="0" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Attention:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="reportToAttention" x="105" y="0" width="250" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{report_to_attention}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="location.label" x="397" y="0" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Location:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="location" x="502" y="0" width="250" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement key="reportToOrganization" x="0" y="12" width="355" height="12">
+					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ORGANIZATION_ID">
+					<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"reportToOrganization.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement key="reportToName.label" x="0" y="12" width="100" height="12" forecolor="#404040">
+					<printWhenExpression><![CDATA[$F{organization_id} == null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Report To:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="reportToName" x="105" y="12" width="250" height="12">
+					<printWhenExpression><![CDATA[$F{organization_id} == null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{report_to_name}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement key="locationAddress" x="397" y="12" width="355" height="0"/>
+				<subreportParameter name="ADDRESS_ID">
+					<subreportParameterExpression><![CDATA[$F{location_address_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PHONE_TYPE">
+					<subreportParameterExpression><![CDATA["N"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="WITH_FAX">
+					<subreportParameterExpression><![CDATA[false]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"address.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement key="reportToAddress" x="0" y="24" width="355" height="0">
+					<printWhenExpression><![CDATA[$F{organization_id} == null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="ADDRESS_ID">
+					<subreportParameterExpression><![CDATA[$F{location_address_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"address.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement key="billToOrganization" positionType="Float" x="0" y="36" width="355" height="12"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"billToOrganization.jasper"]]></subreportExpression>
+			</subreport>
+			<staticText>
+				<reportElement key="owner.label" positionType="Float" x="397" y="24" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Owner:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="owner" positionType="Float" x="502" y="24" width="250" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{owner}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="collector.label" positionType="Float" x="397" y="36" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Collector:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="collector" positionType="Float" x="502" y="36" width="250" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="wellNumber.label" positionType="Float" x="397" y="48" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Well #:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="wellNumber" positionType="Float" x="502" y="48" width="55" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{well_number}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="projects.label" positionType="Float" x="397" y="60" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Project(s):]]></text>
+			</staticText>
+			<subreport>
+				<reportElement key="project" positionType="Float" x="502" y="60" width="250" height="12"/>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"project.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>

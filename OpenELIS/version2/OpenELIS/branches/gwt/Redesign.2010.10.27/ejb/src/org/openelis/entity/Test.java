@@ -74,7 +74,7 @@ import org.openelis.utils.Auditable;
                         " t.timeTransit,t.timeHolding,t.timeTaAverage,t.timeTaWarning,t.timeTaMax,t.labelId," +
                         " t.labelQty,t.testTrailerId,t.scriptletId,t.testFormatId,t.revisionMethodId," +
                         " t.reportingMethodId,t.sortingMethodId,t.reportingSequence,m.name,l.name,tt.name,s.name) " +
-                        " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.name = :name and " +
+                        " from Test t left join t.scriptlet s left join t.testTrailer tt left join t.label l left join t.method m where t.isActive = 'Y' and t.name = :name and " +
                         " m.name=:methodName order by t.name"),
     @NamedQuery( name = "Test.FetchNameMethodSectionByName",
                 query = "select distinct new org.openelis.domain.PanelVO(t.id,t.name,m.name,s.name)"
