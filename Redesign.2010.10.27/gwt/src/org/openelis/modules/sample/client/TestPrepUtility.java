@@ -26,12 +26,13 @@
 package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.TestPrepViewDO;
+import org.openelis.domain.TestSectionViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
@@ -61,13 +62,11 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         DONE
     };
 
-    protected SampleManager             manager;
+//    protected SampleManager             manager;
     protected Integer                   anInPrepId;
     protected Screen                    screen;
 
-    private SampleDataBundle            analysisDataBundle;
-    private ArrayList<SampleDataBundle> bundles;
-    private int                         numberOfPrepScreensDrawn;
+    private ArrayList<SampleDataBundle> bundles, analysisDataBundles;
     private ScreenService               panelService;
     private ValidationErrorsList        errorsList;
 
@@ -82,13 +81,13 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         }
     }
 
-    public SampleManager getManager() {
-        return manager;
-    }
-
-    public void setManager(SampleManager manager) {
-        this.manager = manager;
-    }
+//    public SampleManager getManager() {
+//        return manager;
+//    }
+//
+//    public void setManager(SampleManager manager) {
+//        this.manager = manager;
+//    }
 
     public Screen getScreen() {
         return screen;
@@ -107,25 +106,39 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
      * @throws Exception
      */
     public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id) throws Exception {
+        lookup(analysisDataBundle, type, id, null);
+    }
+    
+    /**
+     * This method is used under normal circumstances.  It is used when a test/panel
+     * has been added via the quick entry screen and needs to add the records and check for preps.
+     * @param analysisDataBundle
+     * @param type
+     * @param id
+     * @param sectionId
+     * @throws Exception
+     */
+    public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id, TestSectionViewDO tsVDO) throws Exception {
         ArrayList<IdVO> testIds;
 
-        assert manager != null : "manager is null";
+//        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
 
-        errorsList = new ValidationErrorsList();
-        this.analysisDataBundle = analysisDataBundle;
         bundles = new ArrayList<SampleDataBundle>();
-        numberOfPrepScreensDrawn = 0;
+        errorsList = new ValidationErrorsList();
+
+        analysisDataBundles = new ArrayList<SampleDataBundle>(1);
+        analysisDataBundles.add(analysisDataBundle);
 
         // we need to expand a panel to test ids
         if (type == Type.PANEL)
             testIds = panelService.callList("fetchTestIdsByPanelId", id);
         else {
-            testIds = new ArrayList<IdVO>();
+            testIds = new ArrayList<IdVO>(1);
             testIds.add(new IdVO(id));
         }
 
-        processTestListAndCheckPrepTests(testIds);
+        processTestListAndCheckPrepTests(testIds, tsVDO);
     }
     
     /**
@@ -136,13 +149,13 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
      * @throws Exception
      */
     public void lookup(ArrayList<SampleDataBundle> analysisBundles) throws Exception {
-        assert manager != null : "manager is null";
+//        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
         
-        errorsList = new ValidationErrorsList();
-        this.analysisDataBundle = analysisBundles.get(0);
         bundles = new ArrayList<SampleDataBundle>();
-        numberOfPrepScreensDrawn = 0;
+        errorsList = new ValidationErrorsList();
+
+        this.analysisDataBundles = analysisBundles;
 
         checkPrepTests(analysisBundles);
     }
@@ -155,45 +168,55 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
      * @throws Exception
      */
     public void lookup(SampleDataBundle analysisDataBundle, ArrayList<OrderTestViewDO> orderTestList) throws Exception {
+        int             i;
         ArrayList<IdVO> testIds;
         OrderTestViewDO testDO;
 
-        assert manager != null : "manager is null";
+//        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
 
-        errorsList = new ValidationErrorsList();
-        this.analysisDataBundle = analysisDataBundle;
         bundles = new ArrayList<SampleDataBundle>();
-        numberOfPrepScreensDrawn = 0;
+        errorsList = new ValidationErrorsList();
 
-        testIds = new ArrayList<IdVO>();
-        for(int i=0; i<orderTestList.size(); i++){
+        analysisDataBundles = new ArrayList<SampleDataBundle>(1);
+        analysisDataBundles.add(analysisDataBundle);
+
+        testIds = new ArrayList<IdVO>(orderTestList.size());
+        for (i = 0; i < orderTestList.size(); i++){
             testDO = orderTestList.get(i);
             testIds.add(new IdVO(testDO.getTestId()));
         }
 
-        processTestListAndCheckPrepTests(testIds);
+        processTestListAndCheckPrepTests(testIds, null);
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
 
-    private void processTestListAndCheckPrepTests(ArrayList<IdVO> testIds) throws Exception {
-        IdVO idVO;
-        AnalysisManager anMan;
-        TestManager testMan;
-        int addedIndex;
+    private void processTestListAndCheckPrepTests(ArrayList<IdVO> testIds, TestSectionViewDO tsVDO) throws Exception {
+        int                          addedIndex;
+        IdVO                         idVO;
+        ArrayList<Object>            prepBundle;
+        ArrayList<ArrayList<Object>> prepBundles;
+        AnalysisManager              anMan;
+        SampleDataBundle             anBundle, analysisDataBundle;
+        SampleManager                manager;
+        TestManager                  testMan;
+        TestPrepManager              prepMan;
 
+        analysisDataBundle = analysisDataBundles.get(0);
+        manager = analysisDataBundle.getSampleManager();
         anMan = manager.getSampleItems().getAnalysisAt(analysisDataBundle.getSampleItemIndex());
 
+        prepBundles = new ArrayList<ArrayList<Object>>();
         for (int i = 0; i < testIds.size(); i++ ) {
             idVO = testIds.get(i);
 
             if (idVO.getId() != null) {
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(idVO.getId());
 
-                if (testMan.canAssign()) {
+                if (testMan.canAssignThisSection(tsVDO)) {
                     if (i == 0) // the first test id row will be in the analysis
                                 // manager already
                         addedIndex = analysisDataBundle.getAnalysisIndex();
@@ -201,109 +224,156 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                         addedIndex = anMan.addAnalysis();
 
                     anMan.setTestAt(testMan, addedIndex);
-                    updateAnalysisAndCheckForPreps(anMan, addedIndex, testMan);
+                    if (tsVDO != null)
+                        anMan.getAnalysisAt(addedIndex).setSectionId(tsVDO.getSectionId());
+
+                    anBundle = anMan.getBundleAt(addedIndex);
+                    bundles.add(anBundle);
+
+                    // create prep bundle and add to list for prep picker screen
+                    try {
+                        prepMan = testMan.getPrepTests();
+                        if (prepMan.count() > 0) {
+                            prepBundle = new ArrayList<Object>();
+                            prepBundle.add(anBundle);
+                            prepBundle.add(prepMan);
+                            prepBundles.add(prepBundle);
+                        }
+                    } catch (Exception e) {
+                        com.google.gwt.user.client.Window.alert(e.getMessage());
+                    }
                 } else {
-                    errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
-                                                          testMan.getTest().getName(),
-                                                          testMan.getTest().getMethodName()));
+                    if (tsVDO != null) {
+                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTestForSection",
+                                                              testMan.getTest().getName(),
+                                                              testMan.getTest().getMethodName(),
+                                                              tsVDO.getSection()));
+                    } else {
+                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
+                                                              testMan.getTest().getName(),
+                                                              testMan.getTest().getMethodName()));
+                    }
                 }
             } else{
                 anMan.removeTestAt(analysisDataBundle.getAnalysisIndex());
                 bundles.add(analysisDataBundle);
             }
         }
-
-        fireFinished();
+        
+        if (prepBundles.size() > 0)
+            drawTestPrepScreen(prepBundles);
+        else
+            fireFinished();
     }
     
-    private void checkPrepTests(ArrayList<SampleDataBundle> bundles) throws Exception {
-        SampleDataBundle bundle;
-        int analysisIndex;
-        AnalysisManager anMan;
-        TestManager testMan;
+    private void drawTestPrepScreen(ArrayList<ArrayList<Object>> prepBundles) {
+        ModalWindow         modal;
+        TestPrepLookupScreen prepPickerScreen;
         
-        for (int i = 0; i < bundles.size(); i++ ) {
-            bundle = bundles.get(i);
-            analysisIndex = bundle.getAnalysisIndex();
-            anMan =  manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
-            testMan = anMan.getTestAt(bundle.getAnalysisIndex());
-
-            updateAnalysisAndCheckForPreps(anMan, analysisIndex, testMan);
-        }
-
-        fireFinished();
-    }
-
-    private void updateAnalysisAndCheckForPreps(AnalysisManager anMan,
-                                                Integer analysisIndex,
-                                                TestManager testMan) {
-        TestPrepManager prepMan;
-        AnalysisViewDO anDO;
-        SampleDataBundle anBundle;
-
-        anDO = anMan.getAnalysisAt(analysisIndex);
-        anBundle = anMan.getBundleAt(analysisIndex);
-        bundles.add(anBundle);
-
-        // check for prep tests
         try {
-            prepMan = testMan.getPrepTests();
-            if (prepMan.count() > 0) {
-                TestPrepViewDO requiredTestPrepDO = prepMan.getRequiredTestPrep();
-                if (requiredTestPrepDO == null)
-                    drawTestPrepScreen(anMan, anBundle, prepMan, anDO.getTestName() + ", " +
-                                                                 anDO.getMethodName());
-                else
-                    selectedPrepTest(anMan, anBundle, requiredTestPrepDO.getPrepTestId());
-            }
+            prepPickerScreen = new TestPrepLookupScreen();
+            prepPickerScreen.addActionHandler(new ActionHandler<TestPrepLookupScreen.Action>() {
+                @SuppressWarnings("unchecked")
+                public void onAction(ActionEvent<TestPrepLookupScreen.Action> event) {
+                    int                                i;
+                    ArrayList<Object>                  prepBundle;
+                    ArrayList<ArrayList<Object>>       prepBundles;
+                    HashMap<ArrayList<Object>,Integer> indexLinks;
 
+                    if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
+                        indexLinks = new HashMap<ArrayList<Object>,Integer>();
+                        prepBundles = (ArrayList<ArrayList<Object>>)event.getData();
+                        for (i = 0; i < prepBundles.size(); i++) {
+                            prepBundle = prepBundles.get(i);
+                            selectedPrepTest(prepBundle, indexLinks);
+                        }
+                        
+                        fireFinished();
+                    } else if (event.getAction() == TestPrepLookupScreen.Action.CANCEL) {
+                        fireCancelled();
+                    }
+                }
+            });
         } catch (Exception e) {
-            com.google.gwt.user.client.Window.alert(e.getMessage());
+            e.printStackTrace();
+            com.google.gwt.user.client.Window.alert("error: " + e.getMessage());
+            return;
         }
+
+        modal = new ModalWindow();
+        modal.setContent(prepPickerScreen);
+        modal.setName(consts.get("prepTestPicker"));
+        prepPickerScreen.setBundles(prepBundles);
     }
 
     //
     // This gets called when a prep test is selected. It is not in the analysis
     // manager at this point.
     //
-    private void selectedPrepTest(AnalysisManager anMan,
-                                  SampleDataBundle parentBundle,
-                                  Integer prepTestId) {
-        TestManager testMan;
-        AnalysisViewDO anDO, prepDO;
-        int addedIndex;
+    @SuppressWarnings("unchecked")
+    private void selectedPrepTest(ArrayList<Object> prepBundle, HashMap<ArrayList<Object>,Integer> indexLinks) {
+        int               addedIndex;
+        Object            tempBundle;
+        Integer           parentIndex, sectionId, tpId;
+        AnalysisManager   anMan;
+        AnalysisViewDO    anDO, prepDO;
+        SampleDataBundle  anaBundle;
+        TestManager       testMan;
+        TestSectionViewDO tsVDO;
 
-        prepDO = checkForPrepTest(anMan, prepTestId);
+        if (prepBundle.get(0) instanceof SampleDataBundle) {
+            anaBundle = (SampleDataBundle) prepBundle.get(0);
+            parentIndex = anaBundle.getAnalysisIndex();
+        } else {
+            tempBundle = (ArrayList<Object>) prepBundle.get(0);
+            parentIndex = indexLinks.get(tempBundle);
+            do {
+                tempBundle = ((ArrayList<Object>)tempBundle).get(0);
+            } while (!(tempBundle instanceof SampleDataBundle)) ;
+            anaBundle = (SampleDataBundle) tempBundle;
+        }
+        
+        try {
+            anMan = anaBundle.getSampleManager().getSampleItems()
+                             .getAnalysisAt(anaBundle.getSampleItemIndex());
+            tpId = (Integer)prepBundle.get(1);
+            sectionId = (Integer)prepBundle.get(2);
 
-        if (prepDO != null) { // prep already exists
-            anDO = anMan.getAnalysisAt(parentBundle.getAnalysisIndex());
-
-            anDO.setPreAnalysisId(prepDO.getId());
-            anDO.setStatusId(anInPrepId);
-            anDO.setAvailableDate(null);
-            anDO.setPreAnalysisTest(prepDO.getTestName());
-            anDO.setPreAnalysisMethod(prepDO.getMethodName());
-
-        } else { // prep doesnt exist in the manager yet
-            testMan = null;
-            try {
-                testMan = TestManager.fetchWithPrepTestsSampleTypes(prepTestId);
-
-            } catch (Exception e) {
-                com.google.gwt.user.client.Window.alert(e.getMessage());
+            prepDO = checkForPrepTest(anMan, tpId);
+    
+            if (prepDO != null) { // prep already exists
+                anDO = anMan.getAnalysisAt(parentIndex);
+    
+                anDO.setPreAnalysisId(prepDO.getId());
+                anDO.setStatusId(anInPrepId);
+                anDO.setAvailableDate(null);
+                anDO.setPreAnalysisTest(prepDO.getTestName());
+                anDO.setPreAnalysisMethod(prepDO.getMethodName());
+            } else { // prep doesn't exist in the manager yet
+                testMan = null;
+                try {
+                    testMan = TestManager.fetchWithPrepTestsSampleTypes(tpId);
+                    tsVDO = new TestSectionViewDO();
+                    tsVDO.setSectionId(sectionId);
+                    if (testMan.canAssignThisSection(tsVDO)) {
+                        addedIndex = anMan.addPreAnalysis(parentIndex);
+                        indexLinks.put(prepBundle, addedIndex);
+                        anDO = anMan.getAnalysisAt(addedIndex);
+                        anMan.setTestAt(testMan, addedIndex);
+                        bundles.add(anMan.getBundleAt(addedIndex));
+                    } else {
+                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTestForSection",
+                                                              testMan.getTest().getName(),
+                                                              testMan.getTest().getMethodName(),
+                                                              tsVDO.getSection()));
+                    }
+                } catch (Exception e) {
+                    com.google.gwt.user.client.Window.alert(e.getMessage());
+                }
+                
             }
-            
-            if (testMan.canAssign()) {
-                addedIndex = anMan.addPreAnalysis(parentBundle.getAnalysisIndex());
-                anDO = anMan.getAnalysisAt(addedIndex);
-                anMan.setTestAt(testMan, addedIndex);
-
-                updateAnalysisAndCheckForPreps(anMan, addedIndex, testMan);
-            } else {
-                errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
-                                          testMan.getTest().getName(),
-                                          testMan.getTest().getMethodName()));
-            }
+        } catch (Exception anyE) {
+            errorsList.add(new FormErrorException());
         }
     }
 
@@ -323,62 +393,71 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         return returnDO;
     }
 
-    private void drawTestPrepScreen(final AnalysisManager anMan,
-                                    final SampleDataBundle parentBundle,
-                                    TestPrepManager manager,
-                                    String testMethodName) {
-        TestPrepLookupScreen prepPickerScreen;
-        try {
-            prepPickerScreen = new TestPrepLookupScreen();
-            prepPickerScreen.addActionHandler(new ActionHandler<TestPrepLookupScreen.Action>() {
-                public void onAction(ActionEvent<TestPrepLookupScreen.Action> event) {
-                    Item<Integer> selectedRow;
-                    Integer testId;
-                    /*if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
-                        TableDataRow selectedRow;
-                        Integer testId;
+    private void checkPrepTests(ArrayList<SampleDataBundle> analysisBundles) throws Exception {
+        int                          i;
+        ArrayList<Object>            prepBundle;
+        ArrayList<ArrayList<Object>> prepBundles;
+        AnalysisManager              anMan;
+        SampleDataBundle             bundle;
+        SampleManager                manager;
+        TestPrepManager              prepMan;
+        TestManager                  testMan;
+        
+        prepBundles = new ArrayList<ArrayList<Object>>();
+        for (i = 0; i < analysisBundles.size(); i++) {
+            bundle = analysisBundles.get(i);
+            manager = bundle.getSampleManager();
+            anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+            testMan = anMan.getTestAt(bundle.getAnalysisIndex());
 
-                        numberOfPrepScreensDrawn-- ;
-                        selectedRow = (TableDataRow)event.getData();
-                        testId = (Integer)selectedRow.key;
-                        selectedPrepTest(anMan, parentBundle, testId);
-                    } else {
-                        numberOfPrepScreensDrawn-- ;
-                    }*/
-                    
-                    if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {                                               
-                        numberOfPrepScreensDrawn-- ;
-                        selectedRow = (Item<Integer>)event.getData();
-                        if (selectedRow != null) { 
-                            testId = (Integer)selectedRow.getKey();
-                            selectedPrepTest(anMan, parentBundle, testId);
-                        }
-                    } else {
-                        numberOfPrepScreensDrawn-- ;
-                    }
+            bundles.add(bundle);
 
-                    fireFinished();
+            // check for prep tests
+            try {
+                prepMan = testMan.getPrepTests();
+                if (prepMan.count() > 0) {
+                    prepBundle = new ArrayList<Object>();
+                    prepBundle.add(bundle);
+                    prepBundle.add(prepMan);
+                    prepBundles.add(prepBundle);
                 }
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            com.google.gwt.user.client.Window.alert("error: " + e.getMessage());
-            return;
+            } catch (Exception e) {
+                com.google.gwt.user.client.Window.alert(e.getMessage());
+            }
         }
 
-        ModalWindow modal = new ModalWindow();
-        modal.setContent(prepPickerScreen, (numberOfPrepScreensDrawn*20),(numberOfPrepScreensDrawn*20));
-        modal.setName(consts.get("prepTestPicker") + " " + testMethodName);
-        prepPickerScreen.setManager(manager);
-        numberOfPrepScreensDrawn++ ;
+        if (prepBundles.size() > 0)
+            drawTestPrepScreen(prepBundles);
+        else
+            fireFinished();
     }
 
     private void fireFinished() {
-        if (numberOfPrepScreensDrawn == 0)
-            ActionEvent.fire(this, Action.DONE, bundles);
+        ActionEvent.fire(this, Action.DONE, bundles);
         
-        if(errorsList.size()> 0)
+        if (errorsList.size() > 0)
             screen.showErrors(errorsList);
     }
+
+    private void fireCancelled() {
+        int              i;
+        SampleDataBundle anBundle;
+        AnalysisManager  anMan;
+        SampleManager    manager;
+        
+        try {
+            for (i = 0; i < analysisDataBundles.size(); i++) {
+                anBundle = analysisDataBundles.get(i);
+                manager = anBundle.getSampleManager();
+                anMan = manager.getSampleItems().getAnalysisAt(anBundle.getSampleItemIndex());
+                anMan.removeTestAt(anBundle.getAnalysisIndex());
+            }
+            analysisDataBundles.clear();
+            bundles.clear();
+            ActionEvent.fire(this, Action.DONE, bundles);
+        } catch (Exception anyE) {
+            com.google.gwt.user.client.Window.alert(consts.get("prepTestCancelledCleanupException"));
+        }
+    }
 }
+

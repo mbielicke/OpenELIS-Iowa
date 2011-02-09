@@ -47,6 +47,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AutoCompleteValue;
 import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CheckBox;
@@ -211,13 +212,14 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(project, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
-                    SampleProjectViewDO projectDO = manager.getProjects()
+                    SampleProjectViewDO data = manager.getProjects()
                                                            .getFirstPermanentProject();
 
-                    if (projectDO != null)
-                        project.setValue(projectDO.getProjectId(), projectDO.getProjectName());
+                    if (data != null)
+                        project.setValue(new AutoCompleteValue(data.getProjectId(), data.getProjectName()+", "+data.getProjectDescription()));
                     else
-                        project.setValue(null, "");
+                        project.setValue(new AutoCompleteValue(null, ""));
+
 
                 } catch (Exception e) {
                     com.google.gwt.user.client.Window.alert(e.getMessage());
@@ -225,29 +227,44 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                Item<Integer> selectedRow = project.getSelectedItem();
-                SampleProjectViewDO projectDO = null;
+                Item<Integer> row;
+                SampleProjectViewDO data;
+
+                row = project.getSelectedItem();
+                data = null;
                 try {
-                    if (selectedRow.getKey() != null) {
-                        projectDO = new SampleProjectViewDO();
-                        projectDO.setIsPermanent("Y");
-                        projectDO.setProjectId((Integer)selectedRow.getKey());
-                        projectDO.setProjectName((String)selectedRow.getCell(0));
-                        projectDO.setProjectDescription((String)selectedRow.getCell(1));
+                    /*
+                     * if a project was not selected and it there were permanent
+                     * projects present then we delete the first permanent project
+                     * and set the next permanent one as the first project in the list;  
+                     * otherwise we modify the first existing permanent project
+                     * or create a new one if none existed
+                     */
+                    if (row == null || row.getKey() == null) {                        
+                        manager.getProjects().removeFirstPermanentProject();
+                        data = manager.getProjects().getFirstPermanentProject();
+                        if (data != null) {
+                            manager.getProjects().setProjectAt(data, 0);
+                            
+                            project.setValue(new AutoCompleteValue(data.getProjectId(), data.getProjectName()+", "+data.getProjectDescription()));
+                        } else {
+                            project.setValue(new AutoCompleteValue(null, ""));                            
+                        }
+                    } else {
+                        data = manager.getProjects().getFirstPermanentProject();
+                        if (data == null) {
+                            data = new SampleProjectViewDO();
+                            data.setIsPermanent("Y");                            
+                            manager.getProjects().addProjectAt(data, 0);
+                        }
+                        data.setProjectId((Integer)row.getKey());
+                        data.setProjectName((String)row.getCell(0));
+                        data.setProjectDescription((String)row.getCell(1));
                     }
-
-                    manager.getProjects().addFirstPermanentProject(projectDO);
-
-                    projectDO = manager.getProjects().getFirstPermanentProject();
-
-                    if (projectDO != null)
-                        project.setValue(projectDO.getProjectId(), projectDO.getProjectName());
-                    else
-                        project.setValue(null, "");
-
                 } catch (Exception e) {
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
+            
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -301,7 +318,7 @@ public class EnvironmentalTab extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleOrganizationViewDO reportToOrg = manager.getOrganizations()
-                                                                  .getFirstReportTo();
+                                                                  .getReportTo();
 
                     if (reportToOrg != null)
                         reportTo.setValue(reportToOrg.getOrganizationId(),
@@ -315,26 +332,30 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                Item<Integer> selectedRow = reportTo.getSelectedItem();
-                SampleOrganizationViewDO reportToOrg = null;
+                Item<Integer> selectedRow;
+                SampleOrganizationViewDO data;                              
+
+                selectedRow = reportTo.getSelectedItem();
                 try {
-                    if (selectedRow.getKey() != null) {
-                        reportToOrg = new SampleOrganizationViewDO();
-                        reportToOrg.setOrganizationId((Integer)selectedRow.getKey());
-                        reportToOrg.setOrganizationName((String)selectedRow.getCell(0));
-                        reportToOrg.setOrganizationCity((String)selectedRow.getCell(2));
-                        reportToOrg.setOrganizationState((String)selectedRow.getCell(3));
+                     if (selectedRow == null || selectedRow.getKey() == null) {
+                        manager.getOrganizations().removeReportTo();
+                        reportTo.setValue(null, "");
+                        return;
                     }
 
-                    manager.getOrganizations().setReportTo(reportToOrg);
+                    data = manager.getOrganizations().getReportTo();
+                    if (data == null) {
+                        data = new SampleOrganizationViewDO();
+                        manager.getOrganizations().setReportTo(data);
+                    }
 
-                    reportToOrg = manager.getOrganizations().getFirstReportTo();
+                    data.setOrganizationId((Integer)selectedRow.getKey());
+                    data.setOrganizationName((String)selectedRow.getCell(0));
+                    data.setOrganizationCity((String)selectedRow.getCell(2));
+                    data.setOrganizationState((String)selectedRow.getCell(3));
 
-                    if (reportToOrg != null)
-                        reportTo.setValue(reportToOrg.getOrganizationId(),
-                                              reportToOrg.getOrganizationName());
-                    else
-                        reportTo.setValue(null, "");
+                    reportTo.setValue(data.getOrganizationId(),
+                                        data.getOrganizationName());
 
                 } catch (Exception e) {
                     com.google.gwt.user.client.Window.alert(e.getMessage());
@@ -360,7 +381,7 @@ public class EnvironmentalTab extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleOrganizationViewDO billToOrg = manager.getOrganizations()
-                                                                .getFirstBillTo();
+                                                                .getBillTo();
 
                     if (billToOrg != null)
                         billTo.setValue(billToOrg.getOrganizationId(),
@@ -374,26 +395,31 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                Item<Integer> selectedRow = billTo.getSelectedItem();
-                SampleOrganizationViewDO billToOrg = null;
+                Item<Integer> selectedRow;
+                SampleOrganizationViewDO billToOrg;
+
+                selectedRow = billTo.getSelectedItem();
+
                 try {
-                    if (selectedRow.getKey() != null) {
-                        billToOrg = new SampleOrganizationViewDO();
-                        billToOrg.setOrganizationId((Integer)selectedRow.getKey());
-                        billToOrg.setOrganizationName((String)selectedRow.getCell(0));
-                        billToOrg.setOrganizationCity((String)selectedRow.getCell(2));
-                        billToOrg.setOrganizationState((String)selectedRow.getCell(3));
+                    if (selectedRow == null || selectedRow.getKey() == null) {
+                        manager.getOrganizations().removeBillTo();
+                        billTo.setValue(null, "");
+                        return;
                     }
 
-                    manager.getOrganizations().setBillTo(billToOrg);
+                    billToOrg = manager.getOrganizations().getBillTo();
+                    if (billToOrg == null) {
+                        billToOrg = new SampleOrganizationViewDO();
+                        manager.getOrganizations().setBillTo(billToOrg);
+                    }
 
-                    billToOrg = manager.getOrganizations().getFirstBillTo();
+                    billToOrg.setOrganizationId((Integer)selectedRow.getKey());
+                    billToOrg.setOrganizationName((String)selectedRow.getCell(0));
+                    billToOrg.setOrganizationCity((String)selectedRow.getCell(2));
+                    billToOrg.setOrganizationState((String)selectedRow.getCell(3));
 
-                    if (billToOrg != null)
-                        billTo.setValue(billToOrg.getOrganizationId(),
-                                            billToOrg.getOrganizationName());
-                    else
-                        billTo.setValue(null, "");
+                    billTo.setValue(billToOrg.getOrganizationId(),
+                                        billToOrg.getOrganizationName());
 
                 } catch (Exception e) {
                     com.google.gwt.user.client.Window.alert(e.getMessage());
@@ -401,7 +427,7 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.setEnabled(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                billTo.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
                 billTo.setQueryMode(event.getState() == State.QUERY);
             }
         });

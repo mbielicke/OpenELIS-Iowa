@@ -1,5 +1,3 @@
-
-
 <!--
 		Exhibit A - UIRF Open-source Based Public Software License. The
 		contents of this file are subject to the UIRF Open-source Based Public
@@ -18,40 +16,59 @@
 		provisions of a UIRF Software License are applicable instead of those
 		above.
   -->
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-                xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:resource="xalan://org.openelis.util.UTFResource"
-                xmlns:locale="xalan://java.util.Locale" 
-                extension-element-prefixes="resource"
-                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-                xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-                version="1.0">
+<xsl:stylesheet
+  version="1.0"
+  extension-element-prefixes="resource"
+  xmlns:locale="xalan://java.util.Locale"
+  xmlns:resource="xalan://org.openelis.util.UTFResource"
+  xmlns:xalan="http://xml.apache.org/xalan"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+  xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+
   <xsl:import href="IMPORT/button.xsl"/>
-  <xalan:component prefix="resource">
-    <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource"/>
-  </xalan:component>
-  <xalan:component prefix="locale">
-    <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
-  </xalan:component>
-
   <xsl:template match="doc">
-    <xsl:variable name="language">
-      <xsl:value-of select="locale"/>
-    </xsl:variable>
-    <xsl:variable name="props">
-      <xsl:value-of select="props"/>
-    </xsl:variable>
-
+    <xsl:variable name="language" select="locale"/>
+    <xsl:variable name="props" select="props"/>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
     <screen name="{resource:getString($constants,'prepTestPicker')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
       <VerticalPanel padding="0" spacing="0">
         <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-        	<table key="prepTestTable" rows="10" vscroll="ALWAYS" hscroll="ALWAYS">
-            	<col width="500" header="{resource:getString($constants,'prepTestMethod')}">
-                	<label field="String"/>
-                </col>
-         	</table>
+          <HorizontalPanel>
+            <HorizontalPanel width="250" />
+            <button key="copyToEmptyButton" style="Button" icon="EditMultipleButtonImage" text="resource:getString($constants,'copyToEmpty')" />
+            <button key="copyToAllButton" style="Button" icon="EditMultipleButtonImage" text="resource:getString($constants,'copyToAll')" />
+          </HorizontalPanel>
+          <tree key="prepTestTree" rows="10" vscroll="ALWAYS">
+        	<columns>
+              <col width="250" header="{resource:getString($constants,'analysisPrepTestMethod')}" />
+              <col width="200" header="{resource:getString($constants,'section')}" />
+              <col width="50" header="{resource:getString($constants,'select')}" />
+        	</columns>
+        	<node key="analysis">
+              <col>
+                <label field="String"/>
+              </col>
+              <col>
+                <label field="String"/>
+              </col>
+              <col>
+                <label field="String"/>
+              </col>
+            </node>
+            <node key="prepTest">
+              <col>
+                <label field="String"/>
+              </col>
+	          <col>
+	            <dropdown width="200" field="Integer" />
+	          </col>
+	          <col>
+	            <check />
+	          </col>
+	        </node>
+          </tree>
      	</VerticalPanel>
 
 <!--button panel code-->

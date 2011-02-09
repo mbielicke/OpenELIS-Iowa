@@ -21,6 +21,7 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -82,6 +83,7 @@ import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.sample.client.SDWISTab;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
+import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleTreeUtility;
@@ -96,6 +98,7 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -127,7 +130,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private Button               prevPage, nextPage, similarButton, expandButton, collapseButton,
                                  queryButton, updateButton, commitButton, abortButton, addTestButton,
                                  cancelTestButton;
-    private MenuItem             envMenuQuery, wellMenuQuery, sdwisMenuQuery, unreleaseSample, historySample,
+    private MenuItem             envMenuQuery, wellMenuQuery, sdwisMenuQuery, unreleaseSample,previewFinalReport,historySample,
                                  historySampleSpec, historySampleProject, historySampleOrganization,
                                  historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
                                  historySampleQA, historyAnalysisQA, historyAuxData;
@@ -142,6 +145,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private Integer              analysisLoggedInId,  sampleErrorStatusId, 
                                  sampleReleasedId;
     private Query                query;
+    
+    private ScreenService        finalReportService;
 
     public enum Tabs {
         BLANK, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -151,6 +156,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     public SampleTrackingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
+        finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("sampletracking");
         unreleasePermission = OpenELIS.getSystemUserPermission().getModule("sampleunrelease");
@@ -354,6 +360,17 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 				unrelease();
 			}
 		});
+		
+		previewFinalReport = (MenuItem)def.getWidget("previewFinalReport");
+        addScreenHandler(previewFinalReport, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                viewFinalReport();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                previewFinalReport.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
 
         historySample = (MenuItem)def.getWidget("historySample");
         addScreenHandler(historySample, new ScreenEventHandler<Object>() {
@@ -643,11 +660,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         //NEED TO FIND A WAY TO DO THIS NOW
         trackingTree.addUnselectionHandler(new UnselectionHandler<Integer>() {
             public void onUnselection(UnselectionEvent<Integer> event) {
-            	/*
                 SampleDataBundle key;
-
+                /*
                 if (state == State.UPDATE && event.getProposedSelect() != null) {
-                    key = (SampleDataBundle)event.getProposedSelect().getData();
+                    key = (SampleDataBundle)event.getProposedSelect().data;
 
                     if ( !key.getSampleManager().getSample().getId().equals(manager.getSample().getId())) {
                         event.cancel();
@@ -661,12 +677,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     DataChangeEvent.fire(trackingScreen);
                 }
                 */
-            	
-            	 if (event.getUnselectedItem() == -1) {
-                     manager = SampleManager.getInstance();
-                     showTabs(Tabs.BLANK);
-                     DataChangeEvent.fire(trackingScreen);
-                 }
             }
         });
         
@@ -1026,6 +1036,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     // tab
                     treeUtil.updateAnalysisRow(selected.getParent());
                     //trackingTree.refreshRow(selected.getParent());
+                } else if (event.getAction() == AnalysisTab.Action.SAMPLE_TYPE_CHANGED) {
+                    selected = trackingTree.getNodeAt(trackingTree.getSelectedNode());
+                    treeUtil.updateSampleItemRow(selected.getParent());
+                   // trackingTree.refreshRow(selected.getParent());
                 }
             }
         });
@@ -1255,9 +1269,24 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         treeUtil.addActionHandler(new ActionHandler() {
             public void onAction(ActionEvent event) {
-                ActionEvent.fire(trackingScreen, event.getAction(), event.getData());
+                if (event.getAction() == SampleItemAnalysisTreeTab.Action.REFRESH_TABS) {
+                    SampleDataBundle data;
+                    
+                    data = (SampleDataBundle)event.getData();
+                    sampleItemTab.setData(data);
+                    analysisTab.setData(data);
+                    testResultsTab.setData(data);
+                    analysisNotesTab.setData(data);
+                    storageTab.setData(data);
+                    qaEventsTab.setData(data);
+
+                    drawTabs();
+                } else {
+                    ActionEvent.fire(trackingScreen, event.getAction(), event.getData());
+                }
             }
         });
+
 
         window.addBeforeClosedHandler(new BeforeCloseHandler<Window>() {
             public void onBeforeClosed(BeforeCloseEvent<Window> event) {
@@ -1349,6 +1378,13 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             return;
         }
         
+        if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
+            if (! withUnrelease) {
+                window.setError(consts.get("cantUpdateReleasedException"));
+                return;
+            }
+        } 
+
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
@@ -1363,7 +1399,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             setState(State.DISPLAY);
             trackingTree.selectNodeAt(topLevelIndex);
             window.clearStatus();
-            
             setState(State.UPDATE);
             
             //
@@ -1371,14 +1406,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             //
             if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
                 if (withUnrelease) {
-                    manager.unrelease();
+                    manager.unrelease(true);
                 } else {
                     abort();
                     window.setError(consts.get("cantUpdateReleasedException"));
                     return;
                 }
             } 
-            
+
             DataChangeEvent.fire(this);
             setFocus(collectedDate);
             window.clearStatus();
@@ -1435,7 +1470,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         wellTab.clearErrors();
         sdwisTab.clearErrors();
         
-        manager.getSample().setStatusId(sampleErrorStatusId);
+        manager.setStatusWithError(true);
 
         if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
@@ -1491,9 +1526,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
     
     public ArrayList<QueryData> getQueryFields() {
-        boolean addDomain;
+        boolean              addDomain;
+        int                  i;
         ArrayList<QueryData> fields, auxFields, tmpFields;
-        QueryData field;
+        QueryData            field;
 
         fields = super.getQueryFields();
         tmpFields = null;
@@ -1508,7 +1544,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             fields.add(field);
 
             // add aux fields
-            for (int i = 0; i < auxFields.size(); i++ ) {                
+            for (i = 0; i < auxFields.size(); i++ ) {                
                 fields.add(auxFields.get(i));            
             } 
         }
@@ -1996,6 +2032,38 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 }
             }
         });
+    }
+    
+    private void viewFinalReport() {
+        Query query;
+        QueryData field;
+
+        query = new Query();
+        field = new QueryData();
+        field.setKey("ACCESSION_NUMBER");
+        field.setQuery(manager.getSample().getAccessionNumber().toString());
+        field.setType(QueryData.Type.STRING);
+
+        query.setFields(field);
+
+        window.setBusy(consts.get("genReportMessage"));
+
+        finalReportService.call("runReportForSingle", query, new AsyncCallback<ReportStatus>() {
+            public void onSuccess(ReportStatus status) {
+                String url;
+
+                url = "report?file=" + status.getMessage();
+                com.google.gwt.user.client.Window.open(URL.encode(url), consts.get("finalReportSingleReprint"), null);
+                window.setDone(consts.get("done"));
+            }
+
+            public void onFailure(Throwable caught) {
+                window.setError("Failed");
+                caught.printStackTrace();
+                com.google.gwt.user.client.Window.alert(caught.getMessage());
+            }
+        });
+
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {

@@ -10,7 +10,6 @@
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
 		<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
 		<fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
-		<pathelement location="/var/lib/tomcat6/shared/ehcache-1.2.jar" />
 		<pathelement location="/var/lib/tomcat6/shared/log4j-1.2.14.jar" />
 	</path>
 
@@ -62,14 +61,7 @@
 	</target>
 
 	<target name="war" depends="gwtc" description="Create a war file">
-
-		<delete file="build/elissecurity.jar" />
-		<jar jarfile="build/elissecurity.jar">
-			<fileset dir="../OpenELIS-Security-EJB/bin">
-				<include name="org/openelis/security/domain/*.class" />
-				<include name="org/openelis/security/remote/*.class" />
-			</fileset>
-		</jar>
+		<mkdir dir="build" />
 		<delete file="build/openelis-common.jar" />
 		<jar jarfile="build/openelis-common.jar">
 			<fileset dir="../OpenELIS-Common/bin">
@@ -84,22 +76,21 @@
 				<include name="org/openelis/utilcommon/*.class" />
 			</fileset>
 		</jar>
+
 		<delete file="build/openelis-lib.jar" />
 		<jar jarfile="build/openelis-lib.jar">
 			<fileset dir="../OpenELIS-Lib/bin" />
 		</jar>
-		<delete file="build/openelis.war" />
 
+		<delete file="build/openelis.war" />
 		<war destfile="build/openelis.war" webxml="metadata/openelis-web.xml">
 			<webinf dir="metadata" includes="stylesheet/**/*" />
 			<metainf dir="metadata" includes="context.xml" />
 			<fileset dir="war/openelis">
 			</fileset>
 			<classes dir="war/WEB-INF/classes" includes="org/openelis/**/*" />
-			<lib dir="lib" />
 			<lib dir="war/WEB-INF/lib" includes="gwt-servlet.jar" />
-			<lib dir="build" includes="openelis-lib.jar,openelis-common.jar,elissecurity.jar" />
-
+			<lib dir="build" includes="openelis-lib.jar,openelis-common.jar" />
 		</war>
 	</target>
 

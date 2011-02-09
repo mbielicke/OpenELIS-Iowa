@@ -1189,6 +1189,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     public ArrayList<QueryData> getQueryFields() {
+        int                  i;
         ArrayList<QueryData> fields, auxFields;
         QueryData field;
 
@@ -1207,7 +1208,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             fields.add(field);
 
             // add aux fields
-            for (int i = 0; i < auxFields.size(); i++ ) {                
+            for (i = 0; i < auxFields.size(); i++ ) {                
                 fields.add(auxFields.get(i));            
             } 
         }

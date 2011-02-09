@@ -14,12 +14,12 @@ import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -35,14 +35,16 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Button;
-import org.openelis.gwt.widget.calendar.Calendar;
+import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.Item;
+import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ModalWindow;
-import org.openelis.gwt.widget.Window;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.calendar.Calendar;
 import org.openelis.gwt.widget.table.Row;
 import org.openelis.gwt.widget.table.Table;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -50,6 +52,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.gwt.widget.tree.Tree;
+import org.openelis.gwt.widget.Window;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.SampleDataBundle;
@@ -72,18 +75,17 @@ import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
+import org.openelis.modules.sample.client.TestPrepUtility;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 
@@ -95,14 +97,16 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
 
     protected Tabs                   tab;
     protected ArrayList<Tabs>        tabIndexes = new ArrayList<Tabs>();
-    protected TextBox                clientReference;
-    protected TextBox<Integer>       accessionNumber, orderNumber;
+    protected TextBox                accessionNumber, clientReference;
+    protected TextBox<Integer>       orderNumber;
     protected TextBox<Datetime>      collectedTime;
 
     protected Dropdown<Integer>      statusId;
     protected Tree                   itemsTree;
     protected Button                 removeRow, releaseButton, reportButton, completeButton,
                                      addItem, addAnalysis, queryButton, updateButton, commitButton, abortButton;
+    protected CheckBox               autoPreview;
+    protected Label<String>          autoPreviewText;
 
     protected Calendar               collectedDate, receivedDate;
 
@@ -130,12 +134,17 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     private NoteViewDO               internalNote;
     private NoteManager              noteMan;
     private Confirm                  confirm;
+    
+    private TestPrepUtility          testPrepUtil;
 
-    protected MenuItem               unreleaseAnalysis, historySample, historySampleSpec,
+    protected MenuItem               unreleaseAnalysis, previewFinalReport, historySample, historySampleSpec,
                                      historySampleProject, historySampleOrganization, historySampleItem,
                                      historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
                                      historyAnalysisQA, historyAuxData;
 
+    private ScreenService            finalReportService;
+    private Integer                  lastAccession;
+    
     private enum Tabs {
         BLANK, SAMPLE, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
         ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA
@@ -144,7 +153,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     public CompleteReleaseScreen() throws Exception {
         super((ScreenDefInt)GWT.create(CompleteReleaseDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.completeRelease.server.CompleteReleaseService");
-
+        finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
+        
         userPermission = OpenELIS.getSystemUserPermission().getModule("samplecompleterelease");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Complete and Release Screen");
@@ -280,15 +290,49 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
         
         unreleaseAnalysis.addCommand(new Command() {
-			public void execute() {
-                if (completeReleaseTable.isMultipleRowsSelected()) {
+        	public void execute() {
+                if (!completeReleaseTable.isAnyRowSelected() || completeReleaseTable.isMultipleRowsSelected()) {
                     com.google.gwt.user.client.Window.alert(consts.get("selOneRowUnrelease"));
                     return;
                 }
-                
                 showConfirm() ;
-			}
-		});
+        	}
+        });
+        
+        previewFinalReport = (MenuItem)def.getWidget("previewFinalReport");
+        addScreenHandler(previewFinalReport, new ScreenEventHandler<Object>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                previewFinalReport.setEnabled(true);
+            }
+        });
+        
+        autoPreview = (CheckBox)def.getWidget("autoPreview");
+        addScreenHandler(autoPreview, new ScreenEventHandler<String>() {
+            public void onValueChange(ValueChangeEvent<String> event) {
+            	previewFinalReport();
+            }
+            
+            public void onDataChange(DataChangeEvent event) {
+            	previewFinalReport();
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                autoPreview.setEnabled(true);
+            }
+        });
+        
+        autoPreviewText = (Label<String>)def.getWidget("autoPreviewText");
+        addScreenHandler(autoPreviewText, new ScreenEventHandler<String>() {                       
+            public void onClick(ClickEvent event) {
+               if ("N".equals(autoPreview.getValue()))
+                   autoPreview.setValue("Y", true);                               
+                
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                autoPreviewText.setStyleName("enabled");
+            }
+        });
 
         historySample = (MenuItem)def.getWidget("historySample");
         addScreenHandler(historySample, new ScreenEventHandler<Object>() {
@@ -298,10 +342,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
         
         historySample.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historySample();
-			}
-		});
+        	public void execute() {
+        		 historyUtility.setManager(manager);
+                 historyUtility.historySample();
+        	}
+        });
 
         historySampleSpec = (MenuItem)def.getWidget("historySampleSpec");
         addScreenHandler(historySampleSpec, new ScreenEventHandler<Object>() {
@@ -309,9 +354,9 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 historySampleSpec.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         historySampleSpec.addCommand(new Command() {
-			public void execute() {
+        	public void execute() {
                 String domain;
 
                 historyUtility.setManager(manager);
@@ -322,9 +367,9 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                     historyUtility.historySamplePrivateWell();
                 else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
                     historyUtility.historySampleSDWIS();
-			}
-		});
-
+        	}
+        });
+        
         historySampleProject = (MenuItem)def.getWidget("historySampleProject");
         addScreenHandler(historySampleProject, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
@@ -333,10 +378,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
         
         historySampleProject.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historySampleProject();
-			}
-		});
+        	public void execute() {
+                historyUtility.setManager(manager);
+                historyUtility.historySampleProject();
+        	}
+        });
 
         historySampleOrganization = (MenuItem)def.getWidget("historySampleOrganization");
         addScreenHandler(historySampleOrganization, new ScreenEventHandler<Object>() {
@@ -347,10 +393,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
         
         historySampleOrganization.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historySampleOrganization();
-			}
-		});
+        	public void execute() {
+                historyUtility.setManager(manager);
+                historyUtility.historySampleOrganization();
+        	}
+        });
 
         historySampleItem = (MenuItem)def.getWidget("historySampleItem");
         addScreenHandler(historySampleItem, new ScreenEventHandler<Object>() {
@@ -360,10 +407,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
         
         historySampleItem.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historySampleItem();
-			}
-		});
+        	public void execute() {
+                historyUtility.setManager(manager);
+                historyUtility.historySampleItem();
+        	}
+        });
 
         historyAnalysis = (MenuItem)def.getWidget("historyAnalysis");
         addScreenHandler(historyAnalysis, new ScreenEventHandler<Object>() {
@@ -373,10 +421,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
         
         historyAnalysis.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historyAnalysis();
-			}
-		});
+        	public void execute() {
+                historyUtility.setManager(manager);
+                historyUtility.historyAnalysis();
+        	}
+        });
 
         historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
         addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
@@ -386,10 +435,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
         
         historyCurrentResult.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historyCurrentResult();
-			}
-		});
+        	public void execute() {
+                historyUtility.setManager(manager);
+                historyUtility.historyCurrentResult();
+        	}
+        });
 
         historyStorage = (MenuItem)def.getWidget("historyStorage");
         addScreenHandler(historyStorage, new ScreenEventHandler<Object>() {
@@ -399,10 +449,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
         
         historyStorage.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historyStorage();
-			}
-		});
+        	public void execute() {
+                historyUtility.setManager(manager);
+                historyUtility.historyStorage();
+        	}
+        });
 
         historySampleQA = (MenuItem)def.getWidget("historySampleQA");
         addScreenHandler(historySampleQA, new ScreenEventHandler<Object>() {
@@ -410,13 +461,14 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 historySampleQA.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-
-        historySampleQA.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historySampleQA();
-			}
-		});
         
+        historySampleQA.addCommand(new Command() {
+        	public void execute() {
+                historyUtility.setManager(manager);
+                historyUtility.historySampleQA();
+        	}
+        });
+
         historyAnalysisQA = (MenuItem)def.getWidget("historyAnalysisQA");
         addScreenHandler(historyAnalysisQA, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
@@ -425,23 +477,25 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         });
         
         historyAnalysisQA.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historyAnalysisQA();
-			}
-		});
+        	public void execute() {
+                historyUtility.setManager(manager);
+                historyUtility.historyAnalysisQA();
+        	}
+        });
 
         historyAuxData = (MenuItem)def.getWidget("historyAuxData");
         addScreenHandler(historyAuxData, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 historyAuxData.setEnabled(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
-        });
+        });        
         
         historyAuxData.addCommand(new Command() {
-			public void execute() {
-				historyUtility.historyAuxData();
-			}
-		});
+        	public void execute() {
+                historyUtility.setManager(manager);
+                historyUtility.historyAuxData();
+        	}
+        });
 
         //
         // screen fields
@@ -477,20 +531,14 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             }
         });
 
-        completeReleaseTable.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
-            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
-                // always allow
-            }
-        });
-
         completeReleaseTable.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 if (completeReleaseTable.getSelectedRows().length == 1) {
                     dataBundle = (SampleDataBundle)completeReleaseTable.getRowAt(event.getSelectedItem()).getData();
                     manager = dataBundle.getSampleManager();
                     setState(State.DISPLAY);
+                    previewFinalReport();
                 }
-
                 resetScreen();
             }
         });
@@ -626,6 +674,29 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             }
         });
 
+        testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
+            @SuppressWarnings("unchecked")
+            public void onAction(ActionEvent<ResultTab.Action> event) {
+                if(event.getAction() == ResultTab.Action.REFLEX_ADDED) {
+                    if (testPrepUtil == null) {
+                        testPrepUtil = new TestPrepUtility();
+                        testPrepUtil.setScreen(completeScreen);
+    
+                        testPrepUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
+                            public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
+                            }
+                        });
+                    }
+    
+                    try {
+                        testPrepUtil.lookup((ArrayList<SampleDataBundle>)event.getData());
+                    } catch (Exception e) {
+                        com.google.gwt.user.client.Window.alert("loadFromEdit: " + e.getMessage());
+                    }
+                }
+            }
+        });
+
         analysisNotesTab = new AnalysisNotesTab(def, window, "anExNotesPanel", "anExNoteButton",
                                                 "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
@@ -706,90 +777,46 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 }
             }
         });
-
     }
 
-    private void executeQuery(final Query query) {
-        window.setBusy(consts.get("querying"));
+    private void initializeDropdowns() {
+	    ArrayList<Item<Integer>> model;
+	    window.clearStatus();
+	
+	    // preload dictionary models and single entries, close the window if an
+	    // error is found
+	    try {
+	        sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
+	        sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
+	        sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+	        analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
+	        analysisCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
+	
+	    } catch (Exception e) {
+	        com.google.gwt.user.client.Window.alert(e.getMessage());
+	        window.close();
+	    }
+	
+	    // sample status dropdown
+	    model = new ArrayList<Item<Integer>>();
+	    model.add(new Item<Integer>(null, ""));
+	    for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
+	        model.add(new Item<Integer>(d.getId(), d.getEntry()));
+	
+	    ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
+	    ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getStatusId())).setModel(model);
+	
+	    // analysis status dropdown
+	    model = new ArrayList<Item<Integer>>();
+	    model.add(new Item<Integer>(null, ""));
+	    for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+	        model.add(new Item<Integer>(d.getId(), d.getEntry()));
+	
+	    ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getAnalysisStatusId())).setModel(model);
+	
+	}
 
-        service.callList("query", query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
-            public void onSuccess(ArrayList<SampleDataBundle> result) {
-                manager = null;
-
-                if (result.size() > 0)
-                    setState(State.DISPLAY);
-                else
-                    setState(State.DEFAULT);
-
-                completeReleaseTable.setModel(getModel(result));
-
-                if (result.size() > 0)
-                    completeReleaseTable.selectRowAt(0);
-
-                window.clearStatus();
-            }
-
-            public void onFailure(Throwable error) {
-                int page;
-
-                if (error instanceof NotFoundException) {
-                    window.setDone(consts.get("noRecordsFound"));
-                    completeReleaseTable.clear();
-                    setState(State.DEFAULT);
-                } else if (error instanceof LastPageException) {
-                    page = query.getPage();
-                    query.setPage(page - 1);
-                    window.setError(consts.get("noMoreRecordInDir"));
-                } else {
-                    completeReleaseTable.clear();
-                    com.google.gwt.user.client.Window.alert("Error: envsample call query failed; " + error.getMessage());
-                    window.setError(consts.get("queryFailed"));
-                }
-            }
-        });
-    }
-
-    public ArrayList<Row> getModel(ArrayList<SampleDataBundle> result) {
-        ArrayList<Row> model;
-        Row analysis;
-        SampleManager sampleMan;
-        SampleDO sample;
-        AnalysisViewDO data;
-
-        model = new ArrayList<Row>();
-
-        if (result == null)
-            return model;
-
-        try {
-            for (SampleDataBundle bundle : result) {
-                sampleMan = bundle.getSampleManager();
-                sample = sampleMan.getSample();
-                data = sampleMan.getSampleItems()
-                                .getAnalysisAt(bundle.getSampleItemIndex())
-                                .getAnalysisAt(bundle.getAnalysisIndex());
-                analysis = new Row(5);
-
-                analysis.setCell(0,sample.getAccessionNumber());
-                analysis.setCell(1,data.getTestName());
-                analysis.setCell(2,data.getMethodName());
-                analysis.setCell(3,data.getStatusId());
-                analysis.setCell(4,sample.getStatusId());
-                analysis.setData(bundle);
-                model.add(analysis);
-            }
-        } catch (Exception e) {
-            com.google.gwt.user.client.Window.alert("getModel: " + e.getMessage());
-        }
-
-        return model;
-    }
-
-    private boolean canEdit() {
-        return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
-    }
-
-    protected void query() {
+	protected void query() {
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
         dataBundle = null;
@@ -817,7 +844,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     }
 
     protected void update() {
-        if (completeReleaseTable.isMultipleRowsSelected()) {
+        if (completeReleaseTable.getSelectedRows().length > 1) {
             window.setError(consts.get("cantUpdateMultiple"));
             return;
         }
@@ -828,7 +855,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             manager = manager.fetchForUpdate();
 
             // update row data
-            updateTableRow(completeReleaseTable.getSelectedRow());
+            //updateTableRow(completeReleaseTable.getSelectedRow());
+            updateAllRows(manager.getSample().getAccessionNumber());
 
             setState(State.UPDATE);
 
@@ -849,7 +877,315 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         }
     }
 
-    protected void commit() {
+    private void complete() {
+	    Integer indexList[];
+	    CRItem item;
+	    String errorMsg;
+	    Row row;
+	    SampleManager man;
+	    AnalysisManager aman;
+	    AnalysisViewDO data;
+	    SampleDataBundle bundle;
+	    ArrayList<Row> rows;
+	    HashMap<Integer, CRItem> hash;
+	
+	    bundle = null;
+	    rows = new ArrayList<Row>();
+	    for(int i : completeReleaseTable.getSelectedRows())
+	    	rows.add(completeReleaseTable.getRowAt(i));
+	    hash = new HashMap<Integer, CRItem>();
+	
+	    window.setBusy(consts.get("updating"));
+	
+	    // loop through and lock sample if necessary
+	    for (int i = 0; i < rows.size(); i++) {
+	        row = rows.get(i);
+	        bundle = (SampleDataBundle)row.getData();
+	        item = hash.get(bundle.getSampleManager().getSample().getId());
+	
+	        try {
+	        	if (item == null) {
+	            	/*
+	            	 * refetch and lock
+	            	 */
+	        		man = bundle.getSampleManager();
+	        		man = man.fetchForUpdate();
+	        		item = new CRItem(man, 1);
+	        		hash.put(man.getSample().getId(), item);
+	        	} else if (item.count == -1) { 
+	        		continue;		// unlockable
+	        	} else {
+	        		man = item.sampleManager;
+	        		item.count++;
+	        	}
+	        	/*
+	        	 * update the manager for this row
+	        	 */
+	            bundle = getCurrentRowBundle(bundle, man);
+	            row.setData(bundle);
+	
+	            /*
+	        	 * give them warning for on-hold analysis
+	        	 */
+	        	aman = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+	            data = aman.getAnalysisAt(bundle.getAnalysisIndex());
+	            if (analysisOnHoldId.equals(data.getStatusId()) &&
+	            		!com.google.gwt.user.client.Window.confirm(consts.get("onHoldWarning")))
+	            	continue;
+	            aman.completeAnalysisAt(bundle.getAnalysisIndex());
+	        } catch (EntityLockedException e) {
+	        	/*
+	        	 * mark the sample as not updateable
+	        	 */
+	        	man = bundle.getSampleManager();
+	        	hash.put(man.getSample().getId(), new CRItem(man, -1));
+	            com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
+	                         man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
+	        } catch (ValidationErrorsList e) {
+	        	/*
+	        	 * mark this analysis as not completable
+	        	 */
+	        	man = bundle.getSampleManager();
+	            item.count--;
+	        	try {
+	            	aman = man.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+	                data = aman.getAnalysisAt(bundle.getAnalysisIndex());
+	                errorMsg = "Cannot complete " + data.getTestName() + ":" + data.getMethodName() + 
+	                		   " on accession #" + man.getSample().getAccessionNumber() + ":\n";
+	                for (int l = 0; l < e.size(); l++ )
+	                    errorMsg += " * " + e.getErrorList().get(l).getMessage() + "\n";
+	                com.google.gwt.user.client.Window.alert(errorMsg);
+	            } catch (Exception f) {
+	                com.google.gwt.user.client.Window.alert(e.getMessage());
+	            }
+	        } catch (Exception e) {
+	        	/*
+	        	 * rollback the entire manager for this accession
+	        	 */
+	        	man = bundle.getSampleManager();
+	        	hash.put(man.getSample().getId(), new CRItem(man, 0));
+	            com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
+	                         man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
+	        }
+	    }
+	
+	    indexList = completeReleaseTable.getSelectedRows();
+	    updateAndRefreshTable(rows, indexList, hash, bundle);
+	    window.clearStatus();
+	}
+
+	private void release() {
+	    Integer indexList[];
+	    CRItem item;
+	    String errorMsg;
+	    Row row;
+	    SampleManager man;
+	    AnalysisManager aman;
+	    AnalysisViewDO data;
+	    SampleDataBundle bundle;
+	    ArrayList<Row> rows;
+	    HashMap<Integer, CRItem> hash;
+	    LocalizedException warn;
+	
+	    bundle = null;
+	    rows = new ArrayList<Row>();
+	    for(int i : completeReleaseTable.getSelectedRows())
+	    	rows.add(completeReleaseTable.getRowAt(i));
+	    hash = new HashMap<Integer, CRItem>();
+	
+	    if (rows.size() > 1) {
+	        warn = new LocalizedException("releaseMultipleWarning", String.valueOf(rows.size()));
+	        if ( !com.google.gwt.user.client.Window.confirm(warn.getMessage()))
+	            return;
+	    }
+	    window.setBusy(consts.get("updating"));
+	
+	    // loop through and lock sample if necessary
+	    for (int i = 0; i < rows.size(); i++ ) {
+	        row = rows.get(i);
+	        bundle = (SampleDataBundle)row.getData();
+	        item = hash.get(bundle.getSampleManager().getSample().getId());
+	
+	        try {
+	            if (item == null) {
+	            	/*
+	            	 * refetch and lock
+	            	 */
+	        		man = bundle.getSampleManager();
+	        		man = man.fetchForUpdate();
+	        		item = new CRItem(man, 1);
+	        		hash.put(man.getSample().getId(), item);
+	            } else if (item.count == -1) {
+	            	continue;
+	            } else {
+	                man = item.sampleManager;
+	                item.count++ ;
+	            }
+	        	/*
+	        	 * update the manager for this row
+	        	 */
+	            bundle = getCurrentRowBundle(bundle, man);
+	            row.setData(bundle);
+	
+	            bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex())
+	                  .releaseAnalysisAt(bundle.getAnalysisIndex());
+	        } catch (EntityLockedException e) {
+	        	/*
+	        	 * mark the sample as not updateable
+	        	 */
+	        	man = bundle.getSampleManager();
+	        	hash.put(man.getSample().getId(), new CRItem(man, -1));
+	            com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
+	                         man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
+	        } catch (ValidationErrorsList e) {
+	        	/*
+	        	 * mark this analysis as not completable
+	        	 */
+	        	man = bundle.getSampleManager();
+	            item.count--;
+	        	try {
+	            	aman = man.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+	                data = aman.getAnalysisAt(bundle.getAnalysisIndex());
+	                errorMsg = "Cannot release " + data.getTestName() + ":" + data.getMethodName() + 
+	                		   " on accession #" + man.getSample().getAccessionNumber() + ":\n";
+	                for (int l = 0; l < e.size(); l++ )
+	                    errorMsg += " * " + e.getErrorList().get(l).getMessage() + "\n";
+	                com.google.gwt.user.client.Window.alert(errorMsg);
+	            } catch (Exception f) {
+	                com.google.gwt.user.client.Window.alert(e.getMessage());
+	            }
+	        } catch (Exception e) {
+	        	/*
+	        	 * rollback the entire manager for this accession
+	        	 */
+	        	man = bundle.getSampleManager();
+	        	hash.put(man.getSample().getId(), new CRItem(man, 0));
+	            com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
+	                         man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
+	        }
+	    }
+	
+	    indexList = completeReleaseTable.getSelectedRows();
+	    updateAndRefreshTable(rows, indexList, hash, bundle);
+	    window.clearStatus();
+	}
+
+	private void unrelease() {
+	    Integer[] indexList;
+	    ArrayList<Row> rows;
+	    Row row;
+	    CRItem item;
+	    SampleDataBundle bundle;
+	    SampleManager man;
+	    HashMap<Integer, CRItem> hash;
+	    AnalysisViewDO data;
+	    AnalysisManager aman;
+	    String errorMsg;
+	
+	    bundle = null;
+	    rows = new ArrayList<Row>();
+	    for(int i : completeReleaseTable.getSelectedRows())
+	    	rows.add(completeReleaseTable.getRowAt(i));
+	    hash = new HashMap<Integer, CRItem>();
+	
+	    window.setBusy(consts.get("updating"));
+	
+	    row = rows.get(0);
+	    bundle = (SampleDataBundle)row.getData();
+	    item = hash.get(bundle.getSampleManager().getSample().getId());
+	    man = bundle.getSampleManager();
+	
+	    try {
+	    	/*
+	    	 * refetch with lock
+	    	 */
+	    	man = man.fetchForUpdate();
+	        item = new CRItem(man, 1);
+	        hash.put(man.getSample().getId(), item);
+	        bundle = getCurrentRowBundle(bundle, man);
+	        row.setData(bundle);
+	        
+	        /*
+	         * force them to enter an internal note for unreleasing
+	         */
+	        aman = man.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+	        aman.setInternalNotes(noteMan, bundle.getAnalysisIndex());
+	        aman.unreleaseAnalysisAt(bundle.getAnalysisIndex());
+	    } catch (EntityLockedException e) {
+	    	/*
+	    	 * mark the sample as not updateable
+	    	 */
+	    	man = bundle.getSampleManager();
+	    	hash.put(man.getSample().getId(), new CRItem(man, -1));
+	        com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
+	                     man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
+	    } catch (ValidationErrorsList e) {
+	    	/*
+	    	 * mark this analysis as not completable
+	    	 */
+	    	man = bundle.getSampleManager();
+	        item.count--;
+	    	try {
+	        	aman = man.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
+	            data = aman.getAnalysisAt(bundle.getAnalysisIndex());
+	            errorMsg = "Cannot unrelease " + data.getTestName() + ":" + data.getMethodName() + 
+	            		   " on accession #" + man.getSample().getAccessionNumber() + ":\n";
+	            for (int l = 0; l < e.size(); l++ )
+	                errorMsg += " * " + e.getErrorList().get(l).getMessage() + "\n";
+	            com.google.gwt.user.client.Window.alert(errorMsg);
+	        } catch (Exception f) {
+	            com.google.gwt.user.client.Window.alert(e.getMessage());
+	        }
+	    } catch (Exception e) {
+	    	/*
+	    	 * rollback the entire manager for this accession
+	    	 */
+	    	man = bundle.getSampleManager();
+	    	hash.put(man.getSample().getId(), new CRItem(man, 0));
+	        com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
+	                     man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
+	    }
+	
+	    indexList = completeReleaseTable.getSelectedRows();
+	    updateAndRefreshTable(rows, indexList, hash, bundle);
+	    window.clearStatus();
+	}
+
+	private void previewFinalReport() {
+	    Query query;
+	    QueryData field;
+	
+	    if (! "Y".equals(autoPreview.getValue()) || state != State.DISPLAY || 
+	    	completeReleaseTable.getSelectedRows().length != 1 || manager == null ||
+	    	manager.getSample().getAccessionNumber().equals(lastAccession))
+	    	return;
+	    
+	    lastAccession = manager.getSample().getAccessionNumber(); 
+	    query = new Query();
+	    field = new QueryData("ACCESSION_NUMBER", QueryData.Type.INTEGER,lastAccession.toString());
+	    query.setFields(field);
+	
+	    window.setBusy(consts.get("genReportMessage"));
+	
+	    finalReportService.call("runReportForPreview", query, new AsyncCallback<ReportStatus>() {
+	        public void onSuccess(ReportStatus status) {
+	            String url;
+	            
+	            url = "report?file=" + status.getMessage();
+	            com.google.gwt.user.client.Window.open(URL.encode(url), consts.get("finalReportSingleReprint"), null);
+	            window.setDone(consts.get("done"));
+	        }
+	
+	        public void onFailure(Throwable caught) {
+	            window.setError("Failed");
+	            caught.printStackTrace();
+	            com.google.gwt.user.client.Window.alert(caught.getMessage());
+	        }
+	    });
+	
+	}
+
+	protected void commit() {
         setFocus(null);
 
         if ( !validate()) {
@@ -864,7 +1200,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             QueryData qd = new QueryData(SampleMeta.getDomain(),QueryData.Type.STRING,"!Q");
             query.setFields(qd);
             executeQuery(query);
-
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
@@ -874,11 +1209,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 updateAllRows(manager.getSample().getAccessionNumber());
 
                 setState(State.DISPLAY);
+                lastAccession = null;
                 DataChangeEvent.fire(this);
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
-
                 if ( !e.hasErrors() && e.hasWarnings())
                     showWarningsDialog(e);
             } catch (Exception e) {
@@ -891,7 +1226,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
     protected void commitWithWarnings() {
         clearErrors();
 
-        manager.getSample().setStatusId(sampleErrorStatusId);
+        manager.setStatusWithError(true);
 
         if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
@@ -900,6 +1235,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                 updateAllRows(manager.getSample().getAccessionNumber());
 
                 setState(Screen.State.DISPLAY);
+                lastAccession = null;
                 DataChangeEvent.fire(this);
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
@@ -942,167 +1278,80 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
             window.clearStatus();
         }
     }
+    
+    public ArrayList<Row> getModel(ArrayList<SampleDataBundle> result) {
+	    ArrayList<Row> model;
+	    Row analysis;
+	    SampleManager sampleMan;
+	    SampleDO sample;
+	    AnalysisViewDO data;
+	
+	    model = new ArrayList<Row>();
+	    if (result == null)
+	        return model;
+	
+	    try {
+	        for (SampleDataBundle bundle : result) {
+	            sampleMan = bundle.getSampleManager();
+	            sample = sampleMan.getSample();
+	            data = sampleMan.getSampleItems()
+	                            .getAnalysisAt(bundle.getSampleItemIndex())
+	                            .getAnalysisAt(bundle.getAnalysisIndex());
+	            analysis = new Row(6);
+	
+	            analysis.setCell(0,sample.getAccessionNumber());
+	            analysis.setCell(1,data.getTestName());
+	            analysis.setCell(2,data.getMethodName());
+	            analysis.setCell(3,data.getStatusId());
+	            analysis.setCell(4,sample.getStatusId());
+	            analysis.setData(bundle);
+	            model.add(analysis);
+	        }
+	    } catch (Exception e) {
+	        com.google.gwt.user.client.Window.alert("getModel: " + e.getMessage());
+	    }
+	    return model;
+	}
 
-    private void resetScreen() {
-        boolean showingDomainTab;
+	private void executeQuery(final Query query) {
+	    window.setBusy(consts.get("querying"));
+	
+	    service.callList("query", query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
+	        public void onSuccess(ArrayList<SampleDataBundle> result) {
+	            manager = null;
+	
+	            if (result.size() > 0)
+	                setState(State.DISPLAY);
+	            else
+	                setState(State.DEFAULT);
+                lastAccession = null;
+	            completeReleaseTable.setModel(getModel(result));
+	            if (result.size() > 0)
+	                completeReleaseTable.selectRowAt(0, true);
+	            window.clearStatus();
+	        }
+	
+	        public void onFailure(Throwable error) {
+	            int page;
+	
+	            if (error instanceof NotFoundException) {
+	                window.setDone(consts.get("noRecordsFound"));
+	                completeReleaseTable.clear();
+	                setState(State.DEFAULT);
+	            } else if (error instanceof LastPageException) {
+	                page = query.getPage();
+	                query.setPage(page - 1);
+	                window.setError(consts.get("noMoreRecordInDir"));
+	            } else {
+	                completeReleaseTable.clear();
+	                com.google.gwt.user.client.Window.alert("Error: envsample call query failed; " + error.getMessage());
+	                window.setError(consts.get("queryFailed"));
+	            }
+	        }
+	    });
+	}
 
-        showingDomainTab = (tab == Tabs.ENVIRONMENT || tab == Tabs.PRIVATE_WELL || tab == Tabs.SDWIS);
-
-        if (completeReleaseTable.isMultipleRowsSelected()) {
-            showTabs(Tabs.BLANK);
-
-        } else if (manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG)) {
-            if (showingDomainTab)
-                tab = Tabs.ENVIRONMENT;
-
-            showTabs(Tabs.SAMPLE, Tabs.ENVIRONMENT, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS,
-                     Tabs.TEST_RESULT, Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE,
-                     Tabs.QA_EVENTS, Tabs.AUX_DATA);
-
-        } else if (manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG)) {
-            if (showingDomainTab)
-                tab = Tabs.PRIVATE_WELL;
-
-            showTabs(Tabs.SAMPLE, Tabs.PRIVATE_WELL, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS,
-                     Tabs.TEST_RESULT, Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE,
-                     Tabs.QA_EVENTS, Tabs.AUX_DATA);
-
-        } else if (manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG)) {
-            if (showingDomainTab)
-                tab = Tabs.SDWIS;
-
-            showTabs(Tabs.SAMPLE, Tabs.SDWIS, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.TEST_RESULT,
-                     Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE, Tabs.QA_EVENTS,
-                     Tabs.AUX_DATA);
-        }
-
-        DataChangeEvent.fire(this);
-        window.clearStatus();
-    }
-
-    private SampleDataBundle getAnalysisBundle(Integer id) throws Exception {
-        int sindex,aindex;
-        SampleItemManager siManager = manager.getSampleItems();
-        
-        sindex = -1;
-        aindex = -1;
-        for (int i = 0; i < siManager.count(); i++ ) {
-            for (int j = 0; j < siManager.getAnalysisAt(i).count(); j++ ) {
-                if (siManager.getAnalysisAt(i).getAnalysisAt(j).getId().equals(id)) {
-                    sindex = i;
-                    aindex = j;
-                    break;
-                }
-            }
-        }
-        if (sindex < -1)
-            return null;
-        return siManager.getAnalysisAt(sindex).getBundleAt(aindex);
-    }
-
-    private void updateAllRows(Integer accessionNumber) {
-        Row row;
-        for (int i = 0; i < completeReleaseTable.getRowCount(); i++ ) {
-            row = completeReleaseTable.getRowAt(i);
-
-            if (accessionNumber.equals(row.getCell(0)))
-                updateTableRow(i);
-        }
-    }
-
-    private void updateTableRow(int index) {
-        int itemIndex, anIndex;
-        Row row;
-        SampleDO sample;
-        AnalysisViewDO data;
-        SampleDataBundle bundle;
-
-        try {
-            row = completeReleaseTable.getRowAt(index);
-            bundle = getCurrentRowBundle(row, manager);
-
-            row.setData(bundle);
-            if (index == completeReleaseTable.getSelectedRow())
-                dataBundle = bundle;
-
-            // get the DOs from the new bundle
-            itemIndex = bundle.getSampleItemIndex();
-            anIndex = bundle.getAnalysisIndex();
-            sample = bundle.getSampleManager().getSample();
-            data = bundle.getSampleManager()
-                         .getSampleItems()
-                         .getAnalysisAt(itemIndex)
-                         .getAnalysisAt(anIndex);
-
-            updateTableRowCells(index, sample, data);
-        } catch (Exception e) {
-            com.google.gwt.user.client.Window.alert("updateSelectedTableRow: " + e.getMessage());
-        }
-    }
-
-    private SampleDataBundle getCurrentRowBundle(Row row, SampleManager manager) throws Exception {
-        int itemIndex, anIndex;
-        Integer analysisId;
-        SampleDataBundle oldBundle, bundle;
-
-        oldBundle = (SampleDataBundle)row.getData();
-        itemIndex = oldBundle.getSampleItemIndex();
-        anIndex = oldBundle.getAnalysisIndex();
-        analysisId = oldBundle.getSampleManager()
-                              .getSampleItems()
-                              .getAnalysisAt(itemIndex)
-                              .getAnalysisAt(anIndex)
-                              .getId();
-
-        if (analysisId.equals(manager.getSampleItems()
-                                     .getAnalysisAt(itemIndex)
-                                     .getAnalysisAt(anIndex)
-                                     .getId()))
-            bundle = manager.getSampleItems().getAnalysisAt(itemIndex).getBundleAt(anIndex);
-        else
-            bundle = getAnalysisBundle(analysisId);
-
-        return bundle;
-    }
-
-    private void initializeDropdowns() {
-        ArrayList<org.openelis.gwt.widget.Item<Integer>> model;
-        window.clearStatus();
-
-        // preload dictionary models and single entries, close the window if an
-        // error is found
-        try {
-            sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-            sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
-            analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
-            analysisCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
-
-        } catch (Exception e) {
-            com.google.gwt.user.client.Window.alert(e.getMessage());
-            window.close();
-        }
-
-        // sample status dropdown
-        model = new ArrayList<org.openelis.gwt.widget.Item<Integer>>();
-        model.add(new org.openelis.gwt.widget.Item<Integer>(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
-            model.add(new org.openelis.gwt.widget.Item<Integer>(d.getId(), d.getEntry()));
-
-        ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
-        ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getStatusId())).setModel(model);
-
-        // analysis status dropdown
-        model = new ArrayList<org.openelis.gwt.widget.Item<Integer>>();
-        model.add(new org.openelis.gwt.widget.Item<Integer>(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
-            model.add(new org.openelis.gwt.widget.Item<Integer>(d.getId(), d.getEntry()));
-
-        ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getAnalysisStatusId())).setModel(model);
-
-    }
-
-    private void drawTabs() {
+	private void drawTabs() {
         switch (tab) {
             case ENVIRONMENT:
                 environmentalTab.draw();
@@ -1162,304 +1411,77 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         }
     }
 
-    public HandlerRegistration addActionHandler(ActionHandler handler) {
-        return addHandler(handler, ActionEvent.getType());
-    }
-
-    private void release() {
-        ArrayList<Row> rows;
-        LocalizedException ex;
-        //int[] indexList;
-        Row row;
-        Item item;
-        SampleDataBundle bundle;
-        SampleManager man;
-        HashMap<Integer, Item> hash;
-        AnalysisViewDO data;
-        String errorMsg;
-        Integer[] sels;
-
-        bundle = null;
-        
-        sels = completeReleaseTable.getSelectedRows();
-        rows = new ArrayList<Row>();
-        
-        for(int i = 0; i < sels.length; i++) 
-        	rows.add(completeReleaseTable.getRowAt(sels[i]));
-        
-        
-        //indexList = completeReleaseTable.getSelectedRows();
-        hash = new HashMap<Integer, Item>();
-
-        if (rows.size() > 1) {
-            ex = new LocalizedException("releaseMultipleWarning", String.valueOf(rows.size()));
-            if ( !com.google.gwt.user.client.Window.confirm(ex.getMessage()))
-                return;
-        }
-        window.setBusy(consts.get("updating"));
-
-        // loop through and lock sample if necessary
-        for (int i = 0; i < rows.size(); i++ ) {
-            row = rows.get(i);
-            bundle = (SampleDataBundle)row.getData();
-            item = hash.get(bundle.getSampleManager().getSample().getId());
-            man = bundle.getSampleManager();
-
-            try {
-                if (item == null) {
-                    man = man.fetchForUpdate();
-                    item = new Item(man, 1);
-                    hash.put(man.getSample().getId(), item);
-                } else if (item.count != -1) {
-                    item.count++ ;
-                    man = item.sampleManager;
-                }
-
-                bundle = getCurrentRowBundle(row, man);
-                row.setData(bundle);
-                bundle.getSampleManager()
-                      .getSampleItems()
-                      .getAnalysisAt(bundle.getSampleItemIndex())
-                      .releaseAnalysisAt(bundle.getAnalysisIndex());
-
-            } catch (EntityLockedException e) {
-                hash.put(man.getSample().getId(), new Item(man, -1));
-                com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
-                             man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
-                window.clearStatus();
-            } catch (ValidationErrorsList e) {
-                try {
-                    data = man.getSampleItems()
-                              .getAnalysisAt(bundle.getSampleItemIndex())
-                              .getAnalysisAt(bundle.getAnalysisIndex());
-                    item.count-- ;
-
-                    errorMsg = "Cannot release " + data.getTestName() + ":" + data.getMethodName() +
-                               " on accession #" + man.getSample().getAccessionNumber() + ":\n";
-
-                    for (int l = 0; l < e.size(); l++ )
-                        errorMsg += " * " + e.getErrorList().get(l).getMessage() + "\n";
-
-                    com.google.gwt.user.client.Window.alert(errorMsg);
-                    window.clearStatus();
-                } catch (Exception f) {
-                    com.google.gwt.user.client.Window.alert(e.getMessage());
-                    window.clearStatus();
-                }
-
-            } catch (Exception e) {
-                com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
-                             man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
-                window.clearStatus();
-            }
-        }
-
-        updateAndRefreshTable(rows, sels, hash, bundle);
-        window.clearStatus();
-    }
-
-    private void unrelease() {
-        Integer[] indexList;
-        ArrayList<Row> rows;
-        Row row;
-        Item item;
-        SampleDataBundle bundle;
-        SampleManager man;
-        HashMap<Integer, Item> hash;
-        AnalysisViewDO data;
-        AnalysisManager anaMan;
-        String errorMsg;
-
-        indexList = completeReleaseTable.getSelectedRows();
-        rows = new ArrayList<Row>();
-        for(int i = 0; i < indexList.length; i++) 
-        	rows.add(completeReleaseTable.getRowAt(indexList[i]));
-        
-        
-        bundle = null;
-        hash = new HashMap<Integer, Item>();
-        row = rows.get(0);
-        bundle = (SampleDataBundle)row.getData();
-        item = hash.get(bundle.getSampleManager().getSample().getId());
-        man = bundle.getSampleManager();
-
-        window.setBusy(consts.get("updating"));
-        try {
-            man = man.fetchForUpdate();
-            item = new Item(man, 1);
-            hash.put(man.getSample().getId(), item);
-            bundle = getCurrentRowBundle(row, man);
-            row.setData(bundle);
-            anaMan = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
-            anaMan.setInternalNotes(noteMan, bundle.getAnalysisIndex());
-            anaMan.unreleaseAnalysisAt(bundle.getAnalysisIndex());
-        } catch (EntityLockedException e) {
-            hash.put(man.getSample().getId(), new Item(man, -1));
-            com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") + man.getSample().getAccessionNumber() +
-                         ":\n\n" + e.getMessage());
-            window.clearStatus();
-        } catch (ValidationErrorsList e) {
-            try {
-                data = man.getSampleItems()
-                          .getAnalysisAt(bundle.getSampleItemIndex())
-                          .getAnalysisAt(bundle.getAnalysisIndex());
-                item.count-- ;
-
-                errorMsg = "Cannot unrelease " + data.getTestName() + ":" + data.getMethodName() +
-                           " on accession #" + man.getSample().getAccessionNumber() + ":\n";
-
-                for (int l = 0; l < e.size(); l++ )
-                    errorMsg += " * " + e.getErrorList().get(l).getMessage() + "\n";
-
-                com.google.gwt.user.client.Window.alert(errorMsg);
-
-            } catch (Exception f) {
-                com.google.gwt.user.client.Window.alert(e.getMessage());
-                window.clearStatus();
-            }
-
-        } catch (Exception e) {
-            com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") + man.getSample().getAccessionNumber() +
-                         ":\n\n" + e.getMessage());
-            window.clearStatus();
-        }
-
-        updateAndRefreshTable(rows, indexList, hash, bundle);
-        window.clearStatus();
-    }
-
-    private void complete() {
-        ArrayList<Row> rows;
-        Integer[] indexList;
-        Row row;
-        Item item;
-        SampleDataBundle bundle;
-        SampleManager man;
-        HashMap<Integer, Item> hash;
-        AnalysisManager anMan;
-        AnalysisViewDO data;
-        ValidationErrorsList errorsList;
-        String errorMsg;
-
-        bundle = null;
-        
-        indexList = completeReleaseTable.getSelectedRows();
-        rows = new ArrayList<Row>();
-        for(int i = 0; i < indexList.length; i++)
-        	rows.add(completeReleaseTable.getRowAt(indexList[i]));
-        
-        hash = new HashMap<Integer, Item>();
-
-        window.setBusy(consts.get("updating"));
-        
-        // loop through and lock sample if necessary
-        for (int i = 0; i < rows.size(); i++ ) {
-            row = rows.get(i);
-            bundle = (SampleDataBundle)row.getData();
-            item = hash.get(bundle.getSampleManager().getSample().getId());
-            man = bundle.getSampleManager();
-
-            try {
-                if (item == null) {
-                    man = man.fetchForUpdate();
-                    item = new Item(man, 1);
-                    hash.put(man.getSample().getId(), item);
-
-                } else if (item.count != -1) {
-                    item.count += 1;
-                    man = item.sampleManager;
-
-                }
-
-                anMan = bundle.getSampleManager()
-                              .getSampleItems()
-                              .getAnalysisAt(bundle.getSampleItemIndex());
-                data = anMan.getAnalysisAt(bundle.getAnalysisIndex());
-                if (analysisCompletedId.equals(data.getStatusId())) {
-                    errorsList = new ValidationErrorsList();
-                    errorsList.add(new FormErrorException("analysisAlreadyComplete"));
-                    throw errorsList;
-                }
-
-                if ( !analysisOnHoldId.equals(data.getStatusId()) ||
-                    com.google.gwt.user.client.Window.confirm(consts.get("onHoldWarning"))) {
-                    bundle = getCurrentRowBundle(row, man);
-                    row.setData(bundle);
-                    bundle.getSampleManager()
-                          .getSampleItems()
-                          .getAnalysisAt(bundle.getSampleItemIndex())
-                          .completeAnalysisAt(bundle.getAnalysisIndex());
-                }
-
-            } catch (EntityLockedException e) {
-                hash.put(man.getSample().getId(), new Item(man, -1));
-                com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
-                             man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
-                window.clearStatus();
-            } catch (ValidationErrorsList e) {
-                try {
-                    data = man.getSampleItems()
-                              .getAnalysisAt(bundle.getSampleItemIndex())
-                              .getAnalysisAt(bundle.getAnalysisIndex());
-                    item.count = item.count - 1;
-
-                    errorMsg = "Cannot complete " + data.getTestName() + ":" +
-                               data.getMethodName() + " on accession #" +
-                               man.getSample().getAccessionNumber() + ":\n";
-
-                    for (int l = 0; l < e.size(); l++ )
-                        errorMsg += " * " + e.getErrorList().get(l).getMessage() + "\n";
-
-                    com.google.gwt.user.client.Window.alert(errorMsg);
-
-                } catch (Exception f) {
-                    com.google.gwt.user.client.Window.alert(e.getMessage());
-                    window.clearStatus();
-                }
-
-            } catch (Exception e) {
-                com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
-                             man.getSample().getAccessionNumber() + ":\n\n" + e.getMessage());
-                window.clearStatus();
-            }
-        }
-
-        updateAndRefreshTable(rows, indexList, hash, bundle);
-        window.clearStatus();
-    }
-
     private void updateAndRefreshTable(ArrayList<Row> rows,
                                        Integer[] indexList,
-                                       HashMap<Integer, Item> hash,
+                                       HashMap<Integer, CRItem> hash,
                                        SampleDataBundle bundle) {
+    	int i;
+        CRItem item;
         Row row;
-        int index;
-        Item item;
+        SampleManager man;
 
-        for (int j = 0; j < rows.size(); j++ ) {
-            index = indexList[j];
-            row = rows.get(j);
+        for (i = 0; i < rows.size(); i++ ) {
+            row = rows.get(i);
             bundle = (SampleDataBundle)row.getData();
             item = hash.get(bundle.getSampleManager().getSample().getId());
 
             try {
-                if (item != null && item.count > 0) {
-                    item.sampleManager.update();
+            	if (item == null)
+            		continue;
+            	/*
+                 * we want to redo the 
+                 */
+            	man = item.sampleManager;
+                if (item.count > 0) {
+                	try {
+                        man.validate();
+                    } catch (ValidationErrorsList e) {
+                        man.setStatusWithError(true);
+                    }
+                    man = item.sampleManager.update();
+                    item.sampleManager = man;
                     item.count = -1;
+                } else if (item.count == 0) {
+                	man = item.sampleManager.abortUpdate();
+                    item.sampleManager = man;
+                	item.count = -1;
                 }
-
-                // update the row
-                updateTableRowCells(index, bundle.getSampleManager().getSample(),
-                                    bundle.getSampleManager()
-                                          .getSampleItems()
-                                          .getAnalysisAt(bundle.getSampleItemIndex())
-                                          .getAnalysisAt(bundle.getAnalysisIndex()));
-
+                
+                if (man != bundle.getSampleManager()) {
+                    bundle = getCurrentRowBundle(bundle, man);
+                    row.setData(bundle);
+                }
             } catch (Exception e) {
                 com.google.gwt.user.client.Window.alert(consts.get("errorSampleAccNum") +
                              bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n" +
                              e.getMessage());
             }
+        }
+
+        /*
+         * change all the rows that need to be updated
+         */
+        for (i = 0; i < completeReleaseTable.getRowCount(); i++ ) {
+            row = completeReleaseTable.getRowAt(i);
+            bundle = (SampleDataBundle)row.getData();
+            man = bundle.getSampleManager();
+            item = hash.get(man.getSample().getId());
+            if (item == null)
+                continue;
+            try {
+                if (man != item.sampleManager) {
+                    bundle = getCurrentRowBundle(bundle, item.sampleManager);
+                    row.setData(bundle);
+                    man = item.sampleManager;
+                }
+                updateTableRowCells(i, man.getSample(), man.getSampleItems()
+                                       .getAnalysisAt(bundle.getSampleItemIndex())
+                                       .getAnalysisAt(bundle.getAnalysisIndex()));
+            } catch (Exception e) {
+                window.setError(e.getMessage());
+                e.printStackTrace();
+            }
+
         }
 
         // if the tabs are showing data we need to make sure to refresh them
@@ -1478,21 +1500,97 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         completeReleaseTable.setValueAt(row, 4, sample.getStatusId());
     }
 
-    private class Item {
-        private SampleManager sampleManager;
-        private int           count;
+    private void updateAllRows(Integer accessionNumber) {
+	    Row row;
+	
+	    for (int i = 0; i < completeReleaseTable.getRowCount(); i++ ) {
+	        row = completeReleaseTable.getRowAt(i);
+	
+	        if (accessionNumber.equals(row.getCell(0)))
+	            updateTableRow(i);
+	    }
+	}
 
-        public Item(SampleManager man, int count) {
-            this.sampleManager = man;
-            this.count = count;
-        }
-    }
-    
-    private void showNote() {                        
-        final int index = dataBundle.getSampleItemIndex();        
+	private void updateTableRow(int index) {
+	    int itemIndex, anIndex;
+	    Row row;
+	    SampleDO sample;
+	    AnalysisViewDO data;
+	    SampleDataBundle bundle;
+	
+	    try {
+	        row = completeReleaseTable.getRowAt(index);
+	        bundle = (SampleDataBundle) row.getData();
+	        bundle = getCurrentRowBundle(bundle, manager);
+	        if (index == completeReleaseTable.getSelectedRow())
+	            dataBundle = bundle;
+	
+	        // get the DOs from the new bundle
+	        itemIndex = bundle.getSampleItemIndex();
+	        anIndex = bundle.getAnalysisIndex();
+	        sample = bundle.getSampleManager().getSample();
+	        data = bundle.getSampleManager()
+	                     .getSampleItems()
+	                     .getAnalysisAt(itemIndex)
+	                     .getAnalysisAt(anIndex);
+	
+	        updateTableRowCells(index, sample, data);
+	    } catch (Exception e) {
+	        com.google.gwt.user.client.Window.alert("updateSelectedTableRow: " + e.getMessage());
+	    }
+	}
+
+	private SampleDataBundle getCurrentRowBundle(SampleDataBundle old, SampleManager man) throws Exception {
+		int ii, ai, i, j;
+		Integer oid, nid;
+		SampleDataBundle nb;
+		AnalysisManager am;
+		SampleItemManager sim;
+		
+		/*
+		 * get the info from old bundle and transfer it to the new bundle
+		 */
+		ii = old.getSampleItemIndex();
+		ai = old.getAnalysisIndex();
+		oid = old.getSampleManager().getSampleItems().getAnalysisAt(ii).getAnalysisAt(ai).getId();
+		
+		/*
+		 * find the analysis at the old position
+		 */
+		nid = null;
+		sim = man.getSampleItems();
+		if (ii < sim.count()) {
+			am = sim.getAnalysisAt(ii);
+			if (ai < am.count())
+				nid = am.getAnalysisAt(ai).getId();
+		}
+		
+		nb = null;
+		if (! oid.equals(nid)) {
+			/*
+			 * things changed -- find the analysis id the hard way
+			 */
+			for (i = 0; i < sim.count(); i++ ) {
+	            for (j = 0; j < sim.getAnalysisAt(i).count(); j++ ) {
+	                if (sim.getAnalysisAt(i).getAnalysisAt(j).getId().equals(oid)) {
+	                	nb = sim.getAnalysisAt(i).getBundleAt(j);
+	                	break;
+	                }
+	            }
+	        }
+		} else {
+			nb = man.getSampleItems().getAnalysisAt(ii).getBundleAt(ai);
+		}
+	
+		return nb;
+	}
+
+	private void showNote() {                        
+        final int index;        
         ModalWindow modal;
         AnalysisManager man;
-        
+                
+        index = dataBundle.getSampleItemIndex();
         try {
             man = dataBundle.getSampleManager().getSampleItems()
                                     .getAnalysisAt(index);
@@ -1531,33 +1629,38 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
         internalEditNote.setNote(internalNote);
     }
 
-    public void onSelection(SelectionEvent<Integer> event) {
-        switch (event.getSelectedItem().intValue()) {
-            case 0:
-                break;
-            case 1:   
-                showNote();
-                break;
-        }
-        
-    }
+    private void resetScreen() {
+	    boolean showingDomainTab;
+	
+	    showingDomainTab = (tab == Tabs.ENVIRONMENT || tab == Tabs.PRIVATE_WELL || tab == Tabs.SDWIS);
+	
+	    if (completeReleaseTable.isMultipleRowsSelected()) {
+	        showTabs(Tabs.BLANK);
+	    } else if (manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG)) {
+	        if (showingDomainTab)
+	            tab = Tabs.ENVIRONMENT;
+	        showTabs(Tabs.SAMPLE, Tabs.ENVIRONMENT, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS,
+	                 Tabs.TEST_RESULT, Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE,
+	                 Tabs.QA_EVENTS, Tabs.AUX_DATA);
+	    } else if (manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG)) {
+	        if (showingDomainTab)
+	            tab = Tabs.PRIVATE_WELL;
+	        showTabs(Tabs.SAMPLE, Tabs.PRIVATE_WELL, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS,
+	                 Tabs.TEST_RESULT, Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE,
+	                 Tabs.QA_EVENTS, Tabs.AUX_DATA);
+	
+	    } else if (manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG)) {
+	        if (showingDomainTab)
+	            tab = Tabs.SDWIS;
+	        showTabs(Tabs.SAMPLE, Tabs.SDWIS, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.TEST_RESULT,
+	                 Tabs.ANALYSIS_NOTES, Tabs.SAMPLE_NOTES, Tabs.STORAGE, Tabs.QA_EVENTS,
+	                 Tabs.AUX_DATA);
+	    }
+	    DataChangeEvent.fire(this);
+	    window.clearStatus();
+	}
 
-    public void onAction(ActionEvent<Action> event) {                
-        if (event.getAction() == EditNoteScreen.Action.OK) {
-            if (DataBaseUtil.isEmpty(internalNote.getText()) || 
-                            DataBaseUtil.isEmpty(internalNote.getSubject())) {                          
-                noteMan.removeEditingNote(); 
-                showConfirm();  
-            } else {                        
-                unrelease();
-            }
-            analysisNotesTab.draw();
-        } else {
-            showConfirm();
-        }
-    }
-    
-    private void showConfirm() {
+	private void showConfirm() {
         if (confirm == null) {
             confirm = new Confirm(Confirm.Type.QUESTION,
                               consts.get("unreleaseAnalysisCaption"),
@@ -1565,7 +1668,50 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers, 
                               "Cancel", "OK");
             confirm.addSelectionHandler(this);
         }
-        confirm.show();   
-        
+        confirm.show();
     }
+
+	private boolean canEdit() {
+	    return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
+	}
+
+	public HandlerRegistration addActionHandler(ActionHandler handler) {
+	    return addHandler(handler, ActionEvent.getType());
+	}
+
+	public void onSelection(SelectionEvent<Integer> event) {
+	    switch (event.getSelectedItem().intValue()) {
+	        case 0:
+	            break;
+	        case 1:   
+	            showNote();
+	            break;
+	    }
+	    
+	}
+
+	public void onAction(ActionEvent<Action> event) {                
+	    if (event.getAction() == EditNoteScreen.Action.OK) {
+	        if (DataBaseUtil.isEmpty(internalNote.getText()) || 
+	                        DataBaseUtil.isEmpty(internalNote.getSubject())) {                          
+	            noteMan.removeEditingNote(); 
+	            showConfirm();  
+	        } else {                        
+	            unrelease();
+	        }
+	        analysisNotesTab.draw();
+	    } else {
+	        showConfirm();
+	    }
+	}
+
+	private class CRItem {
+	    private SampleManager sampleManager;
+	    private int           count;
+	
+	    public CRItem(SampleManager man, int count) {
+	        this.sampleManager = man;
+	        this.count = count;
+	    }
+	}
 }

@@ -136,8 +136,7 @@ public class SampleItemAnalysisTreeTab extends Screen
         };
 
         treeUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
-            public void onAction(ActionEvent<TestPrepUtility.Action> event) {
-                
+            public void onAction(ActionEvent<TestPrepUtility.Action> event) {                
                 ActionEvent.fire(treeTab, Action.REFRESH_TABS, event.getData());
             }
         });
@@ -291,6 +290,10 @@ public class SampleItemAnalysisTreeTab extends Screen
         addAnalysis = (Button)def.getWidget("addAnalysisButton");
         addScreenHandler(addAnalysis, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                if(itemsTree.getSelectedNode() == -1 && itemsTree.getRowCount() > 1) {
+                    window.setError(consts.get("sampleItemSelectedToAddAnalysis"));
+                    return;
+                }
                 treeUtil.onAddAnalysisButtonClick();
             }
 
@@ -366,6 +369,15 @@ public class SampleItemAnalysisTreeTab extends Screen
                     //itemsTree.fireEvents(true);
                     
                     treeUtil.importReflexTestList((ArrayList<SampleDataBundle>)event.getData());
+                } else if (event.getAction() == AnalysisTab.Action.SAMPLE_TYPE_CHANGED) {
+                    selected = itemsTree.getNodeAt(itemsTree.getSelectedNode());
+                    
+                    // make sure it is a sample item row
+                    if ("analysis".equals(selected.getType()))
+                        selected = selected.getParent();
+
+                    treeUtil.updateSampleItemRow(selected);
+                    //itemsTree.refreshRow(selected);
                 }
             }
         });

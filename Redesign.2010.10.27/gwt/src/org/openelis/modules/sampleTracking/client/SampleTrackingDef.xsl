@@ -104,6 +104,7 @@ UIRF Software License are applicable instead of those above.
                   </button>
                 </menuDisplay>
                 <menuItem key="unreleaseSample" enabled="false" icon="unreleaseIcon" display="Unrelease Sample" />
+                <menuItem key="previewFinalReport" description="" enable="false" icon="unreleaseIcon" label = "{resource:getString($constants,'viewFinalReport')}" />  					
                 <separator/>
                 <menuItem key="historySample" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySample')}" />
                 <menuItem key="historySampleSpec" enabled="false" icon="historyIcon" display="{resource:getString($constants,'historySampleSpec')}" />

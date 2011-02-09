@@ -28,13 +28,11 @@ package org.openelis.modules.report.client;
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.services.ScreenService;
 
-public class FinalReportScreen extends ReportScreen {
+public class VerificationReportScreen extends ReportScreen {
 
-    public FinalReportScreen() throws Exception {         
+    public VerificationReportScreen() throws Exception { 
         drawScreen(new ScreenDef());        
-        setPromptsInterface("getPromptsForSingle");
-        setRunReportInterface("runReportForSingle");   
-        setName(consts.get("finalReportSingleReprint"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");       
-    } 
+        setName(consts.get("verificationReport"));
+        service = new ScreenService("controller?service=org.openelis.modules.report.server.VerificationReportService");
+    }
 }

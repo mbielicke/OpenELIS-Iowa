@@ -51,6 +51,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AutoCompleteValue;
 import org.openelis.gwt.widget.Button;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
@@ -76,7 +77,7 @@ public class PrivateWellTab extends Screen {
                                            locationAddrMultipleUnit, locationAddrStreetAddress, locationAddrCity,
                                            locationAddrZipCode, wellOwner, wellCollector;
     private TextBox<Integer>               wellOrganizationId, wellNumber;
-    private AutoComplete                   orgName, billTo,projectName;
+    private AutoComplete                   orgName, billTo,project;
     private Dropdown<String>               addressState, locationAddrState;
     private Button                         projectLookup, billToLookup;
 
@@ -627,18 +628,17 @@ public class PrivateWellTab extends Screen {
             }
         });
 
-        projectName = (AutoComplete)def.getWidget(SampleMeta.getProjectName());
-        addScreenHandler(projectName, new ScreenEventHandler<Integer>() {
+        project = (AutoComplete)def.getWidget(SampleMeta.getProjectName());
+        addScreenHandler(project, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
-                    SampleProjectViewDO projectDO = manager.getProjects()
+                    SampleProjectViewDO data = manager.getProjects()
                                                            .getFirstPermanentProject();
 
-                    if (projectDO != null)
-                        projectName.setValue(projectDO.getProjectId(),
-                                                 projectDO.getProjectName());
+                    if (data != null)
+                        project.setValue(new AutoCompleteValue(data.getProjectId(), data.getProjectName()+", "+data.getProjectDescription()));
                     else
-                        projectName.setValue(null, "");
+                        project.setValue(new AutoCompleteValue(null, ""));
 
                 } catch (Exception e) {
                     com.google.gwt.user.client.Window.alert(e.getMessage());
@@ -646,40 +646,52 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                Item<Integer> selectedRow = projectName.getSelectedItem();
-                SampleProjectViewDO projectDO = null;
+                Item<Integer> row;
+                SampleProjectViewDO data;
+
+                row = project.getSelectedItem();
+                data = null;
                 try {
-                    if (selectedRow.getKey() != null) {
-                        projectDO = new SampleProjectViewDO();
-                        projectDO.setIsPermanent("Y");
-                        projectDO.setProjectId((Integer)selectedRow.getKey());
-                        projectDO.setProjectName((String)selectedRow.getCell(0));
-                        projectDO.setProjectDescription((String)selectedRow.getCell(1));
-                    }
-
-                    manager.getProjects().addFirstPermanentProject(projectDO);
-
-                    projectDO = manager.getProjects().getFirstPermanentProject();
-
-                    if (projectDO != null)
-                        projectName.setValue(projectDO.getProjectId(),
-                                                 projectDO.getProjectName());
-                    else
-                        projectName.setValue(null, "");
-
+                    /*
+                     * if a project was not selected and it there were permanent
+                     * projects present then we delete the first permanent project
+                     * and set the next permanent one as the first project in the list;  
+                     * otherwise we modify the first existing permanent project
+                     * or create a new one if none existed
+                     */
+                    if (row == null || row.getKey() == null) {                        
+                        manager.getProjects().removeFirstPermanentProject();
+                        data = manager.getProjects().getFirstPermanentProject();
+                        if (data != null) {
+                            manager.getProjects().setProjectAt(data, 0);
+                            
+                            project.setValue(new AutoCompleteValue(data.getProjectId(), data.getProjectName()+", "+data.getProjectDescription()));
+                        } else {
+                            project.setValue(new AutoCompleteValue(null, ""));                            
+                        }
+                    } else {
+                        data = manager.getProjects().getFirstPermanentProject();
+                        if (data == null) {
+                            data = new SampleProjectViewDO();
+                            data.setIsPermanent("Y");                            
+                            manager.getProjects().addProjectAt(data, 0);
+                        }
+                        data.setProjectId((Integer)row.getKey());
+                        data.setProjectName((String)row.getCell(0));
+                        data.setProjectDescription((String)row.getCell(1));                        
+                    } 
                 } catch (Exception e) {
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
             }
-
             public void onStateChange(StateChangeEvent<State> event) {
-                projectName.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                project.setEnabled(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                           .contains(event.getState()));
-                projectName.setQueryMode(event.getState() == State.QUERY);
+                project.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        projectName.addGetMatchesHandler(new GetMatchesHandler() {
+        project.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 Item<Integer> row;
@@ -709,7 +721,7 @@ public class PrivateWellTab extends Screen {
 
                         model.add(row);
                     }
-                    projectName.showAutoMatches(model);
+                    project.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     com.google.gwt.user.client.Window.alert(e.getMessage());
@@ -735,7 +747,7 @@ public class PrivateWellTab extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     SampleOrganizationViewDO billToOrg = manager.getOrganizations()
-                                                                .getFirstBillTo();
+                                                                .getBillTo();
 
                     if (billToOrg != null)
                         billTo.setValue(billToOrg.getOrganizationId(),
@@ -749,27 +761,31 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                Item<Integer> selectedRow = billTo.getSelectedItem();
-                SampleOrganizationViewDO billToOrg = null;
+                Item<Integer> selectedRow;
+                SampleOrganizationViewDO data;
+
+                selectedRow = billTo.getSelectedItem();
+
                 try {
-                    if (selectedRow.getKey() != null) {
-                        billToOrg = new SampleOrganizationViewDO();
-                        billToOrg.setOrganizationId((Integer)selectedRow.getKey());
-                        billToOrg.setOrganizationName((String)selectedRow.getCell(0));
-                        billToOrg.setOrganizationCity((String)selectedRow.getCell(2));
-                        billToOrg.setOrganizationState((String)selectedRow.getCell(3));
+                    if (selectedRow == null || selectedRow.getKey() == null) {
+                        manager.getOrganizations().removeBillTo();
+                        billTo.setValue(null, "");
+                        return;
                     }
 
-                    manager.getOrganizations().setBillTo(billToOrg);
+                    data = manager.getOrganizations().getBillTo();
+                    if (data == null) {
+                        data = new SampleOrganizationViewDO();
+                        manager.getOrganizations().setBillTo(data);
+                    }
 
-                    billToOrg = manager.getOrganizations().getFirstBillTo();
+                    data.setOrganizationId((Integer)selectedRow.getKey());
+                    data.setOrganizationName((String)selectedRow.getCell(0));
+                    data.setOrganizationCity((String)selectedRow.getCell(2));
+                    data.setOrganizationState((String)selectedRow.getCell(3));
 
-                    if (billToOrg != null)
-                        billTo.setValue(billToOrg.getOrganizationId(),
-                                            billToOrg.getOrganizationName());
-                    else
-                        billTo.setValue(null, "");
-
+                    billTo.setValue(data.getOrganizationId(),
+                                        data.getOrganizationName());
                 } catch (Exception e) {
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
@@ -836,7 +852,7 @@ public class PrivateWellTab extends Screen {
                 projectScreen.addActionHandler(new ActionHandler<SampleProjectLookupScreen.Action>() {
                     public void onAction(ActionEvent<SampleProjectLookupScreen.Action> event) {
                         if (event.getAction() == SampleProjectLookupScreen.Action.OK) {
-                            DataChangeEvent.fire(env, projectName);
+                            DataChangeEvent.fire(env, project);
 
                         }
                     }

@@ -32,10 +32,14 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.BeforeGetMatchesEvent;
+import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -64,6 +68,8 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.PanelManager;
+import org.openelis.manager.TestManager;
 import org.openelis.meta.OrderMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -79,11 +85,12 @@ public class ContainerTab extends Screen {
     private Table                 orderTestTable, orderContainerTable;
     private boolean               loaded;
 
-    protected ScreenService       analysisService, testService;
+    protected ScreenService       analysisService, panelService, testService;
 
     public ContainerTab(ScreenDefInt def, Window window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
+        panelService  = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         testService  = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         setDefinition(def);
@@ -207,6 +214,76 @@ public class ContainerTab extends Screen {
         });
         
         test = (AutoComplete) orderTestTable.getColumnWidget(OrderMeta.getTestName());
+        test.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
+            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
+                int                      r;
+                Integer                  sampleType, testPanelId, sepIndex;
+                String                   value, flag;
+                ArrayList<Item<Integer>> model;
+                Item<Integer>            row;
+                OrderContainerDO         oData;
+                PanelDO                  pDO;
+                PanelManager             pMan;
+                TestManager              tMan;
+                TestViewDO               tVDO;
+                TestMethodVO             tmData;
+
+                value = event.getMatch();
+                if (value.matches("[tp][0-9]*\\-[0-9]*")) {
+                    flag = value.substring(0, 1);
+                    sepIndex = value.indexOf("-");
+                    testPanelId = Integer.valueOf(value.substring(1, sepIndex));
+                    sampleType = Integer.valueOf(value.substring(sepIndex + 1));
+                    try {
+                        //
+                        // Add container so we can set the sample type to it
+                        //
+                        orderContainerTable.addRow();
+                        r = orderContainerTable.getRowCount() - 1;
+                        oData = manager.getContainers().getContainerAt(r);
+                        oData.setTypeOfSampleId(sampleType);
+                        orderContainerTable.setModel(getContainerTableModel());
+                        orderContainerTable.selectRowAt(r);
+                        orderContainerTable.scrollToVisible(r);
+
+                        row = new Item<Integer>(3);
+                        tmData = new TestMethodVO();
+                        if ("t".equals(flag)) {
+                            tMan = testService.call("fetchById", testPanelId);
+                            tVDO = tMan.getTest();
+                            row.setKey(tVDO.getId());
+                            tmData.setTestId(tVDO.getId());
+                            row.setCell(0,tVDO.getName());
+                            tmData.setTestName(tVDO.getName());
+                            row.setCell(1,tVDO.getMethodName());
+                            tmData.setMethodId(tVDO.getMethodId());
+                            tmData.setMethodName(tVDO.getMethodName());
+                            row.setCell(2,tVDO.getDescription());
+                            tmData.setTestDescription(tVDO.getDescription());
+                        } else if ("p".equals(flag)) {
+                            pMan = panelService.call("fetchById", testPanelId);
+                            pDO = pMan.getPanel();
+                            row.setKey(pDO.getId());
+                            tmData.setTestId(pDO.getId());
+                            row.setCell(0,pDO.getName());
+                            tmData.setTestName(pDO.getName());
+                            row.setCell(2,pDO.getDescription());
+                            tmData.setTestDescription(pDO.getDescription());
+                        }
+                        row.setData(tmData);
+                        model = new ArrayList<Item<Integer>>();
+                        model.add(row);
+                        test.setModel(model);
+                        test.setSelectedIndex(0);
+                        orderTestTable.finishEditing();
+                    } catch (Exception e) {
+                        com.google.gwt.user.client.Window.alert(e.getMessage());
+                    }
+                    event.cancel();
+                }
+            }
+        });
+
         test.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {               
                 Query query;
@@ -253,13 +330,10 @@ public class ContainerTab extends Screen {
 
                         model.add(row);
                     }
-
                     test.showAutoMatches(model);
-
                 } catch (Exception e) {
                     com.google.gwt.user.client.Window.alert(e.getMessage());
                 }
-            
             }            
         });
         

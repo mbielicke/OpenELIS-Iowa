@@ -27,7 +27,7 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
-import org.openelis.gwt.common.LocalizedException;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -36,10 +36,12 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.table.Row;
 import org.openelis.gwt.widget.table.Table;
 import org.openelis.utilcommon.ResultValidator;
+import org.openelis.utilcommon.ResultValidator.OptionItem;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.user.client.Window;
 
 public class ResultSuggestionsScreen extends Screen {
     protected Table suggestionsTable;
@@ -77,27 +79,31 @@ public class ResultSuggestionsScreen extends Screen {
      }
      
      private ArrayList<Row> getTableModel(){
-         int                           i;
-         Row                           row;
-         ArrayList<Row>                model;
-         ArrayList<LocalizedException> suggestions;
-         
-         model = new ArrayList<Row>();
-         
-         suggestions = resultValidator.getRanges(unitId);
-         for(i = 0; i < suggestions.size(); i++){
-             row = new Row(suggestions.get(i).getMessage());
-             model.add(row);
-         }
-         
-         suggestions = resultValidator.getDictionaryRanges(unitId);
-         for(i = 0; i < suggestions.size(); i++)
-             model.add(new Row(suggestions.get(i).getMessage()));
-         
-         return model;
+        Row row;
+        String message;
+        ArrayList<Row> model;
+        ArrayList<OptionItem> suggestions;
+        DictionaryDO data;
+
+        model = new ArrayList<Row>();
+        row = null;
+        suggestions = resultValidator.getRanges(unitId);
+        try {
+            for (OptionItem o : suggestions) {
+                message = consts.get(o.getProperty());
+                message = message.replace("{0}", o.getValue());                   
+                row = new Row(message, message);
+                model.add(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());            
+        }
+
+        return model;
      }
      
-     public void setValidator(ResultValidator resultValidator, Integer unitId){
+     public void setValidator(ResultValidator resultValidator, Integer unitId) {
          this.resultValidator = resultValidator;
          this.unitId = unitId;
          

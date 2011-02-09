@@ -23,18 +23,37 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.report.client;
+package org.openelis.modules.report.server;
 
-import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
+import java.util.ArrayList;
 
-public class FinalReportScreen extends ReportScreen {
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.SampleLoginLabelReportRemote;
+import org.openelis.report.Prompt;
 
-    public FinalReportScreen() throws Exception {         
-        drawScreen(new ScreenDef());        
-        setPromptsInterface("getPromptsForSingle");
-        setRunReportInterface("runReportForSingle");   
-        setName(consts.get("finalReportSingleReprint"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");       
+public class SampleLoginLabelReportService {    
+    
+    public ArrayList<Prompt> getPrompts() throws Exception{
+        return remote().getPrompts();      
+    }
+    
+    public ReportStatus runReport(Query query) throws Exception { 
+        return remote().runReport(query.getFields());
+    }
+    
+    public ArrayList<Prompt> getAdditionalPrompts() throws Exception{
+        return remote().getAdditionalPrompts();      
+    }
+    
+    public ReportStatus runAdditionalReport(Query query) throws Exception { 
+        return remote().runAdditionalReport(query.getFields());
+    }
+    
+    private SampleLoginLabelReportRemote remote() {
+        return (SampleLoginLabelReportRemote)EJBFactory.lookup("openelis/SampleLoginLabelReportBean/remote");
     } 
 }
+
+

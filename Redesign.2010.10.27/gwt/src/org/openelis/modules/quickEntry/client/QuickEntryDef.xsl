@@ -108,6 +108,39 @@ UIRF Software License are applicable instead of those above.
               <HorizontalPanel/>
               </widget>
               <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'testSection')" />:
+              </text>
+              <widget colspan="5">
+              	<dropdown key="testSection" width="419" popWidth="auto" field="String" tab="entry, entry"/>
+              </widget>
+              </row>
+              <row>
+              <widget colspan="2">
+              <HorizontalPanel/>
+              </widget>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'testSection')" />:
+              </text>
+              <widget colspan="5">
+              	<dropdown key="testSection" width="419" popWidth="auto" field="String" tab="entry, entry"/>
+              </widget>
+              </row>
+              <row>
+              <widget colspan="2">
+              <HorizontalPanel/>
+              </widget>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'testSection')" />:
+              </text>
+              <widget colspan="5">
+              	<dropdown key="testSection" width="419" popWidth="auto" field="String" tab="entry, entry"/>
+              </widget>
+              </row>
+              <row>
+              <widget colspan="2">
+              <HorizontalPanel/>
+              </widget>
+              <text style="Prompt">
               	<xsl:value-of select="resource:getString($constants,'currentDateTime')" />:
               </text>
               <check key="currentDateTime" tab="entry, entry"/>

@@ -71,6 +71,7 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
 
     private SampleProjectManager manager;
     protected Button projectRemoveButton;
+    protected AutoComplete project;
     
     public enum Action {
         OK
@@ -116,7 +117,7 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
             }
         });
 
-        final AutoComplete project = (AutoComplete)sampleProjectTable.getColumnWidget(0);
+        project = (AutoComplete)sampleProjectTable.getColumnWidget(0);
         sampleProjectTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row,col;
@@ -197,7 +198,11 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
         
         sampleProjectTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                manager.addProject(new SampleProjectViewDO());
+                SampleProjectViewDO data;
+                
+                data = new SampleProjectViewDO();
+                data.setIsPermanent("N");
+                manager.addProject(data);
                 projectRemoveButton.setEnabled(true);
             }
         });

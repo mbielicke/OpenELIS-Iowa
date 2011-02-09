@@ -41,9 +41,9 @@ UIRF Software License are applicable instead of those above.
     <VerticalPanel padding="0" spacing="0">
       <TablePanel height="100%" padding="0" spacing="0" style="TabSubForm">
         <row>
-          <table key="sampleQATable" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides">
+          <table key="sampleQATable" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab = "analysisQATable,analysisQATable">
             <col key="{meta:getSampleSubQaName()}" width="172" header="{resource:getString($constants,'sampleQAEvent')}">
-              <textbox field="String" />
+              <label field="String" />
             </col>
             <col key="{meta:getSampleQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
               <dropdown width="90" field="Integer" />
@@ -55,9 +55,9 @@ UIRF Software License are applicable instead of those above.
           <widget rowspan="3">
             <AbsolutePanel style="Divider" />
           </widget>
-          <table key="analysisQATable" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides">
+          <table key="analysisQATable" rows="8" vscroll="ALWAYS" hscroll="ALWAYS" style="ScreenTableWithSides" tab = "sampleQATable,sampleQATable">
             <col key="{meta:getAnalysisSubQaName()}" width="172" header="{resource:getString($constants,'analysisQAEvent')}">
-              <textbox field="String" />
+              <label field="String" />
             </col>
             <col key="{meta:getAnalysisQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
               <dropdown width="90" field="Integer" />
