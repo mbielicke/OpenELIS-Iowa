@@ -38,19 +38,28 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          organizationName, OrganizationCity, OrganizationState;
+    protected String organizationName, organizationMultipleUnit, organizationStreetAddress,
+                     organizationCity, organizationState, organizationZipCode, organizationWorkPhone,
+                     organizationFaxPhone;
 
     public SampleOrganizationViewDO() {
     }
 
     public SampleOrganizationViewDO(Integer id, Integer sampleId, Integer organizationId,
-                                    String organizationAttention,
-                                    Integer typeId, String organizationName,
-                                    String organizationCity, String organizationState) {
+                                    String organizationAttention, Integer typeId,
+                                    String organizationName, String organizationMultipleUnit,
+                                    String organizationStreetAddress, String organizationCity,
+                                    String organizationState, String organizationZipCode,
+                                    String organizationWorkPhone, String organizationFaxPhone) {
         super(id, sampleId, organizationId, organizationAttention, typeId);
         setOrganizationName(organizationName);
+        setOrganizationMultipleUnit(organizationMultipleUnit);
+        setOrganizationStreetAddress(organizationStreetAddress);
         setOrganizationCity(organizationCity);
         setOrganizationState(organizationState);
+        setOrganizationZipCode(organizationZipCode);
+        setOrganizationWorkPhone(organizationWorkPhone);
+        setOrganizationFaxPhone(organizationFaxPhone);
     }
 
     public String getOrganizationName() {
@@ -58,22 +67,62 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
     }
 
     public void setOrganizationName(String organizationName) {
-        this.organizationName = organizationName;
+        this.organizationName = DataBaseUtil.trim(organizationName);
+    }
+
+    public String getOrganizationMultipleUnit() {
+        return organizationMultipleUnit;
+    }
+
+    public void setOrganizationMultipleUnit(String organizationMultipleUnit) {
+        this.organizationMultipleUnit = DataBaseUtil.trim(organizationMultipleUnit);
+    }
+
+    public String getOrganizationStreetAddress() {
+        return organizationStreetAddress;
+    }
+
+    public void setOrganizationStreetAddress(String organizationStreetAddress) {
+        this.organizationStreetAddress = DataBaseUtil.trim(organizationStreetAddress);
     }
 
     public String getOrganizationCity() {
-        return OrganizationCity;
+        return organizationCity;
     }
 
     public void setOrganizationCity(String organizationCity) {
-        OrganizationCity = DataBaseUtil.trim(organizationCity);
+        this.organizationCity = DataBaseUtil.trim(organizationCity);
     }
 
     public String getOrganizationState() {
-        return OrganizationState;
+        return organizationState;
     }
 
     public void setOrganizationState(String organizationState) {
-        OrganizationState = DataBaseUtil.trim(organizationState);
+        this.organizationState = DataBaseUtil.trim(organizationState);
+    }
+
+    public String getOrganizationZipCode() {
+        return organizationZipCode;
+    }
+
+    public void setOrganizationZipCode(String organizationZipCode) {
+        this.organizationZipCode = DataBaseUtil.trim(organizationZipCode);
+    }
+
+    public String getOrganizationWorkPhone() {
+        return organizationWorkPhone;
+    }
+
+    public void setOrganizationWorkPhone(String organizationWorkPhone) {
+        this.organizationWorkPhone = DataBaseUtil.trim(organizationWorkPhone);
+    }
+
+    public String getOrganizationFaxPhone() {
+        return organizationFaxPhone;
+    }
+
+    public void setOrganizationFaxPhone(String organizationFaxPhone) {
+        this.organizationFaxPhone = DataBaseUtil.trim(organizationFaxPhone);
     }
 }
