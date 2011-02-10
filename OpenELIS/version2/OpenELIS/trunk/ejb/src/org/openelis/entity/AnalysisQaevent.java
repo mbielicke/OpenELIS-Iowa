@@ -26,11 +26,11 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "AnalysisQaevent.FetchByAnalysisId",
                 query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " +
-                        "q.typeId, q.isBillable, q.qaEvent.name)"
+                        "q.typeId, q.isBillable, q.qaEvent.name, q.qaEvent.reportingText)"
                       + " from AnalysisQaevent q where q.analysisId = :id order by q.id"),
    @NamedQuery( name = "AnalysisQaevent.FetchInternalByAnalysisId",
                query = "select new org.openelis.domain.AnalysisQaEventViewDO(aq.id, aq.analysisId, aq.qaeventId, " +
-                       "aq.typeId, aq.isBillable, q.name)"
+                       "aq.typeId, aq.isBillable, q.name, q.reportingText)"
                      + " from AnalysisQaevent aq left join aq.qaEvent q left join aq.dictionary d"
                      + " where aq.analysisId = :id and d.systemName = 'qaevent_internal' order by aq.id")})
 @Entity

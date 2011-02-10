@@ -98,7 +98,7 @@ public class SampleQAEventManagerProxy {
     private SampleQAEventLocal local(){
         try{
             InitialContext ctx = new InitialContext();
-            return (SampleQAEventLocal)ctx.lookup("openelis/SampleQaEventBean/local");
+            return (SampleQAEventLocal)ctx.lookup("openelis/SampleQAEventBean/local");
         }catch(Exception e){
              System.out.println(e.getMessage());
              return null;

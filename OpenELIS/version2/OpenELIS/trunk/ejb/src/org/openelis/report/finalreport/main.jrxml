@@ -4,6 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.report.finalreport.OrganizationPrint"/>
+	<import value="org.openelis.report.finalreport.NoteDataSource"/>
 	<parameter name="SAMPLE_ID" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -40,6 +41,10 @@ WHERE
 	<variable name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList">
 		<variableExpression><![CDATA[$V{UNIT_LIST}]]></variableExpression>
 		<initialValueExpression><![CDATA[new org.openelis.report.finalreport.AnalysisUnitList()]]></initialValueExpression>
+	</variable>
+	<variable name="NOTE_DATASOURCE" class="org.openelis.report.finalreport.NoteDataSource" calculation="System">
+		<variableExpression><![CDATA[$V{NOTE_DATASOURCE}]]></variableExpression>
+		<initialValueExpression><![CDATA[NoteDataSource.getInstance($F{s_id}, null, null)]]></initialValueExpression>
 	</variable>
 	<group name="Sample_Organization" isStartNewPage="true" isResetPageNumber="true">
 		<groupExpression><![CDATA[$P{ORGANIZATION_ID}+"-"+$F{s_id}]]></groupExpression>
@@ -175,7 +180,7 @@ WHERE
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<dataSourceExpression><![CDATA[$V{NOTE_DATASOURCE}]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleQaeventNote.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
