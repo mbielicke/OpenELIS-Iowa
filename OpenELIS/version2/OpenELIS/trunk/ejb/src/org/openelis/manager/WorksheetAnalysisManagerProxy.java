@@ -324,9 +324,9 @@ public class WorksheetAnalysisManagerProxy {
                         aVDO = aManager.getAnalysisAt(l);
                         if (analysis.getAnalysisId().equals(aVDO.getId())) {
                             try {
-                                if (anLoggedInId.equals(aVDO.getId()) ||
-                                    anInitiatedId.equals(aVDO.getId()) ||            
-                                    anCompletedId.equals(aVDO.getId()))
+                                if (anLoggedInId.equals(aVDO.getStatusId()) ||
+                                    anInitiatedId.equals(aVDO.getStatusId()) ||            
+                                    anCompletedId.equals(aVDO.getStatusId()))
                                     aManager.completeAnalysisAt(l);
                             } catch (Exception ignE) {
                                 // ignoring errors cause by trying to complete
