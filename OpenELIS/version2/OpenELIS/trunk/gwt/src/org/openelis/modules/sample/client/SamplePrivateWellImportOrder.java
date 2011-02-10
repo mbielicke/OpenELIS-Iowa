@@ -265,41 +265,59 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
     }
 
     protected void loadReportToBillTo(Integer orderId, SampleManager man) throws Exception {
-        OrderViewDO data;
-        OrganizationDO reportTo, org;
+        OrderViewDO              orderDO;
+        OrganizationDO           shipToDO, reportToDO, billToDO;
         SamplePrivateWellManager wellMan;
-        SamplePrivateWellViewDO privateWell;
-        SampleOrganizationViewDO billTo;
+        SamplePrivateWellViewDO  privateWell;
+        SampleOrganizationViewDO billToSampOrg;
 
         if (orderMan == null)
             orderMan = OrderManager.fetchById(orderId);
 
-        // report to
-        wellMan = (SamplePrivateWellManager)man.getDomainManager();
+        wellMan     = (SamplePrivateWellManager)man.getDomainManager();
         privateWell = wellMan.getPrivateWell();
-        data = orderMan.getOrder();
-        reportTo = data.getReportTo();
-        org = data.getOrganization();
+        orderDO     = orderMan.getOrder();
+        shipToDO    = orderDO.getOrganization();
+        reportToDO  = orderDO.getReportTo();
+        billToDO    = orderDO.getBillTo();
 
-        if (reportTo != null) {
-            privateWell.setOrganizationId(reportTo.getId());
-            privateWell.getOrganization().setName(reportTo.getName());
-        } else if (org == null){
-            privateWell.setOrganizationId(null);
+        // report to
+        if (reportToDO != null) {
+            privateWell.setOrganizationId(reportToDO.getId());
+            privateWell.setOrganization(reportToDO);
+            privateWell.setReportToAttention(orderDO.getReportToAttention());
+        } else {
+            privateWell.setOrganizationId(shipToDO.getId());
+            privateWell.setOrganization(shipToDO);
+            privateWell.setReportToAttention(orderDO.getOrganizationAttention());
         }
 
         // bill to
-        billTo = new SampleOrganizationViewDO();
-        org = orderMan.getOrder().getBillTo();
-
-        if (org != null) {
-            billTo.setOrganizationId(org.getId());
-            billTo.setOrganizationAttention(data.getBillToAttention());
-            billTo.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
-            billTo.setOrganizationName(org.getName());
-            billTo.setOrganizationCity(org.getAddress().getCity());
-            billTo.setOrganizationState(org.getAddress().getState());
-            man.getOrganizations().addOrganization(billTo);
+        billToSampOrg = new SampleOrganizationViewDO();
+        if (billToDO != null) {
+            billToSampOrg.setOrganizationId(billToDO.getId());
+            billToSampOrg.setOrganizationAttention(orderDO.getBillToAttention());
+            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setOrganizationName(billToDO.getName());
+            billToSampOrg.setOrganizationCity(billToDO.getAddress().getCity());
+            billToSampOrg.setOrganizationState(billToDO.getAddress().getState());
+            man.getOrganizations().addOrganization(billToSampOrg);
+        } else if (reportToDO != null) {
+            billToSampOrg.setOrganizationId(reportToDO.getId());
+            billToSampOrg.setOrganizationAttention(orderDO.getReportToAttention());
+            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setOrganizationName(reportToDO.getName());
+            billToSampOrg.setOrganizationCity(reportToDO.getAddress().getCity());
+            billToSampOrg.setOrganizationState(reportToDO.getAddress().getState());
+            man.getOrganizations().addOrganization(billToSampOrg);
+        } else {
+            billToSampOrg.setOrganizationId(shipToDO.getId());
+            billToSampOrg.setOrganizationAttention(orderDO.getOrganizationAttention());
+            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setOrganizationName(shipToDO.getName());
+            billToSampOrg.setOrganizationCity(shipToDO.getAddress().getCity());
+            billToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
+            man.getOrganizations().addOrganization(billToSampOrg);
         }
     }
 
