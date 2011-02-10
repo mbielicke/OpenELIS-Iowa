@@ -8,6 +8,10 @@ import org.openelis.remote.SystemUserPermissionProxyRemote;
 
 public class SystemUserService {
 
+    public SystemUserVO fetchById(Integer id) throws Exception {
+        return remote().fetchById(id);
+    }
+
     public ArrayList<SystemUserVO> fetchByLoginName(String search) throws Exception {
         return remote().fetchByLoginName(search + "%", 10);
     }

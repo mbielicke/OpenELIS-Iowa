@@ -53,6 +53,7 @@ import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SectionPermission;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -93,7 +94,7 @@ public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup;
     private Integer              statusWorking, statusFailedRun, origStatus;
-    private ScreenService        instrumentService, sysVarService;
+    private ScreenService        instrumentService, sysVarService, userService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
@@ -141,6 +142,7 @@ public class WorksheetCompletionScreen extends Screen {
         service           = new ScreenService("controller?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
         sysVarService     = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
+        userService       = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         
         userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
         if (userPermission == null)
@@ -649,11 +651,21 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     protected void editWorksheet() {
+        SystemUserVO userVO;
+        
         window.setBusy("Saving worksheet for editing");
         try {
             service.call("saveForEdit", manager);
+            
+            userVO = null;
+            try {
+                userVO = userService.call("fetchById", manager.getWorksheet().getSystemUserId());
+            } catch (Exception anyE) {
+                throw new Exception("Error retrieving username for worksheet: "+anyE.getMessage());
+            }
+            
             worksheetFileName = new String(outputFileDirectory+manager.getWorksheet().getId()+
-                                           "_"+OpenELIS.getSystemUserPermission().getLoginName()+".xls");
+                                           "_"+userVO.getLoginName()+".xls");
             window.setDone(consts.get("worksheetCompletionEditConfirm")+
                                       " "+worksheetFileName);
         } catch (Exception anyE) {

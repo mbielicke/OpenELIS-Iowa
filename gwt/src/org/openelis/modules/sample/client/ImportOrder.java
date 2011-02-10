@@ -44,40 +44,64 @@ public class ImportOrder {
     protected OrderManager orderMan;
     
     protected void loadReportToBillTo(Integer orderId, SampleManager man) throws Exception {
-        OrderViewDO orderDO;
-        OrganizationDO orgDO;
-        SampleOrganizationViewDO reportToDO, billToDO;
+        OrderViewDO              orderDO;
+        OrganizationDO           shipToDO, reportToDO, billToDO;
+        SampleOrganizationViewDO reportToSampOrg, billToSampOrg;
 
         if(orderMan == null )
             orderMan = OrderManager.fetchById(orderId);
-        
+
+        orderDO    = orderMan.getOrder();
+        shipToDO   = orderDO.getOrganization();
+        reportToDO = orderDO.getReportTo();
+        billToDO   = orderDO.getBillTo();
+
         //report to
-        orderDO = orderMan.getOrder();
-        orgDO = orderDO.getReportTo();
-        reportToDO = new SampleOrganizationViewDO();
-        
-        if(orgDO != null){
-            reportToDO.setOrganizationId(orgDO.getId());
-            reportToDO.setOrganizationAttention(orderDO.getReportToAttention());
-            reportToDO.setTypeId(DictionaryCache.getIdFromSystemName("org_report_to"));
-            reportToDO.setOrganizationName(orgDO.getName());
-            reportToDO.setOrganizationCity(orgDO.getAddress().getCity());
-            reportToDO.setOrganizationState(orgDO.getAddress().getState());
-            man.getOrganizations().addOrganization(reportToDO);
+        reportToSampOrg = new SampleOrganizationViewDO();
+        if (reportToDO != null) {
+            reportToSampOrg.setOrganizationId(reportToDO.getId());
+            reportToSampOrg.setOrganizationAttention(orderDO.getReportToAttention());
+            reportToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_report_to"));
+            reportToSampOrg.setOrganizationName(reportToDO.getName());
+            reportToSampOrg.setOrganizationCity(reportToDO.getAddress().getCity());
+            reportToSampOrg.setOrganizationState(reportToDO.getAddress().getState());
+            man.getOrganizations().addOrganization(reportToSampOrg);
+        } else {
+            reportToSampOrg.setOrganizationId(shipToDO.getId());
+            reportToSampOrg.setOrganizationAttention(orderDO.getOrganizationAttention());
+            reportToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_report_to"));
+            reportToSampOrg.setOrganizationName(shipToDO.getName());
+            reportToSampOrg.setOrganizationCity(shipToDO.getAddress().getCity());
+            reportToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
+            man.getOrganizations().addOrganization(reportToSampOrg);
         }
         
         //bill to
-        billToDO = new SampleOrganizationViewDO();
-        orgDO = orderMan.getOrder().getBillTo();
-        
-        if(orgDO != null){
-            billToDO.setOrganizationId(orgDO.getId());
-            billToDO.setOrganizationAttention(orderDO.getBillToAttention());
-            billToDO.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
-            billToDO.setOrganizationName(orgDO.getName());
-            billToDO.setOrganizationCity(orgDO.getAddress().getCity());
-            billToDO.setOrganizationState(orgDO.getAddress().getState());
-            man.getOrganizations().addOrganization(billToDO);
+        billToSampOrg = new SampleOrganizationViewDO();
+        if (billToDO != null) {
+            billToSampOrg.setOrganizationId(billToDO.getId());
+            billToSampOrg.setOrganizationAttention(orderDO.getBillToAttention());
+            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setOrganizationName(billToDO.getName());
+            billToSampOrg.setOrganizationCity(billToDO.getAddress().getCity());
+            billToSampOrg.setOrganizationState(billToDO.getAddress().getState());
+            man.getOrganizations().addOrganization(billToSampOrg);
+        } else if (reportToDO != null) {
+            billToSampOrg.setOrganizationId(reportToDO.getId());
+            billToSampOrg.setOrganizationAttention(orderDO.getReportToAttention());
+            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setOrganizationName(reportToDO.getName());
+            billToSampOrg.setOrganizationCity(reportToDO.getAddress().getCity());
+            billToSampOrg.setOrganizationState(reportToDO.getAddress().getState());
+            man.getOrganizations().addOrganization(billToSampOrg);
+        } else {
+            billToSampOrg.setOrganizationId(shipToDO.getId());
+            billToSampOrg.setOrganizationAttention(orderDO.getOrganizationAttention());
+            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setOrganizationName(shipToDO.getName());
+            billToSampOrg.setOrganizationCity(shipToDO.getAddress().getCity());
+            billToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
+            man.getOrganizations().addOrganization(billToSampOrg);
         }
     }
     

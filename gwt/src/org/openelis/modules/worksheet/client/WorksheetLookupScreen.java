@@ -45,6 +45,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -62,6 +63,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
@@ -137,11 +139,10 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
             }
         });
 
-        systemUserId = (AutoComplete<Integer>)def.getWidget(WorksheetCompletionMeta.getSystemUserId());
+        systemUserId = (AutoComplete)def.getWidget(WorksheetCompletionMeta.getSystemUserId());
         addScreenHandler(systemUserId, new ScreenEventHandler<Integer>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 systemUserId.enable(true);
-                systemUserId.setQueryMode(true);
             }
         });
 
@@ -264,6 +265,38 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         statusId.setModel(model);
         ((Dropdown<Integer>)worksheetTable.getColumns().get(3).getColumnWidget()).setModel(model);
+    }
+
+    //
+    // overriding AutoComplete's getQuery to return the id of the
+    // selection instead of the text
+    //
+    @SuppressWarnings("unchecked")
+    public ArrayList<QueryData> getQueryFields() {
+        ArrayList<QueryData> list;
+        QueryData            qd;
+        QueryFieldUtil       qField;
+        TableDataRow         row;
+
+        list = new ArrayList<QueryData>();
+        for (String key : def.getWidgets().keySet()) {
+            if (def.getWidget(key) instanceof AutoComplete) {
+                row = ((AutoComplete)def.getWidget(key)).getSelection();
+                if(row != null && row.key != null) {
+                    qd = new QueryData();
+                    qd.key = key;
+                    qd.query = ((Integer)row.key).toString();
+                    qd.type = QueryData.Type.INTEGER;
+                    list.add(qd);
+
+                    qField = new QueryFieldUtil();
+                    qField.parse(qd.query);
+                }
+            } else if (def.getWidget(key) instanceof HasField) {
+                ((HasField)def.getWidget(key)).getQuery(list, key);
+            }
+        }
+        return list;
     }
 
     protected void executeQuery() {
