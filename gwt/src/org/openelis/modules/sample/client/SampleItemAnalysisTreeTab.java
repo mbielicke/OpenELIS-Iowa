@@ -159,8 +159,9 @@ public class SampleItemAnalysisTreeTab extends Screen
                 SampleDataBundle data;
                 AnalysisViewDO anDO;
                 boolean enable;
-                TreeDataItem selection = itemsTree.getSelection();
+                TreeDataItem selection;
 
+                selection = itemsTree.getSelection();
                 if (selection != null)
                     data = (SampleDataBundle)selection.data;
                 else
@@ -170,7 +171,6 @@ public class SampleItemAnalysisTreeTab extends Screen
                 if (state == State.ADD || state == State.UPDATE) {
                     if ("sampleItem".equals(selection.leafType)) {
                         enable = !selection.hasChildren();
-
                     } else {
                         if (data != null) {
                             try {

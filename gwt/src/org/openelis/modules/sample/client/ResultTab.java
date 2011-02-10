@@ -70,6 +70,8 @@ import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
+import org.openelis.utilcommon.ResultValidator;
+import org.openelis.utilcommon.ResultValidator.OptionItem;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -88,8 +90,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     private boolean                                 loaded;
 
     protected AppButton                             addResultButton, removeResultButton,
-                    suggestionsButton, popoutTable;
-    protected TableWidget                           testResultsTable;
+                                                    suggestionsButton, popoutTable;
+    protected TableWidget                          testResultsTable;
     private ArrayList<TableColumn>                  resultTableCols;
 
     protected TestAnalyteLookupScreen               testAnalyteScreen;
@@ -199,16 +201,18 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 SectionViewDO section;
                 TestAnalyteViewDO testAnalyte;
                 SectionPermission perm;
+                SampleResultValueTableColumn tabcol;
 
                 perm = null;
                 section = null;
+                tabcol = null;
                 isHeaderRow = false;
                 enableButton = true;
 
                 r = event.getRow();
                 c = event.getCol();
                 row = testResultsTable.getRow(r);
-                isHeaderRow = ((Boolean)row.data).booleanValue();
+                isHeaderRow = ((Boolean)row.data).booleanValue();                
 
                 if (analysis.getSectionId() != null) {
                 	try {
@@ -237,13 +241,13 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     event.cancel();
                     enableButton = false;
                 } else {
-                    if (c < 2)
+                    if (c < 2) 
                         data = displayManager.getObjectAt(r, 0);
-                    else
-                        data = displayManager.getObjectAt(r, c - 2);
+                    else 
+                        data = displayManager.getObjectAt(r, c - 2);                                            
 
                     testAnalyte = manager.getTestAnalyte(data.getRowGroup(),
-                                                         data.getTestAnalyteId());
+                                                         data.getTestAnalyteId());                    
                     if (testAnalyte == null) {
                         window.setError(consts.get("testAnalyteDefinitionChanged"));
                         event.cancel();
@@ -259,7 +263,16 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         enableButton = false;
                     } else {
                         window.clearStatus();
-                    }
+                        if (c >= 2) {
+                            /*
+                             * we do this here in order to make sure that the correct
+                             * dropdown for the result group that this cell is showing
+                             * the values from is returned as the editor 
+                             */
+                            tabcol = (SampleResultValueTableColumn)testResultsTable.getColumns().get(c);
+                            tabcol.setResultGroup(data.getResultGroup());
+                        }
+                    }                                                                                   
                 }
                 suggestionsButton.enable(enableButton);
             }
@@ -368,11 +381,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         val = getDefaultValue(data, analysis.getUnitOfMeasureId());
                         testResultsTable.setCell(index, i, val);
 
-                        if ( !DataBaseUtil.isEmpty(val)) {
-                            // data.setValue(val);
-                            // displayManager.validateResultValue(manager, data,
-                            // analysis.getUnitOfMeasureId());
-
+                        if ( !DataBaseUtil.isEmpty(val)) {                            
                             testResult = displayManager.validateResultValue(manager,
                                                                             data,
                                                                             analysis.getUnitOfMeasureId());
@@ -516,87 +525,202 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             }
         });
     }
+    
+    public void setData(SampleDataBundle data) {
+        try {
+            if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
+                analysisMan = data.getSampleManager()
+                                  .getSampleItems()
+                                  .getAnalysisAt(data.getSampleItemIndex());
+                analysis = analysisMan.getAnalysisAt(data.getAnalysisIndex());
+
+                if (state == State.ADD || state == State.UPDATE)
+                    StateChangeEvent.fire(this, State.UPDATE);
+            } else {
+                analysisMan = null;
+                analysis = new AnalysisViewDO();
+                StateChangeEvent.fire(this, State.DEFAULT);
+            }
+
+            bundle = data;
+            loaded = false;
+
+        } catch (Exception e) {
+            Window.alert("resultTab setData: " + e.getMessage());
+        }
+    }
+
+    public void draw() {
+        if ( !loaded) {
+            try {
+                if (analysisMan == null || analysis.getTestId() == null)
+                    manager = AnalysisResultManager.getInstance();
+                else {
+                    if (state == State.ADD || state == State.UPDATE)
+                        manager = analysisMan.getAnalysisResultAt(bundle.getAnalysisIndex());
+                    else
+                        manager = analysisMan.getDisplayAnalysisResultAt(bundle.getAnalysisIndex());
+                }
+
+                displayManager = new TestAnalyteDisplayManager<ResultViewDO>();
+                displayManager.setDataGrid(manager.getResults());
+
+                DataChangeEvent.fire(this);
+                loaded = true;
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public HandlerRegistration addActionHandler(ActionHandler<ResultTab.Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    }
 
     private ArrayList<TableDataRow> getTableModel() {
-        int m, c, len, numberOfCols;
-        TestResultDO testResult;
-        ArrayList<TableDataRow> model;
-        TableDataRow hrow, row;
-        ResultViewDO resultDO;
+        int i, c, len, numberOfCols;
         boolean headerFilled, validateResults;
+        Integer rg;
         String val, entry;
+        TestResultDO testResult;
+        ArrayList<TableDataRow> model, ddModel;
+        TableDataRow hrow, row;
+        ResultViewDO data;
+        SampleResultValueTableColumn tabcol;
+        ArrayList<TableColumn> cl;
+        ResultValidator v;
 
-        //
-        // we are assuming there will be at least 1 non supplemental
-        // if there are only supplementals in a row group it will not
-        // show a header so the user wont be able to add any analytes
-        //
+        /*
+         * we are assuming there will be at least 1 non supplemental if there are
+         * only supplementals in a row group it will not show a header so the user
+         * wont be able to add any analytes
+         */
         model = new ArrayList<TableDataRow>();
         if (manager == null || displayManager == null)
             return model;
 
+        validateResults = (state == State.ADD || state == State.UPDATE);
         numberOfCols = displayManager.maxColumnCount();
         resizeResultTable(numberOfCols);
 
         hrow = null;
         headerFilled = false;
-
-        for (m = 0; m < displayManager.rowCount(); m++ ) {
-            if (displayManager.isHeaderRow(m)) {
-                m++ ;
+        
+        /*
+         * Since we maintain a hashmap between result groups and dropdowns in each
+         * instance of SampleResultValueTableColumn, we need to make sure that
+         * these hashmaps get filled with the latest data every time the analysis
+         * changes for which this table is to be loaded. This only needs to happen
+         * if the data is to be edited and validated. 
+         */
+        if (validateResults) {
+            cl = testResultsTable.getColumns();
+            for (i = 2; i < cl.size(); i++) {
+                tabcol = (SampleResultValueTableColumn)cl.get(i);
+                tabcol.clear();
+            }
+        }
+        
+        for (i = 0; i < displayManager.rowCount(); i++ ) {
+            if (displayManager.isHeaderRow(i)) {
+                i++ ;
                 hrow = createHeaderRow(numberOfCols);
                 model.add(hrow);
                 headerFilled = false;
             }
 
-            len = displayManager.columnCount(m) - 2;
+            len = displayManager.columnCount(i) - 2;
             row = new TableDataRow(numberOfCols);
             row.data = new Boolean(false);
-            validateResults = (state == State.ADD || state == State.UPDATE);
-
-            for (c = 0; c < len; c++ ) {
-                resultDO = displayManager.getObjectAt(m, c);
-                row.key = resultDO.getId();
+            
+            for (c = 0; c < len; c++ ) {                
+                data = displayManager.getObjectAt(i, c);
+                rg = data.getResultGroup();
+                row.key = data.getId();
                 try {
                     if (c == 0) {
-                        row.cells.get(0).setValue(resultDO.getIsReportable());
-                        row.cells.get(1).setValue(resultDO.getAnalyte());
+                        row.cells.get(0).setValue(data.getIsReportable());
+                        row.cells.get(1).setValue(data.getAnalyte());
                     }
 
-                    val = resultDO.getValue();
+                    val = data.getValue();           
+                    
+                    /*
+                     * this has to be done here as well as later on in this method
+                     * because otherwise if validateResults is false, then the value
+                     * that gets set in the cell for the type dictionary is the
+                     * id of the record and not the entry 
+                     */
+                    if (!typeDictionary.equals(data.getTypeId())) {
+                        row.cells.get(c + 2).setValue(val);
+                    } else {
+                        entry = DictionaryCache.getEntryFromId(Integer.parseInt(val)).getEntry();
+                        row.cells.get(c + 2).setValue(entry);
+                    }
+                    
+                    if ( !headerFilled && c > 0)
+                        hrow.cells.get(c + 2).setValue(data.getAnalyte());
+                    
+                    if ( !validateResults)
+                        continue;
+                    rg = data.getResultGroup();
                     entry = null;
-                    if (typeDictionary.equals(resultDO.getTypeId())) {
-                        val = DictionaryCache.getEntryFromId(Integer.parseInt(val)).getEntry();
-                        entry = val;
-                    }
-                    row.cells.get(c + 2).setValue(val);
-
-                    if (validateResults && !DataBaseUtil.isEmpty(val)) {
-                        //resultDO.setValue(val);
+                    if ( !DataBaseUtil.isEmpty(val)) {
                         testResult = displayManager.validateResultValue(manager,
-                                                                        resultDO,
+                                                                        data,
                                                                         analysis.getUnitOfMeasureId());
-                        val = manager.formatResultValue(resultDO.getResultGroup(),
-                                                              analysis.getUnitOfMeasureId(),
-                                                              testResult.getId(), val);
-                        resultDO.setValue(val);
-                        if (!typeDictionary.equals(resultDO.getTypeId()))
-                            row.cells.get(c + 2).setValue(val); 
-                        else
-                            row.cells.get(c + 2).setValue(entry); 
-                    }
+                        val = manager.formatResultValue(rg,
+                                                        analysis.getUnitOfMeasureId(),
+                                                        testResult.getId(), val);
+                        data.setValue(val);
+                        /* 
+                         * Since a default can match a dictionary entry for the
+                         * same unit, the value returned by validateResultValue()
+                         * will be the test result that has the dictionary entry
+                         * matching the default. Thus the field "typeId" will 
+                         * have changed from what it was before validateResultValue() 
+                         * was called, and we have to perform the check for the type
+                         * again to set the appropriate value.    
+                         */
+                        if ( !typeDictionary.equals(data.getTypeId())) {
+                            row.cells.get(c + 2).setValue(val);
+                        } else {
+                            entry = DictionaryCache.getEntryFromId(Integer.parseInt(val)).getEntry();
+                            row.cells.get(c + 2).setValue(entry);
+                        }
+                    }                                       
                 } catch (ParseException e) {
                     row.cells.get(c + 2).clearExceptions();
                     row.cells.get(c + 2).addException(e);
-                    resultDO.setTypeId(null);
-                    resultDO.setTestResultId(null);
-
+                    data.setTypeId(null);
+                    data.setTestResultId(null);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                }      
+                
+                /* 
+                 * we can't do this in the block for try-catch because in Add mode
+                 * the default is the value set in the DO in EJB and if the default
+                 * is invalid, the dropdown for that result group won't be created
+                 * because of the exception thrown during validation
+                 */
+                tabcol = (SampleResultValueTableColumn)testResultsTable.getColumns().get(c + 2);                    
+                v = manager.getResultValidator(rg);
+                /* 
+                 * If a result group only has dictionary entries, we show a dropdown
+                 * and not a textbox when a user tries to edit the cell referring
+                 * to that result group. The class SampleResultValueTableColumn
+                 * is responsible for returning the right dropdown based on the
+                 * result group. 
+                 */
+                if (v.hasOnlyDictionary()) {                            
+                    ddModel = new ArrayList<TableDataRow>();
+                    ddModel.add(new TableDataRow("", ""));
+                    for (OptionItem oi : v.getDictionaryRanges())                                 
+                        ddModel.add(new TableDataRow(oi.getValue(), oi.getValue()));
+                    tabcol.setResultGroupModel(rg, ddModel);
                 }
-
-                if ( !headerFilled && c > 0)
-                    hrow.cells.get(c + 2).setValue(resultDO.getAnalyte());
             }
             headerFilled = true;
             model.add(row);
@@ -606,13 +730,12 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         return model;
     }
 
-    private String getDefaultValue(ResultViewDO resultDO, Integer unitOfMeasureId) {
+    private String getDefaultValue(ResultViewDO data, Integer unitOfMeasureId) {
         String val;
-        if (resultDO.getValue() != null || resultDO.getId() != null)
-            val = resultDO.getValue();
-
+        if (data.getValue() != null || data.getId() != null)
+            val = data.getValue();
         else
-            val = manager.getDefaultValue(resultDO.getResultGroup(), analysis.getUnitOfMeasureId());
+            val = manager.getDefaultValue(data.getResultGroup(), analysis.getUnitOfMeasureId());
 
         return val;
     }
@@ -759,57 +882,5 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             postHeader = (Boolean)testResultsTable.getRow(index + 1).data;
 
         return prevHeader && postHeader;
-    }
-
-    public void setData(SampleDataBundle data) {
-        try {
-            if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
-                analysisMan = data.getSampleManager()
-                                  .getSampleItems()
-                                  .getAnalysisAt(data.getSampleItemIndex());
-                analysis = analysisMan.getAnalysisAt(data.getAnalysisIndex());
-
-                if (state == State.ADD || state == State.UPDATE)
-                    StateChangeEvent.fire(this, State.UPDATE);
-            } else {
-                analysisMan = null;
-                analysis = new AnalysisViewDO();
-                StateChangeEvent.fire(this, State.DEFAULT);
-            }
-
-            bundle = data;
-            loaded = false;
-
-        } catch (Exception e) {
-            Window.alert("resultTab setData: " + e.getMessage());
-        }
-    }
-
-    public void draw() {
-        if ( !loaded) {
-            try {
-                if (analysisMan == null || analysis.getTestId() == null)
-                    manager = AnalysisResultManager.getInstance();
-                else {
-                    if (state == State.ADD || state == State.UPDATE)
-                        manager = analysisMan.getAnalysisResultAt(bundle.getAnalysisIndex());
-                    else
-                        manager = analysisMan.getDisplayAnalysisResultAt(bundle.getAnalysisIndex());
-                }
-
-                displayManager = new TestAnalyteDisplayManager<ResultViewDO>();
-                displayManager.setDataGrid(manager.getResults());
-
-                DataChangeEvent.fire(this);
-                loaded = true;
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public HandlerRegistration addActionHandler(ActionHandler<ResultTab.Action> handler) {
-        return addHandler(handler, ActionEvent.getType());
-    }
+    }    
 }

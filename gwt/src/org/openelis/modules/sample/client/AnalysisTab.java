@@ -681,6 +681,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 int r, c;
                 Object val;
                 AnalysisUserViewDO data;
+                TableDataRow row;
 
                 r = event.getRow();
                 c = event.getCol();
@@ -696,11 +697,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
                 switch (c) {
                     case 0:
-                        TableDataRow selectedRow = userName.getSelection();
+                        row = userName.getSelection();
 
-                        if (selectedRow != null) {
-                            data.setSystemUserId((Integer)selectedRow.key);
-                            data.setSystemUser((String)selectedRow.cells.get(0).value);
+                        if (row != null) {
+                            data.setSystemUserId((Integer)row.key);
+                            data.setSystemUser((String)row.cells.get(0).value);
                         } else {
                             data.setSystemUserId(null);
                             data.setSystemUser(null);

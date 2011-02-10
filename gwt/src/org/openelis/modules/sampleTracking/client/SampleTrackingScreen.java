@@ -141,8 +141,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private SampleTreeUtility    treeUtil;
     private SampleHistoryUtility historyUtility;
 
-    private Integer              analysisLoggedInId,  sampleErrorStatusId, 
-                                 sampleReleasedId;
+    private Integer              analysisLoggedInId, sampleReleasedId;
     private Query                query;
     
     private ScreenService        finalReportService;
@@ -1131,9 +1130,16 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                 if (selectedRow != null && "qaevent".equals(selectedRow.leafType)) {
                     bundle = (SampleDataBundle)selectedRow.data;
-
+                    
+                    /* 
+                     * we need to make sure that any qa events previously shown
+                     * in the tab for any analyses get cleared out if we are showing
+                     * only the qa events for a sample and thus we pass null to setData()
+                     */
                     if (SampleDataBundle.Type.ANALYSIS.equals(bundle.getType()))
                         qaEventsTab.setData(bundle);
+                    else
+                        qaEventsTab.setData(null);
 
                     qaEventsTab.setManager(manager);
                     qaEventsTab.draw();
@@ -1256,7 +1262,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         // error is found
         try {
             analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
-            sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());

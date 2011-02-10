@@ -27,6 +27,7 @@ package org.openelis.utilcommon;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.RPC;
@@ -256,6 +257,31 @@ public class ResultValidator implements RPC {
             }
         }
 
+        return opt;
+    }
+    
+    /**
+     * This method returns a list of all dictionary result ranges suitable for tooltip 
+     */
+    public ArrayList<OptionItem> getDictionaryRanges() {
+        ArrayList<Item> list;
+        ArrayList<OptionItem> opt;
+        Iterator<Integer> iter;
+        Integer unitId;        
+        
+        opt = new ArrayList<OptionItem>();                
+        iter = units.keySet().iterator();
+        
+        while (iter.hasNext()) {
+            unitId = iter.next();            
+            list = units.get(unitId);            
+            for (Item item : list) {
+                if (item.type == Type.DICTIONARY)
+                    opt.add(new OptionItem("option" + item.type,
+                                           item.value.toString(),
+                                           ((ResultRangeDictionary)item.value).getId()));                
+            }
+        }                
         return opt;
     }
 

@@ -134,6 +134,7 @@ public class SampleEnvironmentalDO extends DataObject {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+        _changed = true;
     }
 
     public AddressDO getLocationAddress() {
