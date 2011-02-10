@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -49,11 +49,12 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
+import org.openelis.local.TestTrailerLocal;
 import org.openelis.meta.TestTrailerMeta;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -62,18 +63,15 @@ import org.openelis.utils.PermissionInterceptor;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("testtrailer-select")
-public class TestTrailerBean implements TestTrailerRemote{
+public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                      manager;
-
-    @Resource
-    private SessionContext                     ctx;
+    private EntityManager                manager;
 
     @EJB
-    private LockLocal                          lockBean;
+    private LockLocal                    lockBean;
 
-    private static final TestTrailerMeta    meta = new TestTrailerMeta();
+    private static final TestTrailerMeta meta = new TestTrailerMeta();
 
     public TestTrailerBean() {
     }
@@ -111,8 +109,8 @@ public class TestTrailerBean implements TestTrailerRemote{
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + TestTrailerMeta.getId() + ", " +
-                          TestTrailerMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + TestTrailerMeta.getId() +
+                          ", " + TestTrailerMeta.getName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(TestTrailerMeta.getName());
 
@@ -218,14 +216,15 @@ public class TestTrailerBean implements TestTrailerRemote{
             list.add(new FieldErrorException("fieldRequiredException", TestTrailerMeta.getName()));
         } else {
             ArrayList<IdNameVO> dups;
-            
+
             dups = fetchByName(data.getName(), 1);
-            if (dups.size() > 0 && ! dups.get(0).getId().equals(data.getId()))
+            if (dups.size() > 0 && !dups.get(0).getId().equals(data.getId()))
                 list.add(new FieldErrorException("fieldUniqueException", TestTrailerMeta.getName()));
         }
 
         if (DataBaseUtil.isEmpty(data.getDescription()))
-            list.add(new FieldErrorException("fieldRequiredException", TestTrailerMeta.getDescription()));
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             TestTrailerMeta.getDescription()));
 
         if (DataBaseUtil.isEmpty(data.getText()))
             list.add(new FieldErrorException("fieldRequiredException", TestTrailerMeta.getText()));
