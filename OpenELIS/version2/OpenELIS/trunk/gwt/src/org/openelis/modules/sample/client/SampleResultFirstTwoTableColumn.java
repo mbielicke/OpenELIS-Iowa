@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.sample.client;
 
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.CheckField;
 import org.openelis.gwt.widget.Label;
@@ -35,9 +36,10 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.Widget;
 
-public class SampleResultTableColumn extends TableColumn {
-    protected Label                 label;
-    protected CheckBox              check;
+public class SampleResultFirstTwoTableColumn extends TableColumn {
+    protected GetMatchesHandler                                 screen;
+    protected Label                                             label;
+    protected CheckBox                                          check;
 
     public Widget getDisplayWidget(TableDataRow row) {
         setColumnWidget(getCellWidget(row));
@@ -46,6 +48,8 @@ public class SampleResultTableColumn extends TableColumn {
 
     public void loadWidget(Widget widget, TableDataRow row, int modelIndex) {
         Widget wid = setCellDisplay(modelIndex);
+        
+        wid = setCellDisplay(modelIndex);
         super.loadWidget(wid,row,modelIndex);
         resetAlign(modelIndex);
     }
@@ -53,7 +57,7 @@ public class SampleResultTableColumn extends TableColumn {
     public Widget getWidgetEditor(TableDataRow row) {
         setColumnWidget(getCellWidget(row));
         return super.getWidgetEditor(row);
-    }
+    }      
 
     private CheckBox getCheckBox(){
         CheckField field;
@@ -76,14 +80,14 @@ public class SampleResultTableColumn extends TableColumn {
         }
         setAlign(HasAlignment.ALIGN_LEFT);
         return label;
-    }
-
+   }
+    
     private Widget getCellWidget(TableDataRow row) {
         Boolean isHeader;
         
         isHeader = (Boolean)row.data;
         
-        if(isHeader == null || isHeader.booleanValue())
+        if(isHeader == null || isHeader.booleanValue() || columnIndex == 1)
             return getLabel();
         else
             return getCheckBox();

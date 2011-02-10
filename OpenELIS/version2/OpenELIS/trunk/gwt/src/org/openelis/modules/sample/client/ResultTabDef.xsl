@@ -44,37 +44,37 @@ UIRF Software License are applicable instead of those above.
       <TablePanel padding="0" spacing="0">
         <row>
           <table key="testResultsTable" width="{string($widthParam)}" maxRows="{string($maxRowsParam)}" showScroll="ALWAYS" title="">
-            <col width="65" class="org.openelis.modules.sample.client.SampleResultTableColumn">
+            <col width="65" class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn">
               <label field="String" />
             </col>
-            <col width="200">
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultFirstTwoTableColumn">
+              <label field="String" />
+            </col>
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultValueTableColumn">
               <textbox max="80" field="String" />
             </col>
-            <col width="200">
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultValueTableColumn">
               <textbox max="80" field="String" />
             </col>
-            <col width="200">
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultValueTableColumn">
               <textbox max="80" field="String" />
             </col>
-            <col width="200">
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultValueTableColumn">
               <textbox max="80" field="String" />
             </col>
-            <col width="200">
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultValueTableColumn">
               <textbox max="80" field="String" />
             </col>
-            <col width="200">
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultValueTableColumn">
               <textbox max="80" field="String" />
             </col>
-            <col width="200">
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultValueTableColumn">
               <textbox max="80" field="String" />
             </col>
-            <col width="200">
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultValueTableColumn">
               <textbox max="80" field="String" />
             </col>
-            <col width="200">
-              <textbox max="80" field="String" />
-            </col>
-            <col width="200">
+            <col width="200" class="org.openelis.modules.sample.client.SampleResultValueTableColumn">
               <textbox max="80" field="String" />
             </col>
           </table>

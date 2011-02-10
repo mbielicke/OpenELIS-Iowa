@@ -85,7 +85,7 @@ public class QAEventsTab extends Screen {
     protected SampleQaEventManager   sampleQAManager;
     protected AnalysisQaEventManager analysisQAManager;
     protected SampleManager          sampleManager;
-    protected AnalysisManager        anMan;
+    protected AnalysisManager        analysisManager;
     protected AnalysisViewDO         anDO;
     protected Integer                analysisCancelledId, analysisReleasedId;
 	protected Integer				 qaInternal, qaWarning, qaOverride;
@@ -526,13 +526,13 @@ public class QAEventsTab extends Screen {
         try {
             if (data == null || SampleDataBundle.Type.SAMPLE_ITEM.equals(data.getType())) {
                 anDO = new AnalysisViewDO();
-                anMan = null;
+                analysisManager = null;
                 type = SampleDataBundle.Type.SAMPLE_ITEM;
             } else {
-                anMan = data.getSampleManager()
+                analysisManager = data.getSampleManager()
                             .getSampleItems()
                             .getAnalysisAt(data.getSampleItemIndex());
-                anDO = anMan.getAnalysisAt(data.getAnalysisIndex());
+                anDO = analysisManager.getAnalysisAt(data.getAnalysisIndex());
                 type = data.getType();
             }
             bundle = data;
@@ -557,10 +557,10 @@ public class QAEventsTab extends Screen {
                     sampleQAManager = SampleQaEventManager.getInstance();
 
                 // analysis
-                if (anMan == null)
-                    analysisQAManager = AnalysisQaEventManager.getInstance();
+                if (analysisManager != null)
+                    analysisQAManager = analysisManager.getQAEventAt(bundle.getAnalysisIndex());
                 else
-                    analysisQAManager = anMan.getQAEventAt(bundle.getAnalysisIndex());
+                    analysisQAManager = AnalysisQaEventManager.getInstance();
 
                 if (state != State.QUERY) 
                     StateChangeEvent.fire(this, state);
