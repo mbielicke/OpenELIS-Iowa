@@ -6,15 +6,17 @@ public class AnalysisQaEventViewDO extends AnalysisQaEventDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String qaEventName;
-    
+    protected String          qaEventName, qaEventReportingText;
+
     public AnalysisQaEventViewDO() {
     }
 
-    public AnalysisQaEventViewDO(Integer id, Integer analysisId, Integer qaeventId, Integer typeId, String isBillable, String qaEventName) {
+    public AnalysisQaEventViewDO(Integer id, Integer analysisId, Integer qaeventId, Integer typeId,
+                                 String isBillable, String qaEventName, String qaEventReportingText) {
         super(id, analysisId, qaeventId, typeId, isBillable);
-        
+
         setQaEventName(qaEventName);
+        setQaEventReportingText(qaEventReportingText);
     }
 
     public String getQaEventName() {
@@ -25,19 +27,11 @@ public class AnalysisQaEventViewDO extends AnalysisQaEventDO {
         this.qaEventName = DataBaseUtil.trim(qaEventName);
     }
 
-    public Integer getTypeId() {
-        return typeId;
+    public String getQaEventReportingText() {
+        return qaEventReportingText;
     }
 
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
-    }
-
-    public String getIsBillable() {
-        return isBillable;
-    }
-
-    public void setIsBillable(String isBillable) {
-        this.isBillable = DataBaseUtil.trim(isBillable);
+    public void setQaEventReportingText(String qaEventReportingText) {
+        this.qaEventReportingText = DataBaseUtil.trim(qaEventReportingText);
     }
 }
