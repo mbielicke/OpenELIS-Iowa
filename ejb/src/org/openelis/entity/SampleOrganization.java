@@ -48,9 +48,14 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {@NamedQuery(name = "SampleOrganization.FetchBySampleId", query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, so.sampleId, " +
-                                                                                 " so.organizationId, so.organizationAttention, so.typeId, o.name, o.address.city, o.address.state) " + 
-                                                                                 " from SampleOrganization so LEFT JOIN so.organization o where so.sampleId = :id")})
+@NamedQueries( {
+    @NamedQuery( name = "SampleOrganization.FetchBySampleId",
+                query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, " +
+                		"so.sampleId, so.organizationId, so.organizationAttention, " +
+                		"so.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, " +
+                		"o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
+                		"o.address.faxPhone)"
+                      + " from SampleOrganization so LEFT JOIN so.organization o where so.sampleId = :id")})
 @Entity
 @Table(name = "sample_organization")
 @EntityListeners( {AuditUtil.class})
