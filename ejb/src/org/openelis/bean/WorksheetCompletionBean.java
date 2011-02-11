@@ -202,7 +202,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 waDO = waManager.getWorksheetAnalysisAt(a);
 
                 row = resultSheet.createRow(r);
-                oRow = overrideSheet.createRow(o);
 
                 // position number
                 posNum = getPositionNumber(wiDO.getPosition(), formatVDO.getSystemName(),
@@ -211,16 +210,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 cell.setCellStyle(styles.get("row_no_edit"));
                 if (a == 0)
                     cell.setCellValue(posNum);
-                cell = oRow.createCell(0);
-                cell.setCellStyle(styles.get("row_no_edit"));
-                if (a == 0)
-                    cell.setCellValue(posNum);
                 
                 // accession number
                 cell = row.createCell(1);
-                cell.setCellStyle(styles.get("row_no_edit"));
-                cell.setCellValue(waDO.getAccessionNumber());
-                cell = oRow.createCell(1);
                 cell.setCellStyle(styles.get("row_no_edit"));
                 cell.setCellValue(waDO.getAccessionNumber());
                 
@@ -265,24 +257,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     cellName.setRefersToFormula("Worksheet!$"+CellReference.convertNumToColString(6)+
                                                 "$"+(row.getRowNum()+1));
 
-                    // description (override)
-                    cell = oRow.createCell(2);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    if (sDomain != null)
-                        cell.setCellValue(sDomain.getDomainDescription());
-                    else
-                        cell.setCellValue("");
-    
-                    // test name (overrride)
-                    cell = oRow.createCell(3);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue(aVDO.getTestName());
-                    
-                    // method name (override)
-                    cell = oRow.createCell(4);
-                    cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue(aVDO.getMethodName());
-                    
                     cellNameIndex = i+"."+a;
                     wrManager = waManager.getWorksheetResultAt(a);
                     if (wrManager.count() == 0) {
@@ -303,6 +277,40 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                                        tCellNames, arManager, wrManager);
                     }
 
+                    //
+                    // Add override row to override sheet
+                    //
+                    oRow = overrideSheet.createRow(o);
+
+                    // position number
+                    cell = oRow.createCell(0);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    if (a == 0)
+                        cell.setCellValue(posNum);
+
+                    // accession number
+                    cell = oRow.createCell(1);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue(waDO.getAccessionNumber());
+
+                    // description (override)
+                    cell = oRow.createCell(2);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    if (sDomain != null)
+                        cell.setCellValue(sDomain.getDomainDescription());
+                    else
+                        cell.setCellValue("");
+    
+                    // test name (overrride)
+                    cell = oRow.createCell(3);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue(aVDO.getTestName());
+                    
+                    // method name (override)
+                    cell = oRow.createCell(4);
+                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellValue(aVDO.getMethodName());
+                    
                     // users (override)
                     cell = oRow.createCell(5);
                     cell.setCellStyle(styles.get("row_edit"));
