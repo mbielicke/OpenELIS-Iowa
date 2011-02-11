@@ -117,7 +117,6 @@ public class ResultDataSource implements JRRewindableDataSource {
 	}
 
     public void moveFirst() throws JRException {
-System.out.println("called movefirst");
         iter = rows.iterator();
     }
 
