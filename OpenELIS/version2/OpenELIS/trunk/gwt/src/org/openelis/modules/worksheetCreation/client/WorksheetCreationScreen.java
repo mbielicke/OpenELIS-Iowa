@@ -103,6 +103,8 @@ public class WorksheetCreationScreen extends Screen {
                                                   qcDup, statusWorking, typeFixed,
                                                   typeRand, typeLastWell, typeLastRun,
                                                   typeLastBoth;
+    private String                                typeRandString, typeLastWellString,
+                                                  typeLastRunString, typeLastBothString;
     private ScreenService                         qcService, worksheetService;
     private ModulePermission                      userPermission;
     private WorksheetManager                      manager;
@@ -424,6 +426,10 @@ public class WorksheetCreationScreen extends Screen {
             typeLastWell = DictionaryCache.getIdFromSystemName("pos_last_of_well");
             typeLastRun = DictionaryCache.getIdFromSystemName("pos_last_of_run");
             typeLastBoth = DictionaryCache.getIdFromSystemName("pos_last_of_well_&_run");
+            typeRandString = DictionaryCache.getEntryFromId(typeRand).getEntry();
+            typeLastWellString = DictionaryCache.getEntryFromId(typeLastWell).getEntry();
+            typeLastRunString = DictionaryCache.getEntryFromId(typeLastRun).getEntry();
+            typeLastBothString = DictionaryCache.getEntryFromId(typeLastBoth).getEntry();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             wcLookupScreen.getWindow().close();
@@ -739,8 +745,18 @@ public class WorksheetCreationScreen extends Screen {
                 try {
                     list = qcService.callList("fetchActiveByName", twiDO.getQcName());
                     if (list.size() == 0) {
-                        for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getBatchCapacity())
-                            qcErrors.put(j, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), String.valueOf(j)));
+                        if (typeRand.equals(twiDO.getTypeId())) {
+                            qcErrors.put(-1, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeRandString));
+                        } else if (typeLastRun.equals(twiDO.getTypeId())) {
+                            qcErrors.put(-2, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastRunString));
+                        } else if (typeLastWell.equals(twiDO.getTypeId())) {
+                            qcErrors.put(-3, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastWellString));
+                        } else if (typeLastBoth.equals(twiDO.getTypeId())) {
+                            qcErrors.put(-4, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastBothString));
+                        } else {
+                            for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getBatchCapacity())
+                                qcErrors.put(j, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), String.valueOf(j)));
+                        }
                         qcDO = new QcDO();
                         qcDO.setName(twiDO.getQcName());
                     } else if (list.size() > 1) {
@@ -952,7 +968,7 @@ public class WorksheetCreationScreen extends Screen {
         hasErrors = false;
         if (!qcErrors.isEmpty()) {
             message = "";
-            for (i = 0; i < items.size(); i++) {
+            for (i = -4; i < items.size(); i++) {
                 tempE = (Exception)qcErrors.get(i+1);
                 if (tempE == null)
                     continue;
@@ -961,7 +977,7 @@ public class WorksheetCreationScreen extends Screen {
                 message += tempE.getMessage();
                 hasErrors = true;
             }
-            
+
             if (hasErrors) {
                 window.setError(message);
                 Window.alert(message);
