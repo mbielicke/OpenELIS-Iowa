@@ -107,8 +107,20 @@ public class PanelManagerBean implements PanelManagerRemote {
     }
     
     public PanelManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.PANEL, id);
-        return fetchById(id);
+        UserTransaction ut;
+        PanelManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.PANEL, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
     
     public PanelManager abortUpdate(Integer id) throws Exception {

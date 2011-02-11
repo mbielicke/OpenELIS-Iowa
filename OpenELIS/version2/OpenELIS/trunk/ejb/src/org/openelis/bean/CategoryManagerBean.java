@@ -109,14 +109,26 @@ public class CategoryManagerBean implements CategoryManagerRemote {
         return man;
     }
 
-    public CategoryManager fetchForUpdate(Integer categoryId) throws Exception {
-        lockBean.lock(ReferenceTable.DICTIONARY, categoryId);
-        return fetchById(categoryId);
+    public CategoryManager fetchForUpdate(Integer id) throws Exception {
+        UserTransaction ut;
+        CategoryManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.DICTIONARY, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
 
-    public CategoryManager abortUpdate(Integer categoryId) throws Exception {
-        lockBean.unlock(ReferenceTable.DICTIONARY, categoryId);
-        return fetchById(categoryId);
+    public CategoryManager abortUpdate(Integer id) throws Exception {
+        lockBean.unlock(ReferenceTable.DICTIONARY, id);
+        return fetchById(id);
     }
     
     public DictionaryManager fetchEntryByCategoryId(Integer id) throws Exception {

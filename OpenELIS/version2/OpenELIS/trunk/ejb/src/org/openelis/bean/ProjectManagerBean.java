@@ -84,8 +84,20 @@ public class ProjectManagerBean implements ProjectManagerRemote {
     }
 
     public ProjectManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.PROJECT, id);
-        return fetchById(id);
+        UserTransaction ut;
+        ProjectManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.PROJECT, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
 
     public ProjectManager abortUpdate(Integer id) throws Exception {

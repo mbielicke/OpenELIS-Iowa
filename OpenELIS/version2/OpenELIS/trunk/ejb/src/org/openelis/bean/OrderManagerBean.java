@@ -123,8 +123,20 @@ public class OrderManagerBean implements OrderManagerRemote {
     }
 
     public OrderManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.ORDER, id);
-        return fetchById(id);
+        UserTransaction ut;
+        OrderManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.ORDER, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
 
     public OrderManager abortUpdate(Integer id) throws Exception {
