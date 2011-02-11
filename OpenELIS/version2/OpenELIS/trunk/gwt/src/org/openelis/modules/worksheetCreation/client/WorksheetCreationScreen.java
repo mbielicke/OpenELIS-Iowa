@@ -1129,35 +1129,17 @@ public class WorksheetCreationScreen extends Screen {
                             list = (ArrayList<QcDO>)event.getData();
                             if (list != null) {
                                 if (qcStartIndex != 0) {
-                                    r = twManager.getItemAt(qcStartIndex - 1).getPosition();
-                                } else {
-                                    r = worksheetItemTable.getSelectedRow();
-                                    if (r == -1)
-                                        r = worksheetItemTable.numRows();
-                                    else
-                                        r++;
-                                }
-                                
-                                for (i = 0; i < list.size(); i++) {
-                                    if (qcItems != null && qcItems[r+i] != null) {
-                                        Window.alert("Fixed QC already designated for position "+(r+i+1)+
-                                                     "; Please select a different position or "+
-                                                     "a shorter list of QCs to add");
-                                        return;
-                                    }
-                                }
-                                
-                                for (i = 0; i < list.size(); i++) {
-                                    qcDO  = list.get(i);
+                                    //
+                                    // If qcStartIndex != 0, then we are coming
+                                    // here because the popup was triggered by
+                                    // multiple matching qcs in a predefined location
+                                    // and we will only be getting one qc selected
+                                    // from the popup
+                                    //
+                                    twiDO = twManager.getItemAt(qcStartIndex - 1);
 
-                                    twiDO = new TestWorksheetItemDO();
-                                    if (qcStartIndex != 0)
-                                        twiDO.setPosition(r);
-                                    else
-                                        twiDO.setPosition(r+1);
-                                    twiDO.setTypeId(typeFixed);
-                                    twiDO.setQcName(qcDO.getName());
-                                    
+                                    qcDO = list.get(0);
+
                                     qcRow = new TableDataRow(11);
                                     qcRow.cells.get(2).value = qcDO.getName();             // description
                                     
@@ -1167,15 +1149,51 @@ public class WorksheetCreationScreen extends Screen {
                                     qcRow.data = dataList;
                                     
                                     testWorksheetItems.add(qcRow);
-                                    r++;
-                                }
-                                
-                                qcLookupScreen.window.close();
-                                
-                                if (qcStartIndex != 0)
+                                    
                                     loadQCTemplate();
-                                else
+                                } else {
+                                    //
+                                    // If qcStartIndex == 0, then we are coming
+                                    // here because the popup was triggered by
+                                    // the user clicking the lookup button
+                                    //
+                                    r = worksheetItemTable.getSelectedRow();
+                                    if (r == -1)
+                                        r = worksheetItemTable.numRows();
+                                    else
+                                        r++;
+
+                                    for (i = 0; i < list.size(); i++) {
+                                        if (qcItems != null && qcItems[r+i] != null) {
+                                            Window.alert("Fixed QC already designated for position "+(r+i+1)+
+                                                         "; Please select a different position or "+
+                                                         "a shorter list of QCs to add");
+                                            return;
+                                        }
+                                    }
+                                    
+                                    for (i = 0; i < list.size(); i++) {
+                                        qcDO  = list.get(i);
+
+                                        twiDO = new TestWorksheetItemDO();
+                                        twiDO.setPosition(r+1);
+                                        twiDO.setTypeId(typeFixed);
+                                        twiDO.setQcName(qcDO.getName());
+                                        
+                                        qcRow = new TableDataRow(11);
+                                        qcRow.cells.get(2).value = qcDO.getName();             // description
+                                        
+                                        dataList = new ArrayList<Object>();
+                                        dataList.add(twiDO);
+                                        dataList.add(qcDO);
+                                        qcRow.data = dataList;
+                                        
+                                        testWorksheetItems.add(qcRow);
+                                        r++;
+                                    }
+
                                     buildQCWorksheet();
+                                }
                                 
                                 mergeAnalysesAndQCs();
 

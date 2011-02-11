@@ -64,7 +64,7 @@ public class QcService {
         ArrayList<QcDO> list;
 
         try {
-            list = remote().fetchActiveByName(search + "%", 10);
+            list = remote().fetchActiveByName(search, 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcDO>(0);
         } catch (RuntimeException e) {
