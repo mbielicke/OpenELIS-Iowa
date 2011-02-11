@@ -117,7 +117,8 @@ public class ResultDataSource implements JRRewindableDataSource {
 	}
 
     public void moveFirst() throws JRException {
-        iter = rows.iterator();
+        if (rows != null)
+            iter = rows.iterator();
     }
 
     private HashMap<String, String> createRow(ArrayList<ResultViewDO> list) {
