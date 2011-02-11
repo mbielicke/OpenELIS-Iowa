@@ -107,8 +107,20 @@ public class InventoryAdjustmentManagerBean implements InventoryAdjustmentManage
     }
 
     public InventoryAdjustmentManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.INVENTORY_ADJUSTMENT, id);
-        return fetchById(id);
+        UserTransaction ut;
+        InventoryAdjustmentManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.INVENTORY_ADJUSTMENT, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
     
     public InventoryAdjustmentManager abortUpdate(Integer id) throws Exception {

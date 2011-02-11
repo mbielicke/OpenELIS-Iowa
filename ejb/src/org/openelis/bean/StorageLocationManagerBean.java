@@ -107,8 +107,20 @@ public class StorageLocationManagerBean implements StorageLocationManagerRemote 
     }
     
     public StorageLocationManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.STORAGE_LOCATION, id);
-        return fetchById(id);
+        UserTransaction ut;
+        StorageLocationManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.STORAGE_LOCATION, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
     
     public StorageLocationManager abortUpdate(Integer id) throws Exception {

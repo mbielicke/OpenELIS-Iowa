@@ -60,28 +60,28 @@ public class TestManagerBean implements TestManagerRemote {
     @EJB
     private LockLocal      lockBean;
 
-    public TestManager fetchById(Integer testId) throws Exception {
-        return TestManager.fetchById(testId);
+    public TestManager fetchById(Integer id) throws Exception {
+        return TestManager.fetchById(id);
     }
 
-    public TestManager fetchWithSampleTypes(Integer testId) throws Exception {
-        return TestManager.fetchWithSampleTypes(testId);
+    public TestManager fetchWithSampleTypes(Integer id) throws Exception {
+        return TestManager.fetchWithSampleTypes(id);
     }
 
-    public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {
-        return TestManager.fetchWithAnalytesAndResults(testId);
+    public TestManager fetchWithAnalytesAndResults(Integer id) throws Exception {
+        return TestManager.fetchWithAnalytesAndResults(id);
     }
 
-    public TestManager fetchWithPrepTestsSampleTypes(Integer testId) throws Exception {
-        return TestManager.fetchWithPrepTestsSampleTypes(testId);
+    public TestManager fetchWithPrepTestsSampleTypes(Integer id) throws Exception {
+        return TestManager.fetchWithPrepTestsSampleTypes(id);
     }
 
-    public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
-        return TestManager.fetchWithPrepTestAndReflexTests(testId);
+    public TestManager fetchWithPrepTestsAndReflexTests(Integer id) throws Exception {
+        return TestManager.fetchWithPrepTestAndReflexTests(id);
     }
 
-    public TestManager fetchWithWorksheet(Integer testId) throws Exception {
-        return TestManager.fetchWithWorksheet(testId);
+    public TestManager fetchWithWorksheet(Integer id) throws Exception {
+        return TestManager.fetchWithWorksheet(id);
     }
 
     public TestManager add(TestManager man) throws Exception {
@@ -126,38 +126,50 @@ public class TestManagerBean implements TestManagerRemote {
         return man;
     }
 
-    public TestManager fetchForUpdate(Integer testId) throws Exception {
-        lockBean.lock(ReferenceTable.TEST, testId);
-        return fetchById(testId);
+    public TestManager fetchForUpdate(Integer id) throws Exception {
+        UserTransaction ut;
+        TestManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.TEST, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
 
-    public TestManager abortUpdate(Integer testId) throws Exception {
-        lockBean.unlock(ReferenceTable.TEST, testId);
-        return fetchById(testId);
+    public TestManager abortUpdate(Integer id) throws Exception {
+        lockBean.unlock(ReferenceTable.TEST, id);
+        return fetchById(id);
     }
 
-    public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception {
-        return TestTypeOfSampleManager.fetchByTestId(testId);
+    public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer id) throws Exception {
+        return TestTypeOfSampleManager.fetchByTestId(id);
     }
 
-    public TestAnalyteManager fetchTestAnalytesByTestId(Integer testId) throws Exception {
-        return TestAnalyteManager.fetchByTestId(testId);
+    public TestAnalyteManager fetchTestAnalytesByTestId(Integer id) throws Exception {
+        return TestAnalyteManager.fetchByTestId(id);
     }
 
-    public TestResultManager fetchTestResultsByTestId(Integer testId) throws Exception {
-        return TestResultManager.fetchByTestId(testId);
+    public TestResultManager fetchTestResultsByTestId(Integer id) throws Exception {
+        return TestResultManager.fetchByTestId(id);
     }
 
-    public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception {
-        return TestPrepManager.fetchByTestId(testId);
+    public TestPrepManager fetchPrepTestsByTestId(Integer id) throws Exception {
+        return TestPrepManager.fetchByTestId(id);
     }
 
-    public TestReflexManager fetchReflexiveTestsByTestId(Integer testId) throws Exception {
-        return TestReflexManager.fetchByTestId(testId);
+    public TestReflexManager fetchReflexiveTestsByTestId(Integer id) throws Exception {
+        return TestReflexManager.fetchByTestId(id);
     }
 
-    public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception {
-        return TestWorksheetManager.fetchByTestId(testId);
+    public TestWorksheetManager fetchWorksheetByTestId(Integer id) throws Exception {
+        return TestWorksheetManager.fetchByTestId(id);
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {

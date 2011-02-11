@@ -121,8 +121,20 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
     }
 
     public InventoryItemManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.INVENTORY_ITEM, id);
-        return fetchById(id);
+        UserTransaction ut;
+        InventoryItemManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.INVENTORY_ITEM, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
 
     public InventoryItemManager abortUpdate(Integer id) throws Exception {

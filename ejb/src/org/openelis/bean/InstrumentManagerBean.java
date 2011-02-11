@@ -107,8 +107,20 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
     }
 
     public InstrumentManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.INSTRUMENT, id);
-        return fetchById(id);
+        UserTransaction ut;
+        InstrumentManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.INSTRUMENT, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
     
     public InstrumentManager abortUpdate(Integer id) throws Exception {

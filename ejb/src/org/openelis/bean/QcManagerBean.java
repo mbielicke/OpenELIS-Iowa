@@ -107,8 +107,20 @@ public class QcManagerBean implements QcManagerRemote {
     }
 
     public QcManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.QC, id);
-        return fetchById(id);
+        UserTransaction ut;
+        QcManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.QC, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
 
     public QcManager abortUpdate(Integer id) throws Exception {

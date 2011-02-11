@@ -63,10 +63,23 @@ public class ProviderManagerBean implements ProviderManagerRemote {
 		
 	}
 
-	public ProviderManager fetchForUpdate(Integer id) throws Exception {
-		lockBean.lock(ReferenceTable.PROVIDER, id);
-		return fetchById(id);
-	}
+    public ProviderManager fetchForUpdate(Integer id) throws Exception {
+        UserTransaction ut;
+        ProviderManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+
+            lockBean.lock(ReferenceTable.PROVIDER, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
+    }
 
 	public ProviderManager update(ProviderManager man) throws Exception {
         UserTransaction ut;

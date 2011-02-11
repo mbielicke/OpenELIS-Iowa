@@ -133,8 +133,20 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
     }
 
     public WorksheetManager fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.WORKSHEET, id);
-        return fetchById(id);
+        UserTransaction ut;
+        WorksheetManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.lock(ReferenceTable.WORKSHEET, id);
+            man = fetchById(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
     }
 
     public WorksheetManager abortUpdate(Integer id) throws Exception {

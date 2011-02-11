@@ -103,15 +103,24 @@ public class InventoryReceiptManagerBean implements InventoryReceiptManagerRemot
     }       
     
     public InventoryReceiptManager fetchForUpdate(InventoryReceiptManager man) throws Exception {
+        UserTransaction ut;
         InventoryReceiptViewDO data;
         InventoryReceiptLocal rl;
-        
+
         rl = local();
-        for (int i = 0; i < man.count(); i++) {
-            data = man.getReceiptAt(i);            
-            man.setReceiptAt(rl.fetchForUpdate(data.getId()), i);
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            for (int i = 0; i < man.count(); i++ ) {
+                data = man.getReceiptAt(i);
+                man.setReceiptAt(rl.fetchForUpdate(data.getId()), i);
+            }
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
         }
-        return man;
     }
     
     public InventoryReceiptManager abortUpdate(InventoryReceiptManager man) throws Exception {

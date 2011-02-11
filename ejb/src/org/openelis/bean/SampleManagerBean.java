@@ -79,20 +79,20 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     @EJB
     private SampleLocal sample;
 
-    public SampleManager fetchById(Integer sampleId) throws Exception {
-        return SampleManager.fetchById(sampleId);
+    public SampleManager fetchById(Integer id) throws Exception {
+        return SampleManager.fetchById(id);
     }
     
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         return SampleManager.fetchByAccessionNumber(accessionNumber);
     }
 
-    public SampleManager fetchWithItemsAnalysis(Integer sampleId) throws Exception {
-        return SampleManager.fetchWithItemsAnalyses(sampleId);
+    public SampleManager fetchWithItemsAnalysis(Integer id) throws Exception {
+        return SampleManager.fetchWithItemsAnalyses(id);
     }
     
-    public SampleManager fetchWithAllData(Integer sampleId) throws Exception {
-        return SampleManager.fetchWithAllData(sampleId);
+    public SampleManager fetchWithAllData(Integer id) throws Exception {
+        return SampleManager.fetchWithAllData(id);
     }
 
     public SampleManager add(SampleManager man) throws Exception {
@@ -137,28 +137,39 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         return man;
     }
 
-    public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        lock.lock(ReferenceTable.SAMPLE, sampleId);
+    public SampleManager fetchForUpdate(Integer id) throws Exception {
+        UserTransaction ut;
+        SampleManager man;
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lock.lock(ReferenceTable.SAMPLE, id);
+            man = fetchWithAllData(id);
+            ut.commit();
+            return man;
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
+    }
+
+    public SampleManager abortUpdate(Integer id) throws Exception {
+        lock.unlock(ReferenceTable.SAMPLE, id);
         
-        return fetchWithAllData(sampleId);
+        return fetchWithItemsAnalysis(id);
     }
 
-    public SampleManager abortUpdate(Integer sampleId) throws Exception {
-        lock.unlock(ReferenceTable.SAMPLE, sampleId);
-        
-        return fetchWithItemsAnalysis(sampleId);
+    public SampleOrganizationManager fetchSampleOrgsBySampleId(Integer id) throws Exception {
+        return SampleOrganizationManager.fetchBySampleId(id);   
     }
 
-    public SampleOrganizationManager fetchSampleOrgsBySampleId(Integer sampleId) throws Exception {
-        return SampleOrganizationManager.fetchBySampleId(sampleId);   
-    }
-
-    public SampleProjectManager fetchSampleProjectsBySampleId(Integer sampleId) throws Exception {
-        return SampleProjectManager.fetchBySampleId(sampleId);   
+    public SampleProjectManager fetchSampleProjectsBySampleId(Integer id) throws Exception {
+        return SampleProjectManager.fetchBySampleId(id);   
     }
     
-    public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception {
-        return SampleItemManager.fetchBySampleId(sampleId);
+    public SampleItemManager fetchSampleItemsBySampleId(Integer id) throws Exception {
+        return SampleItemManager.fetchBySampleId(id);
     }
     
     public SampleManager validateAccessionNumber(SampleDO data) throws Exception {
