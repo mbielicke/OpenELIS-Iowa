@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.NoteViewDO;
@@ -43,7 +44,7 @@ import org.openelis.local.NoteLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.TestTrailerLocal;
 
-public class NoteDataSource implements JRDataSource {
+public class NoteDataSource implements JRRewindableDataSource {
 
 	private NoteLocal nl;
     private SampleQAEventLocal sl;
@@ -191,7 +192,7 @@ public class NoteDataSource implements JRDataSource {
                 if (tmp.length() > 0)
                     tmp.append('\n');
                 tmp.append("<style pdfFontName='Times-Italic' size='8'>")
-                   .append(escape(qas))
+                   .append(escape(trailer))
                    .append("</style>");
 	        }
 	        ret = tmp.toString();
@@ -220,7 +221,11 @@ public class NoteDataSource implements JRDataSource {
 	    return false;
 	}
 	
-	public boolean hasSampleOverride() {
+    public void moveFirst() throws JRException {
+        hasNext = true;
+    }
+
+    public boolean hasSampleOverride() {
 	    return sOverride;
 	}
 	
@@ -259,5 +264,4 @@ public class NoteDataSource implements JRDataSource {
         }
         return tmp;
     }
-
 }

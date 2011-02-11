@@ -29,16 +29,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JRRewindableDataSource;
+
 import org.openelis.domain.ResultViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
 
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRField;
-
-public class ResultDataSource implements JRDataSource {
+public class ResultDataSource implements JRRewindableDataSource {
 
 	private ArrayList<HashMap<String, String>> rows;
 	private HashMap<String, String> currentRow;
@@ -116,7 +116,12 @@ public class ResultDataSource implements JRDataSource {
 		return false;
 	}
 
-	private HashMap<String, String> createRow(ArrayList<ResultViewDO> list) {
+    public void moveFirst() throws JRException {
+System.out.println("called movefirst");
+        iter = rows.iterator();
+    }
+
+    private HashMap<String, String> createRow(ArrayList<ResultViewDO> list) {
 		int i;
 		boolean hasRowAnalyte;
 		Integer id;

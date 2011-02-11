@@ -25,7 +25,7 @@ WHERE
 	<field name="zip_code" class="java.lang.String"/>
 	<field name="country" class="java.lang.String"/>
 	<detail>
-		<band height="12">
+		<band height="12" splitType="Stretch">
 			<printWhenExpression><![CDATA[$P{ATTENTION} != null && $P{ATTENTION}.length() > 0]]></printWhenExpression>
 			<textField>
 				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
@@ -35,7 +35,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{ATTENTION}]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="48">
+		<band height="48" splitType="Stretch">
 			<textField isBlankWhenNull="false">
 				<reportElement positionType="Float" x="0" y="0" width="250" height="0"/>
 				<textElement/>

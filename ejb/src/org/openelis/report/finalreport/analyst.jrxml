@@ -32,7 +32,7 @@ WHERE
 		</band>
 	</detail>
 	<summary>
-		<band height="12">
+		<band height="12" splitType="Stretch">
 			<textField>
 				<reportElement x="0" y="0" width="120" height="12"/>
 				<textElement>
