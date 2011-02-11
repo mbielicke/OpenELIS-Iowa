@@ -189,13 +189,13 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
                 list.add((QcDO)row.data);
         }
         
-        ActionEvent.fire(this, Action.OK, list);
         window.close();
+        ActionEvent.fire(this, Action.OK, list);
     }
 
     public void cancel() {
-        ActionEvent.fire(this, Action.CANCEL, null);
         window.close();
+        ActionEvent.fire(this, Action.CANCEL, null);
     }
 
     public void setScreenState(State state) {
