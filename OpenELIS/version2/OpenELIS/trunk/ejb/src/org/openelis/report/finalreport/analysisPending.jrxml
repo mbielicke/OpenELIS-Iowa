@@ -28,7 +28,7 @@ WHERE
 		<initialValueExpression><![CDATA[org.openelis.utils.JasperUtil.concatWithSeparator($F{t_reporting_description}," , ", $F{m_reporting_description})]]></initialValueExpression>
 	</variable>
 	<pageHeader>
-		<band height="24">
+		<band height="24" splitType="Stretch">
 			<staticText>
 				<reportElement positionType="Float" x="0" y="5" width="550" height="14"/>
 				<box bottomPadding="0"/>

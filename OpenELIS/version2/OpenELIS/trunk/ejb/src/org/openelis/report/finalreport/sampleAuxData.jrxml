@@ -20,24 +20,27 @@ WHERE
 	</queryString>
 	<field name="analyte_name" class="java.lang.String"/>
 	<field name="aux_data_value" class="java.lang.String"/>
+	<title>
+		<band height="12"/>
+	</title>
 	<detail>
-		<band height="24" splitType="Stretch">
+		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="12" width="150" height="12"/>
+				<reportElement x="0" y="0" width="150" height="12"/>
 				<textElement textAlignment="Right">
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="160" y="12" width="390" height="12"/>
+				<reportElement x="160" y="0" width="390" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{aux_data_value}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement x="155" y="12" width="1" height="12"/>
+				<reportElement x="155" y="0" width="1" height="12"/>
 			</line>
 		</band>
 	</detail>

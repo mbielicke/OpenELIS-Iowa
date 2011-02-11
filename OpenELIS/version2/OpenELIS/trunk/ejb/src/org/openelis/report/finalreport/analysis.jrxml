@@ -75,7 +75,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 	<group name="analysisGroup">
 		<groupExpression><![CDATA[$F{a_id}]]></groupExpression>
 		<groupFooter>
-			<band height="12"/>
+			<band height="12" splitType="Stretch"/>
 		</groupFooter>
 	</group>
 	<detail>
@@ -201,7 +201,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{UNIT_LIST}.add($F{unit_id})]]></textFieldExpression>
 			</textField>
 		</band>
-		<band height="12">
+		<band height="12" splitType="Stretch">
 			<printWhenExpression><![CDATA[$F{pat_reporting_description} != null]]></printWhenExpression>
 			<staticText>
 				<reportElement x="40" y="0" width="90" height="12"/>
@@ -221,7 +221,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<reportElement x="135" y="0" width="1" height="12"/>
 			</line>
 		</band>
-		<band height="24">
+		<band height="24" splitType="Stretch">
 			<subreport>
 				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
 					<printWhenExpression><![CDATA["test_format_two_column".equals($F{test_format})]]></printWhenExpression>
@@ -258,7 +258,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
-				<dataSourceExpression><![CDATA[NoteDataSource.getInstance($P{SAMPLE_ID},$F{a_id},$F{test_trailer_id})]]></dataSourceExpression>
+				<dataSourceExpression><![CDATA[$V{NOTE_DATASOURCE}]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisQaeventNote.jasper"]]></subreportExpression>
 			</subreport>
 		</band>

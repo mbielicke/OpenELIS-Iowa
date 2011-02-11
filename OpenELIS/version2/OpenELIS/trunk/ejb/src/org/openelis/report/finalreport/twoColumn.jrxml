@@ -12,10 +12,10 @@
 	<field name="header1" class="java.lang.String"/>
 	<field name="field0" class="java.lang.String"/>
 	<field name="field1" class="java.lang.String"/>
-	<group name="headerGroup" isStartNewPage="true">
+	<group name="headerGroup" isReprintHeaderOnEachPage="true" minHeightToStartNewPage="36">
 		<groupExpression><![CDATA[$F{rowGroup}]]></groupExpression>
 		<groupHeader>
-			<band height="24">
+			<band height="24" splitType="Stretch">
 				<textField>
 					<reportElement mode="Opaque" x="0" y="12" width="275" height="12" isPrintInFirstWholeBand="true" forecolor="#FFFFFF" backcolor="#000000"/>
 					<textElement>

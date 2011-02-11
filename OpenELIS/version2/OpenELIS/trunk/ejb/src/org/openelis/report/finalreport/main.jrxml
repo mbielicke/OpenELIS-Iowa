@@ -49,7 +49,7 @@ WHERE
 	<group name="Sample_Organization" isStartNewPage="true" isResetPageNumber="true">
 		<groupExpression><![CDATA[$P{ORGANIZATION_ID}+"-"+$F{s_id}]]></groupExpression>
 		<groupHeader>
-			<band height="12">
+			<band height="12" splitType="Stretch">
 				<subreport>
 					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
 						<printWhenExpression><![CDATA[$F{s_domain}.equals("W")]]></printWhenExpression>
@@ -92,7 +92,7 @@ WHERE
 		</groupHeader>
 	</group>
 	<background>
-		<band height="750">
+		<band height="750" splitType="Stretch">
 			<staticText>
 				<reportElement key="internalUseOnlyBackground" positionType="Float" x="206" y="40" width="200" height="706" forecolor="#DCC8C8">
 					<printWhenExpression><![CDATA["C".equals($P{REPORT_TYPE})]]></printWhenExpression>
@@ -171,7 +171,7 @@ WHERE
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="84">
+		<band height="84" splitType="Stretch">
 			<subreport isUsingCache="true">
 				<reportElement positionType="Float" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -243,7 +243,7 @@ WHERE
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="60">
+		<band height="60" splitType="Stretch">
 			<textField>
 				<reportElement x="139" y="5" width="158" height="12"/>
 				<textElement textAlignment="Right">
@@ -367,7 +367,7 @@ WHERE
 		</band>
 	</pageFooter>
 	<lastPageFooter>
-		<band height="60">
+		<band height="60" splitType="Stretch">
 			<textField>
 				<reportElement x="139" y="3" width="158" height="12"/>
 				<textElement textAlignment="Right">
