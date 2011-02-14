@@ -90,7 +90,6 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
 					.setRequired(true));
 			return p;
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw e;
 		}
 	}
@@ -148,9 +147,8 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         	data = sysvar.fetchForUpdateByName("last_accession_number");
         	laccession = Integer.parseInt(data.getValue());
         	data.setValue(String.valueOf(laccession + samples));
-        	sysvar.update(data);
+        	sysvar.updateAsSystem(data);
         } catch (Exception e) {
-        	e.printStackTrace();
         	throw e;
         }
         status.setPercentComplete(100);
@@ -221,7 +219,6 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
 					.setRequired(true));
 			return p;
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw e;
 		}
 	}

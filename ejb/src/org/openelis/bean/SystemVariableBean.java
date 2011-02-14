@@ -182,6 +182,29 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
         return data;
     }
 
+    /**
+     * Update the record without checking for user's permission (as system).
+     */
+    public SystemVariableDO updateAsSystem(SystemVariableDO data) throws Exception {
+        SystemVariable entity;
+
+        if ( !data.isChanged())
+            return data;
+
+        validate(data);
+
+        lockBean.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        entity = manager.find(SystemVariable.class, data.getId());
+        entity.setName(data.getName());
+        entity.setValue(data.getValue());
+
+        lockBean.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+
+        return data;
+    }
+
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception {
         lockBean.lock(ReferenceTable.SYSTEM_VARIABLE, id);
         return fetchById(id);
