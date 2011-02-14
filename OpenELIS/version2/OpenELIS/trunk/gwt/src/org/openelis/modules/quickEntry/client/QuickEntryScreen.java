@@ -506,7 +506,7 @@ public class QuickEntryScreen extends Screen {
 
             // test/panel
         } else if (val.matches("[TP][0-9]*\\-[0-9]*")) {
-            testMethodSampleType.setValue(val);
+            testMethodSampleType.setValue(val, true);
 
             // tube #
         } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) {
