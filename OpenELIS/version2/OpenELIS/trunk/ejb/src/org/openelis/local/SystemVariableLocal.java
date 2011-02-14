@@ -44,6 +44,8 @@ public interface SystemVariableLocal {
 
     public SystemVariableDO update(SystemVariableDO data) throws Exception;
 
+    public SystemVariableDO updateAsSystem(SystemVariableDO data) throws Exception;
+
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception;
 
     public SystemVariableDO fetchForUpdateByName(String name) throws Exception;
