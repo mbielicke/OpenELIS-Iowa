@@ -393,7 +393,7 @@ public class ItemTab extends Screen {
         
         try {
             window.setBusy(consts.get("fetching"));
-            orderService.call("fetchByShippingItemId", data.getReferenceId(), new SyncCallback<OrderViewDO>() {
+            orderService.call("fetchByShippingItemId", data.getId(), new SyncCallback<OrderViewDO>() {
                 public void onSuccess(OrderViewDO result) {                                    
                     try {
                         if(result != null)
