@@ -1996,11 +1996,10 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     //
                     if (r+1 < analyteTable.numRows()) {
                         nrow = analyteTable.getRow(r+1);
-                        if(!(Boolean)nrow.data) {
+                        if(!(Boolean)nrow.data) 
                             analyteTable.deleteRow(r);
-                        } else {
-                            Window.alert(consts.get("atleastTwoRowsInRowGroup"));
-                        }
+                        else 
+                            Window.alert(consts.get("atleastTwoRowsInRowGroup"));                        
                     } else {
                         Window.alert(consts.get("atleastTwoRowsInRowGroup"));
                     }
@@ -2153,15 +2152,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     IdNameVO entry;
                     TestResultManager man;
 
-                    man = null;
-                        
-                    try {
-                        man = manager.getTestResults();
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                        e.printStackTrace();  
-                        return;
-                    } 
+                    man = null;                       
 
                     selTab = resultTabPanel.getTabBar().getSelectedTab();
                     if (event.getAction() == DictionaryLookupScreen.Action.OK) {
@@ -2172,6 +2163,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                 window.setError(consts.get("test.noSelectedRow"));
                                 return;
                             }
+                            
+                            try {
+                                man = manager.getTestResults();
+                            } catch (Exception e) {
+                                Window.alert(e.getMessage());
+                                e.printStackTrace();  
+                                return;
+                            } 
 
                             //
                             // set the first dictionary value in the row that was
@@ -2183,6 +2182,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                             data.setDictionary(entry.getName());
                             data.setTypeId(typeDict);
                             resultTable.setCell(r, 1, typeDict);
+                            resultTable.clearCellExceptions(r, 1);
                             resultTable.setCell(r, 2, data.getDictionary());
                             resultTable.clearCellExceptions(r, 2);
                             clearResultCellError(selTab, r, TestMeta.getResultValue());
