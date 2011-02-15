@@ -44,6 +44,8 @@ import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -57,6 +59,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
@@ -64,7 +67,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
@@ -73,11 +75,14 @@ import org.openelis.meta.ShippingMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
+import org.openelis.modules.processShipping.client.ProcessShippingScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.logical.shared.CloseEvent;
+import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
@@ -97,7 +102,7 @@ public class ShippingScreen extends Screen {
 
     private AppButton                      queryButton, previousButton, nextButton, addButton,
                                            updateButton, commitButton, abortButton;
-    protected MenuItem                     shippingHistory, shippingItemHistory,
+    protected MenuItem                     processShipping, shippingHistory, shippingItemHistory,
                                            shippingTrackingHistory;
     private TextBox                        id, numberOfPackages, cost, shippedToAddressMultipleUnit,
                                            processedById, shippedToAddressStreetAddress, shippedToAddressCity,
@@ -106,7 +111,9 @@ public class ShippingScreen extends Screen {
     private Dropdown<Integer>              statusId, shippedFromId, shippedMethodId;
     private AutoComplete<Integer>          shippedToName;
     private TabPanel                       tabPanel;
-    private Integer                        status_processed;
+    private Integer                        status_processed, status_shipped;
+    private ShippingScreen                 screen;
+    private ProcessShippingScreen          processShippingScreen;
         
     private boolean                        openedFromMenu;
     
@@ -139,11 +146,11 @@ public class ShippingScreen extends Screen {
 
         openedFromMenu = fromMenu;
         
-        //
-        // this is done here in order to make sure that if the screen is brought
-        // up from some other screen (i.e. window != null) then its widgets are 
-        // initialized before the constructor ends execution
-        //
+        /*
+         * this is done here in order to make sure that if the screen is brought
+         * up from some other screen (i.e. window != null) then its widgets are 
+         * initialized before the constructor ends execution
+         */
         if (window != null) {
             postConstructor();
         } else {
@@ -182,6 +189,8 @@ public class ShippingScreen extends Screen {
         //
         // button panel buttons
         //
+        screen = this;
+        
         queryButton = (AppButton)def.getWidget("query");
         addScreenHandler(queryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -268,6 +277,17 @@ public class ShippingScreen extends Screen {
             }
         });
         
+        processShipping = (MenuItem)def.getWidget("processShipping");
+        addScreenHandler(processShipping, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {                
+                processShipping();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                processShipping.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
         shippingHistory = (MenuItem)def.getWidget("shippingHistory");
         addScreenHandler(shippingHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -318,13 +338,19 @@ public class ShippingScreen extends Screen {
                 id.setQueryMode(event.getState() == State.QUERY);
             }
         });    
+        
         statusId = (Dropdown)def.getWidget(ShippingMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 statusId.setSelection(manager.getShipping().getStatusId());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
+            public void onValueChange(ValueChangeEvent<Integer> event) {                
+                if (!status_shipped.equals(event.getValue())) {
+                    manager.getShipping().setShippedDate(null);
+                    shippedDate.setValue(manager.getShipping().getShippedDate());
+                }
+                
                 manager.getShipping().setStatusId(event.getValue());
             }
 
@@ -791,6 +817,7 @@ public class ShippingScreen extends Screen {
         
         try {
             status_processed  = DictionaryCache.getIdFromSystemName("shipping_status_processed");
+            status_shipped  = DictionaryCache.getIdFromSystemName("shipping_status_shipped");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -854,28 +881,32 @@ public class ShippingScreen extends Screen {
         boolean ok;
         window.setBusy(consts.get("lockForUpdate"));
 
-        try {
+        try {            
+            ok = true;
             
-            if (status_processed.equals(manager.getShipping().getStatusId())) {
-               ok = Window.confirm(consts.get("shippingStatusProcessed"));
-               if (ok) {
-                    manager = manager.fetchForUpdate();
-                    setState(State.UPDATE);
-                    setFocus(statusId);
-                    DataChangeEvent.fire(this);
-                    window.clearStatus();
-                } else {
-                    manager = manager.abortUpdate();
-                    setState(State.DISPLAY);
-                    DataChangeEvent.fire(this);
-                    window.setDone(consts.get("updateAborted"));
-                }
-            }                         
-        } catch (Exception e) {
+            if (status_processed.equals(manager.getShipping().getStatusId())) 
+                ok = Window.confirm(consts.get("shippingStatusProcessed"));                
+            else if (status_shipped.equals(manager.getShipping().getStatusId())) 
+                ok = Window.confirm(consts.get("shippingStatusShipped"));                            
+            
+            if (!ok) {
+                manager = manager.abortUpdate();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.setDone(consts.get("updateAborted"));
+                return;
+            }
+            
+            manager = manager.fetchForUpdate();
+            setState(State.UPDATE);
+            setFocus(statusId);
+            DataChangeEvent.fire(this);
+            window.clearStatus();
+        }  catch (Exception e) {
             Window.alert(e.getMessage());
             window.clearStatus();
-        }        
-    }
+        }      
+    }    
 
     protected void commit() {
         setFocus(null);
@@ -917,7 +948,7 @@ public class ShippingScreen extends Screen {
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.setDone(consts.get("updatingComplete"));               
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -925,7 +956,7 @@ public class ShippingScreen extends Screen {
                 window.clearStatus();
             }
         }
-    }
+    }      
 
     protected void abort() {
         setFocus(null);
@@ -956,6 +987,116 @@ public class ShippingScreen extends Screen {
             window.clearStatus();
         }
     }
+    
+    protected void processShipping() {
+        int t,l,w;
+        ScreenWindow modal;
+        
+        if (processShippingScreen == null) {
+            try {
+                processShippingScreen = new ProcessShippingScreen();
+                processShippingScreen.addActionHandler(new ActionHandler<ProcessShippingScreen.Action>() {
+                    public void onAction(ActionEvent<ProcessShippingScreen.Action> event) {
+                        int i;
+                        Integer id;
+                        ShippingTrackingManager man;
+                        ShippingViewDO data;
+
+                        if (event.getAction() == ProcessShippingScreen.Action.SHIPPING) {
+                            id = (Integer)event.getData();
+                            
+                            if (state == State.UPDATE) { 
+                                commit();                            
+                                if (state != State.DISPLAY) 
+                                    return;
+                            }
+                            //
+                            // the current record should be locked and fetched
+                            //                            
+                            try {
+                                if (!fetchById(id)) {
+                                    processShippingScreen.reset();
+                                    return;
+                                }
+                                
+                                window.setBusy(consts.get("lockForUpdate"));
+                                manager = manager.fetchForUpdate();
+                                data = manager.getShipping();
+                                /*
+                                 * we don't allow the processing of a shipping
+                                 * record if its status isn't either "Processed"
+                                 * or "Shipped"
+                                 */
+                                setState(State.UPDATE);
+                                if ( !status_shipped.equals(data.getStatusId()) &&
+                                    !status_processed.equals(data.getStatusId())) {
+                                    Window.alert(consts.get("statusProcessedShipped"));
+                                    abort();
+                                    return;
+                                }
+                                setProcessShippingData(data);
+                                DataChangeEvent.fire(screen);
+                                window.clearStatus();
+                            } catch (Exception e) {
+                                Window.alert(e.getMessage());
+                                /*
+                                 * if there was any other problem with fetching
+                                 * the record with id we fill the widgets in the
+                                 * screen with an empty manager
+                                 */
+                                fetchById(null);
+                                processShippingScreen.reset();
+                            }
+                        } else if (event.getAction() == ProcessShippingScreen.Action.TRACKING) {
+                            /*
+                             * this is a tracking number, it just needs to be
+                             * added to this ShippingManager's list of tracking
+                             * numbers
+                             */
+                            try {
+                                man = manager.getTrackings();
+                                i = man.addTracking();
+                                man.getTrackingAt(i).setTrackingNumber((String)event.getData());
+                                itemTab.setManager(manager);
+                                drawTabs();
+                            } catch (Exception e) {
+                                Window.alert(e.getMessage());
+                            }
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("ProcessShippingScreen error: " + e.getMessage());
+                return;
+            }
+        }
+        w = screen.getOffsetWidth();
+        t = screen.getAbsoluteTop();
+        l = screen.getAbsoluteLeft();
+        
+        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+        modal.setName(consts.get("processShipping"));
+        /*
+         * we display the pop up screen a little outside of the area in which
+         * this screen is showing
+         */
+        modal.setContent(processShippingScreen, l+w+20, t);
+        processShippingScreen.reset();
+
+        modal.addCloseHandler(new CloseHandler<ScreenWindow>() {
+            public void onClose(CloseEvent<ScreenWindow> event) {
+                /*
+                 * we update the database with the data showing on the screen
+                 * when the pop up window is closed if a record was being
+                 * updated on the screen
+                 */
+                if (state == State.UPDATE)
+                    commit();
+            }
+        });
+    }
+    
     
     protected void shippingHistory() {
         IdNameVO hist;
@@ -1061,5 +1202,10 @@ public class ShippingScreen extends Screen {
                 noteTab.draw();
                 break;   
         }
-    }   
+    }
+    
+    private void setProcessShippingData(ShippingViewDO data) throws Exception {
+        data.setShippedDate(Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY));        
+        data.setStatusId(status_shipped);        
+    }
 }

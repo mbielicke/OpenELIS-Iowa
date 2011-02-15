@@ -2135,7 +2135,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
     private void showDictionary(String entry, ArrayList<IdNameVO> list) {
         ScreenWindow modal;
-        TestResultManager man;
 
         if (dictLookup == null) {
             try {
@@ -2144,16 +2143,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 e.printStackTrace();
                 Window.alert("DictionaryLookup error: " + e.getMessage());
                 return;
-            }            
-            
-            man = null;
-            
-            try {
-                man = manager.getTestResults();
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                e.printStackTrace();                
-            } 
+            }                                    
             
             dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
                 public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
@@ -2169,7 +2159,8 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                         man = manager.getTestResults();
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
-                        e.printStackTrace();                
+                        e.printStackTrace();  
+                        return;
                     } 
 
                     selTab = resultTabPanel.getTabBar().getSelectedTab();
