@@ -26,7 +26,6 @@
 package org.openelis.modules.report.client;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.openelis.domain.OptionListItem;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -56,6 +55,7 @@ import org.openelis.report.Prompt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.http.client.URL;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
@@ -566,6 +566,7 @@ public class ReportScreen extends Screen {
 		byte s, e;
 		DateField f;
 		CalendarLookUp c;
+		DateTimeFormat format;
 
 		s = getDatetimeCode(p.getDatetimeStartCode());
 		e = getDatetimeCode(p.getDatetimeEndCode());
@@ -585,10 +586,18 @@ public class ReportScreen extends Screen {
 			c.setWidth(p.getWidth() + "px");
 		else
 			c.setWidth("100px");
-		if (p.getDefaultValue() != null)
-			c.setFieldValue(Datetime.getInstance(s, e,
-					new Date(p.getDefaultValue())));
-
+		if (p.getDefaultValue() != null) {
+		    if (e > Datetime.DAY)
+		        format = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm");
+		    else
+		        format = DateTimeFormat.getFormat("yyyy-MM-dd");
+		    
+		    try {
+		        c.setFieldValue(Datetime.getInstance(s, e, format.parse(p.getDefaultValue())));
+	        } catch (IllegalArgumentException iargE) {
+	            // we don't set a default if we cannot parse it
+		    }
+		}
 		return c;
 	}
 
