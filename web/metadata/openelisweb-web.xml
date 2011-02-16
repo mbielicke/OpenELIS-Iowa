@@ -66,10 +66,7 @@ UIRF Software License are applicable instead of those above.
   <servlet>
     <servlet-name>ReportServlet</servlet-name>
     <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
-   		<init-param>
-              <param-name>app.root</param-name>
-              <param-value>${catalina.home}/apps/openelisweb/</param-value>
-        </init-param>
+    <load-on-startup>4</load-on-startup>
   </servlet>
   
   <servlet-mapping>
