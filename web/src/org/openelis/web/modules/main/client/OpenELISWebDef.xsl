@@ -49,13 +49,29 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
     <xsl:template match="doc">
       <screen name="Openelis Web V2.0">
-          <AbsolutePanel style="AppBackground" width="100%" height="100%" align="center">
-            <VerticalPanel width="800px" height="100%" align="center" key="container">
-              <widget halign="center" height="100%">
-    	   	  	<AbsolutePanel style="ContentWeb" key="content" align="center" width="800px" height="100%"/>
-    	   	  </widget>
-    	   	</VerticalPanel>
-       	  </AbsolutePanel>
+        <TablePanel style="AppBackground" width="100%" height="100%" spacing="0">
+        	<row style="Crumbline">
+        	  <widget width="60px">
+        	    <icon style="homeIcon" key="home" enable="true"/>
+        	  </widget>
+        	  <widget width="100%">        	  
+        	    <label style="webLabel" key="title" width="100%"/>
+        	  </widget>
+        	  <widget align="right">
+        	    <HorizontalPanel>
+              	  <label style="webLabel" key="welcome"/>
+              	  <text style="webLabel"> | </text>
+              	  <label style="webLabel,clickable" key="logout" text="Logout"/>
+                </HorizontalPanel>
+              </widget>
+        	</row> 
+        	<row>
+        	  <AbsolutePanel key="links" height="100%"/>
+        	  <widget colspan="2">
+        	    <AbsolutePanel key="content" width="100%" height="100%"/>
+        	  </widget>
+        	</row>
+        </TablePanel>
       </screen>
     </xsl:template>
 </xsl:stylesheet>

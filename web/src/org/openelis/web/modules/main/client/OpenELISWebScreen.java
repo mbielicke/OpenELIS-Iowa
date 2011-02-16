@@ -31,16 +31,20 @@ import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.web.modules.main.client.OpenELISRPC;
-import org.openelis.web.modules.menu.client.MenuScreen;
+import org.openelis.gwt.widget.IconContainer;
+import org.openelis.gwt.widget.Label;
+import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.web.modules.home.client.HomeScreen;
+import org.openelis.web.modules.links.client.LinksScreen;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.History;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * 
@@ -48,24 +52,37 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * be handled by this class.
  *
  */
-public class OpenELISWebScreen extends Screen implements ValueChangeHandler<String>{
+public class OpenELISWebScreen extends Screen {
 	
 	/**
 	 * This panel is where the screen content is displayed
 	 */
 	protected static AbsolutePanel 							content;
+	
+	/**
+	 * Ever Present link back to the Home Page
+	 */
+	protected static IconContainer							homeLink;
+	
+	/**
+	 * Labels on the main screen
+	 */
+	protected static Label<String>                          welcome,logout,title;
+	
 	/**
 	 * HashMap of Screens navigated 
 	 */
 	protected static HashMap<String,Screen> 				screens;
+	
 	/**
-	 * Crumbline navigation widget
-	 */
-	protected static CrumbLine 								crumb;
-	/**
-	 * Permisions assigned to the currently signed in user
+	 * Permissions assigned to the currently signed in user
 	 */
 	protected static SystemUserPermission                   systemUserPermission;
+	
+	/**
+	 * Static window used to display status messages
+	 */
+	public static ScreenWindow window;
 	
 	/**
 	 * No-arg Constructor
@@ -73,12 +90,13 @@ public class OpenELISWebScreen extends Screen implements ValueChangeHandler<Stri
 	 */
 	public OpenELISWebScreen() throws Exception {
 		super((ScreenDefInt)GWT.create(OpenELISWebDef.class));
-        OpenELISRPC rpc;
+		 OpenELISRPC rpc;
 
-        service = new ScreenService("OpenELISServlet?service=org.openelis.web.modules.main.server.OpenELISWebService");
+        service = new ScreenService("controller?service=org.openelis.web.modules.main.server.OpenELISWebService");
         rpc = service.call("initialData");
         consts = rpc.appConstants;
         systemUserPermission = rpc.systemUserPermission;
+        window = new ScreenWindow(ScreenWindow.Mode.WEB);
         
 		initialize();
 	}
@@ -86,16 +104,45 @@ public class OpenELISWebScreen extends Screen implements ValueChangeHandler<Stri
 	/**
 	 * This method will set up initial widgets for the main screen and load the Menu screen into the content panel.
 	 */
-	private void initialize() {
+	@SuppressWarnings("unchecked")
+	private void initialize() {		
 		content = (AbsolutePanel)def.getWidget("content");
 		screens = new HashMap<String,Screen>();
-		crumb = new CrumbLine();
+		welcome = (Label<String>)def.getWidget("welcome");
+		logout = (Label<String>)def.getWidget("logout");
+		title = (Label<String>)def.getWidget("title");
+		homeLink = (IconContainer)def.getWidget("home");
 		
-		((VerticalPanel)def.getWidget("container")).insert(crumb, 0);
+		homeLink.addClickHandler(new ClickHandler() {
+			@Override
+			public void onClick(ClickEvent event) {
+				gotoScreen("home");
+			}
+		});
+
+		((AbsolutePanel)def.getWidget("links")).add(new LinksScreen());
+	
+		welcome.setText("Welcome "+systemUserPermission.getFirstName());
+		logout.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+                try {
+                    service.call("logout");
+                    Window.open("OpenELIS.html", "_self", null);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+			}
+		});
+				
+		History.addValueChangeHandler(new ValueChangeHandler<String>() {
+			public void onValueChange(ValueChangeEvent<String> event) {
+				gotoScreen(event.getValue());
+			}
+		});
 		
-		History.addValueChangeHandler(this);
+		setScreen(new HomeScreen(),"Home","home");
 		
-		setScreen(new MenuScreen(),"Menu","menu");
 	}
 	
 	/**
@@ -108,10 +155,13 @@ public class OpenELISWebScreen extends Screen implements ValueChangeHandler<Stri
 	public static void setScreen(Screen screen, String name, String key) {
 		content.clear();
 		content.add(screen);
+		screen.setWindow(window);
+		screen.setWidth("100%");
+		screen.setHeight("100%");
 		History.newItem(key,false);
 		screens.put(key, screen);
 		screen.getDefinition().setName(name);
-		crumb.addLink(name, key);
+		title.setText(name);
 	}
 	
 	/**
@@ -119,30 +169,14 @@ public class OpenELISWebScreen extends Screen implements ValueChangeHandler<Stri
 	 * @param key
 	 */
 	public static void gotoScreen(String key) {
-		content.clear();
-		content.add(screens.get(key));
-		History.newItem(key,false);
-	}
-
-	/**
-	 * This handler receives events from the History listener of GWT when the user presses the back or forward button
-	 */
-	public void onValueChange(ValueChangeEvent<String> event) {
 		Screen screen;
 		
-		screen = screens.get(event.getValue());
+		screen = screens.get(key);
 		
 		content.clear();
 		content.add(screen);
-		if(event.getValue().equals("menu"))
-			crumb.removeLink();
-		else
-			crumb.addLink(screen.getDefinition().getName(),event.getValue());
-	}
-	
-	@Override
-	public void onBrowserEvent(Event event) {
-		super.onBrowserEvent(event);
+		title.setText(screen.getDefinition().getName());
+		History.newItem(key,false);
 	}
 
 }
