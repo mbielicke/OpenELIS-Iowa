@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.processShipping.client;
+package org.openelis.modules.shipping.client;
 
 import org.openelis.modules.main.client.openelis.OpenELISDef;
 
