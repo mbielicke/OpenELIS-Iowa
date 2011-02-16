@@ -1,5 +1,5 @@
 /**
- * Exhibit A - UIRF Open-source Based Public Software License.
+s * Exhibit A - UIRF Open-source Based Public Software License.
  * 
  * The contents of this file are subject to the UIRF Open-source Based Public
  * Software License(the "License"); you may not use this file except in
