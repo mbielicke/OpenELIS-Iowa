@@ -36,10 +36,17 @@ import org.openelis.web.modules.main.client.OpenELISRPC;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
+/**
+ * This class loads initial data for the main screen of the OpenELIS Web app
+ */
 public class OpenELISWebService {
 
     public static String APP_ROOT; 
 
+    /**
+     * Method called by client to retrieve initial Data
+     * @return
+     */
     public OpenELISRPC initialData() {
         OpenELISRPC rpc;
 
@@ -50,6 +57,9 @@ public class OpenELISWebService {
         return rpc;
     }
 
+    /**
+     * Method called by client to logout the calling user
+     */
     public void logout() {
         HttpSession session;
 
@@ -64,6 +74,9 @@ public class OpenELISWebService {
         }
     }
 
+    /**
+     * Method that sets up a Hash of String literals by locale to be used by the client
+     */
     private HashMap<String, String> getConstants() {
         String locale, key;
         UTFResource resource;
