@@ -81,10 +81,22 @@ UIRF Software License are applicable instead of those above.
     <url-pattern>/openelisweb/PreferencesServlet</url-pattern>
   </servlet-mapping>
   
+  <servlet>
+    <servlet-name>ReportServlet</servlet-name>
+    <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>OpenELISServlet</servlet-name>
     <url-pattern>/openelisweb/controller</url-pattern>
   </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>ReportServlet</servlet-name>
+    <url-pattern>/openelisweb/report</url-pattern>
+  </servlet-mapping>
+  
       <servlet> 
       <servlet-name>remoteLoggingServiceImpl</servlet-name> <servlet-class>com.google.gwt.libideas.logging.server.RemoteLoggingServiceImpl</servlet-class> </servlet> <servlet-mapping> <servlet-name>remoteLoggingServiceImpl</servlet-name> <url-pattern>/openelis/logging</url-pattern> </servlet-mapping>
   <session-config>
