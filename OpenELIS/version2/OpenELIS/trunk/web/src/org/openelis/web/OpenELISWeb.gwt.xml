@@ -36,8 +36,9 @@ UIRF Software License are applicable instead of those above.
          
     <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
     <inherits name="org.openelis.web.modules.main.Main"/>
-    <inherits name="org.openelis.web.modules.menu.Menu"/>
-    <inherits name="org.openelis.web.modules.report.Report"/>
+    <inherits name="org.openelis.web.modules.links.Links"/>
+    <inherits name="org.openelis.web.modules.home.Home"/>
+    <inherits name="org.openelis.modules.report.Report"/>
     <inherits name="org.openelis.ELISCommon"/>   
 	<stylesheet src="CSS/web.css"/>
 	<!-- Specify the app entry point class.                   -->

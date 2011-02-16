@@ -1,16 +1,36 @@
+.webFlowPanel {
+	display :inline;
+}
+
+.webButton {
+	
+}
 .webTestIcon {
-	height : 90px;
-	width : 90px;
+	height : 60px;
+	width : 60px;
 	background:transparent url(../Images/test.png) no-repeat scroll center;
 }
 
 .webIPodIcon {
-	height : 90px;
-	width : 90px;
+	height : 60px;
+	width : 60px;
 	background:transparent url(../Images/ipod.png) no-repeat scroll center;
 }
 
+.reportIcon {
+	height : 60px;
+	width : 60px;
+	background:transparent url(../Images/report.png) no-repeat scroll center;
+}
+
+
 .webLabel {
+	font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+	font-size : 12px;
+	color:white;
+}
+
+.menuLabel {
 	font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
 	font-size : 12px;
 	color:white;
@@ -25,4 +45,28 @@
 	height:30px;
     width:100%;
     background:black url(../Images/topmenubg.gif) repeat-x;
+}
+
+.HomeContainer {
+	width : 60px;
+	height : 30px;
+	border-right :1px solid grey;
+}
+	
+
+.homeIcon {
+	height : 20px;
+	width : 20px;
+	background:url(../Images/house.png) no-repeat center;
+	margin-left : 15px;	
+}
+
+.divider {
+	height : 100%;
+	width : 2px;
+	background : red;
+}
+
+.categories {
+	border-right: 1px solid grey;
 }
