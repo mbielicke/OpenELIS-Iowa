@@ -72,8 +72,6 @@ import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.Type;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
@@ -116,9 +114,6 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             public void onStateChange(StateChangeEvent<State> event) {
                 auxValsTable.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
                                            .contains(event.getState()));
-                // auxValsTable.setQueryMode(event.getState() == State.QUERY);
-                // ((HasField)auxValsTable.getColumns().get(1).colWidget).setQueryMode(false);
-                // auxValsTable.fireEvents(true);
             }
         });
 
@@ -160,14 +155,14 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 val = auxValsTable.getObject(r, c);
                 data = null;
 
-                if (state == State.QUERY){
-                    if(DataBaseUtil.isEmpty(equals(val)))
+                if (state == State.QUERY) {
+                    if (DataBaseUtil.isEmpty(val))
                         queryFieldEntered = false;
                     else
                         queryFieldEntered = true;
                     return;
                 }
-                
+
                 try {
                     data = manager.getAuxDataAt(r);
                 } catch (Exception e) {
@@ -185,21 +180,25 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                         rv = adb.validator;
                         fieldDO = (AuxFieldViewDO)adb.fieldDO;
                         value = getCorrectManValueByType(val, fieldDO.getTypeId());
-                                                                       
-                        try {
-                            if (numericId.equals(fieldDO.getTypeId())) {
-                                auxValsTable.clearCellExceptions(r, c);
-                                rv.validate(null, value);                                
-                            } else if (timeId.equals(fieldDO.getTypeId())) {
-                                auxValsTable.clearCellExceptions(r, c);
-                                timeRange.contains(value);                                  
+                        if ( !DataBaseUtil.isEmpty(value)) {
+                            try {
+                                if (numericId.equals(fieldDO.getTypeId())) {
+                                    auxValsTable.clearCellExceptions(r, c);
+                                    rv.validate(null, value);
+                                } else if (timeId.equals(fieldDO.getTypeId())) {
+                                    auxValsTable.clearCellExceptions(r, c);
+                                    timeRange.contains(value);
+                                }
+                            } catch (ParseException e) {
+                                auxValsTable.setCellException(r, c, e);
+                                value = null;
                             }
-                        } catch (ParseException e) {
-                            auxValsTable.setCellException(r, c, e);
-                            value = null;
-                        }
 
-                        data.setValue(value);                        
+                            data.setValue(value);
+                        } else {
+                            auxValsTable.clearCellExceptions(r, c);
+                            data.setValue(null);
+                        }
                         break;
                 }
             }
