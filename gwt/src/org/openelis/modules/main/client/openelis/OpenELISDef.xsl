@@ -254,7 +254,7 @@ UIRF Software License are applicable instead of those above.
                 </menuItem>
                 <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'summary')}">
                   <menuPanel layout="vertical" position="beside" style="topMenuContainer">
-                    <menuItem key="sampleInhouseReport" description="" icon="" enable="false" label="{resource:getString($constants,'sampleInhouseReport')}" />
+                    <menuItem key="sampleInhouseReport" description="" icon="" enable="true" label="{resource:getString($constants,'sampleInhouseReport')}" />
 	                <menuItem key="sampleDataExport" description="" icon="" enable="false" label="{resource:getString($constants,'sampleDataExport')}" />
                     <menuItem key="QAByOrganization" description="" icon="" enable="false" label="{resource:getString($constants,'QAByOrganization')}" />
                     <menuItem key="testCountByFacility" description="" icon="" enable="false" label="{resource:getString($constants,'testCountByFacility')}" />

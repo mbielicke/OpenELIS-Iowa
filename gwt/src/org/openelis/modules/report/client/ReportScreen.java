@@ -38,6 +38,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.CalendarWidget;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.CheckField;
 import org.openelis.gwt.widget.DateField;
@@ -324,6 +325,7 @@ public class ReportScreen extends Screen {
 	protected void reset() {
 		Dropdown<String> dd;
 		TextBox tb;
+		CalendarLookUp cl;
 		ArrayList<TableDataRow> data;
 
 		for (String key : def.getWidgets().keySet()) {
@@ -341,7 +343,12 @@ public class ReportScreen extends Screen {
 				tb = ((TextBox) def.getWidget(key));
 				tb.setFieldValue("");
 				tb.clearExceptions();
+			} else if (def.getWidget(key) instanceof CalendarLookUp) {
+				cl = ((CalendarLookUp) def.getWidget(key));
+				cl.setValue(null);
+				cl.clearExceptions();
 			}
+			
 		}
 
 		window.clearStatus();
@@ -586,18 +593,18 @@ public class ReportScreen extends Screen {
 			c.setWidth(p.getWidth() + "px");
 		else
 			c.setWidth("100px");
-		if (p.getDefaultValue() != null) {
-		    if (e > Datetime.DAY)
-		        format = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm");
-		    else
-		        format = DateTimeFormat.getFormat("yyyy-MM-dd");
-		    
-		    try {
-		        c.setFieldValue(Datetime.getInstance(s, e, format.parse(p.getDefaultValue())));
-	        } catch (IllegalArgumentException iargE) {
-	            // we don't set a default if we cannot parse it
-		    }
-		}
+        if (p.getDefaultValue() != null) {
+            if (e > Datetime.DAY)
+                format = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm");
+            else
+                format = DateTimeFormat.getFormat("yyyy-MM-dd");
+            
+            try {
+                c.setFieldValue(Datetime.getInstance(s, e, format.parse(p.getDefaultValue())));
+            } catch (IllegalArgumentException iargE) {
+                // we don't set a default if we cannot parse it
+            }
+        }
 		return c;
 	}
 
