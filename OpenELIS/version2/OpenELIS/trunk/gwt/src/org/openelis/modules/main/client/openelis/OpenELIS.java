@@ -67,6 +67,7 @@ import org.openelis.modules.report.client.SampleLoginLabelReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelAdditionalReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.modules.report.client.VerificationReportScreen;
+import org.openelis.modules.report.client.SampleInhouseReportScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.section.client.SectionScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
@@ -1125,6 +1126,26 @@ public class OpenELIS extends Screen {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new VerificationReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addClickHandler("sampleInhouseReport", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new SampleInhouseReportScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
