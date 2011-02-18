@@ -26,94 +26,102 @@ WHERE
 	<field name="location_address_id" class="java.lang.Integer"/>
 	<field name="organization_id" class="java.lang.Integer"/>
 	<detail>
-		<band height="72" splitType="Stretch">
+		<band height="60" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="24" width="100" height="12"/>
+				<reportElement x="0" y="12" width="100" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
-				<text><![CDATA[Collection Site:]]></text>
+				<text><![CDATA[Description:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="105" y="12" width="250" height="12"/>
 				<textElement>
 					<font size="10"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="397" y="36" width="100" height="12"/>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
-				</textElement>
-				<text><![CDATA[Project:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="0" y="0" width="100" height="12"/>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
-				</textElement>
-				<text><![CDATA[Description:]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="397" y="12" width="100" height="12"/>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
-				</textElement>
-				<text><![CDATA[Phone:]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="105" y="0" width="250" height="12"/>
-				<textElement>
-					<font size="10"/>
-				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{description}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="397" y="12" width="100" height="12"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Hazardous:]]></text>
+			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="105" y="24" width="250" height="12"/>
-				<textElement>
-					<font size="10"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
-			</textField>
-			<textField isBlankWhenNull="true">
-				<reportElement x="502" y="12" width="90" height="12"/>
-				<textElement>
-					<font size="10"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector_phone}]]></textFieldExpression>
+				<reportElement x="502" y="12" width="19" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{is_hazardous}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="0" y="12" width="100" height="12"/>
+				<reportElement x="0" y="24" width="100" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Collector:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="502" y="0" width="19" height="12"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{is_hazardous}]]></textFieldExpression>
+				<reportElement x="105" y="24" width="250" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="397" y="0" width="100" height="12"/>
-				<textElement textAlignment="Right"/>
-				<text><![CDATA[Hazardous:]]></text>
-			</staticText>
-			<staticText>
 				<reportElement x="397" y="24" width="100" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Phone:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="502" y="24" width="250" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector_phone}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="36" width="100" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Collection Site:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="105" y="36" width="250" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="397" y="36" width="100" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Priority:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="502" y="24" width="32" height="12"/>
+				<reportElement x="502" y="36" width="32" height="12"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{priority}]]></textFieldExpression>
 			</textField>
+			<staticText>
+				<reportElement x="397" y="48" width="100" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Project:]]></text>
+			</staticText>
 			<subreport>
-				<reportElement key="locationAddress" x="66" y="36" width="355" height="0"/>
+				<reportElement key="project" positionType="Float" x="502" y="48" width="250" height="12"/>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"project.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement key="locationAddress" x="0" y="48" width="355" height="0"/>
 				<subreportParameter name="ADDRESS_ID">
 					<subreportParameterExpression><![CDATA[$F{location_address_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -126,16 +134,10 @@ WHERE
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"address.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="24">
 			<subreport>
-				<reportElement key="project" positionType="Float" x="502" y="36" width="250" height="12"/>
-				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
-				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"project.jasper"]]></subreportExpression>
-			</subreport>
-			<subreport>
-				<reportElement key="reportToOrganization" positionType="Float" x="0" y="60" width="355" height="12">
+				<reportElement key="reportToOrganization" x="0" y="12" width="355" height="12">
 					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -148,7 +150,7 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"reportToOrganization.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="billToOrganization" positionType="Float" x="397" y="60" width="355" height="12"/>
+				<reportElement key="billToOrganization" x="397" y="12" width="355" height="12"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>

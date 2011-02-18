@@ -61,7 +61,7 @@ ORDER BY si.item_sequence]]>
 				<text><![CDATA[Source:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="sourceOfSample" x="375" y="36" width="180" height="12"/>
+				<reportElement key="sourceOfSample" x="375" y="36" width="377" height="12"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_of_sample}]]></textFieldExpression>
 			</textField>
@@ -111,7 +111,7 @@ ORDER BY si.item_sequence]]>
 				<text><![CDATA[Unit:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="unit" x="375" y="72" width="120" height="12"/>
+				<reportElement key="unit" x="375" y="72" width="377" height="12"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit}]]></textFieldExpression>
 			</textField>

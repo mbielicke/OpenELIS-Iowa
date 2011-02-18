@@ -136,7 +136,7 @@ ORDER BY
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="96" splitType="Stretch">
+		<band height="72" splitType="Stretch">
 			<rectangle>
 				<reportElement x="0" y="0" width="752" height="24" backcolor="#C0C0C0"/>
 				<graphicElement>
@@ -253,7 +253,7 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{client_reference}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement key="sampleEnvironmental" x="0" y="36" width="752" height="12">
+				<reportElement key="sampleEnvironmental" x="0" y="24" width="752" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["E".equals($F{domain})]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -266,7 +266,7 @@ ORDER BY
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"sampleEnvironmental.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="samplePrivateWell" x="0" y="36" width="752" height="12">
+				<reportElement key="samplePrivateWell" x="0" y="24" width="752" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["W".equals($F{domain})]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -279,14 +279,14 @@ ORDER BY
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"samplePrivateWell.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="sampleQuickEntry" x="0" y="36" width="752" height="12">
+				<reportElement key="sampleQuickEntry" x="0" y="24" width="752" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["Q".equals($F{domain})]]></printWhenExpression>
 				</reportElement>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"sampleQuickEntry.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="secondaryReportToOrganizations" positionType="Float" x="0" y="48" width="752" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement key="secondaryReportToOrganizations" positionType="Float" x="0" y="36" width="752" height="0" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -296,19 +296,23 @@ ORDER BY
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"secondaryReportToOrganizations.jasper"]]></subreportExpression>
 			</subreport>
+			<staticText>
+				<reportElement key="sampleQaevent.label" positionType="Float" x="0" y="48" width="50" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font size="10" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[QA Events:]]></text>
+			</staticText>
 			<subreport>
-				<reportElement key="sampleQaeventNote" positionType="Float" x="0" y="60" width="752" height="12" isRemoveLineWhenBlank="true"/>
-				<subreportParameter name="SUBREPORT_DIR">
-					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
+				<reportElement key="sampleQaevent" positionType="Float" x="50" y="48" width="702" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
-				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"sampleQaeventNote.jasper"]]></subreportExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"sampleQaevent.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="auxData" positionType="Float" x="0" y="72" width="752" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement key="auxData" positionType="Float" x="0" y="60" width="752" height="0" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="REFERENCE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -319,7 +323,7 @@ ORDER BY
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"auxData.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="sampleItems" positionType="Float" x="0" y="84" width="752" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement key="sampleItems" positionType="Float" x="0" y="61" width="752" height="0" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>

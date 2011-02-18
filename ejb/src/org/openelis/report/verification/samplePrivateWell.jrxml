@@ -27,37 +27,37 @@ WHERE
 	<field name="collector" class="java.lang.String"/>
 	<field name="well_number" class="java.lang.Integer"/>
 	<detail>
-		<band height="72" splitType="Stretch">
+		<band height="84" splitType="Stretch">
 			<staticText>
-				<reportElement key="reportToAttention.label" x="0" y="0" width="100" height="12" forecolor="#404040"/>
+				<reportElement key="reportToAttention.label" x="0" y="12" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Attention:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="reportToAttention" x="105" y="0" width="250" height="12"/>
+				<reportElement key="reportToAttention" x="105" y="12" width="250" height="12"/>
 				<textElement>
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{report_to_attention}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="location.label" x="397" y="0" width="100" height="12" forecolor="#404040"/>
+				<reportElement key="location.label" x="397" y="12" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Location:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="location" x="502" y="0" width="250" height="12"/>
+				<reportElement key="location" x="502" y="12" width="250" height="12"/>
 				<textElement>
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement key="reportToOrganization" x="0" y="12" width="355" height="12">
+				<reportElement key="reportToOrganization" x="0" y="24" width="355" height="12">
 					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -70,7 +70,7 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"reportToOrganization.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement key="reportToName.label" x="0" y="12" width="100" height="12" forecolor="#404040">
+				<reportElement key="reportToName.label" x="0" y="24" width="100" height="12" forecolor="#404040">
 					<printWhenExpression><![CDATA[$F{organization_id} == null]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right">
@@ -79,7 +79,7 @@ WHERE
 				<text><![CDATA[Report To:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="reportToName" x="105" y="12" width="250" height="12">
+				<reportElement key="reportToName" x="105" y="24" width="250" height="12">
 					<printWhenExpression><![CDATA[$F{organization_id} == null]]></printWhenExpression>
 				</reportElement>
 				<textElement>
@@ -88,7 +88,7 @@ WHERE
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{report_to_name}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement key="locationAddress" x="397" y="12" width="355" height="0"/>
+				<reportElement key="locationAddress" x="397" y="24" width="355" height="0"/>
 				<subreportParameter name="ADDRESS_ID">
 					<subreportParameterExpression><![CDATA[$F{location_address_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -102,7 +102,7 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"address.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="reportToAddress" x="0" y="24" width="355" height="0">
+				<reportElement key="reportToAddress" x="0" y="36" width="355" height="0">
 					<printWhenExpression><![CDATA[$F{organization_id} == null]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="ADDRESS_ID">
@@ -112,7 +112,7 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"address.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement key="billToOrganization" positionType="Float" x="0" y="36" width="355" height="12"/>
+				<reportElement key="billToOrganization" positionType="Float" x="0" y="48" width="355" height="12"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -123,56 +123,56 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"billToOrganization.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement key="owner.label" positionType="Float" x="397" y="24" width="100" height="12" forecolor="#404040"/>
+				<reportElement key="owner.label" positionType="Float" x="397" y="36" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Owner:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="owner" positionType="Float" x="502" y="24" width="250" height="12"/>
+				<reportElement key="owner" positionType="Float" x="502" y="36" width="250" height="12"/>
 				<textElement>
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{owner}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="collector.label" positionType="Float" x="397" y="36" width="100" height="12" forecolor="#404040"/>
+				<reportElement key="collector.label" positionType="Float" x="397" y="48" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Collector:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="collector" positionType="Float" x="502" y="36" width="250" height="12"/>
+				<reportElement key="collector" positionType="Float" x="502" y="48" width="250" height="12"/>
 				<textElement>
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="wellNumber.label" positionType="Float" x="397" y="48" width="100" height="12" forecolor="#404040"/>
+				<reportElement key="wellNumber.label" positionType="Float" x="397" y="60" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Well #:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="wellNumber" positionType="Float" x="502" y="48" width="55" height="12"/>
+				<reportElement key="wellNumber" positionType="Float" x="502" y="60" width="250" height="12"/>
 				<textElement>
 					<font size="10"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{well_number}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="projects.label" positionType="Float" x="397" y="60" width="100" height="12" forecolor="#404040"/>
+				<reportElement key="projects.label" positionType="Float" x="397" y="72" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Project(s):]]></text>
 			</staticText>
 			<subreport>
-				<reportElement key="project" positionType="Float" x="502" y="60" width="250" height="12"/>
+				<reportElement key="project" positionType="Float" x="502" y="72" width="250" height="12"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
 				</subreportParameter>

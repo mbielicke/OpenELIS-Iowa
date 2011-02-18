@@ -161,14 +161,14 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         position = data.getPosition();
         typeId = data.getTypeId();
         
-        if (DataBaseUtil.isEmpty(name)) {
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             TestMeta.getWorksheetItemQcName()));
-        }
         if (DataBaseUtil.isEmpty(data.getTypeId())) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getWorksheetItemTypeId()));
             
+        }
+        if (DataBaseUtil.isDifferent(typeDupl, typeId) && DataBaseUtil.isEmpty(name)) {
+            list.add(new FieldErrorException("fieldRequiredException",
+                                             TestMeta.getWorksheetItemQcName()));
         }
         
         if (position == null) {
