@@ -146,7 +146,7 @@ WHERE
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
-				<text><![CDATA[Reference]]></text>
+				<text><![CDATA[Client Reference]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="284" y="84" width="140" height="12"/>
