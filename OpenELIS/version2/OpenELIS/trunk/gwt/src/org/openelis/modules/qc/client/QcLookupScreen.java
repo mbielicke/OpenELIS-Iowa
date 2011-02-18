@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import org.openelis.domain.QcDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -45,6 +47,9 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.meta.QcMeta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -138,6 +143,14 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
 
         });
 
+        qcTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                // this table cannot be edited
+                event.cancel();
+                
+            }
+        });
+
         okButton = (AppButton)def.getWidget("ok");
         addScreenHandler(okButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -214,19 +227,35 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
     }
 
     public void executeQuery(String pattern) {
-        QueryFieldUtil parser;
-       
+        ArrayList<QueryData> fields;
+        Query                query;
+        QueryData            field;
+
         if (DataBaseUtil.isEmpty(pattern))
             return;              
 
         findTextBox.setText(pattern);
         
-        window.setBusy(consts.get("querying"));
+        fields = new ArrayList<QueryData>();
         
-        parser = new QueryFieldUtil();
-        parser.parse(pattern);
+        field = new QueryData();
+        field.key = QcMeta.getName();
+        field.type = QueryData.Type.STRING;
+        field.query = pattern;
+        fields.add(field);
+        
+        field = new QueryData();
+        field.key = QcMeta.getIsActive();
+        field.type = QueryData.Type.STRING;
+        field.query = "Y";
+        fields.add(field);
 
-        service.callList("fetchByName", parser.getParameter().get(0), new AsyncCallback<ArrayList<QcDO>>() {
+        query = new Query();
+        query.setFields(fields);
+        
+        window.setBusy(consts.get("querying"));
+
+        service.callList("fetchActiveByName", query, new AsyncCallback<ArrayList<QcDO>>() {
             public void onSuccess(ArrayList<QcDO> result) {
                 setQueryResult(result);
             }

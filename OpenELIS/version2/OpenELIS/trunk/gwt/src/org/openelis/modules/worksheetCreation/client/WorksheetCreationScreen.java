@@ -96,11 +96,10 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCreationScreen extends Screen {
 
-    private boolean                               hasErrors, isTemplateLoaded,
-                                                  isSaved, wasExitCalled;
+    private boolean                               isTemplateLoaded, isSaved, wasExitCalled;
     private int                                   tempId, qcStartIndex;
     private Integer                               formatId, formatTotal,
-                                                  qcDup, statusWorking, typeFixed,
+                                                  statusWorking, typeFixed, typeDup,
                                                   typeRand, typeLastWell, typeLastRun,
                                                   typeLastBoth;
     private String                                typeRandString, typeLastWellString,
@@ -155,7 +154,6 @@ public class WorksheetCreationScreen extends Screen {
      */
     private void postConstructor() {
         analysisItems      = new ArrayList<TableDataRow>();
-        hasErrors          = false;
         isSaved            = true;
         isTemplateLoaded   = false;
         manager            = WorksheetManager.getInstance();
@@ -419,9 +417,9 @@ public class WorksheetCreationScreen extends Screen {
 
         try {
             formatTotal = DictionaryCache.getIdFromSystemName("wformat_total");
-            qcDup = DictionaryCache.getIdFromSystemName("qc_duplicate");
             statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
             typeFixed = DictionaryCache.getIdFromSystemName("pos_fixed");
+            typeDup = DictionaryCache.getIdFromSystemName("pos_duplicate");
             typeRand = DictionaryCache.getIdFromSystemName("pos_random");
             typeLastWell = DictionaryCache.getIdFromSystemName("pos_last_of_well");
             typeLastRun = DictionaryCache.getIdFromSystemName("pos_last_of_run");
@@ -557,11 +555,6 @@ public class WorksheetCreationScreen extends Screen {
         
         if (worksheetItemTable.numRows() == 0) {
             Window.alert(consts.get("worksheetNotSaveEmpty"));
-            return;
-        }
-        
-        if (hasErrors) {
-            Window.alert("Please fix errors on worksheet before saving");
             return;
         }
         
@@ -743,29 +736,33 @@ public class WorksheetCreationScreen extends Screen {
             for (; i < twManager.itemCount(); i++) {
                 twiDO = twManager.getItemAt(i);
                 try {
-                    list = qcService.callList("fetchActiveByName", twiDO.getQcName());
-                    if (list.size() == 0) {
-                        if (typeRand.equals(twiDO.getTypeId())) {
-                            qcErrors.put(-1, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeRandString));
-                        } else if (typeLastRun.equals(twiDO.getTypeId())) {
-                            qcErrors.put(-2, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastRunString));
-                        } else if (typeLastWell.equals(twiDO.getTypeId())) {
-                            qcErrors.put(-3, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastWellString));
-                        } else if (typeLastBoth.equals(twiDO.getTypeId())) {
-                            qcErrors.put(-4, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastBothString));
+                    if (!typeDup.equals(twiDO.getTypeId())) {
+                        list = qcService.callList("fetchActiveByName", twiDO.getQcName());
+                        if (list.size() == 0) {
+                            if (typeRand.equals(twiDO.getTypeId())) {
+                                qcErrors.put(-1, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeRandString));
+                            } else if (typeLastRun.equals(twiDO.getTypeId())) {
+                                qcErrors.put(-2, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastRunString));
+                            } else if (typeLastWell.equals(twiDO.getTypeId())) {
+                                qcErrors.put(-3, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastWellString));
+                            } else if (typeLastBoth.equals(twiDO.getTypeId())) {
+                                qcErrors.put(-4, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastBothString));
+                            } else {
+                                for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getBatchCapacity())
+                                    qcErrors.put(j, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), String.valueOf(j)));
+                            }
+                            continue;
+                        } else if (list.size() > 1) {
+                            Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), String.valueOf(i+1)).getMessage());
+                            openQCLookup(twiDO.getQcName(), list);
+                            qcStartIndex = i + 1;
+                            break;
                         } else {
-                            for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getBatchCapacity())
-                                qcErrors.put(j, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), String.valueOf(j)));
+                            qcDO = list.get(0);
                         }
-                        qcDO = new QcDO();
-                        qcDO.setName(twiDO.getQcName());
-                    } else if (list.size() > 1) {
-                        Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), String.valueOf(i+1)).getMessage());
-                        openQCLookup(twiDO.getQcName(), list);
-                        qcStartIndex = i + 1;
-                        break;
                     } else {
-                        qcDO = list.get(0);
+                        qcDO = new QcDO();
+                        qcDO.setName("Duplicate");
                     }
 
                     qcRow = new TableDataRow(11);
@@ -825,7 +822,7 @@ public class WorksheetCreationScreen extends Screen {
             
             qcRow.key = getNextTempId();                           // fake worksheet analysis id
             
-            if (typeFixed.equals(twiDO.getTypeId()))
+            if (typeFixed.equals(twiDO.getTypeId()) || typeDup.equals(twiDO.getTypeId())) {
                 for (j = 0; j < numBatches; j++) {
                     posNum = j * testWorksheetDO.getBatchCapacity() + twiDO.getPosition() - 1;
                     
@@ -838,14 +835,15 @@ public class WorksheetCreationScreen extends Screen {
                         qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
                     qcItems[posNum] = qcRow;
                 }
-            else if (typeRand.equals(twiDO.getTypeId()))
+            } else if (typeRand.equals(twiDO.getTypeId())) {
                 qcRandList.add(qcRow);
-            else if (typeLastWell.equals(twiDO.getTypeId()))
+            } else if (typeLastWell.equals(twiDO.getTypeId())) {
                 qcLastWellList.add(qcRow);
-            else if (typeLastRun.equals(twiDO.getTypeId()))
+            } else if (typeLastRun.equals(twiDO.getTypeId())) {
                 qcLastRunList.add(qcRow);
-            else if (typeLastBoth.equals(twiDO.getTypeId()))
+            } else if (typeLastBoth.equals(twiDO.getTypeId())) {
                 qcLastBothList.add(qcRow);
+            }
         }
 
         //
@@ -878,7 +876,7 @@ public class WorksheetCreationScreen extends Screen {
                 if (qcItems[posNum] == null) {
                     if (posNum + 1 < testWorksheetDO.getTotalCapacity()) {
                         qcRow1 = qcItems[posNum+1];
-                        if (qcRow1 != null && qcDup.equals(((QcDO)qcRow1.data).getTypeId()))
+                        if (qcRow1 != null && typeDup.equals(((TestWorksheetItemDO)((ArrayList<Object>)qcRow1.data).get(0)).getTypeId()))
                             continue;
                     }
                     qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
@@ -895,7 +893,8 @@ public class WorksheetCreationScreen extends Screen {
         ArrayList<TableDataRow> items, lastOf;
         Exception               tempE;
         String                  message;
-        TableDataRow            row;
+        TableDataRow            row, dupedRow;
+        TestWorksheetItemDO     twiDO;
         
         //
         // insert end of run QCs into lastOf list
@@ -917,13 +916,33 @@ public class WorksheetCreationScreen extends Screen {
                     break;
 
                 row = analysisItems.get(j);
-                row.cells.get(0).value = getPositionNumber(i);
-                items.add(analysisItems.get(j));
                 j++;
             } else {
-                row.cells.get(0).value = getPositionNumber(i);
-                items.add(row);
+                twiDO = (TestWorksheetItemDO) ((ArrayList<Object>)row.data).get(0);
+                if (typeDup.equals(twiDO.getTypeId())) {
+                    //
+                    // copy previous analysis row and set it as the qc link for
+                    // this row
+                    //
+                    dupedRow = analysisItems.get(j-1); 
+                    row = new TableDataRow(11);
+                    row.key = getNextTempId();                              // fake worksheet analysis id
+                    row.cells.get(1).value = dupedRow.cells.get(1).value;   // accession #
+                    row.cells.get(2).value = "Duplicate of "+
+                                             dupedRow.cells.get(1).value;   // description
+                    row.cells.get(3).value = dupedRow.key;                  // qc link
+                    row.cells.get(4).value = dupedRow.cells.get(4).value;   // test name
+                    row.cells.get(5).value = dupedRow.cells.get(5).value;   // method name
+                    row.cells.get(6).value = dupedRow.cells.get(6).value;   // status
+                    row.cells.get(7).value = dupedRow.cells.get(7).value;   // collection date
+                    row.cells.get(8).value = dupedRow.cells.get(8).value;   // received date and time
+                    row.cells.get(9).value = dupedRow.cells.get(9).value;   // due days
+                    row.cells.get(10).value = dupedRow.cells.get(10).value;  // expire date and time
+                    row.data = dupedRow.data;
+                }
             }
+            row.cells.get(0).value = getPositionNumber(i);
+            items.add(row);
         }
         
         //
@@ -965,7 +984,6 @@ public class WorksheetCreationScreen extends Screen {
         worksheetItemTable.load(items);
         
         clearErrors();
-        hasErrors = false;
         if (!qcErrors.isEmpty()) {
             message = "";
             for (i = -4; i < items.size(); i++) {
@@ -975,11 +993,10 @@ public class WorksheetCreationScreen extends Screen {
                 if (message.length() > 0)
                     message += "\n\n";
                 message += tempE.getMessage();
-                hasErrors = true;
             }
 
-            if (hasErrors) {
-                window.setError(message);
+            if (message.length() > 0) {
+//                window.setError(message);
                 Window.alert(message);
             }
         }
