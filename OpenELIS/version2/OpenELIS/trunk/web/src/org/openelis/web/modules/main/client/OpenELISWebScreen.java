@@ -33,9 +33,11 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.IconContainer;
 import org.openelis.gwt.widget.Label;
-import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.web.LinkButton;
+import org.openelis.gwt.widget.web.WebWindow;
+import org.openelis.modules.report.client.FinalReportScreen;
+import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
-import org.openelis.web.modules.links.client.LinksScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -82,7 +84,7 @@ public class OpenELISWebScreen extends Screen {
 	/**
 	 * Static window used to display status messages
 	 */
-	public static ScreenWindow window;
+	public static WebWindow window;
 	
 	/**
 	 * No-arg Constructor
@@ -96,7 +98,7 @@ public class OpenELISWebScreen extends Screen {
         rpc = service.call("initialData");
         consts = rpc.appConstants;
         systemUserPermission = rpc.systemUserPermission;
-        window = new ScreenWindow(ScreenWindow.Mode.WEB);
+        window = new WebWindow();
         
 		initialize();
 	}
@@ -113,14 +115,14 @@ public class OpenELISWebScreen extends Screen {
 		title = (Label<String>)def.getWidget("title");
 		homeLink = (IconContainer)def.getWidget("home");
 		
+		content.add(window);
+		
 		homeLink.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
 				gotoScreen("home");
 			}
 		});
-
-		((AbsolutePanel)def.getWidget("links")).add(new LinksScreen());
 	
 		welcome.setText("Welcome "+systemUserPermission.getFirstName());
 		logout.addClickHandler(new ClickHandler() {
@@ -141,8 +143,56 @@ public class OpenELISWebScreen extends Screen {
 			}
 		});
 		
+		setLinks();
+		
 		setScreen(new HomeScreen(),"Home","home");
 		
+	}
+	
+	/**
+	 * This method will set the links available to the user in the right column 
+	 * based on their permissions.
+	 */
+	private void setLinks() {
+		LinkButton finalReport,testReport;
+		AbsolutePanel linksPanel;
+		
+		linksPanel = (AbsolutePanel)def.getWidget("links");
+
+	    finalReport = new LinkButton("","Final Report");
+	    finalReport.setSize("60px", "60px");
+		finalReport.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+
+				try {
+					FinalReportScreen screen =  new FinalReportScreen();
+					screen.setStyleName("WhiteContentPanel");
+					OpenELISWebScreen.setScreen(screen, "Final Report", "finalReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		finalReport.addStyleName("webButton");
+		linksPanel.add(finalReport);
+		
+		testReport = new LinkButton("","Test Report");
+		testReport.setSize("60px", "60px");
+		testReport.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					TestReportScreen screen = new TestReportScreen();
+					screen.setStyleName("WhiteContentPanel");
+					OpenELISWebScreen.setScreen(screen, "Test Report", "testReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		testReport.addStyleName("webButton");
+		linksPanel.add(testReport);		
 	}
 	
 	/**
@@ -153,9 +203,7 @@ public class OpenELISWebScreen extends Screen {
 	 * @param key
 	 */
 	public static void setScreen(Screen screen, String name, String key) {
-		content.clear();
-		content.add(screen);
-		screen.setWindow(window);
+		window.setContent(screen);
 		screen.setWidth("100%");
 		screen.setHeight("100%");
 		History.newItem(key,false);
@@ -165,7 +213,7 @@ public class OpenELISWebScreen extends Screen {
 	}
 	
 	/**
-	 * This method is called statically when a user navigates by using the crumbline or the browser back or forward buttons
+	 * This method is called statically when a user navigates by using the back or forward buttons
 	 * @param key
 	 */
 	public static void gotoScreen(String key) {
@@ -173,8 +221,7 @@ public class OpenELISWebScreen extends Screen {
 		
 		screen = screens.get(key);
 		
-		content.clear();
-		content.add(screen);
+		window.setContent(screen);
 		title.setText(screen.getDefinition().getName());
 		History.newItem(key,false);
 	}
