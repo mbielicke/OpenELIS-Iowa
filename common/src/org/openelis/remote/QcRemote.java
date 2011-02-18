@@ -39,5 +39,7 @@ public interface QcRemote {
 
     public ArrayList<QcDO> fetchActiveByName(String name, int max) throws Exception;
 
+    public ArrayList<QcDO> fetchActiveByName(ArrayList<QueryData> fields) throws Exception;
+
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }
