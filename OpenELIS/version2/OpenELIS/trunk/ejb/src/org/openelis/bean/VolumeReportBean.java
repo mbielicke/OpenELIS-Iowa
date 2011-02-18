@@ -55,15 +55,14 @@ public class VolumeReportBean implements VolumeReportRemote{
     /*
      * Returns the prompt for a single re-print
      */
-    public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<OptionListItem> prn;
+    public ArrayList<Prompt> getPrompts() throws Exception {       
         ArrayList<Prompt> p;
 
         try {
             p = new ArrayList<Prompt>();
 
             p.add(new Prompt("FROM", Prompt.Type.DATETIME).setPrompt("Date From:")
-                                                          .setWidth(200)
+                                                          .setWidth(150)
                                                           .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                           .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                           .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
@@ -72,7 +71,7 @@ public class VolumeReportBean implements VolumeReportRemote{
                                                           .setRequired(true));
 
             p.add(new Prompt("TO", Prompt.Type.DATETIME).setPrompt("Date To:")
-                                                        .setWidth(200)
+                                                        .setWidth(150)
                                                         .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                         .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                         .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
@@ -81,17 +80,11 @@ public class VolumeReportBean implements VolumeReportRemote{
                                                         .setRequired(true));
 
             p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Section Name:")
-                                                          .setWidth(200)
+                                                          .setWidth(150)
                                                           .setOptionList(getSections())
                                                           .setMutiSelect(true));
 
-            prn = PrinterList.getInstance().getListByType("pdf");
-            prn.add(0, new OptionListItem("-view-", "View Spreadsheet"));
-            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
-                                                          .setWidth(200)
-                                                          .setOptionList(prn)
-                                                          .setMutiSelect(false)
-                                                          .setRequired(true));
+            
             return p;
         } catch (Exception e) {
             e.printStackTrace();
@@ -112,7 +105,7 @@ public class VolumeReportBean implements VolumeReportRemote{
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String frDate, tDate, fromDate, toDate, section, loginName, printer, dir, printstat;
+        String frDate, tDate, fromDate, toDate, section, loginName, dir, printstat;
         fromDate = toDate = null;
         /*
          * push status into session so we can query it while the report is
@@ -130,12 +123,10 @@ public class VolumeReportBean implements VolumeReportRemote{
 
         frDate = ReportUtil.getSingleParameter(param, "FROM");
         tDate = ReportUtil.getSingleParameter(param, "TO");
-        section = ReportUtil.getListParameter(param, "SECTION");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        section = ReportUtil.getListParameter(param, "SECTION");        
 
-        if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate) ||
-            DataBaseUtil.isEmpty(printer))
-            throw new InconsistencyException("You must specify From Date, To Date, Status and printer for this report");
+        if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate))
+            throw new InconsistencyException("You must specify From Date and To Date for this report");
 
         if (frDate != null && frDate.length() > 0) {
             fromDate = frDate + ":00";
@@ -182,16 +173,11 @@ public class VolumeReportBean implements VolumeReportRemote{
             jexport.exportReport();
 
             status.setPercentComplete(100);
-
-            if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
-                status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
-            } else {
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
-                      .setStatus(ReportStatus.Status.SAVED);
-            }
+            
+            tempFile = ReportUtil.saveForUpload(tempFile);
+            status.setMessage(tempFile.getName())
+                  .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                  .setStatus(ReportStatus.Status.SAVED);            
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
