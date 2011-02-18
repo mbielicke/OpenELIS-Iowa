@@ -35,7 +35,6 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.QcManagerRemote;
 import org.openelis.remote.QcRemote;
 
@@ -60,6 +59,10 @@ public class QcService {
         return list;
     }
 
+    public ArrayList<QcDO> fetchActiveByName(Query query) throws Exception {
+        return remote().fetchActiveByName(query.getFields());
+    }
+    
     public ArrayList<QcDO> fetchActiveByName(String search) throws Exception {
         ArrayList<QcDO> list;
 
@@ -110,9 +113,5 @@ public class QcService {
 
     private QcManagerRemote remoteManager() {
         return (QcManagerRemote)EJBFactory.lookup("openelis/QcManagerBean/remote");
-    }
-
-    private DictionaryRemote dictRemote() {
-        return (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
     }
 }
