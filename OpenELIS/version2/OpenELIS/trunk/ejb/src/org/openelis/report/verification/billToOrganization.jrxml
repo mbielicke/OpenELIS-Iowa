@@ -30,12 +30,12 @@ WHERE
 				<text><![CDATA[Bill To:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="organizationName" x="105" y="0" width="250" height="12"/>
+				<reportElement key="organizationName" x="105" y="0" width="250" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement key="organizationAddress" x="0" y="12" width="355" height="12"/>
+				<reportElement key="organizationAddress" x="0" y="12" width="355" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="ADDRESS_ID">
 					<subreportParameterExpression><![CDATA[$F{address_id}]]></subreportParameterExpression>
 				</subreportParameter>

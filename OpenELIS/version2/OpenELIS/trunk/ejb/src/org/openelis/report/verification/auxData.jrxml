@@ -22,6 +22,9 @@ WHERE
 	</queryString>
 	<field name="analyte_name" class="java.lang.String"/>
 	<field name="aux_data_value" class="java.lang.String"/>
+	<pageHeader>
+		<band height="12"/>
+	</pageHeader>
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField>

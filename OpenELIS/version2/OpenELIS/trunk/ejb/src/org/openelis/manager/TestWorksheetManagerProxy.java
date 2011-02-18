@@ -392,8 +392,8 @@ public class TestWorksheetManagerProxy {
             }
 
             if (checkPosition) {
-                if (duplicateAfterFixedOrDuplicate(currDO, prevDO)) {
-                    list.add(new TableFieldErrorException("duplPosAfterFixedOrDuplPosException", i,
+                if (duplicateAfterFixed(currDO, prevDO)) {
+                    list.add(new TableFieldErrorException("duplPosAfterFixedPosException", i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                 }
@@ -437,14 +437,12 @@ public class TestWorksheetManagerProxy {
 
     /**
      * This method will return true if the type specified in currDO is duplicate
-     * and if the type specified in prevDO is either fixed or duplicate and,
-     * such that the position specified in prevDO is one less than the position
-     * in currDO. The two integers, fixedId and duplId, are the ids of the
-     * dictionary records that contain the entries for the fixed and duplicate
-     * types respectively
+     * and if the type specified in prevDO is fixed and, such that the position
+     * specified in prevDO is one less than the position in currDO. The two integers, 
+     * typeFixed and typeDupl, are the ids of the dictionary records that contain the 
+     * entries for the fixed and duplicate types respectively
      */
-    private boolean duplicateAfterFixedOrDuplicate(TestWorksheetItemDO currDO,
-                                                   TestWorksheetItemDO prevDO) {
+    private boolean duplicateAfterFixed(TestWorksheetItemDO currDO, TestWorksheetItemDO prevDO) {
         Integer ptId, ctId, ppos, cpos;
 
         if (prevDO == null || currDO == null)
@@ -456,8 +454,7 @@ public class TestWorksheetManagerProxy {
         ppos = prevDO.getPosition();
 
         if (ppos != null && cpos != null && ppos == cpos - 1) {
-            if (DataBaseUtil.isSame(typeDupl, ctId) &&
-                (DataBaseUtil.isSame(typeDupl, ptId) || DataBaseUtil.isSame(typeFixed, ptId)))
+            if (DataBaseUtil.isSame(typeDupl, ctId) && DataBaseUtil.isSame(typeFixed, ptId))
                 return true;
         }
 

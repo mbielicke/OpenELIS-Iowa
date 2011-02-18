@@ -8,16 +8,16 @@
 		<![CDATA[]]>
 	</queryString>
 	<pageHeader>
-		<band height="24">
+		<band height="36">
 			<staticText>
-				<reportElement x="326" y="0" width="100" height="12"/>
+				<reportElement x="276" y="12" width="200" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Quick Entry Domain]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="239" y="12" width="275" height="12"/>
+				<reportElement x="226" y="24" width="300" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10" isBold="false"/>
 				</textElement>

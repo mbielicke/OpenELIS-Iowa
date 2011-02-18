@@ -130,8 +130,12 @@ public class VerificationReportBean implements VerificationReportRemote {
 
         loginName = PermissionInterceptor.getSystemUserName();
         
-        beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED")+":00";
-        endEntered = ReportUtil.getSingleParameter(param, "END_ENTERED")+":59";
+        beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
+        if (beginEntered != null && beginEntered.length() > 0)
+            beginEntered += ":00";
+        endEntered = ReportUtil.getSingleParameter(param, "END_ENTERED");
+        if (endEntered != null && endEntered.length() > 0)
+            endEntered += ":59";
         userWhere = ReportUtil.getListParameter(param, "USER_LIST");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 

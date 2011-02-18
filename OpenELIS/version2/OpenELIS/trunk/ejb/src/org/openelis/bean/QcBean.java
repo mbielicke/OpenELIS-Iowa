@@ -126,6 +126,34 @@ public class QcBean implements QcRemote, QcLocal {
     }
 
     @SuppressWarnings("unchecked")
+    public ArrayList<QcDO> fetchActiveByName(ArrayList<QueryData> fields) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.QcDO(" + 
+                          QcMeta.getId() + "," + QcMeta.getName() + "," + QcMeta.getTypeId() + "," +
+                          QcMeta.getInventoryItemId() + "," + QcMeta.getSource() + "," +
+                          QcMeta.getLotNumber() + "," + QcMeta.getPreparedDate() + "," +
+                          QcMeta.getPreparedVolume() + "," + QcMeta.getPreparedUnitId() + "," +
+                          QcMeta.getPreparedById() + "," + QcMeta.getUsableDate() + "," +
+                          QcMeta.getExpireDate() + "," + QcMeta.getIsActive() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(QcMeta.getName() + "," + QcMeta.getLotNumber());
+
+        query = manager.createQuery(builder.getEJBQL());
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
@@ -152,7 +180,6 @@ public class QcBean implements QcRemote, QcLocal {
 
         return (ArrayList<IdNameVO>)list;
     }
-
 
     public QcViewDO add(QcViewDO data) throws Exception {
         Qc entity;
