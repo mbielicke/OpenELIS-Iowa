@@ -25,8 +25,11 @@
  */
 package org.openelis.local;
 
+import java.util.ArrayList;
+
 import javax.ejb.Local;
 
+import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
 
 @Local
@@ -39,4 +42,6 @@ public interface ProjectLocal {
     public ProjectViewDO update(ProjectViewDO data) throws Exception;
 
     public void validate(ProjectViewDO data) throws Exception;
+    
+    public ArrayList<ProjectDO> fetchActiveByName(String name, int maxResults) throws Exception;
 }
