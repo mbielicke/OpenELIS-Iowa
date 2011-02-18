@@ -47,6 +47,8 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Field;
 import org.openelis.gwt.widget.IntegerField;
 import org.openelis.gwt.widget.Label;
+import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.StringField;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.TextBox.Case;
@@ -82,6 +84,8 @@ public class ReportScreen extends Screen {
 			promptsInterface;
 
 	protected static String defaultPrinter, defaultBarcodePrinter;
+	
+	protected ScreenWindowInt windowInt;
 
 	protected ReportScreen() throws Exception {
 		name = null;
@@ -99,7 +103,7 @@ public class ReportScreen extends Screen {
 
 	protected void initialize() {
 		getReportParameters();
-		window.setName(name);
+		windowInt.setName(name);
 	}
 
 	/**
@@ -151,18 +155,18 @@ public class ReportScreen extends Screen {
 	 * Gets the prompts from the report
 	 */
 	protected void getReportParameters() {
-		window.setBusy(consts.get("gettingReportParam"));
+		windowInt.setBusy(consts.get("gettingReportParam"));
 
 		service.callList(promptsInterface,
 				new AsyncCallback<ArrayList<Prompt>>() {
 					public void onSuccess(ArrayList<Prompt> result) {
 						reportParameters = result;
 						createReportWindow();
-						window.setDone(consts.get("loadCompleteMessage"));
+						windowInt.setDone(consts.get("loadCompleteMessage"));
 					}
 
 					public void onFailure(Throwable caught) {
-						window.close();
+						windowInt.close();
 						Window.alert("Failed to get parameters for " + name);
 					}
 				});
@@ -286,13 +290,13 @@ public class ReportScreen extends Screen {
 		Query query;
 
 		if (!validate()) {
-			window.setError(consts.get("correctErrors"));
+			windowInt.setError(consts.get("correctErrors"));
 			return;
 		}
 
 		query = new Query();
 		query.setFields(getQueryFields());
-		window.setBusy(consts.get("genReportMessage"));
+		windowInt.setBusy(consts.get("genReportMessage"));
 
 		service.call(runReportInterface, query,
 				new AsyncCallback<ReportStatus>() {
@@ -305,15 +309,15 @@ public class ReportScreen extends Screen {
 								url += "&attachment=" + attachmentName;
 
 							Window.open(URL.encode(url), name, null);
-							window.setDone("Generated file "
+							windowInt.setDone("Generated file "
 									+ status.getMessage());
 						} else {
-							window.setDone(status.getMessage());
+							windowInt.setDone(status.getMessage());
 						}
 					}
 
 					public void onFailure(Throwable caught) {
-						window.setError("Failed");
+						windowInt.setError("Failed");
 						Window.alert(caught.getMessage());
 					}
 				});
@@ -351,7 +355,7 @@ public class ReportScreen extends Screen {
 			
 		}
 
-		window.clearStatus();
+		windowInt.clearStatus();
 	}
 
 	/**
@@ -661,5 +665,16 @@ public class ReportScreen extends Screen {
 		}
 
 		return 0;
+	}
+	
+	@Override
+	public void setWindow(ScreenWindow window) {
+		super.setWindow(window);
+		windowInt = window;
+	}
+	
+	@Override
+	public void setWindowInt(ScreenWindowInt window) {
+		windowInt = window;
 	}
 }
