@@ -83,7 +83,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
             p = new ArrayList<Prompt>();
 
             p.add(new Prompt("FROM", Prompt.Type.DATETIME).setPrompt("Date From:")
-                                                          .setWidth(200)
+                                                          .setWidth(150)
                                                           .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                           .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                           .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
@@ -92,7 +92,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
                                                           .setRequired(true));
 
             p.add(new Prompt("TO", Prompt.Type.DATETIME).setPrompt("Date To:")
-                                                        .setWidth(200)
+                                                        .setWidth(150)
                                                         .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                         .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                         .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
