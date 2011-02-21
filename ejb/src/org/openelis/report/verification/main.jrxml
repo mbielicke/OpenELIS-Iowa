@@ -297,8 +297,8 @@ ORDER BY
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"secondaryReportToOrganizations.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement key="sampleQaevent.label" positionType="Float" x="0" y="48" width="50" height="12" isRemoveLineWhenBlank="true"/>
-				<textElement>
+				<reportElement key="sampleQaevent.label" positionType="Float" x="-10" y="48" width="60" height="12" isRemoveLineWhenBlank="true" forecolor="#404040"/>
+				<textElement textAlignment="Right">
 					<font size="10" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[QA Events:]]></text>
