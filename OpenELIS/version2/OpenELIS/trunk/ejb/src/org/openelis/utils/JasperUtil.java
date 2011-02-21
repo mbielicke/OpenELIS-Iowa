@@ -25,19 +25,12 @@
  */
 package org.openelis.utils;
 
-//import java.sql.Date;
 import java.sql.Timestamp;
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class JasperUtil {
-	
-	public enum Type{DAY,HOUR};
+
     /**
      * Concats two strings together. Null parameters are ignored.
      */
@@ -70,7 +63,7 @@ public class JasperUtil {
         }
         return buf.toString();
     }
-    
+
     /**
      * Concats a list of objects together using delimiter.
      */
@@ -78,90 +71,46 @@ public class JasperUtil {
         StringBuffer buf;
 
         buf = new StringBuffer();
-    	for (Object i : list) {
-    		if (buf.length() > 0)
-    			buf.append(delimiter);
-    		buf.append(i.toString().trim());
-    	}
-    	return buf.toString();
-    }   
- 
+        for (Object i : list) {
+            if (buf.length() > 0)
+                buf.append(delimiter);
+            buf.append(i.toString().trim());
+        }
+        return buf.toString();
+    }
+
     /**
-     * Returns a new String representation of a Timestamp object with the specified Timestamp field incremented
-     * (+amount) or decremented (-amount) by "amount" which is of the type Type. This implementation uses
-     * Calendar.add() method to provide this functionality.
-     * E.g.: changeDate("2009-02-12 08:20", 2, JasperUtil.TYPE.DAY) would yield "2009-02-14 08:20"
-     *       changeDate("2009-02-12 08:20", 2, JasperUtil.TYPE.HOUR) would yield "2009-02-12 10:20"
-     **/  
-     public static String changeDate(Timestamp date, int amount, Type type ) {
-        Calendar c;   
-        long time;
-        String retDate;
-        DateFormat formatter;  
-        
-        if(date == null)
-        	return null;
-        
-        c = Calendar.getInstance();
-        time = date.getTime();
-        retDate = null;
-    	formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-    	c.setTimeInMillis(time); 
-    	
-        if(amount == 0){
-        	formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        	return formatter.format(c.getTime());
-        }     
-    	
-        switch(type){
-        case HOUR:         	    	       
-        	c.add(Calendar.HOUR, amount);
-        	retDate = formatter.format(c.getTime());
-        	break;
-        case DAY: 
-        	c.add(Calendar.DAY_OF_MONTH, amount);
-        	retDate = formatter.format(c.getTime());
-        	break;        
-        }     	
-    	return retDate;
-    } 
-    
-    /**
-     * Concats date with time to call the overloaded changeDate method: changeDate(Timestamp date, int amount, Type type )   
+     * Increments/decrements the specified timestamp by the amount and unit. The unit
+     * is a Calendar.HOUR, Calendar.DAY or any other Calendar field.
      */
-    public static String changeDate(Timestamp date, Timestamp time, int amount, Type type) {             
-    	String tempDate, tempTime, retDate;
-    	Timestamp t;
-    	DateFormat formatter;
-    	Date dt;
-    	long ms;
-    	
-    	dt = null;
-    	
-    	if(date == null)
-        	return null;
-    	
-    	tempDate = date.toString().trim().substring(0, 10);
-    	
-    	if(time == null){
-    		retDate =  tempDate + " 00:00";    		
-    	}
-    	else{
-    		formatter = new SimpleDateFormat("HH:mm");    		
-    		tempTime = time.toString().substring(11, 16);    		
-    		retDate = concatWithSeparator(tempDate, " ",tempTime); 
-    	}
-    	
-    	formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");    	
-    	try {
-			dt = (Date)formatter.parse(retDate);
-		} catch (ParseException e) {			
-			e.printStackTrace();
-		}		
-		ms = dt.getTime();
-		t = new Timestamp(ms);		
-		retDate=changeDate(t, amount, type);	
-		
-		return retDate;    	
+    public static Timestamp changeDate(Timestamp date, int amount, int unit) {
+        Calendar c;
+
+        if (date == null || amount == 0)
+            return date;
+
+        c = Calendar.getInstance();
+        c.setTimeInMillis(date.getTime());
+        c.add(unit, amount);
+
+        return new Timestamp(c.getTimeInMillis());
+    }
+
+    /**
+     * Concats date with time to call the overloaded changeDate method:
+     */
+    public static Timestamp concatDateAndTime(Timestamp date, Timestamp time) {
+        Calendar c;
+
+        if (date == null || time == null)
+            return date;
+
+        c = Calendar.getInstance();
+        c.setTimeInMillis(date.getTime());
+        c.set(Calendar.HOUR_OF_DAY, time.getHours());
+        c.set(Calendar.MINUTE, time.getMinutes());
+        c.set(Calendar.SECOND, time.getSeconds());
+        
+        return new Timestamp(c.getTimeInMillis());
     }
 }
