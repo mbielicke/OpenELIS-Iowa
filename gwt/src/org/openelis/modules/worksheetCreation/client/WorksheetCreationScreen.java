@@ -926,18 +926,18 @@ public class WorksheetCreationScreen extends Screen {
                     //
                     dupedRow = analysisItems.get(j-1); 
                     row = new TableDataRow(11);
-                    row.key = getNextTempId();                              // fake worksheet analysis id
-                    row.cells.get(1).value = dupedRow.cells.get(1).value;   // accession #
+                    row.key = getNextTempId();                                  // fake worksheet analysis id
+                    row.cells.get(1).value = "D"+dupedRow.cells.get(1).value;   // accession #
                     row.cells.get(2).value = "Duplicate of "+
-                                             dupedRow.cells.get(1).value;   // description
-                    row.cells.get(3).value = dupedRow.key;                  // qc link
-                    row.cells.get(4).value = dupedRow.cells.get(4).value;   // test name
-                    row.cells.get(5).value = dupedRow.cells.get(5).value;   // method name
-                    row.cells.get(6).value = dupedRow.cells.get(6).value;   // status
-                    row.cells.get(7).value = dupedRow.cells.get(7).value;   // collection date
-                    row.cells.get(8).value = dupedRow.cells.get(8).value;   // received date and time
-                    row.cells.get(9).value = dupedRow.cells.get(9).value;   // due days
-                    row.cells.get(10).value = dupedRow.cells.get(10).value;  // expire date and time
+                                             dupedRow.cells.get(1).value;       // description
+                    row.cells.get(3).value = dupedRow.key;                      // qc link
+                    row.cells.get(4).value = dupedRow.cells.get(4).value;       // test name
+                    row.cells.get(5).value = dupedRow.cells.get(5).value;       // method name
+                    row.cells.get(6).value = dupedRow.cells.get(6).value;       // status
+                    row.cells.get(7).value = dupedRow.cells.get(7).value;       // collection date
+                    row.cells.get(8).value = dupedRow.cells.get(8).value;       // received date and time
+                    row.cells.get(9).value = dupedRow.cells.get(9).value;       // due days
+                    row.cells.get(10).value = dupedRow.cells.get(10).value;     // expire date and time
                     row.data = dupedRow.data;
                 }
             }
