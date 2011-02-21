@@ -10,14 +10,14 @@
 	<pageHeader>
 		<band height="36">
 			<staticText>
-				<reportElement x="276" y="12" width="200" height="12"/>
+				<reportElement key="quickEntry.title" x="276" y="12" width="200" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10" isBold="false"/>
 				</textElement>
 				<text><![CDATA[Quick Entry Domain]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="226" y="24" width="300" height="12"/>
+				<reportElement key="quickEntry.message" x="226" y="24" width="300" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10" isBold="false"/>
 				</textElement>

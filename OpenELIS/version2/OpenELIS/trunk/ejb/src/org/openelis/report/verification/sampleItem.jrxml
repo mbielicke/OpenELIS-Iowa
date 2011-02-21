@@ -33,7 +33,7 @@ ORDER BY si.item_sequence]]>
 	<detail>
 		<band height="96" splitType="Stretch">
 			<rectangle>
-				<reportElement x="188" y="12" width="376" height="12" backcolor="#C0C0C0"/>
+				<reportElement key="sampleItem.box" x="188" y="12" width="376" height="12" backcolor="#C0C0C0"/>
 				<graphicElement>
 					<pen lineWidth="0.0"/>
 				</graphicElement>
@@ -46,7 +46,7 @@ ORDER BY si.item_sequence]]>
 				<textFieldExpression class="java.lang.String"><![CDATA["Sample Item #"+$F{item_sequence}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="typeOfSample.label" x="0" y="36" width="120" height="12"/>
+				<reportElement key="typeOfSample.label" x="0" y="36" width="120" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Sample Type:]]></text>
 			</staticText>
@@ -56,7 +56,7 @@ ORDER BY si.item_sequence]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_of_sample}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="sourceOfSample.label" x="310" y="36" width="60" height="12"/>
+				<reportElement key="sourceOfSample.label" x="310" y="36" width="60" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Source:]]></text>
 			</staticText>
@@ -66,7 +66,7 @@ ORDER BY si.item_sequence]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_of_sample}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="sourceOther.label" x="285" y="48" width="85" height="12"/>
+				<reportElement key="sourceOther.label" x="285" y="48" width="85" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Source Other:]]></text>
 			</staticText>
@@ -76,7 +76,7 @@ ORDER BY si.item_sequence]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_other}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="quantity.label" x="0" y="60" width="120" height="12"/>
+				<reportElement key="quantity.label" x="0" y="60" width="120" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Quantity:]]></text>
 			</staticText>
@@ -86,7 +86,7 @@ ORDER BY si.item_sequence]]>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="container.label" x="310" y="60" width="60" height="12"/>
+				<reportElement key="container.label" x="310" y="60" width="60" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Container:]]></text>
 			</staticText>
@@ -96,7 +96,7 @@ ORDER BY si.item_sequence]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{container}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="containerReference.label" x="0" y="72" width="120" height="12"/>
+				<reportElement key="containerReference.label" x="0" y="72" width="120" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Container Reference:]]></text>
 			</staticText>
@@ -106,7 +106,7 @@ ORDER BY si.item_sequence]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{container_reference}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="unit.label" x="310" y="72" width="60" height="12"/>
+				<reportElement key="unit.label" x="310" y="72" width="60" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Unit:]]></text>
 			</staticText>

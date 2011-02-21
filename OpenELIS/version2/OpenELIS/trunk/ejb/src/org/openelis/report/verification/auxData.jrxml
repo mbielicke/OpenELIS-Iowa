@@ -28,7 +28,7 @@ WHERE
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement key="analyteName" x="0" y="0" width="150" height="12"/>
+				<reportElement key="analyteName" x="0" y="0" width="150" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()]]></textFieldExpression>
 			</textField>
