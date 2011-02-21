@@ -82,7 +82,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         try {
             p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("FROM", Prompt.Type.DATETIME).setPrompt("Date From:")
+            p.add(new Prompt("FROM_ENTERED", Prompt.Type.DATETIME).setPrompt("Starting Entered Date:")
                                                           .setWidth(150)
                                                           .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                           .setDatetimeEndCode(Prompt.Datetime.MINUTE)
@@ -91,7 +91,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
                                                                                    .toString())
                                                           .setRequired(true));
 
-            p.add(new Prompt("TO", Prompt.Type.DATETIME).setPrompt("Date To:")
+            p.add(new Prompt("TO_ENTERED", Prompt.Type.DATETIME).setPrompt("Ending Entered Date:")
                                                         .setWidth(150)
                                                         .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                         .setDatetimeEndCode(Prompt.Datetime.MINUTE)
@@ -110,7 +110,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
                                                        .setOptionList(getTests())
                                                        .setMutiSelect(true));
 
-            p.add(new Prompt("STATUS", Prompt.Type.ARRAY).setPrompt("Status:")
+            p.add(new Prompt("STATUS", Prompt.Type.ARRAY).setPrompt("Analysis Status:")
                                                          .setWidth(200)
                                                          .setOptionList(getStatus())
                                                          .setMutiSelect(true)
@@ -151,25 +151,21 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String frDate, tDate, fromDate, toDate, section, test, aStatus, project, orgId, loginName, printer, dir, printstat;
-        fromDate=toDate= null;
+        String fromDate, toDate, section, test, aStatus, project, orgId, loginName, printer, dir, printstat;
+
         /*
          * push status into session so we can query it while the report is
          * running
          */
         status = new ReportStatus();
-        session.setAttribute("SampleInhouseReport", status);    
-       
-        
+        session.setAttribute("SampleInhouseReport", status);
+
         /*
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.parameterMap(paramList);
-
-        loginName = PermissionInterceptor.getSystemUserName();
-        
-        frDate = ReportUtil.getSingleParameter(param, "FROM");
-        tDate = ReportUtil.getSingleParameter(param, "TO");
+        fromDate = ReportUtil.getSingleParameter(param, "FROM_ENTERED");
+        toDate = ReportUtil.getSingleParameter(param, "TO_ENTERED");
         section = ReportUtil.getListParameter(param, "SECTION");
         test = ReportUtil.getListParameter(param, "TEST");
         aStatus = ReportUtil.getListParameter(param, "STATUS");
@@ -177,36 +173,38 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         orgId = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
-        if (DataBaseUtil.isEmpty(frDate) || DataBaseUtil.isEmpty(tDate) ||
+        if (DataBaseUtil.isEmpty(fromDate) || DataBaseUtil.isEmpty(toDate) ||
             DataBaseUtil.isEmpty(aStatus) || DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify From Date, To Date, Status and printer for this report");
-        
-       if(frDate !=null && frDate.length()>0) {           
-            fromDate = frDate + ":00";            
-        }
-        if(tDate !=null && tDate.length()>0) {           
-            toDate = tDate + ":59";
-            
-        }    
-        
+
+        if (fromDate != null && fromDate.length() > 0)
+            fromDate += ":00";
+
+        if (toDate != null && toDate.length() > 0)
+            toDate += ":59";
+
         if ( !DataBaseUtil.isEmpty(section))
             section = " and s.id " + section;
         else
             section = "";
+
         if ( !DataBaseUtil.isEmpty(test))
             test = " and t.id " + test;
         else
-            test = "";       
-        if ( !DataBaseUtil.isEmpty(project)){
+            test = "";
+
+        if ( !DataBaseUtil.isEmpty(project))
             project = " and sa.id in (select sample_id from sample_project where sample_id = sa.id and project_id " +
                       project + ") ";
-        }
         else
             project = "";
+
         if ( !DataBaseUtil.isEmpty(orgId))
             orgId = " and sd.organization_id = " + orgId + " and sd.sample_id = sa.id ";
         else
             orgId = "";
+
+        loginName = PermissionInterceptor.getSystemUserName();
         /*
          * start the report
          */
@@ -326,7 +324,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
 
         l = new ArrayList<OptionListItem>();
         l.add(new OptionListItem("", ""));
-        
+
         try {
             p = proj.fetchActiveByName("%", 10000000);
             for (ProjectDO n : p)
