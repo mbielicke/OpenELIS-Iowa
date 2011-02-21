@@ -168,9 +168,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 			orgPrint = null;
 			for (Object[] result : results) {
 				if (orgId == null || DataBaseUtil.isSame(orgId, result[1])) {
-				    // remove dups
-				    if (orgPrint != null && orgPrint.getOrganizationId().equals(result[1]))
-				        continue;
 					orgPrint = new OrganizationPrint();
 					orgPrint.setOrganizationId((Integer)result[1]);
 					orgPrint.setSampleIds("="+data.getId());

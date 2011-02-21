@@ -4,6 +4,7 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="ireport.callouts" value="##Tue Sep 21 15:30:40 CDT 2010"/>
+	<import value="java.util.Calendar"/>
 	<import value="org.openelis.utils.JasperUtil"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
@@ -215,32 +216,34 @@ ORDER BY sa.accession_number]]>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{status}]]></textFieldExpression>
 			</textField>
-			<textField pattern="" isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
 				<reportElement x="571" y="0" width="86" height="12">
-					<printWhenExpression><![CDATA[$F{domain}=='E' && $F{priority} != null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{priority} != null]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="9" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.changeDate($F{received_date}, $F{priority},JasperUtil.Type.DAY)]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[JasperUtil.changeDate($F{received_date}, $F{priority}, Calendar.DAY_OF_MONTH)]]></textFieldExpression>
 			</textField>
-			<textField pattern="" isBlankWhenNull="true">
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
 				<reportElement x="571" y="0" width="86" height="12">
-					<printWhenExpression><![CDATA[$F{domain}!='E' || $F{priority} == null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{priority} == null]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="9" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.changeDate($F{received_date}, $F{time_ta_average}, JasperUtil.Type.DAY)]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[JasperUtil.changeDate($F{received_date}, $F{time_ta_average}, Calendar.DAY_OF_MONTH)]]></textFieldExpression>
 			</textField>
-			<textField pattern="" isBlankWhenNull="true">
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
 				<reportElement x="662" y="0" width="90" height="12">
 					<printWhenExpression><![CDATA[$F{time_holding} <= 48]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="9" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.changeDate($F{collection_date},$F{collection_time}, $F{time_holding}, JasperUtil.Type.HOUR)]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[JasperUtil.changeDate(
+JasperUtil.concatDateAndTime($F{collection_date},$F{collection_time}),
+$F{time_holding}, Calendar.HOUR)]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
