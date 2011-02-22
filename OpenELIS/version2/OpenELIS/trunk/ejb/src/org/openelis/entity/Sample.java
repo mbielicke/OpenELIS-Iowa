@@ -146,9 +146,9 @@ import org.openelis.utils.Auditable;
     @SqlResultSetMappings({@SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportBatchMapping",
                            columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),  @ColumnResult(name="a_id")}),
                            @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportSingleMapping",
-                           columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),  @ColumnResult(name="a_id")}),
+                           columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id")}),
                            @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportPreviewMapping",
-                           columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),  @ColumnResult(name="a_id")})})
+                           columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id")})})
 @Entity
 @Table(name = "sample")
 @EntityListeners( {AuditUtil.class})
