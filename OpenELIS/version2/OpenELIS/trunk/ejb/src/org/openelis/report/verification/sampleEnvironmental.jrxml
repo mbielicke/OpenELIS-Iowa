@@ -11,10 +11,10 @@
      se.is_hazardous, se.priority, se.description, se.collector, se.collector_phone, se.location, se.location_address_id,
      so.organization_id
 FROM
-     sample_environmental se, sample_organization so
+     sample_environmental se, outer sample_organization so
 WHERE
      se.sample_id = $P{SAMPLE_ID}
-     AND so.sample_id = $P{SAMPLE_ID}
+     AND so.sample_id = se.sample_id
      AND so.type_id in (select id from dictionary where system_name = 'org_report_to')]]>
 	</queryString>
 	<field name="is_hazardous" class="java.lang.String"/>

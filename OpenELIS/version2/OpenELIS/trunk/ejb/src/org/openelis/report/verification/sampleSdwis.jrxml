@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleSdwis" language="groovy" pageWidth="752" pageHeight="572" orientation="Landscape" columnWidth="752" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     ss.pws_id, p.name pws_name, ss.state_lab_id, ss.facility_id, d1.entry sample_type,
+     d2.entry sample_category, ss.sample_point_id, ss.location, ss.collector, so.organization_id
+FROM
+     sample_sdwis ss, pws p, outer dictionary d1, outer dictionary d2, outer sample_organization so
+WHERE
+     ss.sample_id = $P{SAMPLE_ID}
+     AND ss.pws_id = p.number0
+     AND ss.sample_type_id = d1.id
+     AND ss.sample_category_id = d2.id
+     AND so.sample_id = ss.sample_id
+     AND so.type_id in (select id from dictionary where system_name = 'org_report_to')]]>
+	</queryString>
+	<field name="pws_id" class="java.lang.String"/>
+	<field name="pws_name" class="java.lang.String"/>
+	<field name="state_lab_id" class="java.lang.Short"/>
+	<field name="facility_id" class="java.lang.String"/>
+	<field name="sample_type" class="java.lang.String"/>
+	<field name="sample_category" class="java.lang.String"/>
+	<field name="sample_point_id" class="java.lang.String"/>
+	<field name="location" class="java.lang.String"/>
+	<field name="collector" class="java.lang.String"/>
+	<field name="organization_id" class="java.lang.Integer"/>
+	<detail>
+		<band height="60" splitType="Stretch">
+			<staticText>
+				<reportElement key="pwsId.label" x="0" y="12" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[PWS Id:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="pwsId" x="105" y="12" width="75" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{pws_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="pwsName.label" x="235" y="12" width="60" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[PWS Name:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="pwsName" x="300" y="12" width="240" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{pws_name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="stateLabNumber.label" x="545" y="12" width="80" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[State Lab #:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="stateLabNumber" x="630" y="12" width="30" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{state_lab_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="facilityId.label" x="0" y="24" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Facility Id:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="facilityId" x="105" y="24" width="75" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{facility_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="sampleType.label" x="220" y="24" width="75" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Sample Type:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="sampleType" x="300" y="24" width="60" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_type}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="sampleCategory.label" x="525" y="24" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Sample Category:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="sampleCategory" x="630" y="24" width="80" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_category}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="samplePointId.label" x="0" y="36" width="100" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Sample Point Id:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="samplePointId" x="105" y="36" width="75" height="12"/>
+				<textElement>
+					<font size="10"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_point_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="samplePointDescription.label" x="185" y="36" width="110" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Point Description:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="samplePointDescription" x="300" y="36" width="120" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="collector.label" x="565" y="36" width="60" height="12" forecolor="#404040"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Collector:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="collector" x="632" y="36" width="120" height="12"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="24">
+			<subreport>
+				<reportElement key="reportToOrganization" x="0" y="12" width="355" height="12">
+					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ORGANIZATION_ID">
+					<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"reportToOrganization.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement key="billToOrganization" x="397" y="12" width="355" height="12"/>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"billToOrganization.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+</jasperReport>
