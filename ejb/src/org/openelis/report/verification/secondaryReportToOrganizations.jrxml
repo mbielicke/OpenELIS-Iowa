@@ -27,13 +27,15 @@ WHERE
 			<staticText>
 				<reportElement key="secondaryReportToName.label" x="0" y="0" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Secondary Report To:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="organizationName" x="105" y="0" width="250" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<subreport>
