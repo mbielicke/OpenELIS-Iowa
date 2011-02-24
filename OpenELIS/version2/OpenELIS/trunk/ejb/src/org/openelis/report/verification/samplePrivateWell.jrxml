@@ -31,28 +31,28 @@ WHERE
 			<staticText>
 				<reportElement key="reportToAttention.label" x="0" y="12" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Attention:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="reportToAttention" x="105" y="12" width="250" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{report_to_attention}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="location.label" x="397" y="12" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Location:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="location" x="502" y="12" width="250" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
 			</textField>
@@ -74,7 +74,7 @@ WHERE
 					<printWhenExpression><![CDATA[$F{organization_id} == null]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Report To:]]></text>
 			</staticText>
@@ -83,7 +83,7 @@ WHERE
 					<printWhenExpression><![CDATA[$F{organization_id} == null]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{report_to_name}]]></textFieldExpression>
 			</textField>
@@ -106,7 +106,13 @@ WHERE
 					<printWhenExpression><![CDATA[$F{organization_id} == null]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="ADDRESS_ID">
-					<subreportParameterExpression><![CDATA[$F{location_address_id}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{report_to_address_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PHONE_TYPE">
+					<subreportParameterExpression><![CDATA["W"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="WITH_FAX">
+					<subreportParameterExpression><![CDATA[true]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"address.jasper"]]></subreportExpression>
@@ -125,49 +131,49 @@ WHERE
 			<staticText>
 				<reportElement key="owner.label" positionType="Float" x="397" y="36" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Owner:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="owner" positionType="Float" x="502" y="36" width="250" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{owner}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="collector.label" positionType="Float" x="397" y="48" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Collector:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="collector" positionType="Float" x="502" y="48" width="250" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="wellNumber.label" positionType="Float" x="397" y="60" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Well #:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="wellNumber" positionType="Float" x="502" y="60" width="250" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{well_number}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="projects.label" positionType="Float" x="397" y="72" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Project(s):]]></text>
 			</staticText>

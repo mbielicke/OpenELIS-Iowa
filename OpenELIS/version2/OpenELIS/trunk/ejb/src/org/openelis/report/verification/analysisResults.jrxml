@@ -35,7 +35,7 @@ ORDER BY
 					<bottomPen lineWidth="0.5" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font size="10" isBold="true"/>
+					<font size="10" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Result]]></text>
 			</staticText>
@@ -45,7 +45,7 @@ ORDER BY
 					<bottomPen lineWidth="0.5" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font size="10" isBold="true"/>
+					<font size="10" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Analyte]]></text>
 			</staticText>
@@ -55,7 +55,7 @@ ORDER BY
 					<bottomPen lineWidth="0.5" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center">
-					<font size="10" isBold="true"/>
+					<font size="10" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Reportable]]></text>
 			</staticText>
@@ -66,17 +66,23 @@ ORDER BY
 			<printWhenExpression><![CDATA[!"Y".equals($F{is_column})]]></printWhenExpression>
 			<textField isBlankWhenNull="true">
 				<reportElement x="190" y="0" width="190" height="12"/>
-				<textElement textAlignment="Center"/>
+				<textElement textAlignment="Center">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{r_value}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="0" y="0" width="180" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}.trim()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="390" y="0" width="85" height="12"/>
-				<textElement textAlignment="Center"/>
+				<textElement textAlignment="Center">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{is_reportable}]]></textFieldExpression>
 			</textField>
 		</band>
@@ -84,17 +90,23 @@ ORDER BY
 			<printWhenExpression><![CDATA["Y".equals($F{is_column})]]></printWhenExpression>
 			<textField>
 				<reportElement x="32" y="0" width="148" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_name}.trim()]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="190" y="0" width="190" height="12"/>
-				<textElement textAlignment="Center"/>
+				<textElement textAlignment="Center">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{r_value}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="390" y="0" width="85" height="12"/>
-				<textElement textAlignment="Center"/>
+				<textElement textAlignment="Center">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{is_reportable}]]></textFieldExpression>
 			</textField>
 		</band>

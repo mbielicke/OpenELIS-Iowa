@@ -29,7 +29,9 @@ WHERE
 		<band height="12" splitType="Stretch">
 			<textField>
 				<reportElement key="analyteName" x="0" y="0" width="150" height="12" forecolor="#404040"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()]]></textFieldExpression>
 			</textField>
 			<line>
@@ -37,7 +39,9 @@ WHERE
 			</line>
 			<textField isBlankWhenNull="true">
 				<reportElement key="auxDataValue" x="165" y="0" width="480" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{aux_data_value}]]></textFieldExpression>
 			</textField>
 		</band>

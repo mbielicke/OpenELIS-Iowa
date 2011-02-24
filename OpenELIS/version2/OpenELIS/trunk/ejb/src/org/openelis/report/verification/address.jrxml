@@ -32,7 +32,7 @@ WHERE
 			<staticText>
 				<reportElement key="multipleUnit.label" x="0" y="0" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Apt/Suite #:]]></text>
 			</staticText>
@@ -46,11 +46,11 @@ WHERE
 			<staticText>
 				<reportElement key="streetAddress.label" x="0" y="12" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Address:]]></text>
 			</staticText>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement key="streetAddress" positionType="Float" x="105" y="12" width="250" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
@@ -60,7 +60,7 @@ WHERE
 			<staticText>
 				<reportElement key="cityStateZip.label" x="0" y="24" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[City, State, Zip:]]></text>
 			</staticText>
@@ -76,7 +76,7 @@ WHERE
 					<printWhenExpression><![CDATA[!"N".equals($P{PHONE_TYPE})]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Phone:]]></text>
 			</staticText>
@@ -103,7 +103,7 @@ WHERE
 					<printWhenExpression><![CDATA[$P{WITH_FAX}]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Fax:]]></text>
 			</staticText>

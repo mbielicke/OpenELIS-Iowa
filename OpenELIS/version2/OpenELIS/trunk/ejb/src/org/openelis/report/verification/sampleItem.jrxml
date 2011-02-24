@@ -47,72 +47,100 @@ ORDER BY si.item_sequence]]>
 			</textField>
 			<staticText>
 				<reportElement key="typeOfSample.label" x="0" y="36" width="120" height="12" forecolor="#404040"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<text><![CDATA[Sample Type:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="typeOfSample" x="125" y="36" width="180" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{type_of_sample}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="sourceOfSample.label" x="310" y="36" width="60" height="12" forecolor="#404040"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<text><![CDATA[Source:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="sourceOfSample" x="375" y="36" width="377" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_of_sample}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="sourceOther.label" x="285" y="48" width="85" height="12" forecolor="#404040"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<text><![CDATA[Source Other:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="sourceOther" x="375" y="48" width="377" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{source_other}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="quantity.label" x="0" y="60" width="120" height="12" forecolor="#404040"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<text><![CDATA[Quantity:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="quantity" x="125" y="60" width="120" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="container.label" x="310" y="60" width="60" height="12" forecolor="#404040"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<text><![CDATA[Container:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="container" x="375" y="60" width="377" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{container}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="containerReference.label" x="0" y="72" width="120" height="12" forecolor="#404040"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<text><![CDATA[Container Reference:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="containerReference" x="125" y="72" width="120" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{container_reference}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="unit.label" x="310" y="72" width="60" height="12" forecolor="#404040"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<text><![CDATA[Unit:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="unit" x="375" y="72" width="377" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{unit}]]></textFieldExpression>
 			</textField>
 			<subreport>

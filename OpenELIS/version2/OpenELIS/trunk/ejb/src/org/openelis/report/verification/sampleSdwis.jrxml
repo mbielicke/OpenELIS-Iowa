@@ -37,119 +37,127 @@ WHERE
 			<staticText>
 				<reportElement key="pwsId.label" x="0" y="12" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[PWS Id:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="pwsId" x="105" y="12" width="75" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pws_id}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="pwsName.label" x="235" y="12" width="60" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[PWS Name:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="pwsName" x="300" y="12" width="240" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pws_name}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="stateLabNumber.label" x="545" y="12" width="80" height="12" forecolor="#404040"/>
-				<textElement textAlignment="Right"/>
+				<textElement textAlignment="Right">
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<text><![CDATA[State Lab #:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="stateLabNumber" x="630" y="12" width="30" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{state_lab_id}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="facilityId.label" x="0" y="24" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Facility Id:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="facilityId" x="105" y="24" width="75" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{facility_id}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="sampleType.label" x="220" y="24" width="75" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Sample Type:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="sampleType" x="300" y="24" width="60" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_type}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="sampleCategory.label" x="525" y="24" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Sample Category:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="sampleCategory" x="630" y="24" width="80" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_category}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="samplePointId.label" x="0" y="36" width="100" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Sample Point Id:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="samplePointId" x="105" y="36" width="75" height="12"/>
 				<textElement>
-					<font size="10"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_point_id}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="samplePointDescription.label" x="185" y="36" width="110" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Point Description:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="samplePointDescription" x="300" y="36" width="120" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="collector.label" x="565" y="36" width="60" height="12" forecolor="#404040"/>
 				<textElement textAlignment="Right">
-					<font size="10" isBold="false"/>
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Collector:]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement key="collector" x="632" y="36" width="120" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector}]]></textFieldExpression>
 			</textField>
 		</band>

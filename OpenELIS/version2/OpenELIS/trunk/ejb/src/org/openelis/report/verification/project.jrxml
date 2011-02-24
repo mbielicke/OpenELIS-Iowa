@@ -21,7 +21,9 @@ ORDER BY p.name]]>
 		<band height="12" splitType="Stretch">
 			<textField isBlankWhenNull="true">
 				<reportElement key="projectName" x="0" y="0" width="250" height="12"/>
-				<textElement/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 		</band>
