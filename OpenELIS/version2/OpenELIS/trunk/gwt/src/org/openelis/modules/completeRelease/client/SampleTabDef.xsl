@@ -69,7 +69,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getClientReference()}" width="196" max="20" tab="SampleContent,{meta:getStatusId()}" field="String" />
+                <textbox key="{meta:getClientReference()}" width="196" case="LOWER" max="20" tab="SampleContent,{meta:getStatusId()}" field="String" />
               </widget>
             </row>
       </TablePanel>

@@ -27,8 +27,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -40,7 +38,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.entity.TestReflex;
@@ -62,19 +59,15 @@ public class TestReflexBean implements TestReflexLocal {
     @EJB
     private DictionaryLocal dictionary;
 
-    private static int      typeDict;
+    private static Integer  typeDict;
 
     @PostConstruct
     public void init() {
-        DictionaryDO data;
-
-        if (typeDict == 0) {
+        if (typeDict == null) {
             try {
-                data = dictionary.fetchBySystemName("test_res_type_dictionary");
-                typeDict = data.getId();
+                typeDict = dictionary.fetchBySystemName("test_res_type_dictionary").getId();
             } catch (Throwable e) {
                 e.printStackTrace();
-                typeDict = 0;
             }
         }
     }

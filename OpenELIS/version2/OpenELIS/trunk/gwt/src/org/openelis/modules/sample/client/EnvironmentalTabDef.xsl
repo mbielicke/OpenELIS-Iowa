@@ -58,7 +58,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'collector')" />:
           </text>
-          <textbox field="String" key="{meta:getEnvCollector()}" tab="{meta:getEnvCollectorPhone()},{meta:getEnvDescription()}" width="235px" />
+          <textbox field="String" key="{meta:getEnvCollector()}" case="LOWER" tab="{meta:getEnvCollectorPhone()},{meta:getEnvDescription()}" width="235px" />
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'phone')" />:
           </text>
@@ -69,7 +69,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'location')" />:
           </text>
           <HorizontalPanel>
-            <textbox field="String" key="{meta:getEnvLocation()}" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" width="175px" />
+            <textbox field="String" key="{meta:getEnvLocation()}" case="LOWER" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" width="175px" />
             <appButton key="locButton" style="LookupButton">
               <AbsolutePanel style="LookupButtonImage" />
             </appButton>

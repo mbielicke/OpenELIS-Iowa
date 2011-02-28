@@ -133,7 +133,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getClientReference()}" width="196" max="20" tab="{meta:getEnvIsHazardous()},{meta:getStatusId()}" field="String" />
+                <textbox key="{meta:getClientReference()}" width="196" case="LOWER" max="20" tab="{meta:getEnvIsHazardous()},{meta:getStatusId()}" field="String" />
               </widget>
             </row>
           </TablePanel>
@@ -156,7 +156,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'collector')" />:
                 </text>
-                <textbox key="{meta:getEnvCollector()}" width="235" max="40" tab="{meta:getEnvCollectorPhone()},{meta:getEnvPriority()}" field="String" />
+                <textbox key="{meta:getEnvCollector()}" width="235" case="LOWER" max="40" tab="{meta:getEnvCollectorPhone()},{meta:getEnvPriority()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'phone')" />:
                 </text>
@@ -167,7 +167,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
                 <HorizontalPanel>
-                  <textbox key="{meta:getEnvLocation()}" width="175" max="40" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
+                  <textbox key="{meta:getEnvLocation()}" width="175" case="LOWER" max="40" tab="{meta:getEnvDescription()},{meta:getEnvCollectorPhone()}" field="String" />
                   <appButton key="locButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>

@@ -138,7 +138,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getClientReference()}" width="196" max="20" tab="{meta:getSDWISPwsId()},{meta:getStatusId()}" field="String" />
+                <textbox key="{meta:getClientReference()}" width="196" case="LOWER" max="20" tab="{meta:getSDWISPwsId()},{meta:getStatusId()}" field="String" />
               </widget>
             </row>
           </TablePanel>
@@ -272,7 +272,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'collector')" />:
                 </text>
-                <textbox key="{meta:getSDWISCollector()}" width="162" max="20" tab="{meta:getOrgName()},{meta:getSDWISLocation()}" field="String" />
+                <textbox key="{meta:getSDWISCollector()}" width="162" case="LOWER" max="20" tab="{meta:getOrgName()},{meta:getSDWISLocation()}" field="String" />
                 </row>
                 <row>
                   <text style="Prompt">

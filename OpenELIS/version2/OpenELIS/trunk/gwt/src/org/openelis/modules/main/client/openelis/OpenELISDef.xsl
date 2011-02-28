@@ -127,6 +127,7 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="storage" description="{resource:getString($constants,'storageDescription')}" enable="true" icon="storageIcon" label="{resource:getString($constants,'storage')}" />
                 <code>}</code>
                 <menuItem key="QC" description="{resource:getString($constants,'QCDescription')}" icon="QCIcon" label="{resource:getString($constants,'QC')}" />
+                <menuItem key="analyteParameter" description="{resource:getString($constants,'analyteParameterDescription')}" icon="QCIcon" label="{resource:getString($constants,'analyteParameter')}" />
               </menuPanel>
             </menuItem>
             <menuItem>

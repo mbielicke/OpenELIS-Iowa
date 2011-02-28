@@ -1416,6 +1416,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
             }
         }
     }
@@ -1439,6 +1440,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 showErrors(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
             }
         }
     }
@@ -1475,7 +1477,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 Window.alert(e.getMessage());
                 window.clearStatus();
             }
-
         } else {
             window.clearStatus();
         }
