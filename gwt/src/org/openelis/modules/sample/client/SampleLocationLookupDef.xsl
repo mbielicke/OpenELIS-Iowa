@@ -43,7 +43,7 @@
                 <xsl:value-of select='resource:getString($constants,"location")' />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getEnvLocation()}" width="214" max="40" tab="{meta:getLocationAddrMultipleUnit()},{meta:getLocationAddrCountry()}" field="String" />
+                <textbox key="{meta:getEnvLocation()}" width="214" case="LOWER" max="40" tab="{meta:getLocationAddrMultipleUnit()},{meta:getLocationAddrCountry()}" field="String" />
               </widget>
             </row>
             <row>
@@ -67,7 +67,7 @@
                 <xsl:value-of select='resource:getString($constants,"city")' />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getLocationAddrCity()}" width="214" case="UPPER" max="30" tab="{meta:getLocationAddrState()},{meta:getLocationAddrStreetAddress()}" field="String" />
+                <textbox key="{meta:getLocationAddrCity()}" width="214" case="LOWER" max="30" tab="{meta:getLocationAddrState()},{meta:getLocationAddrStreetAddress()}" field="String" />
               </widget>
             </row>
             <row>

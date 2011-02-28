@@ -94,7 +94,7 @@ UIRF Software License are applicable instead of those above.
                        <text style="Prompt">
                          <xsl:value-of select="resource:getString($constants,'collector')" />:
                        </text>
-                       <textbox key="{meta:getSDWISCollector()}" width="162" max="20" tab="{meta:getOrgName()},itemsTestsTree" field="String" />
+                       <textbox key="{meta:getSDWISCollector()}" width="162" case="LOWER" max="20" tab="{meta:getOrgName()},itemsTestsTree" field="String" />
                        <text style="Prompt">
                          <xsl:value-of select="resource:getString($constants,'reportTo')" />:
                        </text>

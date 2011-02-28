@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -38,7 +39,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.entity.TestResult;
@@ -48,6 +48,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestResultLocal;
 import org.openelis.meta.TestMeta;
+import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -60,100 +61,24 @@ public class TestResultBean implements TestResultLocal {
     @EJB
     private DictionaryLocal dictionary;
 
-    private static int      typeDict, typeNumeric, typeTiter, typeDate, typeDateTime, typeTime,
-                            typeAlphaLower, typeAlphaUpper, typeAlphaMixed;
-
+    private static HashMap<Integer, Type> types;
+    
     @PostConstruct
-    public void init() {
-        DictionaryDO data;
-
-        if (typeDict == 0) {
+    public void init() {        
+        if (types == null) {
+            types = new HashMap<Integer, Type>();
             try {
-                data = dictionary.fetchBySystemName("test_res_type_dictionary");
-                typeDict = data.getId();
+                types.put(dictionary.fetchBySystemName("test_res_type_dictionary").getId(), Type.DICTIONARY);
+                types.put(dictionary.fetchBySystemName("test_res_type_numeric").getId(), Type.NUMERIC);
+                types.put(dictionary.fetchBySystemName("test_res_type_titer").getId(), Type.TITER);
+                types.put(dictionary.fetchBySystemName("test_res_type_date").getId(), Type.DATE);
+                types.put(dictionary.fetchBySystemName("test_res_type_date_time").getId(), Type.DATE_TIME);
+                types.put(dictionary.fetchBySystemName("test_res_type_time").getId(), Type.TIME);
+                types.put(dictionary.fetchBySystemName("test_res_type_alpha_lower").getId(), Type.ALPHA_LOWER);
+                types.put(dictionary.fetchBySystemName("test_res_type_alpha_upper").getId(), Type.ALPHA_UPPER);
+                types.put(dictionary.fetchBySystemName("test_res_type_alpha_mixed").getId(), Type.ALPHA_MIXED);
             } catch (Throwable e) {
                 e.printStackTrace();
-                typeDict = 0;
-            }
-        }
-
-        if (typeNumeric == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_numeric");
-                typeNumeric = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeNumeric = 0;
-            }
-        }
-
-        if (typeTiter == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_titer");
-                typeTiter = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeTiter = 0;
-            }
-        }
-
-        if (typeDate == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_date");
-                typeDate = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDate = 0;
-            }
-        }
-
-        if (typeDateTime == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_date_time");
-                typeDateTime = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeDateTime = 0;
-            }
-        }
-
-        if (typeTime == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_time");
-                typeTime = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeTime = 0;
-            }
-        }
-
-        if (typeAlphaLower == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_alpha_lower");
-                typeAlphaLower = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeAlphaLower = 0;
-            }
-        }
-
-        if (typeAlphaUpper == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_alpha_upper");
-                typeAlphaUpper = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeAlphaUpper = 0;
-            }
-        }
-
-        if (typeAlphaMixed == 0) {
-            try {
-                data = dictionary.fetchBySystemName("test_res_type_alpha_mixed");
-                typeAlphaMixed = data.getId();
-            } catch (Throwable e) {
-                e.printStackTrace();
-                typeAlphaMixed = 0;
             }
         }
     }
@@ -165,6 +90,7 @@ public class TestResultBean implements TestResultLocal {
         Integer rg;
         Query query;
         DictionaryViewDO dict;
+        Type type;
 
         list = null;
         grid = new ArrayList<ArrayList<TestResultViewDO>>();
@@ -185,12 +111,13 @@ public class TestResultBean implements TestResultLocal {
                 list = DataBaseUtil.toArrayList(list);
                 for (int i = 0; i < list.size(); i++ ) {
                     data = (TestResultViewDO)list.get(i);
-                    //
-                    // for entries that are dictionary, we want to fetch the
-                    // dictionary
-                    // text and set it for display
-                    //
-                    if (DataBaseUtil.isSame(typeDict, data.getTypeId())) {
+                    
+                    /*
+                     *  for entries that are dictionary, we want to fetch the
+                     * dictionary text and set it for display
+                     */
+                    type = types.get(data.getTypeId());
+                    if (type == Type.DICTIONARY) {
                         dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
                         if (dict != null)
                             data.setDictionary(dict.getEntry());
@@ -269,11 +196,9 @@ public class TestResultBean implements TestResultLocal {
         ValidationErrorsList list;
         Integer typeId;
         String value;
-
-        value = null;
-
+        Type type;
+        
         list = new ValidationErrorsList();
-
         value = data.getValue();
         typeId = data.getTypeId();
 
@@ -282,18 +207,13 @@ public class TestResultBean implements TestResultLocal {
         //
         // dictionary, titers, numeric require a value
         //
+        type = types.get(data.getTypeId());
         if (DataBaseUtil.isEmpty(value) &&
-            (DataBaseUtil.isSame(typeNumeric, typeId) || DataBaseUtil.isSame(typeTiter, typeId) || DataBaseUtil.isSame(
-                                                                                                                       typeDict,
-                                                                                                                       typeId))) {
+            (type == Type.NUMERIC || type == Type.TITER || type == Type.DICTIONARY)) {
             list.add(new FieldErrorException("fieldRequiredException", TestMeta.getResultValue()));
         } else if ( !DataBaseUtil.isEmpty(value) &&
-                   (DataBaseUtil.isSame(typeDateTime, typeId) ||
-                    DataBaseUtil.isSame(typeTime, typeId) ||
-                    DataBaseUtil.isSame(typeDate, typeId) ||
-                    DataBaseUtil.isSame(typeAlphaLower, typeId) ||
-                    DataBaseUtil.isSame(typeAlphaUpper, typeId) || DataBaseUtil.isSame(typeAlphaMixed,
-                                                                                       typeId))) {
+                   (type == Type.DATE_TIME || type == Type.TIME || type == Type.DATE || type == Type.ALPHA_LOWER ||
+                   type == Type.ALPHA_UPPER || type == Type.ALPHA_MIXED)) {
             list.add(new FieldErrorException("valuePresentForTypeException",
                                              TestMeta.getResultValue()));
         }
