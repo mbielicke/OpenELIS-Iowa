@@ -63,7 +63,7 @@ public class VerificationReportBean implements VerificationReportRemote {
             p = new ArrayList<Prompt>();
 
             p.add(new Prompt("BEGIN_ENTERED", Prompt.Type.DATETIME)
-                    .setPrompt("Beginning Date and Time Entered:")
+                    .setPrompt("Begin Entered:")
                     .setWidth(120)
                     .setDatetimeStartCode(Prompt.Datetime.YEAR)
                     .setDatetimeEndCode(Prompt.Datetime.MINUTE)
@@ -71,7 +71,7 @@ public class VerificationReportBean implements VerificationReportRemote {
                     .setRequired(true));
 
             p.add(new Prompt("END_ENTERED", Prompt.Type.DATETIME)
-                    .setPrompt("Ending Date and Time Entered:")
+                    .setPrompt("End Entered:")
                     .setWidth(120)
                     .setDatetimeStartCode(Prompt.Datetime.YEAR)
                     .setDatetimeEndCode(Prompt.Datetime.MINUTE)
