@@ -102,7 +102,6 @@ public class WorksheetManager implements RPC, HasNotesInt {
 
     public WorksheetManager add() throws Exception {
         return proxy().add(this);
-
     }
 
     public WorksheetManager update() throws Exception {
