@@ -198,7 +198,7 @@ public class WorksheetAnalysisManagerProxy {
     public void add(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
         boolean                   doBreak;
         int                       j, k;
-        String                    qcAccessionNumber;
+        String                    accessionNumber;
         AnalysisViewDO            aVDO;
         AnalysisManager           aManager;
         AnalysisResultManager     arManager;
@@ -217,13 +217,13 @@ public class WorksheetAnalysisManagerProxy {
             //
             // Rewrite temporary QC accession number
             //
-            qcAccessionNumber = analysis.getAccessionNumber();
+            accessionNumber = analysis.getAccessionNumber();
             //
             // We are only initializing the QCs that were not added from another
             // worksheet
             //
-            if (qcAccessionNumber.startsWith("X.")) {
-                analysis.setAccessionNumber(qcAccessionNumber.replaceFirst("X", manager.getWorksheetId().toString()));
+            if (accessionNumber.startsWith("X.")) {
+                analysis.setAccessionNumber(accessionNumber.replaceFirst("X", manager.getWorksheetId().toString()));
                 qcManager = QcManager.fetchById(analysis.getQcId());
                 wqrManager = manager.getWorksheetQcResultAt(i);
                 initializeWorksheetQcResults(qcManager, wqrManager);
@@ -234,13 +234,20 @@ public class WorksheetAnalysisManagerProxy {
             //
             doBreak = false;
             //
+            // Trim the 'D' off the front of the accession number for analyses
+            // in a duplicate position on the worksheet
+            //
+            accessionNumber = analysis.getAccessionNumber();
+            if (accessionNumber.startsWith("D"))
+                accessionNumber = accessionNumber.substring(1);
+            //
             // Keep a hash map of sample managers so we only allocate one per
             // sample to avoid update collisions for multiple analyses on the
             // same sample
             //
-            sManager = manager.getLockedManagers().get(Integer.valueOf(analysis.getAccessionNumber()));
+            sManager = manager.getLockedManagers().get(Integer.valueOf(accessionNumber));
             if (sManager == null) {
-                sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
+                sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(accessionNumber));
                 sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
                 manager.getLockedManagers().put(sample.getAccessionNumber(), sManager);
                 manager.getSampleManagers().put(sample.getAccessionNumber(), sManager);
@@ -290,6 +297,7 @@ public class WorksheetAnalysisManagerProxy {
     public void update(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
         boolean                   doBreak;
         int                       k, l;
+        String                    accessionNumber;
         AnalysisViewDO            aVDO;
         AnalysisManager           aManager;
         SampleDO                  sample;
@@ -306,13 +314,20 @@ public class WorksheetAnalysisManagerProxy {
             if (analysis.getAnalysisId() != null) {
                 doBreak = false;
                 //
+                // Trim the 'D' off the front of the accession number for analyses
+                // in a duplicate position on the worksheet
+                //
+                accessionNumber = analysis.getAccessionNumber();
+                if (accessionNumber.startsWith("D"))
+                    accessionNumber = accessionNumber.substring(1);
+                //
                 // Keep a hash map of sample managers so we only allocate one per
                 // sample to avoid update collisions for multiple analyses on the
                 // same sample
                 //
-                sManager = manager.getLockedManagers().get(Integer.valueOf(analysis.getAccessionNumber()));
+                sManager = manager.getLockedManagers().get(Integer.valueOf(accessionNumber));
                 if (sManager == null) {
-                    sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(analysis.getAccessionNumber()));
+                    sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(accessionNumber));
                     sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
                     manager.getLockedManagers().put(sample.getAccessionNumber(), sManager);
                     manager.getSampleManagers().put(sample.getAccessionNumber(), sManager);
