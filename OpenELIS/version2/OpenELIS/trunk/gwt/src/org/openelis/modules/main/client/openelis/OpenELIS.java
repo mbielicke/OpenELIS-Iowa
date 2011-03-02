@@ -66,6 +66,7 @@ import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelAdditionalReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
+import org.openelis.modules.report.client.TurnaroundReportScreen;
 import org.openelis.modules.report.client.VerificationReportScreen;
 import org.openelis.modules.report.client.SampleInhouseReportScreen;
 import org.openelis.modules.report.client.VolumeReportScreen;
@@ -1181,6 +1182,25 @@ public class OpenELIS extends Screen {
             }
         });
         
+        addClickHandler("turnaround", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new TurnaroundReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
     }
 
     /**
