@@ -313,15 +313,15 @@ public class WorksheetCompletionScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                Integer statusId;
-                
-                if (manager != null && manager.getWorksheet() != null) {
-                    statusId = manager.getWorksheet().getStatusId();
-                    instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-                                        statusWorking.equals(statusId));
-                } else {
+//                Integer statusId;
+//                
+//                if (manager != null && manager.getWorksheet() != null) {
+//                    statusId = manager.getWorksheet().getStatusId();
+//                    instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+//                                        statusWorking.equals(statusId));
+//                } else {
                     instrumentId.enable(false);
-                }
+//                }
             }
         });
 

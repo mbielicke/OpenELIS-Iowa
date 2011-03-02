@@ -669,9 +669,11 @@ public class WorksheetCreationScreen extends Screen {
             worksheetItemTable.enable(false);
         } catch (ValidationErrorsList e) {
             showErrors(e);
+            manager = WorksheetManager.getInstance();
         } catch (Exception e) {
             Window.alert("save(): " + e.getMessage());
             window.clearStatus();
+            manager = WorksheetManager.getInstance();
         }
     }
 
