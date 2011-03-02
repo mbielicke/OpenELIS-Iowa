@@ -100,7 +100,8 @@ public class ResultBean implements ResultLocal {
         List<AnalyteDO> analytes;
         List<TestResultDO> testResults;
         List<TestAnalyteViewDO> testAnalytes;
-        int i, j, k, rg;
+        int i, k;
+        Integer j, rg;
         Integer rowGroup;
         TestAnalyteViewDO data;
         AnalyteDO analyte;
@@ -195,11 +196,12 @@ public class ResultBean implements ResultLocal {
                 //we need to set the default
                 resultDO.setValue(resultValidators.get(resultDO.getResultGroup() - 1).getDefault(unitId));
                 
-                if (j != rg) {
+                if (!DataBaseUtil.isSame(j,rg)) {
                     ar = new ArrayList<ResultViewDO>(1);
                     ar.add(resultDO);
                     results.add(ar);
-                    j = rg;
+                    if (rg != null)
+                        j = rg;
                     continue;
                 }
                 if ("N".equals(data.getIsColumn())) {
@@ -268,7 +270,8 @@ public class ResultBean implements ResultLocal {
                                   ArrayList<ResultValidator> resultValidators) throws Exception {
 
         // build the grid
-        int i, j, rg;
+        int i;
+        Integer j, rg;
         ResultViewDO rdo;
         TestResultDO testResultDO;
         List<AnalyteDO> analytes;
@@ -344,11 +347,12 @@ public class ResultBean implements ResultLocal {
             rdo = rslts.get(i);
             rg = rdo.getRowGroup();
 
-            if (j != rg) {
+            if (!DataBaseUtil.isSame(j,rg)) {
                 ar = new ArrayList<ResultViewDO>(1);
                 ar.add(rdo);
                 results.add(ar);
-                j = rg;
+                if (rg != null)
+                    j = rg;
                 continue;
             }
             if ("N".equals(rdo.getIsColumn())) {
