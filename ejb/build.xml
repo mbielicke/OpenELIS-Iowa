@@ -59,6 +59,8 @@
 				<include name="lib/security-client.jar" />
 				<include name="lib/poi-3.6-20091214.jar" />
 				<include name="lib/iText-2.1.7.jar" />
+				<include name="lib/jcommon-1.0.15.jar" />
+				<include name="lib/jfreechart-1.0.12.jar" />				
 			    <include name="lib/groovy-all-1.5.5.jar" />		
 			    <include name="lib/barbecue-1.5-beta1.jar" />			    
 			    <include name="lib/commons-digester-1.7.jar" />
