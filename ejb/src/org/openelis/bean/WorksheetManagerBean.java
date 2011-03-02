@@ -82,7 +82,9 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
     }
 
     public WorksheetManager add(WorksheetManager man) throws Exception {
+        Iterator<SampleManager> iter;
         UserTransaction ut;
+        SampleManager sMan;
         
         checkSecurity(ModuleFlags.ADD);
 
@@ -95,6 +97,11 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
+            iter = man.getLockedManagers().values().iterator();
+            while (iter.hasNext()) {
+                sMan = iter.next();
+                lockBean.unlock(ReferenceTable.SAMPLE, sMan.getSample().getId());
+            }
             man.getLockedManagers().clear();
             throw e;
         }
