@@ -80,10 +80,10 @@ public class JasperUtil {
     }
 
     /**
-     * Increments/decrements the specified timestamp by the amount and unit. The unit
-     * is a Calendar.HOUR, Calendar.DAY or any other Calendar field.
+     * Increments/decrements the specified timestamp by the amount and unit. The
+     * unit is a Calendar.HOUR, Calendar.DAY or any other Calendar field.
      */
-    public static Timestamp changeDate(Timestamp date, int amount, int unit) {
+    public static Timestamp changeDate(Timestamp date, Integer amount, Integer unit) {
         Calendar c;
 
         if (date == null || amount == 0)
@@ -110,7 +110,41 @@ public class JasperUtil {
         c.set(Calendar.HOUR_OF_DAY, time.getHours());
         c.set(Calendar.MINUTE, time.getMinutes());
         c.set(Calendar.SECOND, time.getSeconds());
-        
+
         return new Timestamp(c.getTimeInMillis());
+    }
+
+    /**
+     * Returns the difference between two dates in hours
+     */
+    public static Integer delta_hours(Timestamp startdate, Timestamp enddate) {
+        Long span;
+        if (startdate == null || enddate == null)
+            return null;
+        span = (enddate.getTime() - startdate.getTime()) / 1000 / 60 / 60;
+        return span.intValue();
+    }
+
+    /**
+     * Converts hours to days and hours. 4.09 is 4 days and 9 hours
+     */
+    public static Float daysAndHours(int hours) {
+        int days, hrs;
+        String s = null;
+        days = Math.abs(hours) / 24;
+        hrs = Math.abs(hours) % 24;
+        if (hours < 0) {
+            if (hrs < 10)
+                s = "-" + days + ".0" + hrs;
+            else
+                s = "-" + days + "." + hrs;
+        } else {
+            if (hrs < 10)
+                s = days + ".0" + hrs;
+            else
+                s = days + "." + hrs;
+        }
+        float f = Float.parseFloat(s);
+        return f;
     }
 }
