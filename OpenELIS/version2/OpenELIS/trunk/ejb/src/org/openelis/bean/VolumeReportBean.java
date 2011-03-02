@@ -163,7 +163,7 @@ public class VolumeReportBean implements VolumeReportRemote{
 
             jreport = (JasperReport)JRLoader.loadObject(url);
             jprint = JasperFillManager.fillReport(jreport, jparam, con);
-            //jexport = new JExcelApiExporter();
+           
             jexport = new JRXlsExporter();
             jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
