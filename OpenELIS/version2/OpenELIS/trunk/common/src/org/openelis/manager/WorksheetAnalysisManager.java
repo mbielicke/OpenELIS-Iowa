@@ -146,6 +146,7 @@ public class WorksheetAnalysisManager implements RPC {
 
     public SampleDataBundle getBundleAt(int i) throws Exception {
         int                       j, k;
+        String                    accessionNumber;
         SampleManager             sManager;
         SampleItemManager         siManager;
         AnalysisManager           aManager;
@@ -157,11 +158,14 @@ public class WorksheetAnalysisManager implements RPC {
         if (analysis.bundle == null) {
             waDO = analysis.worksheetAnalysis;
             if (waDO != null && waDO.getId() != null) {
-                sManager = sampleManagers.get(Integer.valueOf(waDO.getAccessionNumber()));
+                accessionNumber = waDO.getAccessionNumber();
+                if (accessionNumber.startsWith("D"))
+                    accessionNumber = accessionNumber.substring(1);
+                sManager = sampleManagers.get(Integer.valueOf(accessionNumber));
                 if (sManager == null) {
                     try {
-                        sManager = SampleManager.fetchByAccessionNumber(Integer.valueOf(waDO.getAccessionNumber()));
-                        sampleManagers.put(Integer.valueOf(waDO.getAccessionNumber()), sManager);
+                        sManager = SampleManager.fetchByAccessionNumber(Integer.valueOf(accessionNumber));
+                        sampleManagers.put(Integer.valueOf(accessionNumber), sManager);
                     } catch (Exception e) {
                         throw e;
                     }
