@@ -133,17 +133,12 @@ public class JasperUtil {
         String s = null;
         days = Math.abs(hours) / 24;
         hrs = Math.abs(hours) % 24;
-        if (hours < 0) {
-            if (hrs < 10)
-                s = "-" + days + ".0" + hrs;
-            else
-                s = "-" + days + "." + hrs;
-        } else {
-            if (hrs < 10)
-                s = days + ".0" + hrs;
-            else
-                s = days + "." + hrs;
-        }
+        if (hrs < 10)
+            s = days + ".0" + hrs;
+        else
+            s = days + "." + hrs;
+        if (hours < 0)
+            s = "-" + s;
         float f = Float.parseFloat(s);
         return f;
     }
