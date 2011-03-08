@@ -141,9 +141,8 @@ public class SampleItemAnalysisTreeTab extends Screen
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                itemsTree.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
+                itemsTree.enable(EnumSet.of(State.ADD, State.UPDATE)
                                         .contains(event.getState()));
-                itemsTree.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
