@@ -112,7 +112,7 @@ public class OpenELISWebScreen extends Screen {
 		screens = new HashMap<String,Screen>();
 		welcome = (Label<String>)def.getWidget("welcome");
 		logout = (Label<String>)def.getWidget("logout");
-		title = (Label<String>)def.getWidget("title");
+		//title = (Label<String>)def.getWidget("title");
 		homeLink = (IconContainer)def.getWidget("home");
 		
 		content.add(window);
@@ -159,7 +159,7 @@ public class OpenELISWebScreen extends Screen {
 		
 		linksPanel = (AbsolutePanel)def.getWidget("links");
 
-	    finalReport = new LinkButton("","Final Report");
+	    finalReport = new LinkButton("finalReportIcon","Final Report");
 	    finalReport.setSize("60px", "60px");
 		finalReport.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -177,7 +177,7 @@ public class OpenELISWebScreen extends Screen {
 		finalReport.addStyleName("webButton");
 		linksPanel.add(finalReport);
 		
-		testReport = new LinkButton("","Test Report");
+		testReport = new LinkButton("testReportIcon","Test Report");
 		testReport.setSize("60px", "60px");
 		testReport.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
@@ -209,7 +209,6 @@ public class OpenELISWebScreen extends Screen {
 		History.newItem(key,false);
 		screens.put(key, screen);
 		screen.getDefinition().setName(name);
-		title.setText(name);
 	}
 	
 	/**
@@ -222,7 +221,6 @@ public class OpenELISWebScreen extends Screen {
 		screen = screens.get(key);
 		
 		window.setContent(screen);
-		title.setText(screen.getDefinition().getName());
 		History.newItem(key,false);
 	}
 
