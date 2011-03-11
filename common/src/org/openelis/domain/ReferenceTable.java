@@ -126,5 +126,6 @@ public class ReferenceTable {
                             PWS_ADDRESS =                   101,
                             PWS_MONITOR =                   102,
                             ORDER_CONTAINER =               103,
-                            ORDER_TEST =                    104; 
+                            ORDER_TEST =                    104,
+                            ANALYTE_PARAMETER =             105;
 }

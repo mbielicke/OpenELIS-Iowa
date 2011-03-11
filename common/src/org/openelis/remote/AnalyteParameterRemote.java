@@ -29,30 +29,14 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.StandardNoteDO;
+import org.openelis.domain.AnalyteParameterViewDO;
+import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
-public interface StandardNoteRemote {
-    public StandardNoteDO fetchById(Integer id) throws Exception;
-
-    public ArrayList<StandardNoteDO> fetchByType(Integer typeId, int max) throws Exception;
+public interface AnalyteParameterRemote {    
+    public ArrayList<AnalyteParameterViewDO> fetchByAnalyteIdReferenceIdReferenceTableId(Integer analyteId, Integer refId,
+                                                                                         Integer refTableId) throws Exception;
     
-    public ArrayList<StandardNoteDO> fetchByNameOrDescription(String name, String description, int max) throws Exception;
-    
-    public StandardNoteDO fetchBySystemVariableName(String name) throws Exception;
-    
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
-
-    public StandardNoteDO add(StandardNoteDO data) throws Exception;
-
-    public StandardNoteDO update(StandardNoteDO data) throws Exception;
-
-    public StandardNoteDO fetchForUpdate(Integer id) throws Exception;
-
-    public StandardNoteDO abortUpdate(Integer id) throws Exception;
-
-    public void delete(StandardNoteDO data) throws Exception;
-    
+    public ArrayList<ReferenceIdTableIdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;   
 }

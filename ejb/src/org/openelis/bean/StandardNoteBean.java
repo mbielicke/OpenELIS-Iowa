@@ -112,6 +112,22 @@ public class StandardNoteBean implements StandardNoteRemote {
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
+    public StandardNoteDO fetchBySystemVariableName(String name) throws Exception {
+        Query query;
+        StandardNoteDO data;
+
+        query = manager.createNamedQuery("StandardNote.FetchBySystemVariableName");
+        query.setParameter("name", name);
+        try {
+            data = (StandardNoteDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
 
     @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {

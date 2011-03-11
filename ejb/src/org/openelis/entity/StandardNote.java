@@ -56,7 +56,10 @@ import org.openelis.utils.Auditable;
     		          + " from StandardNote s where s.typeId = :typeId order by s.name"),
     @NamedQuery( name = "StandardNote.FetchByNameOrDescription", 
                 query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text)"
-                      + " from StandardNote s where (s.name like :name OR s.description like :description) order by s.name")
+                      + " from StandardNote s where (s.name like :name OR s.description like :description) order by s.name"),
+    @NamedQuery( name = "StandardNote.FetchBySystemVariableName", 
+                query = "select new org.openelis.domain.StandardNoteDO(s.id,s.name,s.description,s.typeId,s.text)"
+                      + " from StandardNote s, SystemVariable v where v.name = :name and s.name = v.value")                  
 })
             
     
