@@ -25,7 +25,8 @@
      pw.owner pw_owner,
      pw.collector pw_collector,
      pw.well_number pw_well_number,
-     a.city a_city
+     a.city a_city,
+     a.street_address a_street_address
 FROM
      sample s, sample_private_well pw, outer address a
 WHERE
@@ -47,6 +48,7 @@ WHERE
 	<field name="pw_collector" class="java.lang.String"/>
 	<field name="pw_well_number" class="java.lang.Integer"/>
 	<field name="a_city" class="java.lang.String"/>
+	<field name="a_street_address" class="java.lang.String"/>
 	<detail>
 		<band height="120" splitType="Stretch">
 			<staticText>
@@ -139,14 +141,14 @@ WHERE
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{s_client_reference}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{a_street_address}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="72" width="140" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
-				<text><![CDATA[Client Reference]]></text>
+				<text><![CDATA[Collection Address]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="284" y="84" width="140" height="12"/>
