@@ -25,34 +25,22 @@
 */
 package org.openelis.remote;
 
-import java.util.ArrayList;
-
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.StandardNoteDO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.manager.AnalyteParameterManager;
 
 @Remote
-public interface StandardNoteRemote {
-    public StandardNoteDO fetchById(Integer id) throws Exception;
+public interface AnalyteParameterManagerRemote {
 
-    public ArrayList<StandardNoteDO> fetchByType(Integer typeId, int max) throws Exception;
+    public AnalyteParameterManager add(AnalyteParameterManager man) throws Exception;
     
-    public ArrayList<StandardNoteDO> fetchByNameOrDescription(String name, String description, int max) throws Exception;
-    
-    public StandardNoteDO fetchBySystemVariableName(String name) throws Exception;
-    
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    public AnalyteParameterManager fetchActiveByReferenceIdReferenceTableId(Integer refId,
+                                                                      Integer refTableId) throws Exception;
 
-    public StandardNoteDO add(StandardNoteDO data) throws Exception;
+    public AnalyteParameterManager update(AnalyteParameterManager man) throws Exception;
 
-    public StandardNoteDO update(StandardNoteDO data) throws Exception;
+    public AnalyteParameterManager fetchForUpdate(AnalyteParameterManager man) throws Exception;
 
-    public StandardNoteDO fetchForUpdate(Integer id) throws Exception;
+    public AnalyteParameterManager abortUpdate(AnalyteParameterManager man) throws Exception;
 
-    public StandardNoteDO abortUpdate(Integer id) throws Exception;
-
-    public void delete(StandardNoteDO data) throws Exception;
-    
 }
