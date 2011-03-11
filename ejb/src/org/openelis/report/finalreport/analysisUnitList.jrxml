@@ -53,4 +53,7 @@ WHERE
 			</staticText>
 		</band>
 	</detail>
+	<summary>
+		<band height="12"/>
+	</summary>
 </jasperReport>

@@ -28,6 +28,7 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.OptionListItem;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
@@ -263,6 +264,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 	 * remaining reports to stop the folding process.
 	 */
 	@RolesAllowed("r_final-select")
+	@TransactionTimeout(600)
 	public ReportStatus runReportForBatch(ArrayList<QueryData> paramList) throws Exception {
 		int i;
 		String printer;
