@@ -51,7 +51,7 @@
                 <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getLocationAddrMultipleUnit()}" width="214" case="UPPER" max="30" tab="{meta:getLocationAddrStreetAddress()},{meta:getEnvLocation()}" field="String" />
+                <textbox key="{meta:getLocationAddrMultipleUnit()}" width="214" case="LOWER" max="30" tab="{meta:getLocationAddrStreetAddress()},{meta:getEnvLocation()}" field="String" />
               </widget>
             </row>
             <row>
@@ -59,7 +59,7 @@
                 <xsl:value-of select='resource:getString($constants,"address")' />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getLocationAddrStreetAddress()}" width="214" case="UPPER" max="30" tab="{meta:getLocationAddrCity()},{meta:getLocationAddrMultipleUnit()}" field="String" />
+                <textbox key="{meta:getLocationAddrStreetAddress()}" width="214" case="LOWER" max="30" tab="{meta:getLocationAddrCity()},{meta:getLocationAddrMultipleUnit()}" field="String" />
               </widget>
             </row>
             <row>

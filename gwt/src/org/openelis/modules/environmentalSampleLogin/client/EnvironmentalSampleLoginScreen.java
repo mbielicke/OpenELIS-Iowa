@@ -31,8 +31,10 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
@@ -123,9 +125,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     protected Dropdown<Integer>            statusId;
     protected CalendarLookUp               collectedDate, receivedDate;
     protected MenuItem                     historySample, historySampleEnvironmental,
-                                           historySampleProject, historySampleOrganization, historySampleItem,
-                                           historyAnalysis, historyCurrentResult, historyStorage, historySampleQA,
-                                           historyAnalysisQA, historyAuxData;
+                                           historySampleProject, historySampleOrganization,
+                                           historySampleItem, historyAnalysis,
+                                           historyCurrentResult, historyStorage,
+                                           historySampleQA, historyAnalysisQA,
+                                           historyAuxData;
 
     protected AppButton                    queryButton, addButton, updateButton, nextButton,
                                            prevButton, commitButton, abortButton, orderLookup;
@@ -136,6 +140,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     private SendoutOrderScreen             sendoutOrderScreen;
 
     private SampleEnvironmentalImportOrder envOrderImport;
+    private StandardNoteDO                 autoNote; 
+    private ScreenService                  standardNoteService;   
     
     private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
@@ -145,6 +151,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     public EnvironmentalSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
+        standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("sampleenvironmental");
         if (userPermission == null)
@@ -172,7 +179,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                                          "user_action", "type_of_sample", 
                                                          "source_of_sample", "sample_container", 
                                                          "unit_of_measure", "qaevent_type", 
-                                                         "aux_field_value_type", "organization_type", "worksheet_status");
+                                                         "aux_field_value_type", "organization_type", "worksheet_status");             
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -932,17 +939,22 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
 
     protected void add() {
+        NoteViewDO exn;
+        
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
         // default the form
         try {
             manager.setDefaults();
-
             manager.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                    .setIsHazardous("N");
-
+                                                                    .setIsHazardous("N");      
+            if (autoNote != null) {
+                exn = manager.getExternalNote().getEditingNote();
+                exn.setIsExternal("Y");
+                exn.setText(autoNote.getText());
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             return;
@@ -1229,10 +1241,16 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
                 model.add(new TableDataRow(d.getId(), d.getEntry()));
 
-            statusId.setModel(model);
+            statusId.setModel(model);            
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
+        }
+        
+        try {
+            autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_environmental");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

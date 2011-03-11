@@ -31,8 +31,10 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
@@ -56,15 +58,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
@@ -132,9 +133,10 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
     private ScreenNavigator           nav;
     private ModulePermission          userPermission;
-
     private SampleSDWISImportOrder    sdwisOrderImport;
     private SendoutOrderScreen        sendoutOrderScreen;
+    private StandardNoteDO            autoNote;
+    private ScreenService             standardNoteService;
 
     private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
@@ -144,7 +146,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     public SDWISSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SDWISSampleLoginDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
-
+        standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
+        
         userPermission = OpenELIS.getSystemUserPermission().getModule("samplesdwis");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "SDWIS Sample Login Screen");
@@ -911,6 +914,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
 
     protected void add() {
+        NoteViewDO exn;
+        
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
 
@@ -918,7 +923,11 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         try {
             manager.setDefaults();
             manager.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
-
+            if (autoNote != null) {                
+                exn = manager.getExternalNote().getEditingNote();            
+                exn.setIsExternal("Y");
+                exn.setText(autoNote.getText());
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             return;
@@ -1216,6 +1225,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
+        }
+        
+        try {
+            autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_sdwis");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

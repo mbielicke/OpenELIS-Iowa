@@ -149,7 +149,6 @@ public class SampleItemAnalysisTreeTab extends Screen
         itemsTree.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeDataItem>() {
             public void onBeforeSelection(BeforeSelectionEvent<TreeDataItem> event) {
                 // do nothing
-
             }
         });
 
