@@ -31,11 +31,12 @@ import java.util.EnumSet;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
@@ -121,16 +122,21 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     protected TextBox<Datetime>            collectedTime;
     protected Dropdown<Integer>            statusId;
     protected CalendarLookUp               collectedDate, receivedDate;
-    protected AppButton                    queryButton, addButton, updateButton, nextButton,
-                    prevButton, commitButton, abortButton, orderLookup;
+    protected AppButton                    queryButton, addButton, updateButton,
+                                           nextButton, prevButton, commitButton,
+                                           abortButton, orderLookup;
     protected MenuItem                     historySample, historySamplePrivateWell,
-                    historySampleProject, historySampleItem, historyAnalysis, historyCurrentResult,
-                    historyStorage, historySampleQA, historyAnalysisQA, historyAuxData;
+                                           historySampleProject, historySampleItem,
+                                           historyAnalysis, historyCurrentResult,
+                                           historyStorage, historySampleQA,
+                                           historyAnalysisQA, historyAuxData;
     protected TabPanel                     tabs;
 
     private ScreenNavigator                nav;
     private ModulePermission               userPermission;
     private SendoutOrderScreen             sendoutOrderScreen;
+    private StandardNoteDO                 autoNote;
+    private ScreenService                  standardNoteService;
 
     protected SamplePrivateWellImportOrder wellOrderImport;
 
@@ -142,11 +148,11 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     public PrivateWellWaterSampleLoginScreen() throws Exception {
         super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
+        standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
 
         userPermission = OpenELIS.getSystemUserPermission().getModule("sampleprivatewell");
         if (userPermission == null)
-            throw new PermissionException("screenPermException",
-                                          "Private Well Water Sample Login Screen");
+            throw new PermissionException("screenPermException", "Private Well Water Sample Login Screen");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -170,7 +176,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                                                          "analysis_status", "type_of_sample",
                                                          "source_of_sample", "sample_container",
                                                          "unit_of_measure", "qaevent_type",
-                                                         "aux_field_value_type", "worksheet_status");
+                                                         "aux_field_value_type", "worksheet_status");            
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -907,13 +913,25 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
 
     protected void add() {
+        NoteViewDO exn;
+        
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
 
-        // default the form
-        manager.setDefaults();
-        manager.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
-
+        // default the form        
+        try {
+            manager.setDefaults();
+            manager.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
+            if (autoNote != null) { 
+                exn = manager.getExternalNote().getEditingNote();
+                exn.setIsExternal("Y");
+                exn.setText(autoNote.getText());
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            return;
+        }
+        
         setState(Screen.State.ADD);
         DataChangeEvent.fire(this);
         setFocus(accessionNumber);
@@ -1195,6 +1213,12 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
+        }
+        
+        try {
+            autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_private_well");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

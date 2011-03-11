@@ -614,7 +614,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
          * changes for which this table is to be loaded. This only needs to happen
          * if the data is to be edited and validated. 
          */
-        if (validateResults) {
+        if (validateResults) { 
             cl = testResultsTable.getColumns();
             for (i = 2; i < cl.size(); i++) {
                 tabcol = (SampleResultValueTableColumn)cl.get(i);

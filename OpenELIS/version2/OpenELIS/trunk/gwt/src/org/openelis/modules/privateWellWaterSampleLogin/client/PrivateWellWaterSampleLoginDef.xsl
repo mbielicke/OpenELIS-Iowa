@@ -231,7 +231,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'faxNumber')" />:
                   </text>
-                  <textbox key="{meta:getWellReportToAddressFaxPhone()}" width="100" max="16" tab="{meta:getWellLocation()},{meta:getWellReportToAddressWorkPhone()}" field="String" />
+                  <textbox key="{meta:getWellReportToAddressFaxPhone()}" width="100" max="16" tab="{meta:getWellLocation()},{meta:getWellReportToAddressWorkPhone()}" mask="{resource:getString($constants,'phonePattern')}" field="String" />
                 </row>
                 <row></row>
               </TablePanel>
@@ -249,7 +249,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getWellLocationAddrMultipleUnit()}" width="180" case="UPPER" max="30" tab="{meta:getWellLocationAddrStreetAddress()},{meta:getWellLocation()}" field="String" />
+                    <textbox key="{meta:getWellLocationAddrMultipleUnit()}" width="180" case="LOWER" max="30" tab="{meta:getWellLocationAddrStreetAddress()},{meta:getWellLocation()}" field="String" />
                   </widget>
                 </row>
                 <row>
@@ -257,7 +257,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"address")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getWellLocationAddrStreetAddress()}" width="180" case="UPPER" max="30" tab="{meta:getWellLocationAddrCity()},{meta:getWellLocationAddrMultipleUnit()}" field="String" />
+                    <textbox key="{meta:getWellLocationAddrStreetAddress()}" width="180" case="LOWER" max="30" tab="{meta:getWellLocationAddrCity()},{meta:getWellLocationAddrMultipleUnit()}" field="String" />
                   </widget>
                 </row>
                 <row>

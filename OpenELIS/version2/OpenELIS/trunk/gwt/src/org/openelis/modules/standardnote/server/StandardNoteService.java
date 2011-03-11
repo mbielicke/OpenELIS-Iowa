@@ -43,8 +43,10 @@ public class StandardNoteService {
     }
 
     public ArrayList<StandardNoteDO> fetchByNameOrDescription(Query query) throws Exception {
-        String name = null, description = null;
+        String name, description;
 
+        name = null;
+        description = null;
         for (QueryData field : query.getFields()) {
             if (field.key != null) {
                 if (StandardNoteMeta.getName().equals(field.key))
@@ -54,6 +56,10 @@ public class StandardNoteService {
             }
         }
         return remote().fetchByNameOrDescription(name, description, 1000);
+    }
+    
+    public StandardNoteDO fetchBySystemVariableName(String name) throws Exception {        
+        return remote().fetchBySystemVariableName(name);
     }
 
     public ArrayList<StandardNoteDO> fetchByType(Integer typeId) throws Exception {
