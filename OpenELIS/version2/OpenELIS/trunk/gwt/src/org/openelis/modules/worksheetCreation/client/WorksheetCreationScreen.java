@@ -99,11 +99,11 @@ public class WorksheetCreationScreen extends Screen {
     private boolean                               isTemplateLoaded, isSaved, wasExitCalled;
     private int                                   tempId, qcStartIndex;
     private Integer                               formatId, formatTotal,
-                                                  statusWorking, typeFixed, typeDup,
-                                                  typeRand, typeLastWell, typeLastRun,
-                                                  typeLastBoth;
-    private String                                typeRandString, typeLastWellString,
-                                                  typeLastRunString, typeLastBothString;
+                                                  statusWorking, typeDup, typeFixed,
+                                                  typeFixedAlways, typeLastBoth,
+                                                  typeLastRun, typeLastWell, typeRand;
+    private String                                typeLastBothString, typeLastRunString,
+                                                  typeLastWellString, typeRandString;
     private ScreenService                         qcService, worksheetService;
     private ModulePermission                      userPermission;
     private WorksheetManager                      manager;
@@ -418,16 +418,17 @@ public class WorksheetCreationScreen extends Screen {
         try {
             formatTotal = DictionaryCache.getIdFromSystemName("wformat_total");
             statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
-            typeFixed = DictionaryCache.getIdFromSystemName("pos_fixed");
             typeDup = DictionaryCache.getIdFromSystemName("pos_duplicate");
-            typeRand = DictionaryCache.getIdFromSystemName("pos_random");
-            typeLastWell = DictionaryCache.getIdFromSystemName("pos_last_of_well");
-            typeLastRun = DictionaryCache.getIdFromSystemName("pos_last_of_run");
+            typeFixed = DictionaryCache.getIdFromSystemName("pos_fixed");
+            typeFixedAlways = DictionaryCache.getIdFromSystemName("pos_fixed_always");
             typeLastBoth = DictionaryCache.getIdFromSystemName("pos_last_of_well_&_run");
-            typeRandString = DictionaryCache.getEntryFromId(typeRand).getEntry();
+            typeLastRun = DictionaryCache.getIdFromSystemName("pos_last_of_run");
+            typeLastWell = DictionaryCache.getIdFromSystemName("pos_last_of_well");
+            typeRand = DictionaryCache.getIdFromSystemName("pos_random");
             typeLastWellString = DictionaryCache.getEntryFromId(typeLastWell).getEntry();
             typeLastRunString = DictionaryCache.getEntryFromId(typeLastRun).getEntry();
             typeLastBothString = DictionaryCache.getEntryFromId(typeLastBoth).getEntry();
+            typeRandString = DictionaryCache.getEntryFromId(typeRand).getEntry();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             wcLookupScreen.getWindow().close();
@@ -802,14 +803,9 @@ public class WorksheetCreationScreen extends Screen {
         TestWorksheetItemDO      twiDO;
 
         //
-        // initialize/clear the qcItems and qcErrors
+        // initialize/clear the qcItems
         //
-        if (qcItems == null) {
-            qcItems = new TableDataRow[testWorksheetDO.getTotalCapacity()];
-        } else {
-            for (i = 0; i < qcItems.length; i++)
-                qcItems[i] = null;
-        }
+        qcItems = new TableDataRow[testWorksheetDO.getTotalCapacity()];
 
         qcRandList     = new ArrayList<TableDataRow>();
         qcLastWellList = new ArrayList<TableDataRow>();
@@ -827,7 +823,8 @@ public class WorksheetCreationScreen extends Screen {
             
             qcRow.key = getNextTempId();                           // fake worksheet analysis id
             
-            if (typeFixed.equals(twiDO.getTypeId()) || typeDup.equals(twiDO.getTypeId())) {
+            if (typeDup.equals(twiDO.getTypeId()) || typeFixed.equals(twiDO.getTypeId()) ||
+                typeFixedAlways.equals(twiDO.getTypeId())) {
                 for (j = 0; j < numBatches; j++) {
                     posNum = j * testWorksheetDO.getBatchCapacity() + twiDO.getPosition() - 1;
                     
@@ -951,14 +948,38 @@ public class WorksheetCreationScreen extends Screen {
         }
         
         //
-        // Append Last of Run QCItems
+        // Append Last of Run QCItems interweaving any fixedAlways QC items
         //
-        for (k = 0; k < lastOf.size() && i < testWorksheetDO.getTotalCapacity(); k++) {
-            row = lastOf.get(k);
-            row.cells.get(0).value = getPositionNumber(i);
-            row.cells.get(1).value = "X."+getPositionNumber(i);     // qc accession #
-            items.add(row);
+        for (k = 0; k < lastOf.size() && i < testWorksheetDO.getTotalCapacity();) {
+            row = qcItems[i];
+            if (row != null &&
+                typeFixedAlways.equals(((TestWorksheetItemDO)((ArrayList<Object>)row.data).get(0)).getTypeId())) {
+                row.cells.get(0).value = getPositionNumber(i);
+                items.add(row);
+            } else {
+                row = lastOf.get(k);
+                row.cells.get(0).value = getPositionNumber(i);
+                row.cells.get(1).value = "X."+getPositionNumber(i);     // qc accession #
+                items.add(row);
+                k++;
+            }
             i++;
+        }
+        
+        //
+        // Add in any remaining fixed always QCs
+        //
+        k = i;
+        while (k < testWorksheetDO.getTotalCapacity()) {
+            row = qcItems[k];
+            if (row != null) {
+                twiDO = (TestWorksheetItemDO) ((ArrayList<Object>)row.data).get(0);
+                if (typeFixedAlways.equals(twiDO.getTypeId())) {
+                    row.cells.get(0).value = getPositionNumber(k);
+                    items.add(row);
+                }
+            }
+            k++;
         }
 
         //
