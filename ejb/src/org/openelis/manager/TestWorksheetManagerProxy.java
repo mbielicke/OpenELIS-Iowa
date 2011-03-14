@@ -46,13 +46,23 @@ import org.openelis.meta.TestMeta;
 
 public class TestWorksheetManagerProxy {
 
-    private static int typeFixed, typeDupl;
+    private static int typeDupl, typeFixed, typeFixedAlways;
 
     public TestWorksheetManagerProxy() {
         DictionaryDO data;
         DictionaryLocal dl;
 
         dl = dictLocal();
+
+        if (typeDupl == 0) {
+            try {
+                data = dl.fetchBySystemName("pos_duplicate");
+                typeDupl = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                typeDupl = 0;
+            }
+        }
 
         if (typeFixed == 0) {
             try {
@@ -64,13 +74,13 @@ public class TestWorksheetManagerProxy {
             }
         }
 
-        if (typeDupl == 0) {
+        if (typeFixedAlways == 0) {
             try {
-                data = dl.fetchBySystemName("pos_duplicate");
-                typeDupl = data.getId();
+                data = dl.fetchBySystemName("pos_fixed_always");
+                typeFixedAlways = data.getId();
             } catch (Throwable e) {
                 e.printStackTrace();
-                typeDupl = 0;
+                typeFixedAlways = 0;
             }
         }
     }
@@ -437,10 +447,11 @@ public class TestWorksheetManagerProxy {
 
     /**
      * This method will return true if the type specified in currDO is duplicate
-     * and if the type specified in prevDO is fixed and, such that the position
-     * specified in prevDO is one less than the position in currDO. The two integers, 
-     * typeFixed and typeDupl, are the ids of the dictionary records that contain the 
-     * entries for the fixed and duplicate types respectively
+     * and if the type specified in prevDO is fixed or fixedAlways and, such that
+     * the position specified in prevDO is one less than the position in currDO.
+     * The three integers, typeDupl, typeFixed and typeFixedAlways, are the ids
+     * of the dictionary records that contain the entries for the fixed and duplicate
+     * types respectively
      */
     private boolean duplicateAfterFixed(TestWorksheetItemDO currDO, TestWorksheetItemDO prevDO) {
         Integer ptId, ctId, ppos, cpos;
@@ -454,7 +465,8 @@ public class TestWorksheetManagerProxy {
         ppos = prevDO.getPosition();
 
         if (ppos != null && cpos != null && ppos == cpos - 1) {
-            if (DataBaseUtil.isSame(typeDupl, ctId) && DataBaseUtil.isSame(typeFixed, ptId))
+            if (DataBaseUtil.isSame(typeDupl, ctId) &&
+                (DataBaseUtil.isSame(typeFixed, ptId) || DataBaseUtil.isSame(typeFixedAlways, ptId)))
                 return true;
         }
 
