@@ -61,11 +61,11 @@
 				<include name="lib/iText-2.1.7.jar" />
 				<include name="lib/jcommon-1.0.15.jar" />
 				<include name="lib/jfreechart-1.0.12.jar" />				
-			    <include name="lib/groovy-all-1.5.5.jar" />		
+			    <include name="lib/groovy-all-1.7.5.jar" />
 			    <include name="lib/barbecue-1.5-beta1.jar" />			    
 			    <include name="lib/commons-digester-1.7.jar" />
-		    	<include name="lib/commons-beanutils-1.5.jar" />
-			    <include name="lib/jasperreports-3.7.4.jar" />
+		    	<include name="lib/commons-beanutils-1.8.2.jar" />
+			    <include name="lib/jasperreports-4.0.1.jar" />
 			</fileset>
 		</ear>
 	</target>
