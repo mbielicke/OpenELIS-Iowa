@@ -61,7 +61,7 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
     @EJB
     private DictionaryLocal          dictionary;
     
-    private static int               typeFixed, typeDupl; 
+    private static int               typeDupl, typeFixed, typeFixedAlways; 
     
     private static final Logger      log  = Logger.getLogger(TestWorksheetItemBean.class.getName());
     
@@ -70,6 +70,15 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         DictionaryDO data;
         
         
+        try {
+            data = dictionary.fetchBySystemName("pos_duplicate");
+            typeDupl = data.getId();
+        } catch (Throwable e) {
+            typeDupl = 0;
+            log.log(Level.SEVERE,
+                    "Failed to lookup dictionary entry by system name='pos_duplicate'", e);
+        }
+
         try {
             data = dictionary.fetchBySystemName("pos_fixed");
             typeFixed = data.getId();
@@ -80,12 +89,12 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         }
         
         try {
-            data = dictionary.fetchBySystemName("pos_duplicate");
-            typeDupl = data.getId();
+            data = dictionary.fetchBySystemName("pos_fixed_always");
+            typeFixedAlways = data.getId();
         } catch (Throwable e) {
-            typeDupl = 0;
+            typeFixedAlways = 0;
             log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='pos_duplicate'", e);
+                    "Failed to lookup dictionary entry by system name='pos_fixed_always'", e);
         }
     }
     
@@ -172,7 +181,8 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         }
         
         if (position == null) {
-            if (DataBaseUtil.isSame(typeDupl, typeId) || DataBaseUtil.isSame(typeFixed, typeId)) {
+            if (DataBaseUtil.isSame(typeDupl, typeId) || DataBaseUtil.isSame(typeFixed, typeId) ||
+                DataBaseUtil.isSame(typeFixedAlways, typeId)) {
                 list.add(new FieldErrorException("fixedDuplicatePosException",
                                                  TestMeta.getWorksheetItemPosition()));
             }
@@ -180,7 +190,8 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
             if (position == 1 && DataBaseUtil.isSame(typeDupl, typeId)) {
                 list.add(new FieldErrorException("posOneDuplicateException",
                                                  TestMeta.getWorksheetItemTypeId()));
-            } else if (DataBaseUtil.isDifferent(typeDupl, typeId) && DataBaseUtil.isDifferent(typeFixed, typeId)) {
+            } else if (DataBaseUtil.isDifferent(typeDupl, typeId) && DataBaseUtil.isDifferent(typeFixed, typeId) &&
+                       DataBaseUtil.isDifferent(typeFixedAlways, typeId)) {
                 list.add(new FieldErrorException("posSpecifiedException",
                                                  TestMeta.getWorksheetItemPosition()));
             }
@@ -189,6 +200,4 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         if(list.size() > 0)
             throw list;
     }
-
-
 }
