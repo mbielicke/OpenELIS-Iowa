@@ -188,7 +188,7 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                commitButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
             }
         });
@@ -200,7 +200,7 @@ public class AnalyteScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
             }
         });
@@ -382,7 +382,7 @@ public class AnalyteScreen extends Screen {
         
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
-                if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
                 }
