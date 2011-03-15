@@ -2,14 +2,14 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="finalreport" language="groovy" pageWidth="612" pageHeight="791" columnWidth="576" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="144"/>
+	<property name="ireport.y" value="96"/>
 	<import value="org.openelis.report.finalreport.OrganizationPrint"/>
 	<import value="org.openelis.report.finalreport.NoteDataSource"/>
 	<parameter name="SAMPLE_ID" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="ORGANIZATION_ID" class="java.lang.Integer">
-		<defaultValueExpression><![CDATA["0"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
@@ -171,7 +171,7 @@ WHERE
 		</band>
 	</pageHeader>
 	<detail>
-		<band height="96" splitType="Stretch">
+		<band height="12" splitType="Stretch">
 			<subreport isUsingCache="true">
 				<reportElement positionType="Float" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -183,8 +183,10 @@ WHERE
 				<dataSourceExpression><![CDATA[$V{NOTE_DATASOURCE}]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleQaeventNote.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="12" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -194,8 +196,10 @@ WHERE
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleAuxData.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="24" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -205,15 +209,17 @@ WHERE
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisPending.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="30" splitType="Stretch">
 			<staticText>
-				<reportElement positionType="Float" x="2" y="42" width="548" height="14"/>
+				<reportElement positionType="Float" x="0" y="0" width="548" height="18"/>
 				<textElement textAlignment="Center">
 					<font size="12" isBold="true" pdfFontName="Times-Bold"/>
 				</textElement>
 				<text><![CDATA[Results of Analyses]]></text>
 			</staticText>
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="60" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="18" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -229,8 +235,10 @@ WHERE
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysis.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="72" width="550" height="12" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["W".equals($F{s_domain}) == false]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SAMPLE_ID">
@@ -242,8 +250,10 @@ WHERE
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisUnitList.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="84" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_DOMAIN">
 					<subreportParameterExpression><![CDATA[$F{s_domain}]]></subreportParameterExpression>
 				</subreportParameter>
