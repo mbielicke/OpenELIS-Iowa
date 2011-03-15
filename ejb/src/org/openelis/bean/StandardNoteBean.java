@@ -28,10 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -48,9 +46,9 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.StandardNoteMeta;
@@ -66,11 +64,8 @@ public class StandardNoteBean implements StandardNoteRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
 
-    @Resource
-    private SessionContext                ctx;
-
     @EJB
-    private LockLocal                     lockBean;
+    private LockLocal                     lock;
 
     private static final StandardNoteMeta meta = new StandardNoteMeta();
 
@@ -180,11 +175,15 @@ public class StandardNoteBean implements StandardNoteRemote {
     public StandardNoteDO update(StandardNoteDO data) throws Exception {
         StandardNote entity;
 
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.STANDARD_NOTE, data.getId());
+            return data;
+        }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lockBean.validateLock(ReferenceTable.STANDARD_NOTE, data.getId());
+        lock.validateLock(ReferenceTable.STANDARD_NOTE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(StandardNote.class, data.getId());
@@ -193,18 +192,18 @@ public class StandardNoteBean implements StandardNoteRemote {
         entity.setText(data.getText());
         entity.setTypeId(data.getTypeId());
 
-        lockBean.unlock(ReferenceTable.STANDARD_NOTE, data.getId());
+        lock.unlock(ReferenceTable.STANDARD_NOTE, data.getId());
 
         return data;
     }
 
     public StandardNoteDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.STANDARD_NOTE, id);
+        lock.lock(ReferenceTable.STANDARD_NOTE, id);
         return fetchById(id);
     }
 
     public StandardNoteDO abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.STANDARD_NOTE, id);
+        lock.unlock(ReferenceTable.STANDARD_NOTE, id);
         return fetchById(id);
     }
 
@@ -213,14 +212,14 @@ public class StandardNoteBean implements StandardNoteRemote {
 
         checkSecurity(ModuleFlags.DELETE);
 
-        lockBean.validateLock(ReferenceTable.STANDARD_NOTE, data.getId());
+        lock.validateLock(ReferenceTable.STANDARD_NOTE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(StandardNote.class, data);
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.unlock(ReferenceTable.ANALYTE, data.getId());
+        lock.unlock(ReferenceTable.ANALYTE, data.getId());
     }
 
     private void validate(StandardNoteDO standardNoteDO) throws Exception {

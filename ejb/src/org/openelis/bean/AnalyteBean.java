@@ -49,9 +49,9 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalyteLocal;
 import org.openelis.local.LockLocal;
@@ -66,10 +66,10 @@ import org.openelis.utils.PermissionInterceptor;
 public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager               manager;
+    private EntityManager               manager;   
 
     @EJB
-    private LockLocal                   lockBean;
+    private LockLocal                   lock;
 
     private static final AnalyteMeta meta = new AnalyteMeta();
 
@@ -169,11 +169,15 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
     public AnalyteViewDO update(AnalyteViewDO data) throws Exception {
         Analyte entity;
 
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.ANALYTE, data.getId());
+            return data;
+        }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lockBean.validateLock(ReferenceTable.ANALYTE, data.getId());
+        lock.validateLock(ReferenceTable.ANALYTE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
@@ -183,7 +187,7 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         entity.setName(data.getName());
         entity.setParentAnalyteId(data.getParentAnalyteId());
 
-        lockBean.unlock(ReferenceTable.ANALYTE, data.getId());
+        lock.unlock(ReferenceTable.ANALYTE, data.getId());
 
         return data;
 
@@ -196,23 +200,23 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
 
         validateForDelete(data.getId());
 
-        lockBean.validateLock(ReferenceTable.ANALYTE, data.getId());
+        lock.validateLock(ReferenceTable.ANALYTE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Analyte.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.unlock(ReferenceTable.ANALYTE, data.getId());
+        lock.unlock(ReferenceTable.ANALYTE, data.getId());
     }
 
     public AnalyteViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.ANALYTE, id);
+        lock.lock(ReferenceTable.ANALYTE, id);
         return fetchById(id);
     }
 
     public AnalyteViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.ANALYTE, id);
+        lock.unlock(ReferenceTable.ANALYTE, id);
         return fetchById(id);
     }
     
@@ -263,14 +267,14 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", AnalyteMeta.getName()));
 
         try {
             query = manager.createQuery("from Analyte where name = :name");
             query.setParameter("name", data.getName());
             analyte = (Analyte)query.getSingleResult();
             if (data.getId() == null || !data.getId().equals(analyte.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                list.add(new FieldErrorException("fieldUniqueException", AnalyteMeta.getName()));
         } catch (EntityNotFoundException e) {
             // Do nothing here, this is what we expect and do not want this
             // exception thrown.

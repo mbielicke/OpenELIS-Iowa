@@ -28,10 +28,9 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.ApplicationException;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -50,9 +49,9 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.LabelMeta;
@@ -68,13 +67,10 @@ public class LabelBean implements LabelRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager             manager;
 
-    @Resource
-    private SessionContext            ctx;
-
     @EJB
-    private LockLocal                 lockBean;
+    private LockLocal                 lock;
 
-    private static final LabelMeta meta = new LabelMeta();
+    private static final LabelMeta    meta = new LabelMeta();
 
     public LabelBean() {
     }
@@ -158,14 +154,15 @@ public class LabelBean implements LabelRemote {
     public LabelViewDO update(LabelViewDO data) throws Exception {
         Label entity;
 
-        if ( !data.isChanged())
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.LABEL, data.getId());
             return data;
-
+        }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lockBean.validateLock(ReferenceTable.LABEL, data.getId());
+        lock.validateLock(ReferenceTable.LABEL, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Label.class, data.getId());
@@ -174,18 +171,18 @@ public class LabelBean implements LabelRemote {
         entity.setPrinterTypeId(data.getPrinterTypeId());
         entity.setScriptletId(data.getScriptletId());
 
-        lockBean.unlock(ReferenceTable.LABEL, data.getId());
+        lock.unlock(ReferenceTable.LABEL, data.getId());
 
         return data;
     }
 
     public LabelViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.LABEL, id);
+        lock.lock(ReferenceTable.LABEL, id);
         return fetchById(id);
     }
 
     public LabelViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.LABEL, id);
+        lock.unlock(ReferenceTable.LABEL, id);
         return fetchById(id);
     }
 
@@ -196,14 +193,14 @@ public class LabelBean implements LabelRemote {
 
         validateForDelete(data.getId());
 
-        lockBean.validateLock(ReferenceTable.LABEL, data.getId());
+        lock.validateLock(ReferenceTable.LABEL, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Label.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.unlock(ReferenceTable.LABEL, data.getId());
+        lock.unlock(ReferenceTable.LABEL, data.getId());
     }
 
     public void validateForDelete(Integer id) throws Exception {

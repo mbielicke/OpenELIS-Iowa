@@ -28,10 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -49,9 +47,9 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.StorageUnitMeta;
@@ -67,11 +65,8 @@ public class StorageUnitBean implements StorageUnitRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager                   manager;
 
-    @Resource
-    private SessionContext                  ctx;
-
     @EJB
-    private LockLocal                       lockBean;
+    private LockLocal                       lock;
 
     private static final StorageUnitMeta meta = new StorageUnitMeta();
 
@@ -156,14 +151,15 @@ public class StorageUnitBean implements StorageUnitRemote {
     public StorageUnitDO update(StorageUnitDO data) throws Exception {
         StorageUnit entity;
 
-        if ( !data.isChanged())
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
             return data;
-
+        }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lockBean.validateLock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lock.validateLock(ReferenceTable.STORAGE_UNIT, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
@@ -172,18 +168,18 @@ public class StorageUnitBean implements StorageUnitRemote {
         entity.setDescription(data.getDescription());
         entity.setIsSingular(data.getIsSingular());
 
-        lockBean.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lock.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
 
         return data;
     }
 
     public StorageUnitDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.STORAGE_UNIT, id);
+        lock.lock(ReferenceTable.STORAGE_UNIT, id);
         return fetchById(id);
     }
 
     public StorageUnitDO abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.STORAGE_UNIT, id);
+        lock.unlock(ReferenceTable.STORAGE_UNIT, id);
         return fetchById(id);
     }
 
@@ -194,14 +190,14 @@ public class StorageUnitBean implements StorageUnitRemote {
 
         validateForDelete(data);
 
-        lockBean.validateLock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lock.validateLock(ReferenceTable.STORAGE_UNIT, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(StorageUnit.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
+        lock.unlock(ReferenceTable.STORAGE_UNIT, data.getId());
 
     }
 
