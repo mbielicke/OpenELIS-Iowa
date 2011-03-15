@@ -221,37 +221,39 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<reportElement x="135" y="0" width="1" height="12"/>
 			</line>
 		</band>
-		<band height="24" splitType="Stretch">
+		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["test_format_two_column".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "twoColumn.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["test_format_three_column".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "threeColumn.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["test_format_four_column".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fourColumn.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["test_format_five_column".equals($F{test_format})]]></printWhenExpression>
 				</reportElement>
 				<dataSourceExpression><![CDATA[$V{RESULT_DATASOURCE}]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "fiveColumn.jasper"]]></subreportExpression>
 			</subreport>
+		</band>
+		<band height="12">
 			<subreport>
-				<reportElement positionType="Float" x="0" y="12" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>

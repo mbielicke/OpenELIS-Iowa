@@ -403,6 +403,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 		int i, n;
 		URL url;
 		File tempFile;
+		Integer zero;
 		Connection con;
 		boolean needBlank;
 		JasperReport jreport;
@@ -414,6 +415,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 		StatsDataSource ds;
 
 		con = null;
+		zero = new Integer(0);
 		try {
 			con = ReportUtil.getConnection(ctx);
 			/*
@@ -436,9 +438,12 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 			 * for each organization, print all the samples 
 			 */
 			for (OrganizationPrint o : orgPrintList) {
-				jparam.put("ORGANIZATION_ID", o.getOrganizationId());
+			    if (o.getOrganizationId() == null)
+			        jparam.put("ORGANIZATION_ID", zero);
+			    else
+			        jparam.put("ORGANIZATION_ID", o.getOrganizationId());
 				jparam.put("SAMPLE_ID", o.getSampleIds());
-				jparam.put("ORGANIZATION_INSTANCE", o);
+				jparam.put("ORGANIZATION_PRINT", o);
 				o.setJprint(JasperFillManager.fillReport(jreport, jparam, con));
 			}
 

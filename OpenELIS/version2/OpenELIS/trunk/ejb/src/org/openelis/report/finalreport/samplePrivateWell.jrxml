@@ -5,7 +5,9 @@
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.report.finalreport.OrganizationPrint"/>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
-	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
+	<parameter name="ORGANIZATION_ID" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -201,7 +203,7 @@ WHERE
 			</textField>
 			<subreport>
 				<reportElement x="35" y="24" width="250" height="60">
-					<printWhenExpression><![CDATA[$P{ORGANIZATION_ID} == null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$P{ORGANIZATION_ID}.equals(0)]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="ADDRESS_ID">
 					<subreportParameterExpression><![CDATA[$F{pw_report_to_address_id}]]></subreportParameterExpression>
@@ -223,7 +225,7 @@ WHERE
 			</subreport>
 			<subreport>
 				<reportElement x="35" y="24" width="250" height="60">
-					<printWhenExpression><![CDATA[$P{ORGANIZATION_ID} != null && $P{ORGANIZATION_ID}.equals($F{pw_organization_id})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[! $P{ORGANIZATION_ID}.equals(0) && $P{ORGANIZATION_ID}.equals($F{pw_organization_id})]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
@@ -242,7 +244,7 @@ WHERE
 			</subreport>
 			<subreport>
 				<reportElement x="35" y="24" width="250" height="60">
-					<printWhenExpression><![CDATA[$P{ORGANIZATION_ID} != null && !$P{ORGANIZATION_ID}.equals($F{pw_organization_id})]]></printWhenExpression>
+					<printWhenExpression><![CDATA[!$P{ORGANIZATION_ID}.equals(0) && !$P{ORGANIZATION_ID}.equals($F{pw_organization_id})]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
