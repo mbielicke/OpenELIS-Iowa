@@ -48,9 +48,9 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
@@ -67,15 +67,15 @@ import org.openelis.utils.PermissionInterceptor;
 public class SectionBean implements SectionRemote, SectionLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager               manager;
-
-    private static final SectionMeta    meta = new SectionMeta();
-
+    private EntityManager               manager;    
+    
     @EJB
-    private LockLocal                   lockBean;
+    private LockLocal                   lock;
 
     @EJB
     private JMSMessageProducerLocal     jmsProducer;
+    
+    private static final SectionMeta    meta = new SectionMeta();
 
     public SectionViewDO fetchById(Integer id) throws Exception {
         SectionViewDO data;
@@ -94,7 +94,9 @@ public class SectionBean implements SectionRemote, SectionLocal {
     }
 
     public ArrayList<SectionDO> fetchByName(String name, int maxResults) throws Exception {
-        Query query = manager.createNamedQuery("Section.FetchByName");
+        Query query;
+        
+        query = manager.createNamedQuery("Section.FetchByName");
         query.setParameter("name", name);
         query.setMaxResults(maxResults);
 
@@ -140,7 +142,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
     }
 
     public SectionViewDO add(SectionViewDO data) throws Exception {
-        Section section;
+        Section entity;
         SectionCacheMessage msg;
 
         checkSecurity(ModuleFlags.ADD);
@@ -149,16 +151,16 @@ public class SectionBean implements SectionRemote, SectionLocal {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        section = new Section();
+        entity = new Section();
 
-        section.setDescription(data.getDescription());
-        section.setOrganizationId(data.getOrganizationId());
-        section.setName(data.getName());
-        section.setIsExternal(data.getIsExternal());
-        section.setParentSectionId(data.getParentSectionId());
-        manager.persist(section);
+        entity.setDescription(data.getDescription());
+        entity.setOrganizationId(data.getOrganizationId());
+        entity.setName(data.getName());
+        entity.setIsExternal(data.getIsExternal());
+        entity.setParentSectionId(data.getParentSectionId());
+        manager.persist(entity);
 
-        data.setId(section.getId());
+        data.setId(entity.getId());
 
         // invalidate the cache
         msg = new SectionCacheMessage();
@@ -169,28 +171,29 @@ public class SectionBean implements SectionRemote, SectionLocal {
     }
 
     public SectionViewDO update(SectionViewDO data) throws Exception {
-        Section section;
+        Section entity;
         SectionCacheMessage msg;
 
-        if ( !data.isChanged())
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.SECTION, data.getId());
             return data;
-
+        }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lockBean.validateLock(ReferenceTable.SECTION, data.getId());
+        lock.validateLock(ReferenceTable.SECTION, data.getId());
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        section = manager.find(Section.class, data.getId());
+        entity = manager.find(Section.class, data.getId());
 
-        section.setDescription(data.getDescription());
-        section.setOrganizationId(data.getOrganizationId());
-        section.setName(data.getName());
-        section.setIsExternal(data.getIsExternal());
-        section.setParentSectionId(data.getParentSectionId());
+        entity.setDescription(data.getDescription());
+        entity.setOrganizationId(data.getOrganizationId());
+        entity.setName(data.getName());
+        entity.setIsExternal(data.getIsExternal());
+        entity.setParentSectionId(data.getParentSectionId());
 
-        lockBean.unlock(ReferenceTable.SECTION, data.getId());
+        lock.unlock(ReferenceTable.SECTION, data.getId());
 
         // invalidate the cache
         msg = new SectionCacheMessage();
@@ -201,12 +204,12 @@ public class SectionBean implements SectionRemote, SectionLocal {
     }
 
     public SectionViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.SECTION, id);
+        lock.lock(ReferenceTable.SECTION, id);
         return fetchById(id);
     }
 
     public SectionViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.SECTION, id);
+        lock.unlock(ReferenceTable.SECTION, id);
         return fetchById(id);
     }
 

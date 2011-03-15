@@ -47,9 +47,9 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.LockLocal;
 import org.openelis.meta.MethodMeta;
@@ -63,10 +63,10 @@ import org.openelis.utils.PermissionInterceptor;
 public class MethodBean implements MethodRemote {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
-
+    private EntityManager  manager;
+    
     @EJB
-    private LockLocal lock;
+    private LockLocal      lock;
 
     private static final MethodMeta meta = new MethodMeta(); 
     
@@ -170,9 +170,10 @@ public class MethodBean implements MethodRemote {
     public MethodDO update(MethodDO data) throws Exception {
     	Method entity;
     	
-    	if( !data.isChanged())
+    	if( !data.isChanged()) {
+    	    lock.unlock(ReferenceTable.METHOD, data.getId());
     		return data;
-    	
+    	}
     	checkSecurity(ModuleFlags.UPDATE);
     	
         validate(data);

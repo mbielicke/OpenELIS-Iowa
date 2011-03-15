@@ -66,7 +66,7 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     private EntityManager                      manager;
 
     @EJB
-    private LockLocal                          lockBean;
+    private LockLocal                          lock;
 
     private static final SystemVariableMeta meta = new SystemVariableMeta();
 
@@ -163,21 +163,22 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     public SystemVariableDO update(SystemVariableDO data) throws Exception {
         SystemVariable entity;
 
-        if ( !data.isChanged())
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
             return data;
-
+        }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lockBean.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(SystemVariable.class, data.getId());
         entity.setName(data.getName());
         entity.setValue(data.getValue());
 
-        lockBean.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
 
         return data;
     }
@@ -193,20 +194,20 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
 
         validate(data);
 
-        lockBean.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(SystemVariable.class, data.getId());
         entity.setName(data.getName());
         entity.setValue(data.getValue());
 
-        lockBean.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
 
         return data;
     }
 
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.SYSTEM_VARIABLE, id);
+        lock.lock(ReferenceTable.SYSTEM_VARIABLE, id);
         return fetchById(id);
     }
     
@@ -218,13 +219,13 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
         } catch (Exception e) {
         	return null;
         }
-        lockBean.lock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.lock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
         
         return data;
     }
     
     public SystemVariableDO abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.SYSTEM_VARIABLE, id);
+        lock.unlock(ReferenceTable.SYSTEM_VARIABLE, id);
         return fetchById(id);
     }
 
@@ -233,14 +234,14 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
 
         checkSecurity(ModuleFlags.DELETE);
 
-        lockBean.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.validateLock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(SystemVariable.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
+        lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
     }
     
     public void validate(SystemVariableDO data) throws Exception {

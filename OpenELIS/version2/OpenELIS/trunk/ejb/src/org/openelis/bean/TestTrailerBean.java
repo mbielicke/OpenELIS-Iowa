@@ -28,10 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -66,10 +64,10 @@ import org.openelis.utils.PermissionInterceptor;
 public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                manager;
+    private EntityManager             manager;
 
     @EJB
-    private LockLocal                    lockBean;
+    private LockLocal                 lock;
 
     private static final TestTrailerMeta meta = new TestTrailerMeta();
 
@@ -151,14 +149,15 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
     public TestTrailerDO update(TestTrailerDO data) throws Exception {
         TestTrailer entity;
 
-        if ( !data.isChanged())
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.TEST_TRAILER, data.getId());
             return data;
-
+        }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lockBean.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
+        lock.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(TestTrailer.class, data.getId());
@@ -166,18 +165,18 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
         entity.setDescription(data.getDescription());
         entity.setText(data.getText());
 
-        lockBean.unlock(ReferenceTable.TEST_TRAILER, data.getId());
+        lock.unlock(ReferenceTable.TEST_TRAILER, data.getId());
 
         return data;
     }
 
     public TestTrailerDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.TEST_TRAILER, id);
+        lock.lock(ReferenceTable.TEST_TRAILER, id);
         return fetchById(id);
     }
 
     public TestTrailerDO abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.TEST_TRAILER, id);
+        lock.unlock(ReferenceTable.TEST_TRAILER, id);
         return fetchById(id);
     }
 
@@ -188,7 +187,7 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
 
         checkSecurity(ModuleFlags.DELETE);
 
-        lockBean.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
+        lock.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
 
         // reference check
         query = manager.createNamedQuery("TestTrailer.ReferenceCount");
@@ -204,7 +203,7 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
         if (entity != null)
             manager.remove(entity);
 
-        lockBean.unlock(ReferenceTable.TEST_TRAILER, data.getId());
+        lock.unlock(ReferenceTable.TEST_TRAILER, data.getId());
     }
 
     public void validate(TestTrailerDO data) throws Exception {

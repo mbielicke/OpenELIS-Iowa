@@ -28,8 +28,10 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -68,8 +70,11 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;
 
+    @Resource
+    private SessionContext            ctx;
+    
     @EJB
-    private LockLocal                   lockBean;
+    private LockLocal                   lock;
 
     private static final QaEventMeta    meta = new QaEventMeta();
 
@@ -207,14 +212,15 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
     public QaEventViewDO update(QaEventViewDO data) throws Exception {
         QaEvent entity;
 
-        if ( !data.isChanged())
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.QAEVENT, data.getId());
             return data;
-
+        }
         checkSecurity(ModuleFlags.UPDATE);
 
         validate(data);
 
-        lockBean.validateLock(ReferenceTable.QAEVENT, data.getId());
+        lock.validateLock(ReferenceTable.QAEVENT, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(QaEvent.class, data.getId());
@@ -226,18 +232,18 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
         entity.setReportingSequence(data.getReportingSequence());
         entity.setReportingText(data.getReportingText());
 
-        lockBean.unlock(ReferenceTable.QAEVENT, data.getId());
+        lock.unlock(ReferenceTable.QAEVENT, data.getId());
 
         return data;
     }
 
     public QaEventViewDO fetchForUpdate(Integer id) throws Exception {
-        lockBean.lock(ReferenceTable.QAEVENT, id);
+        lock.lock(ReferenceTable.QAEVENT, id);
         return fetchById(id);
     }
 
     public QaEventViewDO abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.QAEVENT, id);
+        lock.unlock(ReferenceTable.QAEVENT, id);
         return fetchById(id);
     }
 
