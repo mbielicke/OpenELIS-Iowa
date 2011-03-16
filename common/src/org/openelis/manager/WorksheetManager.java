@@ -118,7 +118,7 @@ public class WorksheetManager implements RPC, HasNotesInt {
         SampleManager           manager;
         
         // abort update on any samples we may have locked when loading data
-        iter = lockedManagers.values().iterator();
+        iter = getLockedManagers().values().iterator();
         while (iter.hasNext()) {
             manager = (SampleManager) iter.next();
             manager.abortUpdate();
