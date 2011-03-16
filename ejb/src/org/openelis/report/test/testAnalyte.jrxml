@@ -4,27 +4,24 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="TEST_ID" class="java.lang.Integer" isForPrompting="false"/>
-	<queryString language="SQL">
+	<queryString>
 		<![CDATA[SELECT
      a.name a_name,
      ta.result_group ta_result_group,
      ta.is_column ta_is_column,
      ta.is_reportable ta_is_reportable,
-     t.id t_id,
      d.entry d_entry
 FROM
      analyte a,
      test_analyte ta,
-     test t,
      dictionary d
 WHERE
-      t.id = 1 AND ta.test_id = t.id  AND ta.analyte_id = a.id AND ta.type_id = d.id order by ta.row_group , ta.sort_order]]>
+      ta.test_id = $P{TEST_ID}  AND ta.analyte_id = a.id AND ta.type_id = d.id order by ta.row_group , ta.sort_order]]>
 	</queryString>
 	<field name="a_name" class="java.lang.String"/>
 	<field name="ta_result_group" class="java.lang.Integer"/>
 	<field name="ta_is_column" class="java.lang.String"/>
 	<field name="ta_is_reportable" class="java.lang.String"/>
-	<field name="t_id" class="java.lang.Integer"/>
 	<field name="d_entry" class="java.lang.String"/>
 	<columnHeader>
 		<band height="12" splitType="Stretch">
