@@ -92,7 +92,7 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean              closeWindow, isPopup;
+    private boolean              closeWindow, isPopup, successfulLoad;
     private Integer              statusWorking, statusFailedRun, origStatus;
     private ScreenService        instrumentService, sysVarService, userService;
     private ModulePermission     userPermission;
@@ -139,6 +139,7 @@ public class WorksheetCompletionScreen extends Screen {
         super((ScreenDefInt)GWT.create(WorksheetCompletionDef.class));
 
         isPopup           = false;
+        successfulLoad    = false;
         service           = new ScreenService("controller?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
         sysVarService     = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
@@ -616,12 +617,20 @@ public class WorksheetCompletionScreen extends Screen {
     }
 
     protected void commit() {
+        setFocus(null);
+
+        if (!validate()) {
+            Window.alert(consts.get("correctErrors"));
+            return;
+        }
+
         window.setBusy(consts.get("updating"));
         try {
             manager = manager.update();
             setState(State.DISPLAY);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("updatingComplete"));
+            successfulLoad = false;
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception e) {
@@ -648,6 +657,7 @@ public class WorksheetCompletionScreen extends Screen {
         } else {
             window.clearStatus();
         }
+        successfulLoad = false;
     }
 
     protected void editWorksheet() {
@@ -682,6 +692,11 @@ public class WorksheetCompletionScreen extends Screen {
         ArrayList<ArrayList<Object>> bundles;
         HashMap<SampleDataBundle,ArrayList<ResultViewDO>> reflexMap;
         SampleDataBundle             bundle;
+        
+        if (successfulLoad) {
+            Window.alert(consts.get("oneWorksheetLoadPerCommit"));
+            return;
+        }
         
         final WorksheetCompletionScreen wcs = this;
         
@@ -733,6 +748,7 @@ public class WorksheetCompletionScreen extends Screen {
                 reflexMap.put(bundle, reflexResults);
             }
             testReflexUtil.resultsEntered(reflexBundles, reflexMap);
+            successfulLoad = true;
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception anyE) {
