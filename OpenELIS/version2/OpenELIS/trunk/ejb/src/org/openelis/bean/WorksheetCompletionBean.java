@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import javax.annotation.security.RolesAllowed;
@@ -445,6 +446,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         ArrayList<DictionaryDO>  statusList;
         ArrayList<SystemUserVO>  userList;
         HashMap<Integer,String>  statusMap;
+        Iterator<SampleManager>  iter;
         File                     file;
         FileInputStream          in;
         StringTokenizer          tokenizer;
@@ -640,6 +642,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                     }
                                 } catch (ParseException parE) {
                                     errorList.add(new FormErrorException("illegalResultValueFormException",
+                                                                         String.valueOf(value),
                                                                          String.valueOf(wiDO.getPosition()),
                                                                          wrVDO.getAnalyteName(),
                                                                          (c == 0 ? "Final Value" : rVDO.getAnalyte())));
@@ -682,8 +685,17 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 rowIndex++;
         }
         
-        if (errorList.getErrorList().size() > 0)
+        if (errorList.getErrorList().size() > 0) {
+            // abort update on any samples we may have locked when loading data
+            iter = manager.getLockedManagers().values().iterator();
+            while (iter.hasNext()) {
+                sManager = (SampleManager) iter.next();
+                sampleManagerLocal.abortUpdate(sManager.getSample().getId());
+            }
+            manager.getLockedManagers().clear();
+            
             throw errorList;
+        }
         
         file.delete();
         
