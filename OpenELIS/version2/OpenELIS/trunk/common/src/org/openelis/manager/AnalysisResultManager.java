@@ -9,6 +9,7 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
+import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.utilcommon.ResultValidator;
@@ -194,6 +195,8 @@ public class AnalysisResultManager implements RPC {
         ArrayList<TestAnalyteViewDO> anList;
 
         returnDO = null;
+        if (rowGroup == null)
+            return returnDO;
         anList = testAnalyteList.get(rowGroup).testAnalytes;
         for (int i = 0; i < anList.size(); i++ ) {
             tmpDO = anList.get(i);
@@ -233,6 +236,8 @@ public class AnalysisResultManager implements RPC {
 
     public Integer validateResultValue(Integer resultGroup, Integer unitId, String value)
                                                                                          throws Exception {
+        if (resultGroup == null)
+            throw new ParseException("testAnalyteDefinitionChanged");
         return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);
     }
 
