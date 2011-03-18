@@ -91,7 +91,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     protected AppButton                             addResultButton, removeResultButton,
                                                     suggestionsButton, popoutTable;
-    protected TableWidget                          testResultsTable;
+    protected TableWidget                           testResultsTable;
     private ArrayList<TableColumn>                  resultTableCols;
 
     protected TestAnalyteLookupScreen               testAnalyteScreen;
@@ -332,8 +332,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(row, col);
                         testResultsTable.setCellException(row, col, e);
-                        data.setTypeId(null);
-                        data.setTestResultId(null);
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                     }
@@ -350,7 +348,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         testResultsTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 int index, prowIndex, numCols;
-                Integer rowGroup;
+                Integer rg,rowGroup;
                 String val;
                 TableDataRow row;
                 ResultViewDO data;
@@ -376,6 +374,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 manager.setDefaultsLoaded(false);
                 for (int i = 2; i < numCols; i++ ) {
                     data = displayManager.getObjectAt(index, i - 2);
+                    rg = data.getResultGroup();
                     row.key = data.getId();
                     try {
                         val = getDefaultValue(data, analysis.getUnitOfMeasureId());
@@ -395,16 +394,20 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                                                      .getEntry();
 
                             testResultsTable.setCell(index, i, val);
-                        }
+                        } 
                     } catch (ParseException e) {
                         testResultsTable.clearCellExceptions(index, i);
                         testResultsTable.setCellException(index, i, e);
-                        data.setTypeId(null);
-                        data.setTestResultId(null);
-
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                     }
+                    /* 
+                     * we can't do this in the block for try-catch because if
+                     * the default value set in the DO is invalid, the dropdown 
+                     * for that result group won't be created because of the
+                     * exception thrown during validation
+                     */
+                    setDropdownForResultGroup(rg,i);
                 }
                 manager.setDefaultsLoaded(true);
             }
@@ -584,12 +587,11 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         Integer rg;
         String val, entry;
         TestResultDO testResult;
-        ArrayList<TableDataRow> model, ddModel;
+        ArrayList<TableDataRow> model;
         TableDataRow hrow, row;
         ResultViewDO data;
         SampleResultValueTableColumn tabcol;
         ArrayList<TableColumn> cl;
-        ResultValidator v;
 
         /*
          * we are assuming there will be at least 1 non supplemental if there are
@@ -653,14 +655,14 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                      * id of the record and not the entry 
                      */
                     if (!typeDictionary.equals(data.getTypeId())) {
-                        row.cells.get(c + 2).setValue(val);
+                        row.cells.get(c+2).setValue(val);
                     } else {
                         entry = DictionaryCache.getEntryFromId(Integer.parseInt(val)).getEntry();
-                        row.cells.get(c + 2).setValue(entry);
+                        row.cells.get(c+2).setValue(entry);
                     }
                     
                     if ( !headerFilled && c > 0)
-                        hrow.cells.get(c + 2).setValue(data.getAnalyte());
+                        hrow.cells.get(c+2).setValue(data.getAnalyte());
                     
                     if ( !validateResults)
                         continue;
@@ -684,17 +686,15 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                          * again to set the appropriate value.    
                          */
                         if ( !typeDictionary.equals(data.getTypeId())) {
-                            row.cells.get(c + 2).setValue(val);
+                            row.cells.get(c+2).setValue(val);
                         } else {
                             entry = DictionaryCache.getEntryFromId(Integer.parseInt(val)).getEntry();
-                            row.cells.get(c + 2).setValue(entry);
+                            row.cells.get(c+2).setValue(entry);
                         }
-                    }                                       
+                    }                                 
                 } catch (ParseException e) {
-                    row.cells.get(c + 2).clearExceptions();
-                    row.cells.get(c + 2).addException(e);
-                    data.setTypeId(null);
-                    data.setTestResultId(null);
+                    row.cells.get(c+2).clearExceptions();
+                    row.cells.get(c+2).addException(e);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }      
@@ -705,22 +705,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                  * is invalid, the dropdown for that result group won't be created
                  * because of the exception thrown during validation
                  */
-                tabcol = (SampleResultValueTableColumn)testResultsTable.getColumns().get(c + 2);                    
-                v = manager.getResultValidator(rg);
-                /* 
-                 * If a result group only has dictionary entries, we show a dropdown
-                 * and not a textbox when a user tries to edit the cell referring
-                 * to that result group. The class SampleResultValueTableColumn
-                 * is responsible for returning the right dropdown based on the
-                 * result group. 
-                 */
-                if (v.hasOnlyDictionary()) {                            
-                    ddModel = new ArrayList<TableDataRow>();
-                    ddModel.add(new TableDataRow("", ""));
-                    for (OptionItem oi : v.getDictionaryRanges())                                 
-                        ddModel.add(new TableDataRow(oi.getValue(), oi.getValue()));
-                    tabcol.setResultGroupModel(rg, ddModel);
-                }
+                setDropdownForResultGroup(rg, c+2);
             }
             headerFilled = true;
             model.add(row);
@@ -882,5 +867,29 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             postHeader = (Boolean)testResultsTable.getRow(index + 1).data;
 
         return prevHeader && postHeader;
-    }    
+    }
+    
+    private void setDropdownForResultGroup(Integer rg, int col) {
+        SampleResultValueTableColumn tabcol;
+        ResultValidator v;
+        ArrayList<TableDataRow> model;
+        
+        if (rg == null)
+            return;
+        tabcol = (SampleResultValueTableColumn)testResultsTable.getColumns().get(col);                    
+        v = manager.getResultValidator(rg);
+        /* 
+         * If a result group only has dictionary entries, we show a dropdown and
+         * not a textbox when a user tries to edit the cell referring to that 
+         * result group. The class SampleResultValueTableColumn is responsible
+         * for returning the right dropdown based on the result group. 
+         */
+        if (v.hasOnlyDictionary()) {                            
+            model = new ArrayList<TableDataRow>();
+            model.add(new TableDataRow("", ""));
+            for (OptionItem oi : v.getDictionaryRanges())                                 
+                model.add(new TableDataRow(oi.getValue(), oi.getValue()));
+            tabcol.setResultGroupModel(rg, model);
+        }
+    }
 }

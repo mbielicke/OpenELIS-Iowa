@@ -180,21 +180,24 @@ public class TestAnalyteDisplayManager<T> {
         
         indexes.clear();                  
                 
-        for(i = 0 ; i < grid.size(); i++) {
-            if(type == Type.TEST){
+        for (i = 0 ; i < grid.size(); i++) {
+            if (type == Type.TEST) {
                 ado = (TestAnalyteViewDO)grid.get(i).get(0);
                 rg = ado.getRowGroup();
                 isColumn = ado.getIsColumn();
-            }else{
+            } else {
                 rdo = (ResultViewDO)grid.get(i).get(0);
                 rg = rdo.getRowGroup();
                 isColumn = rdo.getIsColumn();
             }
-                
-            if(j != rg) {                 
+            /* 
+             * it is possible that after results been added for an analysis some 
+             * of the test analytes get deleted on Test screen, the row group could be null for those   
+             */               
+            if((rg != null && j != rg) || (j != null && j == -1)) {                 
                 indexes.add(-1);                
                 indexes.add(i);
-                j = rg;
+                j = rg;                    
                 continue;
             }            
             if("N".equals(isColumn)) {                

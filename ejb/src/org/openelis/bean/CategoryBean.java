@@ -179,9 +179,8 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         return data;
     }
     
-    public void validate(CategoryDO data) throws Exception{
+    public void validate(CategoryDO data) throws Exception {
         ValidationErrorsList list;
-        Query query;
         Integer catId;
         String sysName, name;
         CategoryDO category;
@@ -196,13 +195,11 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
             list.add(new FieldErrorException("fieldRequiredException",
                                              CategoryMeta.getSystemName()));
         } else {
-            query = manager.createNamedQuery("Category.FetchBySystemName");
-            query.setParameter("systemName", sysName);
             try {
-                category = (CategoryDO)query.getSingleResult();
+                category = fetchBySystemName(sysName);
                 catId = category.getId();
-            } catch (Exception e) {
-               e.printStackTrace();
+            } catch (NotFoundException ignE) {
+                // do nothing
             }            
             
             if (!DataBaseUtil.isEmpty(catId) && !catId.equals(data.getId())) {
