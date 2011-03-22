@@ -31,14 +31,14 @@ WHERE  a.released_date between $P{FROM_DATE} and $P{TO_DATE} and
        a.test_id = t.id and t.is_active = "Y" and
        t.method_id = m.id and ts.section_id = se.id and ts.test_id = t.id and a.section_id = se.id and
        a.revision = 0 and
-       d.id=a.status_id and a.status_id = 36 and
-       --a.printed is not null and
+       d.id=a.status_id and d.system_name = 'analysis_released' and
+       --a.printed_date is not null and
        a.id not in
          (
           SELECT  analysis_qaevent.analysis_id
           FROM   analysis_qaevent, qaevent
           WHERE  analysis_qaevent.analysis_id = qaevent.id and
-                 qaevent.type_id = d.id and d.id = 49
+                 qaevent.type_id = d.id and d.system_name = 'qaevent_override'
          )
         $P!{SECTION}
 order by 1, 2]]>
@@ -47,10 +47,10 @@ order by 1, 2]]>
 	<field name="mth_name" class="java.lang.String"/>
 	<field name="s_col_date" class="java.sql.Timestamp"/>
 	<field name="s_col_time" class="java.sql.Timestamp"/>
-	<field name="a_rel" class="java.sql.Timestamp"/>
 	<field name="s_rec" class="java.sql.Timestamp"/>
-	<field name="a_com" class="java.sql.Timestamp"/>
 	<field name="a_avail" class="java.sql.Timestamp"/>
+	<field name="a_com" class="java.sql.Timestamp"/>
+	<field name="a_rel" class="java.sql.Timestamp"/>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
