@@ -29,15 +29,16 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.DictionaryCacheCategoryListVO;
+import org.openelis.domain.DictionaryDO;
 
 @Local
-public interface SectionCacheLocal {
+public interface CategoryCacheLocal {
+    
+    public ArrayList<DictionaryDO> getBySystemName(String systemName) throws Exception;
+    
+    public DictionaryCacheCategoryListVO getBySystemNames(String systemNames[]) throws Exception;
 
-    public abstract SectionViewDO getById(Integer id) throws Exception;
-
-    public abstract ArrayList<SectionViewDO> getList() throws Exception;
-
-    public abstract void evict(Integer id);
+    public void evict(String systemName) throws Exception;
 
 }
