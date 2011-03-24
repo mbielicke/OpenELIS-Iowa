@@ -25,19 +25,29 @@
 */
 package org.openelis.local;
 
-import java.util.ArrayList;
-
 import javax.ejb.Local;
 
-import org.openelis.domain.SectionViewDO;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
+import org.openelis.gwt.common.SectionPermission.SectionFlags;
+import org.openelis.gwt.common.SystemUserPermission;
+import org.openelis.gwt.common.SystemUserVO;
 
 @Local
-public interface SectionCacheLocal {
+public interface UserCacheLocal {
 
-    public abstract SectionViewDO getById(Integer id) throws Exception;
+    public Integer getId() throws Exception ;
+    
+    public String getName() throws Exception;
+    
+    public SystemUserVO getSystemUser() throws Exception;
+    
+    public SystemUserVO getSystemUser(Integer id) throws Exception;
 
-    public abstract ArrayList<SectionViewDO> getList() throws Exception;
+    public SystemUserVO getSystemUser(String name) throws Exception;
 
-    public abstract void evict(Integer id);
+    public void applyPermission(String module, ModuleFlags flag) throws Exception;
 
+    public void applyPermission(String section, SectionFlags flag) throws Exception;
+    
+    public SystemUserPermission getPermission() throws Exception;
 }

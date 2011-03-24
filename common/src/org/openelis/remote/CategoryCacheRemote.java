@@ -23,21 +23,19 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.remote;
 
 import java.util.ArrayList;
 
-import javax.ejb.Local;
+import javax.ejb.Remote;
 
-import org.openelis.domain.SectionViewDO;
+import org.openelis.domain.DictionaryCacheCategoryListVO;
+import org.openelis.domain.DictionaryDO;
 
-@Local
-public interface SectionCacheLocal {
+@Remote
+public interface CategoryCacheRemote {
 
-    public abstract SectionViewDO getById(Integer id) throws Exception;
-
-    public abstract ArrayList<SectionViewDO> getList() throws Exception;
-
-    public abstract void evict(Integer id);
-
+    public ArrayList<DictionaryDO> getBySystemName(String systemName) throws Exception;
+    
+    public DictionaryCacheCategoryListVO getBySystemNames(String systemNames[]) throws Exception;
 }

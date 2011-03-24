@@ -25,19 +25,16 @@
 */
 package org.openelis.local;
 
-import java.util.ArrayList;
-
 import javax.ejb.Local;
 
-import org.openelis.domain.SectionViewDO;
-
 @Local
-public interface SectionCacheLocal {
+public interface SessionCacheLocal {
 
-    public abstract SectionViewDO getById(Integer id) throws Exception;
-
-    public abstract ArrayList<SectionViewDO> getList() throws Exception;
-
-    public abstract void evict(Integer id);
-
+    public void setAttribute(String key, Object value);
+    
+    public Object getAttribute(String key);    
+          
+    public void removeAttribute(String key);
+    
+    public void evict();
 }

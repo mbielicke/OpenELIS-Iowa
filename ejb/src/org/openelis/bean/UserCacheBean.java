@@ -1,6 +1,28 @@
-/**
- * 
- */
+/** Exhibit A - UIRF Open-source Based Public Software License.
+* 
+* The contents of this file are subject to the UIRF Open-source Based
+* Public Software License(the "License"); you may not use this file except
+* in compliance with the License. You may obtain a copy of the License at
+* openelis.uhl.uiowa.edu
+* 
+* Software distributed under the License is distributed on an "AS IS"
+* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+* License for the specific language governing rights and limitations
+* under the License.
+* 
+* The Original Code is OpenELIS code.
+* 
+* The Initial Developer of the Original Code is The University of Iowa.
+* Portions created by The University of Iowa are Copyright 2006-2008. All
+* Rights Reserved.
+* 
+* Contributor(s): ______________________________________.
+* 
+* Alternatively, the contents of this file marked
+* "Separately-Licensed" may be used under the terms of a UIRF Software
+* license ("UIRF Software License"), in which case the provisions of a
+* UIRF Software License are applicable instead of those above. 
+*/
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -19,6 +41,7 @@ import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SectionPermission.SectionFlags;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.UserCacheRemote;
 import org.openelis.utils.EJBFactory;
 
@@ -28,7 +51,7 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Service(objectName = "jboss:custom=UserCacheBean")
-public class UserCacheBean implements UserCacheRemote {
+public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
 
     @Resource
     private SessionContext ctx;
@@ -134,23 +157,6 @@ public class UserCacheBean implements UserCacheRemote {
         return data;
     }
 
-    /**
-     * Returns the system user data for matching name.
-     */
-    @Override
-    public ArrayList<SystemUserVO> getSystemUsers(String name, int max) throws Exception {
-        ArrayList<SystemUserVO> list;
-
-        try {
-            list = EJBFactory.getSecurity().fetchByLoginName(name, max);
-        } catch (Exception e1) {
-            e1.printStackTrace();
-            list = null;
-        }
-
-        return list;
-    }
-
     /*
      * Permission
      */
@@ -174,9 +180,54 @@ public class UserCacheBean implements UserCacheRemote {
     }
 
     /**
+     * Returns the user permission for initial application login
+     */
+    public SystemUserPermission login() {
+        try {
+            return getPermission();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Removes the permission and various user caches for current user. This
+     * method should be called on user logout.
+     */
+    public void logout() {
+        String name;
+        Element e;
+        SystemUserPermission data;
+
+        name = ctx.getCallerPrincipal().getName();
+        e = permCache.get(name);
+        if (e != null) {
+            data = (SystemUserPermission)e.getValue();
+            permCache.remove(name);
+            cache.remove(data.getLoginName());
+            cache.remove(data.getSystemUserId());
+        }
+    }
+    
+    /**
+     * Returns the system user data for matching name.
+     */
+    public ArrayList<SystemUserVO> getSystemUsers(String name, int max) throws Exception {
+        ArrayList<SystemUserVO> list;
+
+        try {
+            list = EJBFactory.getSecurity().fetchByLoginName(name, max);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            list = null;
+        }
+
+        return list;
+    }
+    
+    /**
      * Returns the user permission for current user.
      */
-    @Override
     public SystemUserPermission getPermission() throws Exception {
         Element e;
         String name;
@@ -199,38 +250,4 @@ public class UserCacheBean implements UserCacheRemote {
 
         return data;
     }
-
-    /**
-     * Returns the user permission for initial application login
-     */
-    @Override
-    public SystemUserPermission login() {
-        try {
-            return getPermission();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
-     * Removes the permission and various user caches for current user. This
-     * method should be called on user logout.
-     */
-    @Override
-    public void logout() {
-        String name;
-        Element e;
-        SystemUserPermission data;
-
-        name = ctx.getCallerPrincipal().getName();
-        e = permCache.get(name);
-        if (e != null) {
-            data = (SystemUserPermission)e.getValue();
-            permCache.remove(name);
-            cache.remove(data.getLoginName());
-            cache.remove(data.getSystemUserId());
-            //sessionC.remove(name);
-        }
-    }
-
 }
