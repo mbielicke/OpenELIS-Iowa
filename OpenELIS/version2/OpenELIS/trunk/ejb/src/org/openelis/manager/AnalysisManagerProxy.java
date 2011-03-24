@@ -389,6 +389,14 @@ public class AnalysisManagerProxy {
         for (int i = 0; i < man.count(); i++ ) {
             analysisDO = man.getAnalysisAt(i);
 
+            //
+            // We do NOT need to validate analyses that are in cancelled or released
+            // status 
+            //
+            if (anCancelledId.equals(analysisDO.getStatusId()) ||
+                anReleasedId.equals(analysisDO.getStatusId()))
+                continue;
+                            
             if (analysisDO.getTestId() == null)
                 errorsList.add(new FormErrorException("analysisTestIdMissing", sampleItemSequence));
 
