@@ -48,7 +48,7 @@ public class Counter {
     public Integer get(String key) {
         return (Integer) count.get(key);
     }
-
+        
     /**
       * Returns True if any counter is being maintained
       */
@@ -92,6 +92,22 @@ public class Counter {
         }
         return buff.toString();
     }
+    
+    /**
+      * Returns all the keys 
+      */
+    public ArrayList<String> getKeys() {
+        String       key;
+        Enumeration<String>  e;
+        ArrayList<String> tokens = new ArrayList<String>();
+
+        e = count.keys();
+        while (e.hasMoreElements()) {
+            key = (String) e.nextElement();
+            tokens.add(key);
+        }
+        return tokens;
+    } 
 
     /**
       * Adds all the keys and their counters to this class. Used for
