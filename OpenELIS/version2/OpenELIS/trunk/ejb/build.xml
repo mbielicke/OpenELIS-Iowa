@@ -10,6 +10,7 @@
 	<target name="ejbjar">
 		<mkdir dir="build"/>
 		<delete file="build/openelis.jar" />
+		<copy file="src/resources/META-INF/ehcache.xml" todir="bin" overwrite="true" />
 		<jar jarfile="build/openelis.jar">
 			<fileset dir="bin">
 				<include name="org/openelis/bean/*.class" />
@@ -19,6 +20,7 @@
 				<include name="org/openelis/report/**/*" />
 				<include name="org/openelis/utils/*.class" />
 				<exclude name="org/openelis/report/**/*.jrxml"/>
+				<include name="ehcache.xml" />
 			</fileset>
 			<fileset dir="${src.resources}/">
 				<include name="META-INF/persistence.xml" />
@@ -64,6 +66,7 @@
 			    <include name="lib/groovy-all-1.7.5.jar" />
 			    <include name="lib/barbecue-1.5-beta1.jar" />			    
 			    <include name="lib/commons-digester-1.7.jar" />
+			    <include name="lib/ehcache-1.2.jar"/>
 		    	<include name="lib/commons-beanutils-1.8.2.jar" />
 			    <include name="lib/jasperreports-4.0.1.jar" />
 			</fileset>
