@@ -64,6 +64,7 @@ import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
+import org.openelis.modules.report.client.QASummaryReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelAdditionalReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
@@ -1209,6 +1210,26 @@ public class OpenELIS extends Screen {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new TurnaroundReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addClickHandler("QAByOrganization", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new QASummaryReportScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
