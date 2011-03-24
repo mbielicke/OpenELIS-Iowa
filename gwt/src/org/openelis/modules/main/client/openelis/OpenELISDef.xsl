@@ -260,7 +260,7 @@ UIRF Software License are applicable instead of those above.
                     <menuItem key="sampleInhouseReport" description="" icon="" enable="true" label="{resource:getString($constants,'sampleInhouseReport')}" />
                     <menuItem key="volumeReport" description="" icon="" enable="true" label="{resource:getString($constants,'volumeReport')}" />
 	                <menuItem key="sampleDataExport" description="" icon="" enable="false" label="{resource:getString($constants,'sampleDataExport')}" />
-                    <menuItem key="QAByOrganization" description="" icon="" enable="false" label="{resource:getString($constants,'QAByOrganization')}" />
+                    <menuItem key="QAByOrganization" description="" icon="" enable="true" label="{resource:getString($constants,'QAByOrganization')}" />
                     <menuItem key="testCountByFacility" description="" icon="" enable="false" label="{resource:getString($constants,'testCountByFacility')}" />
                     <menuItem key="turnaround" description="" icon="" enable="true" label="{resource:getString($constants,'turnaround')}" />
                     <menuItem key="finalReport" description="" icon="" enable="true" label="{resource:getString($constants,'finalReport')}" />
