@@ -97,13 +97,14 @@ public class AnalysisManagerProxy {
                          String sampleDomain,
                          ValidationErrorsList errorsList) throws Exception {
         AnalysisListItem item;
-        Integer cancelledStatusId;
+        Integer cancelledStatusId, releasedStatusId;
         AnalysisViewDO analysisDO;
         TestManager testMan;
         boolean quickEntry;
 
         quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDomain);
         cancelledStatusId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+        releasedStatusId = DictionaryCache.getIdFromSystemName("analysis_released");
 
         if (man.count() == 0)
             errorsList.add(new FormErrorWarning("minOneAnalysisException", sampleItemSequence));
@@ -112,6 +113,14 @@ public class AnalysisManagerProxy {
             analysisDO = man.getAnalysisAt(i);
             testMan = man.getTestAt(i);
 
+            //
+            // We do NOT need to validate analyses that are in cancelled or released
+            // status 
+            //
+            if (cancelledStatusId.equals(analysisDO.getStatusId()) ||
+                releasedStatusId.equals(analysisDO.getStatusId()))
+                continue;
+                            
             if (analysisDO.getTestId() == null)
                 errorsList.add(new FormErrorException("analysisTestIdMissing", sampleItemSequence));
 
@@ -121,20 +130,15 @@ public class AnalysisManagerProxy {
                                                       analysisDO.getMethodName()));
 
             // if unit is not null, it needs to be validated
-            // ignore the unit check if its cancelled
             if (analysisDO.getTestId() != null &&
-                !cancelledStatusId.equals(analysisDO.getStatusId()) &&
                 analysisDO.getUnitOfMeasureId() != null &&
                 !testMan.getSampleTypes().hasUnit(analysisDO.getUnitOfMeasureId(), sampleTypeId))
                 errorsList.add(new FormErrorWarning("analysisUnitInvalid",
                                                     analysisDO.getTestName(),
                                                     analysisDO.getMethodName()));
 
-            // ignore the sample type check if analysis is cancelled. This is
-            // the only
-            // way they can fix this error in some cases.
+            // validate the sample type
             if (analysisDO.getTestId() != null &&
-                !cancelledStatusId.equals(analysisDO.getStatusId()) &&
                 !testMan.getSampleTypes().hasType(sampleTypeId))
                 errorsList.add(new FormErrorWarning("sampleTypeInvalid", analysisDO.getTestName(),
                                                     analysisDO.getMethodName()));
