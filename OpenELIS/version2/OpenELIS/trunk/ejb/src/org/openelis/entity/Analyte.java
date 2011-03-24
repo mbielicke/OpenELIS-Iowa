@@ -78,9 +78,7 @@ import org.openelis.utils.Auditable;
                                                            + "UNION "
                                                            + "select analyte_id as ANALYTE_ID from aux_field where analyte_id = :id "
                                                            + "UNION "
-                                                           + "select analyte_id as ANALYTE_ID from worksheet_analyte where analyte_id = :id "
-                                                           + "UNION "
-                                                           + "select analyte_id as ANALYTE_ID from instrument_analyte where analyte_id = :id", resultSetMapping = "Analyte.ReferenceCheckMapping")
+                                                           + "select analyte_id as ANALYTE_ID from worksheet_analyte where analyte_id = :id ", resultSetMapping = "Analyte.ReferenceCheckMapping")
 @SqlResultSetMapping(name = "Analyte.ReferenceCheckMapping", columns = {@ColumnResult(name = "ANALYTE_ID")})
 @Entity
 @Table(name = "analyte")
