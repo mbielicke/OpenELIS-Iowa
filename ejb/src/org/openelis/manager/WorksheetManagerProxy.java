@@ -180,7 +180,11 @@ public class WorksheetManagerProxy {
             iter = manager.getSampleManagers().values().iterator();
             while (iter.hasNext()) {
                 sManager = (SampleManager) iter.next();
-                sManager.validate();
+                try {
+                    sManager.validate();
+                } catch (Exception e) {
+                    DataBaseUtil.mergeException(errorList, e);
+                }
             }
         }
     }
