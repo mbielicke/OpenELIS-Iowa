@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -47,6 +48,7 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.CategoryCacheLocal;
 import org.openelis.local.CategoryLocal;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.remote.CategoryRemote;
@@ -60,6 +62,9 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager          manager;
 
+    @EJB
+    private CategoryCacheLocal      catCache;
+    
     private static CategoryMeta    meta = new CategoryMeta();
 
     public CategoryBean() {        
@@ -142,39 +147,42 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
     }
 
     public CategoryDO add(CategoryDO data) throws Exception {
-        Category category;
+        Category entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        category = new Category();
+        entity = new Category();
 
-        category.setDescription(data.getDescription());
-        category.setName(data.getName());
-        category.setSectionId(data.getSectionId());
-        category.setSystemName(data.getSystemName());
-        category.setIsSystem(data.getIsSystem());
+        entity.setDescription(data.getDescription());
+        entity.setName(data.getName());
+        entity.setSectionId(data.getSectionId());
+        entity.setSystemName(data.getSystemName());
+        entity.setIsSystem(data.getIsSystem());
 
-        manager.persist(category);
+        manager.persist(entity);
 
-        data.setId(category.getId());
+        data.setId(entity.getId());
 
         return data;
     }
 
     public CategoryDO update(CategoryDO data) throws Exception {
-        Category category;
+        Category entity;
 
         if (!data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        category = manager.find(Category.class, data.getId());
-
-        category.setDescription(data.getDescription());
-        category.setName(data.getName());
-        category.setSectionId(data.getSectionId());
-        category.setSystemName(data.getSystemName());
-        category.setIsSystem(data.getIsSystem());
+        entity = manager.find(Category.class, data.getId());
+        
+        // need to remove it before we change it
+        catCache.evict(entity.getSystemName());        
+        
+        entity.setDescription(data.getDescription());
+        entity.setName(data.getName());
+        entity.setSectionId(data.getSectionId());
+        entity.setSystemName(data.getSystemName());
+        entity.setIsSystem(data.getIsSystem());
 
         return data;
     }

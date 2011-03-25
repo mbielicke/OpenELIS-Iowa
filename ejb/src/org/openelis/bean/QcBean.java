@@ -53,7 +53,7 @@ import org.openelis.local.QcLocal;
 import org.openelis.meta.QcMeta;
 import org.openelis.remote.QcRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -75,7 +75,7 @@ public class QcBean implements QcRemote, QcLocal {
         try {
             data = (QcViewDO)query.getSingleResult();
             if (data.getPreparedById() != null) {
-                user = PermissionInterceptor.getSystemUser(data.getPreparedById());
+                user = EJBFactory.getUserCache().getSystemUser(data.getPreparedById());
                 if (user != null)
                     data.setPreparedByName(user.getLoginName());
             }

@@ -55,7 +55,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.meta.StorageUnitMeta;
 import org.openelis.remote.StorageUnitRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -174,8 +174,12 @@ public class StorageUnitBean implements StorageUnitRemote {
     }
 
     public StorageUnitDO fetchForUpdate(Integer id) throws Exception {
-        lock.lock(ReferenceTable.STORAGE_UNIT, id);
-        return fetchById(id);
+        try {
+            lock.lock(ReferenceTable.STORAGE_UNIT, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public StorageUnitDO abortUpdate(Integer id) throws Exception {
@@ -241,7 +245,7 @@ public class StorageUnitBean implements StorageUnitRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("storageunit", flag);
+        EJBFactory.getUserCache().applyPermission("storageunit", flag);
     }
 
 }

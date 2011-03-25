@@ -45,7 +45,7 @@ import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.remote.OrderManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -165,7 +165,7 @@ public class OrderManagerBean implements OrderManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("order", flag);
+        EJBFactory.getUserCache().applyPermission("order", flag);
     }
 
 }

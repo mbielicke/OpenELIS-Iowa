@@ -28,13 +28,11 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryItemLocal;
 import org.openelis.local.InventoryXUseLocal;
+import org.openelis.utils.EJBFactory;
 
 public class OrderFillManagerProxy {
 
@@ -43,7 +41,7 @@ public class OrderFillManagerProxy {
         OrderFillManager m;
         ArrayList<InventoryXUseViewDO> list;
 
-        ul = local();
+        ul = EJBFactory.getInventoryXUse();
         list = ul.fetchByOrderId(id);
         m = OrderFillManager.getInstance();
 
@@ -56,7 +54,7 @@ public class OrderFillManagerProxy {
         InventoryXUseLocal ul;
         InventoryXUseViewDO fill; 
 
-        ul = local();
+        ul = EJBFactory.getInventoryXUse();
         for (int i = 0; i < man.count(); i++ ) {
             fill = man.getFillAt(i);
             ul.add(fill);
@@ -69,7 +67,7 @@ public class OrderFillManagerProxy {
         InventoryXUseLocal ul;
         InventoryXUseViewDO fill;        
 
-        ul = local();
+        ul = EJBFactory.getInventoryXUse();
         
         for (int j = 0; j < man.deleteCount(); j++ )
             ul.delete(man.getDeletedAt(j));
@@ -138,24 +136,4 @@ public class OrderFillManagerProxy {
         if (list.size() > 0) 
             throw list;        
     }
-
-    private InventoryXUseLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryXUseLocal)ctx.lookup("openelis/InventoryXUseBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private InventoryItemLocal invItemLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryItemLocal)ctx.lookup("openelis/InventoryItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }   
 }

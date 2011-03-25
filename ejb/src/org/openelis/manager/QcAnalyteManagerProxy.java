@@ -27,12 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.QcAnalyteLocal;
+import org.openelis.utils.EJBFactory;
 
 public class QcAnalyteManagerProxy {
 
@@ -40,7 +39,7 @@ public class QcAnalyteManagerProxy {
         QcAnalyteManager cm;
         ArrayList<QcAnalyteViewDO> analytes;
 
-        analytes = local().fetchByQcId(id);
+        analytes = EJBFactory.getQcAnalyte().fetchByQcId(id);
         cm = QcAnalyteManager.getInstance();
         cm.setQcId(id);
         cm.setAnalytes(analytes);
@@ -52,7 +51,7 @@ public class QcAnalyteManagerProxy {
         QcAnalyteLocal cl;
         QcAnalyteViewDO analyte;
 
-        cl = local();
+        cl = EJBFactory.getQcAnalyte();
         for (int i = 0; i < man.count(); i++ ) {
             analyte = man.getAnalyteAt(i);
             analyte.setQcId(man.getQcId());
@@ -66,7 +65,7 @@ public class QcAnalyteManagerProxy {
         QcAnalyteLocal cl;
         QcAnalyteViewDO analyte;
 
-        cl = local();
+        cl = EJBFactory.getQcAnalyte();
         for (int j = 0; j < man.deleteCount(); j++ )
             cl.delete(man.getDeletedAt(j));
 
@@ -88,7 +87,7 @@ public class QcAnalyteManagerProxy {
         ValidationErrorsList list;
         QcAnalyteLocal cl;
 
-        cl = local();
+        cl = EJBFactory.getQcAnalyte();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -99,15 +98,5 @@ public class QcAnalyteManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-
-    private QcAnalyteLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (QcAnalyteLocal)ctx.lookup("openelis/QcAnalyteBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

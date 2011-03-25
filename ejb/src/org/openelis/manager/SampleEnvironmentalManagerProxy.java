@@ -25,52 +25,40 @@
 */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.local.SampleEnvironmentalLocal;
+import org.openelis.utils.EJBFactory;
 
 public class SampleEnvironmentalManagerProxy {
     public SampleEnvironmentalManager fetchBySampleId(Integer sampleId) throws Exception {
-        SampleEnvironmentalDO envDO;
+        SampleEnvironmentalDO data;
         SampleEnvironmentalManager em;
         
-        envDO = local().fetchBySampleId(sampleId);
+        data = EJBFactory.getSampleEnvironmental().fetchBySampleId(sampleId);
         em = SampleEnvironmentalManager.getInstance();
         
-        em.setEnvironmental(envDO);
+        em.setEnvironmental(data);
         
         return em;
     }
     
     public SampleEnvironmentalManager add(SampleEnvironmentalManager man) throws Exception {
         man.getEnvironmental().setSampleId(man.getSampleId());
-        local().add(man.getEnvironmental());
+        EJBFactory.getSampleEnvironmental().add(man.getEnvironmental());
         
         return man;
     }
 
     public SampleEnvironmentalManager update(SampleEnvironmentalManager man) throws Exception {
-        SampleEnvironmentalDO envDO;
+        SampleEnvironmentalDO data;
         
-        envDO = man.getEnvironmental();
+        data = man.getEnvironmental();
         
-        if(envDO.getId() == null){
-            envDO.setSampleId(man.getSampleId());
-            local().add(envDO);
+        if(data.getId() == null){
+            data.setSampleId(man.getSampleId());
+            EJBFactory.getSampleEnvironmental().add(data);
         }else
-            local().update(envDO);
+            EJBFactory.getSampleEnvironmental().update(data);
         
         return man;
-    }
-    
-    private SampleEnvironmentalLocal local(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (SampleEnvironmentalLocal)ctx.lookup("openelis/SampleEnvironmentalBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
     }
 }

@@ -27,23 +27,22 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.ShippingTrackingDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ShippingTrackingLocal;
+import org.openelis.utils.EJBFactory;
 
 public class ShippingTrackingManagerProxy {
     
     public ShippingTrackingManager fetchByShippingId(Integer id) throws Exception {
         ShippingTrackingManager m;
-        ArrayList<ShippingTrackingDO> trackings;
+        ArrayList<ShippingTrackingDO> list;
     
-        trackings = local().fetchByShippingId(id);
+        list = EJBFactory.getShippingTracking().fetchByShippingId(id);
         m = ShippingTrackingManager.getInstance();
         m.setShippingId(id);
-        m.setTrackings(trackings);
+        m.setTrackings(list);
         
         return m;
     }
@@ -52,7 +51,7 @@ public class ShippingTrackingManagerProxy {
         ShippingTrackingLocal tl; 
         ShippingTrackingDO data;
     
-        tl = local();
+        tl = EJBFactory.getShippingTracking();
         
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getTrackingAt(i);
@@ -67,7 +66,7 @@ public class ShippingTrackingManagerProxy {
         ShippingTrackingLocal tl; 
         ShippingTrackingDO data;
     
-        tl = local();
+        tl = EJBFactory.getShippingTracking();
         
         for (int j = 0; j < man.deleteCount(); j++ )
             tl.delete(man.getDeletedAt(j));
@@ -90,7 +89,7 @@ public class ShippingTrackingManagerProxy {
         ValidationErrorsList list;
         ShippingTrackingLocal tl;
         
-        tl = local();
+        tl = EJBFactory.getShippingTracking();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -102,15 +101,4 @@ public class ShippingTrackingManagerProxy {
         if (list.size() > 0)
             throw list;
     } 
-    
-    private ShippingTrackingLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (ShippingTrackingLocal)ctx.lookup("openelis/ShippingTrackingBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
 }

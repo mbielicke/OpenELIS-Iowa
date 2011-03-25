@@ -27,13 +27,12 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.PanelItemDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.PanelItemLocal;
+import org.openelis.utils.EJBFactory;
 
 public class PanelItemManagerProxy {
     
@@ -41,7 +40,7 @@ public class PanelItemManagerProxy {
         PanelItemManager man;
         ArrayList<PanelItemDO> items;
         
-        items = local().fetchByPanelId(id);
+        items = EJBFactory.getPanelItem().fetchByPanelId(id);
         man = PanelItemManager.getInstance();
         man.setPanelId(id);
         man.setItems(items);
@@ -53,7 +52,7 @@ public class PanelItemManagerProxy {
         PanelItemLocal pl;
         PanelItemDO data;
         
-        pl = local();
+        pl = EJBFactory.getPanelItem();
         for(int i = 0 ; i < man.count(); i++) {
             data = man.getItemAt(i);
             data.setSortOrder(i + 1);
@@ -68,7 +67,7 @@ public class PanelItemManagerProxy {
         PanelItemLocal pl;
         PanelItemDO data;
         
-        pl = local();
+        pl = EJBFactory.getPanelItem();
         for(int j = 0; j < man.deleteCount(); j++) {
             pl.delete(man.getDeletedAt(j));
         }
@@ -91,7 +90,7 @@ public class PanelItemManagerProxy {
         PanelItemLocal pl;
         PanelItemDO data;
         
-        pl = local();
+        pl = EJBFactory.getPanelItem();
         for(int j = 0; j < man.deleteCount(); j++) {
             pl.delete(man.getDeletedAt(j));
         }
@@ -110,7 +109,7 @@ public class PanelItemManagerProxy {
         PanelItemLocal pl;
         int count;
         
-        pl = local();
+        pl = EJBFactory.getPanelItem();
         list = new ValidationErrorsList();
         count = man.count();
         
@@ -127,16 +126,6 @@ public class PanelItemManagerProxy {
         if (list.size() > 0)
             throw list;
         
-    }
-    
-    private PanelItemLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (PanelItemLocal)ctx.lookup("openelis/PanelItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }
  

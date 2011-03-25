@@ -27,18 +27,14 @@ package org.openelis.utils;
 
 import java.util.Date;
 
-import javax.naming.InitialContext;
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
 
 import org.openelis.domain.HistoryVO;
-import org.openelis.local.HistoryLocal;
 
 public class AuditUtil {
-    
-    private static HistoryLocal local;
     
     public AuditUtil() {
     }
@@ -59,7 +55,7 @@ public class AuditUtil {
 
             data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
                                  new Date(), 1, getSystemUserId(), null);
-            local().add(data);
+            EJBFactory.getHistory().add(data);
         }
     }
 
@@ -73,7 +69,7 @@ public class AuditUtil {
 
             data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
                                  new Date(), 2, getSystemUserId(), audit.getXML(false));
-            local().add(data);
+            EJBFactory.getHistory().add(data);
         }
     }
 
@@ -87,7 +83,7 @@ public class AuditUtil {
 
             data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
                                  new Date(), 3, getSystemUserId(), audit.getXML(true));
-            local().add(data);
+            EJBFactory.getHistory().add(data);
         }
     }
 
@@ -96,24 +92,9 @@ public class AuditUtil {
      */
     private Integer getSystemUserId() {
         try {
-            return PermissionInterceptor.getSystemUserId();
+            return EJBFactory.getUserCache().getId();
         } catch (Exception e) {
             return null;
         }
-    }
-
-    private HistoryLocal local() {
-        InitialContext ctx;
-        
-        if (local == null) {
-            try {
-                ctx = new InitialContext();
-                local = (HistoryLocal)ctx.lookup("openelis/HistoryBean/local");
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                return null;
-            }
-        }
-        return local;
     }
 }

@@ -31,9 +31,10 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SectionLocal;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.remote.TurnaroundReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
@@ -47,7 +48,7 @@ public class TurnaroundReportBean implements TurnaroundReportRemote {
     private SessionContext  ctx;
 
     @EJB
-    private SessionCacheInt session;
+    private SessionCacheLocal session;
 
     @EJB
     private SectionLocal    section;
@@ -126,7 +127,7 @@ public class TurnaroundReportBean implements TurnaroundReportRemote {
          */
         param = ReportUtil.parameterMap(paramList);
 
-        loginName = PermissionInterceptor.getSystemUserName();
+        loginName = EJBFactory.getUserCache().getName();
 
         frDate = ReportUtil.getSingleParameter(param, "FROM_RELEASED");
         tDate = ReportUtil.getSingleParameter(param, "TO_RELEASED");

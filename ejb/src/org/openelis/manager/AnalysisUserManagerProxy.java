@@ -30,25 +30,24 @@ import java.util.ArrayList;
 import javax.naming.InitialContext;
 
 import org.openelis.domain.AnalysisUserViewDO;
-import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisUserLocal;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 public class AnalysisUserManagerProxy {
 
     public AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        AnalysisUserViewDO anDO;
-        ArrayList<AnalysisUserViewDO> items;
+        AnalysisUserViewDO data;
+        ArrayList<AnalysisUserViewDO> list;
         AnalysisUserManager man;
 
-        items = local().fetchByAnalysisId(analysisId);
+        list = EJBFactory.getAnalysisUser().fetchByAnalysisId(analysisId);
         man = AnalysisUserManager.getInstance();
 
-        for (int i = 0; i < items.size(); i++ ) {
-            anDO = items.get(i);
-            man.addAnalysisUser(anDO);
+        for (int i = 0; i < list.size(); i++ ) {
+            data = list.get(i);
+            man.addAnalysisUser(data);
         }
 
         man.setAnalysisId(analysisId);
@@ -57,37 +56,38 @@ public class AnalysisUserManagerProxy {
     }
 
     public AnalysisUserManager add(AnalysisUserManager man) throws Exception {
-        AnalysisUserViewDO anUser;
+        AnalysisUserViewDO data;
         AnalysisUserLocal l;
 
-        l = local();
+        l = EJBFactory.getAnalysisUser();
         for (int i = 0; i < man.count(); i++ ) {
-            anUser = man.getAnalysisUserAt(i);
-            anUser.setAnalysisId(man.getAnalysisId());
+            data = man.getAnalysisUserAt(i);
+            data.setAnalysisId(man.getAnalysisId());
 
-            l.add(anUser);
+            l.add(data);
         }
 
         return man;
     }
 
     public AnalysisUserManager update(AnalysisUserManager man) throws Exception {
-        AnalysisUserViewDO anUser;
+        int i;
+        AnalysisUserViewDO data;
         AnalysisUserLocal l;
 
-        l = local();
-        for (int j = 0; j < man.deleteCount(); j++ ) {
-            l.delete(man.getDeletedAt(j));
+        l = EJBFactory.getAnalysisUser();
+        for (i = 0; i < man.deleteCount(); i++ ) {
+            l.delete(man.getDeletedAt(i));
         }
 
-        for (int i = 0; i < man.count(); i++ ) {
-            anUser = man.getAnalysisUserAt(i);
+        for (i = 0; i < man.count(); i++ ) {
+            data = man.getAnalysisUserAt(i);
 
-            if (anUser.getId() == null) {
-                anUser.setAnalysisId(man.getAnalysisId());
-                l.add(anUser);
+            if (data.getId() == null) {
+                data.setAnalysisId(man.getAnalysisId());
+                l.add(data);
             } else
-                l.update(anUser);
+                l.update(data);
         }
 
         return man;
@@ -96,42 +96,14 @@ public class AnalysisUserManagerProxy {
     public void validate(AnalysisUserManager man, ValidationErrorsList errorsList) throws Exception {
     }
 
-    protected SystemUserVO getSystemUser() {
-        try {
-            return PermissionInterceptor.getSystemUser();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     protected void loadDictionaryEntries(AnalysisUserManager m) throws Exception {
         DictionaryLocal l;
 
         if (m.actionCompletedId == null) {
-            l = dictionaryLocal();
+            l = EJBFactory.getDictionary();
             m.actionCompletedId = l.fetchBySystemName("an_user_ac_completed").getId();
             m.actionReleasedId = l.fetchBySystemName("an_user_ac_released").getId();
         }
     }
 
-    private AnalysisUserLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AnalysisUserLocal)ctx.lookup("openelis/AnalysisUserBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private static DictionaryLocal dictionaryLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
 }

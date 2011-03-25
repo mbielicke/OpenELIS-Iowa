@@ -25,12 +25,10 @@
 */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.PanelDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.PanelLocal;
+import org.openelis.utils.EJBFactory;
 
 public class PanelManagerProxy {
 
@@ -38,7 +36,7 @@ public class PanelManagerProxy {
         PanelDO data;
         PanelManager m;
         
-        data = local().fetchById(id);
+        data = EJBFactory.getPanel().fetchById(id);
         m = PanelManager.getInstance();
         
         m.setPanel(data);
@@ -58,7 +56,7 @@ public class PanelManagerProxy {
     public PanelManager add(PanelManager man) throws Exception {
         Integer id;
         
-        local().add(man.getPanel());
+        EJBFactory.getPanel().add(man.getPanel());
         id = man.getPanel().getId();
         
         if (man.items != null) {
@@ -72,7 +70,7 @@ public class PanelManagerProxy {
     public PanelManager update(PanelManager man) throws Exception {
         Integer id;
         
-        local().update(man.getPanel());
+        EJBFactory.getPanel().update(man.getPanel());
         id = man.getPanel().getId();
         
         if (man.items != null) {
@@ -88,7 +86,7 @@ public class PanelManagerProxy {
         man.getItems().setPanelId(man.getPanel().getId());
         man.getItems().delete();
 
-        local().delete(man.getPanel());
+        EJBFactory.getPanel().delete(man.getPanel());
     }
     
     public PanelManager fetchForUpdate(Integer id) throws Exception {
@@ -107,7 +105,7 @@ public class PanelManagerProxy {
         list = new ValidationErrorsList();
         
         try {
-            local().validate(man.getPanel());
+            EJBFactory.getPanel().validate(man.getPanel());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -120,15 +118,5 @@ public class PanelManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-    
-    private PanelLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (PanelLocal)ctx.lookup("openelis/PanelBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
-import javax.ejb.ApplicationException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -57,7 +56,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.meta.LabelMeta;
 import org.openelis.remote.LabelRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -177,8 +176,12 @@ public class LabelBean implements LabelRemote {
     }
 
     public LabelViewDO fetchForUpdate(Integer id) throws Exception {
-        lock.lock(ReferenceTable.LABEL, id);
-        return fetchById(id);
+        try {
+            lock.lock(ReferenceTable.LABEL, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public LabelViewDO abortUpdate(Integer id) throws Exception {
@@ -242,7 +245,7 @@ public class LabelBean implements LabelRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("label", flag);
+        EJBFactory.getUserCache().applyPermission("label", flag);
     }
 
 }

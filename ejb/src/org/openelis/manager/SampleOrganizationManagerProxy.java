@@ -27,14 +27,13 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleOrganizationLocal;
+import org.openelis.utils.EJBFactory;
 
 public class SampleOrganizationManagerProxy {
     
@@ -43,7 +42,7 @@ public class SampleOrganizationManagerProxy {
     public SampleOrganizationManagerProxy() {
         DictionaryLocal l;
         if (orgBillToId == null) {
-            l = dictionaryLocal();
+            l = EJBFactory.getDictionary();
 
             try {
                 orgBillToId = l.fetchBySystemName("org_bill_to").getId();
@@ -59,7 +58,7 @@ public class SampleOrganizationManagerProxy {
         ArrayList<SampleOrganizationViewDO> orgs;
         SampleOrganizationManager som;
         
-        orgs = local().fetchBySampleId(sampleId);
+        orgs = EJBFactory.getSampleOrganization().fetchBySampleId(sampleId);
         
         som = SampleOrganizationManager.getInstance();
         som.setOrganizations(orgs);
@@ -69,37 +68,38 @@ public class SampleOrganizationManagerProxy {
     }
     
     public SampleOrganizationManager add(SampleOrganizationManager man) throws Exception {
-        SampleOrganizationViewDO orgDO;
+        SampleOrganizationViewDO data;
         SampleOrganizationLocal l;
         
-        l = local();
+        l = EJBFactory.getSampleOrganization();
         for(int i=0; i<man.count(); i++){
-            orgDO = man.getOrganizationAt(i);
-            orgDO.setSampleId(man.getSampleId());
+            data = man.getOrganizationAt(i);
+            data.setSampleId(man.getSampleId());
             
-            l.add(orgDO);
+            l.add(data);
         }
         
         return man;
     }
     
     public SampleOrganizationManager update(SampleOrganizationManager man) throws Exception {
-        SampleOrganizationViewDO orgDO;
+        int i;
+        SampleOrganizationViewDO data;
         SampleOrganizationLocal l;
         
-        l = local();
-        for(int j=0; j<man.deleteCount(); j++){
-            l.delete(man.getDeletedAt(j));
+        l = EJBFactory.getSampleOrganization();
+        for(i=0; i<man.deleteCount(); i++){
+            l.delete(man.getDeletedAt(i));
         }
         
-        for(int i=0; i<man.count(); i++){
-            orgDO = man.getOrganizationAt(i);
+        for(i=0; i<man.count(); i++){
+            data = man.getOrganizationAt(i);
             
-            if(orgDO.getId() == null){
-                orgDO.setSampleId(man.getSampleId());
-                l.add(orgDO);
+            if(data.getId() == null){
+                data.setSampleId(man.getSampleId());
+                l.add(data);
             }else
-                l.update(orgDO);
+                l.update(data);
         }
 
         return man;
@@ -130,25 +130,5 @@ public class SampleOrganizationManagerProxy {
         
         if(numReportTo > 1)
             errorsList.add(new FormErrorException("multipleReportToException"));
-    }
-    
-    private SampleOrganizationLocal local(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (SampleOrganizationLocal)ctx.lookup("openelis/SampleOrganizationBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-    
-    private static DictionaryLocal dictionaryLocal(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
     }
 }

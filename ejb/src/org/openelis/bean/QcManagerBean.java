@@ -41,7 +41,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
 import org.openelis.remote.QcManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -133,6 +133,6 @@ public class QcManagerBean implements QcManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("qc", flag);
+        EJBFactory.getUserCache().applyPermission("qc", flag);
     }
 }

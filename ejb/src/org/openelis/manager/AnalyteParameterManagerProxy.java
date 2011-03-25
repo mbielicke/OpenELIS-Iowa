@@ -41,6 +41,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalyteParameterLocal;
 import org.openelis.local.QcLocal;
 import org.openelis.local.TestLocal;
+import org.openelis.utils.EJBFactory;
 
 public class AnalyteParameterManagerProxy {
 
@@ -50,7 +51,7 @@ public class AnalyteParameterManagerProxy {
         TestViewDO t;
         QcViewDO q;
                 
-        list = local().fetchActiveByReferenceIdReferenceTableId(referenceId, referenceTableId);    
+        list = EJBFactory.getAnalyteParameter().fetchActiveByReferenceIdReferenceTableId(referenceId, referenceTableId);    
         m = AnalyteParameterManager.getInstance();
         m.setReferenceId(referenceId);
         m.setReferenceTableId(referenceTableId);
@@ -60,11 +61,11 @@ public class AnalyteParameterManagerProxy {
         
         switch (referenceTableId) {
             case ReferenceTable.TEST:               
-                t = testLocal().fetchById(referenceId);
+                t = EJBFactory.getTest().fetchById(referenceId);
                 m.setReferenceName(t.getName()+" , "+t.getMethodName());
                 break;
             case ReferenceTable.QC:
-                q = qcLocal().fetchById(referenceId);
+                q = EJBFactory.getQc().fetchById(referenceId);
                 m.setReferenceName(q.getName()+" , "+q.getLotNumber());
                 break;
             case ReferenceTable.PROVIDER:
@@ -81,7 +82,7 @@ public class AnalyteParameterManagerProxy {
         ArrayList<AnalyteParameterViewDO> params;
         ArrayList<Integer> idList;
 
-        pl = local();
+        pl = EJBFactory.getAnalyteParameter();
         params = man.getParameters();
         idList = new ArrayList<Integer>(); 
         for (i = 0; i < params.size(); i++) {
@@ -115,7 +116,7 @@ public class AnalyteParameterManagerProxy {
         ArrayList<Integer> idList;
         Datetime ab, ae;
 
-        pl = local();
+        pl = EJBFactory.getAnalyteParameter();
         prevData = null;
         params = man.getParameters();
         idList = new ArrayList<Integer>();
@@ -204,7 +205,7 @@ public class AnalyteParameterManagerProxy {
             throw errors;
         }
         
-        pl = local();
+        pl = EJBFactory.getAnalyteParameter();
         prev = null;
         numActive = 0;
         
@@ -284,36 +285,6 @@ public class AnalyteParameterManagerProxy {
         
         if (errors.size() > 0)
             throw errors;
-    }
-    
-    private AnalyteParameterLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AnalyteParameterLocal)ctx.lookup("openelis/AnalyteParameterBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private TestLocal testLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (TestLocal)ctx.lookup("openelis/TestBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private QcLocal qcLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (QcLocal)ctx.lookup("openelis/QcBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
     
     private void fetchPreviousAndValidate(AnalyteParameterViewDO data, AnalyteParameterLocal pl,

@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.naming.InitialContext;
@@ -39,17 +38,12 @@ import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.SystemUserPermissionProxyLocal;
 import org.openelis.remote.SystemUserPermissionProxyRemote;
 import org.openelis.security.remote.SystemUserPermissionRemote;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 public class SystemUserPermissionProxyBean implements SystemUserPermissionProxyRemote,
                                                       SystemUserPermissionProxyLocal {
-
-    @EJB
-    SessionCacheInt session;
-
-    @EJB
-    ApplicationCacheInt application;
 
     @Resource
     private SessionContext ctx;
@@ -63,8 +57,7 @@ public class SystemUserPermissionProxyBean implements SystemUserPermissionProxyR
             rctx = new InitialContext();
             user = (SystemUserPermissionRemote) rctx.lookup("security/SystemUserPermissionBean/remote");
             perm = user.fetchByApplicationAndLoginName("openelis", ctx.getCallerPrincipal().getName());
-            session.setAttribute("UserPermission", perm);
-            application.setAttribute("UserList", perm.getSystemUserId(), perm.getUser());
+            EJBFactory.getSessionCache().setAttribute("UserPermission", perm);
         } catch (Exception e) {
             e.printStackTrace();
             perm = null;
@@ -74,7 +67,7 @@ public class SystemUserPermissionProxyBean implements SystemUserPermissionProxyR
     }
 
     public void logout() {
-        session.destroySession();
+        EJBFactory.getSessionCache().evict();
     }
     
     public SystemUserVO fetchById(Integer id) throws Exception {

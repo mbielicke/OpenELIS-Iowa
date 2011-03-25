@@ -1,15 +1,9 @@
 package org.openelis.manager;
 
-import java.util.ArrayList;
-
-import javax.naming.InitialContext;
-
-import org.openelis.domain.ProjectParameterDO;
 import org.openelis.domain.ProjectViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ProjectLocal;
-import org.openelis.local.ProjectParameterLocal;
+import org.openelis.utils.EJBFactory;
 
 public class ProjectManagerProxy {
 
@@ -17,7 +11,7 @@ public class ProjectManagerProxy {
         ProjectViewDO data;
         ProjectManager m;
 
-        data = local().fetchById(id);
+        data = EJBFactory.getProject().fetchById(id);
         m = ProjectManager.getInstance();
         m.setProject(data);
 
@@ -28,7 +22,7 @@ public class ProjectManagerProxy {
         ProjectViewDO data;
         ProjectManager m;
 
-        data = local().fetchById(id);
+        data = EJBFactory.getProject().fetchById(id);
         m = ProjectManager.getInstance();
 
         m.setProject(data);
@@ -40,7 +34,7 @@ public class ProjectManagerProxy {
     public ProjectManager add(ProjectManager man) throws Exception {
         Integer id;
 
-        local().add(man.getProject());
+        EJBFactory.getProject().add(man.getProject());
         id = man.getProject().getId();
 
         if (man.parameters != null) {
@@ -53,7 +47,7 @@ public class ProjectManagerProxy {
     public ProjectManager update(ProjectManager man) throws Exception {
         Integer id;
 
-        local().update(man.getProject());
+        EJBFactory.getProject().update(man.getProject());
         id = man.getProject().getId();
 
         if (man.parameters != null) {
@@ -78,7 +72,7 @@ public class ProjectManagerProxy {
 
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getProject());
+            EJBFactory.getProject().validate(man.getProject());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -91,15 +85,5 @@ public class ProjectManagerProxy {
 
         if (list.size() > 0)
             throw list;
-    }
-
-    private ProjectLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (ProjectLocal)ctx.lookup("openelis/ProjectBean/local");
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }

@@ -28,8 +28,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -37,51 +35,53 @@ import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InstrumentLogLocal;
 import org.openelis.meta.InstrumentMeta;
+import org.openelis.utils.EJBFactory;
 
 public class InstrumentLogManagerProxy {
     
     public InstrumentLogManager fetchByInstrumentId(Integer id) throws Exception {
         InstrumentLogManager man;
-        ArrayList<InstrumentLogDO> logs;
+        ArrayList<InstrumentLogDO> list;
         
-        logs = local().fetchByInstrumentId(id);
+        list = EJBFactory.getInstrumentLog().fetchByInstrumentId(id);
         man = InstrumentLogManager.getInstance();
         man.setInstrumentId(id);
-        man.setLogs(logs);
+        man.setLogs(list);
         
         return man;
     }
     
     public InstrumentLogManager add(InstrumentLogManager man) throws Exception {
         InstrumentLogLocal il;
-        InstrumentLogDO log;
+        InstrumentLogDO data;
         
-        il = local();
+        il = EJBFactory.getInstrumentLog();
         for (int i = 0; i < man.count(); i++ ) {
-            log = man.getLogAt(i);
-            log.setInstrumentId(man.getInstrumentId());
-            il.add(log);
+            data = man.getLogAt(i);
+            data.setInstrumentId(man.getInstrumentId());
+            il.add(data);
         }
         
         return man;
     }
     
     public InstrumentLogManager update(InstrumentLogManager man) throws Exception {
+        int i;
         InstrumentLogLocal il;
-        InstrumentLogDO log;
+        InstrumentLogDO data;
         
-        il = local();
-        for (int j = 0; j < man.deleteCount(); j++ )
-            il.delete(man.getDeletedAt(j));
+        il = EJBFactory.getInstrumentLog();
+        for (i = 0; i < man.deleteCount(); i++ )
+            il.delete(man.getDeletedAt(i));
 
-        for (int i = 0; i < man.count(); i++ ) {
-            log = man.getLogAt(i);
+        for (i = 0; i < man.count(); i++ ) {
+            data = man.getLogAt(i);
 
-            if (log.getId() == null) {
-                log.setInstrumentId(man.getInstrumentId());
-                il.add(log);
+            if (data.getId() == null) {
+                data.setInstrumentId(man.getInstrumentId());
+                il.add(data);
             } else {
-                il.update(log);
+                il.update(data);
             }
         }
 
@@ -112,7 +112,7 @@ public class InstrumentLogManagerProxy {
         rangeList = new ArrayList<Datetime[]>();
         for(int i=0; i < man.count(); i++) {
             data = man.getLogAt(i);
-            il = local();
+            il = EJBFactory.getInstrumentLog();
 
             try {
                 il.validate(data);
@@ -183,17 +183,6 @@ public class InstrumentLogManagerProxy {
         }
         
         return overlap; 
-    }
-    
-    private InstrumentLogLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InstrumentLogLocal)ctx.lookup("openelis/InstrumentLogBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    
     }
 }
  

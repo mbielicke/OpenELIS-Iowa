@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.TestWorksheetItemDO;
@@ -43,6 +41,7 @@ import org.openelis.local.TestWorksheetAnalyteLocal;
 import org.openelis.local.TestWorksheetItemLocal;
 import org.openelis.local.TestWorksheetLocal;
 import org.openelis.meta.TestMeta;
+import org.openelis.utils.EJBFactory;
 
 public class TestWorksheetManagerProxy {
 
@@ -52,7 +51,7 @@ public class TestWorksheetManagerProxy {
         DictionaryDO data;
         DictionaryLocal dl;
 
-        dl = dictLocal();
+        dl = EJBFactory.getDictionary();
 
         if (typeDupl == 0) {
             try {
@@ -93,18 +92,16 @@ public class TestWorksheetManagerProxy {
         TestWorksheetViewDO data;
         ArrayList<TestWorksheetItemDO> items;
         ArrayList<TestWorksheetAnalyteViewDO> analytes;
-
-        items = null;
-        wl = worksheetLocal();
+               
+        items = null;        
         twm = TestWorksheetManager.getInstance();
         data = null;
         analytes = null;
-
+        wl = EJBFactory.getTestWorksheet();
+        il = EJBFactory.getTestWorksheetItem();
+        al = EJBFactory.getTestWorksheetAnalyte();
         data = wl.fetchByTestId(testId);
-
-        il = itemLocal();
-        al = analyteLocal();
-
+        
         if (data == null) {
             data = new TestWorksheetViewDO();
         } else {
@@ -133,9 +130,10 @@ public class TestWorksheetManagerProxy {
         Integer id;
 
         worksheet = man.getWorksheet();
-        wl = worksheetLocal();
-        il = itemLocal();
-        al = analyteLocal();
+        
+        wl = EJBFactory.getTestWorksheet();
+        il = EJBFactory.getTestWorksheetItem();
+        al = EJBFactory.getTestWorksheetAnalyte();
 
         //
         // This check is put here in order to distinguish between the cases
@@ -186,9 +184,9 @@ public class TestWorksheetManagerProxy {
         Integer id;
 
         data = man.getWorksheet();
-        wl = worksheetLocal();
-        il = itemLocal();
-        al = analyteLocal();
+        wl = EJBFactory.getTestWorksheet();
+        il = EJBFactory.getTestWorksheetItem();
+        al = EJBFactory.getTestWorksheetAnalyte();
 
         //
         // This check for the _changed flag is put here in order to distinguish
@@ -249,11 +247,22 @@ public class TestWorksheetManagerProxy {
         TestWorksheetLocal wl;
 
         data = man.getWorksheet();
-        wl = worksheetLocal();
+        wl = EJBFactory.getTestWorksheet();
         list = new ValidationErrorsList();
 
         try {
-            wl.validate(data);
+            //
+            // This check is put here in order to distinguish between the cases where
+            // the TestWorksheetDO was changed on the screen and where it was not.
+            // This is necessary because it is possible for the users to enter no
+            // information on the screen in the fields related to the DO and
+            // commit the data and since the DO can't be null because then the fields
+            // on the screen won't get refreshed on fetch, the validation code below
+            // will make error messages get displayed on the screen when there was
+            // no fault of the user.
+            //
+            if (data.isChanged() || man.itemCount() > 0 || man.analyteCount() > 0) 
+                wl.validate(data);
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -264,95 +273,24 @@ public class TestWorksheetManagerProxy {
             throw list;
     }
 
-    private TestWorksheetLocal worksheetLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (TestWorksheetLocal)ctx.lookup("openelis/TestWorksheetBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private TestWorksheetItemLocal itemLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (TestWorksheetItemLocal)ctx.lookup("openelis/TestWorksheetItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private TestWorksheetAnalyteLocal analyteLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (TestWorksheetAnalyteLocal)ctx.lookup("openelis/TestWorksheetAnalyteBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
     private void validateWorksheetItems(ValidationErrorsList list,
                                         List<TestWorksheetItemDO> items,
                                         TestWorksheetViewDO data) {
-        Integer bc, tc, position, formatId;
-        ArrayList<Integer> posList;
         int i, size;
-        TestWorksheetItemDO currDO, prevDO;
         boolean checkPosition;
-
+        Integer bc, tc, position;
+        ArrayList<Integer> posList;        
+        TestWorksheetItemDO currDO, prevDO;
         TestWorksheetItemLocal il;
-        TestWorksheetLocal wl;
 
         if (items == null)
-            return;
-
-        bc = null;
-        tc = null;
-        formatId = null;
+            return;        
+        
         size = items.size();
-
-        il = itemLocal();
-        wl = worksheetLocal();
-
-        if (data != null) {
-            bc = data.getBatchCapacity();
-            tc = data.getTotalCapacity();
-            formatId = data.getFormatId();
-        } else if (size > 0) {
-            // 
-            // if there's no data in TestWorksheetViewDO it means that the user
-            // didn't
-            // specify any details about the kind of worksheet it will be and so
-            // if there are qcs present then this is an erroneous situation and
-            // the errors related to the worksheet information must be added to
-            // the list of errors and since the validation for a TestWorksheetDO
-            // won't be carried out unless the _changed flag is set, we set the
-            // 3 fields that are required for a TestWorksheet
-            //
-            data = new TestWorksheetViewDO();
-            data.setBatchCapacity(bc);
-            data.setFormatId(formatId);
-            data.setTotalCapacity(tc);
-            try {
-                wl.validate(data);
-            } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e);
-            }
-        }
-
+        il = EJBFactory.getTestWorksheetItem();
+        
+        bc = data.getBatchCapacity();
+        tc = data.getTotalCapacity();
         posList = new ArrayList<Integer>();
         checkPosition = false;
 
@@ -421,9 +359,9 @@ public class TestWorksheetManagerProxy {
 
         if (analytes == null)
             return;
-
+        
         idlist = new ArrayList<Integer>();
-        al = analyteLocal();
+        al = EJBFactory.getTestWorksheetAnalyte();
 
         for (int i = 0; i < analytes.size(); i++ ) {
             data = analytes.get(i);

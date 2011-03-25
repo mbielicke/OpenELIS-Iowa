@@ -28,26 +28,24 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.manager.SampleItemManager.SampleItemListItem;
+import org.openelis.utils.EJBFactory;
 
 public class SampleItemManagerProxy {
     public SampleItemManager fetchBySampleId(Integer sampleId) throws Exception {
-        ArrayList<SampleItemViewDO> items;
+        ArrayList<SampleItemViewDO> list;
         SampleItemManager sim;
 
-        items = local().fetchBySampleId(sampleId);
+        list = EJBFactory.getSampleItem().fetchBySampleId(sampleId);
         sim = SampleItemManager.getInstance();
 
-        sim.addSampleItems(items);
+        sim.addSampleItems(list);
         sim.setSampleId(sampleId);
 
         return sim;
@@ -55,27 +53,27 @@ public class SampleItemManagerProxy {
 
     public SampleItemManager add(SampleItemManager man) throws Exception {
         Integer sampleItemRefTableId;
-        SampleItemViewDO itemDO;
+        SampleItemViewDO data;
         SampleItemListItem item;
         SampleItemLocal l;
 
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
 
-        l = local();
+        l = EJBFactory.getSampleItem();
         for (int i = 0; i < man.count(); i++ ) {
-            itemDO = man.getSampleItemAt(i);
-            itemDO.setSampleId(man.getSampleId());
-            l.add(itemDO);
+            data = man.getSampleItemAt(i);
+            data.setSampleId(man.getSampleId());
+            l.add(data);
             item = man.getItemAt(i);
 
             if (item.storage != null) {
-                man.getStorageAt(i).setReferenceId(itemDO.getId());
+                man.getStorageAt(i).setReferenceId(data.getId());
                 man.getStorageAt(i).setReferenceTableId(sampleItemRefTableId);
                 man.getStorageAt(i).add();
             }
 
             if (item.analysis != null)
-                man.getAnalysisAt(i).setSampleItemId(itemDO.getId());
+                man.getAnalysisAt(i).setSampleItemId(data.getId());
         }
 
         addAnalyses(man);
@@ -84,35 +82,36 @@ public class SampleItemManagerProxy {
     }
 
     public SampleItemManager update(SampleItemManager man) throws Exception {
+        int i;
         Integer sampleItemRefTableId;
         SampleItemLocal l;
-        SampleItemViewDO itemDO;
+        SampleItemViewDO data;
         SampleItemListItem item;
 
-        l = local();
+        l = EJBFactory.getSampleItem();
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
 
-        for (int j = 0; j < man.deleteCount(); j++ )
-            l.delete(man.getDeletedAt(j).sampleItem);
+        for (i = 0; i < man.deleteCount(); i++ )
+            l.delete(man.getDeletedAt(i).sampleItem);
 
-        for (int i = 0; i < man.count(); i++ ) {
-            itemDO = man.getSampleItemAt(i);
+        for (i = 0; i < man.count(); i++ ) {
+            data = man.getSampleItemAt(i);
 
-            if (itemDO.getId() == null) {
-                itemDO.setSampleId(man.getSampleId());
-                l.add(itemDO);
+            if (data.getId() == null) {
+                data.setSampleId(man.getSampleId());
+                l.add(data);
             } else
-                l.update(itemDO);
+                l.update(data);
 
             item = man.getItemAt(i);
             if (item.storage != null) {
-                man.getStorageAt(i).setReferenceId(itemDO.getId());
+                man.getStorageAt(i).setReferenceId(data.getId());
                 man.getStorageAt(i).setReferenceTableId(sampleItemRefTableId);
                 man.getStorageAt(i).update();
             }
 
             if (item.analysis != null)
-                man.getAnalysisAt(i).setSampleItemId(itemDO.getId());
+                man.getAnalysisAt(i).setSampleItemId(data.getId());
         }
 
         updateAnalyses(man);
@@ -121,9 +120,10 @@ public class SampleItemManagerProxy {
     }
 
     public Integer getIdFromSystemName(String systemName) throws Exception {
-        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+        DictionaryDO data;
 
-        return dictDO.getId();
+        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
+        return data.getId();
     }
 
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
@@ -176,25 +176,5 @@ public class SampleItemManagerProxy {
                 numOfUnresolved = numOfUnresolved + man.getAnalysisAt(i).update(idHash);
 
         } while (numOfUnresolved != 0);
-    }
-
-    private SampleItemLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SampleItemLocal)ctx.lookup("openelis/SampleItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private static DictionaryLocal dictionaryLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

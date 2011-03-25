@@ -41,7 +41,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.InstrumentManager;
 import org.openelis.remote.InstrumentManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -133,7 +133,7 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("instrument", flag);
+        EJBFactory.getUserCache().applyPermission("instrument", flag);
     }
 
 }

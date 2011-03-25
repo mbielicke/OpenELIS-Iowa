@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -33,10 +32,11 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SectionLocal;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.TestLocal;
 import org.openelis.remote.QASummaryReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
@@ -45,11 +45,11 @@ import org.openelis.utils.ReportUtil;
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
 public class QASummaryReportBean implements QASummaryReportRemote {
 
+    @EJB
+    private SessionCacheLocal session;
+    
     @Resource
     private SessionContext  ctx;
-
-    @EJB
-    private SessionCacheInt session;
 
     @EJB
     private SectionLocal    section;
@@ -175,7 +175,7 @@ public class QASummaryReportBean implements QASummaryReportRemote {
         else
             test = "";        
 
-        loginName = PermissionInterceptor.getSystemUserName();
+        loginName = EJBFactory.getUserCache().getName();
         /*
          * start the report
          */

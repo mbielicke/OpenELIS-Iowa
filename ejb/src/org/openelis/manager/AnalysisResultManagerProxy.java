@@ -28,8 +28,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
@@ -39,10 +37,10 @@ import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.utilcommon.ResultValidator;
+import org.openelis.utils.EJBFactory;
 
 public class AnalysisResultManagerProxy {
 
@@ -51,7 +49,7 @@ public class AnalysisResultManagerProxy {
         AnalysisResultManager man;
 
         results = new ArrayList<ArrayList<ResultViewDO>>();
-        local().fetchByAnalysisIdForDisplay(analysisId, results);        
+        EJBFactory.getResult().fetchByAnalysisIdForDisplay(analysisId, results);        
         man = AnalysisResultManager.getInstance();
         man.setResults(results);
 
@@ -73,7 +71,7 @@ public class AnalysisResultManagerProxy {
         testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
         resultValidators = new ArrayList<ResultValidator>();
 
-        local().fetchByAnalysisId(analysisId, results, testResultList, analyteList,
+        EJBFactory.getResult().fetchByAnalysisId(analysisId, results, testResultList, analyteList,
                                   testAnalyteList, resultValidators);
         man = AnalysisResultManager.getInstance();
         man.setResults(results);
@@ -100,7 +98,7 @@ public class AnalysisResultManagerProxy {
         testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
         resultValidators = new ArrayList<ResultValidator>();
 
-        local().fetchByTestIdNoResults(testId, unitId, results, testResultList, analyteList,
+        EJBFactory.getResult().fetchByTestIdNoResults(testId, unitId, results, testResultList, analyteList,
                                        testAnalyteList, resultValidators);
         man = AnalysisResultManager.getInstance();
         man.setResults(results);
@@ -122,7 +120,7 @@ public class AnalysisResultManagerProxy {
 
         grid = man.getResults();
         so = 0;
-        l = local();
+        l = EJBFactory.getResult();
         for (i = 0; i < man.rowCount(); i++ ) {
             list = grid.get(i);
             for (j = 0; j < list.size(); j++ ) {
@@ -147,7 +145,7 @@ public class AnalysisResultManagerProxy {
 
         grid = man.getResults();
         so = 0;
-        l = local();
+        l = EJBFactory.getResult();
         for (i = 0; i < man.deleteCount(); i++ ) {
             l.delete(man.getDeletedAt(i));
         }
@@ -195,7 +193,7 @@ public class AnalysisResultManagerProxy {
                          ValidationErrorsList errorsList) throws Exception {
         ArrayList<ResultViewDO> results;
         ResultViewDO result;
-        TestResultDO testResultDO;
+        TestResultDO data;
         Integer testResultId;
 
         // go through the results and put a form error if one is found to be
@@ -211,10 +209,10 @@ public class AnalysisResultManagerProxy {
                         testResultId = man.validateResultValue(result.getResultGroup(),
                                                                anDO.getUnitOfMeasureId(),
                                                                result.getValue());
-                        testResultDO = man.getTestResultList().get(testResultId);
+                        data = man.getTestResultList().get(testResultId);
 
-                        result.setTypeId(testResultDO.getTypeId());
-                        result.setTestResultId(testResultDO.getId());
+                        result.setTypeId(data.getTypeId());
+                        result.setTestResultId(data.getId());
                     }
                 }
             }
@@ -233,7 +231,6 @@ public class AnalysisResultManagerProxy {
         TestResultDO testResultDO;
         Integer testResultId;
         Integer resultRequiredId;
-        boolean requiredEx, invalidEx;
         int i, j;
 
         resultRequiredId = getIdFromSystemName("test_analyte_req");
@@ -278,16 +275,17 @@ public class AnalysisResultManagerProxy {
     }
 
     public Integer getIdFromSystemName(String systemName) throws Exception {
-        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
-
-        return dictDO.getId();
+        DictionaryDO data;
+        
+        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
+        return data.getId();
     }
 
     private void mergeResultGrid(ArrayList<ArrayList<ResultViewDO>> oldGrid,
                                  ArrayList<ArrayList<ResultViewDO>> newGrid) {
-        ResultViewDO r1, r2;
-        boolean found;
         int k;
+        boolean found;
+        ResultViewDO r1, r2;
 
         k = 0;
         for (int i = 0; i < newGrid.size(); i++ ) {
@@ -312,26 +310,6 @@ public class AnalysisResultManagerProxy {
                 if (found)
                     break;
             }
-        }
-    }
-
-    private static DictionaryLocal dictionaryLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private ResultLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (ResultLocal)ctx.lookup("openelis/ResultBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
         }
     }
 }

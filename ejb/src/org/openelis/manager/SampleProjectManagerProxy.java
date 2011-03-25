@@ -27,74 +27,63 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleProjectLocal;
+import org.openelis.utils.EJBFactory;
 
 public class SampleProjectManagerProxy {
     public SampleProjectManager fetchBySampleId(Integer sampleId) throws Exception {
-        ArrayList<SampleProjectViewDO> projects;
+        ArrayList<SampleProjectViewDO> list;
         SampleProjectManager spm;
         
-        projects = local().fetchBySampleId(sampleId);
+        list = EJBFactory.getSampleProject().fetchBySampleId(sampleId);
         
         spm = SampleProjectManager.getInstance();
-        spm.setProjects(projects);
+        spm.setProjects(list);
         spm.setSampleId(sampleId);
         
         return spm;
     }
     
     public SampleProjectManager add(SampleProjectManager man) throws Exception {
-        SampleProjectViewDO projectDO;
+        SampleProjectViewDO data;
         SampleProjectLocal l;
         
-        l = local();
+        l = EJBFactory.getSampleProject();
         for(int i=0; i<man.count(); i++){
-            projectDO = man.getProjectAt(i);
-            projectDO.setSampleId(man.getSampleId());
+            data = man.getProjectAt(i);
+            data.setSampleId(man.getSampleId());
             
-            l.add(projectDO);
+            l.add(data);
         }
         
         return man;
     }
     
     public SampleProjectManager update(SampleProjectManager man) throws Exception {
-        SampleProjectViewDO projectDO;
+        int i;
+        SampleProjectViewDO data;
         SampleProjectLocal l;
         
-        l = local();
-        for(int j=0; j<man.deleteCount(); j++){
-            l.delete(man.getDeletedAt(j));
+        l = EJBFactory.getSampleProject();
+        for(i=0; i<man.deleteCount(); i++){
+            l.delete(man.getDeletedAt(i));
         }
         
-        for(int i=0; i<man.count(); i++){
-            projectDO = man.getProjectAt(i);
+        for(i=0; i<man.count(); i++){
+            data = man.getProjectAt(i);
             
-            if(projectDO.getId() == null){
-                projectDO.setSampleId(man.getSampleId());
-                l.add(projectDO);
+            if(data.getId() == null){
+                data.setSampleId(man.getSampleId());
+                l.add(data);
             }else
-                l.update(projectDO);
+                l.update(data);
         }
 
         return man;
     }
     
-    public void validate(SampleProjectManager man, ValidationErrorsList errorsList) throws Exception {
-        
-    }
-    
-    private SampleProjectLocal local(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (SampleProjectLocal)ctx.lookup("openelis/SampleProjectBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
+    public void validate(SampleProjectManager man, ValidationErrorsList errorsList) throws Exception {       
     }
 }

@@ -42,7 +42,7 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.AnalysisUserLocal;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -62,7 +62,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
             anUserDO = (AnalysisUserViewDO)query.getSingleResult();
             
             if (anUserDO.getSystemUserId() != null) {
-                user = PermissionInterceptor.getSystemUser(anUserDO.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(anUserDO.getSystemUserId());
                 if (user != null)
                     anUserDO.setSystemUser(user.getLoginName());
             }
@@ -88,7 +88,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
             anUserDO = returnList.get(i);
 
             if (anUserDO.getSystemUserId() != null) {
-                user = PermissionInterceptor.getSystemUser(anUserDO.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(anUserDO.getSystemUserId());
                 if (user != null)
                     anUserDO.setSystemUser(user.getLoginName());
             }

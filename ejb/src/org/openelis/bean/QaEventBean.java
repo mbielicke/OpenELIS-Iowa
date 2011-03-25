@@ -60,7 +60,7 @@ import org.openelis.local.QaeventLocal;
 import org.openelis.meta.QaEventMeta;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -70,9 +70,6 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;
 
-    @Resource
-    private SessionContext            ctx;
-    
     @EJB
     private LockLocal                   lock;
 
@@ -238,8 +235,12 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
     }
 
     public QaEventViewDO fetchForUpdate(Integer id) throws Exception {
-        lock.lock(ReferenceTable.QAEVENT, id);
-        return fetchById(id);
+        try {
+            lock.lock(ReferenceTable.QAEVENT, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public QaEventViewDO abortUpdate(Integer id) throws Exception {
@@ -283,6 +284,6 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("qaevent", flag);
+        EJBFactory.getUserCache().applyPermission("qaevent", flag);
     }
 }

@@ -117,23 +117,14 @@ public class TestWorksheetBean implements TestWorksheetLocal {
         boolean checkForMultiple = true;
         ValidationErrorsList list;
 
-        //
-        // This check is put here in order to distinguish between the cases where
-        // the TestWorksheetDO was changed on the screen and where it was not.
-        // This is necessary because it is possible for the users to enter no
-        // information on the screen in the fields related to the DO and
-        // commit the data and since the DO can't be null because then the fields
-        // on the screen won't get refreshed on fetch, the validation code below
-        // will make error messages get displayed on the screen when there was
-        // no fault of the user.
-        //
-        if (!data.isChanged())
-            return;
-
         list = new ValidationErrorsList();
         
         if (DataBaseUtil.isEmpty(data.getBatchCapacity())) {
             list.add(new FieldErrorException("fieldRequiredException",
+                                             TestMeta.getWorksheetBatchCapacity()));
+            checkForMultiple = false;
+        } else if (data.getBatchCapacity() <= 0) {
+            list.add(new FieldErrorException("batchCapacityMoreThanZeroException",
                                              TestMeta.getWorksheetBatchCapacity()));
             checkForMultiple = false;
         }
@@ -141,15 +132,7 @@ public class TestWorksheetBean implements TestWorksheetLocal {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getWorksheetTotalCapacity()));
             checkForMultiple = false;
-        }
-
-        if (DataBaseUtil.isEmpty(data.getBatchCapacity()) && data.getBatchCapacity() <= 0) {
-            list.add(new FieldErrorException("batchCapacityMoreThanZeroException",
-                                             TestMeta.getWorksheetBatchCapacity()));
-            checkForMultiple = false;
-        }
-
-        if (DataBaseUtil.isEmpty(data.getTotalCapacity()) && data.getTotalCapacity() <= 0) {
+        } else if (data.getTotalCapacity() <= 0) {
             list.add(new FieldErrorException("totalCapacityMoreThanZeroException",
                                              TestMeta.getWorksheetTotalCapacity()));
             checkForMultiple = false;

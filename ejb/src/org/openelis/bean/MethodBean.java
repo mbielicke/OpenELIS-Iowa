@@ -55,7 +55,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.meta.MethodMeta;
 import org.openelis.remote.MethodRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -63,12 +63,12 @@ import org.openelis.utils.PermissionInterceptor;
 public class MethodBean implements MethodRemote {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager  manager;
-    
-    @EJB
-    private LockLocal      lock;
+    private EntityManager           manager;
 
-    private static final MethodMeta meta = new MethodMeta(); 
+    @EJB
+    private LockLocal               lock;
+
+    private static final MethodMeta meta = new MethodMeta();
     
     public MethodDO fetchById(Integer id) throws Exception {
     	Query query;
@@ -124,8 +124,8 @@ public class MethodBean implements MethodRemote {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + meta.getId()
-                          + "," + meta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + MethodMeta.getId()
+                          + "," + MethodMeta.getName() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(MethodMeta.getName());
 
@@ -195,9 +195,13 @@ public class MethodBean implements MethodRemote {
         return data;
     }
     
-    public MethodDO fetchForUpdate(Integer id) throws Exception {
-        lock.lock(ReferenceTable.METHOD, id);
-        return fetchById(id);
+    public MethodDO fetchForUpdate(Integer id) throws Exception {        
+        try {
+            lock.lock(ReferenceTable.METHOD, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     public MethodDO abortUpdate(Integer id) throws Exception {
@@ -211,23 +215,23 @@ public class MethodBean implements MethodRemote {
         list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(data.getName())) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", MethodMeta.getName()));
         } else {
             MethodDO dup;
             
             try {
                 dup = fetchByName(data.getName());
                 if (DataBaseUtil.isDifferent(data.getId(), dup.getId()))
-                    list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
+                    list.add(new FieldErrorException("fieldUniqueException", MethodMeta.getName()));
             } catch (NotFoundException ignE) {
             }
         }
         
         if (DataBaseUtil.isEmpty(data.getActiveBegin())) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.getActiveBegin()));
+            list.add(new FieldErrorException("fieldRequiredException", MethodMeta.getActiveBegin()));
         
         if (DataBaseUtil.isEmpty(data.getActiveEnd())) 
-            list.add(new FieldErrorException("fieldRequiredException", meta.getActiveEnd()));                
+            list.add(new FieldErrorException("fieldRequiredException", MethodMeta.getActiveEnd()));                
                 
         if (DataBaseUtil.isAfter(data.getActiveBegin(),data.getActiveEnd())) 
             list.add(new FormErrorException("endDateAfterBeginDateException"));                   
@@ -237,6 +241,6 @@ public class MethodBean implements MethodRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("method", flag);
+        EJBFactory.getUserCache().applyPermission("method", flag);
     }
 }

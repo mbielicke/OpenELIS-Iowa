@@ -31,6 +31,7 @@ import org.openelis.domain.QcViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.QcLocal;
+import org.openelis.utils.EJBFactory;
 
 public class QcManagerProxy {
 
@@ -38,7 +39,7 @@ public class QcManagerProxy {
         QcViewDO data;
         QcManager m;
 
-        data = local().fetchById(id);
+        data = EJBFactory.getQc().fetchById(id);
         m = QcManager.getInstance();
 
         m.setQc(data);
@@ -58,7 +59,7 @@ public class QcManagerProxy {
     public QcManager add(QcManager man) throws Exception {
         Integer id;
 
-        local().add(man.getQc());
+        EJBFactory.getQc().add(man.getQc());
         id = man.getQc().getId();
 
         if (man.analytes != null) {
@@ -72,7 +73,7 @@ public class QcManagerProxy {
     public QcManager update(QcManager man) throws Exception {
         Integer id;
 
-        local().update(man.getQc());
+        EJBFactory.getQc().update(man.getQc());
         id = man.getQc().getId();
 
         if (man.analytes != null) {
@@ -100,7 +101,7 @@ public class QcManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getQc());
+            EJBFactory.getQc().validate(man.getQc());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -113,15 +114,5 @@ public class QcManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-
-    private QcLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (QcLocal)ctx.lookup("openelis/QcBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

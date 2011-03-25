@@ -36,22 +36,22 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.messages.DictionaryCacheMessage;
 import org.openelis.meta.CategoryMeta;
+import org.openelis.utils.EJBFactory;
 
 public class DictionaryManagerProxy {
 
     public DictionaryManager fetchByCategoryId(Integer id) throws Exception {
         DictionaryManager man;
-        ArrayList<DictionaryViewDO> entries;
+        ArrayList<DictionaryViewDO> list;
 
-        entries = local().fetchByCategoryId(id);
+        list = EJBFactory.getDictionary().fetchByCategoryId(id);
         man = DictionaryManager.getInstance();
         man.setCategoryId(id);
-        man.setEntries(entries);
+        man.setEntries(list);
         
         return man;
     }
@@ -60,7 +60,7 @@ public class DictionaryManagerProxy {
         DictionaryViewDO data;
         DictionaryLocal dl;
 
-        dl = local();
+        dl = EJBFactory.getDictionary();
 
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getEntryAt(i);
@@ -73,15 +73,16 @@ public class DictionaryManagerProxy {
     }
 
     public DictionaryManager update(DictionaryManager man) throws Exception {
-        DictionaryViewDO entry;
-        DictionaryLocal dl;
         int i;
-        DictionaryCacheMessage msg;
-        CategoryDO catDO;
         boolean sendMessage;
+        DictionaryViewDO data;
+        DictionaryLocal dl;
+        DictionaryCacheMessage msg;
+        CategoryDO category;
+
 
         sendMessage = false;
-        dl = local();
+        dl = EJBFactory.getDictionary();
 
         for (i = 0; i < man.deleteCount(); i++ ) {
             dl.delete(man.getDeletedAt(i));
@@ -89,25 +90,25 @@ public class DictionaryManagerProxy {
         }
 
         for (i = 0; i < man.count(); i++ ) {
-            entry = man.getEntryAt(i);
-            entry.setSortOrder(i + 1);
+            data = man.getEntryAt(i);
+            data.setSortOrder(i + 1);
 
-            if (entry.getId() == null) {
-                entry.setCategoryId(man.getCategoryId());
-                dl.add(entry);
+            if (data.getId() == null) {
+                data.setCategoryId(man.getCategoryId());
+                dl.add(data);
                 sendMessage = true;
             } else {
-                dl.update(entry);
-                if (entry.isChanged())
+                dl.update(data);
+                if (data.isChanged())
                     sendMessage = true;
             }
         }
 
         if (sendMessage) {
             // invalidate the cache
-            catDO = catLocal().fetchById(man.getCategoryId());            
+            category = EJBFactory.getCategory().fetchById(man.getCategoryId());            
             msg = new DictionaryCacheMessage();
-            msg.setCatDO(catDO);
+            msg.setCatDO(category);
             msg.action = DictionaryCacheMessage.Action.UPDATED;
             jmsLocal().writeMessage(msg);
         }
@@ -136,26 +137,6 @@ public class DictionaryManagerProxy {
             throw list;
     }
 
-    private CategoryLocal catLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private DictionaryLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
     private JMSMessageProducerLocal jmsLocal() {
         try {
             InitialContext ctx = new InitialContext();
@@ -167,23 +148,20 @@ public class DictionaryManagerProxy {
     }
 
     private void validateDictionary(ValidationErrorsList list, DictionaryManager man) {
+        int i;
+        Integer catId, categoryId;
+        String name,systemName;
         ArrayList<String> systemNames, entries;
         DictionaryViewDO data;
-        DictionaryDO dictDO;
+        DictionaryDO dictionary;
         DictionaryLocal dl;
-        Integer catId;
-        String systemName;
-        String name;
-        Integer categoryId;
-        int i;
 
         systemNames = new ArrayList<String>();
         entries = new ArrayList<String>();
         data = null;
-        dl = local();
+        dl = EJBFactory.getDictionary();
         catId = null;
-        categoryId = man.getCategoryId();
-        
+        categoryId = man.getCategoryId();        
 
         for(i = 0;  i < man.deleteCount(); i++) {
             data = man.getDeletedAt(i);
@@ -220,8 +198,8 @@ public class DictionaryManagerProxy {
             if (!DataBaseUtil.isEmpty(systemName)) {
                 if (!systemNames.contains(systemName)) {
                    try {
-                       dictDO = dl.fetchBySystemName(systemName);
-                       catId = dictDO.getCategoryId();
+                       dictionary = dl.fetchBySystemName(systemName);
+                       catId = dictionary.getCategoryId();
                    } catch (NotFoundException e) {
                        //do nothing
                    } catch(Exception e){

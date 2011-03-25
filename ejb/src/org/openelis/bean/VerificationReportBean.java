@@ -30,10 +30,11 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemUserPermissionProxyLocal;
 import org.openelis.remote.VerificationReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
@@ -47,7 +48,7 @@ public class VerificationReportBean implements VerificationReportRemote {
     private SessionContext  ctx;
 
     @EJB
-    private SessionCacheInt session;
+    private SessionCacheLocal session;
     
     @EJB
     private SystemUserPermissionProxyLocal sysUser;
@@ -128,7 +129,7 @@ public class VerificationReportBean implements VerificationReportRemote {
          */
         param = ReportUtil.parameterMap(paramList);
 
-        loginName = PermissionInterceptor.getSystemUserName();
+        loginName = EJBFactory.getUserCache().getName();
         
         beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
         if (beginEntered != null && beginEntered.length() > 0)
@@ -169,7 +170,7 @@ public class VerificationReportBean implements VerificationReportRemote {
             userWhere = " and h.system_user_id " + userWhere;
         } else {
             userNames = loginName;
-            userWhere = " and h.system_user_id = " + PermissionInterceptor.getSystemUserId();
+            userWhere = " and h.system_user_id = " + EJBFactory.getUserCache().getId();
         }
         
         /*

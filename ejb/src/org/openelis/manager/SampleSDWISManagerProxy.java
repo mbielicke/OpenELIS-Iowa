@@ -25,23 +25,17 @@
  */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.PwsLocal;
-import org.openelis.local.SampleSDWISLocal;
-import org.openelis.meta.SampleMeta;
+import org.openelis.utils.EJBFactory;
 
 public class SampleSDWISManagerProxy {
     public SampleSDWISManager fetchBySampleId(Integer sampleId) throws Exception {
         SampleSDWISViewDO data;
         SampleSDWISManager man;
 
-        data = local().fetchBySampleId(sampleId);
+        data = EJBFactory.getSampleSDWIS().fetchBySampleId(sampleId);
         man = SampleSDWISManager.getInstance();
 
         man.setSDWIS(data);
@@ -51,7 +45,7 @@ public class SampleSDWISManagerProxy {
 
     public SampleSDWISManager add(SampleSDWISManager man) throws Exception {
         man.getSDWIS().setSampleId(man.getSampleId());
-        local().add(man.getSDWIS());
+        EJBFactory.getSampleSDWIS().add(man.getSDWIS());
 
         return man;
     }
@@ -63,9 +57,9 @@ public class SampleSDWISManagerProxy {
 
         if (data.getId() == null) {
             data.setSampleId(man.getSampleId());
-            local().add(data);
+            EJBFactory.getSampleSDWIS().add(data);
         } else
-            local().update(data);
+            EJBFactory.getSampleSDWIS().update(data);
 
         return man;
     }
@@ -75,32 +69,12 @@ public class SampleSDWISManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getSDWIS());
+            EJBFactory.getSampleSDWIS().validate(man.getSDWIS());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
         
         if (list.size() > 0)
             throw list;
-    }
-
-    private SampleSDWISLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SampleSDWISLocal)ctx.lookup("openelis/SampleSDWISBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private PwsLocal pwsLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (PwsLocal)ctx.lookup("openelis/PwsBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

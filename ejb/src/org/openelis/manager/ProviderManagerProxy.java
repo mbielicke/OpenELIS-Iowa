@@ -32,6 +32,7 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ProviderLocal;
+import org.openelis.utils.EJBFactory;
 
 public class ProviderManagerProxy {
 
@@ -40,7 +41,7 @@ public class ProviderManagerProxy {
         ProviderDO data;
         ProviderManager m;
 
-        ol = local();
+        ol = EJBFactory.getProvider();
         data = ol.fetchById(id);
         m = ProviderManager.getInstance();
 
@@ -71,7 +72,7 @@ public class ProviderManagerProxy {
         Integer id;
         ProviderLocal ol;
 
-        ol = local();
+        ol = EJBFactory.getProvider();
         ol.add(man.getProvider());
         id = man.getProvider().getId();
 
@@ -91,7 +92,7 @@ public class ProviderManagerProxy {
         Integer id;
         ProviderLocal ol;
 
-        ol = local();
+        ol = EJBFactory.getProvider();
         ol.update(man.getProvider());
         id = man.getProvider().getId();
 
@@ -122,7 +123,7 @@ public class ProviderManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getProvider());
+            EJBFactory.getProvider().validate(man.getProvider());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -141,15 +142,5 @@ public class ProviderManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-
-    private ProviderLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (ProviderLocal)ctx.lookup("openelis/ProviderBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

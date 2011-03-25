@@ -27,12 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderTestLocal;
+import org.openelis.utils.EJBFactory;
 
 public class OrderTestManagerProxy {
     
@@ -40,7 +39,7 @@ public class OrderTestManagerProxy {
         OrderTestManager m;
         ArrayList<OrderTestViewDO> tests;
         
-        tests = local().fetchByOrderId(id);
+        tests = EJBFactory.getOrderTest().fetchByOrderId(id);
         m = OrderTestManager.getInstance();
         m.setOrderId(id);
         m.setTests(tests);
@@ -52,7 +51,7 @@ public class OrderTestManagerProxy {
         OrderTestLocal tl;
         OrderTestViewDO data;
 
-        tl = local();
+        tl = EJBFactory.getOrderTest();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getTestAt(i);
             data.setSortOrder(i+1);
@@ -67,7 +66,7 @@ public class OrderTestManagerProxy {
         OrderTestLocal tl;
         OrderTestViewDO data;
         
-        tl = local();
+        tl = EJBFactory.getOrderTest();
         for (int j = 0; j < man.deleteCount(); j++ )
             tl.delete(man.getDeletedAt(j));
 
@@ -89,7 +88,7 @@ public class OrderTestManagerProxy {
         ValidationErrorsList list;
         OrderTestLocal tl;
 
-        tl = local();
+        tl = EJBFactory.getOrderTest();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -102,14 +101,4 @@ public class OrderTestManagerProxy {
         if (list.size() > 0)
             throw list;
     }
-    
-    private OrderTestLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrderTestLocal)ctx.lookup("openelis/OrderTestBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }    
 }

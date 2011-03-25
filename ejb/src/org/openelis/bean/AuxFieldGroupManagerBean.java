@@ -42,7 +42,7 @@ import org.openelis.manager.AuxFieldGroupManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.remote.AuxFieldGroupManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -146,6 +146,6 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("auxiliary", flag);
+        EJBFactory.getUserCache().applyPermission("auxiliary", flag);
     }    
 }

@@ -42,11 +42,12 @@ import org.openelis.local.AnalysisLocal;
 import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.report.finalreport.OrganizationPrint;
 import org.openelis.report.finalreport.StatsDataSource;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
@@ -58,7 +59,7 @@ import org.openelis.utils.ReportUtil;
 public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
 	@EJB
-	private SessionCacheInt session;
+	private SessionCacheLocal session;
 
 	@EJB
 	private SampleLocal sampleBean;
@@ -430,7 +431,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 			jparam = new HashMap<String, Object>();
 			jparam.put("REPORT_TYPE", reportType);
 			jparam.put("SUBREPORT_DIR", dir);
-			jparam.put("LOGNAME", PermissionInterceptor.getSystemUserName());
+			jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
 			
 			url = ReportUtil.getResourceURL("org/openelis/report/finalreport/main.jasper");
 			jreport = (JasperReport) JRLoader.loadObject(url);

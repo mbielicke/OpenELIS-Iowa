@@ -42,7 +42,7 @@ import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
 import org.openelis.remote.OrganizationManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -146,6 +146,6 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("organization", flag);
+        EJBFactory.getUserCache().applyPermission("organization", flag);
     }
 }

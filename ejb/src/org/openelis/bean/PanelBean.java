@@ -286,7 +286,7 @@ public class PanelBean implements PanelRemote, PanelLocal {
         list = new ValidationErrorsList();
         name = data.getName();
         if (DataBaseUtil.isEmpty(name)) {
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", PanelMeta.getName()));
             throw list;
         }
 
@@ -295,9 +295,9 @@ public class PanelBean implements PanelRemote, PanelLocal {
         try {
             panel = (PanelDO)query.getSingleResult();
             if (DataBaseUtil.isDifferent(panel.getId(), data.getId()))
-                list.add(new FieldErrorException("fieldUniqueException", meta.getName()));
-        } catch (NoResultException ex) {
-            ex.printStackTrace();
+                list.add(new FieldErrorException("fieldUniqueException", PanelMeta.getName()));
+        } catch (NoResultException ignE) {
+            // do nothing
         }
 
         if (list.size() > 0)

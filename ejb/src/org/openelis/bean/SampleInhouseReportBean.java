@@ -4,11 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.sql.Connection;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 import javax.annotation.Resource;
@@ -35,16 +31,16 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ProjectLocal;
 import org.openelis.local.SectionLocal;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.TestLocal;
 import org.openelis.remote.SampleInhouseReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
@@ -58,7 +54,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
     private SessionContext  ctx;
 
     @EJB
-    private SessionCacheInt session;
+    private SessionCacheLocal session;
 
     @EJB
     private SectionLocal    section;
@@ -204,7 +200,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         else
             orgId = "";
 
-        loginName = PermissionInterceptor.getSystemUserName();
+        loginName = EJBFactory.getUserCache().getName();
         /*
          * start the report
          */

@@ -43,7 +43,7 @@ import org.openelis.local.AnalyteParameterLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.AnalyteParameterManager;
 import org.openelis.remote.AnalyteParameterManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -52,10 +52,10 @@ import org.openelis.utils.PermissionInterceptor;
 public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemote {   
     
     @Resource
-    private SessionContext ctx;
-    
+    private SessionContext        ctx;
+
     @EJB
-    private LockLocal      lockBean;
+    private LockLocal             lock;
     
     public AnalyteParameterManager fetchActiveByReferenceIdReferenceTableId(Integer refId,
                                                                       Integer refTableId) throws Exception {        
@@ -97,13 +97,13 @@ public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemot
             for (i = 0; i < man.count(); i++ ) {
                 data = man.getParameterAt(i);
                 if ("Y".equals(data.getIsActive()) && data.getId() != null)
-                    lockBean.validateLock(ReferenceTable.ANALYTE_PARAMETER, data.getId()); 
+                    lock.validateLock(ReferenceTable.ANALYTE_PARAMETER, data.getId()); 
             }
             man.update();
             for (i = 0; i < man.count(); i++ ) {
                 data = man.getParameterAt(i);
                 if ("Y".equals(data.getIsActive()))
-                    lockBean.unlock(ReferenceTable.ANALYTE_PARAMETER, data.getId()); 
+                    lock.unlock(ReferenceTable.ANALYTE_PARAMETER, data.getId()); 
             }
             ut.commit();
         } catch (Exception e) {
@@ -119,7 +119,7 @@ public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemot
         AnalyteParameterViewDO data;
         AnalyteParameterLocal pl;
 
-        pl = local();
+        pl = EJBFactory.getAnalyteParameter();
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
@@ -141,7 +141,7 @@ public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemot
         AnalyteParameterViewDO data;
         AnalyteParameterLocal pl;
         
-        pl = local();
+        pl = EJBFactory.getAnalyteParameter();
         for (int i = 0; i < man.count(); i++) {
             data = man.getParameterAt(i);
             if ("Y".equals(data.getIsActive()))
@@ -151,16 +151,6 @@ public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemot
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("analyteparameter", flag);
-    }
-    
-    private AnalyteParameterLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AnalyteParameterLocal)ctx.lookup("openelis/AnalyteParameterBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+        EJBFactory.getUserCache().applyPermission("analyteparameter", flag);
     }
 }
