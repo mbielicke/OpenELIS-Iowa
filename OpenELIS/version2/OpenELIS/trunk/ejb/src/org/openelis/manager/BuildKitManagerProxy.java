@@ -27,8 +27,6 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemViewDO;
@@ -43,15 +41,12 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.InventoryItemLocal;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryReceiptLocal;
 import org.openelis.local.InventoryXPutLocal;
-import org.openelis.local.InventoryXUseLocal;
-import org.openelis.local.OrderItemLocal;
 import org.openelis.meta.InventoryItemMeta;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 public class BuildKitManagerProxy {
 
@@ -62,7 +57,7 @@ public class BuildKitManagerProxy {
 
         if (statusProcessed == 0) {
             try {
-                data = dictLocal().fetchBySystemName("order_status_processed");
+                data = EJBFactory.getDictionary().fetchBySystemName("order_status_processed");
                 statusProcessed = data.getId();
             } catch (Throwable e) {
                 statusProcessed = 0;
@@ -101,7 +96,7 @@ public class BuildKitManagerProxy {
         order = orderMan.getOrder();
         order.setNeededInDays(0);
         order.setOrderedDate(date);
-        order.setRequestedBy(PermissionInterceptor.getSystemUser().getLoginName());
+        order.setRequestedBy(EJBFactory.getUserCache().getName());
         order.setType(OrderManager.TYPE_INTERNAL);
         order.setStatusId(statusProcessed);
         orderMan.add();
@@ -109,7 +104,7 @@ public class BuildKitManagerProxy {
         compMan = kitMan.getInventoryItem().getComponents();
         orderItems = new ArrayList<OrderItemViewDO>();
         locationIdList = new ArrayList<Integer>();
-        ll = invLocLocal();
+        ll = EJBFactory.getInventoryLocation();
         for (i = 0; i < compMan.count(); i++ ) {
             component = compMan.getComponentAt(i);
             //
@@ -129,18 +124,18 @@ public class BuildKitManagerProxy {
             orderItems.add(orderItem);
         }
 
-        orderItemLocal().add(order, orderItems);
+        EJBFactory.getOrderItem().add(order, orderItems);
         //
         // fill the order
         //
-        xuseLocal().add(orderItems, locationIdList);
+        EJBFactory.getInventoryXUse().add(orderItems, locationIdList);
 
         //
         // calculate the total cost of the kit
         //
-        xl = xputLocal();
-        rl = receiptLocal();
-        il = invItemLocal();
+        xl = EJBFactory.getInventoryXPut();
+        rl = EJBFactory.getInventoryReceipt();
+        il = EJBFactory.getInventoryItem();
         totalCost = 0.0;
         for (i = 0; i < compMan.count(); i++ ) {
             component = compMan.getComponentAt(i);
@@ -198,7 +193,7 @@ public class BuildKitManagerProxy {
         itemMan = man.getInventoryItem();
         receipt = man.getInventoryReceipt();
         list = new ValidationErrorsList();
-        il = invItemLocal();
+        il = EJBFactory.getInventoryItem();
         storeId = null;
 
         if (DataBaseUtil.isEmpty(itemMan)) {
@@ -272,75 +267,5 @@ public class BuildKitManagerProxy {
 
         if (list.size() > 0)
             throw list;
-    }
-
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private InventoryItemLocal invItemLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryItemLocal)ctx.lookup("openelis/InventoryItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private OrderItemLocal orderItemLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrderItemLocal)ctx.lookup("openelis/OrderItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private InventoryXUseLocal xuseLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryXUseLocal)ctx.lookup("openelis/InventoryXUseBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private InventoryLocationLocal invLocLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryLocationLocal)ctx.lookup("openelis/InventoryLocationBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private InventoryXPutLocal xputLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryXPutLocal)ctx.lookup("openelis/InventoryXPutBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private InventoryReceiptLocal receiptLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryReceiptLocal)ctx.lookup("openelis/InventoryReceiptBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

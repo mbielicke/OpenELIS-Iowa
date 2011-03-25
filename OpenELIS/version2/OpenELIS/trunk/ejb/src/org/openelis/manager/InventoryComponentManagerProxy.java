@@ -27,57 +27,57 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryComponentLocal;
+import org.openelis.utils.EJBFactory;
 
 public class InventoryComponentManagerProxy {
 
     public InventoryComponentManager fetchByInventoryItemId(Integer id) throws Exception {
         InventoryComponentManager cm;
-        ArrayList<InventoryComponentViewDO> components;
+        ArrayList<InventoryComponentViewDO> list;
 
-        components = local().fetchByInventoryItemId(id);
+        list = EJBFactory.getInventoryComponent().fetchByInventoryItemId(id);
         cm = InventoryComponentManager.getInstance();
         cm.setInventoryItemId(id);
-        cm.setComponents(components);
+        cm.setComponents(list);
 
         return cm;
     }
 
     public InventoryComponentManager add(InventoryComponentManager man) throws Exception {
         InventoryComponentLocal cl;
-        InventoryComponentViewDO component;
+        InventoryComponentViewDO data;
 
-        cl = local();
+        cl = EJBFactory.getInventoryComponent();
         for (int i = 0; i < man.count(); i++ ) {
-            component = man.getComponentAt(i);
-            component.setInventoryItemId(man.getInventoryItemId());
-            cl.add(component);
+            data = man.getComponentAt(i);
+            data.setInventoryItemId(man.getInventoryItemId());
+            cl.add(data);
         }
 
         return man;
     }
 
     public InventoryComponentManager update(InventoryComponentManager man) throws Exception {
+        int i;
         InventoryComponentLocal cl;
-        InventoryComponentViewDO component;
+        InventoryComponentViewDO data;
 
-        cl = local();
-        for (int j = 0; j < man.deleteCount(); j++ )
-            cl.delete(man.getDeletedAt(j));
+        cl = EJBFactory.getInventoryComponent();
+        for (i = 0; i < man.deleteCount(); i++ )
+            cl.delete(man.getDeletedAt(i));
 
-        for (int i = 0; i < man.count(); i++ ) {
-            component = man.getComponentAt(i);
+        for (i = 0; i < man.count(); i++ ) {
+            data = man.getComponentAt(i);
 
-            if (component.getId() == null) {
-                component.setInventoryItemId(man.getInventoryItemId());
-                cl.add(component);
+            if (data.getId() == null) {
+                data.setInventoryItemId(man.getInventoryItemId());
+                cl.add(data);
             } else {
-                cl.update(component);
+                cl.update(data);
             }
         }
 
@@ -88,7 +88,7 @@ public class InventoryComponentManagerProxy {
         ValidationErrorsList list;
         InventoryComponentLocal cl;
 
-        cl = local();
+        cl = EJBFactory.getInventoryComponent();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -99,15 +99,5 @@ public class InventoryComponentManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-
-    private InventoryComponentLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryComponentLocal)ctx.lookup("openelis/InventoryComponentBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

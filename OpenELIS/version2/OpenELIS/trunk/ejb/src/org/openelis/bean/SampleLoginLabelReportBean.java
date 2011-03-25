@@ -21,6 +21,7 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SampleLocal;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.remote.SampleLoginLabelReportRemote;
 import org.openelis.report.Prompt;
@@ -33,7 +34,7 @@ import org.openelis.utils.ReportUtil;
 public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote {
 
 	@EJB
-	private SessionCacheInt session;
+	private SessionCacheLocal session;
 
 	@EJB
 	private SystemVariableLocal sysvar;

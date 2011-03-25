@@ -41,7 +41,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
 import org.openelis.remote.PanelManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -153,7 +153,7 @@ public class PanelManagerBean implements PanelManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("panel", flag);
+        EJBFactory.getUserCache().applyPermission("panel", flag);
     }
 
 }

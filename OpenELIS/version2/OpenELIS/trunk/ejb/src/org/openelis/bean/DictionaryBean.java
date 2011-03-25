@@ -103,20 +103,20 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
 
     public DictionaryViewDO fetchById(Integer id) throws Exception {
         Query query;
-        DictionaryViewDO dictDO;
+        DictionaryViewDO data;
 
         query = manager.createNamedQuery("Dictionary.FetchById");
         query.setParameter("id", id);
 
         try {
-            dictDO = (DictionaryViewDO)query.getSingleResult();
+            data = (DictionaryViewDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
 
-        return dictDO;
+        return data;
     }
 
     public ArrayList<IdNameVO> fetchByEntry(ArrayList<QueryData> fields) throws Exception {
@@ -187,6 +187,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         if ( !data.isChanged())
             return data;
 
+        manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Dictionary.class, data.getId());
 
         // need to remove it before we change it

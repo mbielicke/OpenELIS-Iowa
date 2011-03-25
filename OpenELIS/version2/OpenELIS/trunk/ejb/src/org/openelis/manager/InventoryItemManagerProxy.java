@@ -25,13 +25,12 @@
  */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryItemLocal;
+import org.openelis.utils.EJBFactory;
 
 public class InventoryItemManagerProxy {
 
@@ -40,7 +39,7 @@ public class InventoryItemManagerProxy {
         InventoryItemViewDO data;
         InventoryItemManager m;
 
-        ol = local();
+        ol = EJBFactory.getInventoryItem();
         data = ol.fetchById(id);
         m = InventoryItemManager.getInstance();
 
@@ -89,7 +88,7 @@ public class InventoryItemManagerProxy {
         Integer id;
         InventoryItemLocal ol;
 
-        ol = local();
+        ol = EJBFactory.getInventoryItem();
         ol.add(man.getInventoryItem());
         id = man.getInventoryItem().getId();
 
@@ -119,7 +118,7 @@ public class InventoryItemManagerProxy {
         Integer id;
         InventoryItemLocal ol;
 
-        ol = local();
+        ol = EJBFactory.getInventoryItem();
         ol.update(man.getInventoryItem());
         id = man.getInventoryItem().getId();
 
@@ -160,7 +159,7 @@ public class InventoryItemManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getInventoryItem());
+            EJBFactory.getInventoryItem().validate(man.getInventoryItem());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -179,15 +178,5 @@ public class InventoryItemManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-
-    private InventoryItemLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryItemLocal)ctx.lookup("openelis/InventoryItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

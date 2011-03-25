@@ -52,7 +52,7 @@ import org.openelis.local.InventoryAdjustmentLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.remote.InventoryAdjustmentRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -73,7 +73,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         query.setParameter("id", id);
         try {
             data = (InventoryAdjustmentViewDO)query.getSingleResult();            
-            user = PermissionInterceptor.getSystemUser(data.getSystemUserId());
+            user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
             data.setSystemUserName(user.getLoginName());
         } catch (NoResultException e) {
             throw new NotFoundException();

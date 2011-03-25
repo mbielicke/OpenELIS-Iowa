@@ -29,17 +29,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.TestLocal;
-import org.openelis.local.TestSectionLocal;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 public class TestManagerProxy {
 
@@ -49,11 +44,11 @@ public class TestManagerProxy {
         TestSectionManager tsm;
         ArrayList<TestSectionViewDO> sections;
 
-        data = local().fetchById(testId);
+        data = EJBFactory.getTest().fetchById(testId);
         man = TestManager.getInstance();
         man.setTest(data);
 
-        sections = (ArrayList<TestSectionViewDO>)sectionLocal().fetchByTestId(testId);
+        sections = (ArrayList<TestSectionViewDO>)EJBFactory.getTestSection().fetchByTestId(testId);
 
         tsm = man.getTestSections();
         tsm.sections = sections;
@@ -116,7 +111,7 @@ public class TestManagerProxy {
         analyteMap = new HashMap<Integer, Integer>();
         resultMap = new HashMap<Integer, Integer>();
 
-        local().add(man.getTest());
+        EJBFactory.getTest().add(man.getTest());
 
         testId = man.getTest().getId();
 
@@ -165,7 +160,7 @@ public class TestManagerProxy {
         analyteMap = new HashMap<Integer, Integer>();
         resultMap = new HashMap<Integer, Integer>();
 
-        local().update(man.getTest());
+        EJBFactory.getTest().update(man.getTest());
 
         testId = man.getTest().getId();
 
@@ -231,7 +226,7 @@ public class TestManagerProxy {
         resListValid = true;
 
         try {
-            local().validate(man.getTest());
+            EJBFactory.getTest().validate(man.getTest());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -291,29 +286,4 @@ public class TestManagerProxy {
         if (list.size() > 0)
             throw list;
     }
-
-    protected SystemUserPermission getSystemUserPermission() throws Exception {
-        return PermissionInterceptor.getSystemUserPermission();
-    }
-
-    private TestLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (TestLocal)ctx.lookup("openelis/TestBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private TestSectionLocal sectionLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (TestSectionLocal)ctx.lookup("openelis/TestSectionBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
 }

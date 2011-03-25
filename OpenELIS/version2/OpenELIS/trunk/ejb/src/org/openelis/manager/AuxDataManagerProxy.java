@@ -28,15 +28,12 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxDataLocal;
-import org.openelis.local.AuxFieldLocal;
-import org.openelis.local.AuxFieldValueLocal;
+import org.openelis.utils.EJBFactory;
 
 public class AuxDataManagerProxy {
     
@@ -52,15 +49,15 @@ public class AuxDataManagerProxy {
         
         AuxDataManager m;
         
-        data = auxDataLocal().fetchById(referenceId, referenceTableId);
-        fields = auxFieldLocal().fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId); //ordered by groupid
+        data = EJBFactory.getAuxData().fetchById(referenceId, referenceTableId);
+        fields = EJBFactory.getAuxField().fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId); //ordered by groupid
         
         //put the fields in the hash to guarantee they match up with data entries
         fieldHash = new HashMap<Integer, AuxFieldViewDO>();
         for(int i=0; i<fields.size(); i++)
             fieldHash.put(fields.get(i).getId(), fields.get(i));
         
-        values = auxValueLocal().fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId);
+        values = EJBFactory.getAuxFieldValue().fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId);
         
         //split the values up by field id
         valueHash = new HashMap<Integer, ArrayList<AuxFieldValueViewDO>>();
@@ -91,7 +88,7 @@ public class AuxDataManagerProxy {
         AuxDataLocal l;
         AuxDataViewDO data;
 
-        l = auxDataLocal();
+        l = EJBFactory.getAuxData();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getAuxDataAt(i);
             data.setReferenceTableId(man.getReferenceTableId());
@@ -105,14 +102,15 @@ public class AuxDataManagerProxy {
     }
     
     public AuxDataManager update(AuxDataManager man) throws Exception {
+        int i;
         AuxDataLocal l;
         AuxDataViewDO data;
 
-        l = auxDataLocal();
-        for (int j = 0; j < man.deleteCount(); j++ )
-            l.delete(man.getDeletedAuxDataAt(j));
+        l = EJBFactory.getAuxData();
+        for (i = 0; i < man.deleteCount(); i++ )
+            l.delete(man.getDeletedAuxDataAt(i));
 
-        for (int i = 0; i < man.count(); i++ ) {
+        for (i = 0; i < man.count(); i++ ) {
             data = man.getAuxDataAt(i);
             data.setSortOrder(i);
             
@@ -128,37 +126,6 @@ public class AuxDataManagerProxy {
         return man;
     }
     
-    public void validate(AuxDataManager man, ValidationErrorsList errorsList) throws Exception {
-        
-    }
-    
-    private AuxDataLocal auxDataLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AuxDataLocal)ctx.lookup("openelis/AuxDataBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private AuxFieldLocal auxFieldLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AuxFieldLocal)ctx.lookup("openelis/AuxFieldBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private AuxFieldValueLocal auxValueLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AuxFieldValueLocal)ctx.lookup("openelis/AuxFieldValueBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+    public void validate(AuxDataManager man, ValidationErrorsList errorsList) throws Exception {        
     }
 }

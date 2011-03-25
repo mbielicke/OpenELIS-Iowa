@@ -37,7 +37,7 @@ import org.openelis.entity.Lock.PK;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.LockLocal;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 public class LockBean implements LockLocal {
@@ -68,7 +68,7 @@ public class LockBean implements LockLocal {
         Integer userId;
         SystemUserVO user;
 
-        userId = PermissionInterceptor.getSystemUserId();
+        userId = EJBFactory.getUserCache().getId();
         timeMillis = System.currentTimeMillis();
         
         pk = new Lock.PK(referenceTableId, referenceId);
@@ -88,7 +88,7 @@ public class LockBean implements LockLocal {
                 lock.setSystemUserId(userId);
                 lock.setExpires(lockTimeMillis+timeMillis);
             } else {
-                user = PermissionInterceptor.getSystemUser(lock.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(lock.getSystemUserId());
                 throw new EntityLockedException("entityLockException",
                                                 user.getLoginName(),
                                                 new Date(lock.getExpires()).toString());
@@ -111,7 +111,7 @@ public class LockBean implements LockLocal {
 
         pk = new Lock.PK(referenceTableId, referenceId);
         try {
-            userId = PermissionInterceptor.getSystemUserId();
+            userId = EJBFactory.getUserCache().getId();
             lock = manager.find(Lock.class, pk);
             if (lock != null && lock.getSystemUserId().equals(userId))
                 manager.remove(lock);
@@ -137,7 +137,7 @@ public class LockBean implements LockLocal {
         pk = new Lock.PK(referenceTableId, referenceId);
         try {
             lock = manager.find(Lock.class, pk);
-            userId = PermissionInterceptor.getSystemUserId();
+            userId = EJBFactory.getUserCache().getId();
         } catch (Exception e) {
             lock = null;
             userId = null;

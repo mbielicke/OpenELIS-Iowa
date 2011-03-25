@@ -27,38 +27,37 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.StorageLocationLocal;
+import org.openelis.utils.EJBFactory;
 
 public class StorageLocationChildManagerProxy {
     
     public StorageLocationChildManager fetchByParentStorageLocationId(Integer id) throws Exception {
         StorageLocationChildManager cm;
-        ArrayList<StorageLocationViewDO> children;
+        ArrayList<StorageLocationViewDO> list;
         
-        children = local().fetchByParentStorageLocationId(id);
+        list = EJBFactory.getStorageLocation().fetchByParentStorageLocationId(id);
         cm = StorageLocationChildManager.getInstance();
         cm.setParentStorageLocationId(id);
-        cm.setChildren(children);
+        cm.setChildren(list);
         
         return cm;
     }
     
     public StorageLocationChildManager add(StorageLocationChildManager man) throws Exception {
         StorageLocationLocal sl;
-        StorageLocationViewDO child;
+        StorageLocationViewDO data;
         
-        sl = local();
+        sl = EJBFactory.getStorageLocation();
         for (int i = 0; i < man.count(); i++ ) {
-            child = man.getChildAt(i);
-            child.setParentStorageLocationId(man.getParentStorageLocationId());
-            child.setName(man.getParentStorageLocationName());
-            child.setSortOrder(i+1);            
-            sl.add(child);
+            data = man.getChildAt(i);
+            data.setParentStorageLocationId(man.getParentStorageLocationId());
+            data.setName(man.getParentStorageLocationName());
+            data.setSortOrder(i+1);            
+            sl.add(data);
         }
         
         return man;
@@ -66,21 +65,21 @@ public class StorageLocationChildManagerProxy {
     
     public StorageLocationChildManager update(StorageLocationChildManager man) throws Exception {
         StorageLocationLocal sl;
-        StorageLocationViewDO child;
+        StorageLocationViewDO data;
         
-        sl = local();
+        sl = EJBFactory.getStorageLocation();
         for (int j = 0; j < man.deleteCount(); j++ )
             sl.delete(man.getDeletedAt(j));
      
         for (int i = 0; i < man.count(); i++ ) {
-            child = man.getChildAt(i);
-            child.setName(man.getParentStorageLocationName());
-            child.setSortOrder(i+1);            
-            if(child.getId() == null) {
-                child.setParentStorageLocationId(man.getParentStorageLocationId());
-                sl.add(child);
+            data = man.getChildAt(i);
+            data.setName(man.getParentStorageLocationName());
+            data.setSortOrder(i+1);            
+            if(data.getId() == null) {
+                data.setParentStorageLocationId(man.getParentStorageLocationId());
+                sl.add(data);
             }  else {
-                sl.update(child);
+                sl.update(data);
             }
         }
 
@@ -89,12 +88,12 @@ public class StorageLocationChildManagerProxy {
     
     
     public void validate(StorageLocationChildManager man) throws Exception {
-        ValidationErrorsList list;
-        StorageLocationLocal sl;
         int i;
+        ValidationErrorsList list;
+        StorageLocationLocal sl;        
         StorageLocationViewDO data;
         
-        sl = local();
+        sl = EJBFactory.getStorageLocation();
         list = new ValidationErrorsList();
         
         for(i = 0;  i < man.deleteCount(); i++) {
@@ -115,15 +114,5 @@ public class StorageLocationChildManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-    
-    private StorageLocationLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (StorageLocationLocal)ctx.lookup("openelis/StorageLocationBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

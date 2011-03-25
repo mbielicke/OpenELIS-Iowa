@@ -27,13 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderContainerLocal;
-import org.openelis.local.OrderTestLocal;
+import org.openelis.utils.EJBFactory;
 
 public class OrderContainerManagerProxy {
     
@@ -41,7 +39,7 @@ public class OrderContainerManagerProxy {
         OrderContainerManager m;
         ArrayList<OrderContainerDO> data;
 
-        data = local().fetchByOrderId(id);
+        data = EJBFactory.getOrderContainer().fetchByOrderId(id);
         m = OrderContainerManager.getInstance();
         m.setOrderId(id);
         m.setContainers(data);
@@ -53,7 +51,7 @@ public class OrderContainerManagerProxy {
         OrderContainerLocal cl;
         OrderContainerDO data;
 
-        cl = local();
+        cl = EJBFactory.getOrderContainer();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getContainerAt(i);
             data.setOrderId(man.getOrderId());
@@ -67,7 +65,7 @@ public class OrderContainerManagerProxy {
         OrderContainerLocal cl;
         OrderContainerDO data;
 
-        cl = local();
+        cl = EJBFactory.getOrderContainer();
         for (int j = 0; j < man.deleteCount(); j++ )
             cl.delete(man.getDeletedAt(j));
 
@@ -89,7 +87,7 @@ public class OrderContainerManagerProxy {
         ValidationErrorsList list;
         OrderContainerLocal cl;
 
-        cl = local();
+        cl = EJBFactory.getOrderContainer();
         list = new ValidationErrorsList();
         
         for (int i = 0; i < man.count(); i++ ) {
@@ -102,15 +100,5 @@ public class OrderContainerManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-    
-    private OrderContainerLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrderContainerLocal)ctx.lookup("openelis/OrderContainerBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

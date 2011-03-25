@@ -25,13 +25,11 @@
  */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrderLocal;
+import org.openelis.utils.EJBFactory;
 
 public class OrderManagerProxy {
 
@@ -39,7 +37,7 @@ public class OrderManagerProxy {
         OrderViewDO data;
         OrderManager m;
 
-        data = local().fetchById(id);
+        data = EJBFactory.getOrder().fetchById(id);
         m = OrderManager.getInstance();
 
         m.setOrder(data);
@@ -88,7 +86,7 @@ public class OrderManagerProxy {
     public OrderManager add(OrderManager man) throws Exception {
         Integer id;
 
-        local().add(man.getOrder());
+        EJBFactory.getOrder().add(man.getOrder());
         id = man.getOrder().getId();
 
         if (man.items != null) {
@@ -135,7 +133,7 @@ public class OrderManagerProxy {
     public OrderManager update(OrderManager man) throws Exception {
         Integer id;
 
-        local().update(man.getOrder());
+        EJBFactory.getOrder().update(man.getOrder());
         id = man.getOrder().getId();
 
         if (man.items != null) {
@@ -194,7 +192,7 @@ public class OrderManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getOrder());
+            EJBFactory.getOrder().validate(man.getOrder());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -232,15 +230,5 @@ public class OrderManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-
-    private OrderLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrderLocal)ctx.lookup("openelis/OrderBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

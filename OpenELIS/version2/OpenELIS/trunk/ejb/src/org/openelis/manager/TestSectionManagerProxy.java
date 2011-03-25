@@ -27,10 +27,6 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.naming.InitialContext;
 
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestSectionViewDO;
@@ -41,6 +37,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestSectionLocal;
 import org.openelis.meta.TestMeta;
+import org.openelis.utils.EJBFactory;
 
 public class TestSectionManagerProxy {
 
@@ -50,7 +47,7 @@ public class TestSectionManagerProxy {
         DictionaryDO data;
         DictionaryLocal dl;
 
-        dl = dictLocal();
+        dl = EJBFactory.getDictionary();
 
         if (typeDefault == 0) {
             try {
@@ -77,7 +74,7 @@ public class TestSectionManagerProxy {
         TestSectionLocal tl;
         TestSectionViewDO data;
 
-        tl = local();
+        tl = EJBFactory.getTestSection();
 
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getSectionAt(i);
@@ -93,7 +90,7 @@ public class TestSectionManagerProxy {
         TestSectionLocal tl;
         TestSectionViewDO data;
 
-        tl = local();
+        tl = EJBFactory.getTestSection();
 
         for (int i = 0; i < man.deleteCount(); i++ )
             tl.delete(man.getDeletedAt(i));
@@ -122,7 +119,7 @@ public class TestSectionManagerProxy {
         int numDef, numMatch, numBlank, i;
         TableFieldErrorException exc;
 
-        sl = local();
+        sl = EJBFactory.getTestSection();
         sectionList = man.getSections();
         list = new ValidationErrorsList();
 
@@ -131,7 +128,7 @@ public class TestSectionManagerProxy {
             throw list;
         }
 
-        dl = dictLocal();
+        dl = EJBFactory.getDictionary();
 
         numDef = 0;
         numMatch = 0;
@@ -218,27 +215,7 @@ public class TestSectionManagerProxy {
     public Integer getIdFromSystemName(String systemName) throws Exception {
         DictionaryDO data;
 
-        data = dictLocal().fetchBySystemName(systemName);
+        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
         return data.getId();
-    }
-
-    private TestSectionLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (TestSectionLocal)ctx.lookup("openelis/TestSectionBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

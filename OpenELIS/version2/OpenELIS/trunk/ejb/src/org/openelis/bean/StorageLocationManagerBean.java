@@ -41,7 +41,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.remote.StorageLocationManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -133,7 +133,7 @@ public class StorageLocationManagerBean implements StorageLocationManagerRemote 
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("storagelocation", flag);
+        EJBFactory.getUserCache().applyPermission("storagelocation", flag);
     }
 
 }

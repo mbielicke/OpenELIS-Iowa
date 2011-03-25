@@ -31,8 +31,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
@@ -47,6 +45,7 @@ import org.openelis.local.TestResultLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
+import org.openelis.utils.EJBFactory;
 
 public class TestResultManagerProxy {
 
@@ -57,7 +56,7 @@ public class TestResultManagerProxy {
         DictionaryDO data;
         DictionaryLocal dl;
 
-        dl = dictLocal();
+        dl = EJBFactory.getDictionary();
 
         if (typeDict == 0) {
             try {
@@ -134,7 +133,7 @@ public class TestResultManagerProxy {
         TestResultManager trm;
         ArrayList<ArrayList<TestResultViewDO>> list;
 
-        list = local().fetchByTestId(testId);
+        list = EJBFactory.getTestResult().fetchByTestId(testId);
         trm = TestResultManager.getInstance();
         trm.setTestId(testId);
         trm.setResults(list);
@@ -144,11 +143,11 @@ public class TestResultManagerProxy {
 
     public TestResultManager add(TestResultManager man, HashMap<Integer, Integer> idMap)
                                                                                         throws Exception {
-        TestResultLocal rl;
-        TestResultViewDO data;
         int i, j, size, negId;
+        TestResultLocal rl;
+        TestResultViewDO data;        
 
-        rl = local();
+        rl = EJBFactory.getTestResult();
 
         for (i = 0; i < man.groupCount(); i++ ) {
             size = man.getResultGroupSize(i + 1);
@@ -168,11 +167,11 @@ public class TestResultManagerProxy {
 
     public TestResultManager update(TestResultManager man, HashMap<Integer, Integer> idMap)
                                                                                            throws Exception {
+        int i, j, size, negId;
         TestResultLocal rl;
         TestResultViewDO data;
-        int i, j, size, negId;
 
-        rl = local();
+        rl = EJBFactory.getTestResult();
 
         for (i = 0; i < man.deleteCount(); i++ )
             rl.delete(man.getDeletedAt(i));
@@ -199,12 +198,12 @@ public class TestResultManagerProxy {
     public void validate(TestResultManager trm,
                          TestTypeOfSampleManager ttsm,
                          HashMap<Integer, List<TestResultViewDO>> resGrpRsltMap) throws Exception {
+        int i, j, k, defCount, size;
+        boolean alphaPresent, alphaErrorAdded, defErrorAdded;
         ValidationErrorsList list;
         TestResultViewDO data, tmpData;
-        Integer typeId, unitId, entryId;
-        int i, j, k, defCount, size;
+        Integer typeId, unitId, entryId;        
         String value, fieldName, unitText;
-        boolean alphaPresent, alphaErrorAdded, defErrorAdded;
         ResultRangeNumeric nr;
         ResultRangeTiter tr;
         HashMap<Integer, List<ResultRangeTiter>> trMap;
@@ -219,8 +218,8 @@ public class TestResultManagerProxy {
 
         list = new ValidationErrorsList();
         value = null;
-        dl = dictLocal();
-        rl = local();
+        dl = EJBFactory.getDictionary();
+        rl = EJBFactory.getTestResult();
 
         trMap = new HashMap<Integer, List<ResultRangeTiter>>();
         nrMap = new HashMap<Integer, List<ResultRangeNumeric>>();
@@ -369,16 +368,13 @@ public class TestResultManagerProxy {
             iter = set.iterator();
 
             //
-            // Here we try to check whether for each result group and for a
-            // given
+            // Here we try to check whether for each result group and for a given
             // unit it is the case that there is a value of type default but no
             // value of any other type. We have to do this check here as opposed
-            // to in the loop above because we need to have the information
-            // about the whole result group before making any decision about
-            // whether
-            // or not this condition is true and this will be considerably
-            // difficult
-            // to do in the loop above because there we at any moment have the
+            // to in the loop above because we need to have the information about
+            // the whole result group before making any decision about whether or
+            // not this condition is true and this will be considerably difficult
+            // to do in the loop above because there we at any moment/ have the
             // information only of the records encountered upto a certain point
             // in the result group.
             //
@@ -401,26 +397,6 @@ public class TestResultManagerProxy {
 
         if (list.size() > 0)
             throw list;
-    }
-
-    private TestResultLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (TestResultLocal)ctx.lookup("openelis/TestResultBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 
     private void addTiterIfNoOverLap(HashMap<Integer, List<ResultRangeTiter>> trMap,

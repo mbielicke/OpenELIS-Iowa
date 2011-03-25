@@ -28,14 +28,13 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestPrepLocal;
 import org.openelis.meta.TestMeta;
+import org.openelis.utils.EJBFactory;
 
 public class TestPrepManagerProxy {
 
@@ -43,7 +42,7 @@ public class TestPrepManagerProxy {
         TestPrepManager tpm;
         ArrayList<TestPrepViewDO> prepTests;
                 
-        prepTests = local().fetchByTestId(testId);
+        prepTests = EJBFactory.getTestPrep().fetchByTestId(testId);
         tpm = TestPrepManager.getInstance();
         tpm.setPreps(prepTests);
         return tpm;
@@ -54,7 +53,7 @@ public class TestPrepManagerProxy {
         TestPrepLocal tl;
         TestPrepViewDO prepTest;
         
-        tl = local();         
+        tl = EJBFactory.getTestPrep();         
         
         for(int i=0; i<man.count(); i++){
             prepTest = man.getPrepAt(i);
@@ -70,7 +69,7 @@ public class TestPrepManagerProxy {
         TestPrepLocal tl;
         TestPrepViewDO prepTest;
         
-        tl = local(); 
+        tl = EJBFactory.getTestPrep(); 
         
         for(int i = 0; i < man.deleteCount(); i++) {
             tl.delete(man.getDeletedAt(i));
@@ -90,18 +89,18 @@ public class TestPrepManagerProxy {
     }
     
     public void validate(TestPrepManager man) throws Exception {
+        int numReq, i;
         ValidationErrorsList list;
         List<Integer> testPrepIdList;
         TableFieldErrorException exc;
         TestPrepViewDO prepDO;
-        Integer prepId;
-        int numReq, i;
+        Integer prepId;        
         TestPrepLocal pl;
 
         testPrepIdList = new ArrayList<Integer>();
         numReq = 0;
         list = new ValidationErrorsList();        
-        pl = local();
+        pl = EJBFactory.getTestPrep();
         
         for (i = 0; i < man.count(); i++ ) {
             prepDO = man.getPrepAt(i);
@@ -133,15 +132,5 @@ public class TestPrepManagerProxy {
         
         if(list.size() > 0)
             throw list;
-    }
-    
-    private TestPrepLocal local(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (TestPrepLocal)ctx.lookup("openelis/TestPrepBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
     }
 }

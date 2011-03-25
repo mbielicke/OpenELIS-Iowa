@@ -44,7 +44,7 @@ import org.openelis.local.InventoryReceiptLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.remote.InventoryReceiptManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -136,7 +136,7 @@ public class InventoryReceiptManagerBean implements InventoryReceiptManagerRemot
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("inventoryreceipt", flag);
+        EJBFactory.getUserCache().applyPermission("inventoryreceipt", flag);
     }
     
     private InventoryReceiptLocal local() {

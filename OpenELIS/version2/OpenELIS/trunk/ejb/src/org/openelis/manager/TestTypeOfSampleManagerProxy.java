@@ -27,13 +27,12 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestTypeOfSampleLocal;
+import org.openelis.utils.EJBFactory;
 
 public class TestTypeOfSampleManagerProxy {   
     
@@ -41,7 +40,7 @@ public class TestTypeOfSampleManagerProxy {
         ArrayList<TestTypeOfSampleDO> sampleTypes;
         TestTypeOfSampleManager man;
                        
-        sampleTypes = local().fetchByTestId(testId);
+        sampleTypes = EJBFactory.getTestTypeOfSample().fetchByTestId(testId);
         man = TestTypeOfSampleManager.getInstance();
         man.setTypes(sampleTypes);
         man.setTestId(testId);
@@ -50,11 +49,11 @@ public class TestTypeOfSampleManagerProxy {
     }
     
     public TestTypeOfSampleManager add(TestTypeOfSampleManager man) throws Exception {
+        int i;
         TestTypeOfSampleLocal tl; 
         TestTypeOfSampleDO data;
-        int i;
         
-        tl = local();         
+        tl = EJBFactory.getTestTypeOfSample();         
         
         for(i = 0; i < man.count(); i++){
             data = man.getTypeAt(i);
@@ -66,11 +65,11 @@ public class TestTypeOfSampleManagerProxy {
     }
     
     public TestTypeOfSampleManager update(TestTypeOfSampleManager man) throws Exception {
+        int i;
         TestTypeOfSampleLocal tl; 
         TestTypeOfSampleDO data;
-        int i;
         
-        tl = local(); 
+        tl = EJBFactory.getTestTypeOfSample(); 
         for(i = 0; i < man.deleteCount(); i++){
             tl.delete(man.getDeletedAt(i));
         }
@@ -89,13 +88,13 @@ public class TestTypeOfSampleManagerProxy {
     }   
     
     public void validate(TestTypeOfSampleManager man) throws Exception {
+        int count;
         ValidationErrorsList list;
         TestTypeOfSampleDO data;
         TestTypeOfSampleLocal sl;
-        int count;
 
         list = new ValidationErrorsList();
-        sl = local();
+        sl = EJBFactory.getTestTypeOfSample();
         count = man.count();
         if (count == 0) {
             list.add(new FieldErrorException("atleastOneSampleTypeException", null));
@@ -113,15 +112,5 @@ public class TestTypeOfSampleManagerProxy {
         
         if(list.size() > 0)
             throw list;
-    }
-    
-    private TestTypeOfSampleLocal local(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (TestTypeOfSampleLocal)ctx.lookup("openelis/TestTypeOfSampleBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
     }
 }

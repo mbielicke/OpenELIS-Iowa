@@ -58,7 +58,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.remote.AnalyteRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -211,8 +211,12 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
     }
 
     public AnalyteViewDO fetchForUpdate(Integer id) throws Exception {
-        lock.lock(ReferenceTable.ANALYTE, id);
-        return fetchById(id);
+        try {
+            lock.lock(ReferenceTable.ANALYTE, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public AnalyteViewDO abortUpdate(Integer id) throws Exception {
@@ -288,6 +292,6 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("analyte", flag);
+        EJBFactory.getUserCache().applyPermission("analyte", flag);
     }
 }

@@ -25,12 +25,11 @@
 */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldGroupLocal;
+import org.openelis.utils.EJBFactory;
 
 public class AuxFieldGroupManagerProxy {
     public AuxFieldGroupManager fetchById(Integer id) throws Exception {
@@ -38,7 +37,7 @@ public class AuxFieldGroupManagerProxy {
         AuxFieldGroupDO data;
         AuxFieldGroupManager m;
 
-        l = local();
+        l = EJBFactory.getAuxFieldGroup();
         data = l.fetchById(id);
         m = AuxFieldGroupManager.getInstance();
         
@@ -60,7 +59,7 @@ public class AuxFieldGroupManagerProxy {
         Integer id;
         AuxFieldGroupLocal l;
 
-        l = local();
+        l = EJBFactory.getAuxFieldGroup();
         l.add(man.getGroup());
         id = man.getGroup().getId();
 
@@ -76,7 +75,7 @@ public class AuxFieldGroupManagerProxy {
         Integer id;
         AuxFieldGroupLocal l;
 
-        l = local();
+        l = EJBFactory.getAuxFieldGroup();
         l.update(man.getGroup());
         id = man.getGroup().getId();
 
@@ -100,7 +99,7 @@ public class AuxFieldGroupManagerProxy {
     
     public void validate(AuxFieldGroupManager man, ValidationErrorsList list) throws Exception {       
         try {
-            local().validate(man.getGroup());
+            EJBFactory.getAuxFieldGroup().validate(man.getGroup());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -111,15 +110,5 @@ public class AuxFieldGroupManagerProxy {
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
-    }
-    
-    private AuxFieldGroupLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AuxFieldGroupLocal)ctx.lookup("openelis/AuxFieldGroupBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
+    }   
 }

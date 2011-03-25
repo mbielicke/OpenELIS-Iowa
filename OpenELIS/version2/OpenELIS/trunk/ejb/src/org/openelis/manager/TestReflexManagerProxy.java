@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.domain.TestResultViewDO;
@@ -41,6 +39,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestReflexLocal;
 import org.openelis.meta.TestMeta;
+import org.openelis.utils.EJBFactory;
 
 public class TestReflexManagerProxy {
     
@@ -50,7 +49,7 @@ public class TestReflexManagerProxy {
         DictionaryDO data;
         DictionaryLocal dl;
 
-        dl = dictLocal();
+        dl = EJBFactory.getDictionary();
 
         if (typeDefault == 0) {
             try {
@@ -67,7 +66,7 @@ public class TestReflexManagerProxy {
         TestReflexManager trm;        
         ArrayList<TestReflexViewDO> reflexTests;    
                 
-        reflexTests = local().fetchByTestId(testId);
+        reflexTests = EJBFactory.getTestReflex().fetchByTestId(testId);
         trm = TestReflexManager.getInstance();
         trm.setReflexes(reflexTests);
         return trm;
@@ -80,7 +79,7 @@ public class TestReflexManagerProxy {
         TestReflexViewDO reflexTest;
         Integer anaId, resId;
         
-        tl = local();         
+        tl = EJBFactory.getTestReflex();         
         
         for(int i=0; i < man.count(); i++) {
             reflexTest = man.getReflexAt(i);
@@ -108,7 +107,7 @@ public class TestReflexManagerProxy {
         TestReflexViewDO reflexTest;
         Integer anaId, resId;
         
-        tl = local(); 
+        tl = EJBFactory.getTestReflex(); 
                 
         for(int i = 0; i < man.deleteCount(); i++) {            
             tl.delete(man.getDeletedAt(i));
@@ -155,7 +154,7 @@ public class TestReflexManagerProxy {
         idsList = new ArrayList<List<Integer>>();
         testReflexDOList = trm.getReflexes();
         list = new ValidationErrorsList();
-        rl = local();
+        rl = EJBFactory.getTestReflex();
 
         if(testReflexDOList == null)
             return;
@@ -208,16 +207,6 @@ public class TestReflexManagerProxy {
         if(list.size() > 0)
             throw list;
         
-    }
-    
-    private TestReflexLocal local(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (TestReflexLocal)ctx.lookup("openelis/TestReflexBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
     }
     
     /**
@@ -300,14 +289,4 @@ public class TestReflexManagerProxy {
         }
         return false;
     }       
-    
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
 }

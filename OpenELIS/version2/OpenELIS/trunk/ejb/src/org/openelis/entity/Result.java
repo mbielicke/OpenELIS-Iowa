@@ -26,12 +26,12 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "Result.FetchByAnalysisId",
                 query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
-                        "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup, ta.resultGroup)"
+                        "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId,ta.resultGroup)"
                       + " from Result r left join r.analysis an left join an.test t left join r.analyte a left join r.testAnalyte ta "
                       + " where r.analysisId = :id order by r.sortOrder"),
     @NamedQuery( name = "Result.FetchReportableByAnalysisId",
                 query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
-                        "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup, ta.resultGroup)"
+                        "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId, ta.resultGroup)"
                       + " from Result r left join r.analysis an left join r.analyte a left join r.testAnalyte ta "
                       + " where r.analysisId = :aid and r.isReportable = 'Y' and" +
                       	" :aid not in (select analysisId from AnalysisQaevent q where q.analysisId = :aid and q.typeId = :overrideid) and"+

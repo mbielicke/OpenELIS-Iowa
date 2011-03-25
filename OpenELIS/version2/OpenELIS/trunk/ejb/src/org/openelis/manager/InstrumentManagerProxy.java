@@ -25,13 +25,11 @@
 */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InstrumentLocal;
-
+import org.openelis.utils.EJBFactory;
 
 public class InstrumentManagerProxy {
 
@@ -40,7 +38,7 @@ public class InstrumentManagerProxy {
         InstrumentViewDO data;
         InstrumentManager m;
         
-        il = local();
+        il = EJBFactory.getInstrument();
         data = il.fetchById(id);
         m = InstrumentManager.getInstance();
         
@@ -52,7 +50,7 @@ public class InstrumentManagerProxy {
     public InstrumentManager fetchWithLogs(Integer id) throws Exception {
         InstrumentManager m;
         
-        m = fetchById(id);
+        m = fetchById(id);        
         m.getLogs();
 
         return m;
@@ -62,7 +60,7 @@ public class InstrumentManagerProxy {
         Integer id;
         InstrumentLocal il;
         
-        il = local();
+        il = EJBFactory.getInstrument();
         il.add(man.getInstrument());
         id = man.getInstrument().getId();
         
@@ -76,7 +74,7 @@ public class InstrumentManagerProxy {
         Integer id;
         InstrumentLocal il;
         
-        il = local();
+        il = EJBFactory.getInstrument();
         il.update(man.getInstrument());
         id = man.getInstrument().getId();
         
@@ -101,7 +99,7 @@ public class InstrumentManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getInstrument());
+            EJBFactory.getInstrument().validate(man.getInstrument());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -114,15 +112,5 @@ public class InstrumentManagerProxy {
         
         if (list.size() > 0)
             throw list;        
-    }
-    
-    private InstrumentLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InstrumentLocal)ctx.lookup("openelis/InstrumentBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

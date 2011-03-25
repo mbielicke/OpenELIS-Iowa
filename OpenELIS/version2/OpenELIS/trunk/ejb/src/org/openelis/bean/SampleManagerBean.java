@@ -43,9 +43,9 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleManagerLocal;
@@ -58,7 +58,7 @@ import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @TransactionManagement(TransactionManagementType.BEAN)
@@ -251,6 +251,6 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("sample", flag);
+        EJBFactory.getUserCache().applyPermission("sample", flag);
     }
 }

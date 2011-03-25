@@ -25,10 +25,9 @@
 */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.PwsDO;
 import org.openelis.local.PwsLocal;
+import org.openelis.utils.EJBFactory;
 
 public class PwsManagerProxy {
 
@@ -37,7 +36,7 @@ public class PwsManagerProxy {
         PwsDO data;
         PwsManager m;
         
-        pl = local();
+        pl = EJBFactory.getPws();
         data = pl.fetchByTinwsysIsNumber(tinwsysIsNumber);
         m = PwsManager.getInstance();
         
@@ -71,15 +70,5 @@ public class PwsManagerProxy {
         m.getMonitors();
         
         return m;
-    }
-    
-    private PwsLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (PwsLocal)ctx.lookup("openelis/PwsBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

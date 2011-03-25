@@ -25,13 +25,11 @@
 */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ShippingLocal;
+import org.openelis.utils.EJBFactory;
 
 public class ShippingManagerProxy {
     
@@ -39,7 +37,7 @@ public class ShippingManagerProxy {
         ShippingViewDO data;
         ShippingManager m;
         
-        data = local().fetchById(id);
+        data = EJBFactory.getShipping().fetchById(id);
         m = ShippingManager.getInstance();
 
         m.setShipping(data);
@@ -69,7 +67,7 @@ public class ShippingManagerProxy {
     public ShippingManager add(ShippingManager man) throws Exception {
         Integer id;
 
-        local().add(man.getShipping());
+        EJBFactory.getShipping().add(man.getShipping());
         id = man.getShipping().getId();                
         
         if (man.items != null) {
@@ -94,7 +92,7 @@ public class ShippingManagerProxy {
     public ShippingManager update(ShippingManager man) throws Exception {
         Integer id;
 
-        local().update(man.getShipping());
+        EJBFactory.getShipping().update(man.getShipping());
         id = man.getShipping().getId();
         
         if (man.items != null) {
@@ -131,7 +129,7 @@ public class ShippingManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getShipping());
+            EJBFactory.getShipping().validate(man.getShipping());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }       
@@ -153,16 +151,4 @@ public class ShippingManagerProxy {
         if (list.size() > 0)
             throw list;
     }
-    
-    private ShippingLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (ShippingLocal)ctx.lookup("openelis/ShippingBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-            
-    }
-
 }

@@ -16,7 +16,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
 import org.openelis.remote.ProjectManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -110,6 +110,6 @@ public class ProjectManagerBean implements ProjectManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("project", flag);
+        EJBFactory.getUserCache().applyPermission("project", flag);
     }
 }

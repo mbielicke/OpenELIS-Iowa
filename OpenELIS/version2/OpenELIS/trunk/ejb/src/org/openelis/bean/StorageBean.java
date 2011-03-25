@@ -51,7 +51,7 @@ import org.openelis.local.AnalysisLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.StorageLocal;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -85,7 +85,7 @@ public class StorageBean implements StorageLocal {
             data = list.get(i);
 
             if (data.getSystemUserId() != null) {
-                user = PermissionInterceptor.getSystemUser(data.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setUserName(user.getLoginName());
             }
@@ -120,7 +120,7 @@ public class StorageBean implements StorageLocal {
             refTableId = data.getReferenceTableId();
 
             if (data.getSystemUserId() != null) {
-                user = PermissionInterceptor.getSystemUser(data.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setUserName(user.getLoginName());
             }
@@ -187,7 +187,7 @@ public class StorageBean implements StorageLocal {
             refTableId = data.getReferenceTableId();
 
             if (data.getSystemUserId() != null) {
-                user = PermissionInterceptor.getSystemUser(data.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setUserName(user.getLoginName());
             }
@@ -225,7 +225,7 @@ public class StorageBean implements StorageLocal {
         entity.setStorageLocationId(data.getStorageLocationId());
         entity.setCheckin(data.getCheckin());
         entity.setCheckout(data.getCheckout());
-        entity.setSystemUserId(PermissionInterceptor.getSystemUserId());
+        entity.setSystemUserId(EJBFactory.getUserCache().getId());
 
         manager.persist(entity);
         data.setId(entity.getId());

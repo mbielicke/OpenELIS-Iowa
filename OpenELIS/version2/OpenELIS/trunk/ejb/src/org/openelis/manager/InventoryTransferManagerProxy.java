@@ -27,8 +27,6 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
@@ -38,11 +36,8 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.InventoryLocationLocal;
-import org.openelis.local.InventoryXUseLocal;
-import org.openelis.local.OrderItemLocal;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 public class InventoryTransferManagerProxy {
 
@@ -53,7 +48,7 @@ public class InventoryTransferManagerProxy {
 
         if (statusProcessed == 0) {
             try {
-                data = dictLocal().fetchBySystemName("order_status_processed");
+                data = EJBFactory.getDictionary().fetchBySystemName("order_status_processed");
                 statusProcessed = data.getId();
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -84,7 +79,7 @@ public class InventoryTransferManagerProxy {
         order = orderMan.getOrder();
         order.setNeededInDays(0);
         order.setOrderedDate(date);
-        order.setRequestedBy(PermissionInterceptor.getSystemUser().getLoginName());
+        order.setRequestedBy(EJBFactory.getUserCache().getName());
         order.setType(OrderManager.TYPE_INTERNAL);
         order.setStatusId(statusProcessed);
         orderMan.add();
@@ -92,7 +87,7 @@ public class InventoryTransferManagerProxy {
         orderItems = new ArrayList<OrderItemViewDO>();
         locationIdList = new ArrayList<Integer>();
         recMan = InventoryReceiptManager.getInstance();
-        ll = invLocLocal();
+        ll = EJBFactory.getInventoryLocation();
         for (i = 0; i < man.count(); i++ ) {
             orderItem = new OrderItemViewDO();
             orderItem.setOrderId(order.getId());
@@ -129,11 +124,11 @@ public class InventoryTransferManagerProxy {
             orderItems.add(orderItem);
         }
 
-        orderItemLocal().add(order, orderItems);
+        EJBFactory.getOrderItem().add(order, orderItems);
         //
         // fill the order
         //
-        xuseLocal().add(orderItems, locationIdList);
+        EJBFactory.getInventoryXUse().add(orderItems, locationIdList);
 
         //
         // add all the inventory receipts
@@ -193,45 +188,5 @@ public class InventoryTransferManagerProxy {
 
         if (list.size() > 0)
             throw list;
-    }
-
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private OrderItemLocal orderItemLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrderItemLocal)ctx.lookup("openelis/OrderItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private InventoryXUseLocal xuseLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryXUseLocal)ctx.lookup("openelis/InventoryXUseBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private InventoryLocationLocal invLocLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryLocationLocal)ctx.lookup("openelis/InventoryLocationBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

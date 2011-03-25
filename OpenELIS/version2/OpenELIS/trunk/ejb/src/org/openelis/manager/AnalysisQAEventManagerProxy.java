@@ -27,90 +27,69 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.DictionaryLocal;
+import org.openelis.utils.EJBFactory;
 
 public class AnalysisQAEventManagerProxy {
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        ArrayList<AnalysisQaEventViewDO> items;
+        ArrayList<AnalysisQaEventViewDO> list;
         AnalysisQaEventManager aqm;
         
-        items = local().fetchByAnalysisId(analysisId);
+        list = EJBFactory.getAnalysisQAEvent().fetchByAnalysisId(analysisId);
         aqm = AnalysisQaEventManager.getInstance();
-        aqm.setAnalysisQAEvents(items);
+        aqm.setAnalysisQAEvents(list);
         aqm.setAnalysisId(analysisId);
         
         return aqm;
     }
     
     public AnalysisQaEventManager add(AnalysisQaEventManager man) throws Exception {
-        AnalysisQaEventViewDO analysisQADO;
+        AnalysisQaEventViewDO data;
         AnalysisQAEventLocal l;
         
-        l = local();
+        l = EJBFactory.getAnalysisQAEvent();
         for(int i=0; i<man.count(); i++){
-            analysisQADO = man.getAnalysisQAAt(i);
-            analysisQADO.setAnalysisId(man.getAnalysisId());
+            data = man.getAnalysisQAAt(i);
+            data.setAnalysisId(man.getAnalysisId());
             
-            l.add(analysisQADO);
+            l.add(data);
         }
         
         return man;
     }
     
     public AnalysisQaEventManager update(AnalysisQaEventManager man) throws Exception {
-        AnalysisQaEventViewDO analysisQADO;
+        int i;
+        AnalysisQaEventViewDO data;
         AnalysisQAEventLocal l;
         
-        l = local();
-        for(int j=0; j<man.deleteCount(); j++)
-            l.delete(man.getDeletedAt(j));
+        l = EJBFactory.getAnalysisQAEvent();
+        for(i=0; i<man.deleteCount(); i++)
+            l.delete(man.getDeletedAt(i));
         
-        for(int i=0; i<man.count(); i++){
-            analysisQADO = man.getAnalysisQAAt(i);
+        for(i=0; i<man.count(); i++){
+            data = man.getAnalysisQAAt(i);
             
-            if(analysisQADO.getId() == null){
-                analysisQADO.setAnalysisId(man.getAnalysisId());
-                l.add(analysisQADO);
+            if(data.getId() == null){
+                data.setAnalysisId(man.getAnalysisId());
+                l.add(data);
             }else
-                l.update(analysisQADO);
+                l.update(data);
         }
 
         return man;
     }
     
-    public void validate(AnalysisQaEventManager man, ValidationErrorsList errorsList) throws Exception {
-        
+    public void validate(AnalysisQaEventManager man, ValidationErrorsList errorsList) throws Exception {      
     }
     
     public Integer getIdFromSystemName(String systemName) throws Exception{
-        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+        DictionaryDO data;
         
-        return dictDO.getId();
-    }
-    
-    private AnalysisQAEventLocal local(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (AnalysisQAEventLocal)ctx.lookup("openelis/AnalysisQAEventBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-    
-    private static DictionaryLocal dictionaryLocal(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
+        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
+        return data.getId();
+    }      
 }

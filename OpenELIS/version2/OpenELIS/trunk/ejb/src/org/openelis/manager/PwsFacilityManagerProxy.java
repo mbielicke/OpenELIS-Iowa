@@ -27,33 +27,20 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.PwsFacilityDO;
-import org.openelis.local.PwsFacilityLocal;
+import org.openelis.utils.EJBFactory;
 
 public class PwsFacilityManagerProxy {
     
     public PwsFacilityManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         PwsFacilityManager man;
-        ArrayList<PwsFacilityDO> facilities;
+        ArrayList<PwsFacilityDO> list;
         
-        facilities = local().fetchByTinwsysIsNumber(tinwsysIsNumber);
+        list = EJBFactory.getPwsFacility().fetchByTinwsysIsNumber(tinwsysIsNumber);
         man = PwsFacilityManager.getInstance();
         man.setTinwsysIsNumber(tinwsysIsNumber);
-        man.setFacilities(facilities);
+        man.setFacilities(list);
         
         return man;
     }
-    
-    private PwsFacilityLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (PwsFacilityLocal) ctx.lookup("openelis/PwsFacilityBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
 }

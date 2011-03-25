@@ -49,9 +49,8 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.InventoryItemCacheLocal;
 import org.openelis.local.InventoryItemLocal;
-import org.openelis.local.JMSMessageProducerLocal;
-import org.openelis.messages.InventoryItemCacheMessage;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.remote.InventoryItemRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -65,8 +64,8 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
     private EntityManager            manager;
     
     @EJB
-    private JMSMessageProducerLocal     jmsProducer;
-
+    private InventoryItemCacheLocal  itemCache; 
+    
     private static InventoryItemMeta meta = new InventoryItemMeta();
     
     public InventoryItemViewDO fetchById(Integer id) throws Exception {
@@ -168,7 +167,6 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
 
     public InventoryItemViewDO add(InventoryItemViewDO data) throws Exception {
         InventoryItem entity;
-        InventoryItemCacheMessage msg;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
@@ -200,24 +198,21 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         manager.persist(entity);
         data.setId(entity.getId());
         
-        // invalidate the cache
-        msg = new InventoryItemCacheMessage();
-        msg.action = InventoryItemCacheMessage.Action.UPDATED;
-        msg.setInventoryItemDO(data);
-        jmsProducer.writeMessage(msg);        
         return data;
     }
 
     public InventoryItemViewDO update(InventoryItemViewDO data) throws Exception {
         InventoryItem entity;
-        InventoryItemCacheMessage msg;
         
         if (!data.isChanged())
             return data;
         
-        manager.setFlushMode(FlushModeType.COMMIT);
-
+        manager.setFlushMode(FlushModeType.COMMIT);        
         entity = manager.find(InventoryItem.class, data.getId());
+        
+        // need to remove it before we change it
+        itemCache.evict(entity.getId());
+        
         entity.setName(data.getName());        
         entity.setDescription(data.getDescription());
         entity.setCategoryId(data.getCategoryId());
@@ -242,11 +237,6 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         entity.setParentInventoryItemId(data.getParentInventoryItemId());
         entity.setParentRatio(data.getParentRatio());
 
-        // invalidate the cache
-        msg = new InventoryItemCacheMessage();
-        msg.action = InventoryItemCacheMessage.Action.UPDATED;
-        msg.setInventoryItemDO(data);
-        jmsProducer.writeMessage(msg);        
         return data;
     }
 

@@ -31,6 +31,7 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SectionLocal;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.TestLocal;
 import org.openelis.remote.TestReportRemote;
 import org.openelis.report.Prompt;
@@ -47,7 +48,7 @@ public class TestReportBean implements TestReportRemote {
     private SessionContext  ctx;
 
     @EJB
-    private SessionCacheInt session;
+    private SessionCacheLocal session;
 
     @EJB
     private SectionLocal    section;

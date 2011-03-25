@@ -27,13 +27,12 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.ShippingItemDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ShippingItemLocal;
+import org.openelis.utils.EJBFactory;
 
 public class ShippingItemManagerProxy {
     
@@ -41,7 +40,7 @@ public class ShippingItemManagerProxy {
         ShippingItemManager m;
         ArrayList<ShippingItemDO> items;
     
-        items = local().fetchByShippingId(id);
+        items = EJBFactory.getShippingItem().fetchByShippingId(id);
         m = ShippingItemManager.getInstance();
         m.setShippingId(id);
         m.setItems(items);
@@ -53,7 +52,7 @@ public class ShippingItemManagerProxy {
         ShippingItemLocal tl; 
         ShippingItemDO item;
     
-        tl = local();
+        tl = EJBFactory.getShippingItem();
         
         for (int i = 0; i < man.count(); i++ ) {
             item = man.getItemAt(i);
@@ -65,15 +64,16 @@ public class ShippingItemManagerProxy {
     }
     
     public ShippingItemManager update(ShippingItemManager man) throws Exception {
+        int i;
         ShippingItemLocal tl; 
         ShippingItemDO item;
     
-        tl = local();
+        tl = EJBFactory.getShippingItem();
         
-        for (int j = 0; j < man.deleteCount(); j++ )
-            tl.delete(man.getDeletedAt(j));
+        for (i = 0; i < man.deleteCount(); i++ )
+            tl.delete(man.getDeletedAt(i));
 
-        for (int i = 0; i < man.count(); i++ ) {
+        for (i = 0; i < man.count(); i++ ) {
             item = man.getItemAt(i);
 
             if (item.getId() == null) {
@@ -88,12 +88,12 @@ public class ShippingItemManagerProxy {
     }
     
     public void validate(ShippingItemManager man) throws Exception {
+        int count;
         ValidationErrorsList list;
         ShippingItemLocal il;
-        int count;
         
         list = new ValidationErrorsList();
-        il = local();
+        il = EJBFactory.getShippingItem();
         count = man.count();
         
         if(count == 0) {
@@ -111,15 +111,4 @@ public class ShippingItemManagerProxy {
         if(list.size() > 0)
             throw list;
     } 
-    
-    private ShippingItemLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (ShippingItemLocal)ctx.lookup("openelis/ShippingItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
 }

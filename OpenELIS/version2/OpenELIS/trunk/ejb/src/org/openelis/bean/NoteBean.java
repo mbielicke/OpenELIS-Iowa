@@ -40,7 +40,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.NoteLocal;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -71,7 +71,7 @@ public class NoteBean implements NoteLocal {
             note = list.get(i);
 
             if (note.getSystemUserId() != null) {
-                user = PermissionInterceptor.getSystemUser(note.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(note.getSystemUserId());
                 if (user != null)
                     note.setSystemUser(user.getLoginName());
             }
@@ -105,7 +105,7 @@ public class NoteBean implements NoteLocal {
             note = list.get(i);
 
             if (note.getSystemUserId() != null) {
-                user = PermissionInterceptor.getSystemUser(note.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(note.getSystemUserId());
                 if (user != null)
                     note.setSystemUser(user.getLoginName());
             }
@@ -124,7 +124,7 @@ public class NoteBean implements NoteLocal {
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setSubject(data.getSubject());
-        entity.setSystemUserId(PermissionInterceptor.getSystemUserId());
+        entity.setSystemUserId(EJBFactory.getUserCache().getId());
         entity.setText(data.getText());
         entity.setTimestamp(Datetime.getInstance());
 
@@ -147,7 +147,7 @@ public class NoteBean implements NoteLocal {
         entity.setReferenceId(data.getReferenceId());
         entity.setReferenceTableId(data.getReferenceTableId());
         entity.setSubject(data.getSubject());
-        entity.setSystemUserId(PermissionInterceptor.getSystemUserId());
+        entity.setSystemUserId(EJBFactory.getUserCache().getId());
         entity.setText(data.getText());
         entity.setTimestamp(Datetime.getInstance());
 

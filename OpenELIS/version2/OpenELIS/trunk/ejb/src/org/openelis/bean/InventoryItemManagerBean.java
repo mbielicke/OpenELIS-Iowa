@@ -42,7 +42,7 @@ import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;
 import org.openelis.remote.InventoryItemManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -151,6 +151,6 @@ public class InventoryItemManagerBean implements InventoryItemManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("inventoryitem", flag);
+        EJBFactory.getUserCache().applyPermission("inventoryitem", flag);
     }
 }

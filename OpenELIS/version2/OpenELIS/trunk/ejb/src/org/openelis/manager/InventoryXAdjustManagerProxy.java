@@ -27,8 +27,6 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
@@ -36,6 +34,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXAdjustLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
+import org.openelis.utils.EJBFactory;
 
 public class InventoryXAdjustManagerProxy {
 
@@ -43,7 +42,7 @@ public class InventoryXAdjustManagerProxy {
         InventoryXAdjustManager m;
         ArrayList<InventoryXAdjustViewDO> adjustments;
 
-        adjustments = local().fetchByInventoryAdjustmentId(id);
+        adjustments = EJBFactory.getInventoryXAdjust().fetchByInventoryAdjustmentId(id);
         m = InventoryXAdjustManager.getInstance();
         m.setInventoryAdjustmentId(id);
         m.setAdjustments(adjustments);
@@ -59,8 +58,8 @@ public class InventoryXAdjustManagerProxy {
         InventoryXAdjustViewDO data;
         InventoryLocationLocal il;
 
-        cl = local();
-        il = invLocLocal();
+        cl = EJBFactory.getInventoryXAdjust();
+        il = EJBFactory.getInventoryLocation();
         invLocIdList = new ArrayList<Integer>();
         
         for (i = 0; i < man.count(); i++ ) {
@@ -88,8 +87,8 @@ public class InventoryXAdjustManagerProxy {
         InventoryXAdjustViewDO data;
         InventoryLocationLocal il;
 
-        cl = local();
-        il = invLocLocal();
+        cl = EJBFactory.getInventoryXAdjust();
+        il = EJBFactory.getInventoryLocation();
         
         for (i = 0; i < man.deleteCount(); i++ )
             cl.delete(man.getDeletedAt(i));
@@ -123,7 +122,7 @@ public class InventoryXAdjustManagerProxy {
         InventoryXAdjustLocal cl;
         InventoryXAdjustViewDO data;
 
-        cl = local();        
+        cl = EJBFactory.getInventoryXAdjust();        
         list = new ValidationErrorsList();
         data = null;
         locationIdList = new ArrayList<Integer>();
@@ -146,25 +145,5 @@ public class InventoryXAdjustManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-
-    private InventoryXAdjustLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryXAdjustLocal)ctx.lookup("openelis/InventoryXAdjustBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private InventoryLocationLocal invLocLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryLocationLocal)ctx.lookup("openelis/InventoryLocationBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

@@ -34,6 +34,7 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ProviderLocationLocal;
 import org.openelis.manager.ProviderLocationManager;
+import org.openelis.utils.EJBFactory;
 
 public class ProviderLocationManagerProxy {
 
@@ -41,7 +42,7 @@ public class ProviderLocationManagerProxy {
         ProviderLocationManager pm;
         ArrayList<ProviderLocationDO> location;
 
-        location = local().fetchByProviderId(id);
+        location = EJBFactory.getProviderLocation().fetchByProviderId(id);
         pm = ProviderLocationManager.getInstance();
         pm.setProviderId(id);
         pm.setLocations(location);
@@ -53,7 +54,7 @@ public class ProviderLocationManagerProxy {
         ProviderLocationLocal pl;
         ProviderLocationDO location;
 
-        pl = local();
+        pl = EJBFactory.getProviderLocation();
         for (int i = 0; i < man.count(); i++ ) {
             location = man.getLocationAt(i);
             location.setProviderId(man.getProviderId());
@@ -67,7 +68,7 @@ public class ProviderLocationManagerProxy {
         ProviderLocationLocal pl;
         ProviderLocationDO location;
 
-        pl = local();
+        pl = EJBFactory.getProviderLocation();
         for (int j = 0; j < man.deleteCount(); j++)
             pl.delete(man.getDeletedAt(j));
         
@@ -89,7 +90,7 @@ public class ProviderLocationManagerProxy {
         ValidationErrorsList list;
         ProviderLocationLocal cl;
 
-        cl = local();
+        cl = EJBFactory.getProviderLocation();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -100,15 +101,5 @@ public class ProviderLocationManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-
-    private ProviderLocationLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (ProviderLocationLocal)ctx.lookup("openelis/ProviderLocationBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

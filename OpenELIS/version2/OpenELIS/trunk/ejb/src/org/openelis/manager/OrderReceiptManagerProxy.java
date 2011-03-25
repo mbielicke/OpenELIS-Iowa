@@ -27,10 +27,9 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.local.InventoryXPutLocal;
+import org.openelis.utils.EJBFactory;
 
 public class OrderReceiptManagerProxy {
 
@@ -39,7 +38,7 @@ public class OrderReceiptManagerProxy {
         OrderReceiptManager m;
         ArrayList<InventoryXPutViewDO> list;
 
-        pl = local();
+        pl = EJBFactory.getInventoryXPut();
         list = pl.fetchByOrderId(id);
         m = OrderReceiptManager.getInstance();
 
@@ -50,12 +49,12 @@ public class OrderReceiptManagerProxy {
 
     public OrderReceiptManager add(OrderReceiptManager man) throws Exception {
         InventoryXPutLocal pl;
-        InventoryXPutViewDO receipt;        
+        InventoryXPutViewDO data;        
 
-        pl = local();
+        pl = EJBFactory.getInventoryXPut();
         for (int i = 0; i < man.count(); i++ ) {
-            receipt = man.getReceiptAt(i);
-            pl.add(receipt);
+            data = man.getReceiptAt(i);
+            pl.add(data);
         }
 
         return man;
@@ -63,19 +62,19 @@ public class OrderReceiptManagerProxy {
 
     public OrderReceiptManager update(OrderReceiptManager man) throws Exception {
         InventoryXPutLocal pl;
-        InventoryXPutViewDO receipt;        
+        InventoryXPutViewDO data;        
 
-        pl = local();
+        pl = EJBFactory.getInventoryXPut();
         
         for (int j = 0; j < man.deleteCount(); j++ )
             pl.delete(man.getDeletedAt(j));
         
         for (int i = 0; i < man.count(); i++ ) {
-            receipt = man.getReceiptAt(i);
-            if(receipt.getId() != null)
-                pl.update(receipt);
+            data = man.getReceiptAt(i);
+            if(data.getId() != null)
+                pl.update(data);
             else
-                pl.add(receipt);
+                pl.add(data);
         }
 
         return man;
@@ -91,17 +90,6 @@ public class OrderReceiptManagerProxy {
         return null;
     }
 
-    public void validate(OrderReceiptManager man) throws Exception {
-    
-    }
-
-    private InventoryXPutLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryXPutLocal)ctx.lookup("openelis/InventoryXPutBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
+    public void validate(OrderReceiptManager man) throws Exception {   
     }
 }

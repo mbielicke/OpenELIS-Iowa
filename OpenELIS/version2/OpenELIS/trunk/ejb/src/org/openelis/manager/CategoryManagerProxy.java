@@ -25,12 +25,10 @@
 */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.CategoryDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.CategoryLocal;
+import org.openelis.utils.EJBFactory;
 
 
 public class CategoryManagerProxy {
@@ -39,7 +37,7 @@ public class CategoryManagerProxy {
         CategoryDO data;
         CategoryManager m;
         
-        data = local().fetchById(id);
+        data = EJBFactory.getCategory().fetchById(id);
         m = CategoryManager.getInstance();
         
         m.setCategory(data);
@@ -59,7 +57,7 @@ public class CategoryManagerProxy {
     public CategoryManager add(CategoryManager man) throws Exception {
         Integer id;
 
-        local().add(man.getCategory());
+        EJBFactory.getCategory().add(man.getCategory());
         id = man.getCategory().getId();
 
         man.getEntries().setCategoryId(id);
@@ -71,7 +69,7 @@ public class CategoryManagerProxy {
     public CategoryManager update(CategoryManager man) throws Exception {
         Integer id;
 
-        local().update(man.getCategory());
+        EJBFactory.getCategory().update(man.getCategory());
         id = man.getCategory().getId();
 
         man.getEntries().setCategoryId(id);
@@ -95,7 +93,7 @@ public class CategoryManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getCategory());
+            EJBFactory.getCategory().validate(man.getCategory());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -107,15 +105,5 @@ public class CategoryManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-    
-    private CategoryLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (CategoryLocal)ctx.lookup("openelis/CategoryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

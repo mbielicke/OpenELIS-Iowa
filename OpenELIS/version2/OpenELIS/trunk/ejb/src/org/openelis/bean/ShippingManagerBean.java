@@ -42,7 +42,7 @@ import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.remote.ShippingManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -142,6 +142,6 @@ public class ShippingManagerBean implements ShippingManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("shipping", flag);
+        EJBFactory.getUserCache().applyPermission("shipping", flag);
     }
 }

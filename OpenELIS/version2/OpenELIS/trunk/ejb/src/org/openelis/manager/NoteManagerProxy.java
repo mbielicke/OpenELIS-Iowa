@@ -27,17 +27,16 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.NoteViewDO;
 import org.openelis.local.NoteLocal;
+import org.openelis.utils.EJBFactory;
 
 public class NoteManagerProxy {
     public NoteManager fetchByRefTableRefIdIsExt(Integer tableId, Integer id, String isExternal) throws Exception {
         NoteManager m;
         ArrayList<NoteViewDO> notes;
 
-        notes = local().fetchByRefTableRefIdIsExt(tableId, id, isExternal);
+        notes = EJBFactory.getNote().fetchByRefTableRefIdIsExt(tableId, id, isExternal);
 
         m = NoteManager.getInstance();
         m.setIsExternal("Y".equals(isExternal));
@@ -56,7 +55,7 @@ public class NoteManagerProxy {
             note.setReferenceId(man.getReferenceId());
             note.setReferenceTableId(man.getReferenceTableId());
 
-            local().add(note);
+            EJBFactory.getNote().add(note);
         }
 
         return man;
@@ -66,7 +65,7 @@ public class NoteManagerProxy {
         NoteViewDO note;
         NoteLocal nl;
 
-        nl = local();
+        nl = EJBFactory.getNote();
         for (int j = 0; j < man.deleteCount(); j++)
             nl.delete(man.getDeletedAt(j));
 
@@ -85,15 +84,5 @@ public class NoteManagerProxy {
     }
 
     public void validate(NoteManager man) throws Exception {
-    }
-
-    private NoteLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (NoteLocal)ctx.lookup("openelis/NoteBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

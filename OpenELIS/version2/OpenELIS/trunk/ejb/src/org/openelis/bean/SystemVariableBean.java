@@ -55,7 +55,7 @@ import org.openelis.local.SystemVariableLocal;
 import org.openelis.meta.SystemVariableMeta;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -207,8 +207,12 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     }
 
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception {
-        lock.lock(ReferenceTable.SYSTEM_VARIABLE, id);
-        return fetchById(id);
+        try {
+            lock.lock(ReferenceTable.SYSTEM_VARIABLE, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
     }
     
     public SystemVariableDO fetchForUpdateByName(String name) throws Exception {
@@ -270,6 +274,6 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("systemvariable", flag);
+        EJBFactory.getUserCache().applyPermission("systemvariable", flag);
     }
 }

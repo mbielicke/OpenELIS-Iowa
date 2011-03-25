@@ -53,7 +53,7 @@ import org.openelis.local.ProjectLocal;
 import org.openelis.meta.ProjectMeta;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -76,7 +76,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         try {
             data = (ProjectViewDO)query.getSingleResult();
             if (data.getOwnerId() != null) {
-                user = PermissionInterceptor.getSystemUser(data.getOwnerId());
+                user = EJBFactory.getUserCache().getSystemUser(data.getOwnerId());
                 if (user != null)
                     data.setOwnerName(user.getLoginName());
             }

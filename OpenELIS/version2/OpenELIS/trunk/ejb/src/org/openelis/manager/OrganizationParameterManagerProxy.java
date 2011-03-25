@@ -27,13 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrganizationParameterLocal;
-import org.openelis.manager.OrganizationParameterManager;
+import org.openelis.utils.EJBFactory;
 
 public class OrganizationParameterManagerProxy {
 
@@ -41,7 +39,7 @@ public class OrganizationParameterManagerProxy {
         OrganizationParameterManager cm;
         ArrayList<OrganizationParameterDO> parameters;
 
-        parameters = local().fetchByOrganizationId(id);
+        parameters = EJBFactory.getOrganizationParameter().fetchByOrganizationId(id);
         cm = OrganizationParameterManager.getInstance();
         cm.setOrganizationId(id);
         cm.setParameters(parameters);
@@ -53,7 +51,7 @@ public class OrganizationParameterManagerProxy {
         OrganizationParameterLocal cl;
         OrganizationParameterDO parameter;
 
-        cl = local();
+        cl = EJBFactory.getOrganizationParameter();
         for (int i = 0; i < man.count(); i++ ) {
             parameter = man.getParameterAt(i);
             parameter.setOrganizationId(man.getOrganizationId());
@@ -67,7 +65,7 @@ public class OrganizationParameterManagerProxy {
         OrganizationParameterLocal cl;
         OrganizationParameterDO parameter;
 
-        cl = local();
+        cl = EJBFactory.getOrganizationParameter();
         for (int j = 0; j < man.deleteCount(); j++ )
             cl.delete(man.getDeletedAt(j));
 
@@ -89,7 +87,7 @@ public class OrganizationParameterManagerProxy {
         ValidationErrorsList list;
         OrganizationParameterLocal cl;
 
-        cl = local();
+        cl = EJBFactory.getOrganizationParameter();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -100,15 +98,5 @@ public class OrganizationParameterManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-
-    private OrganizationParameterLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrganizationParameterLocal)ctx.lookup("openelis/OrganizationParameterBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

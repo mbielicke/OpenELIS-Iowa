@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
@@ -40,6 +38,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.TestAnalyteLocal;
 import org.openelis.meta.TestMeta;
+import org.openelis.utils.EJBFactory;
 
 public class TestAnalyteManagerProxy {
 
@@ -49,7 +48,7 @@ public class TestAnalyteManagerProxy {
         DictionaryDO data;
         DictionaryLocal dl;
 
-        dl = dictLocal();
+        dl = EJBFactory.getDictionary();
 
         if (typeSuppl == 0) {
             try {
@@ -66,7 +65,7 @@ public class TestAnalyteManagerProxy {
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
         TestAnalyteManager tam;
 
-        grid = local().fetchByTestId(testId);
+        grid = EJBFactory.getTestAnalyte().fetchByTestId(testId);
         tam = TestAnalyteManager.getInstance();
         tam.setAnalytes(grid);
         tam.setTestId(testId);
@@ -76,13 +75,13 @@ public class TestAnalyteManagerProxy {
 
     public TestAnalyteManager add(TestAnalyteManager man, HashMap<Integer, Integer> idMap)
                                                                                           throws Exception {
+        int i, j, so, negId;
         TestAnalyteLocal al;
         ArrayList<TestAnalyteViewDO> list;
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
-        TestAnalyteViewDO data;
-        int i, j, so, negId;
+        TestAnalyteViewDO data;        
 
-        al = local();
+        al = EJBFactory.getTestAnalyte();
         grid = man.getAnalytes();
         so = 0;
         negId = 0;
@@ -108,13 +107,13 @@ public class TestAnalyteManagerProxy {
 
     public TestAnalyteManager update(TestAnalyteManager man, HashMap<Integer, Integer> idMap)
                                                                                              throws Exception {
+        int i, j, so, negId;
         TestAnalyteLocal al;
         ArrayList<TestAnalyteViewDO> list;
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
         TestAnalyteViewDO data;
-        int i, j, so, negId;
 
-        al = local();
+        al = EJBFactory.getTestAnalyte();
         grid = man.getAnalytes();
         so = 0;
         negId = 0;
@@ -149,9 +148,9 @@ public class TestAnalyteManagerProxy {
     public void validate(TestAnalyteManager tam,
                          TestResultManager trm,
                          HashMap<Integer, Integer> anaResGrpMap) throws Exception {
-        TestAnalyteLocal al;
-        ValidationErrorsList list;
         int i, j;
+        TestAnalyteLocal al;
+        ValidationErrorsList list;        
         List<TestAnalyteViewDO> analist;
         TestAnalyteViewDO data;
         GridFieldErrorException exc;
@@ -159,7 +158,7 @@ public class TestAnalyteManagerProxy {
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
         ArrayList<ArrayList<TestResultViewDO>> results;
 
-        al = local();
+        al = EJBFactory.getTestAnalyte();
         list = new ValidationErrorsList();
         grid = tam.getAnalytes();
         results = trm.getResults();
@@ -200,25 +199,4 @@ public class TestAnalyteManagerProxy {
             throw list;
 
     }
-
-    private TestAnalyteLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (TestAnalyteLocal)ctx.lookup("openelis/TestAnalyteBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
 }

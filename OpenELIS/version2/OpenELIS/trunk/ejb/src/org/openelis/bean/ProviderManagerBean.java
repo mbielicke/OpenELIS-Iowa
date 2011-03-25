@@ -16,7 +16,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 import org.openelis.remote.ProviderManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -113,6 +113,6 @@ public class ProviderManagerBean implements ProviderManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("provider", flag);
+        EJBFactory.getUserCache().applyPermission("provider", flag);
     }
 }

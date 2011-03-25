@@ -25,18 +25,16 @@
 */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.SamplePrivateWellLocal;
+import org.openelis.utils.EJBFactory;
 
 public class SamplePrivateWellManagerProxy {
     public SamplePrivateWellManager fetchBySampleId(Integer sampleId) throws Exception {
         SamplePrivateWellManager man;
         SamplePrivateWellViewDO data;        
         
-        data = local().fetchBySampleId(sampleId);
+        data = EJBFactory.getSamplePrivateWell().fetchBySampleId(sampleId);
         
         man = SamplePrivateWellManager.getInstance();
         man.setPrivateWell(data);       
@@ -46,7 +44,7 @@ public class SamplePrivateWellManagerProxy {
 
     public SamplePrivateWellManager add(SamplePrivateWellManager man) throws Exception {     
         man.getPrivateWell().setSampleId(man.getSampleId());
-        local().add(man.getPrivateWell());
+        EJBFactory.getSamplePrivateWell().add(man.getPrivateWell());
         
         return man;
     }
@@ -57,26 +55,14 @@ public class SamplePrivateWellManagerProxy {
         data = man.getPrivateWell();                       
         if(data.getId() == null) {
             data.setSampleId(man.getSampleId());
-            local().add(data);
+            EJBFactory.getSamplePrivateWell().add(data);
         } else {
-            local().update(data);
+            EJBFactory.getSamplePrivateWell().update(data);
         }
         
         return man;
     }
     
-    public void validate(SamplePrivateWellManager man, ValidationErrorsList errorsList) throws Exception {
-        
+    public void validate(SamplePrivateWellManager man, ValidationErrorsList errorsList) throws Exception {       
     }
-    
-    private SamplePrivateWellLocal local(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (SamplePrivateWellLocal)ctx.lookup("openelis/SamplePrivateWellBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-    
 }

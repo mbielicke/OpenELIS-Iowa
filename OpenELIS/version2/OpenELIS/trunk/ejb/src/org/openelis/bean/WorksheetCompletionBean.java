@@ -100,7 +100,7 @@ import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
 import org.openelis.remote.WorksheetCompletionRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -533,7 +533,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         statusLocked = false;
 
                     sectionVDO = sectionLocal.fetchById(aVDO.getSectionId());
-                    perm = PermissionInterceptor.getSystemUserPermission().getSection(sectionVDO.getName());
+                    perm = EJBFactory.getUserCache().getPermission().getSection(sectionVDO.getName());
                     if (perm == null || !perm.hasCompletePermission())
                         permLocked = true;
                     else

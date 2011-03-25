@@ -27,32 +27,20 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.PwsMonitorDO;
-import org.openelis.local.PwsMonitorLocal;
+import org.openelis.utils.EJBFactory;
 
 public class PwsMonitorManagerProxy {
 
     public PwsMonitorManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         PwsMonitorManager man;
-        ArrayList<PwsMonitorDO> monitors;
+        ArrayList<PwsMonitorDO> list;
         
-        monitors = local().fetchByTinwsysIsNumber(tinwsysIsNumber);
+        list = EJBFactory.getPwsMonitor().fetchByTinwsysIsNumber(tinwsysIsNumber);
         man = PwsMonitorManager.getInstance();
         man.setTinwsysIsNumber(tinwsysIsNumber);
-        man.setMonitors(monitors);
+        man.setMonitors(list);
         
         return man;
-    }
-    
-    private PwsMonitorLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (PwsMonitorLocal) ctx.lookup("openelis/PwsMonitorBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
+    }   
 }

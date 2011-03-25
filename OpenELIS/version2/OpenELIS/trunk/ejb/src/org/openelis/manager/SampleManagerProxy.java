@@ -28,24 +28,18 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
-import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.local.OrderLocal;
-import org.openelis.local.SampleItemLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleManagerLocal;
 import org.openelis.meta.SampleMeta;
+import org.openelis.utils.EJBFactory;
 
 public class SampleManagerProxy {
     protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId, anInPrepId,
@@ -56,7 +50,7 @@ public class SampleManagerProxy {
     public SampleManagerProxy() {
         DictionaryLocal l;
         if (anLoggedInId == null) {
-            l = dictionaryLocal();
+            l = EJBFactory.getDictionary();
 
             try {
                 anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
@@ -86,7 +80,7 @@ public class SampleManagerProxy {
         SampleDO data;
         SampleManager man;
 
-        data = sampleLocal().fetchById(sampleId);
+        data = EJBFactory.getSample().fetchById(sampleId);
 
         man = SampleManager.getInstance();
         man.setSample(data);
@@ -103,7 +97,7 @@ public class SampleManagerProxy {
         SampleDO data;
         SampleManager man;
 
-        data = sampleLocal().fetchByAccessionNumber(accessionNumber);
+        data = EJBFactory.getSample().fetchByAccessionNumber(accessionNumber);
 
         man = SampleManager.getInstance();
         man.setSample(data);
@@ -126,7 +120,7 @@ public class SampleManagerProxy {
         AnalysisViewDO analysis;
         AnalysisManager anaMan;
 
-        data = sampleLocal().fetchById(sampleId);
+        data = EJBFactory.getSample().fetchById(sampleId);
 
         man = SampleManager.getInstance();
         man.setSample(data);
@@ -136,7 +130,7 @@ public class SampleManagerProxy {
         man.getProjects();
 
         // sample item
-        items = (ArrayList<SampleItemViewDO>)sampleItemLocal().fetchBySampleId(sampleId);
+        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);
         itemMan = SampleItemManager.getInstance();
         itemMan.setSampleId(sampleId);
         itemMan.setSampleManager(man);
@@ -157,7 +151,7 @@ public class SampleManagerProxy {
 
         // fetch analyses
         try {
-            analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
+            analyses = (ArrayList<AnalysisViewDO>)EJBFactory.getAnalysis().fetchBySampleId(sampleId);
             for (int i = 0; i < analyses.size(); i++ ) {
                 analysis = analyses.get(i);
                 anaMan = anaMap.get(analysis.getSampleItemId());
@@ -184,7 +178,7 @@ public class SampleManagerProxy {
         HashMap<Integer, TestManager> testCache;
         TestManager testMan;
 
-        data = sampleLocal().fetchById(sampleId);
+        data = EJBFactory.getSample().fetchById(sampleId);
 
         man = SampleManager.getInstance();
         man.setSample(data);
@@ -194,7 +188,7 @@ public class SampleManagerProxy {
         man.getProjects();
 
         // sample item
-        items = (ArrayList<SampleItemViewDO>)sampleItemLocal().fetchBySampleId(sampleId);
+        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);
         itemMan = SampleItemManager.getInstance();
         itemMan.setSampleId(sampleId);
         itemMan.setSampleManager(man);
@@ -215,7 +209,7 @@ public class SampleManagerProxy {
 
         // fetch analysess
         try {
-            analyses = (ArrayList<AnalysisViewDO>)analysisLocal().fetchBySampleId(sampleId);
+            analyses = (ArrayList<AnalysisViewDO>)EJBFactory.getAnalysis().fetchBySampleId(sampleId);
             testCache = new HashMap<Integer, TestManager>();
             for (int i = 0; i < analyses.size(); i++ ) {
                 analysis = analyses.get(i);
@@ -240,7 +234,7 @@ public class SampleManagerProxy {
     public SampleManager add(SampleManager man) throws Exception {
         Integer sampleId;
 
-        sampleLocal().add(man.getSample());
+        EJBFactory.getSample().add(man.getSample());
         sampleId = man.getSample().getId();
 
         if (man.getDomainManager() != null) {
@@ -301,7 +295,7 @@ public class SampleManagerProxy {
         if (samReleasedId.equals(data.getStatusId()) && data.getReleasedDate() == null)
             data.setReleasedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
             
-        sampleLocal().update(man.getSample());
+        EJBFactory.getSample().update(man.getSample());
         sampleId = man.getSample().getId();
 
         if (man.sampleDomain != null) {
@@ -398,14 +392,14 @@ public class SampleManagerProxy {
     }
 
     private void validateAccessionNumber(SampleDO data, ValidationErrorsList errorsList) throws Exception {
+        ArrayList<Exception> list;
         try {
-            sampleManagerLocal().validateAccessionNumber(data);
-
+            EJBFactory.getSampleManager().validateAccessionNumber(data);
         } catch (ValidationErrorsList e) {
-            ArrayList<Exception> errors = e.getErrorList();
+            list = e.getErrorList();
 
-            for (int i = 0; i < errors.size(); i++ )
-                errorsList.add(errors.get(i));
+            for (int i = 0; i < list.size(); i++ )
+                errorsList.add(list.get(i));
         }
     }
     
@@ -413,69 +407,9 @@ public class SampleManagerProxy {
         OrderViewDO order;
         if (data.getOrderId() == null)
             return;
-        order = orderLocal().fetchById(data.getOrderId());
+        order = EJBFactory.getOrder().fetchById(data.getOrderId());
         if (order == null || !OrderManager.TYPE_SEND_OUT.equals(order.getType()))
             errorsList.add(new FieldErrorException("orderIdInvalidException",
                                                        SampleMeta.getOrderId()));                    
-    }
-
-    private SampleLocal sampleLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SampleLocal)ctx.lookup("openelis/SampleBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private SampleManagerLocal sampleManagerLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SampleManagerLocal)ctx.lookup("openelis/SampleManagerBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private SampleItemLocal sampleItemLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (SampleItemLocal)ctx.lookup("openelis/SampleItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private AnalysisLocal analysisLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private static DictionaryLocal dictionaryLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private static OrderLocal orderLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrderLocal)ctx.lookup("openelis/OrderBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

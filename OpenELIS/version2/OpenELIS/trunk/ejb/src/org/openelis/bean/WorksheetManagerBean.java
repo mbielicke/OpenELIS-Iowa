@@ -47,7 +47,7 @@ import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
 import org.openelis.remote.WorksheetManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -178,6 +178,6 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("worksheet", flag);
+        EJBFactory.getUserCache().applyPermission("worksheet", flag);
     }
 }

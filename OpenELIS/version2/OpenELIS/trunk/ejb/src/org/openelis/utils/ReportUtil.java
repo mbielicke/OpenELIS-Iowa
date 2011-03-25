@@ -182,7 +182,7 @@ public class ReportUtil {
          */
         try {
             sb.append("lpr")
-              .append(" -U ").append(PermissionInterceptor.getSystemUserName());// username
+              .append(" -U ").append(EJBFactory.getUserCache().getName());// username
 
             if ( !DataBaseUtil.isEmpty(destination))
                 sb.append(" -P ").append(destination);  // printer

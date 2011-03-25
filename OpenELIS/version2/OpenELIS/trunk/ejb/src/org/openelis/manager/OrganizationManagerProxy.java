@@ -25,13 +25,11 @@
  */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrganizationLocal;
+import org.openelis.utils.EJBFactory;
 
 public class OrganizationManagerProxy {
 
@@ -39,7 +37,7 @@ public class OrganizationManagerProxy {
         OrganizationViewDO data;
         OrganizationManager m;
 
-        data = local().fetchById(id);
+        data = EJBFactory.getOrganization().fetchById(id);
         m = OrganizationManager.getInstance();
 
         m.setOrganization(data);
@@ -77,7 +75,7 @@ public class OrganizationManagerProxy {
     public OrganizationManager add(OrganizationManager man) throws Exception {
         Integer id;
 
-        local().add(man.getOrganization());
+        EJBFactory.getOrganization().add(man.getOrganization());
         id = man.getOrganization().getId();
 
         if (man.contacts != null) {
@@ -100,7 +98,7 @@ public class OrganizationManagerProxy {
     public OrganizationManager update(OrganizationManager man) throws Exception {
         Integer id;
 
-        local().update(man.getOrganization());
+        EJBFactory.getOrganization().update(man.getOrganization());
         id = man.getOrganization().getId();
 
         if (man.contacts != null) {
@@ -135,7 +133,7 @@ public class OrganizationManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getOrganization());
+            EJBFactory.getOrganization().validate(man.getOrganization());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -154,15 +152,5 @@ public class OrganizationManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-
-    private OrganizationLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrganizationLocal)ctx.lookup("openelis/OrganizationBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

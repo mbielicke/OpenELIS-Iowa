@@ -28,20 +28,15 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.local.SectionLocal;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 public class AnalysisManagerProxy {
     protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
@@ -53,7 +48,7 @@ public class AnalysisManagerProxy {
         DictionaryLocal l;
 
         if (anLoggedInId == null) {
-            l = dictionaryLocal();
+            l = EJBFactory.getDictionary();
 
             try {
                 anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
@@ -81,7 +76,7 @@ public class AnalysisManagerProxy {
         ArrayList<AnalysisViewDO> analyses;
         AnalysisManager man;
 
-        analyses = analysisLocal().fetchBySampleItemId(sampleItemId);
+        analyses = EJBFactory.getAnalysis().fetchBySampleItemId(sampleItemId);
         man = AnalysisManager.getInstance();
 
         for (int i = 0; i < analyses.size(); i++ ) {
@@ -278,7 +273,7 @@ public class AnalysisManagerProxy {
         analysisRefId = ReferenceTable.ANALYSIS;
 
         analysisDO.setSampleItemId(man.getSampleItemId());
-        analysisLocal().add(analysisDO);
+        EJBFactory.getAnalysis().add(analysisDO);
 
         item = man.getItemAt(i);
 
@@ -324,7 +319,7 @@ public class AnalysisManagerProxy {
 
         if (analysisDO.getId() == null) {
             analysisDO.setSampleItemId(man.getSampleItemId());
-            analysisLocal().add(analysisDO);
+            EJBFactory.getAnalysis().add(analysisDO);
         } else {
             //
             // if the analysis was moved to a different sample item, we need to
@@ -332,7 +327,7 @@ public class AnalysisManagerProxy {
             //
             if (!man.getSampleItemId().equals(analysisDO.getSampleItemId()))
                 analysisDO.setSampleItemId(man.getSampleItemId());
-            analysisLocal().update(analysisDO);
+            EJBFactory.getAnalysis().update(analysisDO);
         }
         
         item = man.getItemAt(i);
@@ -422,44 +417,10 @@ public class AnalysisManagerProxy {
     }
 
     public SectionViewDO getSectionFromId(Integer sectionId) throws Exception {
-        return sectionLocal().fetchById(sectionId);
+        return EJBFactory.getSection().fetchById(sectionId);
     }
 
     protected Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
         return Datetime.getInstance(begin, end);
-    }
-
-    protected SystemUserPermission getSystemUserPermission() throws Exception {
-        return PermissionInterceptor.getSystemUserPermission();
-    }
-
-    private AnalysisLocal analysisLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private DictionaryLocal dictionaryLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private static SectionLocal sectionLocal(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (SectionLocal)ctx.lookup("openelis/SectionBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
     }
 }

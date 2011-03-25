@@ -37,8 +37,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.InventoryComponentViewDO;
-import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;

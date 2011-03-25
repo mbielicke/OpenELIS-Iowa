@@ -31,7 +31,6 @@ import java.util.HashMap;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.naming.InitialContext;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.NoResultException;
@@ -60,7 +59,7 @@ import org.openelis.manager.WorksheetManagerProxy;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.remote.WorksheetRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -106,7 +105,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
             for (i = 0; i < data.size(); i++) {
                 worksheet = data.get(i);
                 if (worksheet.getSystemUserId() != null) {
-                    user = PermissionInterceptor.getSystemUser(worksheet.getSystemUserId());
+                    user = EJBFactory.getUserCache().getSystemUser(worksheet.getSystemUserId());
                     if (user != null)
                         worksheet.setSystemUser(user.getLoginName());
                 }
@@ -161,7 +160,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
             worksheet = list.get(i);
             
             if (worksheet.getSystemUserId() != null) {
-                user = PermissionInterceptor.getSystemUser(worksheet.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(worksheet.getSystemUserId());
                 if (user != null)
                     worksheet.setSystemUser(user.getLoginName());
             }

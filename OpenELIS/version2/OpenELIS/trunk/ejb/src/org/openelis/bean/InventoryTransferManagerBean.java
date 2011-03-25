@@ -37,7 +37,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.InventoryTransferManager;
 import org.openelis.remote.InventoryTransferManagerRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -70,7 +70,7 @@ public class InventoryTransferManagerBean implements InventoryTransferManagerRem
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("inventorytransfer", flag);
+        EJBFactory.getUserCache().applyPermission("inventorytransfer", flag);
     }
 
 }

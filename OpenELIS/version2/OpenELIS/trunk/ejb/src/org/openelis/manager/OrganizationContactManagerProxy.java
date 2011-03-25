@@ -27,58 +27,57 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrganizationContactLocal;
-import org.openelis.manager.OrganizationContactManager;
+import org.openelis.utils.EJBFactory;
 
 public class OrganizationContactManagerProxy {
 
     public OrganizationContactManager fetchByOrganizationId(Integer id) throws Exception {
         OrganizationContactManager cm;
-        ArrayList<OrganizationContactDO> contacts;
+        ArrayList<OrganizationContactDO> list;
 
-        contacts = local().fetchByOrganizationId(id);
+        list = EJBFactory.getOrganizationContact().fetchByOrganizationId(id);
         cm = OrganizationContactManager.getInstance();
         cm.setOrganizationId(id);
-        cm.setContacts(contacts);
+        cm.setContacts(list);
 
         return cm;
     }
 
     public OrganizationContactManager add(OrganizationContactManager man) throws Exception {
         OrganizationContactLocal cl;
-        OrganizationContactDO contact;
+        OrganizationContactDO data;
 
-        cl = local();
+        cl = EJBFactory.getOrganizationContact();
         for (int i = 0; i < man.count(); i++ ) {
-            contact = man.getContactAt(i);
-            contact.setOrganizationId(man.getOrganizationId());
-            cl.add(contact);
+            data = man.getContactAt(i);
+            data.setOrganizationId(man.getOrganizationId());
+            cl.add(data);
         }
 
         return man;
     }
 
     public OrganizationContactManager update(OrganizationContactManager man) throws Exception {
+        int i;
         OrganizationContactLocal cl;
-        OrganizationContactDO contact;
+        OrganizationContactDO data;
 
-        cl = local();
-        for (int j = 0; j < man.deleteCount(); j++ )
-            cl.delete(man.getDeletedAt(j));
+        cl = EJBFactory.getOrganizationContact();
+        for (i = 0; i < man.deleteCount(); i++ )
+            cl.delete(man.getDeletedAt(i));
 
-        for (int i = 0; i < man.count(); i++ ) {
-            contact = man.getContactAt(i);
+        for (i = 0; i < man.count(); i++ ) {
+            data = man.getContactAt(i);
 
-            if (contact.getId() == null) {
-                contact.setOrganizationId(man.getOrganizationId());
-                cl.add(contact);
+            if (data.getId() == null) {
+                data.setOrganizationId(man.getOrganizationId());
+                cl.add(data);
             } else {
-                cl.update(contact);
+                cl.update(data);
             }
         }
 
@@ -89,7 +88,7 @@ public class OrganizationContactManagerProxy {
         ValidationErrorsList list;
         OrganizationContactLocal cl;
 
-        cl = local();
+        cl = EJBFactory.getOrganizationContact();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -100,15 +99,5 @@ public class OrganizationContactManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-
-    private OrganizationContactLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrganizationContactLocal)ctx.lookup("openelis/OrganizationContactBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

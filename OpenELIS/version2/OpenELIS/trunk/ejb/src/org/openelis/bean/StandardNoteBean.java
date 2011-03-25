@@ -54,7 +54,7 @@ import org.openelis.local.LockLocal;
 import org.openelis.meta.StandardNoteMeta;
 import org.openelis.remote.StandardNoteRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -198,8 +198,12 @@ public class StandardNoteBean implements StandardNoteRemote {
     }
 
     public StandardNoteDO fetchForUpdate(Integer id) throws Exception {
-        lock.lock(ReferenceTable.STANDARD_NOTE, id);
-        return fetchById(id);
+        try {
+            lock.lock(ReferenceTable.STANDARD_NOTE, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public StandardNoteDO abortUpdate(Integer id) throws Exception {
@@ -215,33 +219,33 @@ public class StandardNoteBean implements StandardNoteRemote {
         lock.validateLock(ReferenceTable.STANDARD_NOTE, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(StandardNote.class, data);
+        entity = manager.find(StandardNote.class, data.getId());
         if (entity != null)
             manager.remove(entity);
 
-        lock.unlock(ReferenceTable.ANALYTE, data.getId());
+        lock.unlock(ReferenceTable.STANDARD_NOTE, data.getId());
     }
 
     private void validate(StandardNoteDO standardNoteDO) throws Exception {
         ValidationErrorsList list = new ValidationErrorsList();
 
         if (DataBaseUtil.isEmpty(standardNoteDO.getName()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", StandardNoteMeta.getName()));
 
         if (DataBaseUtil.isEmpty(standardNoteDO.getDescription()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getDescription()));
+            list.add(new FieldErrorException("fieldRequiredException", StandardNoteMeta.getDescription()));
 
         if (DataBaseUtil.isEmpty(standardNoteDO.getTypeId()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getTypeId()));
+            list.add(new FieldErrorException("fieldRequiredException", StandardNoteMeta.getTypeId()));
 
         if (DataBaseUtil.isEmpty(standardNoteDO.getText()))
-            list.add(new FieldErrorException("fieldRequiredException", meta.getText()));
+            list.add(new FieldErrorException("fieldRequiredException", StandardNoteMeta.getText()));
 
         if (list.size() > 0)
             throw list;
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("standardnote", flag);
+        EJBFactory.getUserCache().applyPermission("standardnote", flag);
     }
 }

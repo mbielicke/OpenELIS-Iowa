@@ -29,8 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
@@ -45,6 +43,7 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.manager.AuxFieldManager.AuxFieldListItem;
 import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.utilcommon.ResultRangeNumeric;
+import org.openelis.utils.EJBFactory;
 
 public class AuxFieldManagerProxy {
 
@@ -54,7 +53,7 @@ public class AuxFieldManagerProxy {
         DictionaryDO data;
         DictionaryLocal dl;
 
-        dl = dictLocal();
+        dl = EJBFactory.getDictionary();
 
         if (typeDict == 0) {
             try {
@@ -90,7 +89,7 @@ public class AuxFieldManagerProxy {
         ArrayList<AuxFieldViewDO> data;
         AuxFieldManager m;
 
-        l = local();
+        l = EJBFactory.getAuxField();
         data = l.fetchById(id);
         m = AuxFieldManager.getInstance();
 
@@ -111,10 +110,10 @@ public class AuxFieldManagerProxy {
         HashMap<Integer, ArrayList<AuxFieldValueViewDO>> valueHash;
         AuxFieldManager m;
 
-        l = local();
+        l = EJBFactory.getAuxField();
         fields = l.fetchByGroupId(groupId);
 
-        vl = valueLocal();
+        vl = EJBFactory.getAuxFieldValue();
         values = vl.fetchByGroupId(groupId);
 
         // split the values up by field id
@@ -152,7 +151,7 @@ public class AuxFieldManagerProxy {
         ArrayList<AuxFieldViewDO> data;
         AuxFieldManager m;
 
-        l = local();
+        l = EJBFactory.getAuxField();
         data = l.fetchByGroupId(auxFieldGroupId);
         m = AuxFieldManager.getInstance();
         m.setAuxFieldGroupId(auxFieldGroupId);
@@ -168,7 +167,7 @@ public class AuxFieldManagerProxy {
         AuxFieldViewDO data;
         AuxFieldLocal l;
 
-        l = local();
+        l = EJBFactory.getAuxField();
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getAuxFieldAt(i);
             data.setAuxFieldGroupId(man.getAuxFieldGroupId());
@@ -190,8 +189,8 @@ public class AuxFieldManagerProxy {
         AuxFieldValueLocal vl;
         AuxFieldListItem item;
 
-        l = local();
-        vl = valueLocal();
+        l = EJBFactory.getAuxField();
+        vl = EJBFactory.getAuxFieldValue();
 
         try {
             for (int j = 0; j < man.deleteCount(); j++ ) {
@@ -235,8 +234,8 @@ public class AuxFieldManagerProxy {
         ArrayList<Integer> dictList;
         int numDefault, numOther, count;
 
-        al = local();
-        vl = valueLocal();
+        al = EJBFactory.getAuxField();
+        vl = EJBFactory.getAuxFieldValue();
         value = null;
         fieldName = null;
         numDefault = 0;
@@ -275,8 +274,7 @@ public class AuxFieldManagerProxy {
                         if (DataBaseUtil.isSame(0, firstTypeId))
                             //
                             // Assign the first non-null selected type to
-                            // firstTypeId
-                            // if the type is not "Default".
+                            // firstTypeId if the type is not "Default".
                             //
                             firstTypeId = typeId;
                     }
@@ -284,7 +282,7 @@ public class AuxFieldManagerProxy {
                     if (numDefault > 1) {
                         fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
                         throw new InconsistencyException("auxMoreThanOneDefaultException");
-                    } else if (count == 1 && numDefault == 1) {
+                    } else if (count == 1 && numDefault == 1 && j > 0) {
                         fieldName = AuxFieldGroupMeta.getFieldValueTypeId();
                         throw new InconsistencyException("auxDefaultWithNoOtherTypeException");
                     }
@@ -325,36 +323,6 @@ public class AuxFieldManagerProxy {
                                                          "auxFieldValueTable"));
                 }
             }
-        }
-    }
-
-    private AuxFieldLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AuxFieldLocal)ctx.lookup("openelis/AuxFieldBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private AuxFieldValueLocal valueLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AuxFieldValueLocal)ctx.lookup("openelis/AuxFieldValueBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
         }
     }
 

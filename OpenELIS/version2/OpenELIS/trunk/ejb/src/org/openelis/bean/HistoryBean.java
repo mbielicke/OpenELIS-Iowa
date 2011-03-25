@@ -40,7 +40,7 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.HistoryLocal;
 import org.openelis.remote.HistoryRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 public class HistoryBean implements HistoryRemote, HistoryLocal {
@@ -61,7 +61,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
         list = query.getResultList();
         for (HistoryVO h : list) {
             if (h.getSystemUserId() != null) {
-                user = PermissionInterceptor.getSystemUser(h.getSystemUserId());
+                user = EJBFactory.getUserCache().getSystemUser(h.getSystemUserId());
                 if (user != null)
                     h.setSystemUserLoginName(user.getLoginName());
             }

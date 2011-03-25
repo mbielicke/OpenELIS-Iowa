@@ -25,12 +25,10 @@
  */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.InventoryAdjustmentViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryAdjustmentLocal;
+import org.openelis.utils.EJBFactory;
 
 public class InventoryAdjustmentManagerProxy {
 
@@ -38,7 +36,7 @@ public class InventoryAdjustmentManagerProxy {
         InventoryAdjustmentViewDO data;
         InventoryAdjustmentManager m;
 
-        data = local().fetchById(id);
+        data = EJBFactory.getInventoryAdjustment().fetchById(id);
         m = InventoryAdjustmentManager.getInstance();
 
         m.setInventoryAdjustment(data);
@@ -58,7 +56,7 @@ public class InventoryAdjustmentManagerProxy {
     public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception {        
         Integer id;        
 
-        local().add(man.getInventoryAdjustment());
+        EJBFactory.getInventoryAdjustment().add(man.getInventoryAdjustment());
         id = man.getInventoryAdjustment().getId();
         
         if (man.adjustments != null) {
@@ -71,7 +69,7 @@ public class InventoryAdjustmentManagerProxy {
     public InventoryAdjustmentManager update(InventoryAdjustmentManager man) throws Exception {
         Integer id;
 
-        local().update(man.getInventoryAdjustment());
+        EJBFactory.getInventoryAdjustment().update(man.getInventoryAdjustment());
         id = man.getInventoryAdjustment().getId();
         
         if (man.adjustments != null) {
@@ -96,7 +94,7 @@ public class InventoryAdjustmentManagerProxy {
         
         list = new ValidationErrorsList();
         try {
-            local().validate(man.getInventoryAdjustment());
+            EJBFactory.getInventoryAdjustment().validate(man.getInventoryAdjustment());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -109,15 +107,5 @@ public class InventoryAdjustmentManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-
-    private InventoryAdjustmentLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryAdjustmentLocal)ctx.lookup("openelis/InventoryAdjustmentBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }   
+    } 
 }

@@ -52,14 +52,13 @@ import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.JMSMessageProducerLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.SectionCacheLocal;
 import org.openelis.local.SectionLocal;
-import org.openelis.messages.SectionCacheMessage;
 import org.openelis.meta.SectionMeta;
 import org.openelis.remote.SectionRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -71,10 +70,10 @@ public class SectionBean implements SectionRemote, SectionLocal {
     
     @EJB
     private LockLocal                   lock;
-
-    @EJB
-    private JMSMessageProducerLocal     jmsProducer;
     
+    @EJB
+    private SectionCacheLocal           secCache;
+       
     private static final SectionMeta    meta = new SectionMeta();
 
     public SectionViewDO fetchById(Integer id) throws Exception {
@@ -143,7 +142,6 @@ public class SectionBean implements SectionRemote, SectionLocal {
 
     public SectionViewDO add(SectionViewDO data) throws Exception {
         Section entity;
-        SectionCacheMessage msg;
 
         checkSecurity(ModuleFlags.ADD);
 
@@ -162,17 +160,11 @@ public class SectionBean implements SectionRemote, SectionLocal {
 
         data.setId(entity.getId());
 
-        // invalidate the cache
-        msg = new SectionCacheMessage();
-        msg.action = SectionCacheMessage.Action.UPDATED;
-        msg.setSectionDO(data);
-        jmsProducer.writeMessage(msg);
         return data;
     }
 
     public SectionViewDO update(SectionViewDO data) throws Exception {
         Section entity;
-        SectionCacheMessage msg;
 
         if ( !data.isChanged()) {
             lock.unlock(ReferenceTable.SECTION, data.getId());
@@ -184,9 +176,11 @@ public class SectionBean implements SectionRemote, SectionLocal {
 
         lock.validateLock(ReferenceTable.SECTION, data.getId());
         manager.setFlushMode(FlushModeType.COMMIT);
-
         entity = manager.find(Section.class, data.getId());
 
+        // need to remove it before we change it
+        secCache.evict(entity.getId());
+        
         entity.setDescription(data.getDescription());
         entity.setOrganizationId(data.getOrganizationId());
         entity.setName(data.getName());
@@ -195,17 +189,16 @@ public class SectionBean implements SectionRemote, SectionLocal {
 
         lock.unlock(ReferenceTable.SECTION, data.getId());
 
-        // invalidate the cache
-        msg = new SectionCacheMessage();
-        msg.action = SectionCacheMessage.Action.UPDATED;
-        msg.setSectionDO(data);
-        jmsProducer.writeMessage(msg);
         return data;
     }
 
     public SectionViewDO fetchForUpdate(Integer id) throws Exception {
-        lock.lock(ReferenceTable.SECTION, id);
-        return fetchById(id);
+        try {
+            lock.lock(ReferenceTable.SECTION, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public SectionViewDO abortUpdate(Integer id) throws Exception {
@@ -254,7 +247,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("section", flag);
+        EJBFactory.getUserCache().applyPermission("section", flag);
     }
 
 }

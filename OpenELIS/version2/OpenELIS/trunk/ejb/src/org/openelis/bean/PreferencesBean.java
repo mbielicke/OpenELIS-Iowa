@@ -34,7 +34,7 @@ import javax.persistence.Query;
 import org.openelis.domain.PreferencesDO;
 import org.openelis.entity.Preferences;
 import org.openelis.remote.PreferencesRemote;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 public class PreferencesBean implements PreferencesRemote {
@@ -48,7 +48,7 @@ public class PreferencesBean implements PreferencesRemote {
         PreferencesDO data;
 
         try {
-            userId = PermissionInterceptor.getSystemUserId();
+            userId = EJBFactory.getUserCache().getId();
         } catch (Exception e) {
             e.printStackTrace();
             userId = null;
@@ -80,7 +80,7 @@ public class PreferencesBean implements PreferencesRemote {
         } else {
             entity = new Preferences();
             try {
-                entity.setSystemUserId(PermissionInterceptor.getSystemUserId());
+                entity.setSystemUserId(EJBFactory.getUserCache().getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }

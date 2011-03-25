@@ -27,13 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxFieldValueLocal;
-import org.openelis.local.DictionaryLocal;
+import org.openelis.utils.EJBFactory;
 
 public class AuxFieldValueManagerProxy {
     public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {
@@ -41,7 +39,7 @@ public class AuxFieldValueManagerProxy {
         ArrayList<AuxFieldValueViewDO> data;
         AuxFieldValueManager m;
 
-        l = local();
+        l = EJBFactory.getAuxFieldValue();
         data = l.fetchById(auxFieldId);
         m = AuxFieldValueManager.getInstance();
         m.setAuxiliaryFieldId(auxFieldId);
@@ -56,7 +54,7 @@ public class AuxFieldValueManagerProxy {
         AuxFieldValueViewDO data;
         AuxFieldValueLocal l;
 
-        l = local();
+        l = EJBFactory.getAuxFieldValue();
         for(int i=0; i<man.count(); i++){
             data = man.getAuxFieldValueAt(i);
             data.setAuxFieldId(man.getAuxiliaryFieldId());
@@ -67,14 +65,15 @@ public class AuxFieldValueManagerProxy {
     }
     
     public AuxFieldValueManager update(AuxFieldValueManager man) throws Exception {
+        int i;
         AuxFieldValueViewDO data;
         AuxFieldValueLocal l;        
 
-        l = local();
-        for(int j = 0; j < man.deleteCount(); j++) 
-            l.delete(man.getDeletedAt(j));
+        l = EJBFactory.getAuxFieldValue();
+        for(i = 0; i < man.deleteCount(); i++) 
+            l.delete(man.getDeletedAt(i));
         
-        for(int i=0; i < man.count(); i++){
+        for(i=0; i < man.count(); i++){
             data = man.getAuxFieldValueAt(i);
             
             if(data.getId() == null){
@@ -88,32 +87,12 @@ public class AuxFieldValueManagerProxy {
     }
     
     public Integer getIdFromSystemName(String systemName) throws Exception{
-        DictionaryDO dictDO = dictionaryLocal().fetchBySystemName(systemName);
+        DictionaryDO data;
         
-        return dictDO.getId();
+        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
+        return data.getId();
     }
     
-    public void validate(AuxFieldValueManager man, ValidationErrorsList list) throws Exception {
-       
-    }
-    
-    private AuxFieldValueLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (AuxFieldValueLocal)ctx.lookup("openelis/AuxFieldValueBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-    
-    private static DictionaryLocal dictionaryLocal(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
+    public void validate(AuxFieldValueManager man, ValidationErrorsList list) throws Exception {       
     }
 }

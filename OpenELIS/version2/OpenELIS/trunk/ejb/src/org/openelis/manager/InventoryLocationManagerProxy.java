@@ -33,44 +33,46 @@ import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryLocationLocal;
+import org.openelis.utils.EJBFactory;
 
 public class InventoryLocationManagerProxy {
 
     public InventoryLocationManager fetchByInventoryItemId(Integer id) throws Exception {
         InventoryLocationManager lm;
-        ArrayList<InventoryLocationViewDO> locations;
+        ArrayList<InventoryLocationViewDO> list;
 
-        locations = local().fetchByInventoryItemId(id);
+        list = EJBFactory.getInventoryLocation().fetchByInventoryItemId(id);
         lm = InventoryLocationManager.getInstance();
         lm.setInventoryItemId(id);
-        lm.setLocations(locations);
+        lm.setLocations(list);
 
         return lm;
     }
 
     public InventoryLocationManager add(InventoryLocationManager man) throws Exception {
         InventoryLocationLocal cl;
-        InventoryLocationViewDO location;
+        InventoryLocationViewDO data;
 
-        cl = local();
+        cl = EJBFactory.getInventoryLocation();
         for (int i = 0; i < man.count(); i++ ) {
-            location = man.getLocationAt(i);
-            location.setInventoryItemId(man.getInventoryItemId());
-            cl.add(location);
+            data = man.getLocationAt(i);
+            data.setInventoryItemId(man.getInventoryItemId());
+            cl.add(data);
         }
 
         return man;
     }
 
     public InventoryLocationManager update(InventoryLocationManager man) throws Exception {
+        int i;
         InventoryLocationLocal cl;
         InventoryLocationViewDO location;
 
-        cl = local();
-        for (int j = 0; j < man.deleteCount(); j++ )
-            cl.delete(man.getDeletedAt(j));
+        cl = EJBFactory.getInventoryLocation();
+        for (i = 0; i < man.deleteCount(); i++ )
+            cl.delete(man.getDeletedAt(i));
 
-        for (int i = 0; i < man.count(); i++ ) {
+        for (i = 0; i < man.count(); i++ ) {
             location = man.getLocationAt(i);
 
             if (location.getId() == null) {
@@ -88,7 +90,7 @@ public class InventoryLocationManagerProxy {
         ValidationErrorsList list;
         InventoryLocationLocal cl;
 
-        cl = local();
+        cl = EJBFactory.getInventoryLocation();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -99,15 +101,5 @@ public class InventoryLocationManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-
-    private InventoryLocationLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryLocationLocal)ctx.lookup("openelis/InventoryLocationBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

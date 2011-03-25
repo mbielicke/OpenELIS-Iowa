@@ -26,10 +26,6 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.naming.InitialContext;
 
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryLocationViewDO;
@@ -38,10 +34,10 @@ import org.openelis.domain.OrderItemViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryReceiptLocal;
 import org.openelis.meta.InventoryReceiptMeta;
+import org.openelis.utils.EJBFactory;
 
 public class InventoryReceiptManagerProxy {
 
@@ -52,7 +48,7 @@ public class InventoryReceiptManagerProxy {
 
         if (statusProcessed == 0) {
             try {
-                data = dictLocal().fetchBySystemName("order_status_processed");
+                data = EJBFactory.getDictionary().fetchBySystemName("order_status_processed");
                 statusProcessed = data.getId();
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -70,8 +66,8 @@ public class InventoryReceiptManagerProxy {
         InventoryReceiptViewDO receipt;
         InventoryLocationViewDO location;
 
-        rl = local();
-        il = invLocLocal();
+        rl = EJBFactory.getInventoryReceipt();
+        il = EJBFactory.getInventoryLocation();
         location = null;
         invLocIdList = new ArrayList<Integer>();
 
@@ -123,8 +119,8 @@ public class InventoryReceiptManagerProxy {
         OrderItemManager orderItemMan;
         OrderItemViewDO orderItem;
 
-        rl = local();
-        il = invLocLocal();
+        rl = EJBFactory.getInventoryReceipt();
+        il = EJBFactory.getInventoryLocation();
         sumQRec = 0;
         location = null;
         invLocIdList = new ArrayList<Integer>();
@@ -217,7 +213,7 @@ public class InventoryReceiptManagerProxy {
         InventoryReceiptViewDO data;
         OrderManager orderMan;
 
-        cl = local();
+        cl = EJBFactory.getInventoryReceipt();
         list = new ValidationErrorsList();
         orderMan = man.getOrder();
         data = null;
@@ -272,35 +268,5 @@ public class InventoryReceiptManagerProxy {
     public InventoryReceiptManager abortUpdate(InventoryReceiptManager man) throws Exception {
         assert false : "not supported";
         return null;
-    }
-
-    private InventoryReceiptLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryReceiptLocal)ctx.lookup("openelis/InventoryReceiptBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private DictionaryLocal dictLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private InventoryLocationLocal invLocLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryLocationLocal)ctx.lookup("openelis/InventoryLocationBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

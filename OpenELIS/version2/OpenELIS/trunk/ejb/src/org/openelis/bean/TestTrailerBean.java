@@ -56,7 +56,7 @@ import org.openelis.local.TestTrailerLocal;
 import org.openelis.meta.TestTrailerMeta;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.PermissionInterceptor;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -171,8 +171,12 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
     }
 
     public TestTrailerDO fetchForUpdate(Integer id) throws Exception {
-        lock.lock(ReferenceTable.TEST_TRAILER, id);
-        return fetchById(id);
+        try {
+            lock.lock(ReferenceTable.TEST_TRAILER, id);
+            return fetchById(id);
+        } catch (NotFoundException e) {
+            throw new DatabaseException(e);
+        }
     }
 
     public TestTrailerDO abortUpdate(Integer id) throws Exception {
@@ -184,19 +188,21 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
         Query query;
         List<Long> list;
         TestTrailer entity;
+        ValidationErrorsList errors;
 
         checkSecurity(ModuleFlags.DELETE);
-
-        lock.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
-
+        errors = new ValidationErrorsList();
         // reference check
         query = manager.createNamedQuery("TestTrailer.ReferenceCount");
         query.setParameter("id", data.getId());
         list = query.getResultList();
         for (Long i : list) {
-            if (i > 0)
-                throw new FormErrorException("testTrailerDeleteException");
+            if (i > 0) {
+                errors.add(new FormErrorException("testTrailerDeleteException"));
+                throw errors;
+            }
         }
+        lock.validateLock(ReferenceTable.TEST_TRAILER, data.getId());
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(TestTrailer.class, data.getId());
@@ -233,6 +239,6 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        PermissionInterceptor.applyPermission("testtrailer", flag);
+        EJBFactory.getUserCache().applyPermission("testtrailer", flag);
     }
 }

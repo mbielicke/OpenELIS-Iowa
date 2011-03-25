@@ -27,14 +27,13 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderItemLocal;
 import org.openelis.meta.OrderMeta;
+import org.openelis.utils.EJBFactory;
 
 public class OrderItemManagerProxy {
 
@@ -42,7 +41,7 @@ public class OrderItemManagerProxy {
         OrderItemManager m;
         ArrayList<OrderItemViewDO> items;
 
-        items = local().fetchByOrderId(id);
+        items = EJBFactory.getOrderItem().fetchByOrderId(id);
         m = OrderItemManager.getInstance();
         m.setOrderId(id);
         m.setItems(items);
@@ -54,7 +53,7 @@ public class OrderItemManagerProxy {
         OrderItemLocal cl;
         OrderItemViewDO item;
 
-        cl = local();
+        cl = EJBFactory.getOrderItem();
         for (int i = 0; i < man.count(); i++ ) {
             item = man.getItemAt(i);
             item.setOrderId(man.getOrderId());
@@ -68,7 +67,7 @@ public class OrderItemManagerProxy {
         OrderItemLocal cl;
         OrderItemViewDO item;
 
-        cl = local();
+        cl = EJBFactory.getOrderItem();
         for (int j = 0; j < man.deleteCount(); j++ )
             cl.delete(man.getDeletedAt(j));
 
@@ -92,7 +91,7 @@ public class OrderItemManagerProxy {
         ValidationErrorsList list;
         OrderItemLocal cl;        
 
-        cl = local();
+        cl = EJBFactory.getOrderItem();
         list = new ValidationErrorsList();
         invItemIdList = null;
         if (OrderManager.TYPE_VENDOR.equals(type))
@@ -119,15 +118,5 @@ public class OrderItemManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-
-    private OrderItemLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (OrderItemLocal)ctx.lookup("openelis/OrderItemBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

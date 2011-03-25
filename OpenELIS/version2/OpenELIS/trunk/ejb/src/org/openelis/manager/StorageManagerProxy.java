@@ -27,23 +27,22 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.StorageLocal;
+import org.openelis.utils.EJBFactory;
 
 public class StorageManagerProxy {
     public StorageManager fetchById(Integer tableId, Integer id) throws Exception {
-        ArrayList<StorageViewDO> storages;
+        ArrayList<StorageViewDO> list;
         StorageManager sm;
         
-        storages = local().fetchByRefId(tableId, id);
+        list = EJBFactory.getStorage().fetchByRefId(tableId, id);
         
         sm = StorageManager.getInstance();
-        sm.setStorages(storages);
+        sm.setStorages(list);
         sm.setReferenceId(id);
         sm.setReferenceTableId(tableId);
         
@@ -52,95 +51,84 @@ public class StorageManagerProxy {
 
     public StorageManager fetchCurrentByLocationId(Integer id) throws Exception {
         StorageLocal sl;
-        ArrayList<StorageViewDO> storages;
+        ArrayList<StorageViewDO> list;
         StorageManager sm;
 
-        sl = local();
-        storages = sl.fetchCurrentByLocationId(id);
+        sl = EJBFactory.getStorage();
+        list = sl.fetchCurrentByLocationId(id);
         sm = StorageManager.getInstance();
-        sm.setStorages(storages);
+        sm.setStorages(list);
 
         return sm;
     }
 
     public StorageManager fetchHistoryByLocationId(Query query) throws Exception {
         StorageLocal sl;
-        ArrayList<StorageViewDO> storages;
+        ArrayList<StorageViewDO> list;
         StorageManager sm;
         QueryData field;
         Integer max;
 
-        sl = local();
+        sl = EJBFactory.getStorage();
 
         field = query.getFields().get(1);
         max = Integer.valueOf(field.query);
 
-        storages = sl.fetchHistoryByLocationId(query.getFields(), query.getPage(), max);
+        list = sl.fetchHistoryByLocationId(query.getFields(), query.getPage(), max);
         sm = StorageManager.getInstance();
-        sm.setStorages(storages);
+        sm.setStorages(list);
 
         return sm;
     }
 
     public StorageManager add(StorageManager man) throws Exception {
-        StorageViewDO storage;
+        StorageViewDO data;
         StorageLocal l;
         
-        l = local();
+        l = EJBFactory.getStorage();
         for (int i = 0; i < man.count(); i++ ) {
-            storage = man.getStorageAt(i);
+            data = man.getStorageAt(i);
 
             //
             // in storage screen, we need to be able to move different reference
             // items at the same time without destroying their original
             // reference id and table id
             //
-            if (storage.getReferenceId() == null) {
-                storage.setReferenceId(man.getReferenceId());
-                storage.setReferenceTableId(man.getReferenceTableId());
+            if (data.getReferenceId() == null) {
+                data.setReferenceId(man.getReferenceId());
+                data.setReferenceTableId(man.getReferenceTableId());
             }
-            l.add(storage);
+            l.add(data);
         }
 
         return man;
     }
 
     public StorageManager update(StorageManager man) throws Exception {
-        StorageViewDO storage;
+        StorageViewDO data;
         StorageLocal l;
         
-        l = local();
+        l = EJBFactory.getStorage();
         for (int i = 0; i < man.count(); i++ ) {
-            storage = man.getStorageAt(i);
-            if (storage.getId() == null) {
+            data = man.getStorageAt(i);
+            if (data.getId() == null) {
                 //
                 // in storage screen, we need to be able to move different reference
                 // items at the same time without destroying their original
                 // reference id and table id
                 //
-                if (storage.getReferenceId() == null) {
-                    storage.setReferenceId(man.getReferenceId());
-                    storage.setReferenceTableId(man.getReferenceTableId());
+                if (data.getReferenceId() == null) {
+                    data.setReferenceId(man.getReferenceId());
+                    data.setReferenceTableId(man.getReferenceTableId());
                 }
-                l.add(storage);
+                l.add(data);
             } else
-                l.update(storage);
+                l.update(data);
         }
 
         return man;
     }
 
     public void validate(StorageManager man, ValidationErrorsList errorsList) throws Exception {
-
-    }
-
-    private StorageLocal local(){
-        try{
-            InitialContext ctx = new InitialContext();
-            return (StorageLocal)ctx.lookup("openelis/StorageBean/local");
-        }catch(Exception e){
-             System.out.println(e.getMessage());
-             return null;
-        }
     }
 }
