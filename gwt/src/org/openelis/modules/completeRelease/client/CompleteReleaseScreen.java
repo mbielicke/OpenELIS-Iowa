@@ -95,8 +95,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                                                  SelectionHandler<Integer>,
                                                  ActionHandler<EditNoteScreen.Action> {
 
-    private Integer                  sampleLoggedInId, sampleErrorStatusId, sampleReleasedId,
-                    analysisOnHoldId, analysisCompletedId;
+    private Integer                  sampleLoggedInId, sampleReleasedId,
+                    analysisOnHoldId;
 
     protected Tabs                   tab;
     protected ArrayList<Tabs>        tabIndexes = new ArrayList<Tabs>();
@@ -779,11 +779,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         // error is found
         try {
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-            sampleErrorStatusId = DictionaryCache.getIdFromSystemName("sample_error");
             sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
             analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
-            analysisCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
-
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1074,7 +1071,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         AnalysisViewDO data;
         AnalysisManager aman;
         String errorMsg;
-        LocalizedException warn;
 
         bundle = null;
         rows = completeReleaseTable.getSelections();
@@ -1417,8 +1413,10 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         }
     }
 
-    private void updateAndRefreshTable(ArrayList<TableDataRow> rows, int[] indexList,
-                                       HashMap<Integer, Item> hash, SampleDataBundle bundle) {
+    private void updateAndRefreshTable(ArrayList<TableDataRow> rows,
+                                       int[] indexList,
+                                       HashMap<Integer, Item> hash,
+                                       SampleDataBundle bundle) {
         int i;
         Item item;
         TableDataRow row;
@@ -1455,10 +1453,25 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                     bundle = getCurrentRowBundle(bundle, man);
                     row.data = bundle;
                 }
-            } catch (Exception e) {
+            } catch (ValidationErrorsList e) {
+                Window.alert(consts.get("errorSampleAccNum") +
+                             bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n"+
+                             e.getErrorList().get(0).getMessage());
+                /*
+                 * it can happen that the validation in the backend fails and so
+                 * the manager won't get a chance to get unlocked if the following
+                 * is not done
+                 */
+                unlockAndRefetchSample(item, bundle, row);
+            }catch (Exception e) {
                 Window.alert(consts.get("errorSampleAccNum") +
                              bundle.getSampleManager().getSample().getAccessionNumber() + ":\n\n" +
                              e.getMessage());
+                /*
+                 * the attempt to update the sample can fails for some other reason
+                 * in that case too we'll need to unlock the manager 
+                 */
+                unlockAndRefetchSample(item, bundle,row);                 
             }
         }
 
@@ -1478,8 +1491,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                     row.data = bundle;
                     man = item.sampleManager;
                 }
-                updateTableRowCells(i,
-                                    man.getSample(),
+                updateTableRowCells(i, man.getSample(),
                                     man.getSampleItems()
                                        .getAnalysisAt(bundle.getSampleItemIndex())
                                        .getAnalysisAt(bundle.getAnalysisIndex()));
@@ -1700,6 +1712,27 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
     private boolean canEdit() {
         return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
+    }
+    
+    private void unlockAndRefetchSample(Item item, SampleDataBundle bundle,
+                              TableDataRow row) {
+        SampleManager man;
+        if (item.count > 0) {
+            try {
+                man = item.sampleManager.abortUpdate();
+                item.sampleManager = man;
+                item.count = -1;
+
+                if (man != bundle.getSampleManager()) {
+                    bundle = getCurrentRowBundle(bundle, man);
+                    row.data = bundle;
+                }
+            } catch (Exception e1) {
+                Window.alert(consts.get("errorSampleAccNum") +
+                             bundle.getSampleManager().getSample().getAccessionNumber() +
+                             ":\n\n" + e1.getMessage());
+            }
+        }
     }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {

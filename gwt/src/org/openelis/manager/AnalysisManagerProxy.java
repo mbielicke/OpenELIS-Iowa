@@ -97,14 +97,11 @@ public class AnalysisManagerProxy {
                          String sampleDomain,
                          ValidationErrorsList errorsList) throws Exception {
         AnalysisListItem item;
-        Integer cancelledStatusId, releasedStatusId;
         AnalysisViewDO analysisDO;
         TestManager testMan;
         boolean quickEntry;
 
         quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDomain);
-        cancelledStatusId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-        releasedStatusId = DictionaryCache.getIdFromSystemName("analysis_released");
 
         if (man.count() == 0)
             errorsList.add(new FormErrorWarning("minOneAnalysisException", sampleItemSequence));
@@ -117,8 +114,8 @@ public class AnalysisManagerProxy {
             // We do NOT need to validate analyses that are in cancelled or released
             // status 
             //
-            if (cancelledStatusId.equals(analysisDO.getStatusId()) ||
-                releasedStatusId.equals(analysisDO.getStatusId()))
+            if (anCancelledId.equals(analysisDO.getStatusId()) ||
+                anReleasedId.equals(analysisDO.getStatusId()))
                 continue;
                             
             if (analysisDO.getTestId() == null)

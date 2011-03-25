@@ -95,10 +95,9 @@ public class SampleResultValueTableColumn extends TableColumn {
             textBox = new TextBox<String>();
             textBox.setStyleName("ScreenTextBox");
             textBox.setField(new StringField());
-            textBox.setLength(200);
-            textBox.enable(true);            
+            textBox.setLength(200);            
         }
-        
+        textBox.enable(true);            
         return textBox;
     }
     
@@ -178,6 +177,7 @@ public class SampleResultValueTableColumn extends TableColumn {
             } else if (val instanceof String) {
                 d.setValue((String)val);
             }
+            d.enable(true);
             return d;
         }
     }

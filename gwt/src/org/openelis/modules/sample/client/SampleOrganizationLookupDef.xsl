@@ -52,7 +52,7 @@
                 <dropdown width="125" field="Integer" required="true"/>
               </col>
               <col width="180" header="Attention">
-              	<textbox field="String"/>
+              	<textbox case = "UPPER" field="String"/>
               </col>
               <col width="220" header="Name">
                 <autoComplete width="130px" case="UPPER" field="Integer" required="true">

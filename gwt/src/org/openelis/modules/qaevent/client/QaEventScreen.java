@@ -523,7 +523,6 @@ public class QaEventScreen extends Screen {
      */
     protected void query() {
         data = new QaEventViewDO();
-        data.setIsBillable("N");
         
         setState(State.QUERY);
         DataChangeEvent.fire(this);
