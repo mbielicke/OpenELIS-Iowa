@@ -191,8 +191,9 @@ public class TestAnalyteDisplayManager<T> {
                 isColumn = rdo.getIsColumn();
             }
             /* 
-             * it is possible that after results been added for an analysis some 
-             * of the test analytes get deleted on Test screen, the row group could be null for those   
+             * it is possible that after results have been added for an analysis
+             * some of the test analytes get deleted on Test screen, the row group
+             * could be null for those   
              */               
             if((rg != null && j != rg) || (j != null && j == -1)) {                 
                 indexes.add(-1);                
@@ -205,7 +206,8 @@ public class TestAnalyteDisplayManager<T> {
                 continue;
             }                      
                         
-            nextGroup = Math.max(nextGroup, rg);
+            if (rg != null)
+                nextGroup = Math.max(nextGroup, rg);
         }
        
         isValid = true;

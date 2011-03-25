@@ -34,6 +34,8 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.messages.DictionaryCacheMessage;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.persistence.MessageHandler;
+import org.openelis.remote.CategoryCacheRemote;
+import org.openelis.remote.DictionaryCacheRemote;
 import org.openelis.remote.DictionaryRemote;
 
 public class DictionaryCacheHandler implements MessageHandler<DictionaryCacheMessage> {

@@ -937,13 +937,13 @@ public class TestScreen extends Screen {
         });
 
         reportingSequence = (TextBox)def.getWidget(TestMeta.getReportingSequence());
-        addScreenHandler(reportingSequence, new ScreenEventHandler<String>() {
+        addScreenHandler(reportingSequence, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                reportingSequence.setValue(Util.toString(manager.getTest().getReportingSequence()));
+                reportingSequence.setValue(manager.getTest().getReportingSequence());
             }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getTest().setReportingSequence(Integer.valueOf(event.getValue()));
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getTest().setReportingSequence(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -956,8 +956,10 @@ public class TestScreen extends Screen {
         testTrailer = (AutoComplete)def.getWidget(TestMeta.getTestTrailerName());
         addScreenHandler(testTrailer, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                TestViewDO testDO = manager.getTest();
-                testTrailer.setSelection(testDO.getTestTrailerId(), testDO.getTrailerName());
+                TestViewDO data;
+                
+                data = manager.getTest();
+                testTrailer.setSelection(data.getTestTrailerId(), data.getTrailerName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
