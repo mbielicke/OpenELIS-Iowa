@@ -27,9 +27,8 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AnalysisUserViewDO;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalysisUserLocal;
 import org.openelis.local.DictionaryLocal;
@@ -94,6 +93,15 @@ public class AnalysisUserManagerProxy {
     }
 
     public void validate(AnalysisUserManager man, ValidationErrorsList errorsList) throws Exception {
+    }
+
+    protected SystemUserVO getSystemUser() {
+        try {
+            return EJBFactory.getUserCache().getSystemUser();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     protected void loadDictionaryEntries(AnalysisUserManager m) throws Exception {
