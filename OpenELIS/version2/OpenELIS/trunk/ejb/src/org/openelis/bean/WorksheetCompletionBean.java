@@ -59,6 +59,7 @@ import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
@@ -124,6 +125,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     private HashMap<String,CellStyle>    styles;
 
+    @TransactionTimeout(600)
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
         int                      r, i, a, c, o;
         String                   statuses[], cellNameIndex, posNum, outFileName;
@@ -435,6 +437,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         return manager;
     }
 
+    @TransactionTimeout(600)
     public WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception {
         boolean                  anaModified, newSampleLock, statusLocked, permLocked;
         int                      a, i, c, r, s, rowIndex;
