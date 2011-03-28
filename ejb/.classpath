@@ -10,8 +10,8 @@
 	<classpathentry kind="lib" path="lib/security-client.jar"/>
 	<classpathentry kind="lib" path="lib/poi-3.6-20091214.jar"/>
 	<classpathentry kind="lib" path="lib/jasperreports-4.0.1.jar"/>
-	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.12.jar"/>
-	<classpathentry kind="lib" path="lib/jcommon-1.0.15.jar"/>	
+	<classpathentry kind="lib" path="lib/jcommon-1.0.15.jar"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

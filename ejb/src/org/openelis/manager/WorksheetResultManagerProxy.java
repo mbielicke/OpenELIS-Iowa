@@ -28,13 +28,12 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetResultLocal;
 import org.openelis.manager.WorksheetResultManager;
+import org.openelis.utils.EJBFactory;
 
 public class WorksheetResultManagerProxy {
     
@@ -43,7 +42,7 @@ public class WorksheetResultManagerProxy {
         WorksheetResultManager       manager;
         ArrayList<WorksheetResultViewDO> results;
         
-        results = local().fetchByWorksheetAnalysisId(id);
+        results = EJBFactory.getWorksheetResult().fetchByWorksheetAnalysisId(id);
         manager = WorksheetResultManager.getInstance();
         manager.setWorksheetAnalysisId(id);
         for (i = 0; i < results.size(); i++)
@@ -57,7 +56,7 @@ public class WorksheetResultManagerProxy {
         WorksheetResultLocal local;
         WorksheetResultViewDO    result;
         
-        local = local();
+        local = EJBFactory.getWorksheetResult();
         for (i = 0; i < manager.count(); i++) {
             result = manager.getWorksheetResultAt(i);
             result.setWorksheetAnalysisId(manager.getWorksheetAnalysisId());
@@ -72,7 +71,7 @@ public class WorksheetResultManagerProxy {
         WorksheetResultLocal local;
         WorksheetResultViewDO    result;
         
-        local = local();
+        local = EJBFactory.getWorksheetResult();
         for (j = 0; j < manager.deleteCount(); j++)
             local.delete(manager.getDeletedAt(j));
         
@@ -94,7 +93,7 @@ public class WorksheetResultManagerProxy {
         int                  i;
         WorksheetResultLocal local;
 
-        local = local();
+        local = EJBFactory.getWorksheetResult();
         for (i = 0; i < manager.count(); i++) {
             try {
                 local.validate(manager.getWorksheetResultAt(i));
@@ -102,16 +101,6 @@ public class WorksheetResultManagerProxy {
 //                DataBaseUtil.mergeException(errorList, e, "itemTable", i);
                 DataBaseUtil.mergeException(errorList, e);
             }
-        }
-    }
-
-    private WorksheetResultLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (WorksheetResultLocal)ctx.lookup("openelis/WorksheetResultBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
         }
     }
 }

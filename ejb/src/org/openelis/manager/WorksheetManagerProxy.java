@@ -27,24 +27,20 @@ package org.openelis.manager;
 
 import java.util.Iterator;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.WorksheetDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
-import org.openelis.local.WorksheetLocal;
+import org.openelis.utils.EJBFactory;
 
 public class WorksheetManagerProxy {
 
     public WorksheetManager fetchById(Integer id) throws Exception {
-        WorksheetLocal   local;
         WorksheetManager manager;
         WorksheetDO      data;
 
-        local   = local();
-        data    = local.fetchById(id);
+        data    = EJBFactory.getWorksheet().fetchById(id);
         manager = WorksheetManager.getInstance();
 
         manager.setWorksheet(data);
@@ -85,13 +81,11 @@ public class WorksheetManagerProxy {
         Iterator<SampleManager> iter;
         LockLocal               lock;
         SampleManager           sManager;
-        WorksheetLocal          local;
 
-        local = local();
-        local.add(manager.getWorksheet());
+        EJBFactory.getWorksheet().add(manager.getWorksheet());
         id = manager.getWorksheet().getId();
 
-        lock = lockLocal();
+        lock = EJBFactory.getLock();
         if (manager.items != null) {
             manager.getItems().setWorksheetId(id);
             manager.getItems().add();
@@ -122,13 +116,11 @@ public class WorksheetManagerProxy {
         Iterator<SampleManager> iter;
         LockLocal               lock;
         SampleManager           sManager;
-        WorksheetLocal          local;
 
-        local = local();
-        local.update(manager.getWorksheet());
+        EJBFactory.getWorksheet().update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
         
-        lock = lockLocal();
+        lock = EJBFactory.getLock();
         if (manager.items != null) {
             manager.getItems().setWorksheetId(id);
             manager.getItems().update();
@@ -169,7 +161,7 @@ public class WorksheetManagerProxy {
         SampleManager           sManager;
 
         try {
-            local().validate(manager.getWorksheet());
+            EJBFactory.getWorksheet().validate(manager.getWorksheet());
         } catch (Exception e) {
             DataBaseUtil.mergeException(errorList, e);
         }
@@ -186,30 +178,6 @@ public class WorksheetManagerProxy {
                     DataBaseUtil.mergeException(errorList, e);
                 }
             }
-        }
-    }
-
-    private WorksheetLocal local(){
-        InitialContext ctx;
-        
-        try {
-            ctx = new InitialContext();
-            return (WorksheetLocal)ctx.lookup("openelis/WorksheetBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-
-    private LockLocal lockLocal(){
-        InitialContext ctx;
-        
-        try {
-            ctx = new InitialContext();
-            return (LockLocal)ctx.lookup("openelis/LockBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
         }
     }
 }

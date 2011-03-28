@@ -33,6 +33,7 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
@@ -422,5 +423,9 @@ public class AnalysisManagerProxy {
 
     protected Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
         return Datetime.getInstance(begin, end);
+    }
+
+    protected SystemUserPermission getSystemUserPermission() throws Exception {
+        return EJBFactory.getUserCache().getPermission();
     }
 }
