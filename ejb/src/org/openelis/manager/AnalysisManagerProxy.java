@@ -328,6 +328,12 @@ public class AnalysisManagerProxy {
             //
             if (!man.getSampleItemId().equals(analysisDO.getSampleItemId()))
                 analysisDO.setSampleItemId(man.getSampleItemId());
+            //
+            // we delay setting the released date until after the validation, 
+            // to detect newly released analyses 
+            //
+            if (anReleasedId.equals(analysisDO.getStatusId()) && analysisDO.getReleasedDate() == null)
+                analysisDO.setReleasedDate(getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));   
             EJBFactory.getAnalysis().update(analysisDO);
         }
         
@@ -390,7 +396,7 @@ public class AnalysisManagerProxy {
             // status 
             //
             if (anCancelledId.equals(analysisDO.getStatusId()) ||
-                anReleasedId.equals(analysisDO.getStatusId()))
+                (anReleasedId.equals(analysisDO.getStatusId()) && analysisDO.getReleasedDate() != null))
                 continue;
                             
             if (analysisDO.getTestId() == null)

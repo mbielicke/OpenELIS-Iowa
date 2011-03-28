@@ -31,6 +31,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SectionViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
@@ -115,7 +116,7 @@ public class AnalysisManagerProxy {
             // status 
             //
             if (anCancelledId.equals(analysisDO.getStatusId()) ||
-                anReleasedId.equals(analysisDO.getStatusId()))
+                (anReleasedId.equals(analysisDO.getStatusId()) && analysisDO.getReleasedDate() != null))
                 continue;
                             
             if (analysisDO.getTestId() == null)

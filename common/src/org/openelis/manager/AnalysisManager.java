@@ -366,14 +366,10 @@ public class AnalysisManager implements RPC {
         }
 
         data.setStatusId(proxy().anReleasedId);
-        data.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+        //data.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
 
-        try {
-            // add an analysis user record
-            getAnalysisUserAt(index).addReleaseRecord();
-        } catch (Exception e) {
-            // do nothing
-        }
+        // add an analysis user record
+        getAnalysisUserAt(index).addReleaseRecord();
     }
 
     public void unreleaseAnalysisAt(int index) throws Exception {
