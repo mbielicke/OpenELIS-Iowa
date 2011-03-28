@@ -47,14 +47,14 @@ ORDER BY q.reporting_sequence, sq_id]]>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="sampleNumber" isPrintRepeatedValues="false" mode="Opaque" x="125" y="0" width="61" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Left">
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Details".equals($P{STYLE}) ? " "+$F{s_no} : null]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="testName" isPrintRepeatedValues="false" mode="Opaque" x="205" y="0" width="120" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Details".equals($P{STYLE}) ? " "+"-sample-" : null]]></textFieldExpression>
 			</textField>
@@ -63,7 +63,7 @@ ORDER BY q.reporting_sequence, sq_id]]>
 					<printWhenExpression><![CDATA[Boolean.valueOf("Details".equals($P{STYLE}))]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[" "+$F{q_name}.trim()]]></textFieldExpression>
 			</textField>
@@ -72,7 +72,7 @@ ORDER BY q.reporting_sequence, sq_id]]>
 					<printWhenExpression><![CDATA[((org.openelis.utils.Counter)$P{sampleTotal}).setIfAbsent($F{s_no}.toString(),true)]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
@@ -80,7 +80,7 @@ ORDER BY q.reporting_sequence, sq_id]]>
 					<printWhenExpression><![CDATA[((org.openelis.utils.Counter)$P{qaeventsTotal}).set($F{q_name}.trim(),true)]]></printWhenExpression>
 				</reportElement>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 			</textField>
 		</band>

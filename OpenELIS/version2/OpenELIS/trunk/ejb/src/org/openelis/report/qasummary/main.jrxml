@@ -140,7 +140,7 @@ ORDER BY o_id, s.accession_number]]>
 						<printWhenExpression><![CDATA[Boolean.valueOf(!"Totals".equals($P{STYLE}))]]></printWhenExpression>
 					</reportElement>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 				</textField>
 				<textField pattern="" isBlankWhenNull="false">
@@ -148,7 +148,7 @@ ORDER BY o_id, s.accession_number]]>
 						<printWhenExpression><![CDATA[Boolean.valueOf(!"Totals".equals($P{STYLE}))]]></printWhenExpression>
 					</reportElement>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[(($F{o_name} != null)&&(!"private".equals($F{o_name}.trim()))) ? $F{o_name} : "UNKNOWN ORGANIZATION"]]></textFieldExpression>
 				</textField>
@@ -157,7 +157,7 @@ ORDER BY o_id, s.accession_number]]>
 						<printWhenExpression><![CDATA[Boolean.valueOf(!"Totals".equals($P{STYLE}))]]></printWhenExpression>
 					</reportElement>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[(($F{city} != null)&&(!"pvt_city".equals($F{city}.trim())))? $F{city}.trim()+", "+$F{state}.trim() : null]]></textFieldExpression>
 				</textField>
@@ -177,7 +177,7 @@ ORDER BY o_id, s.accession_number]]>
 						<printWhenExpression><![CDATA[((org.openelis.utils.Counter)$V{qaeventsGrandTotal}).add($V{qaeventsTotal})]]></printWhenExpression>
 					</reportElement>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 				</textField>
 				<textField pattern="" isBlankWhenNull="true">
@@ -185,20 +185,20 @@ ORDER BY o_id, s.accession_number]]>
 						<printWhenExpression><![CDATA[((org.openelis.utils.Counter)$V{analysesGrandTotal}).add($V{analysesTotal})]]></printWhenExpression>
 					</reportElement>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 				</textField>
 				<textField pattern="" isBlankWhenNull="true">
 					<reportElement key="sampleTotal" positionType="Float" x="125" y="12" width="61" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="ORG_ID"/>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[!"Totals".equals($P{STYLE}) ? " "+$V{sampleTotal}.getTotal()+"  Sample(s)" : null]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
 					<reportElement key="qaeventsTotal" positionType="Float" x="354" y="12" width="116" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="ORG_ID"/>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[!"Totals".equals($P{STYLE}) ? $V{qaeventsTotal}.toString().trim() : null]]></textFieldExpression>
 				</textField>
@@ -228,13 +228,13 @@ ORDER BY o_id, s.accession_number]]>
 						<printWhenExpression><![CDATA[((org.openelis.utils.Counter)$V{sampleGrandTotal}).add($V{sampleTotal})]]></printWhenExpression>
 					</reportElement>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 				</textField>
 				<textField pattern="" isBlankWhenNull="true">
 					<reportElement key="analysesTotal" positionType="Float" x="205" y="12" width="120" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="ORG_ID"/>
 					<textElement>
-						<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+						<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 					</textElement>
 					<textFieldExpression class="java.lang.String"><![CDATA[!"Totals".equals($P{STYLE}) ? " "+$V{analysesTotal}.getTotal()+"  Analyses" : null]]></textFieldExpression>
 				</textField>
@@ -246,42 +246,42 @@ ORDER BY o_id, s.accession_number]]>
 			<textField pattern="MMM dd, yyyy">
 				<reportElement key="headerDate" mode="Transparent" x="0" y="0" width="114" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm:ss">
 				<reportElement key="headerTime" mode="Transparent" x="0" y="12" width="114" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="headerTitle1" mode="Transparent" x="174" y="0" width="227" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Center">
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[QA Summary Report]]></text>
 			</staticText>
 			<textField pattern="">
 				<reportElement key="headerPageNo" mode="Transparent" x="446" y="0" width="116" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of "]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report" pattern="">
 				<reportElement key="headerPageNoLast" mode="Transparent" x="566" y="0" width="10" height="12"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
 				<reportElement key="headerLogname" mode="Transparent" x="483" y="12" width="93" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement textAlignment="Right">
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
 			</textField>
@@ -373,21 +373,21 @@ ORDER BY o_id, s.accession_number]]>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
 				<reportElement key="analysesGrandTotal" isPrintRepeatedValues="false" mode="Opaque" x="205" y="0" width="120" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[" "+$V{analysesGrandTotal}.getTotal()+"  Analyses"]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="specimensGrandTotal" isPrintRepeatedValues="false" x="125" y="0" width="61" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[" "+$V{sampleGrandTotal}.getTotal()+" Sample(s)"]]></textFieldExpression>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
 				<reportElement key="qaeventsGrandTotal" x="354" y="0" width="116" height="12"/>
 				<textElement>
-					<font fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{qaeventsGrandTotal}.toString().trim()]]></textFieldExpression>
 			</textField>
