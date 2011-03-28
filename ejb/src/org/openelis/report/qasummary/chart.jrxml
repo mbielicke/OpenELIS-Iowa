@@ -60,7 +60,7 @@
 				<bar3DPlot isShowLabels="true">
 					<plot labelRotation="90.0"/>
 					<itemLabel color="#000000" backgroundColor="#FFFFFF">
-						<font fontName="Times New Roman" size="4" pdfFontName="Times-Roman"/>
+						<font size="4" pdfFontName="Times-Roman"/>
 					</itemLabel>
 					<categoryAxisLabelExpression><![CDATA[]]></categoryAxisLabelExpression>
 					<categoryAxisFormat labelRotation="90.0">
