@@ -28,13 +28,12 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetQcResultLocal;
 import org.openelis.manager.WorksheetQcResultManager;
+import org.openelis.utils.EJBFactory;
 
 public class WorksheetQcResultManagerProxy {
     
@@ -43,7 +42,7 @@ public class WorksheetQcResultManagerProxy {
         WorksheetQcResultManager       manager;
         ArrayList<WorksheetQcResultViewDO> qcResults;
         
-        qcResults = local().fetchByWorksheetAnalysisId(id);
+        qcResults = EJBFactory.getWorksheetQcResult().fetchByWorksheetAnalysisId(id);
         manager = WorksheetQcResultManager.getInstance();
         manager.setWorksheetAnalysisId(id);
         for (i = 0; i < qcResults.size(); i++)
@@ -57,7 +56,7 @@ public class WorksheetQcResultManagerProxy {
         WorksheetQcResultLocal local;
         WorksheetQcResultViewDO    qcResult;
         
-        local = local();
+        local = EJBFactory.getWorksheetQcResult();
         for (i = 0; i < manager.count(); i++) {
             qcResult = manager.getWorksheetQcResultAt(i);
             qcResult.setWorksheetAnalysisId(manager.getWorksheetAnalysisId());
@@ -72,7 +71,7 @@ public class WorksheetQcResultManagerProxy {
         WorksheetQcResultLocal local;
         WorksheetQcResultViewDO    qcResult;
         
-        local = local();
+        local = EJBFactory.getWorksheetQcResult();
         for (j = 0; j < manager.deleteCount(); j++)
             local.delete(manager.getDeletedAt(j));
         
@@ -94,7 +93,7 @@ public class WorksheetQcResultManagerProxy {
         int                    i;
         WorksheetQcResultLocal local;
 
-        local = local();
+        local = EJBFactory.getWorksheetQcResult();
         for (i = 0; i < manager.count(); i++) {
             try {
                 local.validate(manager.getWorksheetQcResultAt(i));
@@ -102,16 +101,6 @@ public class WorksheetQcResultManagerProxy {
 //                DataBaseUtil.mergeException(errorList, e, "itemTable", i);
                 DataBaseUtil.mergeException(errorList, e);
             }
-        }
-    }
-
-    private WorksheetQcResultLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (WorksheetQcResultLocal)ctx.lookup("openelis/WorksheetQcResultBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
         }
     }
 }

@@ -29,14 +29,13 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetItemLocal;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetItemManager.WorksheetItemListItem;
+import org.openelis.utils.EJBFactory;
 
 public class WorksheetItemManagerProxy {
     
@@ -45,7 +44,7 @@ public class WorksheetItemManagerProxy {
         WorksheetItemManager       manager;
         ArrayList<WorksheetItemDO> items;
         
-        items = local().fetchByWorksheetId(id);
+        items = EJBFactory.getWorksheetItem().fetchByWorksheetId(id);
         manager = WorksheetItemManager.getInstance();
         manager.setWorksheetId(id);
         for (i = 0; i < items.size(); i++)
@@ -61,7 +60,7 @@ public class WorksheetItemManagerProxy {
         WorksheetItemDO          item;
         WorksheetItemLocal       local;
         
-        local = local();
+        local = EJBFactory.getWorksheetItem();
         for (i = 0; i < manager.count(); i++) {
             item = manager.getWorksheetItemAt(i);
             item.setWorksheetId(manager.getWorksheetId());
@@ -91,7 +90,7 @@ public class WorksheetItemManagerProxy {
         WorksheetItemDO          item;
         WorksheetItemLocal       local;
         
-        local = local();
+        local = EJBFactory.getWorksheetItem();
         for (j = 0; j < manager.deleteCount(); j++)
             local.delete(manager.getDeletedAt(j).worksheetItem);
         
@@ -126,7 +125,7 @@ public class WorksheetItemManagerProxy {
         WorksheetItemListItem listItem;
         WorksheetItemLocal    local;
 
-        local = local();
+        local = EJBFactory.getWorksheetItem();
         for (i = 0; i < manager.count(); i++) {
             try {
                 local.validate(manager.getWorksheetItemAt(i));
@@ -138,16 +137,6 @@ public class WorksheetItemManagerProxy {
             listItem = manager.getItemAt(i);
             if (listItem.analysis != null)
                 manager.getWorksheetAnalysisAt(i).validate(errorList);
-        }
-    }
-
-    private WorksheetItemLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (WorksheetItemLocal)ctx.lookup("openelis/WorksheetItemBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
         }
     }
 }

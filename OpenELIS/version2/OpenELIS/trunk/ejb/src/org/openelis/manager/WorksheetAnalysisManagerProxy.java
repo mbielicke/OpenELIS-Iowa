@@ -29,8 +29,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ResultViewDO;
@@ -43,14 +41,11 @@ import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleManagerLocal;
-import org.openelis.local.SectionLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetAnalysisManager.WorksheetAnalysisListItem;
+import org.openelis.utils.EJBFactory;
 
 public class WorksheetAnalysisManagerProxy {
     
@@ -60,7 +55,7 @@ public class WorksheetAnalysisManagerProxy {
         DictionaryLocal l;
 
         if (anLoggedInId == null) {
-            l = dictionaryLocal();
+            l = EJBFactory.getDictionary();
 
             try {
                 anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
@@ -82,7 +77,7 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetAnalysisDO            waDO;
         WorksheetAnalysisManager       waManager;
         
-        analyses = local().fetchByWorksheetItemId(id);
+        analyses = EJBFactory.getWorksheetAnalysis().fetchByWorksheetItemId(id);
         sections = new HashMap<Integer,SectionViewDO>();
         waManager = WorksheetAnalysisManager.getInstance();
         waManager.setWorksheetItemId(id);
@@ -90,8 +85,8 @@ public class WorksheetAnalysisManagerProxy {
             waDO = analyses.get(i);
             waManager.addWorksheetAnalysis(waDO);
             if (waDO.getAnalysisId() != null) {
-                aVDO = analysisLocal().fetchById(waDO.getAnalysisId());
-                sectionVDO = sectionLocal().fetchById(aVDO.getSectionId());
+                aVDO = EJBFactory.getAnalysis().fetchById(waDO.getAnalysisId());
+                sectionVDO = EJBFactory.getSection().fetchById(aVDO.getSectionId());
                 if (!sections.containsKey(sectionVDO.getId()))
                     sections.put(sectionVDO.getId(), sectionVDO);
             }
@@ -211,7 +206,7 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetQcResultManager  wqrManager;
         WorksheetResultManager    wrManager;
         
-        local = local();
+        local = EJBFactory.getWorksheetAnalysis();
 
         if (analysis.getQcId() != null) {
             //
@@ -247,8 +242,8 @@ public class WorksheetAnalysisManagerProxy {
             //
             sManager = manager.getLockedManagers().get(Integer.valueOf(accessionNumber));
             if (sManager == null) {
-                sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(accessionNumber));
-                sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
+                sample = EJBFactory.getSample().fetchByAccessionNumber(Integer.valueOf(accessionNumber));
+                sManager = EJBFactory.getSampleManager().fetchForUpdate(sample.getId());
                 manager.getLockedManagers().put(sample.getAccessionNumber(), sManager);
                 manager.getSampleManagers().put(sample.getAccessionNumber(), sManager);
             }
@@ -306,7 +301,7 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetAnalysisListItem listItem;
         WorksheetAnalysisLocal    local;
         
-        local = local();
+        local = EJBFactory.getWorksheetAnalysis();
         
         if (analysis.getId() == null) {
             assert false : "not supported";
@@ -327,8 +322,8 @@ public class WorksheetAnalysisManagerProxy {
                 //
                 sManager = manager.getLockedManagers().get(Integer.valueOf(accessionNumber));
                 if (sManager == null) {
-                    sample = sampleLocal().fetchByAccessionNumber(Integer.valueOf(accessionNumber));
-                    sManager = sampleManagerLocal().fetchForUpdate(sample.getId());
+                    sample = EJBFactory.getSample().fetchByAccessionNumber(Integer.valueOf(accessionNumber));
+                    sManager = EJBFactory.getSampleManager().fetchForUpdate(sample.getId());
                     manager.getLockedManagers().put(sample.getAccessionNumber(), sManager);
                     manager.getSampleManagers().put(sample.getAccessionNumber(), sManager);
                 }
@@ -375,7 +370,7 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetAnalysisListItem listItem;
         WorksheetAnalysisLocal    local;
 
-        local = local();
+        local = EJBFactory.getWorksheetAnalysis();
         for (i = 0; i < manager.count(); i++) {
             try {
                 local.validate(manager.getWorksheetAnalysisAt(i));
@@ -390,74 +385,6 @@ public class WorksheetAnalysisManagerProxy {
             else if (manager.getWorksheetAnalysisAt(i).getQcId() != null &&
                      listItem.worksheetQcResult != null)
                 manager.getWorksheetQcResultAt(i).validate(errorList);
-        }
-    }
-
-    private WorksheetAnalysisLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (WorksheetAnalysisLocal)ctx.lookup("openelis/WorksheetAnalysisBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-
-    private SampleLocal sampleLocal() {
-        InitialContext ctx;
-        
-        try {
-            ctx = new InitialContext();
-            return (SampleLocal)ctx.lookup("openelis/SampleBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-
-    private SampleManagerLocal sampleManagerLocal() {
-        InitialContext ctx;
-        
-        try {
-            ctx = new InitialContext();
-            return (SampleManagerLocal)ctx.lookup("openelis/SampleManagerBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-
-    private AnalysisLocal analysisLocal() {
-        InitialContext ctx;
-        
-        try {
-            ctx = new InitialContext();
-            return (AnalysisLocal)ctx.lookup("openelis/AnalysisBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-
-    private SectionLocal sectionLocal() {
-        InitialContext ctx;
-        
-        try {
-            ctx = new InitialContext();
-            return (SectionLocal)ctx.lookup("openelis/SectionBean/local");
-        } catch(Exception e) {
-             System.out.println(e.getMessage());
-             return null;
-        }
-    }
-
-    private DictionaryLocal dictionaryLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (DictionaryLocal)ctx.lookup("openelis/DictionaryBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
         }
     }
 
