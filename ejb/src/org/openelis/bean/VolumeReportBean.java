@@ -86,16 +86,16 @@ public class VolumeReportBean implements VolumeReportRemote{
         try {
             p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("FROM", Prompt.Type.DATETIME).setPrompt("Date From:")
+            p.add(new Prompt("FROM", Prompt.Type.DATETIME).setPrompt("Starting Entered Date:")
                                                           .setWidth(150)
                                                           .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                           .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                           .setDefaultValue(Datetime.getInstance(Datetime.YEAR,
                                                                                                 Datetime.MINUTE)
                                                                                    .toString())
-                                                          .setRequired(true));
+                                                          .setRequired(true));        
 
-            p.add(new Prompt("TO", Prompt.Type.DATETIME).setPrompt("Date To:")
+            p.add(new Prompt("TO", Prompt.Type.DATETIME).setPrompt("Ending Entered Date:")
                                                         .setWidth(150)
                                                         .setDatetimeStartCode(Prompt.Datetime.YEAR)
                                                         .setDatetimeEndCode(Prompt.Datetime.MINUTE)
