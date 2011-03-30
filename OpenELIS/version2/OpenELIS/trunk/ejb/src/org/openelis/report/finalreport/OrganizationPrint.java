@@ -57,8 +57,8 @@ public class OrganizationPrint {
 		return organizationName;
 	}
 
-	public void setOrganizationName(String organizationName) {
-		this.organizationName = organizationName;
+	public String setOrganizationName(String organizationName) {
+		return this.organizationName = organizationName;
 	}
 
 	public JasperPrint getJprint() {
