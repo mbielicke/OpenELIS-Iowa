@@ -35,8 +35,8 @@ public class AnalysisUnitList {
         this.unitList = new ArrayList<Integer>();
     }
     
-    public void add(Integer unitId) {
-        unitList.add(unitId);
+    public boolean add(Integer unitId) {
+        return unitList.add(unitId);
     }
     
     public int size() {
