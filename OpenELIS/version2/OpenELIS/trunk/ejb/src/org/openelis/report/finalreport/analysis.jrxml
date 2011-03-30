@@ -196,7 +196,7 @@ ORDER BY sorting_method, t.reporting_sequence, a.released_date desc]]>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisVerifier.jasper"]]></subreportExpression>
 			</subreport>
 			<textField isBlankWhenNull="true">
-				<reportElement x="0" y="12" width="163" height="12"/>
+				<reportElement x="0" y="12" width="163" height="0"/>
 				<textElement/>
 				<textFieldExpression class="java.lang.Boolean"><![CDATA[$P{UNIT_LIST}.add($F{unit_id})]]></textFieldExpression>
 			</textField>

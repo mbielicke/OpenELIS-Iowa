@@ -7,7 +7,7 @@
 	<queryString language="SQL">
 		<![CDATA[]]>
 	</queryString>
-	<field name="rowGroup" class="java.lang.Integer"/>
+	<field name="rowGroup" class="java.lang.String"/>
 	<field name="field0" class="java.lang.String"/>
 	<field name="field1" class="java.lang.String"/>
 	<field name="field2" class="java.lang.String"/>

@@ -328,47 +328,52 @@ order by se_id, t_id]]>
 		<band>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="countLoggedIn" isPrintRepeatedValues="false" mode="Opaque" x="302" y="0" width="83" height="0">
-					<printWhenExpression><![CDATA["analysis_logged_in".equals($F{d_system_name}.trim()) ?((org.openelis.utils.Counter)$V{cnt_loggedin}).set("loggedin",true):""]]></printWhenExpression>
+					<printWhenExpression><![CDATA["analysis_logged_in".equals($F{d_system_name}.trim()) ?((org.openelis.utils.Counter)$V{cnt_loggedin}).set("loggedin",true):Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="countLoggedInSec" isPrintRepeatedValues="false" mode="Opaque" x="312" y="0" width="83" height="0">
-					<printWhenExpression><![CDATA["analysis_logged_in".equals($F{d_system_name}.trim()) ?((org.openelis.utils.Counter)$V{cnt_loggedin_sec}).set("loggedin",true):""]]></printWhenExpression>
+					<printWhenExpression><![CDATA["analysis_logged_in".equals($F{d_system_name}.trim()) ?((org.openelis.utils.Counter)$V{cnt_loggedin_sec}).set("loggedin",true):Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="countLoggedInReport" isPrintRepeatedValues="false" mode="Opaque" x="322" y="0" width="83" height="0">
-					<printWhenExpression><![CDATA["analysis_logged_in".equals($F{d_system_name}.trim()) ?((org.openelis.utils.Counter)$V{cnt_loggedin_report}).set("loggedin",true):""]]></printWhenExpression>
+					<printWhenExpression><![CDATA["analysis_logged_in".equals($F{d_system_name}.trim()) ?((org.openelis.utils.Counter)$V{cnt_loggedin_report}).set("loggedin",true):Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="countInitiated" isPrintRepeatedValues="false" mode="Opaque" x="312" y="0" width="83" height="0">
-					<printWhenExpression><![CDATA["analysis_initiated".equals($F{d_system_name}.trim())?((org.openelis.utils.Counter)$V{cnt_initiated}).set("initiated",true):""]]></printWhenExpression>
+					<printWhenExpression><![CDATA["analysis_initiated".equals($F{d_system_name}.trim())?((org.openelis.utils.Counter)$V{cnt_initiated}).set("initiated",true):Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="countInitiatedInSec" isPrintRepeatedValues="false" mode="Opaque" x="322" y="0" width="83" height="0">
-					<printWhenExpression><![CDATA["analysis_initiated".equals($F{d_system_name}.trim())?((org.openelis.utils.Counter)$V{cnt_initiated_sec}).set("initiated",true):""]]></printWhenExpression>
+					<printWhenExpression><![CDATA["analysis_initiated".equals($F{d_system_name}.trim())?((org.openelis.utils.Counter)$V{cnt_initiated_sec}).set("initiated",true):Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement key="countInitiatedInReport" isPrintRepeatedValues="false" mode="Opaque" x="332" y="0" width="83" height="0">
-					<printWhenExpression><![CDATA["analysis_initiated".equals($F{d_system_name}.trim())?((org.openelis.utils.Counter)$V{cnt_initiated_report}).set("initiated",true):""]]></printWhenExpression>
+					<printWhenExpression><![CDATA["analysis_initiated".equals($F{d_system_name}.trim())?((org.openelis.utils.Counter)$V{cnt_initiated_report}).set("initiated",true):Boolean.FALSE]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>

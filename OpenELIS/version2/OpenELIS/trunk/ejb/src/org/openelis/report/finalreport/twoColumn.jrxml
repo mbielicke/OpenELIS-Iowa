@@ -7,7 +7,7 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="rowGroup" class="java.lang.Integer"/>
+	<field name="rowGroup" class="java.lang.String"/>
 	<field name="header0" class="java.lang.String"/>
 	<field name="header1" class="java.lang.String"/>
 	<field name="field0" class="java.lang.String"/>
