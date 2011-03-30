@@ -250,42 +250,42 @@ order by 1, 2]]>
 					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getSD()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getSD())):null]]></textFieldExpression>
 				</textField>
 				<staticText>
-					<reportElement x="475" y="0" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="475" y="0" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Col-Rel]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="475" y="12" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="475" y="12" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Rec-Rel]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="475" y="24" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="475" y="24" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Rec-Cmp]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="475" y="36" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="475" y="36" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Cmp-Rel]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="475" y="48" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="475" y="48" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Rdy-Cmp]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="475" y="60" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="475" y="60" width="40" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
@@ -363,35 +363,35 @@ order by 1, 2]]>
 					</bar3DPlot>
 				</bar3DChart>
 				<staticText>
-					<reportElement x="531" y="72" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="530" y="72" width="33" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Col-Rel]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="566" y="72" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="563" y="72" width="33" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Rec-Rel]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="601" y="72" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="596" y="72" width="37" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Rec-Cmp]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="636" y="72" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="633" y="72" width="35" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
 					<text><![CDATA[Cmp-Rel]]></text>
 				</staticText>
 				<staticText>
-					<reportElement x="671" y="72" width="35" height="12" forecolor="#7F7F7F"/>
+					<reportElement x="668" y="72" width="38" height="12" forecolor="#7F7F7F"/>
 					<textElement textAlignment="Left">
 						<font size="8"/>
 					</textElement>
@@ -452,7 +452,7 @@ order by 1, 2]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement key="headerTime" mode="Opaque" x="278" y="12" width="227" height="12"/>
+				<reportElement key="headerTime" mode="Opaque" x="278" y="12" width="240" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
