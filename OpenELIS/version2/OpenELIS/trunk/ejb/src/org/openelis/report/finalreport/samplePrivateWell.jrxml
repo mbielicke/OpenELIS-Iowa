@@ -109,7 +109,7 @@ WHERE
 				<text><![CDATA[Date Collected]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="60" width="142" height="12"/>
+				<reportElement x="434" y="60" width="180" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -139,7 +139,7 @@ WHERE
 				<textFieldExpression class="java.sql.Time"><![CDATA[$F{s_collection_time}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="72" width="142" height="12"/>
+				<reportElement x="434" y="72" width="180" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -167,9 +167,9 @@ WHERE
 				<text><![CDATA[Well Number]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="48" width="142" height="12"/>
+				<reportElement x="434" y="48" width="180" height="12"/>
 				<textElement>
-					<font pdfFontName="Times-Roman"/>
+					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pw_location}]]></textFieldExpression>
 			</textField>
@@ -181,21 +181,21 @@ WHERE
 				<text><![CDATA[Owner]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="108" width="142" height="12"/>
+				<reportElement x="434" y="108" width="180" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pw_owner}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="84" width="142" height="12"/>
+				<reportElement x="434" y="84" width="180" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{pw_collector}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="96" width="142" height="12"/>
+				<reportElement x="434" y="96" width="180" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
@@ -262,7 +262,7 @@ WHERE
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleOrganization.jasper"]]></subreportExpression>
 			</subreport>
 			<subreport>
-				<reportElement x="434" y="24" width="142" height="12"/>
+				<reportElement x="434" y="24" width="180" height="12"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>

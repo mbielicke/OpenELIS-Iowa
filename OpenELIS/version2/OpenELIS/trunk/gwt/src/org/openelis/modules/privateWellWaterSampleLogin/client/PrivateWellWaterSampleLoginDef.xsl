@@ -241,7 +241,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'location')" />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getWellLocation()}" width="180" case="LOWER" max="40" tab="{meta:getWellLocationAddrMultipleUnit()},{meta:getWellReportToAddressFaxPhone()}" field="String" />
+                    <textbox key="{meta:getWellLocation()}" width="180" case="LOWER" max="28" tab="{meta:getWellLocationAddrMultipleUnit()},{meta:getWellReportToAddressFaxPhone()}" field="String" />
                   </widget>
                 </row>
                 <row>
