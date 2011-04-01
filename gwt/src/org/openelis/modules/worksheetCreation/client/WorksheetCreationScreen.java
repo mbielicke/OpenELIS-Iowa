@@ -116,7 +116,8 @@ public class WorksheetCreationScreen extends Screen {
     protected ArrayList<TableDataRow>             analysisItems, qcLastRunList,
                                                   qcLastBothList, qcLinkModel,
                                                   testWorksheetItems;
-    protected Confirm                             worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
+    protected Confirm                             worksheetRemoveDuplicateQCConfirm,
+                                                  worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
                                                   worksheetSaveConfirm, worksheetExitConfirm;
     protected HashMap<Integer,Exception>          qcErrors;
     protected QcLookupScreen                      qcLookupScreen;
@@ -346,7 +347,7 @@ public class WorksheetCreationScreen extends Screen {
         addScreenHandler(removeRowButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int                 rowIndex;
-                TableDataRow        dataRow;
+                TableDataRow        dataRow, qDataRow;
                 
                 rowIndex = worksheetItemTable.getSelectedRow();
                 if (rowIndex > -1 && worksheetItemTable.numRows() > 0) {
@@ -398,8 +399,31 @@ public class WorksheetCreationScreen extends Screen {
                         }
                         worksheetRemoveQCConfirm.show();
                     } else if (dataRow.data instanceof WorksheetCreationVO) {
-                        analysisItems.remove(dataRow);
-                        mergeAnalysesAndQCs();
+                        if (((String)dataRow.cells.get(1).value).startsWith("D")) {
+                            if (worksheetRemoveDuplicateQCConfirm == null) {
+                                worksheetRemoveDuplicateQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
+                                                                                consts.get("worksheetRemoveDuplicateQCConfirm"),
+                                                                                "Don't Remove", "Remove");
+                                worksheetRemoveDuplicateQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                                    public void onSelection(SelectionEvent<Integer> event) {
+                                        TableDataRow qDataRow;
+
+                                        switch(event.getSelectedItem().intValue()) {
+                                            case 1:
+                                                qDataRow = qcItems[worksheetItemTable.getSelectedRow()];
+                                                testWorksheetItems.remove(qDataRow);
+                                                buildQCWorksheet();
+                                                mergeAnalysesAndQCs();
+                                                break;
+                                        }
+                                    }
+                                });
+                            }
+                            worksheetRemoveDuplicateQCConfirm.show();
+                        } else {
+                            analysisItems.remove(dataRow);
+                            mergeAnalysesAndQCs();
+                        }
                     }
                 }
             }
