@@ -71,7 +71,7 @@ WHERE
 				<text><![CDATA[Project]]></text>
 			</staticText>
 			<subreport>
-				<reportElement x="434" y="24" width="142" height="12"/>
+				<reportElement x="434" y="24" width="180" height="12"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -110,7 +110,7 @@ WHERE
 				<text><![CDATA[Collection Site]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="48" width="142" height="12"/>
+				<reportElement x="434" y="48" width="180" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -124,7 +124,7 @@ WHERE
 				<text><![CDATA[Collection Town]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="60" width="142" height="12"/>
+				<reportElement x="434" y="60" width="180" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -138,7 +138,7 @@ WHERE
 				<text><![CDATA[Sample Description]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="72" width="142" height="12"/>
+				<reportElement x="434" y="72" width="180" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -152,7 +152,7 @@ WHERE
 				<text><![CDATA[Client Reference]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="84" width="142" height="12"/>
+				<reportElement x="434" y="84" width="180" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -166,7 +166,7 @@ WHERE
 				<text><![CDATA[Collector]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="96" width="142" height="12"/>
+				<reportElement x="434" y="96" width="180" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
