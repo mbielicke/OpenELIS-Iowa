@@ -48,6 +48,9 @@ public class OpenELISScreenService {
         return rpc;
     }
 
+    public void keepAlive() {
+    }
+
     public void logout() {
         HttpSession session;
 
