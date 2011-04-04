@@ -27,11 +27,14 @@ package org.openelis.modules.main.client.openelis;
 
 import java.util.HashMap;
 
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenSessionTimer;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.WindowBrowser;
 import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
@@ -65,12 +68,12 @@ import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
+import org.openelis.modules.report.client.SampleInhouseReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelAdditionalReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.modules.report.client.TurnaroundReportScreen;
 import org.openelis.modules.report.client.VerificationReportScreen;
-import org.openelis.modules.report.client.SampleInhouseReportScreen;
 import org.openelis.modules.report.client.VolumeReportScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.section.client.SectionScreen;
@@ -89,29 +92,40 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class OpenELIS extends Screen {
+public class OpenELIS extends Screen implements ScreenSessionTimer {
 
-    protected static WindowBrowser                          browser;
-    protected static SystemUserPermission                   systemUserPermission;
+    protected static WindowBrowser          browser;
+    protected static SystemUserPermission   systemUserPermission;
 
-    private FavoritesScreen                                 fv;
+    private FavoritesScreen                 fv;
     private static HashMap<String, HashMap> cacheList;
+    private Confirm                         timeoutPopup;
+    private static Timer                    timeoutTimer, forceTimer;
+    private static int                      SESSION_TIMEOUT = 1000 * 60 * 30,
+                                            FORCE_TIMEOUT = 1000 * 60;
 
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
 
         service = new ScreenService("controller?service=org.openelis.modules.main.server.OpenELISScreenService");
         rpc = service.call("initialData");
+
         consts = rpc.appConstants;
         systemUserPermission = rpc.systemUserPermission;
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
         browser = (WindowBrowser)def.getWidget("browser");
         browser.setBrowserHeight();
+
         initialize();
+        initializeTimeout();
     }
 
     protected void initialize() {
@@ -147,13 +161,7 @@ public class OpenELIS extends Screen {
         });
         addClickHandler("Logout", new ClickHandler() {
             public void onClick(ClickEvent event) {
-                try {
-                    service.call("logout");
-                    Window.open("OpenELIS.html", "_self", null);
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
+                logout();
             }
         });
 
@@ -1270,6 +1278,81 @@ public class OpenELIS extends Screen {
         return browser;
     }
     
+    /**
+     * resets the timeout timer to allow
+     */
+    public void resetTimeout() {
+        timeoutTimer.schedule(SESSION_TIMEOUT);
+    }
+
+    protected void initializeTimeout() {
+        /*
+         * add session timeout dialog box and timers
+         */
+        timeoutPopup = new Confirm(Confirm.Type.WARN, consts.get("timeoutHeader"), consts.get("timeoutWarning"),
+                                     consts.get("timeoutExtendTime"), consts.get("timeoutLogout"));
+        timeoutPopup.addSelectionHandler(new SelectionHandler<Integer>() {
+            public void onSelection(SelectionEvent<Integer> event) {
+                if (event.getSelectedItem() == 0) {
+                    forceTimer.cancel();
+                    restServerTimeout();                    
+                } else {
+                    logout();
+                }
+                    
+            }
+        });
+        
+        /*
+         * if they don't answer the dialog box, we are going to log them out automatically
+         */
+        forceTimer = new Timer() {
+            public void run() {
+                logout();
+            }
+        };
+
+        timeoutTimer = new Timer() {
+            public void run() {
+                forceTimer.schedule(FORCE_TIMEOUT);
+                timeoutPopup.show();
+            }
+        };
+        resetTimeout();
+        /*
+         * Register the reset timer call
+         */
+        ScreenService.setScreenSessionTimer(this);
+    }
+
+    /**
+     * ping the server so we session does not expire
+     */
+    private void restServerTimeout() {
+        service.call("keepAlive", new AsyncCallback<RPC>() {
+            public void onSuccess(RPC result) {
+            }
+            public void onFailure(Throwable caught) {
+                Window.alert("Couldn't call the application server; please call your sysadmin");
+            }
+        });
+    }
+    
+    /**
+     * logout the user
+     */
+    private void logout() {
+        try {
+            service.call("logout");
+            Window.open("OpenELIS.html", "_self", null);
+        } catch (Throwable e) {
+            Window.alert(e.getMessage());
+        }
+    }
+
+    /**
+     * register a click handler
+     */
     private void addClickHandler(String screenName, ClickHandler handler) {
         MenuItem item;
 
