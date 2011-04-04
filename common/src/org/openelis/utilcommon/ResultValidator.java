@@ -289,7 +289,10 @@ public class ResultValidator implements RPC {
      * Returns the "default" for specified unit.
      */
     public String getDefault(Integer unitId) {
-        return defaults.get(unitId == null ? 0 : unitId);
+        if (unitId == null || !defaults.containsKey(unitId))
+            return defaults.get(0);
+        else
+            return defaults.get(unitId);
     }
 
     /**
