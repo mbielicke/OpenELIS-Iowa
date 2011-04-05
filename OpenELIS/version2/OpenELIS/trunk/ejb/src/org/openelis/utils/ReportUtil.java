@@ -48,6 +48,7 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SystemVariableLocal;
 
@@ -272,6 +273,21 @@ public class ReportUtil {
         out.close(); 
     }
     
+    /**
+     * Returns the initials for the specified system user id
+     */
+    public static String getInitialsForUserId(Integer userId) {        
+        SystemUserVO userVO;
+   
+        try {
+            userVO = EJBFactory.getUserCache().getSystemUser(userId);
+            return userVO.getInitials();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }                
+    }
+
     /**
      * Executes a system command and waits for its exit status. The method
      * throws the subprocess's error string as an exception if the exit code is not 0.

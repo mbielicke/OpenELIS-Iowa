@@ -105,6 +105,27 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 		}
 	}
 
+    /**
+     * Returns the prompt for a batch print
+     */
+    public ArrayList<Prompt> getPromptsForBatch() throws Exception {
+        ArrayList<OptionListItem> prn;
+        ArrayList<Prompt> p;
+
+        try {
+            p = new ArrayList<Prompt>();
+
+            prn = PrinterList.getInstance().getListByType("pdf");
+            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY)
+                    .setPrompt("Printer:").setWidth(200).setOptionList(prn)
+                    .setMutiSelect(false).setRequired(true));
+            return p;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
 	/**
 	 * Final report for a single or reprint. The report is printed for the
 	 * primary or secondary organization(s) ordered by organization.
