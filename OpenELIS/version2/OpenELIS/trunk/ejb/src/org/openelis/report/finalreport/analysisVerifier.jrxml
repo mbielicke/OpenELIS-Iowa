@@ -9,7 +9,7 @@
 		<![CDATA[SELECT first 1
       au.id au_id, s.initials initial
 FROM
-      security_dev:system_user s, analysis_user au
+      security:system_user s, analysis_user au
 WHERE
      au.analysis_id  = $P{ANALYSIS_ID} and
       s.id = au.system_user_id and
