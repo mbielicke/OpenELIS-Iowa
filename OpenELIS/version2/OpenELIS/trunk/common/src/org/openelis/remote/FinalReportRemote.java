@@ -13,6 +13,8 @@ public interface FinalReportRemote {
     
     public ArrayList<Prompt> getPromptsForSingle() throws Exception;
     
+    public ArrayList<Prompt> getPromptsForBatch() throws Exception;
+    
     public ReportStatus runReportForSingle(ArrayList<QueryData> paramList) throws Exception;
 
     public ReportStatus runReportForPreview(ArrayList<QueryData> paramList) throws Exception;
