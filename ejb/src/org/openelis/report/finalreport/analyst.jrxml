@@ -4,18 +4,18 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<import value="org.openelis.utils.JasperUtil"/>
+	<import value="org.openelis.utils.ReportUtil"/>
 	<parameter name="ANALYSIS_ID" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT first 5
-      s.initials initial
+      au.system_user_id
 FROM
-      security:system_user s, analysis_user au
+      analysis_user au
 WHERE
-     au.analysis_id  = $P{ANALYSIS_ID} and
-      s.id = au.system_user_id and
-     au.action_id IN (select id from dictionary d where d.system_name = "an_user_ac_completed")]]>
+      au.analysis_id  = $P{ANALYSIS_ID} and
+      au.action_id IN (select id from dictionary d where d.system_name = "an_user_ac_completed")]]>
 	</queryString>
-	<field name="initial" class="java.lang.String"/>
+	<field name="system_user_id" class="java.lang.Integer"/>
 	<variable name="INITIALS" class="java.util.List">
 		<variableExpression><![CDATA[$V{INITIALS}]]></variableExpression>
 		<initialValueExpression><![CDATA[new java.util.ArrayList()]]></initialValueExpression>
@@ -27,7 +27,7 @@ WHERE
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Boolean"><![CDATA[$V{INITIALS}.add($F{initial})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Boolean"><![CDATA[$V{INITIALS}.add(ReportUtil.getInitialsForUserId($F{system_user_id}))]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

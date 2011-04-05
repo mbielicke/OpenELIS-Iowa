@@ -95,7 +95,7 @@ import org.openelis.utils.Auditable;
                                     + " from sample s, sample_private_well spw, sample_item si, analysis a, test t"
                                     + " where s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error')) and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                                     + " a.printed_date is null and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
-                                    + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released') and"
+                                    + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released')"
                                     + " union "
                                     + "select s.id s_id, so.organization_id o_id, a.id a_id"
                                     + " from sample s, sample_private_well spw, sample_item si, analysis a, sample_organization so"
