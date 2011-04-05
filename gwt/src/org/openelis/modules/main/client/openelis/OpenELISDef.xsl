@@ -264,6 +264,9 @@ UIRF Software License are applicable instead of those above.
                     <menuItem key="testCountByFacility" description="" icon="" enable="false" label="{resource:getString($constants,'testCountByFacility')}" />
                     <menuItem key="turnaround" description="" icon="" enable="true" label="{resource:getString($constants,'turnaround')}" />
                     <menuItem key="finalReport" description="" icon="" enable="true" label="{resource:getString($constants,'finalReport')}" />
+	                <code>if(OpenELIS.getSystemUserPermission().hasModule("r_finalbatch","SELECT")){</code>
+                    <menuItem key="finalReportBatch" description="" icon="" enable="true" label="{resource:getString($constants,'finalReportBatch')}" />
+	                <code>}</code>
                   </menuPanel>
                 </menuItem>
               </menuPanel>
