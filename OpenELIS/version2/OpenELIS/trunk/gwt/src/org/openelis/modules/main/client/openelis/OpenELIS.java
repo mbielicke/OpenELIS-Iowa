@@ -66,6 +66,7 @@ import org.openelis.modules.pws.client.PwsScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
+import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
 import org.openelis.modules.report.client.SampleInhouseReportScreen;
@@ -1138,6 +1139,26 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new FinalReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addClickHandler("finalReportBatch", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new FinalReportBatchScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

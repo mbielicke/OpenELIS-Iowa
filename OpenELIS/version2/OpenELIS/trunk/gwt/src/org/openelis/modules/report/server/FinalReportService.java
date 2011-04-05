@@ -41,6 +41,10 @@ public class FinalReportService {
         return remote().getPromptsForSingle();
     }
 
+    public ArrayList<Prompt> getPromptsForBatch() throws Exception {
+        return remote().getPromptsForBatch();
+    }
+
     public ReportStatus runReportForSingle(Query query) throws Exception {
         ReportStatus st;
 
