@@ -110,7 +110,6 @@ public class StaticFilter implements Filter {
             try {
                 login(hreq, hreq.getParameter("username"), req.getParameter("password"),  
                       hreq.getRemoteAddr());
-
                 try {
                     chain.doFilter(req, response);
                 } catch (Exception e) {
@@ -170,8 +169,6 @@ public class StaticFilter implements Filter {
         SystemUserPermissionProxyRemote remote;
         SystemUserPermission perm;
         
-        System.out.println("Checking Credentials");
-
         try {
             localctx = new InitialContext();
             propFile = new File((String)localctx.lookup( ("java:comp/env/openelisJNDI")));
@@ -189,7 +186,7 @@ public class StaticFilter implements Filter {
             // check to see if she has connect permission
             //
             if (!perm.hasConnectPermission())
-                throw new PermissionException("NoPermission.html");
+                throw new PermissionException();
 
             req.getSession().setAttribute("UserPermission", perm);
             req.getSession().setAttribute("jndiProps", props);
