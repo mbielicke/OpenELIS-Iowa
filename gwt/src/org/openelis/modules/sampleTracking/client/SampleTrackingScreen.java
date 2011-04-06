@@ -160,6 +160,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         unreleasePermission = OpenELIS.getSystemUserPermission().getModule("sampleunrelease");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Sample Tracking Screen");
+        if (unreleasePermission == null)
+            unreleasePermission = new ModulePermission();
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
