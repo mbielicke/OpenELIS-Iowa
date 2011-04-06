@@ -63,7 +63,7 @@ public class ResultBean implements ResultLocal {
     @EJB
     private DictionaryLocal dictionary;
 
-    private static Integer supplementalTypeId, epaMethodId, qaEventOverrideId;
+    private static Integer supplementalTypeId, roundEpaId, roundIntegerId, qaEventOverrideId;
     private static HashMap<Integer, Type> types;
 
     @PostConstruct
@@ -84,7 +84,8 @@ public class ResultBean implements ResultLocal {
 
                 supplementalTypeId = dictionary.fetchBySystemName("test_analyte_suplmtl").getId();
                 qaEventOverrideId = dictionary.fetchBySystemName("qaevent_override").getId();
-                epaMethodId = dictionary.fetchBySystemName("round_epa").getId();
+                roundEpaId = dictionary.fetchBySystemName("round_epa").getId();
+                roundIntegerId = dictionary.fetchBySystemName("round_integer").getId();
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -498,8 +499,10 @@ public class ResultBean implements ResultLocal {
                     resultValidators.add(rv);
                 }
                 
-                if (DataBaseUtil.isSame(epaMethodId, data.getRoundingMethodId()))
+                if (DataBaseUtil.isSame(roundEpaId, data.getRoundingMethodId()))
                     method = RoundingMethod.EPA_METHOD;
+                else if (DataBaseUtil.isSame(roundIntegerId, data.getRoundingMethodId()))
+                    method = RoundingMethod.INTEGER;
                 
                 type = types.get(data.getTypeId());
                 if (type == Type.DICTIONARY) {
