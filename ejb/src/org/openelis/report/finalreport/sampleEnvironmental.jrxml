@@ -193,7 +193,7 @@ WHERE
 				</graphicElement>
 			</line>
 			<subreport>
-				<reportElement x="35" y="24" width="250" height="60">
+				<reportElement x="35" y="48" width="250" height="60">
 					<printWhenExpression><![CDATA[$P{ORGANIZATION_ID} != null]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
