@@ -644,7 +644,7 @@ public class QuickEntryScreen extends Screen {
                 if (item == null)
                     managers.put(sManager.getSample().getAccessionNumber(), new Item(sManager, 1));
                 else
-                    item.count++ ;
+                    item.count++;
 
                 updateQuickEntryRowFromBundle(quickEntryTable.numRows() - 1);
             }
@@ -652,8 +652,12 @@ public class QuickEntryScreen extends Screen {
             quickEntryTable.fireEvents(true);
         }
 
-        if (numOfRows == 0 && quickEntryTable.numRows() > 0)
-            setState(State.ADD);
+        if (quickEntryTable.numRows() > 0) {
+            if (numOfRows == 0)
+                setState(State.ADD);
+            quickEntryTable.selectRow(quickEntryTable.numRows() - 1);
+            quickEntryTable.scrollToVisisble();
+        }
 
         window.clearStatus();
    }
@@ -853,12 +857,12 @@ public class QuickEntryScreen extends Screen {
                 manager = item.sampleManager;
                 sampleDO = manager.getSample();
 
-                for (i = 0; i < manager.getSampleItems().count(); i++ ) { // items
+                for (i = 0; i < manager.getSampleItems().count(); i++) { // items
                     itemMan = manager.getSampleItems();
                     anMan = itemMan.getAnalysisAt(i);
                     itemDO = itemMan.getSampleItemAt(i);
 
-                    for (j = 0; j < anMan.count(); j++ ) { // analyses
+                    for (j = 0; j < anMan.count(); j++) { // analyses
                         anDO = anMan.getAnalysisAt(j);
                         if (anDO.getId() < 0) {
                             row = new TableDataRow(6);
