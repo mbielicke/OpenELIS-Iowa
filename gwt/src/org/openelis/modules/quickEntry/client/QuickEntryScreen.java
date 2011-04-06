@@ -98,7 +98,7 @@ public class QuickEntryScreen extends Screen {
     protected boolean              useCurrentTime, printLabelsOnTheFly, close;
     protected TestPrepUtility      testLookup;
     protected Confirm              windowCloseConfirm, receivedDateNotTodayConfirm;
-    
+
     private CalendarLookUp         receivedDate;
     private TextBox                entry, tubeNumber;
     private TextBox<Integer>       accessionNumber;
@@ -433,7 +433,7 @@ public class QuickEntryScreen extends Screen {
                 manager = item.sampleManager;
                 manager.getSample().setStatusId(sampleLoggedInId);
                 
-                if(manager.getSample().getId() == null)
+                if (manager.getSample().getId() == null)
                     manager.add();
                 else
                     manager.update();
@@ -444,7 +444,7 @@ public class QuickEntryScreen extends Screen {
                 errorsList.add(new FormErrorException("quickCommitError"));
                 for (i = 0; i < e.size(); i++)
                     errorsList.add(new FormErrorException("rowError", 
-                               manager.getSample().getAccessionNumber().toString(), e.getErrorList().get(i).getLocalizedMessage()));
+                                   manager.getSample().getAccessionNumber().toString(), e.getErrorList().get(i).getLocalizedMessage()));
             } catch (Exception e) {
                 errorsList.add(new FormErrorException("quickCommitError"));
                 errorsList.add(new FormErrorException("rowError", 
@@ -471,6 +471,7 @@ public class QuickEntryScreen extends Screen {
         Integer       accessionNum;
         SampleDO      sampleDO;
         SampleManager sampleMan;
+        LocalizedException ex;
 
         val = entry.getValue();
         window.clearStatus();
@@ -480,7 +481,7 @@ public class QuickEntryScreen extends Screen {
         recDate.validate();
         if (recDate.exceptions == null) {
             if (todaysDate.after(recDate.getValue())) {
-                LocalizedException ex = new LocalizedException("recievedDateNotTodayExceptionBody", recDate.getValue().toString());
+                ex = new LocalizedException("recievedDateNotTodayExceptionBody", recDate.getValue().toString());
                 receivedDateNotTodayConfirm = new Confirm(Confirm.Type.QUESTION,
                                                     consts.get("recievedDateNotTodayExceptionTitle"),
                                                     ex.getMessage(),
@@ -489,7 +490,7 @@ public class QuickEntryScreen extends Screen {
                     public void onSelection(SelectionEvent<Integer> event) {
                         switch (event.getSelectedItem().intValue()) {
                             case 0:
-                                //do nothing
+                                // do nothing
                                 break;
                             case 1:
                                 receivedDate.setValue(recDate.getValue());
@@ -497,23 +498,20 @@ public class QuickEntryScreen extends Screen {
                         }
                     }
                 });
-            
                 receivedDateNotTodayConfirm.show();
-            
             } else {
                 receivedDate.setValue(recDate.getValue());
             }
-
-            // test/panel
-        } else if (val.matches("[TP][0-9]*\\-[0-9]*")) {
-            testMethodSampleType.setValue(val, true);
-
-            // tube #
-        } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) {
+        } else if (val.matches("[TP][0-9]*\\-[0-9]*")) {    // test & panel
+            try {
+                testMethodSampleType.setValue(val, true);
+            } catch (Exception e) {
+                ex = new LocalizedException("invalidEntryException", val);
+                window.setError(ex.getMessage());
+            }
+        } else if (val.matches("[a-zA-Z]{3}[0-9]{3}")) {    // tube #
             tubeNumber.setValue(val);
-
-            // new accession #
-        } else if (val.matches("NEW")) {
+        } else if (val.matches("NEW")) {                    // new accession #
             if (validateFields()) {
                 if (accNumUtil == null)
                     accNumUtil = new AccessionNumberUtility();
@@ -522,20 +520,16 @@ public class QuickEntryScreen extends Screen {
                     accessionNum = accNumUtil.getNewAccessionNumber();
                     accessionNumber.setValue(accessionNum);
                     addAnalysisRow();
-                    
-                }catch(ValidationErrorsList e){
+                } catch (ValidationErrorsList e) {
                     showErrors(e);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
-
-            // accession #
-        } else if (val.matches("[0-9]+") || val.matches("[0-9]+-[0-9]+")) {
+        } else if (val.matches("[0-9]+") || val.matches("[0-9]+-[0-9]+")) { // accession # 
             if (validateFields()) {
                 if (accNumUtil == null)
                     accNumUtil = new AccessionNumberUtility();
-
                 //
                 // Trim the Sample Item ID from the end of the bar coded
                 // accession number
@@ -560,7 +554,7 @@ public class QuickEntryScreen extends Screen {
                     accessionNumber.setValue(val);
                     addAnalysisRow();
                 } catch (NumberFormatException e) {
-                    LocalizedException ex = new LocalizedException("invalidEntryException", val);
+                    ex = new LocalizedException("invalidEntryException", val);
                     window.setError(ex.getMessage());
                 } catch (ValidationErrorsList e) {
                     FieldErrorException fe;
@@ -571,15 +565,14 @@ public class QuickEntryScreen extends Screen {
                         fe = (FieldErrorException)e.getErrorList().get(i);
                         newE.add(new FormErrorException(fe.getKey()));
                     }
-
                     showErrors(newE);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
         } else {
-            LocalizedException e = new LocalizedException("invalidEntryException", val);
-            window.setError(e.getMessage());
+            ex = new LocalizedException("invalidEntryException", val);
+            window.setError(ex.getMessage());
         }
         entry.setValue(null);
         recDate.exceptions = null;
@@ -618,10 +611,10 @@ public class QuickEntryScreen extends Screen {
 
     public void testLookupFinished(ArrayList<SampleDataBundle> bundles) {
         int numOfRows;
-        Item         item;
+        Item item;
         TableDataRow newRow;
         SampleDataBundle bundle;
-        SampleManager    sManager;
+        SampleManager sManager;
 
         window.setBusy();
 
@@ -645,25 +638,25 @@ public class QuickEntryScreen extends Screen {
                     newRow.data = bundle;
                     quickEntryTable.addRow(newRow);
                 }
-                
+
                 sManager = bundle.getSampleManager();
                 item = managers.get(sManager.getSample().getAccessionNumber());
                 if (item == null)
                     managers.put(sManager.getSample().getAccessionNumber(), new Item(sManager, 1));
                 else
-                    item.count++;
+                    item.count++ ;
 
                 updateQuickEntryRowFromBundle(quickEntryTable.numRows() - 1);
             }
 
             quickEntryTable.fireEvents(true);
         }
-        
-        if(numOfRows == 0 && quickEntryTable.numRows() > 0)
+
+        if (numOfRows == 0 && quickEntryTable.numRows() > 0)
             setState(State.ADD);
 
         window.clearStatus();
-    }
+   }
 
     private void rowDeleted(TableDataRow deletedRow) {
         Item              item;
@@ -758,7 +751,6 @@ public class QuickEntryScreen extends Screen {
 
             rowToBeAdded = row;
             analysisTestChanged(id, (typeDO.getTestId() == null), tsVDO, anBundle, sampleMan);
-
         } catch (Exception e) {
             Window.alert("rowAdded: " + e.getMessage());
         }
@@ -856,17 +848,17 @@ public class QuickEntryScreen extends Screen {
 
         try {
             itr = managers.values().iterator();
-            while (itr.hasNext()) {       //samples
+            while (itr.hasNext()) { // samples
                 item = itr.next();
                 manager = item.sampleManager;
                 sampleDO = manager.getSample();
-                
-                for (i = 0; i < manager.getSampleItems().count(); i++) { //items
+
+                for (i = 0; i < manager.getSampleItems().count(); i++ ) { // items
                     itemMan = manager.getSampleItems();
                     anMan = itemMan.getAnalysisAt(i);
                     itemDO = itemMan.getSampleItemAt(i);
-                    
-                    for(j = 0; j < anMan.count(); j++) {   //analyses
+
+                    for (j = 0; j < anMan.count(); j++ ) { // analyses
                         anDO = anMan.getAnalysisAt(j);
                         if (anDO.getId() < 0) {
                             row = new TableDataRow(6);
@@ -875,9 +867,12 @@ public class QuickEntryScreen extends Screen {
                             row.cells.get(2).value = anDO.getTestName();
                             row.cells.get(3).value = anDO.getMethodName();
                             row.cells.get(4).value = itemDO.getTypeOfSample();
-                            // TODO: Need to add value for Tube Number in this cell
-                            // when we get the specs for where it will be stored.
-                            // For now we will store it in sample_item.container_reference.
+                            // TODO: Need to add value for Tube Number in this
+                            // cell
+                            // when we get the specs for where it will be
+                            // stored.
+                            // For now we will store it in
+                            // sample_item.container_reference.
                             row.cells.get(5).value = itemDO.getContainerReference();
                             model.add(row);
                         }
@@ -931,23 +926,22 @@ public class QuickEntryScreen extends Screen {
     private void updateRecievedDate() {
         calendarService.callDatetime("getCurrentDatetime", Datetime.YEAR, Datetime.MINUTE,
                                      new AsyncCallback<Datetime>() {
-                                         public void onSuccess(Datetime currentDate) {
-                                             if (currentDateTime.getValue() != null &&
-                                                 "Y".equals(currentDateTime.getValue())) {
-                                                 receivedDate.setValue(currentDate);
-                                                 Timer timer = new Timer() {
-                                                     public void run() {
-                                                         updateRecievedDate();
-                                                     }
-                                                 };
-                                                 timer.schedule(55000);
-                                             }
-                                         }
+                     public void onSuccess(Datetime currentDate) {
+                         if (currentDateTime.getValue() != null && "Y".equals(currentDateTime.getValue())) {
+                             receivedDate.setValue(currentDate);
+                             Timer timer = new Timer() {
+                                 public void run() {
+                                     updateRecievedDate();
+                                 }
+                             };
+                             timer.schedule(55000);
+                         }
+                     }
 
-                                         public void onFailure(Throwable caught) {
-                                             Window.alert(caught.getMessage());
-                                         }
-                                     });
+                     public void onFailure(Throwable caught) {
+                         Window.alert(caught.getMessage());
+                     }
+                 });
     }
     
     private class Item {
