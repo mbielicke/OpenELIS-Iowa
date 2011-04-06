@@ -48,7 +48,7 @@ public class ResultValidator implements RPC {
     };
 
     public enum RoundingMethod {
-        EPA_METHOD
+        EPA_METHOD, INTEGER
     };
 
     public ResultValidator() {
@@ -212,7 +212,7 @@ public class ResultValidator implements RPC {
                             return value.toLowerCase();
                         case NUMERIC:
                             compOp = null;
-                            if (value.startsWith(">") || value.startsWith("<")) {
+                            if (value.length() > 1 && (value.startsWith(">") || value.startsWith("<"))) {
                                 compOp = value.substring(0, 1);
                                 value = value.substring(1);
                             }
@@ -222,6 +222,8 @@ public class ResultValidator implements RPC {
                                         if (item.significantDigits != null)
                                             value = SignificantFigures.format(value,
                                                                               item.significantDigits);
+                                    case INTEGER:
+                                        value = String.valueOf(Math.round(Double.valueOf(value)));
                                 }
                             }
                             if (compOp != null)
