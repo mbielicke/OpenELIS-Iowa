@@ -138,12 +138,11 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         if (DataBaseUtil.isEmpty(received) || DataBaseUtil.isEmpty(location) || DataBaseUtil.isEmpty(printer))
 			throw new InconsistencyException("You must specify # of samples, # of continers, date received,\nlocation, and printer for this report");
 
+        status.setMessage("Outputing report").setPercentComplete(0);
+
         /*
          * fetch accession number counter and increment it 
          */
-    	tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
-        status.setMessage("Outputing report").setPercentComplete(0);
-
         try {
         	data = sysvar.fetchForUpdateByName("last_accession_number");
         	laccession = Integer.parseInt(data.getValue());
@@ -157,6 +156,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         /*
          * print the labels and send it to printer
          */
+        tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
         ps = new PrintStream(tempFile);
         for (i = 0; i < samples; i++) {
         	laccession++;
@@ -280,6 +280,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
 			throw new InconsistencyException("Accession number must be in format 12345 or 12345-01\nwhere 01 is the starting container");
         }
 
+        status.setMessage("Outputing report").setPercentComplete(0);
         /*
          * find the sample get the received date
          */
@@ -299,14 +300,9 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         }
 
         /*
-         * fetch accession number and make sure we have issues the it before 
-         */
-    	tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
-        status.setMessage("Outputing report").setPercentComplete(0);
-
-        /*
          * print the labels and send it to printer
          */
+        tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
         ps = new PrintStream(tempFile);
     	for (i = 0; i < containers; i++)
     		printlabel(ps, accession, i+starting, received, location);
