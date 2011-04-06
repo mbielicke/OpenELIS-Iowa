@@ -205,7 +205,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 		if (orgPrintList.size() == 0)
 			throw new InconsistencyException("Final report for accession number "+ accession+ " has incorrect status,\nmissing information, or has no analysis ready to be printed");
 
-		print(orgPrintList, "R", status, printer);
+		print(orgPrintList, "R", false, status, printer);
 
 		return status;
 	}
@@ -270,7 +270,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 			throw e;
 		}
 
-		print(orgPrintList, "C", status, "-view-");
+		print(orgPrintList, "C", false, status, "-view-");
 
 		return status;
 	}
@@ -409,7 +409,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 				orgPrintList.add(orgPrint);
 			}
 		}
-		print(orgPrintList, "R", status, printer);
+		print(orgPrintList, "R", true, status, printer);
 
 		/*
 		 * unlock all the samples
@@ -420,8 +420,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 		return status;
 	}
 
-	private void print(ArrayList<OrganizationPrint> orgPrintList,
-			String reportType, ReportStatus status, String printer) throws Exception {
+	private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
+	                   boolean forMailing, ReportStatus status, String printer) throws Exception {
 		int i, n;
 		URL url;
 		File tempFile;
@@ -483,10 +483,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 				Collections.sort(orgPrintList, new MyComparator());
 
 			/*
-			 * assemble all the pages and put in a blank page between 6 and more
-			 * pages
+			 * assemble all the pages. put in a blank page between 6 and more
+			 * pages if we are going to mail them (for folding machine)
 			 */
-			needBlank = true;
+			needBlank = forMailing;
 			for (OrganizationPrint o : orgPrintList) {
 				pages = o.getJprint().getPages();
 				n = pages.size();
@@ -502,7 +502,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 			 * the stat page at the end will list all the organizations printed in
 			 * this run.
 			 */
-			if ("B".equals(reportType)) {
+			if (forMailing) {
 				ds = new StatsDataSource();
 				ds.setStats(orgPrintList);
 				url = ReportUtil.getResourceURL("org/openelis/report/finalreport/stats.jasper");
