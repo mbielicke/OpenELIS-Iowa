@@ -23,7 +23,10 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
                 query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId) "+
-                        "from WorksheetAnalysis wa where wa.worksheetItemId = :id")})
+                        "from WorksheetAnalysis wa where wa.worksheetItemId = :id"),
+    @NamedQuery( name = "WorksheetAnalysis.FetchById",
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId) "+
+                        "from WorksheetAnalysis wa where wa.id = :id")})
 @Entity
 @Table(name = "worksheet_analysis")
 @EntityListeners( {AuditUtil.class})

@@ -32,6 +32,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -39,6 +40,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.entity.WorksheetAnalysis;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -68,6 +70,23 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
+    public WorksheetAnalysisDO fetchById(Integer id) throws Exception {
+        Query query;
+        WorksheetAnalysisDO data;
+        
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchById");
+        query.setParameter("id",id);
+        try {
+            data = (WorksheetAnalysisDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        
+        return data;
+    }
+    
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {
         WorksheetAnalysis entity;
 
