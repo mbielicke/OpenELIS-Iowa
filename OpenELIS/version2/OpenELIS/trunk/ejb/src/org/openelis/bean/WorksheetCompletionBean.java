@@ -75,7 +75,9 @@ import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
@@ -132,6 +134,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
         int                      r, i, a, c, o;
         String                   statuses[], cellNameIndex, posNum, outFileName;
+        File                     outFile;
         FileInputStream          in;
         FileOutputStream         out;
         HashMap<Integer,String>  statusMap;
@@ -158,6 +161,12 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetItemDO          wiDO;
         WorksheetQcResultManager wqrManager;
         WorksheetResultManager   wrManager;
+
+        outFileName = getWorksheetOutputFileName(manager.getWorksheet().getId(),
+                                                 manager.getWorksheet().getSystemUserId());
+        outFile = new File(outFileName);
+        if (outFile.exists())
+            throw new Exception("An Excel file for this worksheet already exists, please delete it before trying to export");
 
         try {
             formatVDO = dictionaryLocal.fetchById(manager.getWorksheet().getFormatId());
@@ -438,8 +447,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             overrideSheet.autoSizeColumn(c, true);
         
         try {
-            outFileName = getWorksheetOutputFileName(manager.getWorksheet().getId(),
-                                                     manager.getWorksheet().getSystemUserId());
             out = new FileOutputStream(outFileName);
             wb.write(out);
             out.close();
@@ -1197,28 +1204,49 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     
     private SampleDataBundle lockManagerIfNeeded(WorksheetManager manager, WorksheetAnalysisDO waDO,
                                                  SampleDataBundle bundle) throws Exception {
-        int               i, j;
-        AnalysisManager   aManager;
-        AnalysisViewDO    aVDO;
-        SampleDataBundle  newBundle;
-        SampleItemManager siManager;
-        SampleManager     sManager;
+        int                     i, j;
+        String                  params[];
+        Iterator<SampleManager> iter;
+        AnalysisManager         aManager;
+        AnalysisViewDO          aVDO;
+        SampleDataBundle        newBundle;
+        SampleItemManager       siManager;
+        SampleManager           sManager;
         
         newBundle = null;
         sManager = bundle.getSampleManager();
         if (!manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
-            sManager = sampleManagerLocal.fetchForUpdate(sManager.getSample().getId());
-            manager.getLockedManagers().put(sManager.getSample().getAccessionNumber(), sManager);
-            manager.getSampleManagers().put(sManager.getSample().getAccessionNumber(), sManager);
-            siManager = sManager.getSampleItems();
-            items: for (i = 0; i < siManager.count(); i++) {
-                aManager = siManager.getAnalysisAt(i);
-                for (j = 0; j < aManager.count(); j++) {
-                    aVDO = aManager.getAnalysisAt(j);
-                    if (waDO.getAnalysisId().equals(aVDO.getId())) {
-                        newBundle = aManager.getBundleAt(j);
-                        break items;
+            try {
+                sManager = sampleManagerLocal.fetchForUpdate(sManager.getSample().getId());
+                manager.getLockedManagers().put(sManager.getSample().getAccessionNumber(), sManager);
+                manager.getSampleManagers().put(sManager.getSample().getAccessionNumber(), sManager);
+                siManager = sManager.getSampleItems();
+                items: for (i = 0; i < siManager.count(); i++) {
+                    aManager = siManager.getAnalysisAt(i);
+                    for (j = 0; j < aManager.count(); j++) {
+                        aVDO = aManager.getAnalysisAt(j);
+                        if (waDO.getAnalysisId().equals(aVDO.getId())) {
+                            newBundle = aManager.getBundleAt(j);
+                            break items;
+                        }
                     }
+                }
+            } catch (Exception anyE) {
+                // abort update on any samples we may have locked when loading data
+                iter = manager.getLockedManagers().values().iterator();
+                while (iter.hasNext()) {
+                    sManager = (SampleManager) iter.next();
+                    sampleManagerLocal.abortUpdate(sManager.getSample().getId());
+                }
+                manager.getLockedManagers().clear();
+                if (anyE instanceof EntityLockedException) {
+                    params = new String[3];
+                    params[0] = sManager.getSample().getAccessionNumber().toString();
+                    params[1] = ((EntityLockedException)anyE).getParams()[0];
+                    params[2] = ((EntityLockedException)anyE).getParams()[1];
+                    throw new LocalizedException("worksheetSampleLockException", params);
+                } else {
+                    throw anyE;
                 }
             }
         }
