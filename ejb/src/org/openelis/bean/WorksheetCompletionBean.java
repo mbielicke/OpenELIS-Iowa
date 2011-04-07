@@ -87,6 +87,7 @@ import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SystemUserPermissionProxyLocal;
 import org.openelis.local.SystemVariableLocal;
+import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.AnalysisUserManager;
@@ -122,6 +123,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     SystemUserPermissionProxyLocal systemUserLocal;
     @EJB
     SystemVariableLocal systemVariableLocal;
+    @EJB
+    WorksheetAnalysisLocal worksheetAnalysisLocal;
 
     private HashMap<String,CellStyle>    styles;
 
@@ -150,7 +153,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         SampleDomainInt          sDomain;
         SampleItemManager        siManager;
         SampleManager            sManager;
-        WorksheetAnalysisDO      waDO;
+        WorksheetAnalysisDO      waDO, waLinkDO;
         WorksheetAnalysisManager waManager;
         WorksheetItemDO          wiDO;
         WorksheetQcResultManager wqrManager;
@@ -203,6 +206,11 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
             for (a = 0; a < waManager.count(); a++) {
                 waDO = waManager.getWorksheetAnalysisAt(a);
+                if (waDO.getWorksheetAnalysisId() != null) {
+                    waLinkDO = worksheetAnalysisLocal.fetchById(waDO.getWorksheetAnalysisId());
+                } else {
+                    waLinkDO = null;
+                }
 
                 row = resultSheet.createRow(r);
 
@@ -239,7 +247,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     // qc link
                     cell = row.createCell(3);
                     cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue("");
+                    if (waLinkDO != null)
+                        cell.setCellValue(waLinkDO.getAccessionNumber());
+                    else
+                        cell.setCellValue("");
 
                     // test name
                     cell = row.createCell(4);
@@ -349,7 +360,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     // qc link
                     cell = row.createCell(3);
                     cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue("");
+                    if (waLinkDO != null)
+                        cell.setCellValue(waLinkDO.getAccessionNumber());
+                    else
+                        cell.setCellValue("");
 
                     // test name
                     cell = row.createCell(4);
@@ -787,7 +801,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             cellName.setRefersToFormula("Worksheet!$"+CellReference.convertNumToColString(8)+
                                         "$"+(row.getRowNum()+1));
             
-            for (c = 9; c < tRow.getLastCellNum(); c++) {
+            for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
                 
                 cell = row.createCell(c);
@@ -820,7 +834,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
                     if (cellName != null && !cellName.isDeleted()) {
                         cell = getCellForName(sheet, cellName.getNameName());
-                        if (cell.getStringCellValue() == null || cell.getStringCellValue().length() == 0) {
+                        if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
                             if (resultTypeDictionary.equals(rVDO.getTypeId())) {
                                 dVDO = dictionaryLocal.fetchById(Integer.valueOf(rVDO.getValue()));
                                 cell.setCellValue(dVDO.getEntry());
@@ -874,7 +888,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             cell.setCellStyle(styles.get("row_no_edit"));
             cell.setCellValue("N");
             
-            for (c = 9; c < tRow.getLastCellNum(); c++) {
+            for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
                 
                 cell = row.createCell(c);
@@ -901,11 +915,11 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 cellName = sheet.getWorkbook().getName("expected_value"+cellNameIndex);
                 if (cellName != null && !cellName.isDeleted()) {
                     cell = getCellForName(sheet, cellName.getNameName());
-                    value = getCellValue(cell);
-                    if (value == null) {
-                        setCellValue(cell, qcaVDO.getValue());
-                    } else {
-                        if (value instanceof String && ((String)value).length() == 0)
+                    if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
+                        value = getCellValue(cell);
+                        if (value == null)
+                            setCellValue(cell, qcaVDO.getValue());
+                        else if (value instanceof String && ((String)value).length() == 0)
                             setCellValue(cell, qcaVDO.getValue());
                         else if (value instanceof Double && ((Double)value).doubleValue() == 0.0)
                             setCellValue(cell, qcaVDO.getValue());

@@ -35,6 +35,8 @@ import org.openelis.domain.WorksheetAnalysisDO;
 public interface WorksheetAnalysisLocal {
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemId(Integer id) throws Exception;
 
+    public WorksheetAnalysisDO fetchById(Integer testId) throws Exception;
+
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception;
 
     public WorksheetAnalysisDO update(WorksheetAnalysisDO data) throws Exception;
