@@ -67,13 +67,6 @@ public class FinalReportService {
 
     public ReportStatus runReportForBatch(Query query) throws Exception {
         ReportStatus st;
-        QueryData f;
-
-        f = new QueryData();
-        f.key = "PRINTER";
-        f.query = "-view-";
-        f.type = f.type.STRING;
-        query.setFields(f);
 
         st = remote().runReportForBatch(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)

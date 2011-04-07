@@ -624,6 +624,8 @@ public class WorksheetCreationScreen extends Screen {
             if (row.cells.get(3).getValue() != null) {
                 if (row.cells.get(3).getValue() instanceof ArrayList)
                     waDO.setWorksheetAnalysisId((Integer)((ArrayList<Object>)row.cells.get(3).getValue()).get(0));
+                else
+                    waDO.setWorksheetAnalysisId((Integer)row.cells.get(3).getValue());
             }
             try {
                 waManager = wiManager.getWorksheetAnalysisAt(i);
