@@ -109,8 +109,7 @@ public class WorksheetCompletionScreen extends Screen {
 //    private TableWidget       table;
 
     protected Integer                   userId;
-    protected String                    outputFileDirectory, worksheetFileName,
-                                        userName;
+    protected String                    displayFileDirectory, userName;
     protected AutoComplete<Integer>     instrumentId, defaultUser;
     protected CalendarLookUp            defaultStartedDate, defaultCompletedDate;
     protected Confirm                   worksheetExitConfirm, worksheetEditConfirm;
@@ -176,9 +175,9 @@ public class WorksheetCompletionScreen extends Screen {
             
             list = sysVarService.callList("fetchByName", "worksheet_display_directory");
             if (list.size() == 0)
-                throw new Exception(consts.get("worksheetOutputDirectoryLookupException"));
+                throw new Exception(consts.get("worksheetDisplayDirectoryLookupException"));
             else
-                outputFileDirectory = ((SystemVariableDO)list.get(0)).getValue();
+                displayFileDirectory = ((SystemVariableDO)list.get(0)).getValue();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -666,18 +665,17 @@ public class WorksheetCompletionScreen extends Screen {
         window.setBusy("Saving worksheet for editing");
         try {
             service.call("saveForEdit", manager);
-            
+
             userVO = null;
             try {
                 userVO = userService.call("fetchById", manager.getWorksheet().getSystemUserId());
-            } catch (Exception anyE) {
-                throw new Exception("Error retrieving username for worksheet: "+anyE.getMessage());
+            } catch (Exception anyE1) {
+                throw new Exception("Error retrieving username for worksheet: "+anyE1.getMessage());
             }
             
-            worksheetFileName = new String(outputFileDirectory+manager.getWorksheet().getId()+
-                                           "_"+userVO.getLoginName()+".xls");
             window.setDone(consts.get("worksheetCompletionEditConfirm")+
-                                      " "+worksheetFileName);
+                                      " "+displayFileDirectory+manager.getWorksheet().getId()+
+                                      "_"+userVO.getLoginName()+".xls");
         } catch (Exception anyE) {
             Window.alert(anyE.getMessage());
             window.clearStatus();
