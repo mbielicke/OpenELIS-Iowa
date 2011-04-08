@@ -114,6 +114,9 @@ UIRF Software License are applicable instead of those above.
                   </text>
                 </HorizontalPanel>
               </appButton>
+              <text key="overrideLabel" style="WarningLabel">
+                <xsl:value-of select="resource:getString($constants,'resultsOverridden')" />
+              </text>
             </HorizontalPanel>
           </widget>
         </row>

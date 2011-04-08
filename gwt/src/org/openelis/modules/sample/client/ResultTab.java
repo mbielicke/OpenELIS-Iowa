@@ -81,6 +81,7 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Label;
 
 public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Action> {
     public enum Action {
@@ -91,6 +92,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     protected AppButton                             addResultButton, removeResultButton,
                                                     suggestionsButton, popoutTable;
+    protected Label                                 overrideLabel;
     protected TableWidget                           testResultsTable;
     private ArrayList<TableColumn>                  resultTableCols;
 
@@ -525,6 +527,21 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
             public void onStateChange(StateChangeEvent<State> event) {
                 popoutTable.enable(false);
+            }
+        });
+
+        overrideLabel = (Label)def.getWidget("overrideLabel");
+        addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                try {
+                    if (bundle.getSampleManager().getQaEvents().hasResultOverrideQA() ||
+                        analysisMan.getQAEventAt(bundle.getAnalysisIndex()).hasResultOverrideQA())
+                        overrideLabel.setVisible(true);
+                    else
+                        overrideLabel.setVisible(false);
+                } catch (Exception anyE) {
+                    overrideLabel.setVisible(false);
+                }                    
             }
         });
     }
