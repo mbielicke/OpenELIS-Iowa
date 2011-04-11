@@ -28,6 +28,7 @@ package org.openelis.server;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Properties;
 
 import javax.naming.Context;
@@ -60,18 +61,16 @@ import org.w3c.dom.Element;
 public class StaticFilter implements Filter {
 
     private static final long    serialVersionUID = 1L;
-    private static Logger        log              = Logger.getLogger(StaticFilter.class.getName());
     private static Logger        authLog          = Logger.getLogger("org.openelis.auth");
     private static String        AppRoot;
+    private static int           LOGIN_LOCK_TIME  = 1000 * 60 * 10,     // minutes to lock user out
+                                 LOGIN_TRY_IP_CNT = 7,                  // max # of bad ip counts before being locked out
+                                 LOGIN_TRY_NM_CNT = 4;                  // max # of bad name counts before being locked out
 
     public void init(FilterConfig config) throws ServletException {
-        log.debug("Initializing the Application.");
-
         AppRoot = config.getInitParameter("AppRoot");
         ServiceUtils.props = "org.openelis.constants.OpenELISConstants";
         JMSMessageConsumer.startListener("topic/openelisTopic");
-        
-        log.debug("getting out");
     }
 
     public void doFilter(ServletRequest req, ServletResponse response, FilterChain chain) throws IOException {
@@ -115,9 +114,6 @@ public class StaticFilter implements Filter {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                return;
-            } catch (PermissionException p) {
-                ((HttpServletResponse)response).sendRedirect("NoPermission.html");
                 return;
             } catch (Exception e) {
                 error = "authFailure";
@@ -170,6 +166,9 @@ public class StaticFilter implements Filter {
         SystemUserPermission perm;
         
         try {
+            if (! LoginAttempt.isValid(name, ipAddress))
+                throw new PermissionException();
+
             localctx = new InitialContext();
             propFile = new File((String)localctx.lookup( ("java:comp/env/openelisJNDI")));
             props = new Properties();
@@ -194,8 +193,60 @@ public class StaticFilter implements Filter {
 
             authLog.info("Login attempt for " + name + " succeeded");
         } catch (Exception e) {
-            authLog.info("Login attempt for " + name + " failed ");
+            LoginAttempt.fail(name, ipAddress);
             throw e;
+        }
+    }
+    
+    /*
+     * Simple class to manage login attempts
+     */
+    private static class LoginAttempt {
+        int tries;
+        long lastTime;
+
+        private static HashMap<String, LoginAttempt> failed = new HashMap<String, StaticFilter.LoginAttempt>();
+    
+        public static boolean isValid(String name, String ipAddress) {
+            long cutoff;
+            LoginAttempt la;
+            
+            cutoff = System.currentTimeMillis() - LOGIN_LOCK_TIME;
+            
+            la = failed.get(ipAddress);
+            if (la != null && la.lastTime >= cutoff && la.tries >= LOGIN_TRY_IP_CNT)
+                return false;
+
+            la = failed.get(name);
+            if (la != null && la.lastTime >= cutoff && la.tries >= LOGIN_TRY_NM_CNT)
+                return false;
+
+            return true;
+        }
+        
+        public static void fail(String name, String ipAddress) {
+            long now;
+            LoginAttempt li, ln;
+            
+            now = System.currentTimeMillis();
+
+            li = failed.get(ipAddress);
+            if (li == null) {
+                li = new LoginAttempt();
+                failed.put(ipAddress, li);
+            }
+            li.lastTime = now;
+            li.tries = Math.min(li.tries+1, LOGIN_TRY_IP_CNT);
+
+            ln = failed.get(name);
+            if (ln == null) {
+                ln = new LoginAttempt();
+                failed.put(name, ln);
+            }
+            ln.lastTime = now;
+            ln.tries = Math.min(ln.tries+1, LOGIN_TRY_NM_CNT);
+
+            authLog.info("Login attempt for "+ name +" ["+ ln.tries +"]"+" - "+ ipAddress +" ["+ li.tries +"] failed ");
         }
     }
 }
