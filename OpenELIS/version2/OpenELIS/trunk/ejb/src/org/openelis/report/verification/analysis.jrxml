@@ -122,9 +122,7 @@ ORDER BY t_description, m_description]]>
 				<text><![CDATA[QA Events:]]></text>
 			</staticText>
 			<subreport>
-				<reportElement key="analysisQaevent" x="50" y="72" width="702" height="12">
-					<printWhenExpression><![CDATA[false]]></printWhenExpression>
-				</reportElement>
+				<reportElement key="analysisQaevent" x="50" y="72" width="702" height="12"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>
