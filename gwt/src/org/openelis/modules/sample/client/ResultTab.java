@@ -230,7 +230,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 	}
                 }
                 
-                if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r)) {
+                if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r) ||
+                    !EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     enableButton = false;
                 } else if (!canEdit()) {
