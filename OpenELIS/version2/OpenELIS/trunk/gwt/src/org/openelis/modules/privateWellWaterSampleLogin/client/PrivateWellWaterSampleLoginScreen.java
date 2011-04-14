@@ -100,6 +100,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
 public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActionHandlers {
+    private boolean                        quickUpdate;
     private SampleManager                  manager;
     protected Tabs                         tab;
     private Integer                        sampleReleasedId;
@@ -170,6 +171,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         tab = Tabs.SAMPLE_ITEM;
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+        quickUpdate = false;
 
         try {
             DictionaryCache.preloadByCategorySystemNames("sample_status", "user_action",
@@ -426,8 +428,22 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
+                Integer       oldNumber;
                 SampleManager quickEntryMan;
 
+                oldNumber = manager.getSample().getAccessionNumber();
+                if (oldNumber != null) {
+                    if (quickUpdate) {
+                        Window.alert(consts.get("cantChangeQuickEntryAccessionNumber"));
+                        accessionNumber.setValue(Util.toString(oldNumber));
+                        setFocus(accessionNumber);
+                        return;
+                    } else if (!Window.confirm(consts.get("accessionNumberEditConfirm"))) {
+                        accessionNumber.setValue(Util.toString(oldNumber));
+                        setFocus(accessionNumber);
+                        return;
+                    }
+                }
                 try {
                     manager.getSample().setAccessionNumber(event.getValue());
 
@@ -435,35 +451,43 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                         accessionNumUtil = new AccessionNumberUtility();
 
                     quickEntryMan = accessionNumUtil.accessionNumberEntered(manager.getSample());
-
                     if (quickEntryMan != null) {
-                        manager = quickEntryMan;
-                        manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
-                        manager.createEmptyDomainManager();
-
-                        DeferredCommand.addCommand(new Command() {
-                            public void execute() {
-                                setFocus(null);
-                                setState(State.UPDATE);
-                                DataChangeEvent.fire(wellScreen);
-                                window.clearStatus();
-                            }
-                        });
+                        if (state == State.ADD) {
+                            manager = quickEntryMan;
+                            manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+                            manager.createEmptyDomainManager();
+    
+                            DeferredCommand.addCommand(new Command() {
+                                public void execute() {
+                                    setFocus(null);
+                                    setState(State.UPDATE);
+                                    DataChangeEvent.fire(wellScreen);
+                                    window.clearStatus();
+                                    quickUpdate = true;
+                                }
+                            });
+                        } else {
+                            quickEntryMan.abortUpdate();
+                            throw new Exception(consts.get("quickEntryNumberExists"));
+                        }
                     }
-
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
+                    accessionNumber.setValue(Util.toString(oldNumber));
+                    manager.getSample().setAccessionNumber(oldNumber);
+                    setFocus(accessionNumber);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                    accessionNumber.setValue(Util.toString(null));
-                    manager.getSample().setAccessionNumber(null);
+                    accessionNumber.setValue(Util.toString(oldNumber));
+                    manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionNumber.enable(EnumSet.of(State.ADD, State.QUERY)
-                                              .contains(event.getState()));
+                accessionNumber.enable(event.getState() == State.QUERY ||
+                                       (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                            .contains(event.getState())));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -521,8 +545,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                          .contains(event.getState()));
+                orderNumber.enable(event.getState() == State.QUERY ||
+                                   (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                        .contains(event.getState())));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -534,8 +559,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                          .contains(event.getState()));
+                orderLookup.enable(event.getState() == State.DISPLAY ||
+                                   (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                        .contains(event.getState())));
             }
         });
 
@@ -550,8 +576,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                            .contains(event.getState()));
+                collectedDate.enable(event.getState() == State.QUERY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -567,7 +594,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                collectedTime.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState()));
+                collectedTime.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -582,8 +611,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                           .contains(event.getState()));
+                receivedDate.enable(event.getState() == State.QUERY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -615,8 +645,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                              .contains(event.getState()));
+                clientReference.enable(event.getState() == State.QUERY ||
+                                       (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                            .contains(event.getState())));
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -945,12 +976,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             manager = manager.fetchForUpdate();
             setState(State.UPDATE);
 
-            if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
-                abort();
-                window.setError(consts.get("cantUpdateReleasedException"));
-                return;
-            }
-
             DataChangeEvent.fire(this);
             setFocus(orderNumber);
         } catch (Exception e) {
@@ -1002,6 +1027,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
+                quickUpdate = false;
             } catch (ValidationErrorsList e) {
                 showErrors(e);
                 if ( !e.hasErrors() && e.hasWarnings())
@@ -1039,6 +1065,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
+                quickUpdate = false;
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1069,6 +1096,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             try {
                 manager = manager.abortUpdate();
 
+                quickUpdate = false;
                 if (SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) {
                     setState(State.DEFAULT);
                     manager = SampleManager.getInstance();
@@ -1222,6 +1250,10 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         }
     }
 
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+    }
+    
     private void drawTabs() {
         switch (tab) {
             case SAMPLE_ITEM:

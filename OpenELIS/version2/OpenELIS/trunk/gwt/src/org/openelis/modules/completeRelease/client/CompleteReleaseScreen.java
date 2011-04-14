@@ -95,9 +95,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                                                  SelectionHandler<Integer>,
                                                  ActionHandler<EditNoteScreen.Action> {
 
-    private Integer                  sampleLoggedInId, sampleReleasedId,
-                    analysisOnHoldId;
-
     protected Tabs                   tab;
     protected ArrayList<Tabs>        tabIndexes = new ArrayList<Tabs>();
     protected TextBox                accessionNumber, clientReference;
@@ -107,7 +104,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     protected Dropdown<Integer>      statusId;
     protected TreeWidget             itemsTree;
     protected AppButton              removeRow, releaseButton, reportButton, completeButton,
-                    addItem, addAnalysis, queryButton, updateButton, commitButton, abortButton;
+                                     addItem, addAnalysis, queryButton, updateButton,
+                                     commitButton, abortButton;
     protected CheckBox               autoPreview;
     protected Label<String>          autoPreviewText;
 
@@ -141,12 +139,14 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     private TestPrepUtility          testPrepUtil;
 
     protected MenuItem               unreleaseAnalysis, previewFinalReport, historySample,
-                    historySampleSpec, historySampleProject, historySampleOrganization,
-                    historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
-                    historySampleQA, historyAnalysisQA, historyAuxData;
+                                     historySampleSpec, historySampleProject, historySampleOrganization,
+                                     historySampleItem, historyAnalysis, historyCurrentResult,
+                                     historyStorage, historySampleQA, historyAnalysisQA,
+                                     historyAuxData;
 
     private ScreenService            finalReportService;
-    private Integer                  lastAccession;
+    private Integer                  analysisOnHoldId, lastAccession, sampleLoggedInId;
+
 
     private enum Tabs {
         BLANK, SAMPLE, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
@@ -333,7 +333,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             public void onClick(ClickEvent event) {
                 if ("N".equals(autoPreview.getValue()))
                     autoPreview.setValue("Y", true);
-
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -498,8 +497,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         addScreenHandler(completeReleaseTable, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 completeReleaseTable.enable(true);
-                completeReleaseTable.setQueryMode(EnumSet.of(State.QUERY)
-                                                         .contains(event.getState()));
+                completeReleaseTable.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -779,7 +777,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         // error is found
         try {
             sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
             analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -848,12 +845,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             updateAllRows(manager.getSample().getAccessionNumber());
 
             setState(State.UPDATE);
-
-            if ( !canEdit()) {
-                abort();
-                window.setError(consts.get("cantUpdateReleasedException"));
-                return;
-            }
 
             DataChangeEvent.fire(this);
             window.clearStatus();
@@ -1710,10 +1701,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         confirm.show();
     }
 
-    private boolean canEdit() {
-        return ( !sampleReleasedId.equals(manager.getSample().getStatusId()));
-    }
-    
     private void unlockAndRefetchSample(Item item, SampleDataBundle bundle,
                               TableDataRow row) {
         SampleManager man;

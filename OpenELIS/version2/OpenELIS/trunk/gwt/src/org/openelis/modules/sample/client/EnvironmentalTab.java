@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -83,6 +84,8 @@ public class EnvironmentalTab extends Screen {
     private SampleManager                  manager;
     private SampleEnvironmentalManager     envManager;
 
+    private Integer                        sampleReleasedId;
+
     protected boolean                      loaded = false;
 
     public EnvironmentalTab(ScreenWindow window) throws Exception {
@@ -101,6 +104,7 @@ public class EnvironmentalTab extends Screen {
         projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
 
         initialize();
+        initializeDropdowns();
     }
 
     public void initialize() {
@@ -115,8 +119,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isHazardous.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                          .contains(event.getState()));
+                isHazardous.enable(event.getState() == State.QUERY ||
+                                   (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                        .contains(event.getState())));
                 isHazardous.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -132,8 +137,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                priority.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                       .contains(event.getState()));
+                priority.enable(event.getState() == State.QUERY ||
+                                (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                     .contains(event.getState())));
                 priority.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -149,8 +155,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                description.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                          .contains(event.getState()));
+                description.enable(event.getState() == State.QUERY ||
+                                   (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                        .contains(event.getState())));
                 description.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -166,8 +173,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collector.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                        .contains(event.getState()));
+                collector.enable(event.getState() == State.QUERY ||
+                                 (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                      .contains(event.getState())));
                 collector.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -183,8 +191,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectorPhone.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                             .contains(event.getState()));
+                collectorPhone.enable(event.getState() == State.QUERY ||
+                                      (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                           .contains(event.getState())));
                 collectorPhone.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -200,8 +209,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                location.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                       .contains(event.getState()));
+                location.enable(event.getState() == State.QUERY ||
+                                (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                     .contains(event.getState())));
                 location.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -265,8 +275,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                project.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                      .contains(event.getState()));
+                project.enable(event.getState() == State.QUERY ||
+                               (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                    .contains(event.getState())));
                 project.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -356,8 +367,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportTo.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                       .contains(event.getState()));
+                reportTo.enable(event.getState() == State.QUERY ||
+                                (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                     .contains(event.getState())));
                 reportTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -420,7 +432,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
+                billTo.enable(event.getState() == State.QUERY ||
+                              (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                   .contains(event.getState())));
                 billTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -439,8 +453,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                           .contains(event.getState()));
+                billToLookup.enable(event.getState() == State.DISPLAY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
             }
         });
 
@@ -451,8 +466,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                             .contains(event.getState()));
+                reportToLookup.enable(event.getState() == State.DISPLAY ||
+                                      (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                           .contains(event.getState())));
             }
         });
 
@@ -463,8 +479,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                            .contains(event.getState()));
+                projectLookup.enable(event.getState() == State.DISPLAY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
             }
         });
 
@@ -475,8 +492,9 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                             .contains(event.getState()));
+                locationLookup.enable(event.getState() == State.DISPLAY ||
+                                      (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                           .contains(event.getState())));
             }
         });
     }
@@ -634,6 +652,19 @@ public class EnvironmentalTab extends Screen {
         }
     }
     
+    private void initializeDropdowns() {
+        try {
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+    }
+    
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+    }
+
     public void showErrors(ValidationErrorsList errors) {
         TableFieldErrorException tableE;
         FieldErrorException fieldE;

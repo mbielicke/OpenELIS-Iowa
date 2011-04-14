@@ -74,6 +74,7 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
 import org.openelis.modules.sample.client.AuxDataTab;
@@ -146,6 +147,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     
     private ScreenService        finalReportService;
 
+    protected AccessionNumberUtility accessionNumUtil;
+
     public enum Tabs {
         BLANK, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
         ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA
@@ -180,6 +183,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                                                          "sample_container", "unit_of_measure",
                                                          "qaevent_type", "aux_field_value_type",
                                                          "organization_type");
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
         } catch (Exception e) {
             Window.alert("TrackingScreen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -299,7 +303,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addTestButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                addTestButton.enable(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -310,7 +314,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                cancelTestButton.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                cancelTestButton.enable(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -520,8 +524,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 trackingTree.enable(true);
-                trackingTree.enableDrag(EnumSet.of(State.UPDATE).contains(event.getState()));
-                trackingTree.enableDrop(EnumSet.of(State.UPDATE).contains(event.getState()));
+                trackingTree.enableDrag(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
+                trackingTree.enableDrop(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -693,11 +697,42 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
-                manager.getSample().setAccessionNumber(event.getValue());
+                Integer       oldNumber;
+                SampleManager quickEntryMan;
+
+                oldNumber = manager.getSample().getAccessionNumber();
+                if (oldNumber != null) {
+                    if (!Window.confirm(consts.get("accessionNumberEditConfirm"))) {
+                        accessionNumber.setValue(Util.toString(oldNumber));
+                        setFocus(accessionNumber);
+                        return;
+                    }
+                }
+                try {
+                    manager.getSample().setAccessionNumber(event.getValue());
+
+                    if (accessionNumUtil == null)
+                        accessionNumUtil = new AccessionNumberUtility();
+
+                    quickEntryMan = accessionNumUtil.accessionNumberEntered(manager.getSample());
+                    if (quickEntryMan != null)
+                        throw new Exception(consts.get("quickEntryNumberExists"));
+                } catch (ValidationErrorsList e) {
+                    showErrors(e);
+                    accessionNumber.setValue(Util.toString(oldNumber));
+                    manager.getSample().setAccessionNumber(oldNumber);
+                    setFocus(accessionNumber);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    accessionNumber.setValue(Util.toString(oldNumber));
+                    manager.getSample().setAccessionNumber(oldNumber);
+                    setFocus(accessionNumber);
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionNumber.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                accessionNumber.enable(event.getState() == State.QUERY ||
+                                       (canEdit() && EnumSet.of(State.UPDATE).contains(event.getState())));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -729,8 +764,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                            .contains(event.getState()));
+                collectedDate.enable(event.getState() == State.QUERY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -746,8 +782,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                            .contains(event.getState()));
+                collectedTime.enable(event.getState() == State.QUERY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
                 collectedTime.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -763,8 +800,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                           .contains(event.getState()));
+                receivedDate.enable(event.getState() == State.QUERY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -796,8 +834,9 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                              .contains(event.getState()));
+                clientReference.enable(event.getState() == State.QUERY ||
+                                       (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                            .contains(event.getState())));
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -925,7 +964,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     bundle = (SampleDataBundle)selectedRow.data;
                     sampleItemTab.setData(bundle);                    
                     showTabs(Tabs.SAMPLE_ITEM);
-                    addTestButton.enable(state == State.UPDATE);
+                    addTestButton.enable(state == State.UPDATE && canEdit());
                     cancelTestButton.enable(false);
                 } else {
                     sampleItemTab.setData(null);
@@ -952,8 +991,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     bundle = (SampleDataBundle)selectedRow.data;
                     analysisTab.setData(bundle);                    
                     showTabs(Tabs.ANALYSIS);
-                    addTestButton.enable(state == State.UPDATE);
-                    cancelTestButton.enable(state == State.UPDATE);
+                    addTestButton.enable(state == State.UPDATE && canEdit());
+                    cancelTestButton.enable(state == State.UPDATE && canEdit());
                 } else {
                     analysisTab.setData(null);
                 }
@@ -1014,8 +1053,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                     testResultsTab.setData(bundle);                    
                     showTabs(Tabs.TEST_RESULT);
-                    addTestButton.enable(state == State.UPDATE);
-                    cancelTestButton.enable(state == State.UPDATE);
+                    addTestButton.enable(state == State.UPDATE && canEdit());
+                    cancelTestButton.enable(state == State.UPDATE && canEdit());
                 } else {
                     testResultsTab.setData(null);
                 }
@@ -1058,8 +1097,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())) {
                     analysisNotesTab.setData(bundle);                    
                     showTabs(Tabs.ANALYSIS_NOTES);
-                    addTestButton.enable(state == State.UPDATE);
-                    cancelTestButton.enable(state == State.UPDATE);
+                    addTestButton.enable(state == State.UPDATE && canEdit());
+                    cancelTestButton.enable(state == State.UPDATE && canEdit());
                 } else {
                     analysisNotesTab.setData(null);
                 }
@@ -1117,9 +1156,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showTabs(Tabs.STORAGE);
 
                     addTestButton.enable(state == State.UPDATE &&
-                                         "analysis".equals(selectedRow.parent.leafType));
+                                         "analysis".equals(selectedRow.parent.leafType) &&
+                                         canEdit());
                     cancelTestButton.enable(state == State.UPDATE &&
-                                            "analysis".equals(selectedRow.parent.leafType));
+                                            "analysis".equals(selectedRow.parent.leafType) &&
+                                            canEdit());
                 } else {
                     storageTab.setData(null);
                 }
@@ -1155,9 +1196,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     qaEventsTab.setManager(manager);                    
                     showTabs(Tabs.QA_EVENTS);
                     addTestButton.enable(state == State.UPDATE &&
-                                         "analysis".equals(selectedRow.parent.leafType));
+                                         "analysis".equals(selectedRow.parent.leafType) &&
+                                         canEdit());
                     cancelTestButton.enable(state == State.UPDATE &&
-                                            "analysis".equals(selectedRow.parent.leafType));
+                                            "analysis".equals(selectedRow.parent.leafType) &&
+                                            canEdit());
                 } else {
                     qaEventsTab.setData(null);
                     qaEventsTab.setManager(manager);                    
@@ -1274,7 +1317,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         // error is found
         try {
             analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1346,12 +1388,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             return;
         }
         
-        if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
-            if (! withUnrelease) {
-                window.setError(consts.get("cantUpdateReleasedException"));
-                return;
-            }
-        } 
+//        if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
+//            if (! withUnrelease) {
+//                window.setError(consts.get("cantUpdateReleasedException"));
+//                return;
+//            }
+//        } 
 
         window.setBusy(consts.get("lockForUpdate"));
 
@@ -1375,10 +1417,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
                 if (withUnrelease) {
                     manager.unrelease(true);
-                } else {
-                    abort();
-                    window.setError(consts.get("cantUpdateReleasedException"));
-                    return;
+//                } else {
+//                    abort();
+//                    window.setError(consts.get("cantUpdateReleasedException"));
+//                    return;
                 }
             } 
 
@@ -1719,6 +1761,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         });
     }
 
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+    }
+    
     private ArrayList<TreeDataItem> getModel(ArrayList<SampleManager> result) {
         ArrayList<TreeDataItem> model;
 

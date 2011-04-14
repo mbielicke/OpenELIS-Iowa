@@ -80,8 +80,8 @@ public class QAEventsTab extends Screen {
 
     protected TableWidget            sampleQATable, analysisQATable;
     protected AutoComplete<Integer>  sampleQaEvent, analysisQaEvent;
-    protected AppButton              removeAnalysisQAButton, removeSampleQAButton, sampleQAPicker,
-                    analysisQAPicker;
+    protected AppButton              removeAnalysisQAButton, removeSampleQAButton,
+                                     sampleQAPicker, analysisQAPicker;
     protected SampleQaEventManager   sampleQAManager;
     protected AnalysisQaEventManager analysisQAManager;
     protected SampleManager          sampleManager;
@@ -137,8 +137,9 @@ public class QAEventsTab extends Screen {
                 	if (! canEditSampleQA()) {
                 		window.setError(consts.get("cantUpdateSampleQAEvent"));
                 		event.cancel();
-                	} else
+                	} else {
                 		window.clearStatus();
+                	}
                 }
             }
         });

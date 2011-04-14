@@ -2,6 +2,7 @@ package org.openelis.modules.completeRelease.client;
 
 import java.util.EnumSet;
 
+import org.openelis.cache.DictionaryCache;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -16,6 +17,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.sample.client.AccessionNumberUtility;
 
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
@@ -32,47 +34,64 @@ public class SampleTab extends Screen {
 	
 	boolean loaded;
 
-	public SampleTab(ScreenDefInt def, ScreenWindow window) {
+    private Integer sampleReleasedId;
+
+    protected AccessionNumberUtility accessionNumUtil;
+
+    public SampleTab(ScreenDefInt def, ScreenWindow window) {
 		setDefinition(def);
 		setWindow(window);
 		
 		initialize();
+		initializeDropdowns();
 	}
 	
 	public void initialize() {
-        accessionNumber = (TextBox)def.getWidget(SampleMeta.getAccessionNumber());
-        addScreenHandler(accessionNumber, new ScreenEventHandler<String>() {
+        accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
+        addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
             }
 
-            public void onValueChange(final ValueChangeEvent<String> event) {
-                int    index;
-                String val;
+            public void onValueChange(final ValueChangeEvent<Integer> event) {
+                Integer       oldNumber;
+                SampleManager quickEntryMan;
 
+                oldNumber = manager.getSample().getAccessionNumber();
+                if (oldNumber != null) {
+                    if (!Window.confirm(consts.get("accessionNumberEditConfirm"))) {
+                        accessionNumber.setValue(Util.toString(oldNumber));
+                        setFocus(accessionNumber);
+                        return;
+                    }
+                }
                 try {
-                    val = event.getValue();
-                    //
-                    // Trim the Sample Item ID from the end of the bar coded
-                    // accession number
-                    //
-                    index = val.indexOf("-");
-                    if (index != -1)
-                        val = val.substring(0, index);
-                    accessionNumber.setValue(val);
+                    manager.getSample().setAccessionNumber(event.getValue());
 
-                    manager.getSample().setAccessionNumber(Integer.valueOf(val));
+                    if (accessionNumUtil == null)
+                        accessionNumUtil = new AccessionNumberUtility();
+
+                    quickEntryMan = accessionNumUtil.accessionNumberEntered(manager.getSample());
+                    if (quickEntryMan != null)
+                        throw new Exception(consts.get("quickEntryNumberExists"));
+                } catch (ValidationErrorsList e) {
+                    showErrors(e);
+                    accessionNumber.setValue(Util.toString(oldNumber));
+                    manager.getSample().setAccessionNumber(oldNumber);
+                    setFocus(accessionNumber);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                    accessionNumber.setValue(Util.toString(oldNumber));
+                    manager.getSample().setAccessionNumber(oldNumber);
+                    setFocus(accessionNumber);
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                              .contains(event.getState()));
+                accessionNumber.enable(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
-
-                if (EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()))
+                
+                if (EnumSet.of(State.UPDATE).contains(event.getState()))
                     accessionNumber.setFocus(true);
             }
         });
@@ -83,23 +102,9 @@ public class SampleTab extends Screen {
                 orderNumber.setValue(Util.toString(manager.getSample().getOrderId()));
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getSample().setOrderId(event.getValue());
-                /*
-                if (envOrderImport == null)
-                    envOrderImport = new SampleEnvironmentalImportOrder();
-
-                try {
-                    envOrderImport.importOrderInfo(event.getValue(), manager);
-                    DataChangeEvent.fire(envScreen);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-                */
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
-                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                orderNumber.enable(false);
+                orderNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -114,8 +119,7 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                            .contains(event.getState()));
+                collectedDate.enable(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -123,7 +127,6 @@ public class SampleTab extends Screen {
         collectedTime = (TextBox<Datetime>)def.getWidget(SampleMeta.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-
                 collectedTime.setValue(manager.getSample().getCollectionTime());
             }
 
@@ -132,8 +135,7 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                            .contains(event.getState()));
+                collectedTime.enable(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
                 collectedTime.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -149,8 +151,7 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                           .contains(event.getState()));
+                receivedDate.enable(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -166,7 +167,7 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                statusId.enable(false);
                 statusId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -182,13 +183,12 @@ public class SampleTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                              .contains(event.getState()));
+                clientReference.enable(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
 	}
-	
+
     public void setData(SampleManager manager) {
         this.manager = manager;
         loaded = false;
@@ -199,5 +199,18 @@ public class SampleTab extends Screen {
             DataChangeEvent.fire(this);
 
         loaded = true;
+    }
+
+    private void initializeDropdowns() {
+        try {
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+    }
+    
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
 }

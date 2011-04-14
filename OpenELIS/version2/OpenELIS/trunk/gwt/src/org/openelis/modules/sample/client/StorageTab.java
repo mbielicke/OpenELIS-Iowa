@@ -82,7 +82,7 @@ public class StorageTab extends Screen {
     protected SampleDataBundle      bundle;
     protected StorageManager        manager;
 
-    private Integer                 analysisCancelledId, analysisReleasedId;
+    private Integer                 analysisCancelledId;
 
     public StorageTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
@@ -348,8 +348,6 @@ public class StorageTab extends Screen {
     private void initializeDropdowns() {
         try {
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

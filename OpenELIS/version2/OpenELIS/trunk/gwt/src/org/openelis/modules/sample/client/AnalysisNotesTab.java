@@ -213,10 +213,6 @@ public class AnalysisNotesTab extends NotesTab {
         }
     }
 
-    private boolean isCancelled() {
-        return (analysis != null && analysisCancelledId.equals(analysis.getStatusId()));
-    }
-
     private boolean isReleased() {
         return (analysis != null && analysisReleasedId.equals(analysis.getStatusId()));
     }
@@ -243,7 +239,6 @@ public class AnalysisNotesTab extends NotesTab {
         try {
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
