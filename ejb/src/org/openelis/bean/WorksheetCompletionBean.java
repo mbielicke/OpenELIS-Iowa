@@ -1211,7 +1211,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         AnalysisViewDO          aVDO;
         SampleDataBundle        newBundle;
         SampleItemManager       siManager;
-        SampleManager           sManager;
+        SampleManager           sManager, tempManager;
         
         newBundle = null;
         sManager = bundle.getSampleManager();
@@ -1235,8 +1235,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 // abort update on any samples we may have locked when loading data
                 iter = manager.getLockedManagers().values().iterator();
                 while (iter.hasNext()) {
-                    sManager = (SampleManager) iter.next();
-                    sampleManagerLocal.abortUpdate(sManager.getSample().getId());
+                    tempManager = (SampleManager) iter.next();
+                    sampleManagerLocal.abortUpdate(tempManager.getSample().getId());
                 }
                 manager.getLockedManagers().clear();
                 if (anyE instanceof EntityLockedException) {
