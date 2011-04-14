@@ -56,11 +56,12 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         CHANGED
     };
 
-    private boolean            loaded;
+    private boolean             loaded;
+    private Integer             sampleReleasedId;
 
-    protected SampleDataBundle bundle;
-    protected SampleItemViewDO sampleItem;
-    protected TextBox          sourceOther, containerReference, quantity;
+    protected SampleDataBundle  bundle;
+    protected SampleItemViewDO  sampleItem;
+    protected TextBox           sourceOther, containerReference, quantity;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
     public SampleItemTab(ScreenDefInt def, ScreenWindow window) {
@@ -87,8 +88,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                typeOfSampleId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                             .contains(event.getState()));
+                typeOfSampleId.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                                          .contains(event.getState()));
                 typeOfSampleId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -106,8 +107,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sourceOfSampleId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                               .contains(event.getState()));
+                sourceOfSampleId.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                            .contains(event.getState()));
                 sourceOfSampleId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -123,8 +124,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sourceOther.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
+                sourceOther.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                                       .contains(event.getState()));
                 sourceOther.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -142,8 +143,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                containerId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                          .contains(event.getState()));
+                containerId.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                                       .contains(event.getState()));
                 containerId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -159,8 +160,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                containerReference.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE,
-                                                     State.DELETE).contains(event.getState()));
+                containerReference.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                                              .contains(event.getState()));
                 containerReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -177,8 +178,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                quantity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                       .contains(event.getState()));
+                quantity.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                                    .contains(event.getState()));
                 quantity.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -194,8 +195,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                unitOfMeasureId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE,
-                                                  State.DELETE).contains(event.getState()));
+                unitOfMeasureId.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
+                                                           .contains(event.getState()));
                 unitOfMeasureId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -204,6 +205,13 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         TableDataRow            row;
+
+        try {
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
 
         // sample type dropdown
         model = new ArrayList<TableDataRow>();
@@ -276,6 +284,11 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             DataChangeEvent.fire(this);
 
         loaded = true;
+    }
+    
+    private boolean canEdit() {
+        return (bundle != null && bundle.getSampleManager() != null &&
+                !sampleReleasedId.equals(bundle.getSampleManager().getSample().getStatusId()));
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

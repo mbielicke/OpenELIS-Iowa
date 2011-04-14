@@ -111,7 +111,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     private Integer                                 analysisCancelledId, analysisReleasedId,
                                                     testAnalyteReadOnlyId, testAnalyteRequiredId,
                                                     addedTestAnalyteId, addedAnalyteId, 
-                                                    typeDictionary;
+                                                    typeDictionary, sampleReleasedId;
     private String                                  addedAnalyteName;
 
     private TestReflexUtility                       reflexTestUtil;
@@ -150,8 +150,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testResultsTable.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                               .contains(event.getState()));
+                testResultsTable.enable(true);
             }
         });
 
@@ -159,12 +158,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
                 boolean isHeader;
                 TableDataRow row;
-
-                if (analysis.getUnitOfMeasureId() == null) {
-                	window.setError(consts.get("unitOfMeasureException"));
-                    addResultButton.enable(false);
-                    removeResultButton.enable(false);
-                }
 
                 row = event.getItem().row;
                 isHeader = ((Boolean)row.data).booleanValue();
@@ -179,17 +172,28 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 int row;
                 ResultViewDO data;
 
-                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state) &&
+                    canEdit() && canEditAnalysis()) {
                     row = testResultsTable.getSelectedRow();
                     data = displayManager.getObjectAt(row, 0);
+
+                    if (analysis.getUnitOfMeasureId() == null) {
+                        window.setError(consts.get("unitOfMeasureException"));
+                        addResultButton.enable(false);
+                        removeResultButton.enable(false);
+                    } else {
+                        addResultButton.enable(true);
+                        suggestionsButton.enable(true);
+                    }
 
                     if (testAnalyteRequiredId.equals(data.getTypeId()))
                         removeResultButton.enable(false);
                     else
                         removeResultButton.enable(true);
-
-                    addResultButton.enable(true);
-                    suggestionsButton.enable(true);
+                } else {
+                    addResultButton.enable(false);
+                    removeResultButton.enable(false);
+                    suggestionsButton.enable(false);
                 }
             }
         });
@@ -229,6 +233,10 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 if (isHeaderRow || c == 1 || c >= displayManager.columnCount(r)) {
                     event.cancel();
                     enableButton = false;
+                } else if (!canEdit()) {
+                    window.setError(consts.get("cantUpdateReleasedException"));
+                    event.cancel();
+                    enableButton = false;
                 } else if (section == null) { 
 					window.setError(consts.get("noSectionsForTest"));
                     event.cancel();
@@ -237,8 +245,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 	window.setError(consts.get("noCompleteTestPermission"));
                     event.cancel();
                     enableButton = false;
-                } else if (analysisCancelledId.equals(analysis.getStatusId()) ||
-                		   analysisReleasedId.equals(analysis.getStatusId())) {
+                } else if (!canEditAnalysis()) {
                 	window.setError(consts.get("analysisCancledOrReleased"));
                     event.cancel();
                     enableButton = false;
@@ -860,6 +867,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         try {
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
             testAnalyteReadOnlyId = DictionaryCache.getIdFromSystemName("test_analyte_read_only");
             testAnalyteRequiredId = DictionaryCache.getIdFromSystemName("test_analyte_req");
             typeDictionary = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
@@ -869,6 +877,16 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         }
     }
 
+    private boolean canEdit() {
+        return (bundle != null && bundle.getSampleManager() != null &&
+                !sampleReleasedId.equals(bundle.getSampleManager().getSample().getStatusId()));
+    }
+    
+    private boolean canEditAnalysis() {
+        return (!analysisReleasedId.equals(analysis.getStatusId()) &&
+                !analysisCancelledId.equals(analysis.getStatusId()));
+    }
+    
     private boolean onlyRowUnderHeading(int index) {
         boolean prevHeader, postHeader;
         int size;

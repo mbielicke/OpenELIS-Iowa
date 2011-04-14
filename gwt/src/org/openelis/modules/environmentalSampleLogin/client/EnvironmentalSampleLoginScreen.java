@@ -101,6 +101,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
 public class EnvironmentalSampleLoginScreen extends Screen implements HasActionHandlers {
+    private boolean                        quickUpdate;
     private SampleManager                  manager;
     protected Tabs                         tab;
     private Integer                        sampleReleasedId;
@@ -173,7 +174,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         tab = Tabs.SAMPLE_ITEM;
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-
+        quickUpdate = false;
+        
         try {
             DictionaryCache.preloadByCategorySystemNames("sample_status", "analysis_status",
                                                          "user_action", "type_of_sample", 
@@ -445,8 +447,22 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
+                Integer       oldNumber;
                 SampleManager quickEntryMan;
                 
+                oldNumber = manager.getSample().getAccessionNumber();
+                if (oldNumber != null) {
+                    if (quickUpdate) {
+                        Window.alert(consts.get("cantChangeQuickEntryAccessionNumber"));
+                        accessionNumber.setValue(Util.toString(oldNumber));
+                        setFocus(accessionNumber);
+                        return;
+                    } else if (!Window.confirm(consts.get("accessionNumberEditConfirm"))) {
+                        accessionNumber.setValue(Util.toString(oldNumber));
+                        setFocus(accessionNumber);
+                        return;
+                    }
+                }
                 try {
                     manager.getSample().setAccessionNumber(event.getValue());
                     
@@ -454,43 +470,51 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                         accessionNumUtil = new AccessionNumberUtility();
 
                     quickEntryMan = accessionNumUtil.accessionNumberEntered(manager.getSample());
-
                     if (quickEntryMan != null) {
-                        manager = quickEntryMan;
-                        manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
-                        manager.createEmptyDomainManager();
-                        //
-                        // since when a sample is entered through quick entry we
-                        // don't know what domain the sample belongs to, it isn't
-                        // possible for the flag "isHazardous" to be set at that
-                        // point because it isn't specified for all samples but
-                        // only for environmental ones   
-                        //
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                        .setIsHazardous("N");
-                        DeferredCommand.addCommand(new Command() {
-                        	public void execute() {
-                        		 setFocus(null);
-                                 setState(State.UPDATE);
-                                 DataChangeEvent.fire(envScreen);
-                                 window.clearStatus();
-                        	}
-                        });
+                        if (state == State.ADD) {
+                            manager = quickEntryMan;
+                            manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+                            manager.createEmptyDomainManager();
+                            //
+                            // since when a sample is entered through quick entry we
+                            // don't know what domain the sample belongs to, it isn't
+                            // possible for the flag "isHazardous" to be set at that
+                            // point because it isn't specified for all samples but
+                            // only for environmental ones   
+                            //
+                            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
+                            .setIsHazardous("N");
+                            DeferredCommand.addCommand(new Command() {
+                            	public void execute() {
+                            		 setFocus(null);
+                                     setState(State.UPDATE);
+                                     DataChangeEvent.fire(envScreen);
+                                     window.clearStatus();
+                                     quickUpdate = true;
+                            	}
+                            });
+                        } else {
+                            quickEntryMan.abortUpdate();
+                            throw new Exception(consts.get("quickEntryNumberExists"));
+                        }
                     }
-
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
+                    accessionNumber.setValue(Util.toString(oldNumber));
+                    manager.getSample().setAccessionNumber(oldNumber);
+                    setFocus(accessionNumber);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                    accessionNumber.setValue(Util.toString(null));
-                    manager.getSample().setAccessionNumber(null);
+                    accessionNumber.setValue(Util.toString(oldNumber));
+                    manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionNumber.enable(EnumSet.of(State.ADD, State.QUERY)
-                                              .contains(event.getState()));
+                accessionNumber.enable(event.getState() == State.QUERY ||
+                                       (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                            .contains(event.getState())));
                 accessionNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -548,7 +572,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderNumber.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
+                orderNumber.enable(event.getState() == State.QUERY ||
+                                   (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                        .contains(event.getState())));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -560,8 +586,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                             .contains(event.getState()));
+                orderLookup.enable(event.getState() == State.DISPLAY ||
+                                   (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                        .contains(event.getState())));
             }
         });
 
@@ -576,8 +603,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                            .contains(event.getState()));
+                collectedDate.enable(event.getSource() == State.QUERY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -594,9 +622,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTime.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                            .contains(event.getState()));
-            }
+                collectedTime.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState()));
+                collectedTime.setQueryMode(event.getState() == State.QUERY);            }
         });
 
         receivedDate = (CalendarLookUp)def.getWidget(SampleMeta.getReceivedDate());
@@ -610,8 +638,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                receivedDate.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                           .contains(event.getState()));
+                receivedDate.enable(event.getState() == State.QUERY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -643,8 +672,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                clientReference.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                              .contains(event.getState()));
+                clientReference.enable(event.getState() == State.QUERY ||
+                                       (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                            .contains(event.getState())));
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -973,12 +1003,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             manager = manager.fetchForUpdate();
             setState(State.UPDATE);
             
-            if (sampleReleasedId.equals(manager.getSample().getStatusId())){
-                abort();
-                window.setError(consts.get("cantUpdateReleasedException"));
-                return;
-            }
-            
             DataChangeEvent.fire(this);
             setFocus(orderNumber);
         } catch (Exception e) {
@@ -1032,6 +1056,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
+                quickUpdate = false;
             } catch (ValidationErrorsList e) {
                 showErrors(e);
                 if ( !e.hasErrors() && e.hasWarnings())
@@ -1069,6 +1094,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 setState(Screen.State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
+                quickUpdate = false;
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -1089,18 +1115,17 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
-
         } else if (state == State.ADD) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("addAborted"));
-
         } else if (state == State.UPDATE) {
 			try {
 				manager = manager.abortUpdate();
 
+				quickUpdate = false;
 				if (SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) {
 					setState(State.DEFAULT);
 					manager = SampleManager.getInstance();
@@ -1254,6 +1279,10 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         }
     }
 
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+    }
+    
     private void drawTabs() {
         switch (tab) {
             case SAMPLE_ITEM:

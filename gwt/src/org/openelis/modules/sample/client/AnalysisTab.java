@@ -194,13 +194,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 } else {
                     testChanged(changedTestId);
                 }
-
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                test.enable(canEdit() &&
-                            EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                   .contains(event.getState()));
+                test.enable(event.getState() == State.QUERY || 
+                            (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState())));
                 test.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -346,7 +344,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                method.enable(canEdit() && EnumSet.of(State.QUERY).contains(event.getState()));
+                method.enable(EnumSet.of(State.QUERY).contains(event.getState()));
                 method.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -368,9 +366,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 ArrayList<TableDataRow> model;
                 TableDataRow            r;
 
-                statusId.enable(canEdit() &&
-                                EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                .contains(event.getState()));
+                statusId.enable(event.getState() == State.QUERY ||
+                                (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                     .contains(event.getState())));
                 statusId.setQueryMode(event.getState() == State.QUERY);
 
                 model = statusId.getData();
@@ -423,9 +421,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                isReportable.enable(canEdit() &&
-                                    EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                           .contains(event.getState()));
+                isReportable.enable(event.getState() == State.QUERY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
                 isReportable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -466,9 +464,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sectionId.enable(canEdit() &&
-                                 EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                        .contains(event.getState()));
+                sectionId.enable(event.getState() == State.QUERY ||
+                                 (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                      .contains(event.getState())));
                 sectionId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -512,9 +510,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                unitOfMeasureId.enable(canEdit() &&
-                                       EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                              .contains(event.getState()));
+                unitOfMeasureId.enable(event.getState() == State.QUERY ||
+                                       (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                            .contains(event.getState())));
                 unitOfMeasureId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -530,9 +528,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                startedDate.enable(canEdit() &&
-                                   EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                   .contains(event.getState()));
+                startedDate.enable(event.getState() == State.QUERY ||
+                                   (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                        .contains(event.getState())));
                 startedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -548,9 +546,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                completedDate.enable(canEdit() &&
-                                     EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                     .contains(event.getState()));
+                completedDate.enable(event.getState() == State.QUERY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
                 completedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -626,8 +624,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                samplePrep.enable(canEdit() &&
-                                  EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                samplePrep.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                      .contains(event.getState()));
                 samplePrep.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -666,11 +664,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                
-                analysisUserTable.enable(canEdit() &&
-                                         EnumSet.of(State.ADD, State.UPDATE)
-                                         .contains(event.getState()));
-                analysisUserTable.setQueryMode(event.getState() == State.QUERY);
+                analysisUserTable.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                             .contains(event.getState()));
             }
         });
 
@@ -807,9 +802,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addActionButton.enable(canEdit() && 
-                                       EnumSet.of(State.ADD, State.UPDATE)
-                                       .contains(event.getState()));
+                addActionButton.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                           .contains(event.getState()));
             }
         });
 
@@ -837,9 +831,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeActionButton.enable(canEdit() &&
-                                          EnumSet.of(State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
+                removeActionButton.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                              .contains(event.getState()));
             }
         });
 

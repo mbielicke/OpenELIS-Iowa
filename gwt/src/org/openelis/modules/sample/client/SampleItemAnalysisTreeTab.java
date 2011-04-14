@@ -84,7 +84,8 @@ public class SampleItemAnalysisTreeTab extends Screen
         REFRESH_TABS
     };
 
-    private Integer                       analysisCancelledId, analysisReleasedId;
+    private Integer                       analysisCancelledId, analysisReleasedId,
+                                          sampleReleasedId;
     protected TreeWidget                  itemsTree;
     protected AppButton                   removeRow, addItem, addAnalysis, popoutTree;
     private HasActionHandlers             parentScreen;
@@ -166,7 +167,7 @@ public class SampleItemAnalysisTreeTab extends Screen
                     data = null;
 
                 enable = false;
-                if (state == State.ADD || state == State.UPDATE) {
+                if (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     if ("sampleItem".equals(selection.leafType)) {
                         enable = !selection.hasChildren();
                     } else {
@@ -275,7 +276,7 @@ public class SampleItemAnalysisTreeTab extends Screen
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addItem.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                addItem.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -290,7 +291,7 @@ public class SampleItemAnalysisTreeTab extends Screen
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addAnalysis.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                addAnalysis.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -409,6 +410,7 @@ public class SampleItemAnalysisTreeTab extends Screen
         try {
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -483,6 +485,10 @@ public class SampleItemAnalysisTreeTab extends Screen
         return model;
     }
 
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+    }
+    
     protected void historyCurrentResult() {
         TreeDataItem item;
         SampleDataBundle bundle;

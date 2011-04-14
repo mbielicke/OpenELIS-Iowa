@@ -66,6 +66,7 @@ import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.HasAuxDataInt;
+import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.utilcommon.ResultRangeTime;
 import org.openelis.utilcommon.ResultValidator;
@@ -78,6 +79,7 @@ import com.google.gwt.user.client.Window;
 
 public class AuxDataTab extends Screen implements GetMatchesHandler {
     private boolean                 loaded;
+    private Integer                 sampleReleasedId;
 
     protected AuxGroupLookupScreen  auxGroupScreen;
     protected TableWidget           auxValsTable;
@@ -112,8 +114,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                auxValsTable.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                           .contains(event.getState()));
+                auxValsTable.enable(EnumSet.of(State.QUERY, State.DISPLAY).contains(event.getState()) ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
             }
         });
 
@@ -129,12 +132,17 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                 if (state == State.QUERY){
                     val = auxValsTable.getObject(r, c);
                     
-                    if(c == 0)
+                    if(c == 0) {
                         event.cancel();
-                    else if(c == 2 && queryFieldEntered && (val == null || "".equals(val))){
+                    } else if(c == 2 && queryFieldEntered && (val == null || "".equals(val))) {
                         event.cancel();
                         window.setError(consts.get("auxDataOneQueryException"));
                     }
+                } else if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    if (!canEdit())
+                        event.cancel();
+                } else {
+                    event.cancel();
                 }
             }
         });
@@ -219,7 +227,8 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
                     auxUnits.setValue(fieldDO.getUnitOfMeasureName());
                 }
 
-                if (EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(state))
+                if (state == State.QUERY ||
+                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(state)))
                     removeAuxButton.enable(true);
             };
         });
@@ -255,8 +264,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addAuxButton.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                           .contains(event.getState()));
+                addAuxButton.enable(event.getState() == State.QUERY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
             }
         });
 
@@ -288,6 +298,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 auxMethod.enable(false);
+                auxMethod.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -299,6 +310,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 auxUnits.enable(false);
+                auxUnits.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -310,6 +322,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 auxDesc.enable(false);
+                auxDesc.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
@@ -321,6 +334,11 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
         // type Date and Date-Time
         //
         timeRange = new ResultRangeTime();
+    }
+    
+    private boolean canEdit() {
+        return (parentMan != null && parentMan instanceof SampleManager &&
+                !sampleReleasedId.equals(((SampleManager)parentMan).getSample().getStatusId()));
     }
 
     private ArrayList<TableDataRow> getTableModel() {
@@ -611,6 +629,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             dateId = DictionaryCache.getIdFromSystemName("aux_date");
             dateTimeId = DictionaryCache.getIdFromSystemName("aux_date_time");
             dictionaryId = DictionaryCache.getIdFromSystemName("aux_dictionary");
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

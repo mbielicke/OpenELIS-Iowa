@@ -81,6 +81,8 @@ public class SDWISTab extends Screen {
     private SampleManager                  manager;
     private SampleSDWISManager             sdwisManager;
 
+    private Integer                        sampleReleasedId;
+
     protected boolean                      loaded = false;
 
     public SDWISTab(ScreenWindow window) throws Exception {
@@ -135,8 +137,8 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                pwsId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                         .contains(event.getState()));
+                pwsId.enable(event.getState() == State.QUERY ||
+                             (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState())));
                 pwsId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -148,8 +150,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                pwsButton.enable(EnumSet.of(State.DISPLAY, State.ADD, State.UPDATE)
-                                        .contains(event.getState()));
+                pwsButton.enable(event.getState() == State.DISPLAY ||
+                                 (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                      .contains(event.getState())));
             }
         });
 
@@ -161,6 +164,7 @@ public class SDWISTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 pwsName.enable(false);
+                pwsName.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -175,8 +179,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                stateLabId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                              .contains(event.getState()));
+                stateLabId.enable(event.getState() == State.QUERY ||
+                                  (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                       .contains(event.getState())));
                 stateLabId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -192,8 +197,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                facilityId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                              .contains(event.getState()));
+                facilityId.enable(event.getState() == State.QUERY ||
+                                  (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                       .contains(event.getState())));
                 facilityId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -209,8 +215,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleTypeId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(event.getState()));
+                sampleTypeId.enable(event.getState() == State.QUERY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
                 sampleTypeId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -226,8 +233,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                samplePointId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                 .contains(event.getState()));
+                samplePointId.enable(event.getState() == State.QUERY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
                 samplePointId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -243,8 +251,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                pointDesc.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                        .contains(event.getState()));
+                pointDesc.enable(event.getState() == State.QUERY ||
+                                 (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                      .contains(event.getState())));
                 pointDesc.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -261,8 +270,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleCategoryId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                    .contains(event.getState()));
+                sampleCategoryId.enable(event.getState() == State.QUERY ||
+                                        (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                             .contains(event.getState())));
                 sampleCategoryId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -278,8 +288,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collector.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
+                collector.enable(event.getState() == State.QUERY ||
+                                 (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                      .contains(event.getState())));
                 collector.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -334,8 +345,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportTo.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                       .contains(event.getState()));
+                reportTo.enable(event.getState() == State.QUERY ||
+                                (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                     .contains(event.getState())));
                 reportTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -398,7 +410,8 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                billTo.enable(event.getState() == State.QUERY ||
+                              (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState())));
                 billTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -417,8 +430,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                           .contains(event.getState()));
+                billToLookup.enable(event.getState() == State.DISPLAY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
             }
         });
 
@@ -429,8 +443,9 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                             .contains(event.getState()));
+                reportToLookup.enable(event.getState() == State.DISPLAY ||
+                                      (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                           .contains(event.getState())));
             }
         });
     }
@@ -567,6 +582,13 @@ public class SDWISTab extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
+        try {
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+
         // sample type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -582,6 +604,10 @@ public class SDWISTab extends Screen {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         sampleCategoryId.setModel(model);
+    }
+    
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
     
     public void showErrors(ValidationErrorsList errors) {

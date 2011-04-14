@@ -90,6 +90,8 @@ public class PrivateWellTab extends Screen {
     private SampleManager                  manager;
     private SamplePrivateWellManager       wellManager;
 
+    private Integer                        sampleReleasedId;
+
     protected boolean                      loaded = false;
 
     public PrivateWellTab(ScreenWindow window) throws Exception {        
@@ -118,9 +120,9 @@ public class PrivateWellTab extends Screen {
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
                     orgName.setSelection(getManager().getPrivateWell().getReportToName(),
                                          getManager().getPrivateWell().getReportToName());
-                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(state));
-
+                    enableReportToFields(state == State.QUERY ||
+                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                              .contains(state)));
                 } else {
                     orgName.setSelection(getManager().getPrivateWell().getOrganization().getName(),
                                          getManager().getPrivateWell().getOrganization().getName());
@@ -147,6 +149,7 @@ public class PrivateWellTab extends Screen {
 
                     wellDO.setOrganizationId(orgDO.getId());
                     wellDO.setOrganization(orgDO);
+
                     enableAddressValues = false;                    
                 } else if (selectedRow != null) { 
                     //
@@ -170,7 +173,6 @@ public class PrivateWellTab extends Screen {
                     wellDO.setOrganizationId(null);
                     wellDO.getOrganization().setName(null);
 
-
                     enableAddressValues = true;
                 }
 
@@ -178,9 +180,15 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orgName.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                      .contains(event.getState()));
+                boolean enable;
+                
+                enable = event.getState() == State.QUERY ||
+                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                
+                orgName.enable(enable);
                 orgName.setQueryMode(event.getState() == State.QUERY);
+
+                enableReportToFields(enable && getManager().getPrivateWell().getOrganizationId() == null);
             }
         });
 
@@ -248,15 +256,15 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(addressMultipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    addressMultipleUnit.setValue(getManager().getPrivateWell()
-                                                 .getReportToAddress()
-                                                 .getMultipleUnit());
-                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(state));
-
+                    addressMultipleUnit.setValue(getManager().getPrivateWell().getReportToAddress()
+                                                             .getMultipleUnit());
+//                    enableReportToFields(state == State.QUERY ||
+//                                         (canEdit() && EnumSet.of(State.QUERY, State.ADD)
+//                                                              .contains(state)));
                 } else {
-                    addressMultipleUnit.setValue(getManager().getPrivateWell().getOrganization().getAddress().getMultipleUnit());
-                    enableReportToFields(false);
+                    addressMultipleUnit.setValue(getManager().getPrivateWell().getOrganization()
+                                                             .getAddress().getMultipleUnit());
+//                    enableReportToFields(false);
                 }
             }
 
@@ -267,8 +275,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressMultipleUnit.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                  .contains(event.getState()));
+//                addressMultipleUnit.enable(event.getState() == State.QUERY ||
+//                                           (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                                .contains(event.getState())));
                 addressMultipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -284,8 +293,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToAttn.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                           .contains(event.getState()));
+                reportToAttn.enable(event.getState() == State.QUERY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
                 reportToAttn.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -294,15 +304,15 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(addressStreetAddress, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {               
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    addressStreetAddress.setValue(getManager().getPrivateWell()
-                                                 .getReportToAddress()
-                                                 .getStreetAddress());
-                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(state));
-
+                    addressStreetAddress.setValue(getManager().getPrivateWell().getReportToAddress()
+                                                              .getStreetAddress());
+//                    enableReportToFields(state == State.QUERY ||
+//                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                              .contains(state)));
                 } else {
-                    addressStreetAddress.setValue(getManager().getPrivateWell().getOrganization().getAddress().getStreetAddress());
-                    enableReportToFields(false);
+                    addressStreetAddress.setValue(getManager().getPrivateWell().getOrganization()
+                                                              .getAddress().getStreetAddress());
+//                    enableReportToFields(false);
                 }
             }
 
@@ -313,8 +323,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressStreetAddress.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                   .contains(event.getState()));
+//                addressStreetAddress.enable(event.getState() == State.QUERY ||
+//                                            (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                                 .contains(event.getState())));
                 addressStreetAddress.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -323,15 +334,15 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(addressCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    addressCity.setValue(getManager().getPrivateWell()
-                                                 .getReportToAddress()
-                                                 .getCity());
-                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(state));
-
+                    addressCity.setValue(getManager().getPrivateWell().getReportToAddress()
+                                                     .getCity());
+//                    enableReportToFields(state == State.QUERY ||
+//                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                              .contains(state)));
                 } else {
-                    addressCity.setValue(getManager().getPrivateWell().getOrganization().getAddress().getCity());
-                    enableReportToFields(false);
+                    addressCity.setValue(getManager().getPrivateWell().getOrganization()
+                                                     .getAddress().getCity());
+//                    enableReportToFields(false);
                 }
             }
 
@@ -340,8 +351,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressCity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
+//                addressCity.enable(event.getState() == State.QUERY ||
+//                                   (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                        .contains(event.getState())));
                 addressCity.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -350,15 +362,15 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(addressWorkPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {                
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    addressWorkPhone.setValue(getManager().getPrivateWell()
-                                                 .getReportToAddress()
-                                                 .getWorkPhone());
-                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(state));
-
+                    addressWorkPhone.setValue(getManager().getPrivateWell().getReportToAddress()
+                                                          .getWorkPhone());
+//                    enableReportToFields(state == State.QUERY ||
+//                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                              .contains(state)));
                 } else {
-                    addressWorkPhone.setValue(getManager().getPrivateWell().getOrganization().getAddress().getWorkPhone());
-                    enableReportToFields(false);
+                    addressWorkPhone.setValue(getManager().getPrivateWell().getOrganization()
+                                                          .getAddress().getWorkPhone());
+//                    enableReportToFields(false);
                 }
             }
 
@@ -367,8 +379,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressWorkPhone.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                               .contains(event.getState()));
+//                addressWorkPhone.enable(event.getState() == State.QUERY ||
+//                                        (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                             .contains(event.getState())));
                 addressWorkPhone.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -377,14 +390,15 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(addressState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    addressState.setValue(getManager().getPrivateWell()
-                                                 .getReportToAddress()
-                                                 .getState());
-                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(state));
+                    addressState.setValue(getManager().getPrivateWell().getReportToAddress()
+                                                      .getState());
+//                    enableReportToFields(state == State.QUERY ||
+//                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                              .contains(state)));
                 } else {
-                    addressState.setValue(getManager().getPrivateWell().getOrganization().getAddress().getState());
-                    enableReportToFields(false);
+                    addressState.setValue(getManager().getPrivateWell().getOrganization()
+                                                      .getAddress().getState());
+//                    enableReportToFields(false);
                 }
             }
 
@@ -393,8 +407,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressState.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                           .contains(event.getState()));
+//                addressState.enable(event.getState() == State.QUERY ||
+//                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                         .contains(event.getState())));
                 addressState.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -403,14 +418,15 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(addressZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    addressZipCode.setValue(getManager().getPrivateWell()
-                                                 .getReportToAddress()
-                                                 .getZipCode());
-                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(state));
+                    addressZipCode.setValue(getManager().getPrivateWell().getReportToAddress()
+                                                        .getZipCode());
+//                    enableReportToFields(state == State.QUERY || 
+//                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                              .contains(state)));
                 } else {
-                    addressZipCode.setValue(getManager().getPrivateWell().getOrganization().getAddress().getZipCode());
-                    enableReportToFields(false);
+                    addressZipCode.setValue(getManager().getPrivateWell().getOrganization()
+                                                        .getAddress().getZipCode());
+//                    enableReportToFields(false);
                 }
             }
 
@@ -419,8 +435,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressZipCode.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
+//                addressZipCode.enable(event.getState() == State.QUERY ||
+//                                      (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                           .contains(event.getState())));
                 addressZipCode.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -428,18 +445,16 @@ public class PrivateWellTab extends Screen {
         addressFaxPhone = (TextBox)def.getWidget(SampleMeta.getWellReportToAddressFaxPhone());
         addScreenHandler(addressFaxPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                addressFaxPhone.setValue(getManager().getPrivateWell()
-                                                     .getReportToAddress()
-                                                     .getFaxPhone());
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    addressFaxPhone.setValue(getManager().getPrivateWell()
-                                                 .getReportToAddress()
-                                                 .getFaxPhone());
-                    enableReportToFields(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(state));
+                    addressFaxPhone.setValue(getManager().getPrivateWell().getReportToAddress()
+                                                         .getFaxPhone());
+//                    enableReportToFields(state == State.QUERY ||
+//                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                              .contains(state)));
                 } else {
-                    addressFaxPhone.setValue(getManager().getPrivateWell().getOrganization().getAddress().getFaxPhone());
-                    enableReportToFields(false);
+                    addressFaxPhone.setValue(getManager().getPrivateWell().getReportToAddress()
+                                                         .getFaxPhone());
+//                    enableReportToFields(false);
                 }
             }
 
@@ -448,8 +463,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addressFaxPhone.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                              .contains(event.getState()));
+//                addressFaxPhone.enable(event.getState() == State.QUERY ||
+//                                       (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+//                                                            .contains(event.getState())));
                 addressFaxPhone.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -465,8 +481,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellLocation.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                           .contains(event.getState()));
+                wellLocation.enable(event.getState() == State.QUERY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
                 wellLocation.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -474,20 +491,18 @@ public class PrivateWellTab extends Screen {
         locationAddrMultipleUnit = (TextBox)def.getWidget(SampleMeta.getWellLocationAddrMultipleUnit());
         addScreenHandler(locationAddrMultipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                locationAddrMultipleUnit.setValue(getManager().getPrivateWell()
-                                                              .getLocationAddress()
+                locationAddrMultipleUnit.setValue(getManager().getPrivateWell().getLocationAddress()
                                                               .getMultipleUnit());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getPrivateWell()
-                            .getLocationAddress()
-                            .setMultipleUnit(event.getValue());
+                getManager().getPrivateWell().getLocationAddress().setMultipleUnit(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrMultipleUnit.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                       .contains(event.getState()));
+                locationAddrMultipleUnit.enable(event.getState() == State.QUERY ||
+                                                (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                                     .contains(event.getState())));
                 locationAddrMultipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -501,14 +516,13 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getPrivateWell()
-                            .getLocationAddress()
-                            .setStreetAddress(event.getValue());
+                getManager().getPrivateWell().getLocationAddress().setStreetAddress(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrStreetAddress.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                        .contains(event.getState()));
+                locationAddrStreetAddress.enable(event.getState() == State.QUERY ||
+                                                 (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                                      .contains(event.getState())));
                 locationAddrStreetAddress.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -516,8 +530,7 @@ public class PrivateWellTab extends Screen {
         locationAddrCity = (TextBox)def.getWidget(SampleMeta.getWellLocationAddrCity());
         addScreenHandler(locationAddrCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                locationAddrCity.setValue(getManager().getPrivateWell()
-                                                      .getLocationAddress()
+                locationAddrCity.setValue(getManager().getPrivateWell().getLocationAddress()
                                                       .getCity());
             }
 
@@ -526,8 +539,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrCity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                               .contains(event.getState()));
+                locationAddrCity.enable(event.getState() == State.QUERY ||
+                                        (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                             .contains(event.getState())));
                 locationAddrCity.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -535,8 +549,7 @@ public class PrivateWellTab extends Screen {
         locationAddrState = (Dropdown)def.getWidget(SampleMeta.getWellLocationAddrState());
         addScreenHandler(locationAddrState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                locationAddrState.setSelection(getManager().getPrivateWell()
-                                                           .getLocationAddress()
+                locationAddrState.setSelection(getManager().getPrivateWell().getLocationAddress()
                                                            .getState());
             }
 
@@ -545,8 +558,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrState.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                .contains(event.getState()));
+                locationAddrState.enable(event.getState() == State.QUERY ||
+                                         (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                              .contains(event.getState())));
                 locationAddrState.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -554,8 +568,7 @@ public class PrivateWellTab extends Screen {
         locationAddrZipCode = (TextBox)def.getWidget(SampleMeta.getWellLocationAddrZipCode());
         addScreenHandler(locationAddrZipCode, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                locationAddrZipCode.setValue(getManager().getPrivateWell()
-                                                         .getLocationAddress()
+                locationAddrZipCode.setValue(getManager().getPrivateWell().getLocationAddress()
                                                          .getZipCode());
             }
 
@@ -564,8 +577,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                locationAddrZipCode.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                  .contains(event.getState()));
+                locationAddrZipCode.enable(event.getState() == State.QUERY ||
+                                           (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                                .contains(event.getState())));
                 locationAddrZipCode.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -581,8 +595,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellOwner.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                        .contains(event.getState()));
+                wellOwner.enable(event.getState() == State.QUERY ||
+                                 (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                      .contains(event.getState())));
                 wellOwner.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -598,8 +613,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellCollector.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                            .contains(event.getState()));
+                wellCollector.enable(event.getState() == State.QUERY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
                 wellCollector.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -615,8 +631,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                wellNumber.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
+                wellNumber.enable(event.getState() == State.QUERY ||
+                                  (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                       .contains(event.getState())));
                 wellNumber.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -624,15 +641,16 @@ public class PrivateWellTab extends Screen {
         project = (AutoComplete<Integer>)def.getWidget(SampleMeta.getProjectName());
         addScreenHandler(project, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
+                SampleProjectViewDO data;
+                
                 try {
-                    SampleProjectViewDO data = manager.getProjects()
-                                                           .getFirstPermanentProject();
-
+                    data = manager.getProjects().getFirstPermanentProject();
                     if (data != null)
-                        project.setSelection(new TableDataRow(data.getProjectId(), data.getProjectName(), data.getProjectDescription()));
+                        project.setSelection(new TableDataRow(data.getProjectId(),
+                                                              data.getProjectName(),
+                                                              data.getProjectDescription()));
                     else
                         project.setSelection(new TableDataRow(null, "", ""));
-
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -678,8 +696,9 @@ public class PrivateWellTab extends Screen {
                 }
             }
             public void onStateChange(StateChangeEvent<State> event) {
-                project.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY)
-                                          .contains(event.getState()));
+                project.enable(event.getState() == State.QUERY ||
+                               (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                    .contains(event.getState())));
                 project.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -726,24 +745,23 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                            .contains(event.getState()));
+                projectLookup.enable(event.getState() == State.DISPLAY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
             }
         });
 
         billTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getBillTo());
         addScreenHandler(billTo, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                try {
-                    SampleOrganizationViewDO billToOrg = manager.getOrganizations()
-                                                                .getBillTo();
+                SampleOrganizationViewDO billToOrg;
 
+                try {
+                    billToOrg = manager.getOrganizations().getBillTo();
                     if (billToOrg != null)
-                        billTo.setSelection(billToOrg.getOrganizationId(),
-                                            billToOrg.getOrganizationName());
+                        billTo.setSelection(billToOrg.getOrganizationId(), billToOrg.getOrganizationName());
                     else
                         billTo.setSelection(null, "");
-
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -782,7 +800,7 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                billTo.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
                 billTo.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -801,8 +819,9 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billToLookup.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
-                                           .contains(event.getState()));
+                billToLookup.enable(event.getState() == State.DISPLAY ||
+                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                         .contains(event.getState())));
             }
         });
     }
@@ -943,6 +962,13 @@ public class PrivateWellTab extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
+        try {
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+
         // state dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -999,5 +1025,9 @@ public class PrivateWellTab extends Screen {
         addressZipCode.setValue(data.getZipCode());
         addressWorkPhone.setValue(data.getWorkPhone());
         addressFaxPhone.setValue(data.getFaxPhone());
+    }
+    
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
 }
