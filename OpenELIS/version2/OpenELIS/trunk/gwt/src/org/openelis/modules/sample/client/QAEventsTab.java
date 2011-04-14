@@ -87,7 +87,7 @@ public class QAEventsTab extends Screen {
     protected SampleManager          sampleManager;
     protected AnalysisManager        analysisManager;
     protected AnalysisViewDO         anDO;
-    protected Integer                analysisCancelledId, analysisReleasedId;
+    protected Integer                analysisCancelledId, analysisReleasedId, sampleReleasedId;
 	protected Integer				 qaInternal, qaWarning, qaOverride;
 
     protected QaeventLookupScreen    qaEventScreen;
@@ -112,8 +112,7 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleQATable.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                            .contains(event.getState()));
+                sampleQATable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
                 sampleQATable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -134,12 +133,8 @@ public class QAEventsTab extends Screen {
         sampleQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
             	if (state == State.ADD || state == State.UPDATE) {
-                	if (! canEditSampleQA()) {
-                		window.setError(consts.get("cantUpdateSampleQAEvent"));
-                		event.cancel();
-                	} else {
-                		window.clearStatus();
-                	}
+                	if (event.getCol() == 0 || !canEditSampleQA())
+                	    event.cancel();
                 }
             }
         });
@@ -195,7 +190,8 @@ public class QAEventsTab extends Screen {
                 	return;
                 data = sampleQAManager.getSampleQAAt(r);
                 /*
-                 * allow removal of only internal qa events if any analysis is released
+                 * allow removal of only internal qa events if sample is released
+                 * or any analysis is released
                  */
         		window.clearStatus();
                 if (data.getTypeId() != qaInternal && !canEditSampleQA())
@@ -232,14 +228,9 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-            	boolean enable;
-            	
-            	enable = event.getState() == State.QUERY ||
-            			 (EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
-    					  SampleDataBundle.Type.ANALYSIS == type &&
-            			  anDO.getTestId() != null && 
-            			  canEditAnalysisQA());
-                analysisQATable.enable(enable); 
+                analysisQATable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
+                                       SampleDataBundle.Type.ANALYSIS == type &&
+                                       anDO.getTestId() != null); 
                 analysisQATable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -260,11 +251,8 @@ public class QAEventsTab extends Screen {
         analysisQATable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
             	if (state == State.ADD || state == State.UPDATE) {
-                	if (! canEditAnalysisQA()) {
-                		window.setError(consts.get("cantUpdateAnalysisQAEvent"));
-                		event.cancel();
-                	} else
-                		window.clearStatus();
+                    if (event.getCol() == 0 || !canEditAnalysisQA())
+                        event.cancel();
                 }
             }
         });
@@ -344,14 +332,11 @@ public class QAEventsTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-            	boolean enable;
-            	
-            	enable = SampleDataBundle.Type.ANALYSIS == type && anDO.getTestId() != null &&
-    					 EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
-                analysisQAPicker.enable(enable);
+                analysisQAPicker.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
+                                        SampleDataBundle.Type.ANALYSIS == type &&
+                                        anDO.getTestId() != null);
             }
         });
-
     }
 
     private ArrayList<TableDataRow> getSampleQAEventTableModel() {
@@ -404,7 +389,6 @@ public class QAEventsTab extends Screen {
         if (qaEventScreen == null) {
 	    	try {
 	            qaEventScreen = new QaeventLookupScreen();
-
 	            qaEventScreen.addActionHandler(new ActionHandler<QaeventLookupScreen.Action>() {
 	            	public void onAction(ActionEvent<QaeventLookupScreen.Action> event) {
 	                	boolean nonInte, canEdit;
@@ -412,12 +396,11 @@ public class QAEventsTab extends Screen {
 	                	TableDataRow row;
 	                    ArrayList<TableDataRow> list;
 	                    
+                        nonInte = false;
 	                    if (qaEventScreen.getType() == QaeventLookupScreen.Type.SAMPLE) {
-	                    	nonInte = false;
 	                    	canEdit = canEditSampleQA();
 	                        sampleQATable.fireEvents(false);
 	                    } else { 
-	                    	nonInte = false;
 	                    	canEdit = canEditAnalysisQA();
 	                    	analysisQATable.fireEvents(false);
 	                    }
@@ -487,6 +470,7 @@ public class QAEventsTab extends Screen {
         try {
             analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
             qaInternal = DictionaryCache.getIdFromSystemName("qaevent_internal");
             qaWarning = DictionaryCache.getIdFromSystemName("qaevent_warning");
             qaOverride = DictionaryCache.getIdFromSystemName("qaevent_override");
@@ -498,7 +482,8 @@ public class QAEventsTab extends Screen {
 
     private boolean canEditSampleQA() {
         try {
-            return !sampleManager.hasReleasedAnalysis();
+            return (!sampleReleasedId.equals(sampleManager.getSample().getStatusId()) &&
+                    !sampleManager.hasReleasedAnalysis());
         } catch (Exception e) {
             return false;
         }

@@ -630,6 +630,60 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
         });
 
+        samplePrep.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<TableDataRow> model;
+                TableDataRow row;
+                AnalysisViewDO anDO;
+                SampleItemViewDO itemDO;
+                SampleItemManager itemMan;
+                AnalysisManager anMan;
+                Integer currentId;
+                String match;
+                int numOfRows, i, j;
+
+                try {
+                    currentId = analysis.getId();
+                    match = event.getMatch();
+                    model = new ArrayList<TableDataRow>();
+                    itemMan = bundle.getSampleManager().getSampleItems();
+
+                    numOfRows = 0;
+                    for (i = 0; i < itemMan.count(); i++ ) {
+                        if (numOfRows > 9)
+                            break;
+
+                        itemDO = itemMan.getSampleItemAt(i);
+                        anMan = itemMan.getAnalysisAt(i);
+
+                        for (j = 0; j < anMan.count(); j++ ) {
+                            if (numOfRows > 9)
+                                break;
+
+                            anDO = anMan.getAnalysisAt(j);
+
+                            if ( !currentId.equals(anDO.getId()) && anDO.getTestName() != null &&
+                                anDO.getTestName().startsWith(match)) {
+                                row = new TableDataRow(
+                                                       anDO.getId(),
+                                                       anDO.getTestName() +
+                                                                       " : " +
+                                                                       anDO.getMethodName() +
+                                                                       " | " +
+                                                                       formatTreeString(itemDO.getTypeOfSample()));
+                                row.data = anMan.getBundleAt(j);
+                                model.add(row);
+                            }
+                        }
+                    }
+
+                    samplePrep.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert("prep getMatches: " + e.getMessage());
+                }
+            }
+        });
+
         worksheetTable = (TableWidget)def.getWidget("worksheetTable");
         addScreenHandler(worksheetTable, new ScreenEventHandler<TableDataRow>() {
             public void onDataChange(DataChangeEvent event) {
@@ -664,13 +718,22 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisUserTable.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
-                                                             .contains(event.getState()));
+                analysisUserTable.enable(true);
             }
         });
 
         final AutoComplete<Integer> userName = ((AutoComplete<Integer>)analysisUserTable.getColumns()
                                                                                         .get(0).colWidget);
+        analysisUserTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                Object val;
+                
+                if (!canEdit() || !EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    event.cancel();
+                }
+            }
+        });
+
         analysisUserTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
@@ -703,7 +766,12 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                         }
                         break;
                     case 1:
-                        data.setActionId((Integer)val);
+                        if (actionReleasedId.equals(data.getActionId())) {
+                            analysisUserTable.setCell(r, c, data.getActionId());
+                            window.setError(consts.get("analysisUserActionException"));
+                        } else {
+                            data.setActionId((Integer)val);
+                        }
                         break;
                 }
             }
@@ -755,7 +823,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         });
         
         userActionId = ((Dropdown<Integer>)analysisUserTable.getColumns().get(1).getColumnWidget());
-        
         userActionId.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {           
             public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {                
                 TableDataRow r;
@@ -833,60 +900,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             public void onStateChange(StateChangeEvent<State> event) {
                 removeActionButton.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                               .contains(event.getState()));
-            }
-        });
-
-        samplePrep.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<TableDataRow> model;
-                TableDataRow row;
-                AnalysisViewDO anDO;
-                SampleItemViewDO itemDO;
-                SampleItemManager itemMan;
-                AnalysisManager anMan;
-                Integer currentId;
-                String match;
-                int numOfRows, i, j;
-
-                try {
-                    currentId = analysis.getId();
-                    match = event.getMatch();
-                    model = new ArrayList<TableDataRow>();
-                    itemMan = bundle.getSampleManager().getSampleItems();
-
-                    numOfRows = 0;
-                    for (i = 0; i < itemMan.count(); i++ ) {
-                        if (numOfRows > 9)
-                            break;
-
-                        itemDO = itemMan.getSampleItemAt(i);
-                        anMan = itemMan.getAnalysisAt(i);
-
-                        for (j = 0; j < anMan.count(); j++ ) {
-                            if (numOfRows > 9)
-                                break;
-
-                            anDO = anMan.getAnalysisAt(j);
-
-                            if ( !currentId.equals(anDO.getId()) && anDO.getTestName() != null &&
-                                anDO.getTestName().startsWith(match)) {
-                                row = new TableDataRow(
-                                                       anDO.getId(),
-                                                       anDO.getTestName() +
-                                                                       " : " +
-                                                                       anDO.getMethodName() +
-                                                                       " | " +
-                                                                       formatTreeString(itemDO.getTypeOfSample()));
-                                row.data = anMan.getBundleAt(j);
-                                model.add(row);
-                            }
-                        }
-                    }
-
-                    samplePrep.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert("prep getMatches: " + e.getMessage());
-                }
             }
         });
     }

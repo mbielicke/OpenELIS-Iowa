@@ -87,8 +87,15 @@ public class SampleNotesTab extends NotesTab {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                standardNote.enable(!isAnalysisReleased() && canEdit() &&
-                                    EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                boolean enable;
+                
+                try {
+                    enable = !sampleManager.hasReleasedAnalysis() && canEdit() &&
+                             EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
+                } catch (Exception anyE) {
+                    enable = false;
+                }
+                standardNote.enable(enable);
             }
         });
 
@@ -197,32 +204,6 @@ public class SampleNotesTab extends NotesTab {
         return (sampleManager != null && !sampleReleasedId.equals(sampleManager.getSample().getStatusId()));
     }
     
-    private boolean isAnalysisReleased() {
-        int i, j;
-        AnalysisManager   aManager;
-        AnalysisViewDO    analysis;
-        SampleItemManager siManager;
-        
-        if (sampleManager != null) {
-            try {
-                siManager = sampleManager.getSampleItems();
-                for (i = 0; i < siManager.count(); i++) {
-                    aManager = siManager.getAnalysisAt(i);
-                    for (j = 0; j < aManager.count(); j++) {
-                        analysis = aManager.getAnalysisAt(j);
-                        if (analysis != null && analysisReleasedId.equals(analysis.getStatusId()))
-                            return true;
-                    }
-                }
-            } catch (Exception anyE) {
-                Window.alert("isAnalysisReleased:" + anyE.getMessage());
-                return true;
-            }
-        }
-        
-        return false;
-    }
-
     private void initializeDropdowns() {
         try {
             analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
