@@ -260,6 +260,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
 
     public void setData(SampleDataBundle data) {
         try{
+            bundle = data;
             if (data == null) {
                 sampleItem = new SampleItemViewDO();
     
@@ -271,8 +272,6 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
                 if (state == State.ADD || state == State.UPDATE)
                     StateChangeEvent.fire(this, State.UPDATE);
             }
-            
-            bundle = data;
             loaded = false;
         }catch(Exception e){
             Window.alert("sampleItemTab setData: "+e.getMessage());

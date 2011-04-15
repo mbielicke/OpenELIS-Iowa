@@ -556,6 +556,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     
     public void setData(SampleDataBundle data) {
         try {
+            bundle = data;
             if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
                 analysisMan = data.getSampleManager()
                                   .getSampleItems()
@@ -569,10 +570,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 analysis = new AnalysisViewDO();
                 StateChangeEvent.fire(this, State.DEFAULT);
             }
-
-            bundle = data;
             loaded = false;
-
         } catch (Exception e) {
             Window.alert("resultTab setData: " + e.getMessage());
         }
