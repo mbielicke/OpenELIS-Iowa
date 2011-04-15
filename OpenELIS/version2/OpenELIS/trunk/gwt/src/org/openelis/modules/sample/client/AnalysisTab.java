@@ -1141,6 +1141,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
     public void setData(SampleDataBundle data) {
         try {
+            bundle = data;
             if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
 
                 analysisIndex = data.getAnalysisIndex();
@@ -1163,7 +1164,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 if (state != State.QUERY)
                     StateChangeEvent.fire(this, State.DEFAULT);
             }
-            bundle = data;
             loaded = false;
         } catch (Exception e) {
             Window.alert("analysisTab setData: " + e.getMessage());
