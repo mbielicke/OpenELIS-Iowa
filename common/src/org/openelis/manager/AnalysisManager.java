@@ -203,7 +203,7 @@ public class AnalysisManager implements RPC {
 
         try {
             data.setStatusId(proxy().anCancelledId);
-            SectionCache.getSectionFromId(data.getSectionId());
+            SectionCache.getById(data.getSectionId());
             data.setPreAnalysisId(null);
 
         } catch (Exception e) {

@@ -55,7 +55,7 @@ public class InventoryAdjustmentViewDO extends InventoryAdjustmentDO {
         this.systemUserName = DataBaseUtil.trim(systemUserName);
     }
 
-    public Integer getIInventoryXAdjustInventoryLocationInventoryItemStoreId() {
+    public Integer getInventoryXAdjustInventoryLocationInventoryItemStoreId() {
         return inventoryXAdjustInventoryLocationInventoryItemStoreId;
     }
 

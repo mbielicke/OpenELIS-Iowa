@@ -29,13 +29,12 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.DictionaryCacheCategoryListVO;
-import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.CategoryCacheVO;
 
 @Remote
 public interface CategoryCacheRemote {
 
-    public ArrayList<DictionaryDO> getBySystemName(String systemName) throws Exception;
+    public CategoryCacheVO getBySystemName(String systemName) throws Exception;
     
-    public DictionaryCacheCategoryListVO getBySystemNames(String systemNames[]) throws Exception;
+    public ArrayList<CategoryCacheVO> getBySystemNames(String systemNames[]) throws Exception;
 }

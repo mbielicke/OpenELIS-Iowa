@@ -38,7 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.DictionaryCacheCategoryVO;
+import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
@@ -64,7 +64,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
     private EntityManager        manager;
 
     @EJB
-    private DictionaryCacheLocal dictCache;
+    private DictionaryCacheLocal dictCache;        
 
     private static CategoryMeta  meta = new CategoryMeta();
 
@@ -207,10 +207,10 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
 
     public void delete(DictionaryViewDO data) throws Exception {
         Dictionary entity;
-
+        
         manager.setFlushMode(FlushModeType.COMMIT);
-
         entity = manager.find(Dictionary.class, data.getId());
+        
         if (entity != null) {
             dictCache.evict(entity.getId());
             dictCache.evict(entity.getSystemName());
@@ -232,8 +232,8 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
             throw list;
     }
 
-    public ArrayList<DictionaryCacheCategoryVO> preLoadBySystemName(ArrayList<DictionaryCacheCategoryVO> cacheVO) throws Exception {
-        DictionaryCacheCategoryVO catVO;
+    public ArrayList<CategoryCacheVO> preLoadBySystemName(ArrayList<CategoryCacheVO> cacheVO) throws Exception {
+        CategoryCacheVO catVO;
 
         for (int i = 0; i < cacheVO.size(); i++ ) {
             catVO = cacheVO.get(i);

@@ -34,10 +34,9 @@ import org.openelis.domain.SectionViewDO;
 @Local
 public interface SectionCacheLocal {
 
-    public abstract SectionViewDO getById(Integer id) throws Exception;
+    public SectionViewDO getById(Integer id) throws Exception;
 
-    public abstract ArrayList<SectionViewDO> getList() throws Exception;
+    public ArrayList<SectionViewDO> getList() throws Exception;
 
-    public abstract void evict(Integer id);
-
+    public void evict() throws Exception;
 }

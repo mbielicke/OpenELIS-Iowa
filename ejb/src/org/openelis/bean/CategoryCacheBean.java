@@ -33,8 +33,7 @@ import net.sf.ehcache.Element;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.Service;
-import org.openelis.domain.DictionaryCacheCategoryListVO;
-import org.openelis.domain.DictionaryCacheCategoryVO;
+import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.local.CategoryCacheLocal;
 import org.openelis.remote.CategoryCacheRemote;
@@ -61,17 +60,20 @@ public class CategoryCacheBean implements CategoryCacheLocal, CategoryCacheRemot
     /*
      * Category Cache
      */
-    public ArrayList<DictionaryDO> getBySystemName(String systemName) throws Exception {
+    public CategoryCacheVO getBySystemName(String systemName) throws Exception {
         Element e;
         ArrayList<DictionaryDO> list;
+        CategoryCacheVO cat;
 
         e = cache.get(systemName);
         if (e != null)
-            return (ArrayList<DictionaryDO>)e.getValue();
-
+            return (CategoryCacheVO)e.getValue();
         list = EJBFactory.getDictionary().fetchByCategorySystemName(systemName);
-        if (list != null) {
-            cache.put(new Element(systemName, list));
+        cat = new CategoryCacheVO();
+        if (list != null) {            
+            cat.setSystemName(systemName);
+            cat.setDictionaryList(list);
+            cache.put(new Element(systemName, cat));
             //
             // add it to dictionary cache
             //
@@ -82,22 +84,16 @@ public class CategoryCacheBean implements CategoryCacheLocal, CategoryCacheRemot
             }
         }
 
-        return list;
+        return cat;
     }
 
-    public DictionaryCacheCategoryListVO getBySystemNames(String systemNames[]) throws Exception {
-        DictionaryCacheCategoryVO data;
-        DictionaryCacheCategoryListVO list;
+    public ArrayList<CategoryCacheVO> getBySystemNames(String systemNames[]) throws Exception {
+        ArrayList<CategoryCacheVO> list;
 
-        list = new DictionaryCacheCategoryListVO();
-        list.setList(new ArrayList<DictionaryCacheCategoryVO>());
+        list = new ArrayList<CategoryCacheVO>();
 
-        for (String name : systemNames) {
-            data = new DictionaryCacheCategoryVO();
-            data.setSystemName(name);
-            data.setDictionaryList(getBySystemName(name));
-            list.getList().add(data);
-        }
+        for (String name : systemNames) 
+            list.add(getBySystemName(name));        
 
         return list;
     }

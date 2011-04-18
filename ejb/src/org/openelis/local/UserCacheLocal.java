@@ -25,6 +25,8 @@
 */
 package org.openelis.local;
 
+import java.util.ArrayList;
+
 import javax.ejb.Local;
 
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
@@ -44,6 +46,8 @@ public interface UserCacheLocal {
     public SystemUserVO getSystemUser(Integer id) throws Exception;
 
     public SystemUserVO getSystemUser(String name) throws Exception;
+    
+    public ArrayList<SystemUserVO> getSystemUsers(String name, int max) throws Exception;
 
     public void applyPermission(String module, ModuleFlags flag) throws Exception;
 

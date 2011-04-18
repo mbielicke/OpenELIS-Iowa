@@ -186,12 +186,8 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
                          statusPending + "," + statusBackOrdered + ")");
         
         builder.setOrderBy(InventoryReceiptMeta.getOrderItemOrderId() + " DESC," +
-                           //InventoryReceiptMeta.getQuantityReceived() + " DESC,"+ 
-                           InventoryReceiptMeta.getInventoryItemId() + " DE" +
-                           		"SC,"+
+                           InventoryReceiptMeta.getInventoryItemId() + " DESC,"+
                            InventoryReceiptMeta.getReceivedDate()+ " DESC" );
-                           //InventoryReceiptMeta.getInventoryItemId() + " ASC");
-        
         
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);

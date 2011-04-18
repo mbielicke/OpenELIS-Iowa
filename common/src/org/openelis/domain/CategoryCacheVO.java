@@ -23,18 +23,38 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.local;
+package org.openelis.domain;
 
 import java.util.ArrayList;
 
-import javax.ejb.Local;
+import org.openelis.gwt.common.RPC;
 
-import org.openelis.gwt.common.SystemUserVO;
+/**
+ * Class is used to send/receive a category dictionary entry and all the
+ * associated dictionary entries.
+ */
+public class CategoryCacheVO implements RPC {
+    private static final long         serialVersionUID = 1L;
 
-@Local
-public interface SystemUserPermissionProxyLocal {
+    protected String                  systemName;
+    protected ArrayList<DictionaryDO> dictionaryList;
 
-    public SystemUserVO fetchById(Integer id) throws Exception;
+    public CategoryCacheVO() {
+    }
 
-    public ArrayList<SystemUserVO> fetchByLoginName(String loginName, int max) throws Exception;
+    public String getSystemName() {
+        return systemName;
+    }
+
+    public void setSystemName(String systemName) {
+        this.systemName = systemName;
+    }
+
+    public ArrayList<DictionaryDO> getDictionaryList() {
+        return dictionaryList;
+    }
+
+    public void setDictionaryList(ArrayList<DictionaryDO> dictionaryList) {
+        this.dictionaryList = dictionaryList;
+    }
 }

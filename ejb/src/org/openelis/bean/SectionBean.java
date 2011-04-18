@@ -179,7 +179,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
         entity = manager.find(Section.class, data.getId());
 
         // need to remove it before we change it
-        secCache.evict(entity.getId());
+        secCache.evict();
         
         entity.setDescription(data.getDescription());
         entity.setOrganizationId(data.getOrganizationId());

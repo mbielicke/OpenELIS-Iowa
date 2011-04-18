@@ -164,12 +164,13 @@ public class Provider implements Auditable, Cloneable {
         audit = new Audit();
         audit.setReferenceTableId(ReferenceTable.PROVIDER);
         audit.setReferenceId(getId());
-        audit.setField("id", id, original.id)
-             .setField("last_name", lastName, original.lastName)
-             .setField("first_name", firstName, original.firstName)
-             .setField("middle_name", middleName, original.middleName)
-             .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
-             .setField("npi", npi, original.npi);
+        if (original != null)
+            audit.setField("id", id, original.id)
+                .setField("last_name", lastName, original.lastName)
+                .setField("first_name", firstName, original.firstName)
+                .setField("middle_name", middleName, original.middleName)
+                .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
+                .setField("npi", npi, original.npi);
 
         return audit;
     }

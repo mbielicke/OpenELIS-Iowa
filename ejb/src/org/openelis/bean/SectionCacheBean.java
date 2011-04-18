@@ -80,26 +80,18 @@ public class SectionCacheBean implements SectionCacheLocal, SectionCacheRemote {
     }  
 
     public ArrayList<SectionViewDO> getList() throws Exception {
-        Element e;
         ArrayList<SectionViewDO> list;
         
         if (cache.getSize() == 0) {
             list = EJBFactory.getSection().fetchList();
             for (SectionViewDO data : list)
                 cache.put(new Element(data.getId(), data));
-        } else {
-            list = new ArrayList<SectionViewDO>(cache.getSize());
-            for (Integer id: (List<Integer>) cache.getKeys()) {
-                e = cache.get(id);
-                if (e != null)
-                    list.add((SectionViewDO) e.getValue());
-            }
+            cache.put(new Element("orderedList", list));        
         }
-
-        return list;
+        return (ArrayList<SectionViewDO>)cache.get("orderedList").getValue();
     }
-
-    public void evict(Integer id) {
-        cache.remove(id);
+    
+    public void evict() throws Exception {
+        cache.removeAll();
     }
 }
