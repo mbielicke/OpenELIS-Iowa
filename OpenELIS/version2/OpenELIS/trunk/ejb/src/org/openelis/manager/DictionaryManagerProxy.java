@@ -27,8 +27,6 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
@@ -37,8 +35,6 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.local.JMSMessageProducerLocal;
-import org.openelis.messages.DictionaryCacheMessage;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -77,7 +73,6 @@ public class DictionaryManagerProxy {
         boolean sendMessage;
         DictionaryViewDO data;
         DictionaryLocal dl;
-        DictionaryCacheMessage msg;
         CategoryDO category;
 
 
@@ -102,16 +97,7 @@ public class DictionaryManagerProxy {
                 if (data.isChanged())
                     sendMessage = true;
             }
-        }
-
-        if (sendMessage) {
-            // invalidate the cache
-            category = EJBFactory.getCategory().fetchById(man.getCategoryId());            
-            msg = new DictionaryCacheMessage();
-            msg.setCatDO(category);
-            msg.action = DictionaryCacheMessage.Action.UPDATED;
-            jmsLocal().writeMessage(msg);
-        }
+        }        
 
         return man;
     }
@@ -135,16 +121,6 @@ public class DictionaryManagerProxy {
         
         if(list.size() > 0)
             throw list;
-    }
-
-    private JMSMessageProducerLocal jmsLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (JMSMessageProducerLocal)ctx.lookup("openelis/JMSMessageProducerBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 
     private void validateDictionary(ValidationErrorsList list, DictionaryManager man) {

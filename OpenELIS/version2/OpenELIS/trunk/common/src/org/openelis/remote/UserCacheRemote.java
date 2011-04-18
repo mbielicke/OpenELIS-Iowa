@@ -34,11 +34,13 @@ import org.openelis.gwt.common.SystemUserVO;
 
 @Remote
 public interface UserCacheRemote {
-
+    
+    public SystemUserVO getSystemUser(Integer id) throws Exception;
+    
     public SystemUserPermission login();
 
     public void logout();
-
+            
     public ArrayList<SystemUserVO> getSystemUsers(String name, int max) throws Exception;
 
     public SystemUserPermission getPermission() throws Exception;

@@ -169,6 +169,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
     public CategoryDO update(CategoryDO data) throws Exception {
         Category entity;
 
+        catCache.evict(data.getSystemName());
         if (!data.isChanged())
             return data;
 

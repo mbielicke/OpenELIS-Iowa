@@ -34,5 +34,5 @@ public interface InventoryItemCacheLocal {
 
     public InventoryItemDO getById(Integer id) throws Exception;
 
-    public void evict(Integer id);
+    public void evict(Integer id) throws Exception;
 }

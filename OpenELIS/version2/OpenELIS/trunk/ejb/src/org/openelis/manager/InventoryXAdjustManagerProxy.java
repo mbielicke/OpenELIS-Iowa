@@ -29,8 +29,12 @@ import java.util.ArrayList;
 
 import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.InventoryItemCacheLocal;
+import org.openelis.local.InventoryItemLocal;
 import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXAdjustLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
@@ -116,16 +120,19 @@ public class InventoryXAdjustManagerProxy {
     }
     
     public void validate(InventoryXAdjustManager man) throws Exception {
-        Integer locationId;
+        Integer storeId, prevStoreId, locationId;
         ArrayList<Integer> locationIdList;
         ValidationErrorsList list;
         InventoryXAdjustLocal cl;
         InventoryXAdjustViewDO data;
+        InventoryItemCacheLocal il;
 
-        cl = EJBFactory.getInventoryXAdjust();        
+        cl = EJBFactory.getInventoryXAdjust();
+        il = EJBFactory.getInventoryItemCache();
         list = new ValidationErrorsList();
         data = null;
         locationIdList = new ArrayList<Integer>();
+        prevStoreId = null;
         for (int i = 0; i < man.count(); i++ ) {
             try {
                 data = man.getAdjustmentAt(i);
@@ -134,7 +141,7 @@ public class InventoryXAdjustManagerProxy {
                 DataBaseUtil.mergeException(list, e, "adjustmentTable", i);
             }
             
-            locationId = data.getInventoryLocationId();
+            locationId = data.getInventoryLocationId();            
             if (locationId != null && locationIdList.contains(locationId)) {
                 list.add(new TableFieldErrorException("fieldUniqueOnlyException",i,
                                                       InventoryAdjustmentMeta.getInventoryLocationInventoryItemName(),
@@ -142,6 +149,18 @@ public class InventoryXAdjustManagerProxy {
             } else {
                 locationIdList.add(locationId);
             }
+            
+            storeId = il.getById(data.getInventoryLocationInventoryItemId()).getStoreId();
+            if (i == 0) {
+                prevStoreId = storeId;
+                continue;
+            }
+            
+            if (!storeId.equals(prevStoreId)) 
+                list.add(new TableFieldErrorException("allItemsSameStoreException",i,
+                                                      InventoryAdjustmentMeta.getInventoryLocationInventoryItemName(),
+                                                      "adjustmentTable"));            
+            prevStoreId = storeId;
         }
         if (list.size() > 0)
             throw list;

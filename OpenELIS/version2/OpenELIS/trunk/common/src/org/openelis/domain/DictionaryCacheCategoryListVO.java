@@ -37,16 +37,16 @@ import org.openelis.gwt.common.RPC;
 public class DictionaryCacheCategoryListVO implements RPC {
     private static final long                      serialVersionUID = 1L;
 
-    protected ArrayList<DictionaryCacheCategoryVO> list;
+    protected ArrayList<CategoryCacheVO> list;
 
     public DictionaryCacheCategoryListVO() {
     }
 
-    public ArrayList<DictionaryCacheCategoryVO> getList() {
+    public ArrayList<CategoryCacheVO> getList() {
         return list;
     }
 
-    public void setList(ArrayList<DictionaryCacheCategoryVO> list) {
+    public void setList(ArrayList<CategoryCacheVO> list) {
         this.list = list;
     }
 }

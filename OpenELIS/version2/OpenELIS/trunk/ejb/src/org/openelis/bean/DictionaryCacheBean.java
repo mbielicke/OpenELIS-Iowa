@@ -56,21 +56,6 @@ public class DictionaryCacheBean implements DictionaryCacheLocal, DictionaryCach
     /*
      * Dictionary Cache
      */
-    public DictionaryDO getBySystemName(String systemName) throws Exception {
-        Element e;
-        DictionaryDO data;
-
-        e = cache.get(systemName);
-        if (e != null)
-            return (DictionaryDO)e.getValue();
-
-        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
-        cache.put(new Element(systemName, data));
-        cache.put(new Element(data.getId(), data));
-
-        return data;
-    }
-
     public DictionaryDO getById(Integer id) throws Exception {
         Element e;
         DictionaryDO data;
@@ -95,6 +80,21 @@ public class DictionaryCacheBean implements DictionaryCacheLocal, DictionaryCach
             return data.getId();
 
         return null;
+    }
+    
+    public DictionaryDO getBySystemName(String systemName) throws Exception {
+        Element e;
+        DictionaryDO data;
+
+        e = cache.get(systemName);
+        if (e != null)
+            return (DictionaryDO)e.getValue();
+
+        data = EJBFactory.getDictionary().fetchBySystemName(systemName);
+        cache.put(new Element(systemName, data));
+        cache.put(new Element(data.getId(), data));
+
+        return data;
     }
 
     public void evict(Object key) throws Exception {

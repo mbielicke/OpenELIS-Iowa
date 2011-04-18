@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.DictionaryCacheCategoryVO;
+import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
@@ -48,7 +48,7 @@ public interface DictionaryRemote {
     
     public ArrayList<DictionaryDO> fetchByCategorySystemName(String categorySystemName) throws Exception;
     
-    public ArrayList<DictionaryCacheCategoryVO> preLoadBySystemName(ArrayList<DictionaryCacheCategoryVO> cacheVO) throws Exception;
+    public ArrayList<CategoryCacheVO> preLoadBySystemName(ArrayList<CategoryCacheVO> cacheVO) throws Exception;
     
     public void validateForDelete(DictionaryViewDO data) throws Exception; 
 }

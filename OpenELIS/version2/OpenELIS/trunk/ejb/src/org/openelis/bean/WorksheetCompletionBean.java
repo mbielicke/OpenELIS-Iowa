@@ -87,7 +87,6 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SectionLocal;
-import org.openelis.local.SystemUserPermissionProxyLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.manager.AnalysisManager;
@@ -121,8 +120,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     SampleManagerLocal sampleManagerLocal;
     @EJB
     SectionLocal sectionLocal;
-    @EJB
-    SystemUserPermissionProxyLocal systemUserLocal;
     @EJB
     SystemVariableLocal systemVariableLocal;
     @EJB
@@ -592,7 +589,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             tokenizer = new StringTokenizer((String)value, ",");
                             while (tokenizer.hasMoreTokens()) {
                                 userToken = tokenizer.nextToken();
-                                userList = systemUserLocal.fetchByLoginName(userToken, 1);
+                                userList = EJBFactory.getUserCache().getSystemUsers(userToken, 1);
                                 if (userList.size() > 0) {
                                     auManager.addCompleteRecord(userList.get(0));
                                     anaModified = true;
@@ -1052,7 +1049,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
         userVO = null;
         try {
-            userVO = systemUserLocal.fetchById(userId);
+            userVO = EJBFactory.getUserCache().getSystemUser(userId);
         } catch (Exception anyE) {
             throw new Exception("Error retrieving username for worksheet: "+anyE.getMessage());
         }

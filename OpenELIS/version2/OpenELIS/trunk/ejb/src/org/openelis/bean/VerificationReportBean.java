@@ -31,7 +31,7 @@ import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.SystemUserPermissionProxyLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.VerificationReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.EJBFactory;
@@ -48,10 +48,7 @@ public class VerificationReportBean implements VerificationReportRemote {
     private SessionContext  ctx;
 
     @EJB
-    private SessionCacheLocal session;
-    
-    @EJB
-    private SystemUserPermissionProxyLocal sysUser;
+    private SessionCacheLocal session;    
 
     /*
      * Returns the prompt for a single re-print
@@ -116,6 +113,7 @@ public class VerificationReportBean implements VerificationReportRemote {
                dir, printstat, loginName, token;
         StringTokenizer tokenizer;
         SystemUserVO  sysUserVO;
+        UserCacheLocal ucl;
 
         /*
          * push status into session so we can query it while the report is
@@ -128,8 +126,8 @@ public class VerificationReportBean implements VerificationReportRemote {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.parameterMap(paramList);
-
-        loginName = EJBFactory.getUserCache().getName();
+        ucl = EJBFactory.getUserCache();
+        loginName = ucl.getName();
         
         beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
         if (beginEntered != null && beginEntered.length() > 0)
@@ -139,7 +137,7 @@ public class VerificationReportBean implements VerificationReportRemote {
             endEntered += ":59";
         userWhere = ReportUtil.getListParameter(param, "USER_LIST");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
-
+        
         if (!DataBaseUtil.isEmpty(userWhere)) {
             userNames = "";
             if (userWhere.startsWith("in (")) {
@@ -148,7 +146,7 @@ public class VerificationReportBean implements VerificationReportRemote {
                 try {
                     while (tokenizer.hasMoreTokens()) {
                         token = tokenizer.nextToken();
-                        sysUserVO = sysUser.fetchById(Integer.valueOf(token));
+                        sysUserVO = ucl.getSystemUser(Integer.valueOf(token));
                         if (userNames.length() > 0)
                             userNames += ", ";
                         userNames += sysUserVO.getLoginName();
@@ -160,7 +158,7 @@ public class VerificationReportBean implements VerificationReportRemote {
             } else if (userWhere.startsWith(" = ")) {
                 userIds = userWhere.substring(3);
                 try {
-                    sysUserVO = sysUser.fetchById(Integer.valueOf(userIds));
+                    sysUserVO = ucl.getSystemUser(Integer.valueOf(userIds));
                     userNames = sysUserVO.getLoginName();
                 } catch (Exception e) {
                     userNames = "ERROR LOADING NAMES";
@@ -170,7 +168,7 @@ public class VerificationReportBean implements VerificationReportRemote {
             userWhere = " and h.system_user_id " + userWhere;
         } else {
             userNames = loginName;
-            userWhere = " and h.system_user_id = " + EJBFactory.getUserCache().getId();
+            userWhere = " and h.system_user_id = " + ucl.getId();
         }
         
         /*
@@ -239,7 +237,7 @@ public class VerificationReportBean implements VerificationReportRemote {
         l = new ArrayList<OptionListItem>();
         l.add(new OptionListItem("", ""));
         try {
-            s = sysUser.fetchByLoginName("%", 500);
+            s = EJBFactory.getUserCache().getSystemUsers("%", 500);
             for (SystemUserVO n : s)
                 l.add(new OptionListItem(n.getId().toString(), n.getLoginName()));
         } catch (Exception e) {
