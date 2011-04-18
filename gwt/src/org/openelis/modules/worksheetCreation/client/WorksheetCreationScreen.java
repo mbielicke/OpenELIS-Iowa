@@ -37,8 +37,10 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.SectionViewDO;
@@ -89,7 +91,7 @@ import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.meta.WorksheetCreationMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.qc.client.QcLookupScreen;
 import org.openelis.modules.worksheet.client.WorksheetQcAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
@@ -137,7 +139,7 @@ public class WorksheetCreationScreen extends Screen {
         qcService        = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
         worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
+        userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Worksheet Creation Screen");
 
@@ -168,11 +170,11 @@ public class WorksheetCreationScreen extends Screen {
         wasExitCalled      = false;
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("analysis_status",
-                                                         "type_of_sample", 
-                                                         "test_worksheet_format",
-                                                         "test_worksheet_item_type",
-                                                         "worksheet_status");
+            CategoryCache.getBySystemNames("analysis_status",
+                                           "type_of_sample", 
+                                           "test_worksheet_format",
+                                           "test_worksheet_item_type",
+                                           "worksheet_status");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -440,19 +442,19 @@ public class WorksheetCreationScreen extends Screen {
         ArrayList<TableDataRow> model;
 
         try {
-            formatTotal = DictionaryCache.getIdFromSystemName("wformat_total");
-            statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
-            typeDup = DictionaryCache.getIdFromSystemName("pos_duplicate");
-            typeFixed = DictionaryCache.getIdFromSystemName("pos_fixed");
-            typeFixedAlways = DictionaryCache.getIdFromSystemName("pos_fixed_always");
-            typeLastBoth = DictionaryCache.getIdFromSystemName("pos_last_of_well_&_run");
-            typeLastRun = DictionaryCache.getIdFromSystemName("pos_last_of_run");
-            typeLastWell = DictionaryCache.getIdFromSystemName("pos_last_of_well");
-            typeRand = DictionaryCache.getIdFromSystemName("pos_random");
-            typeLastWellString = DictionaryCache.getEntryFromId(typeLastWell).getEntry();
-            typeLastRunString = DictionaryCache.getEntryFromId(typeLastRun).getEntry();
-            typeLastBothString = DictionaryCache.getEntryFromId(typeLastBoth).getEntry();
-            typeRandString = DictionaryCache.getEntryFromId(typeRand).getEntry();
+            formatTotal = DictionaryCache.getIdBySystemName("wformat_total");
+            statusWorking = DictionaryCache.getIdBySystemName("worksheet_working");
+            typeDup = DictionaryCache.getIdBySystemName("pos_duplicate");
+            typeFixed = DictionaryCache.getIdBySystemName("pos_fixed");
+            typeFixedAlways = DictionaryCache.getIdBySystemName("pos_fixed_always");
+            typeLastBoth = DictionaryCache.getIdBySystemName("pos_last_of_well_&_run");
+            typeLastRun = DictionaryCache.getIdBySystemName("pos_last_of_run");
+            typeLastWell = DictionaryCache.getIdBySystemName("pos_last_of_well");
+            typeRand = DictionaryCache.getIdBySystemName("pos_random");
+            typeLastWellString = DictionaryCache.getById(typeLastWell).getEntry();
+            typeLastRunString = DictionaryCache.getById(typeLastRun).getEntry();
+            typeLastBothString = DictionaryCache.getById(typeLastBoth).getEntry();
+            typeRandString = DictionaryCache.getById(typeRand).getEntry();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             wcLookupScreen.getWindow().close();
@@ -469,7 +471,7 @@ public class WorksheetCreationScreen extends Screen {
         //
         // load analysis status dropdown model
         //
-        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
+        dictList  = CategoryCache.getBySystemName("analysis_status");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
@@ -507,7 +509,7 @@ public class WorksheetCreationScreen extends Screen {
                                                .append("\t").append(data.getTestName().trim()).append(", ")
                                                .append(data.getMethodName().trim());
                                         try {
-                                            sectionVDO = SectionCache.getSectionFromId(data.getSectionId());
+                                            sectionVDO = SectionCache.getById(data.getSectionId());
                                             message.append("\t\t").append(sectionVDO.getName().trim());
                                         } catch (Exception anyE) {
                                             anyE.printStackTrace();
@@ -587,7 +589,7 @@ public class WorksheetCreationScreen extends Screen {
 
         wDO = manager.getWorksheet();
         wDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-        wDO.setSystemUserId(OpenELIS.getSystemUserPermission().getSystemUserId());
+        wDO.setSystemUserId(UserCache.getPermission().getSystemUserId());
         wDO.setStatusId(statusWorking);
         wDO.setFormatId(testWorksheetDO.getFormatId());
 //        if (formatBatch.equals(wDO.getFormatId()))

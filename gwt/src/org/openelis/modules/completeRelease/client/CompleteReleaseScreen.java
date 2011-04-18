@@ -6,7 +6,9 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
@@ -60,7 +62,6 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.EditNoteScreen.Action;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
@@ -158,7 +159,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         service = new ScreenService("controller?service=org.openelis.modules.completeRelease.server.CompleteReleaseService");
         finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("samplecompleterelease");
+        userPermission = UserCache.getPermission().getModule("samplecompleterelease");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Complete and Release Screen");
 
@@ -169,12 +170,12 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         });
     }
 
-    public void postConstructor() {
+    private void postConstructor() {
         tab = Tabs.BLANK;
         manager = SampleManager.getInstance();
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("sample_status",
+           CategoryCache.getBySystemNames("sample_status",
                                                          "analysis_status",
                                                          "type_of_sample",
                                                          "source_of_sample",
@@ -680,12 +681,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             }
         });
 
-        analysisNotesTab = new AnalysisNotesTab(def,
-                                                window,
-                                                "anExNotesPanel",
-                                                "anExNoteButton",
-                                                "anIntNotesPanel",
-                                                "anIntNoteButton");
+        analysisNotesTab = new AnalysisNotesTab(def, window, "anExNotesPanel", "anExNoteButton",
+                                                "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisNotesTab.setData(dataBundle);
@@ -697,7 +694,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                 analysisNotesTab.setState(event.getState());
             }
         });
-
+        
         sampleNotesTab = new SampleNotesTab(def,
                                             window,
                                             "sampleExtNotesPanel",
@@ -776,8 +773,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         // preload dictionary models and single entries, close the window if an
         // error is found
         try {
-            sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-            analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
+            sampleLoggedInId = DictionaryCache.getIdBySystemName("sample_logged_in");
+            analysisOnHoldId = DictionaryCache.getIdBySystemName("analysis_on_hold");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -786,7 +783,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         // sample status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("sample_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
@@ -795,7 +792,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getAnalysisStatusId())).setModel(model);
@@ -1627,14 +1624,14 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         internalNote = null;
         try {
             internalNote = noteMan.getEditingNote();
+            internalNote.setSystemUser(UserCache.getPermission().getLoginName());
+            internalNote.setSystemUserId(UserCache.getPermission().getSystemUserId());
+            internalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
+            internalEditNote.setNote(internalNote);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error!");
         }
-        internalNote.setSystemUser(OpenELIS.getSystemUserPermission().getLoginName());
-        internalNote.setSystemUserId(OpenELIS.getSystemUserPermission().getSystemUserId());
-        internalNote.setTimestamp(Datetime.getInstance(Datetime.YEAR, Datetime.SECOND));
-        internalEditNote.setNote(internalNote);
     }
 
     private void resetScreen() {

@@ -23,29 +23,24 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.server.cache;
+package org.openelis.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.DictionaryCacheCategoryListVO;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.server.handlers.DictionaryCacheHandler;
+import org.openelis.domain.CategoryCacheVO;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.CategoryCacheRemote;
 
-public class DictionaryCacheService {
-
-    public DictionaryDO getIdBySystemName(String systemName) {
-        return DictionaryCacheHandler.getDictionaryDOFromSystemName(systemName);
+public class CategoryCacheService {
+    public CategoryCacheVO getBySystemName(String systemName) throws Exception {
+        return remote().getBySystemName(systemName);
     }
 
-    public DictionaryDO getSystemNameById(Integer id) {
-        return DictionaryCacheHandler.getDictionaryDOFromId(id);
+    public ArrayList<CategoryCacheVO> getBySystemNames(String... systemNames) throws Exception {        
+        return remote().getBySystemNames(systemNames);
     }
 
-    public ArrayList<DictionaryDO> getListByCategorySystemName(String systemName) {
-        return DictionaryCacheHandler.getListByCategorySystemName(systemName);
-    }
-    
-    public DictionaryCacheCategoryListVO preloadByCategorySystemNames(DictionaryCacheCategoryListVO cacheVO) {
-        return DictionaryCacheHandler.preloadByCategorySystemNames(cacheVO);
+    private CategoryCacheRemote remote() {
+        return (CategoryCacheRemote)EJBFactory.lookup("openelis/CategoryCacheBean/remote");
     }
 }

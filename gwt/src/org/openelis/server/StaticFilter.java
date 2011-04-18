@@ -46,8 +46,7 @@ import org.apache.log4j.Logger;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.persistence.JMSMessageConsumer;
-import org.openelis.remote.SystemUserPermissionProxyRemote;
+import org.openelis.remote.UserCacheRemote;
 import org.openelis.util.SessionManager;
 import org.openelis.util.XMLUtil;
 import org.w3c.dom.Document;
@@ -70,7 +69,6 @@ public class StaticFilter implements Filter {
     public void init(FilterConfig config) throws ServletException {
         AppRoot = config.getInitParameter("AppRoot");
         ServiceUtils.props = "org.openelis.constants.OpenELISConstants";
-        JMSMessageConsumer.startListener("topic/openelisTopic");
     }
 
     public void doFilter(ServletRequest req, ServletResponse response, FilterChain chain) throws IOException {
@@ -150,7 +148,6 @@ public class StaticFilter implements Filter {
 
     public void destroy() {
         System.out.println("in static filter distroy");
-        JMSMessageConsumer.stopListener();
     }
 
     /*
@@ -161,8 +158,8 @@ public class StaticFilter implements Filter {
     private void login(HttpServletRequest req, String name, String password, String ipAddress) throws Exception {
         InitialContext localctx, remotectx;
         File propFile;
-        Properties props;
-        SystemUserPermissionProxyRemote remote;
+        Properties props;        
+        UserCacheRemote remote;
         SystemUserPermission perm;
         
         try {
@@ -178,8 +175,8 @@ public class StaticFilter implements Filter {
             props.setProperty(Context.SECURITY_PRINCIPAL, name);
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
-            remotectx = new InitialContext(props);
-            remote = (SystemUserPermissionProxyRemote)remotectx.lookup("openelis/SystemUserPermissionProxyBean/remote");
+            remotectx = new InitialContext(props);            
+            remote = (UserCacheRemote)remotectx.lookup("openelis/UserCacheBean/remote");
             perm = remote.login();
             //
             // check to see if she has connect permission

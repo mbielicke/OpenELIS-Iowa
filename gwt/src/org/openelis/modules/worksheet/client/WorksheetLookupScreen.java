@@ -27,17 +27,8 @@ package org.openelis.modules.worksheet.client;
 
 import java.util.ArrayList;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.WorksheetViewDO;
@@ -76,6 +67,16 @@ import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCompletionMeta;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 public class WorksheetLookupScreen extends Screen implements HasActionHandlers<WorksheetLookupScreen.Action> {
 
     protected AppButton             searchButton, selectButton, cancelButton;
@@ -85,8 +86,6 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
     protected TableWidget           worksheetTable;
     protected TextBox<Integer>      worksheetNumber;
 
-    private ScreenService           userService;
-    
     public enum Action {
         SELECT, CANCEL
     };
@@ -94,7 +93,6 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
     public WorksheetLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetLookupDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
-        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -156,7 +154,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
                 parser.parse(event.getMatch());
 
                 try {
-                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
+                    users = UserCache.getSystemUsers(parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
@@ -258,7 +256,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
         //
         // load worksheet status dropdown model
         //
-        dictList  = DictionaryCache.getListByCategorySystemName("worksheet_status");
+        dictList  = CategoryCache.getBySystemName("worksheet_status");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)

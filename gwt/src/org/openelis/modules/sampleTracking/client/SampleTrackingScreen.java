@@ -5,7 +5,9 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
@@ -73,7 +75,6 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
 import org.openelis.modules.sample.client.AnalysisTab;
@@ -159,8 +160,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         service = new ScreenService("controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
         finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("sampletracking");
-        unreleasePermission = OpenELIS.getSystemUserPermission().getModule("sampleunrelease");
+        userPermission = UserCache.getPermission().getModule("sampletracking");
+        unreleasePermission = UserCache.getPermission().getModule("sampleunrelease");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Sample Tracking Screen");
         if (unreleasePermission == null)
@@ -178,12 +179,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         manager = SampleManager.getInstance();
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("sample_status", "analysis_status",
+            CategoryCache.getBySystemNames("sample_status", "analysis_status",
                                                          "type_of_sample", "source_of_sample",
                                                          "sample_container", "unit_of_measure",
                                                          "qaevent_type", "aux_field_value_type",
                                                          "organization_type");
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
         } catch (Exception e) {
             Window.alert("TrackingScreen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -563,7 +564,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                         event.cancel();
                     else {
                         label = new Label(treeItem.cells.get(0).value + " | " +
-                                          DictionaryCache.getEntryFromId((Integer)treeItem.cells.get(1).value).getEntry());
+                                          DictionaryCache.getById((Integer)treeItem.cells.get(1).value).getEntry());
                         label.setStyleName("ScreenLabel");
                         label.setWordWrap(false);
                         event.setProxy(label);
@@ -1316,7 +1317,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         // preload dictionary models and single entries, close the window if an
         // error is found
         try {
-            analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
+            analysisLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1325,7 +1326,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         // sample status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("sample_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)def.getWidget(SampleMeta.getStatusId())).setModel(model);
@@ -1333,7 +1334,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
         ((Dropdown<Integer>)trackingTree.getColumns().get("analysis").get(1).colWidget).setModel(model);
 
@@ -1780,7 +1781,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 sample.data = sm.getBundle();
                 sample.cells.add(new TableDataCell(sm.getSample().getAccessionNumber()));
                 try {
-                    sample.cells.add(new TableDataCell(DictionaryCache.getEntryFromId(sm.getSample()
+                    sample.cells.add(new TableDataCell(DictionaryCache.getById(sm.getSample()
                                                                                         .getStatusId()).getEntry()));
                 } catch (Exception e) {
                     sample.cells.add(new TableDataCell(sm.getSample().getStatusId()));

@@ -28,7 +28,7 @@ package org.openelis.modules.order.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderTestViewDO;
@@ -516,7 +516,7 @@ public class ContainerTab extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("sample_container");
+        list = CategoryCache.getBySystemName("sample_container");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -526,7 +526,7 @@ public class ContainerTab extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("type_of_sample");
+        list = CategoryCache.getBySystemName("type_of_sample");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

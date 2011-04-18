@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelDO;
@@ -109,7 +111,6 @@ import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.meta.TestMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -171,7 +172,7 @@ public class TestScreen extends Screen {
         qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
         dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
         
-        userPermission = OpenELIS.getSystemUserPermission().getModule("test");
+        userPermission = UserCache.getPermission().getModule("test");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Test Screen");        
 
@@ -192,7 +193,7 @@ public class TestScreen extends Screen {
         manager = TestManager.getInstance();
         
         try{
-            DictionaryCache.preloadByCategorySystemNames("test_format", "test_reporting_method", "test_sorting_method", 
+            CategoryCache.getBySystemNames("test_format", "test_reporting_method", "test_sorting_method", 
                                                          "test_revision_method", "test_section_flags", "type_of_sample",
                                                          "unit_of_measure","test_analyte_type","test_result_type",
                                                          "test_result_flags","rounding_method","test_reflex_flags",
@@ -783,7 +784,7 @@ public class TestScreen extends Screen {
                             data.setFlagId(val);
                             if (val == null)
                                 break;
-                            systemName = DictionaryCache.getSystemNameFromId(val);
+                            systemName = DictionaryCache.getSystemNameById(val);
                             if (systemName != null) {
                                 if ("test_section_default".equals(systemName)) {
                                     for (i = 0; i < man.count(); i++ ) {
@@ -1244,7 +1245,7 @@ public class TestScreen extends Screen {
         TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_format");
+        list = CategoryCache.getBySystemName("test_format");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
@@ -1254,7 +1255,7 @@ public class TestScreen extends Screen {
         testFormat.setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_reporting_method");
+        list = CategoryCache.getBySystemName("test_reporting_method");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
@@ -1264,7 +1265,7 @@ public class TestScreen extends Screen {
         reportingMethod.setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_sorting_method");
+        list = CategoryCache.getBySystemName("test_sorting_method");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
@@ -1274,7 +1275,7 @@ public class TestScreen extends Screen {
         sortingMethod.setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_revision_method");
+        list = CategoryCache.getBySystemName("test_revision_method");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
@@ -1284,7 +1285,7 @@ public class TestScreen extends Screen {
         revisionMethod.setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_section_flags");
+        list = CategoryCache.getBySystemName("test_section_flags");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
@@ -1294,7 +1295,7 @@ public class TestScreen extends Screen {
         ((Dropdown<Integer>)sectionTable.getColumnWidget(TestMeta.getSectionFlagId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        sectList = SectionCache.getSectionList();
+        sectList = SectionCache.getList();
         model.add(new TableDataRow(null, ""));
         for (SectionViewDO resultDO : sectList) {
             model.add(new TableDataRow(resultDO.getId(), resultDO.getName()));
@@ -1513,7 +1514,7 @@ public class TestScreen extends Screen {
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
                 data = man.getSectionAt(i);
-                sect = SectionCache.getSectionFromId(data.getSectionId());
+                sect = SectionCache.getById(data.getSectionId());
                 if(sect != null)
                     section = sect.getName();
                 else 
@@ -1547,7 +1548,7 @@ public class TestScreen extends Screen {
             for (i = 0; i < count; i++ ) {
                 data = man.getTypeAt(i);
                 typeId = data.getTypeOfSampleId();
-                dict = DictionaryCache.getEntryFromId(typeId);
+                dict = DictionaryCache.getById(typeId);
                 if(dict != null)
                     entry = dict.getEntry();
                 else

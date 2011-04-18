@@ -54,7 +54,7 @@ public class SampleItemManagerProxy {
     }
     
     public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdFromSystemName(systemName);
+        return DictionaryCache.getIdBySystemName(systemName);
     }
 
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {

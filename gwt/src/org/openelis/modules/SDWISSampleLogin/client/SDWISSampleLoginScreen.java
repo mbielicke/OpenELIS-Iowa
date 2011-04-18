@@ -28,7 +28,9 @@ package org.openelis.modules.SDWISSampleLogin.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
@@ -71,7 +73,6 @@ import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
@@ -149,7 +150,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
         standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
         
-        userPermission = OpenELIS.getSystemUserPermission().getModule("samplesdwis");
+        userPermission = UserCache.getPermission().getModule("samplesdwis");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "SDWIS Sample Login Screen");
 
@@ -172,7 +173,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         quickUpdate = false;
         
         try {
-            DictionaryCache.preloadByCategorySystemNames("sample_status", "analysis_status",
+            CategoryCache.getBySystemNames("sample_status", "analysis_status",
                                                          "type_of_sample", "source_of_sample",
                                                          "sample_container", "unit_of_measure",
                                                          "qaevent_type", "aux_field_value_type",
@@ -952,7 +953,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         // default the form
         try {
             manager.setDefaults();
-            manager.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
+            manager.getSample().setReceivedById(UserCache.getPermission().getSystemUserId());
             if (autoNote != null) {                
                 exn = manager.getExternalNote().getEditingNote();            
                 exn.setIsExternal("Y");
@@ -1240,12 +1241,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         // preload dictionary models and single entries, close the window if an
         // error is found
         try {
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
 
             // sample status dropdown
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));
-            for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_status"))
+            for (DictionaryDO d : CategoryCache.getBySystemName("sample_status"))
                 model.add(new TableDataRow(d.getId(), d.getEntry()));
 
             statusId.setModel(model);

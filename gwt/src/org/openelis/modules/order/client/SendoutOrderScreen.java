@@ -28,7 +28,9 @@ package org.openelis.modules.order.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
@@ -80,7 +82,6 @@ import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AuxDataTab;
 
 import com.google.gwt.core.client.GWT;
@@ -125,7 +126,7 @@ public class SendoutOrderScreen extends Screen {
     private Integer               status_pending;
     private String                descQuery;
 
-    protected ScreenService       userService, organizationService;
+    protected ScreenService       organizationService;
 
     private enum Tabs {
         ITEM, FILL, SHIP_NOTE, CUSTOMER_NOTE, REPORT_TO, CONTAINER, AUX_DATA
@@ -146,10 +147,9 @@ public class SendoutOrderScreen extends Screen {
 
     private void SendoutOrderScreenImpl() throws Exception {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
-        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("sendoutorder");
+        userPermission = UserCache.getPermission().getModule("sendoutorder");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Send-out Order Screen");
 
@@ -174,10 +174,10 @@ public class SendoutOrderScreen extends Screen {
         manager = OrderManager.getInstance();
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("order_status", "cost_centers",
-                                                         "inventory_store", "inventory_unit",
-                                                         "order_ship_from", "sample_container",
-                                                         "type_of_sample");
+            CategoryCache.getBySystemNames("order_status", "cost_centers",
+                                           "inventory_store", "inventory_unit",
+                                           "order_ship_from", "sample_container",
+                                           "type_of_sample");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -959,7 +959,7 @@ public class SendoutOrderScreen extends Screen {
         // order status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("order_status");
+        list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -970,7 +970,7 @@ public class SendoutOrderScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("cost_centers");
+        list = CategoryCache.getBySystemName("cost_centers");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -981,7 +981,7 @@ public class SendoutOrderScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("order_ship_from");
+        list = CategoryCache.getBySystemName("order_ship_from");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -991,7 +991,7 @@ public class SendoutOrderScreen extends Screen {
         shipFromId.setModel(model);
 
         try {
-            status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");
+            status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1067,7 +1067,7 @@ public class SendoutOrderScreen extends Screen {
         data = manager.getOrder();
         data.setStatusId(status_pending);
         data.setOrderedDate(now);
-        data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
+        data.setRequestedBy(UserCache.getPermission().getLoginName());
         data.setType(OrderManager.TYPE_SEND_OUT);
 
         setState(State.ADD);
@@ -1193,11 +1193,10 @@ public class SendoutOrderScreen extends Screen {
             data = manager.getOrder();
             data.setStatusId(status_pending);
             data.setOrderedDate(now);
-            data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
+            data.setRequestedBy(UserCache.getPermission().getLoginName());
             data.setType(OrderManager.TYPE_SEND_OUT);
 
             itemTab.setManager(manager);
-            // fillTab.setManager(manager);
             shipNoteTab.setManager(manager);
             custNoteTab.setManager(manager);
             reportToBillToTab.setManager(manager);
@@ -1205,7 +1204,6 @@ public class SendoutOrderScreen extends Screen {
             auxDataTab.setManager(manager);
 
             manager.getItems();
-            // manager.getFills();
             manager.getShippingNotes();
             manager.getCustomerNotes();
             manager.getTests();
@@ -1215,7 +1213,6 @@ public class SendoutOrderScreen extends Screen {
             clearKeys();
 
             itemTab.draw();
-            // fillTab.draw();
             shipNoteTab.draw();
             custNoteTab.draw();
             reportToBillToTab.draw();
@@ -1301,7 +1298,7 @@ public class SendoutOrderScreen extends Screen {
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
                 data = man.getContainerAt(i);
-                dict = DictionaryCache.getEntryFromId(data.getContainerId());
+                dict = DictionaryCache.getById(data.getContainerId());
                 refVoList[i] = new IdNameVO(data.getId(), dict.getEntry());
             }
         } catch (Exception e) {

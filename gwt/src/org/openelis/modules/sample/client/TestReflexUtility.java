@@ -64,8 +64,8 @@ public class TestReflexUtility extends Screen implements
 
     public TestReflexUtility() {
         try {
-            autoAddId = DictionaryCache.getIdFromSystemName("reflex_auto");
-            promptId = DictionaryCache.getIdFromSystemName("reflex_prompt");
+            autoAddId = DictionaryCache.getIdBySystemName("reflex_auto");
+            promptId = DictionaryCache.getIdBySystemName("reflex_prompt");
         } catch (Exception e) {
             Window.alert("testlookup constructor: " + e.getMessage());
         }

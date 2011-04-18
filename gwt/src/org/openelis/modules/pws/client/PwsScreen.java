@@ -28,6 +28,7 @@ package org.openelis.modules.pws.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
@@ -60,7 +61,6 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.PwsManager;
 import org.openelis.meta.PwsMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -111,7 +111,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
         super((ScreenDefInt)GWT.create(PwsDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.pws.server.PwsService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("pws");
+        userPermission = UserCache.getPermission().getModule("pws");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "PWS Screen");
 

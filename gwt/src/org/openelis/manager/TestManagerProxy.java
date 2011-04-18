@@ -25,9 +25,9 @@
  */
 package org.openelis.manager;
 
+import org.openelis.cache.UserCache;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class TestManagerProxy {
 
@@ -82,6 +82,6 @@ public class TestManagerProxy {
     }
 
     protected SystemUserPermission getSystemUserPermission() {
-        return OpenELIS.getSystemUserPermission();
+        return UserCache.getPermission();       
     }
 }

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
@@ -1600,7 +1601,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("test_analyte_type");
+        list = CategoryCache.getBySystemName("test_analyte_type");
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));
@@ -1611,7 +1612,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("test_result_type");
+        list = CategoryCache.getBySystemName("test_result_type");
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));
@@ -1622,7 +1623,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("test_result_flags");
+        list = CategoryCache.getBySystemName("test_result_flags");
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));
@@ -1633,7 +1634,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("rounding_method");
+        list = CategoryCache.getBySystemName("rounding_method");
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));
@@ -1653,16 +1654,16 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         setUnitsOfMeasure();
 
         try {
-            typeDict = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
-            typeNumeric = DictionaryCache.getIdFromSystemName("test_res_type_numeric");
-            typeTiter = DictionaryCache.getIdFromSystemName("test_res_type_titer");
-            typeDefault = DictionaryCache.getIdFromSystemName("test_res_type_default");
-            typeDate = DictionaryCache.getIdFromSystemName("test_res_type_date");
-            typeDateTime = DictionaryCache.getIdFromSystemName("test_res_type_date_time");
-            typeTime = DictionaryCache.getIdFromSystemName("test_res_type_time");
-            typeAlphaLower = DictionaryCache.getIdFromSystemName("test_res_type_alpha_lower"); 
-            typeAlphaUpper = DictionaryCache.getIdFromSystemName("test_res_type_alpha_upper");
-            typeAlphaMixed = DictionaryCache.getIdFromSystemName("test_res_type_alpha_mixed");
+            typeDict = DictionaryCache.getIdBySystemName("test_res_type_dictionary");
+            typeNumeric = DictionaryCache.getIdBySystemName("test_res_type_numeric");
+            typeTiter = DictionaryCache.getIdBySystemName("test_res_type_titer");
+            typeDefault = DictionaryCache.getIdBySystemName("test_res_type_default");
+            typeDate = DictionaryCache.getIdBySystemName("test_res_type_date");
+            typeDateTime = DictionaryCache.getIdBySystemName("test_res_type_date_time");
+            typeTime = DictionaryCache.getIdBySystemName("test_res_type_time");
+            typeAlphaLower = DictionaryCache.getIdBySystemName("test_res_type_alpha_lower"); 
+            typeAlphaUpper = DictionaryCache.getIdBySystemName("test_res_type_alpha_upper");
+            typeAlphaMixed = DictionaryCache.getIdBySystemName("test_res_type_alpha_mixed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1697,7 +1698,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 unitId = data.getUnitOfMeasureId();
                 try {
                     if (unitId != null && !unitList.contains(unitId)) {
-                        entry = DictionaryCache.getEntryFromId(unitId).getEntry();
+                        entry = DictionaryCache.getById(unitId).getEntry();
                         model.add(new TableDataRow(unitId, entry));
                         unitList.add(unitId);
                     }
@@ -1707,7 +1708,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                 }
             }
         } else {
-            dictList = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+            dictList = CategoryCache.getBySystemName("unit_of_measure");
             for (DictionaryDO dict : dictList) {
                 model.add(new TableDataRow(dict.getId(), dict.getEntry()));
             }

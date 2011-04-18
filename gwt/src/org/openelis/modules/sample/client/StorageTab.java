@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.StorageLocationViewDO;
@@ -63,7 +64,6 @@ import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -183,8 +183,8 @@ public class StorageTab extends Screen {
                     TableDataRow selectedRow = storageTable.getRow(0);
                     StorageViewDO storageDO = new StorageViewDO();
                     storageDO.setCheckin((Datetime)selectedRow.cells.get(2).value);
-                    storageDO.setSystemUserId(OpenELIS.getSystemUserPermission().getSystemUserId());
-                    storageDO.setUserName(OpenELIS.getSystemUserPermission().getLoginName());
+                    storageDO.setSystemUserId(UserCache.getPermission().getSystemUserId());
+                    storageDO.setUserName(UserCache.getPermission().getLoginName());
 
                     manager.addStorage(storageDO);
                     removeStorageButton.enable(true);
@@ -256,7 +256,7 @@ public class StorageTab extends Screen {
                 }
 
                 TableDataRow newRow = new TableDataRow(4);
-                newRow.cells.get(0).value = OpenELIS.getSystemUserPermission().getLoginName();
+                newRow.cells.get(0).value = UserCache.getPermission().getLoginName();
                 newRow.cells.get(2).value = date;
                 storageTable.addRow(0, newRow);
                 storageTable.selectRow(0);
@@ -327,8 +327,8 @@ public class StorageTab extends Screen {
                 try {
                     anDO = bundle.getSampleManager().getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex());
                     if (anDO != null && anDO.getSectionId() != null) {
-                        sectionVDO = SectionCache.getSectionFromId(anDO.getSectionId());
-                        perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                        sectionVDO = SectionCache.getById(anDO.getSectionId());
+                        perm = UserCache.getPermission().getSection(sectionVDO.getName());
                         return !analysisCancelledId.equals(anDO.getStatusId()) &&
                                perm != null &&
                                (perm.hasAssignPermission() || perm.hasCompletePermission());
@@ -347,7 +347,7 @@ public class StorageTab extends Screen {
 
     private void initializeDropdowns() {
         try {
-            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

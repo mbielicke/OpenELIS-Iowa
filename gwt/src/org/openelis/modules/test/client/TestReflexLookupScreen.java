@@ -275,10 +275,10 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
 
     private void initializeDropdowns() {
         try {
-            autoAddId = DictionaryCache.getIdFromSystemName("reflex_auto");
-            autoAddNonDupId = DictionaryCache.getIdFromSystemName("reflex_auto_ndup");
-            promptNonDupId = DictionaryCache.getIdFromSystemName("reflex_prompt_ndup");
-            testSectionDefaultId = DictionaryCache.getIdFromSystemName("test_section_default");
+            autoAddId = DictionaryCache.getIdBySystemName("reflex_auto");
+            autoAddNonDupId = DictionaryCache.getIdBySystemName("reflex_auto_ndup");
+            promptNonDupId = DictionaryCache.getIdBySystemName("reflex_prompt_ndup");
+            testSectionDefaultId = DictionaryCache.getIdBySystemName("test_section_default");
         } catch (Exception e) {
             Window.alert("TestReflexUtility constructor: " + e.getMessage());
         }

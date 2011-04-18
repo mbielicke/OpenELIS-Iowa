@@ -28,6 +28,7 @@ package org.openelis.modules.panel.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.PanelVO;
@@ -67,7 +68,6 @@ import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
 import org.openelis.meta.PanelMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -98,7 +98,7 @@ public class PanelScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("panel");
+        userPermission = UserCache.getPermission().getModule("panel");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Panel Screen");
 

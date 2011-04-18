@@ -92,7 +92,8 @@ public class ResultSuggestionsScreen extends Screen {
         try {
             for (OptionItem o : suggestions) {
                 message = consts.get(o.getProperty());
-                message = message.replace("{0}", o.getValue());                   
+                if (o.getValue() != null)
+                    message = message.replace("{0}", o.getValue());                
                 row = new TableDataRow(message, message);
                 model.add(row);
             }

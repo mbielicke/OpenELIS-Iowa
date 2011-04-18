@@ -29,9 +29,9 @@ import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
@@ -40,7 +40,6 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class AnalysisManagerProxy {
     protected static final String ANALYSIS_SERVICE_URL = "org.openelis.modules.analysis.server.AnalysisService";
@@ -54,19 +53,19 @@ public class AnalysisManagerProxy {
 
         if (anLoggedInId == null) {
             try {
-                anLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
-                anInitiatedId = DictionaryCache.getIdFromSystemName("analysis_initiated");
-                anCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
-                anReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-                anInPrepId = DictionaryCache.getIdFromSystemName("analysis_inprep");
-                anOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
-                anRequeueId = DictionaryCache.getIdFromSystemName("analysis_requeue");
-                anCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-                anErrorLoggedInId = DictionaryCache.getIdFromSystemName("analysis_error_logged_in");
-                anErrorInitiatedId = DictionaryCache.getIdFromSystemName("analysis_error_initiated");
-                anErrorInPrepId = DictionaryCache.getIdFromSystemName("analysis_error_inprep");
-                anErrorCompletedId = DictionaryCache.getIdFromSystemName("analysis_error_completed");
-                sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+                anLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
+                anInitiatedId = DictionaryCache.getIdBySystemName("analysis_initiated");
+                anCompletedId = DictionaryCache.getIdBySystemName("analysis_completed");
+                anReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
+                anInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
+                anOnHoldId = DictionaryCache.getIdBySystemName("analysis_on_hold");
+                anRequeueId = DictionaryCache.getIdBySystemName("analysis_requeue");
+                anCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
+                anErrorLoggedInId = DictionaryCache.getIdBySystemName("analysis_error_logged_in");
+                anErrorInitiatedId = DictionaryCache.getIdBySystemName("analysis_error_initiated");
+                anErrorInPrepId = DictionaryCache.getIdBySystemName("analysis_error_inprep");
+                anErrorCompletedId = DictionaryCache.getIdBySystemName("analysis_error_completed");
+                sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
             } catch (Exception e) {
                 e.printStackTrace();
                 anLoggedInId = null;
@@ -159,7 +158,7 @@ public class AnalysisManagerProxy {
     }
 
     protected SectionViewDO getSectionFromId(Integer sectionId) throws Exception {
-        return SectionCache.getSectionFromId(sectionId);
+        return SectionCache.getById(sectionId);
     }
 
     protected Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
@@ -167,6 +166,6 @@ public class AnalysisManagerProxy {
     }
 
     protected SystemUserPermission getSystemUserPermission() {
-        return OpenELIS.getSystemUserPermission();
+        return UserCache.getPermission();
     }
 }

@@ -29,42 +29,35 @@ import java.util.HashMap;
 
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
-public class InventoryItemCache {
-    protected static final String               INVENTORY_ITEM_CACHE_SERVICE_URL = "org.openelis.server.cache.InventoryItemCacheService";
-    protected ScreenService                     service;
-    protected HashMap<Integer, InventoryItemDO> idList;
-    private static InventoryItemCache           instance = new InventoryItemCache();  
+public class InventoryItemCache {   
+    protected static HashMap<Integer, InventoryItemDO> cache;
+    protected static final String                      SERVICE_URL;
+    protected static ScreenService                     service;
     
-    protected InventoryItemCache() {
-        service = new ScreenService("controller?service="+INVENTORY_ITEM_CACHE_SERVICE_URL);
-        
-        idList = new HashMap<Integer, InventoryItemDO>();
-        OpenELIS.getCacheList().put("InventoryItemsCache-id", idList);
+    static {
+        cache = new HashMap<Integer, InventoryItemDO>();
+        SERVICE_URL = "org.openelis.server.InventoryItemCacheService";
+        service = new ScreenService("controller?service="+SERVICE_URL);
     }
     
-    public static InventoryItemDO getActiveInventoryItemFromId(Integer id) throws Exception {
-        return instance.getActiveInventoryItemFromIdInt(id);
-    }   
-
-    protected InventoryItemDO getActiveInventoryItemFromIdInt(Integer id) throws Exception {
+    public static InventoryItemDO getById(Integer id) throws Exception {
         InventoryItemDO data;
         
-        data = idList.get(id);
-        if(data == null){
+        data = cache.get(id);
+        if(data == null) {
             try{
-                data = (InventoryItemDO)service.call("fetchActiveInventoryItemById", id);
+                data = (InventoryItemDO)service.call("getById", id);
                 
                 if(data != null)
-                    idList.put(data.getId(), data);
+                    cache.put(data.getId(), data);
                 
             } catch(Exception e){
                 e.printStackTrace();
-                throw new Exception("InventoryItemCache.getActiveInventoryItemFromId: id \""+id+"\" not found in system.  Please call the system administrator.");    
+                throw new Exception("InventoryItemCache.getById: id \""+id+"\" not found in system.  Please call the system administrator.");    
             }
         }
         
         return data;
-    }
+    }   
 }

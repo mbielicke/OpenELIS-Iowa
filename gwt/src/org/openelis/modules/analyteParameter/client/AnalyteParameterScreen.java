@@ -28,7 +28,9 @@ package org.openelis.modules.analyteParameter.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcAnalyteViewDO;
@@ -60,7 +62,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -84,9 +85,7 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.AnalyteParameterMeta;
-import org.openelis.meta.MethodMeta;
 import org.openelis.meta.QcMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -124,7 +123,7 @@ public class AnalyteParameterScreen extends Screen {
         testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("analyteparameter");
+        userPermission =  UserCache.getPermission().getModule("analyteparameter");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Analyte Parameter Screen");
 
@@ -144,8 +143,7 @@ public class AnalyteParameterScreen extends Screen {
         manager = AnalyteParameterManager.getInstance();
         
         try{
-            DictionaryCache.preloadByCategorySystemNames("type_of_sample");
-            DictionaryCache.preloadByCategorySystemNames("analyte_parameter_type");
+            CategoryCache.getBySystemNames("type_of_sample","analyte_parameter_type");
         } catch(Exception e){
             Window.alert(e.getMessage());
             window.close();
@@ -658,7 +656,7 @@ public class AnalyteParameterScreen extends Screen {
         TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("analyte_parameter_type");
+        list = CategoryCache.getBySystemName("analyte_parameter_type");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             if ("analyte_param_type_test".equals(resultDO.getSystemName())) {
@@ -681,7 +679,7 @@ public class AnalyteParameterScreen extends Screen {
         ((Dropdown)atozTable.getColumnWidget(AnalyteParameterMeta.getReferenceTableId())).setModel(model);
         
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("type_of_sample");
+        list = CategoryCache.getBySystemName("type_of_sample");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
@@ -1066,7 +1064,7 @@ public class AnalyteParameterScreen extends Screen {
         try {
             for (int i = 0; i < man.count(); i++ ) {
                 data = man.getTypeAt(i);
-                dict = DictionaryCache.getEntryFromId(data.getTypeOfSampleId());
+                dict = DictionaryCache.getById(data.getTypeOfSampleId());
                 model.add(new TableDataRow(dict.getId(), dict.getEntry()));
             }
         } catch (Exception e) {

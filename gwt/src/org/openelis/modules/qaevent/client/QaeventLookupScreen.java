@@ -28,7 +28,7 @@ package org.openelis.modules.qaevent.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QaEventVO;
 import org.openelis.gwt.event.ActionEvent;
@@ -190,7 +190,7 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
 
 		model = new ArrayList<TableDataRow>();
 		model.add(new TableDataRow(null, ""));
-		for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qaevent_type"))
+		for (DictionaryDO d : CategoryCache.getBySystemName("qaevent_type"))
 			model.add(new TableDataRow(d.getId(), d.getEntry()));
 
 		((Dropdown<Integer>) qaEventTable.getColumns().get(2).getColumnWidget()).setModel(model);

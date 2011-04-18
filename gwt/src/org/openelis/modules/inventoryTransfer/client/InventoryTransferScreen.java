@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.InventoryItemCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryLocationViewDO;
@@ -50,11 +51,11 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -68,7 +69,6 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.InventoryTransferManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryItemMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -116,7 +116,7 @@ public class InventoryTransferScreen extends Screen {
         inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");        
         inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("inventorytransfer");
+        userPermission = UserCache.getPermission().getModule("inventorytransfer");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Inventory Transfer Screen");
         
@@ -233,7 +233,7 @@ public class InventoryTransferScreen extends Screen {
                                                                                 data.getStorageLocationUnitDescription(),
                                                                                 data.getStorageLocationLocation());
                         row.cells.get(0).setValue(data.getInventoryItemName());
-                        store = DictionaryCache.getEntryFromId(data.getInventoryItemStoreId());
+                        store = DictionaryCache.getById(data.getInventoryItemStoreId());
                         row.cells.get(1).setValue(store.getEntry());
                         row.cells.get(2).setValue(location);
                         row.cells.get(3).setValue(data.getQuantityOnhand());
@@ -289,8 +289,8 @@ public class InventoryTransferScreen extends Screen {
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = (InventoryItemDO) list.get(i);
-                        store = DictionaryCache.getEntryFromId(data.getStoreId());
-                        units = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
+                        store = DictionaryCache.getById(data.getStoreId());
+                        units = DictionaryCache.getById(data.getDispensedUnitsId());
                         row = new TableDataRow(data.getId(), data.getName(), 
                                                store.getEntry(), units.getEntry());
                         row.data = data;
@@ -461,7 +461,7 @@ public class InventoryTransferScreen extends Screen {
                         if (row != null) {      
                             data = (InventoryLocationViewDO)row.data;
                             try {
-                                manager.setFromInventoryItemAt(InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId()), r);
+                                manager.setFromInventoryItemAt(InventoryItemCache.getById(data.getInventoryItemId()), r);
                             } catch (Exception e) {
                                 Window.alert(e.getMessage());
                                 e.printStackTrace();
@@ -625,7 +625,7 @@ public class InventoryTransferScreen extends Screen {
                     if (r > -1) {
                         data = manager.getFromInventoryItemAt(r);
                         if (data != null) {
-                            dict = DictionaryCache.getEntryFromId(data.getStoreId());
+                            dict = DictionaryCache.getById(data.getStoreId());
                             inventoryItemStoreId.setValue(dict.getEntry());
                         } else {
                             inventoryItemStoreId.setValue(null);
@@ -661,7 +661,7 @@ public class InventoryTransferScreen extends Screen {
                     if (r > -1) {
                         data = manager.getFromInventoryItemAt(r);
                         if (data != null) {
-                            dict = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
+                            dict = DictionaryCache.getById(data.getDispensedUnitsId());
                             inventoryItemDispensedUnitsId.setValue(dict.getEntry());
                         } else {
                             inventoryItemDispensedUnitsId.setValue(null);
@@ -781,7 +781,7 @@ public class InventoryTransferScreen extends Screen {
                     if (r > -1) {
                         data = manager.getToInventoryItemAt(r);
                         if (data != null) {
-                            dict = DictionaryCache.getEntryFromId(data.getStoreId());
+                            dict = DictionaryCache.getById(data.getStoreId());
                             toStoreId.setValue(dict.getEntry());
                         } else {
                             toStoreId.setValue(null);
@@ -817,7 +817,7 @@ public class InventoryTransferScreen extends Screen {
                     if (r > -1) {
                         data = manager.getToInventoryItemAt(r);
                         if (data != null) {
-                            dict = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
+                            dict = DictionaryCache.getById(data.getDispensedUnitsId());
                             toDispensedUnits.setValue(dict.getEntry());
                         } else {
                             toDispensedUnits.setValue(null);

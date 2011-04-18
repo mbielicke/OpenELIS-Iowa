@@ -28,8 +28,10 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
@@ -63,7 +65,6 @@ import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleQaEventManager;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.qaevent.client.QaeventLookupScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -461,19 +462,19 @@ public class QAEventsTab extends Screen {
         // qa event type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("qaevent_type"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("qaevent_type"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)sampleQATable.getColumns().get(1).getColumnWidget()).setModel(model);
         ((Dropdown<Integer>)analysisQATable.getColumns().get(1).getColumnWidget()).setModel(model);
 
         try {
-            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
-            qaInternal = DictionaryCache.getIdFromSystemName("qaevent_internal");
-            qaWarning = DictionaryCache.getIdFromSystemName("qaevent_warning");
-            qaOverride = DictionaryCache.getIdFromSystemName("qaevent_override");
+            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
+            qaInternal = DictionaryCache.getIdBySystemName("qaevent_internal");
+            qaWarning = DictionaryCache.getIdBySystemName("qaevent_warning");
+            qaOverride = DictionaryCache.getIdBySystemName("qaevent_override");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -495,8 +496,8 @@ public class QAEventsTab extends Screen {
         
         if (anDO != null && anDO.getSectionId() != null) {
             try {
-                sectionVDO = SectionCache.getSectionFromId(anDO.getSectionId());
-                perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                sectionVDO = SectionCache.getById(anDO.getSectionId());
+                perm = UserCache.getPermission().getSection(sectionVDO.getName());
                 return !analysisCancelledId.equals(anDO.getStatusId()) &&
                        !analysisReleasedId.equals(anDO.getStatusId()) &&
                        perm != null &&

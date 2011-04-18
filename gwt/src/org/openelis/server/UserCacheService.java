@@ -23,15 +23,31 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.server.cache;
+package org.openelis.server;
 
-import org.openelis.domain.InventoryItemDO;
-import org.openelis.server.handlers.InventoryItemCacheHandler;
+import java.util.ArrayList;
 
-public class InventoryItemCacheService {   
+import org.openelis.gwt.common.SystemUserPermission;
+import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.UserCacheRemote;
+
+public class UserCacheService {
     
-    public InventoryItemDO fetchActiveInventoryItemById(Integer id) throws Exception {
-        return InventoryItemCacheHandler.getActiveInventoryItemDOFromId(id);
-    }  
+    public SystemUserVO getSystemUser(Integer id) throws Exception {
+        return remote().getSystemUser(id);
+    }
 
+    public ArrayList<SystemUserVO> getSystemUsers(String name) throws Exception {
+        return remote().getSystemUsers(name + "%", 10);
+    }
+
+    public SystemUserPermission getPermission() throws Exception {
+       return remote().getPermission();
+    }    
+    
+    private UserCacheRemote remote() {
+        return (UserCacheRemote)EJBFactory.lookup("openelis/UserCacheBean/remote");
+    }
+    
 }

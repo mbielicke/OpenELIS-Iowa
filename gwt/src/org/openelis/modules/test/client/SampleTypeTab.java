@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -198,7 +198,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
 
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("type_of_sample");
+        list = CategoryCache.getBySystemName("type_of_sample");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
@@ -208,7 +208,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
         ((Dropdown)table.getColumnWidget(TestMeta.getTypeOfSampleTypeOfSampleId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+        list = CategoryCache.getBySystemName("unit_of_measure");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());

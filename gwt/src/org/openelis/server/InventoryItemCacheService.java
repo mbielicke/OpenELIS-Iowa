@@ -23,35 +23,20 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.server;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.domain.InventoryItemDO;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.InventoryItemCacheRemote;
 
+public class InventoryItemCacheService {   
+    
+    public InventoryItemDO getById(Integer id) throws Exception {
+        return remote().getById(id);
+    }  
+    
+    public InventoryItemCacheRemote remote() {
+        return (InventoryItemCacheRemote)EJBFactory.lookup("openelis/InventoryItemCacheBean/remote");
+    }
 
-public class TestSectionManagerProxy {
-    
-    protected static final String TEST_MANAGER_SERVICE_URL = "org.openelis.modules.test.server.TestService";
-    protected ScreenService service;
-    
-    public TestSectionManagerProxy() {
-        service = new ScreenService("controller?service="+TEST_MANAGER_SERVICE_URL);
-    }
-    
-    public TestSectionManager add(TestSectionManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public TestSectionManager update(TestSectionManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public void validate(TestSectionManager man) throws Exception {        
-    }
-    
-    public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdBySystemName(systemName);
-    }
 }

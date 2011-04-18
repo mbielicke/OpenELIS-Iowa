@@ -28,6 +28,7 @@ package org.openelis.modules.section.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
@@ -64,7 +65,6 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.SectionMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -93,7 +93,7 @@ public class SectionScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.section.server.SectionService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("section");
+        userPermission = UserCache.getPermission().getModule("section");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Section Screen");
 

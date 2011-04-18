@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
@@ -583,7 +584,7 @@ public class SDWISTab extends Screen {
         ArrayList<TableDataRow> model;
 
         try {
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -592,7 +593,7 @@ public class SDWISTab extends Screen {
         // sample type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sdwis_sample_type"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("sdwis_sample_type"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         sampleTypeId.setModel(model);
@@ -600,7 +601,7 @@ public class SDWISTab extends Screen {
         // sample category dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sdwis_sample_category"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("sdwis_sample_category"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         sampleCategoryId.setModel(model);

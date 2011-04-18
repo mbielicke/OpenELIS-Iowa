@@ -55,6 +55,6 @@ public class AuxFieldValueManagerProxy {
     }
     
     public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdFromSystemName(systemName);
+        return DictionaryCache.getIdBySystemName(systemName);
     }
 }

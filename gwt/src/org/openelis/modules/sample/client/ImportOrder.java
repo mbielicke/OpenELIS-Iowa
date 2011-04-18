@@ -61,7 +61,7 @@ public class ImportOrder {
         if (reportToDO != null) {
             reportToSampOrg.setOrganizationId(reportToDO.getId());
             reportToSampOrg.setOrganizationAttention(orderDO.getReportToAttention());
-            reportToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_report_to"));
+            reportToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_report_to"));
             reportToSampOrg.setOrganizationName(reportToDO.getName());
             reportToSampOrg.setOrganizationCity(reportToDO.getAddress().getCity());
             reportToSampOrg.setOrganizationState(reportToDO.getAddress().getState());
@@ -69,7 +69,7 @@ public class ImportOrder {
         } else {
             reportToSampOrg.setOrganizationId(shipToDO.getId());
             reportToSampOrg.setOrganizationAttention(orderDO.getOrganizationAttention());
-            reportToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_report_to"));
+            reportToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_report_to"));
             reportToSampOrg.setOrganizationName(shipToDO.getName());
             reportToSampOrg.setOrganizationCity(shipToDO.getAddress().getCity());
             reportToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
@@ -81,7 +81,7 @@ public class ImportOrder {
         if (billToDO != null) {
             billToSampOrg.setOrganizationId(billToDO.getId());
             billToSampOrg.setOrganizationAttention(orderDO.getBillToAttention());
-            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
             billToSampOrg.setOrganizationName(billToDO.getName());
             billToSampOrg.setOrganizationCity(billToDO.getAddress().getCity());
             billToSampOrg.setOrganizationState(billToDO.getAddress().getState());
@@ -89,7 +89,7 @@ public class ImportOrder {
         } else if (reportToDO != null) {
             billToSampOrg.setOrganizationId(reportToDO.getId());
             billToSampOrg.setOrganizationAttention(orderDO.getReportToAttention());
-            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
             billToSampOrg.setOrganizationName(reportToDO.getName());
             billToSampOrg.setOrganizationCity(reportToDO.getAddress().getCity());
             billToSampOrg.setOrganizationState(reportToDO.getAddress().getState());
@@ -97,7 +97,7 @@ public class ImportOrder {
         } else {
             billToSampOrg.setOrganizationId(shipToDO.getId());
             billToSampOrg.setOrganizationAttention(orderDO.getOrganizationAttention());
-            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
             billToSampOrg.setOrganizationName(shipToDO.getName());
             billToSampOrg.setOrganizationCity(shipToDO.getAddress().getCity());
             billToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
@@ -125,10 +125,10 @@ public class ImportOrder {
                 addedIndex = itemMan.addSampleItem();
                 itemDO = itemMan.getSampleItemAt(addedIndex);
                 itemDO.setContainerId(containerDO.getContainerId());
-                itemDO.setContainer(DictionaryCache.getEntryFromId(containerDO.getContainerId()).getEntry());
+                itemDO.setContainer(DictionaryCache.getById(containerDO.getContainerId()).getEntry());
                 itemDO.setTypeOfSampleId(containerDO.getTypeOfSampleId());
                 if(containerDO.getTypeOfSampleId() != null)
-                    itemDO.setTypeOfSample(DictionaryCache.getEntryFromId(containerDO.getTypeOfSampleId()).getEntry());
+                    itemDO.setTypeOfSample(DictionaryCache.getById(containerDO.getTypeOfSampleId()).getEntry());
             }
         }
         

@@ -28,7 +28,8 @@ package org.openelis.modules.project.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectParameterDO;
@@ -80,7 +81,6 @@ import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
 import org.openelis.meta.ProjectMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -106,15 +106,14 @@ public class ProjectScreen extends Screen {
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
 
-    private ScreenService         userService, scriptletService;
-
+    private ScreenService        scriptletService;
+    
     public ProjectScreen() throws Exception {
         super((ScreenDefInt)GWT.create(ProjectDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
-        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
+        service = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");       
         scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("project");
+        userPermission = UserCache.getPermission().getModule("project");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Project Screen");
 
@@ -334,7 +333,7 @@ public class ProjectScreen extends Screen {
                 parser.parse(event.getMatch());
 
                 try {
-                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
+                    users = UserCache.getSystemUsers(parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
@@ -398,10 +397,10 @@ public class ProjectScreen extends Screen {
         });
 
         scriptletId = (AutoComplete<Integer>)def.getWidget(ProjectMeta.getScriptletName());
-        addScreenHandler(name, new ScreenEventHandler<Integer>() {
+        addScreenHandler(scriptletId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 scriptletId.setSelection(manager.getProject().getScriptletId(),
-                                       Util.toString(manager.getProject().getScriptletName()));
+                                         manager.getProject().getScriptletName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -527,7 +526,13 @@ public class ProjectScreen extends Screen {
         addParameterButton = (AppButton)def.getWidget("addParameterButton");
         addScreenHandler(addParameterButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                int n;
+                
                 parameterTable.addRow();
+                n = parameterTable.numRows() - 1;
+                parameterTable.selectRow(n);
+                parameterTable.scrollToSelection();
+                parameterTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -640,7 +645,7 @@ public class ProjectScreen extends Screen {
         // parameter table project parameter
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list =  DictionaryCache.getListByCategorySystemName("project_parameter_operations");
+        list =  CategoryCache.getBySystemName("project_parameter_operations");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

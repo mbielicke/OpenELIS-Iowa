@@ -654,7 +654,7 @@ public class EnvironmentalTab extends Screen {
     
     private void initializeDropdowns() {
         try {
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

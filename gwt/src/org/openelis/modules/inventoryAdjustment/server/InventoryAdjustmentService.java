@@ -46,10 +46,6 @@ public class InventoryAdjustmentService {
         return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
     
-    private InventoryAdjustmentRemote remote() {
-        return (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
-    }
-    
     public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception {
         return remoteManager().add(man);
     }
@@ -68,6 +64,10 @@ public class InventoryAdjustmentService {
     
     public InventoryXAdjustManager fetchAdjustmentByInventoryAdjustmentId(Integer id) throws Exception {
         return remoteManager().fetchAdjustmentByInventoryAdjustmentId(id);
+    }
+        
+    private InventoryAdjustmentRemote remote() {
+        return (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
     }
     
     private InventoryAdjustmentManagerRemote remoteManager() {

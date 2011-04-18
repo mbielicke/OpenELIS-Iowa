@@ -28,6 +28,7 @@ package org.openelis.modules.testTrailer.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestTrailerDO;
@@ -58,7 +59,6 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.TestTrailerMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -84,7 +84,7 @@ public class TestTrailerScreen extends Screen {
         super((ScreenDefInt)GWT.create(TestTrailerDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.testTrailer.server.TestTrailerService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("testtrailer");
+        userPermission = UserCache.getPermission().getModule("testtrailer");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Test Trailer Screen");
 

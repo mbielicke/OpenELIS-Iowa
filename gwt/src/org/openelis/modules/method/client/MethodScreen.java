@@ -28,6 +28,7 @@ package org.openelis.modules.method.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.ReferenceTable;
@@ -60,7 +61,6 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.MethodMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -88,7 +88,7 @@ public class MethodScreen extends Screen {
         super((ScreenDefInt)GWT.create(MethodDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.method.server.MethodService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("method");
+        userPermission = UserCache.getPermission().getModule("method");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Method Screen");
 

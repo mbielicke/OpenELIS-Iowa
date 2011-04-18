@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
@@ -146,7 +147,7 @@ public class SampleItemsPopoutTreeLookup extends Screen {
                         event.cancel();
                     else{
                         label = new Label(treeItem.cells.get(0).value + " | " + 
-                                          DictionaryCache.getEntryFromId((Integer)treeItem.cells.get(1).value).getEntry());
+                                          DictionaryCache.getById((Integer)treeItem.cells.get(1).value).getEntry());
                         label.setStyleName("ScreenLabel");
                         label.setWordWrap(false);
                         event.setProxy(label);
@@ -263,7 +264,7 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)sampleTreePopout.getColumns().get("analysis").get(1).colWidget).setModel(model);

@@ -38,8 +38,10 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
@@ -77,7 +79,6 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.meta.WorksheetCreationMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 public class WorksheetCreationLookupScreen extends Screen 
                                            implements HasActionHandlers<WorksheetCreationLookupScreen.Action> {
@@ -104,7 +105,7 @@ public class WorksheetCreationLookupScreen extends Screen
         service = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
         testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         
-        userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
+        userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Worksheet Creation Lookup Screen");
 
@@ -121,8 +122,8 @@ public class WorksheetCreationLookupScreen extends Screen
      */
     private void postConstructor() {
         try {
-            DictionaryCache.preloadByCategorySystemNames("analysis_status",
-                                                         "type_of_sample");
+            CategoryCache.getBySystemNames("analysis_status",
+                                           "type_of_sample");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -331,10 +332,10 @@ public class WorksheetCreationLookupScreen extends Screen
         ArrayList<TableDataRow> model;
 
         try {
-            statusErrorInPrep = DictionaryCache.getIdFromSystemName("analysis_error_inprep");
-            statusInPrep      = DictionaryCache.getIdFromSystemName("analysis_inprep");
-            statusReleased    = DictionaryCache.getIdFromSystemName("analysis_released");
-            statusCancelled   = DictionaryCache.getIdFromSystemName("analysis_cancelled");
+            statusErrorInPrep = DictionaryCache.getIdBySystemName("analysis_error_inprep");
+            statusInPrep      = DictionaryCache.getIdBySystemName("analysis_inprep");
+            statusReleased    = DictionaryCache.getIdBySystemName("analysis_released");
+            statusCancelled   = DictionaryCache.getIdBySystemName("analysis_cancelled");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -343,7 +344,7 @@ public class WorksheetCreationLookupScreen extends Screen
         //
         // load analysis status dropdown model
         //
-        sectList  = SectionCache.getSectionList();
+        sectList  = SectionCache.getList();
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (SectionViewDO resultDO : sectList)
@@ -354,7 +355,7 @@ public class WorksheetCreationLookupScreen extends Screen
         //
         // load analysis status dropdown model
         //
-        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
+        dictList  = CategoryCache.getBySystemName("analysis_status");
         model = new ArrayList<TableDataRow>();
 //        model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
@@ -365,7 +366,7 @@ public class WorksheetCreationLookupScreen extends Screen
         //
         // load type of sample dropdown model
         //
-        dictList  = DictionaryCache.getListByCategorySystemName("type_of_sample");
+        dictList  = CategoryCache.getBySystemName("type_of_sample");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
@@ -500,7 +501,7 @@ public class WorksheetCreationLookupScreen extends Screen
                        .append("\t").append(analysisRow.getTestName().trim()).append(", ")
                        .append(analysisRow.getMethodName().trim());
                 try {
-                    sectionVDO = SectionCache.getSectionFromId(analysisRow.getSectionId());
+                    sectionVDO = SectionCache.getById(analysisRow.getSectionId());
                     message.append("\t\t").append(sectionVDO.getName().trim());
                 } catch (Exception anyE) {
                     anyE.printStackTrace();
@@ -547,8 +548,8 @@ public class WorksheetCreationLookupScreen extends Screen
             return allow;
 
         try {
-            section = SectionCache.getSectionFromId(analysisRow.getSectionId());
-            perm = OpenELIS.getSystemUserPermission().getSection(section.getName()); 
+            section = SectionCache.getById(analysisRow.getSectionId());
+            perm = UserCache.getPermission().getSection(section.getName()); 
             if (perm != null && perm.hasCompletePermission())
                 allow = true;
         } catch (Exception anyE) {

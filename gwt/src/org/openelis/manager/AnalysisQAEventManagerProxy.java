@@ -52,7 +52,7 @@ public class AnalysisQAEventManagerProxy {
     }
     
     public Integer getIdFromSystemName(String systemName) throws Exception {
-        return DictionaryCache.getIdFromSystemName(systemName);
+        return DictionaryCache.getIdBySystemName(systemName);
     }
     
     public void validate(AnalysisQaEventManager man, ValidationErrorsList errorsList) throws Exception {

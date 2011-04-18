@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
@@ -92,7 +94,6 @@ import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -141,13 +142,12 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
     private Confirm                                     changeTestConfirm;
     protected ScreenService                             panelService, testService,
-                                                        userService, worksheetService;
+                                                        worksheetService;
 
     public AnalysisTab(ScreenDefInt def, ScreenWindow window) {
         service = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
-        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         setDefinition(def);
@@ -227,7 +227,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     sampleType = Integer.valueOf(value.substring(sepIndex + 1));
                     try {
                         if (sampleItem.getTypeOfSampleId() == null) {
-                            stDO = DictionaryCache.getEntryFromId(sampleType);
+                            stDO = DictionaryCache.getById(sampleType);
                             sampleItem.setTypeOfSampleId(stDO.getId());
                             sampleItem.setTypeOfSample(stDO.getEntry());
                             ActionEvent.fire(anTab, Action.SAMPLE_TYPE_CHANGED, null);
@@ -810,7 +810,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 parser.parse(event.getMatch());
 
                 try {
-                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
+                    users = UserCache.getSystemUsers(parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
@@ -934,7 +934,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     sampleType = man.getTypeAt(i);
                     if (sampleType.getUnitOfMeasureId() != null &&
                         sampleTypeId.equals(sampleType.getTypeOfSampleId())) {
-                        entry = DictionaryCache.getEntryFromId(sampleType.getUnitOfMeasureId());
+                        entry = DictionaryCache.getById(sampleType.getUnitOfMeasureId());
                         model.add(new TableDataRow(entry.getId(), entry.getEntry()));
                     }
                 }
@@ -951,15 +951,15 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         ArrayList<TableDataRow> model;
         TableDataRow r;
         try {
-            analysisInitiatedId = DictionaryCache.getIdFromSystemName("analysis_initiated"); 
-            analysisOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
-            analysisRequeueId = DictionaryCache.getIdFromSystemName("analysis_requeue");
-            analysisCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
-            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-            analysisLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
-            analysisInPrepId = DictionaryCache.getIdFromSystemName("analysis_inprep");
-            actionReleasedId = DictionaryCache.getIdFromSystemName("an_user_ac_released");
+            analysisInitiatedId = DictionaryCache.getIdBySystemName("analysis_initiated"); 
+            analysisOnHoldId = DictionaryCache.getIdBySystemName("analysis_on_hold");
+            analysisRequeueId = DictionaryCache.getIdBySystemName("analysis_requeue");
+            analysisCompletedId = DictionaryCache.getIdBySystemName("analysis_completed");
+            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
+            analysisLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
+            analysisInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
+            actionReleasedId = DictionaryCache.getIdBySystemName("an_user_ac_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -968,7 +968,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("analysis_status"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         statusId.setModel(model);
@@ -976,7 +976,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         // section full dropdown model
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (SectionDO s : SectionCache.getSectionList())
+        for (SectionDO s : SectionCache.getList())
             model.add(new TableDataRow(s.getId(), s.getName()));
 
         fullSectionModel = model;
@@ -987,7 +987,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         // unit full dropdown model
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
         
         fullUnitModel = model;
@@ -998,7 +998,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         // analysis user action
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("user_action")) {
+        for (DictionaryDO d : CategoryCache.getBySystemName("user_action")) {
             r = new TableDataRow(d.getId(), d.getEntry());
             if(actionReleasedId.equals(d.getId())) 
                 r.enabled = false;
@@ -1010,7 +1010,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         // worksheet status
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("worksheet_status"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("worksheet_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
         ((Dropdown<Integer>)worksheetTable.getColumns().get(2).getColumnWidget()).setModel(model);
 
@@ -1119,8 +1119,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 return true;
             
             try {
-                sectionVDO = SectionCache.getSectionFromId(analysis.getSectionId());
-                perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                sectionVDO = SectionCache.getById(analysis.getSectionId());
+                perm = UserCache.getPermission().getSection(sectionVDO.getName());
                 return !analysisCancelledId.equals(analysis.getStatusId()) &&
                        !analysisReleasedId.equals(analysis.getStatusId()) &&
                        perm != null &&

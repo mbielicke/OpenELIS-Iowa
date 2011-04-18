@@ -52,7 +52,7 @@ import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.main.client.OpenELIS;
 
 import com.google.gwt.user.client.Window;
 

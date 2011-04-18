@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
@@ -564,7 +564,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         TableDataRow row;
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_worksheet_analyte_flags");
+        list = CategoryCache.getBySystemName("test_worksheet_analyte_flags");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
@@ -574,7 +574,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         ((Dropdown)worksheetAnalyteTable.getColumnWidget(TestMeta.getWorksheetAnalyteFlagId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_worksheet_item_type");
+        list = CategoryCache.getBySystemName("test_worksheet_item_type");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
@@ -584,7 +584,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         ((Dropdown)worksheetTable.getColumnWidget(TestMeta.getWorksheetItemTypeId())).setModel(model);
 
         model = new ArrayList<TableDataRow>();
-        list = DictionaryCache.getListByCategorySystemName("test_worksheet_format");
+        list = CategoryCache.getBySystemName("test_worksheet_format");
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());

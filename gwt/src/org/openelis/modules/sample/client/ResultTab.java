@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
@@ -68,7 +69,6 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.test.client.TestAnalyteDisplayManager;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.OptionItem;
@@ -222,8 +222,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
                 if (analysis.getSectionId() != null) {
                 	try {
-                		section = SectionCache.getSectionFromId(analysis.getSectionId());
-                		perm = OpenELIS.getSystemUserPermission().getSection(section.getName());
+                		section = SectionCache.getById(analysis.getSectionId());
+                		perm = UserCache.getPermission().getSection(section.getName());
                 	} catch (Exception e) {
                 		section = null;
                 		perm = null;
@@ -400,7 +400,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                             data.setValue(val);
 
                             if (typeDictionary.equals(testResult.getTypeId()))
-                                val = DictionaryCache.getEntryFromId(Integer.parseInt(val))
+                                val = DictionaryCache.getById(Integer.parseInt(val))
                                                      .getEntry();
 
                             testResultsTable.setCell(index, i, val);
@@ -680,7 +680,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     if (!typeDictionary.equals(data.getTypeId())) {
                         row.cells.get(c+2).setValue(val);
                     } else {
-                        entry = DictionaryCache.getEntryFromId(Integer.parseInt(val)).getEntry();
+                        entry = DictionaryCache.getById(Integer.parseInt(val)).getEntry();
                         row.cells.get(c+2).setValue(entry);
                     }
                     
@@ -711,7 +711,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         if ( !typeDictionary.equals(data.getTypeId())) {
                             row.cells.get(c+2).setValue(val);
                         } else {
-                            entry = DictionaryCache.getEntryFromId(Integer.parseInt(val)).getEntry();
+                            entry = DictionaryCache.getById(Integer.parseInt(val)).getEntry();
                             row.cells.get(c+2).setValue(entry);
                         }
                     }                                 
@@ -864,12 +864,12 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private void initializeDropdowns() {
         try {
-            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
-            testAnalyteReadOnlyId = DictionaryCache.getIdFromSystemName("test_analyte_read_only");
-            testAnalyteRequiredId = DictionaryCache.getIdFromSystemName("test_analyte_req");
-            typeDictionary = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
+            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
+            testAnalyteReadOnlyId = DictionaryCache.getIdBySystemName("test_analyte_read_only");
+            testAnalyteRequiredId = DictionaryCache.getIdBySystemName("test_analyte_req");
+            typeDictionary = DictionaryCache.getIdBySystemName("test_res_type_dictionary");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

@@ -28,7 +28,8 @@ package org.openelis.modules.organization.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationContactDO;
@@ -70,7 +71,6 @@ import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 
 import com.google.gwt.core.client.GWT;
@@ -113,7 +113,7 @@ public class OrganizationScreen extends Screen {
         super((ScreenDefInt)GWT.create(OrganizationDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("organization");
+        userPermission = UserCache.getPermission().getModule("organization");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Oranization Screen");
 
@@ -134,8 +134,8 @@ public class OrganizationScreen extends Screen {
         manager = OrganizationManager.getInstance();
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("country", "state",
-                                                         "contact_type", "parameter_type");
+            CategoryCache.getBySystemNames("country", "state",
+                                           "contact_type", "parameter_type");
         } catch (Exception e) {
             Window.alert("OrganizationScreen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -634,7 +634,7 @@ public class OrganizationScreen extends Screen {
         // country dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("country");
+        list = CategoryCache.getBySystemName("country");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getEntry(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -646,7 +646,7 @@ public class OrganizationScreen extends Screen {
         // state dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list =  DictionaryCache.getListByCategorySystemName("state");
+        list =  CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getEntry(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

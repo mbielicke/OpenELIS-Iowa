@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
@@ -351,16 +352,16 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         model.add(new TableDataRow(null, ""));
         
         try{
-            list = DictionaryCache.getListByCategorySystemName("organization_type");
+            list = CategoryCache.getBySystemName("organization_type");
             for(DictionaryDO resultDO :  list){
                 model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
             } 
             ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(0).getColumnWidget()).setModel(model);
             
             //load the type ids
-            reportToId = DictionaryCache.getIdFromSystemName("org_report_to");
-            billToId = DictionaryCache.getIdFromSystemName("org_bill_to");
-            secondReportToId = DictionaryCache.getIdFromSystemName("org_second_report_to");
+            reportToId = DictionaryCache.getIdBySystemName("org_report_to");
+            billToId = DictionaryCache.getIdBySystemName("org_bill_to");
+            secondReportToId = DictionaryCache.getIdBySystemName("org_second_report_to");
         
         }catch(Exception e){
             Window.alert("initializedropdowns: "+e.getMessage());
@@ -399,10 +400,10 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             numReportTo = 0;
             for(int i=0; i<manager.count(); i++){
                 SampleOrganizationDO orgDO = manager.getOrganizationAt(i);
-                if(DictionaryCache.getIdFromSystemName("org_bill_to").equals(orgDO.getTypeId()))
+                if(DictionaryCache.getIdBySystemName("org_bill_to").equals(orgDO.getTypeId()))
                     numBillTo++;
                 
-                if(DictionaryCache.getIdFromSystemName("org_report_to").equals(orgDO.getTypeId()))
+                if(DictionaryCache.getIdBySystemName("org_report_to").equals(orgDO.getTypeId()))
                     numReportTo++;
             }
             

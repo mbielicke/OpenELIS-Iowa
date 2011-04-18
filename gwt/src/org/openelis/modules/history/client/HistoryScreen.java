@@ -28,7 +28,7 @@ package org.openelis.modules.history.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.HistoryVO;
 import org.openelis.domain.IdNameVO;
@@ -49,7 +49,7 @@ import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
-import org.openelis.modules.main.client.openelis.OpenELIS;
+import org.openelis.modules.main.client.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;
@@ -130,7 +130,7 @@ public class HistoryScreen extends Screen {
         ArrayList<DictionaryDO> list;
         DictionaryDO d;
 
-        list = DictionaryCache.getListByCategorySystemName("history_type");
+        list = CategoryCache.getBySystemName("history_type");
         for (int i = 0; i < list.size(); i++ ) {
             d = list.get(i);
             if (DataBaseUtil.isSame( ("history_" + (i+1)), d.getSystemName()))

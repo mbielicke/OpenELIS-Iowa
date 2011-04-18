@@ -45,7 +45,7 @@ import org.apache.log4j.Logger;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
-import org.openelis.remote.SystemUserPermissionProxyRemote;
+import org.openelis.remote.UserCacheRemote;
 import org.openelis.util.SessionManager;
 
 public class HostedFilter implements Filter {
@@ -58,7 +58,6 @@ public class HostedFilter implements Filter {
         log.debug("Initializing the Application.");
 
         ServiceUtils.props = "org.openelis.constants.OpenELISConstants";
-        //JMSMessageConsumer.startListener("topic/openelisTopic");
 
         locale = config.getInitParameter("Locale");
         user = config.getInitParameter("User");
@@ -123,7 +122,7 @@ public class HostedFilter implements Filter {
         InitialContext remotectx;
         File propFile;
         Properties props;
-        SystemUserPermissionProxyRemote remote;
+        UserCacheRemote remote;
         SystemUserPermission perm;
 
         System.out.println("Checking Credentials");
@@ -139,7 +138,7 @@ public class HostedFilter implements Filter {
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
             remotectx = new InitialContext(props);
-            remote = (SystemUserPermissionProxyRemote)remotectx.lookup("openelis/SystemUserPermissionProxyBean/remote");
+            remote = (UserCacheRemote)remotectx.lookup("openelis/UserCacheBean/remote");
             perm = remote.login();
             //
             // check to see if she has connect permission

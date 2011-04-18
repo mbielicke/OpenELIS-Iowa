@@ -29,6 +29,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SectionViewDO;
@@ -47,7 +48,6 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.SampleDataBundle;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
 
@@ -168,7 +168,7 @@ public class AnalysisNotesTab extends NotesTab {
                     internalNote = internalManager.getEditingNote();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Window.alert("error!");
+                    Window.alert(e.getMessage());
                 }
                 internalNote.setSystemUser(userName);
                 internalNote.setSystemUserId(userId);
@@ -223,8 +223,8 @@ public class AnalysisNotesTab extends NotesTab {
         
         if (analysis != null && analysis.getSectionId() != null) {
             try {
-                sectionVDO = SectionCache.getSectionFromId(analysis.getSectionId());
-                perm = OpenELIS.getSystemUserPermission().getSection(sectionVDO.getName());
+                sectionVDO = SectionCache.getById(analysis.getSectionId());
+                perm = UserCache.getPermission().getSection(sectionVDO.getName());
                 return !analysisCancelledId.equals(analysis.getStatusId()) &&
                        perm != null &&
                        (perm.hasAssignPermission() || perm.hasCompletePermission());
@@ -237,8 +237,8 @@ public class AnalysisNotesTab extends NotesTab {
     
     private void initializeDropdowns() {
         try {
-            analysisCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
+            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
+            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

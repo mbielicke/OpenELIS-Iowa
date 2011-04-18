@@ -28,7 +28,9 @@ package org.openelis.modules.inventoryAdjustment.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryAdjustmentDO;
@@ -83,7 +85,6 @@ import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryAdjustmentMeta;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -119,7 +120,7 @@ public class InventoryAdjustmentScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.inventoryAdjustment.server.InventoryAdjustmentService");
         inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");        
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("inventoryadjustment");
+        userPermission = UserCache.getPermission().getModule("inventoryadjustment");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Inventory Adjustment Screen");
 
@@ -133,7 +134,7 @@ public class InventoryAdjustmentScreen extends Screen {
     private void postConstructor() {
         manager = InventoryAdjustmentManager.getInstance();
         try {
-            DictionaryCache.preloadByCategorySystemNames("inventory_store");
+            CategoryCache.getBySystemNames("inventory_store");
         } catch (Exception e) {
             Window.alert("Inventory Adjustment Screen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -324,7 +325,7 @@ public class InventoryAdjustmentScreen extends Screen {
         inventoryItemStoreId = (Dropdown)def.getWidget(InventoryAdjustmentMeta.getInventoryLocationInventoryItemStoreId());
         addScreenHandler(inventoryItemStoreId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                inventoryItemStoreId.setSelection(manager.getInventoryAdjustment().getIInventoryXAdjustInventoryLocationInventoryItemStoreId());
+                inventoryItemStoreId.setSelection(manager.getInventoryAdjustment().getInventoryXAdjustInventoryLocationInventoryItemStoreId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -367,7 +368,6 @@ public class InventoryAdjustmentScreen extends Screen {
         adjustmentTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
-                String location;
                 Integer qtyOnHand, physCount, adjQty;
                 InventoryXAdjustViewDO data;
                 InventoryLocationViewDO invLoc;
@@ -389,80 +389,20 @@ public class InventoryAdjustmentScreen extends Screen {
                         row = (TableDataRow)val;
                         if (row != null && row.data != null) {
                             invLoc = (InventoryLocationViewDO)row.data;
-                            data.setInventoryLocationId(invLoc.getId());
-                            data.setInventoryLocationInventoryItemId(invLoc.getInventoryItemId());
-                            data.setInventoryLocationInventoryItemName(invLoc.getInventoryItemName());
-                            data.setInventoryLocationLotNumber(invLoc.getLotNumber());
-                            data.setInventoryLocationQuantityOnhand(invLoc.getQuantityOnhand());
-                            data.setInventoryLocationStorageLocationLocation(invLoc.getStorageLocationLocation());
-                            data.setInventoryLocationStorageLocationName(invLoc.getStorageLocationName());
-                            data.setInventoryLocationStorageLocationUnitDescription(invLoc.getStorageLocationUnitDescription());
-                            
-                            adjustmentTable.setCell(r, 1, new TableDataRow(invLoc.getInventoryItemId(),invLoc.getInventoryItemName()));
-                            location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
-                                                                                    invLoc.getStorageLocationUnitDescription(),
-                                                                                    invLoc.getStorageLocationLocation());
-                            adjustmentTable.setCell(r, 2, location);
-                            adjustmentTable.setCell(r, 3, invLoc.getQuantityOnhand());
-                            adjustmentTable.setCell(r, 4, null);
-                            adjustmentTable.setCell(r, 5, null);
+                            loadFromInventoryLocation(data, invLoc, r);
                             adjustmentTable.clearCellExceptions(r, 1);
-                        } else  {
-                            data.setInventoryLocationId(null);
-                            data.setInventoryLocationInventoryItemId(null);
-                            data.setInventoryLocationInventoryItemName(null);
-                            data.setInventoryLocationLotNumber(null);
-                            data.setInventoryLocationQuantityOnhand(null);
-                            data.setInventoryLocationQuantityOnhand(null);
-                            data.setInventoryLocationStorageLocationLocation(null);
-                            data.setInventoryLocationStorageLocationName(null);
-                            data.setInventoryLocationStorageLocationUnitDescription(null);
-                            
-                            adjustmentTable.setCell(r, 1, null);                            
-                            adjustmentTable.setCell(r, 2, null);
-                            adjustmentTable.setCell(r, 3, null);
-                            adjustmentTable.setCell(r, 4, null);
-                            adjustmentTable.setCell(r, 5, null);
+                        } else  {                           
+                            loadFromInventoryLocation(data, null, r);
                         }                      
                         break;
                     case 1:
                         row = (TableDataRow)val;
                         if (row != null) {
-                            invLoc = (InventoryLocationViewDO)row.data;
-                            data.setInventoryLocationId(invLoc.getId());
-                            data.setInventoryLocationInventoryItemId(invLoc.getInventoryItemId());
-                            data.setInventoryLocationInventoryItemName(invLoc.getInventoryItemName());
-                            data.setInventoryLocationLotNumber(invLoc.getLotNumber());
-                            data.setInventoryLocationQuantityOnhand(invLoc.getQuantityOnhand());
-                            data.setInventoryLocationStorageLocationLocation(invLoc.getStorageLocationLocation());
-                            data.setInventoryLocationStorageLocationName(invLoc.getStorageLocationName());
-                            data.setInventoryLocationStorageLocationUnitDescription(invLoc.getStorageLocationUnitDescription());
-                            
-                            adjustmentTable.setCell(r, 0, new TableDataRow(invLoc.getId(), invLoc.getId().toString()));
-                            location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
-                                                                                    invLoc.getStorageLocationUnitDescription(),
-                                                                                    invLoc.getStorageLocationLocation());
-                            adjustmentTable.setCell(r, 2, location);
-                            adjustmentTable.setCell(r, 3, invLoc.getQuantityOnhand());
-                            adjustmentTable.setCell(r, 4, null);
-                            adjustmentTable.setCell(r, 5, null);
+                            invLoc = (InventoryLocationViewDO)row.data;                            
+                            loadFromInventoryLocation(data, invLoc, r);
                             adjustmentTable.clearCellExceptions(r, 0);
                         } else  {
-                            data.setInventoryLocationId(null);
-                            data.setInventoryLocationInventoryItemId(null);
-                            data.setInventoryLocationInventoryItemName(null);
-                            data.setInventoryLocationLotNumber(null);
-                            data.setInventoryLocationQuantityOnhand(null);
-                            data.setInventoryLocationQuantityOnhand(null);
-                            data.setInventoryLocationStorageLocationLocation(null);
-                            data.setInventoryLocationStorageLocationName(null);
-                            data.setInventoryLocationStorageLocationUnitDescription(null);
-                            
-                            adjustmentTable.setCell(r, 0, null);                            
-                            adjustmentTable.setCell(r, 2, null);
-                            adjustmentTable.setCell(r, 3, null);
-                            adjustmentTable.setCell(r, 4, null);
-                            adjustmentTable.setCell(r, 5, null);
+                            loadFromInventoryLocation(data, null, r);
                         }                      
                         break;
                     case 4:
@@ -528,7 +468,7 @@ public class InventoryAdjustmentScreen extends Screen {
                     row.key = data.getId();  
                     row.cells.get(0).setValue(data.getId().toString());
                     row.cells.get(1).setValue(data.getInventoryItemName());
-                    store = DictionaryCache.getEntryFromId(data.getInventoryItemStoreId());
+                    store = DictionaryCache.getById(data.getInventoryItemStoreId());
                     row.cells.get(2).setValue(store.getEntry());
                     location = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
                                                                             data.getStorageLocationUnitDescription(),
@@ -603,7 +543,7 @@ public class InventoryAdjustmentScreen extends Screen {
 
                         row.key = data.getId();                        
                         row.cells.get(0).setValue(data.getInventoryItemName());
-                        store = DictionaryCache.getEntryFromId(data.getInventoryItemStoreId());
+                        store = DictionaryCache.getById(data.getInventoryItemStoreId());
                         row.cells.get(1).setValue(store.getEntry());
                         location = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
                                                                                 data.getStorageLocationUnitDescription(),
@@ -744,7 +684,7 @@ public class InventoryAdjustmentScreen extends Screen {
         // country dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("inventory_store");
+        list = CategoryCache.getBySystemName("inventory_store");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -785,8 +725,8 @@ public class InventoryAdjustmentScreen extends Screen {
         manager = InventoryAdjustmentManager.getInstance();
         data = manager.getInventoryAdjustment();
         data.setAdjustmentDate(now);
-        data.setSystemUserId(OpenELIS.getSystemUserPermission().getSystemUserId());
-        data.setSystemUserName(OpenELIS.getSystemUserPermission().getLoginName());
+        data.setSystemUserId(UserCache.getPermission().getSystemUserId());
+        data.setSystemUserName(UserCache.getPermission().getLoginName());
                 
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -980,5 +920,52 @@ public class InventoryAdjustmentScreen extends Screen {
         }
         
         return model;
+    }
+    
+    private void loadFromInventoryLocation(InventoryXAdjustViewDO data, InventoryLocationViewDO invLoc, int r) {
+        Integer itemId;
+        String name, location;
+
+        if (invLoc != null) {
+            data.setInventoryLocationId(invLoc.getId()); 
+            itemId = invLoc.getInventoryItemId();
+            data.setInventoryLocationInventoryItemId(itemId);
+            name = invLoc.getInventoryItemName();
+            data.setInventoryLocationInventoryItemName(name);
+            data.setInventoryLocationLotNumber(invLoc.getLotNumber());
+            data.setInventoryLocationQuantityOnhand(invLoc.getQuantityOnhand());
+            data.setInventoryLocationStorageLocationLocation(invLoc.getStorageLocationLocation());
+            data.setInventoryLocationStorageLocationName(invLoc.getStorageLocationName());
+            data.setInventoryLocationStorageLocationUnitDescription(invLoc.getStorageLocationUnitDescription());
+
+            adjustmentTable.setCell(r, 0, new TableDataRow(invLoc.getId(), invLoc.getId()
+                                                                                 .toString()));
+            location = StorageLocationManager.getLocationForDisplay(invLoc.getStorageLocationName(),
+                                                                    invLoc.getStorageLocationUnitDescription(),
+                                                                    invLoc.getStorageLocationLocation());
+            adjustmentTable.setCell(r, 1, new TableDataRow(itemId, name));
+            adjustmentTable.setCell(r, 2, location);
+            adjustmentTable.setCell(r, 3, invLoc.getQuantityOnhand());
+            adjustmentTable.setCell(r, 4, null);
+            adjustmentTable.setCell(r, 5, null);
+        } else {
+            data.setInventoryLocationId(null);
+            data.setInventoryLocationInventoryItemId(null);
+            data.setInventoryLocationInventoryItemName(null);
+            data.setInventoryLocationLotNumber(null);
+            data.setInventoryLocationQuantityOnhand(null);
+            data.setInventoryLocationQuantityOnhand(null);
+            data.setInventoryLocationStorageLocationLocation(null);
+            data.setInventoryLocationStorageLocationName(null);
+            data.setInventoryLocationStorageLocationUnitDescription(null);
+
+            adjustmentTable.setCell(r, 0, null);
+            adjustmentTable.setCell(r, 1, new TableDataRow(null, ""));
+            adjustmentTable.setCell(r, 2, null);
+            adjustmentTable.setCell(r, 3, null);
+            adjustmentTable.setCell(r, 4, null);
+            adjustmentTable.setCell(r, 5, null);
+        }
+
     }
 }

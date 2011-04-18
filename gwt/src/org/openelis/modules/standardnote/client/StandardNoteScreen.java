@@ -28,7 +28,8 @@ package org.openelis.modules.standardnote.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
@@ -61,7 +62,6 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.StandardNoteMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -88,7 +88,7 @@ public class StandardNoteScreen extends Screen {
         super((ScreenDefInt)GWT.create(StandardNoteDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("standardnote");
+        userPermission = UserCache.getPermission().getModule("standardnote");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Standard Note Screen");
 
@@ -385,7 +385,7 @@ public class StandardNoteScreen extends Screen {
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("standard_note_type");
+        list = CategoryCache.getBySystemName("standard_note_type");
         for (DictionaryDO entry : list) {            
             row = new TableDataRow(entry.getId(), entry.getEntry());
             row.enabled = ("Y".equals(entry.getIsActive()));

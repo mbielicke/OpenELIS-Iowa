@@ -31,6 +31,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
@@ -90,7 +91,6 @@ import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -119,10 +119,9 @@ public class DictionaryScreen extends Screen {
 
     public DictionaryScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DictionaryDef.class));
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.dictionary.server.DictionaryService");
-
-        userPermission = OpenELIS.getSystemUserPermission().getModule("dictionary");
+        service = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
+        
+        userPermission = UserCache.getPermission().getModule("dictionary");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Dictionary Screen");
 
@@ -653,14 +652,17 @@ public class DictionaryScreen extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<SectionViewDO> list;
+        try {
+            model = new ArrayList<TableDataRow>();
+            list = SectionCache.getList();
+            model.add(new TableDataRow(null, ""));
+            for (SectionViewDO data : list)
+                model.add(new TableDataRow(data.getId(), data.getName()));
+            sectionId.setModel(model);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
 
-        model = new ArrayList<TableDataRow>();
-        list = SectionCache.getSectionList();
-
-        model.add(new TableDataRow(null, ""));
-        for (SectionViewDO data : list)
-            model.add(new TableDataRow(data.getId(), data.getName()));
-        sectionId.setModel(model);
     }
 
     protected void query() {

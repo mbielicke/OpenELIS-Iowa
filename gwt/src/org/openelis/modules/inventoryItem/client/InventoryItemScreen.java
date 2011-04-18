@@ -29,7 +29,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.IdNameVO;
@@ -73,7 +75,6 @@ import org.openelis.manager.InventoryLocationManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 
 import com.google.gwt.core.client.GWT;
@@ -121,7 +122,7 @@ public class InventoryItemScreen extends Screen {
         super((ScreenDefInt)GWT.create(InventoryItemDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("inventoryitem");
+        userPermission = UserCache.getPermission().getModule("inventoryitem");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Inventory Item Screen");
 
@@ -628,8 +629,8 @@ public class InventoryItemScreen extends Screen {
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = (InventoryItemDO) list.get(i);
-                        store = DictionaryCache.getEntryFromId(data.getStoreId());
-                        units = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
+                        store = DictionaryCache.getById(data.getStoreId());
+                        units = DictionaryCache.getById(data.getDispensedUnitsId());
                         row = new TableDataRow(data.getId(), data.getName(),
                                                store.getEntry(), units.getEntry());
                         row.data = data;
@@ -863,7 +864,7 @@ public class InventoryItemScreen extends Screen {
         // category dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("inventory_category");
+        list = CategoryCache.getBySystemName("inventory_category");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -874,8 +875,8 @@ public class InventoryItemScreen extends Screen {
         // stores dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("inventory_store");
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("inventory_store")) {
+        list = CategoryCache.getBySystemName("inventory_store");
+        for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
@@ -890,7 +891,7 @@ public class InventoryItemScreen extends Screen {
         // units dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("inventory_unit");
+        list = CategoryCache.getBySystemName("inventory_unit");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

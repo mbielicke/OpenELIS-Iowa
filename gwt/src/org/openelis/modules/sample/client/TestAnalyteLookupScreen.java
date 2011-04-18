@@ -27,7 +27,7 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -180,7 +180,7 @@ public class TestAnalyteLookupScreen extends Screen implements HasActionHandlers
         //type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("test_analyte_type"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("test_analyte_type"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
         ((Dropdown<Integer>)testAnalyteTable.getColumns().get(1).colWidget).setModel(model);

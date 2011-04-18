@@ -167,14 +167,14 @@ public class AuxTableColumn extends TableColumn {
 
         if (alphaLowerId == null) {
             try {
-                alphaLowerId = DictionaryCache.getIdFromSystemName("aux_alpha_lower");
-                alphaUpperId = DictionaryCache.getIdFromSystemName("aux_alpha_upper");
-                alphaMixedId = DictionaryCache.getIdFromSystemName("aux_alpha_mixed");
-                timeId = DictionaryCache.getIdFromSystemName("aux_time");
-                numericId = DictionaryCache.getIdFromSystemName("aux_numeric");
-                dateId = DictionaryCache.getIdFromSystemName("aux_date");
-                dateTimeId = DictionaryCache.getIdFromSystemName("aux_date_time");
-                dictionaryId = DictionaryCache.getIdFromSystemName("aux_dictionary");
+                alphaLowerId = DictionaryCache.getIdBySystemName("aux_alpha_lower");
+                alphaUpperId = DictionaryCache.getIdBySystemName("aux_alpha_upper");
+                alphaMixedId = DictionaryCache.getIdBySystemName("aux_alpha_mixed");
+                timeId = DictionaryCache.getIdBySystemName("aux_time");
+                numericId = DictionaryCache.getIdBySystemName("aux_numeric");
+                dateId = DictionaryCache.getIdBySystemName("aux_date");
+                dateTimeId = DictionaryCache.getIdBySystemName("aux_date_time");
+                dictionaryId = DictionaryCache.getIdBySystemName("aux_dictionary");
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }

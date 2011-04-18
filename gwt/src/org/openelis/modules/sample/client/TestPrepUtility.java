@@ -73,7 +73,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                                          "controller?service=org.openelis.modules.panel.server.PanelService");
 
         try {
-            anInPrepId = DictionaryCache.getIdFromSystemName("analysis_inprep");
+            anInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
         } catch (Exception e) {
             Window.alert("testlookup constructor: " + e.getMessage());
         }

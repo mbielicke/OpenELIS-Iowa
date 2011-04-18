@@ -206,8 +206,8 @@ public class SampleNotesTab extends NotesTab {
     
     private void initializeDropdowns() {
         try {
-            analysisReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

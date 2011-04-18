@@ -28,7 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
@@ -168,7 +168,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
         if(entry == null)
             return null;
         
-        entries = DictionaryCache.getListByCategorySystemName(dictSystemName);
+        entries = CategoryCache.getBySystemName(dictSystemName);
         
         for(int i=0; i<entries.size(); i++){
             dictDO = entries.get(i);
