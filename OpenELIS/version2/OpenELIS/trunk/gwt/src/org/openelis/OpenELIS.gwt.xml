@@ -93,7 +93,7 @@ UIRF Software License are applicable instead of those above.
     <source path="common"/>
     
 	<!-- Specify the app entry point class.                   -->
-	<entry-point class="org.openelis.modules.main.client.OpenELIS"/>
+	<entry-point class="org.openelis.modules.main.client.OpenELISEntry"/>
 	
 <!--
 	<extend-property name="locale" values="cn"/>

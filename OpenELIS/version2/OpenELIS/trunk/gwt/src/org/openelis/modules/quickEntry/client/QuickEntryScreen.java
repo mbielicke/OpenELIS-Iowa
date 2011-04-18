@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.OrganizationContactDO;
@@ -77,7 +78,6 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestSectionManager;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.TestPrepUtility;
 
@@ -121,7 +121,7 @@ public class QuickEntryScreen extends Screen {
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         calendarService = new ScreenService("controller?service=org.openelis.gwt.server.CalendarService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("quickentry");
+        userPermission = UserCache.getPermission().getModule("quickentry");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Quick Entry Screen");
 
@@ -729,7 +729,7 @@ public class QuickEntryScreen extends Screen {
 
                 sampleMan.getSample().setDomain(SampleManager.QUICK_ENTRY);
                 sampleMan.setDefaults();
-                sampleMan.getSample().setReceivedById(OpenELIS.getSystemUserPermission().getSystemUserId());
+                sampleMan.getSample().setReceivedById(UserCache.getPermission().getSystemUserId());
                 sampleMan.getSample().setAccessionNumber(accessionNum);
                 sampleMan.getSample().setReceivedDate(receivedDate.getValue());
             } else {
@@ -896,8 +896,8 @@ public class QuickEntryScreen extends Screen {
         TableDataRow row;
 
         try {
-            sampleLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-            testSectionDefaultId = DictionaryCache.getIdFromSystemName("test_section_default");
+            sampleLoggedInId = DictionaryCache.getIdBySystemName("sample_logged_in");
+            testSectionDefaultId = DictionaryCache.getIdBySystemName("test_section_default");
             todaysDate = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
             
             testPanelList = service.callList("fetchTestMethodSampleTypeList");

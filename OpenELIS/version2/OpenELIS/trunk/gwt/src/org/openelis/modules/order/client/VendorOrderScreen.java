@@ -28,7 +28,9 @@ package org.openelis.modules.order.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.NoteViewDO;
@@ -74,7 +76,6 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -97,9 +98,10 @@ public class VendorOrderScreen extends Screen {
     private CalendarLookUp   orderedDate;
     private Dropdown<Integer> statusId, costCenterId;
     private TextBox           id, neededInDays, organizationAttention,
-                    organizationAddressMultipleUnit, requestedBy, organizationAddressStreetAddress,
-                    organizationAddressCity, externalOrderNumber, organizationAddressState,
-                    organizationAddressZipCode;
+                              organizationAddressMultipleUnit, requestedBy,
+                              organizationAddressStreetAddress, organizationAddressCity,
+                              externalOrderNumber, organizationAddressState,
+                              organizationAddressZipCode;
     private ItemTab           itemTab;
     private FillTab           fillTab;
     private ShipNoteTab       shipNoteTab;
@@ -107,7 +109,7 @@ public class VendorOrderScreen extends Screen {
 
     private AutoComplete      organizationName;
     private AppButton         queryButton, previousButton, nextButton, addButton, updateButton,
-                    commitButton, abortButton;
+                              commitButton, abortButton;
     private MenuItem          duplicate, orderHistory, itemHistory;
     private TabPanel          tabPanel;
     private Integer           status_pending;
@@ -120,12 +122,10 @@ public class VendorOrderScreen extends Screen {
 
     public VendorOrderScreen() throws Exception {
         super((ScreenDefInt)GWT.create(VendorOrderDef.class));
-        service = new ScreenService(
-                                    "controller?service=org.openelis.modules.order.server.OrderService");
-        organizationService = new ScreenService(
-                                                "controller?service=org.openelis.modules.organization.server.OrganizationService");
+        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
+        organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("vendororder");
+        userPermission = UserCache.getPermission().getModule("vendororder");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Vendor Order Screen");
 
@@ -141,7 +141,7 @@ public class VendorOrderScreen extends Screen {
         manager = OrderManager.getInstance();
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("order_status", "cost_centers",
+            CategoryCache.getBySystemNames("order_status", "cost_centers",
                                                          "inventory_store");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
@@ -774,7 +774,7 @@ public class VendorOrderScreen extends Screen {
         // order status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("order_status");
+        list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -785,7 +785,7 @@ public class VendorOrderScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("cost_centers");
+        list = CategoryCache.getBySystemName("cost_centers");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -795,7 +795,7 @@ public class VendorOrderScreen extends Screen {
         costCenterId.setModel(model);
 
         try {
-            status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");
+            status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -843,7 +843,7 @@ public class VendorOrderScreen extends Screen {
         data = manager.getOrder();
         data.setStatusId(status_pending);
         data.setOrderedDate(now);
-        data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
+        data.setRequestedBy(UserCache.getPermission().getLoginName());
         data.setType(OrderManager.TYPE_VENDOR);
 
         setState(State.ADD);
@@ -968,21 +968,18 @@ public class VendorOrderScreen extends Screen {
             data = manager.getOrder();
             data.setStatusId(status_pending);
             data.setOrderedDate(now);
-            data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
+            data.setRequestedBy(UserCache.getPermission().getLoginName());
             data.setType(OrderManager.TYPE_VENDOR);
 
             itemTab.setManager(manager);
-            // fillTab.setManager(manager);
             shipNoteTab.setManager(manager);
 
             manager.getItems();
-            // manager.getFills();
             manager.getShippingNotes();
 
             clearKeys();
 
             itemTab.draw();
-            // fillTab.draw();
             shipNoteTab.draw();
 
             setState(State.ADD);

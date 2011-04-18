@@ -28,7 +28,9 @@ package org.openelis.modules.instrument.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentLogDO;
@@ -79,7 +81,6 @@ import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.InstrumentManager;
 import org.openelis.meta.InstrumentMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -113,7 +114,7 @@ public class InstrumentScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
         scriptletService = new ScreenService("controller?service=org.openelis.modules.scriptlet.server.ScriptletService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("instrument");
+        userPermission = UserCache.getPermission().getModule("instrument");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Instrument Screen");
 
@@ -646,7 +647,7 @@ public class InstrumentScreen extends Screen {
         // type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("instrument_type");
+        list = CategoryCache.getBySystemName("instrument_type");
         for (DictionaryDO d : list) {         
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -658,7 +659,7 @@ public class InstrumentScreen extends Screen {
         // log type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, "")); 
-        list = DictionaryCache.getListByCategorySystemName("instrument_log_type");
+        list = CategoryCache.getBySystemName("instrument_log_type");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -810,7 +811,7 @@ public class InstrumentScreen extends Screen {
             for (i = 0; i < count; i++ ) {
                 data = man.getLogAt(i);
                 typeId = data.getTypeId();
-                dict = DictionaryCache.getEntryFromId(typeId);
+                dict = DictionaryCache.getById(typeId);
                 if(dict != null)
                     entry = dict.getEntry();
                 else

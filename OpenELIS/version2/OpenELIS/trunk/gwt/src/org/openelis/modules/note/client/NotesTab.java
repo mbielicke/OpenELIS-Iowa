@@ -2,6 +2,7 @@ package org.openelis.modules.note.client;
 
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
@@ -16,7 +17,6 @@ import org.openelis.gwt.widget.NotesPanel;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -38,8 +38,8 @@ public class NotesTab extends Screen {
         setDefinition(def);
         setWindow(window);
 
-        userName = OpenELIS.getSystemUserPermission().getLoginName();
-        userId = OpenELIS.getSystemUserPermission().getSystemUserId();
+        userName = UserCache.getPermission().getLoginName();
+        userId = UserCache.getPermission().getSystemUserId();
         this.notesPanelKey = notesPanelKey;
         this.editButtonKey = editButtonKey;
 

@@ -28,7 +28,9 @@ package org.openelis.modules.order.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.NoteViewDO;
@@ -69,7 +71,6 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -110,7 +111,7 @@ public class InternalOrderScreen extends Screen {
         super((ScreenDefInt)GWT.create(InternalOrderDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("internalorder");
+        userPermission = UserCache.getPermission().getModule("internalorder");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Internal Order Screen");
 
@@ -126,7 +127,7 @@ public class InternalOrderScreen extends Screen {
         manager = OrderManager.getInstance();
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("order_status", "cost_centers",
+            CategoryCache.getBySystemNames("order_status", "cost_centers",
                                                          "inventory_store", "inventory_unit");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
@@ -517,7 +518,7 @@ public class InternalOrderScreen extends Screen {
         // order status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("order_status");
+        list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -528,7 +529,7 @@ public class InternalOrderScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("cost_centers");
+        list = CategoryCache.getBySystemName("cost_centers");
         for (DictionaryDO d : list) {         
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -538,7 +539,7 @@ public class InternalOrderScreen extends Screen {
         costCenterId.setModel(model);
         
         try {
-            status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");
+            status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -587,7 +588,7 @@ public class InternalOrderScreen extends Screen {
         data = manager.getOrder();
         data.setStatusId(status_pending);
         data.setOrderedDate(now);
-        data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
+        data.setRequestedBy(UserCache.getPermission().getLoginName());
         data.setType(OrderManager.TYPE_INTERNAL);
 
         setState(State.ADD);
@@ -713,7 +714,7 @@ public class InternalOrderScreen extends Screen {
             data = manager.getOrder();
             data.setStatusId(status_pending);
             data.setOrderedDate(now);
-            data.setRequestedBy(OpenELIS.getSystemUserPermission().getLoginName());
+            data.setRequestedBy(UserCache.getPermission().getLoginName());
             data.setType(OrderManager.TYPE_INTERNAL);           
             
             itemTab.setManager(manager);                        

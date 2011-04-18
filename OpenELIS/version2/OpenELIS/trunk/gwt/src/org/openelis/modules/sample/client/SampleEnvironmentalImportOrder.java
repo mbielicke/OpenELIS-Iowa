@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
@@ -107,7 +108,7 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
                     }else if(analyteId.equals("smpl_client_ref"))
                         manager.getSample().setClientReference(auxData.getValue());
                     else if(analyteId.equals("is_hazardous")){
-                        if(auxData.getValue() != null && "yes".equals(DictionaryCache.getSystemNameFromId(new Integer(auxData.getValue()))))
+                        if(auxData.getValue() != null && "yes".equals(DictionaryCache.getSystemNameById(new Integer(auxData.getValue()))))
                             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setIsHazardous("Y");
                         else
                             ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental().setIsHazardous("N");
@@ -186,7 +187,7 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
         if(entry == null)
             return false;
         
-        entries = DictionaryCache.getListByCategorySystemName(dictSystemName);
+        entries = CategoryCache.getBySystemName(dictSystemName);
         
         for(int i=0; i<entries.size(); i++){
             dictDO = entries.get(i);

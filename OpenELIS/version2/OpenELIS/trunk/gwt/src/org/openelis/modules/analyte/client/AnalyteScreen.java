@@ -28,6 +28,7 @@ package org.openelis.modules.analyte.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
@@ -63,7 +64,6 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.AnalyteMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -89,8 +89,8 @@ public class AnalyteScreen extends Screen {
     public AnalyteScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AnalyteDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-
-        userPermission = OpenELIS.getSystemUserPermission().getModule("analyte");
+        
+        userPermission = UserCache.getPermission().getModule("analyte");        
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Analyte Screen");
 

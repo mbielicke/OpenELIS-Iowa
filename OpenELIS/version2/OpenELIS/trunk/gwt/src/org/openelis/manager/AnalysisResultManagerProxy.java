@@ -152,7 +152,7 @@ public class AnalysisResultManagerProxy {
         Integer testResultId, resultRequiredId;
         int i, j;
 
-        resultRequiredId = DictionaryCache.getIdFromSystemName("test_analyte_req");
+        resultRequiredId = DictionaryCache.getIdBySystemName("test_analyte_req");
         i = 0;
         // go through the results look for empty required and invalid results
         while (i < man.rowCount()) {

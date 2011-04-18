@@ -25,7 +25,7 @@
 */
 package org.openelis.modules.shipping.client;
 
-import org.openelis.modules.main.client.openelis.OpenELISDef;
+import org.openelis.modules.main.client.OpenELISDef;
 
 public interface ProcessShippingDef extends OpenELISDef {
 

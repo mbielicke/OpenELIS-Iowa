@@ -29,7 +29,9 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
@@ -100,7 +102,6 @@ import org.openelis.meta.AuxFieldGroupMeta;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.ResultRangeNumeric;
 
 import com.google.gwt.core.client.GWT;
@@ -146,7 +147,7 @@ public class AuxiliaryScreen extends Screen {
         analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
         dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
         
-        userPermission = OpenELIS.getSystemUserPermission().getModule("auxiliary");
+        userPermission =  UserCache.getPermission().getModule("auxiliary");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Auxiliary Screen");
 
@@ -964,7 +965,7 @@ public class AuxiliaryScreen extends Screen {
         // unit of measure dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+        list = CategoryCache.getBySystemName("unit_of_measure");
         for (DictionaryDO d : list) {            
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -976,7 +977,7 @@ public class AuxiliaryScreen extends Screen {
         // aux field value type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("aux_field_value_type");
+        list = CategoryCache.getBySystemName("aux_field_value_type");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -986,9 +987,9 @@ public class AuxiliaryScreen extends Screen {
         auxFieldValueTypeId.setModel(model);
         
         try {
-            typeDict    = DictionaryCache.getIdFromSystemName("aux_dictionary");
-            typeNumeric = DictionaryCache.getIdFromSystemName("aux_numeric");
-            typeDefault = DictionaryCache.getIdFromSystemName("aux_default");
+            typeDict    = DictionaryCache.getIdBySystemName("aux_dictionary");
+            typeNumeric = DictionaryCache.getIdBySystemName("aux_numeric");
+            typeDefault = DictionaryCache.getIdBySystemName("aux_default");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1166,7 +1167,7 @@ public class AuxiliaryScreen extends Screen {
             for (i = 0; i < count; i++ ) {
                 data = afvm.getAuxFieldValueAt(i);
                 typeId = data.getTypeId();
-                dict = DictionaryCache.getEntryFromId(typeId);
+                dict = DictionaryCache.getById(typeId);
                 if(dict != null)
                     entry = dict.getEntry();
                 else

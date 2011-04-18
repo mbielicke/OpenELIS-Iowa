@@ -27,6 +27,7 @@ package org.openelis.modules.note.client;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
@@ -371,7 +372,7 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
                 oldTypeId = currentTypeId;
 
                 try {
-                    dictDO = DictionaryCache.getEntryFromId(currentTypeId);
+                    dictDO = DictionaryCache.getById(currentTypeId);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     dictDO = null;
@@ -412,23 +413,25 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
     }
 
     private void buildTree() {
+        DictionaryDO data;
+        TreeDataItem item;
         if (tree.numRows() > 0)
             tree.clear();
 
         if (categoryList == null)
-            categoryList = DictionaryCache.getListByCategorySystemName("standard_note_type");
+            categoryList = CategoryCache.getBySystemName("standard_note_type");
 
         ArrayList<TreeDataItem> treeList = new ArrayList<TreeDataItem>();
         for (int i = 0; i < categoryList.size(); i++ ) {
-            DictionaryDO dictDO = categoryList.get(i);
+            data = categoryList.get(i);
 
-            TreeDataItem treeModelItem = new TreeDataItem(1);
-            treeModelItem.leafType = "category";
-            treeModelItem.checkForChildren(true);
-            treeModelItem.key = dictDO.getId();
-            treeModelItem.cells.get(0).value = dictDO.getEntry();
+            item = new TreeDataItem(1);
+            item.leafType = "category";
+            item.checkForChildren(true);
+            item.key = data.getId();
+            item.cells.get(0).value = data.getEntry();
 
-            treeList.add(treeModelItem);
+            treeList.add(item);
         }
 
         tree.load(treeList);

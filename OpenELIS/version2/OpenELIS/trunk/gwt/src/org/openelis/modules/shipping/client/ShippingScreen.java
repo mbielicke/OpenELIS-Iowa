@@ -28,7 +28,9 @@ package org.openelis.modules.shipping.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
@@ -73,7 +75,6 @@ import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.meta.ShippingMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 
 import com.google.gwt.core.client.GWT;
@@ -139,7 +140,7 @@ public class ShippingScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");        
         
-        userPermission = OpenELIS.getSystemUserPermission().getModule("shipping");
+        userPermission = UserCache.getPermission().getModule("shipping");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Shipping Screen");
 
@@ -171,7 +172,7 @@ public class ShippingScreen extends Screen {
         manager = ShippingManager.getInstance();
         
         try {
-            DictionaryCache.preloadByCategorySystemNames("shipping_status", "order_ship_from",
+            CategoryCache.getBySystemNames("shipping_status", "order_ship_from",
                                                          "shipping_method");
         } catch (Exception e) {
             Window.alert("ShippingSreen: missing dictionary entry; " + e.getMessage());
@@ -785,7 +786,7 @@ public class ShippingScreen extends Screen {
         // order status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("shipping_status");
+        list = CategoryCache.getBySystemName("shipping_status");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -796,7 +797,7 @@ public class ShippingScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("order_ship_from");
+        list = CategoryCache.getBySystemName("order_ship_from");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -807,7 +808,7 @@ public class ShippingScreen extends Screen {
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("shipping_method");
+        list = CategoryCache.getBySystemName("shipping_method");
         for (DictionaryDO d : list) {
             model.add(new TableDataRow(d.getId(), d.getEntry()));
         }
@@ -815,8 +816,8 @@ public class ShippingScreen extends Screen {
         shippedMethodId.setModel(model);
         
         try {
-            status_processed  = DictionaryCache.getIdFromSystemName("shipping_status_processed");
-            status_shipped  = DictionaryCache.getIdFromSystemName("shipping_status_shipped");
+            status_processed  = DictionaryCache.getIdBySystemName("shipping_status_processed");
+            status_shipped  = DictionaryCache.getIdBySystemName("shipping_status_shipped");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -867,8 +868,8 @@ public class ShippingScreen extends Screen {
         data = this.manager.getShipping();
         data.setStatusId(status_processed);
         data.setProcessedDate(now);
-        data.setProcessedBy(OpenELIS.getSystemUserPermission().getLoginName());
-        
+        data.setProcessedBy(UserCache.getPermission().getLoginName());
+
         setState(State.ADD);
         DataChangeEvent.fire(this);
 

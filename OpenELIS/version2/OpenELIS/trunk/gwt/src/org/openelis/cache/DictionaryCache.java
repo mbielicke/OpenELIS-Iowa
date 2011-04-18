@@ -25,16 +25,10 @@
  */
 package org.openelis.cache;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.domain.DictionaryCacheCategoryVO;
-import org.openelis.domain.DictionaryCacheCategoryListVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.modules.main.client.openelis.OpenELIS;
-
-import com.google.gwt.user.client.Window;
 
 /**
  * Class provides cache service handling for front end GWT classes. Cache
@@ -43,102 +37,25 @@ import com.google.gwt.user.client.Window;
  * restart the session to get updated objects.
  */
 
-public class DictionaryCache {
-    protected ScreenService                            service;
-    protected HashMap<String, DictionaryDO>            systemNameList;
-    protected HashMap<Integer, DictionaryDO>           idList;
-    protected HashMap<String, ArrayList<DictionaryDO>> categoryNameList;
-
-    protected static final String                      DICTIONARY_CACHE_SERVICE_URL = "org.openelis.server.cache.DictionaryCacheService";
-    private static DictionaryCache                     instance                     = new DictionaryCache();
-
-    protected DictionaryCache() {
-        service = new ScreenService("controller?service=" + DICTIONARY_CACHE_SERVICE_URL);
-
-        systemNameList = new HashMap<String, DictionaryDO>();
-        OpenELIS.getCacheList().put("DictSystemNameCache-systemName", systemNameList);
-
-        idList = new HashMap<Integer, DictionaryDO>();
-        OpenELIS.getCacheList().put("DictSystemNameCache-id", idList);
-
-        categoryNameList = new HashMap<String, ArrayList<DictionaryDO>>();
-        OpenELIS.getCacheList().put("DictSystemNameCache-categoryName", categoryNameList);
+public class DictionaryCache {    
+    protected static HashMap<Object, DictionaryDO> cache;
+    protected static final String                  SERVICE_URL;
+    protected static ScreenService                 service;
+    
+    static {
+        cache = new HashMap<Object, DictionaryDO>();
+        SERVICE_URL = "org.openelis.server.DictionaryCacheService";
+        service = new ScreenService("controller?service=" + SERVICE_URL);
     }
-
-    public static Integer getIdFromSystemName(String systemName) throws Exception {
-        return instance.getIdFromSystemNameInt(systemName);
-    }
-
-    public static String getSystemNameFromId(Integer id) throws Exception {
-        return instance.getSystemNameFromIdInt(id);
-    }
-
-    public static void preloadByCategorySystemNames(String... systemNames) throws Exception {
-        instance.preloadByCategorySystemNamesInt(systemNames);
-    }
-
-    public static ArrayList<DictionaryDO> getListByCategorySystemName(String systemName) {
-        return instance.getListFromCategorySystemName(systemName);
-    }
-
-    public static DictionaryDO getEntryFromId(Integer id) throws Exception {
-        return instance.getEntryFromIdInt(id);
-    }
-
-    protected Integer getIdFromSystemNameInt(final String systemName) throws Exception {
+    
+    public static DictionaryDO getById(Integer id) throws Exception {
         DictionaryDO data;
 
-        data = systemNameList.get(systemName);
+        data = cache.get(id);
         if (data == null) {
             try {
-                data = (DictionaryDO)service.call("getIdBySystemName", systemName);
-
-                if (data != null) {
-                    systemNameList.put(data.getSystemName(), data);
-                    idList.put(data.getId(), data);
-                }
-            } catch (Exception e) {
-                throw new Exception("DictionaryCache.getIdFromSystemName: \"" + systemName +
-                                    "\" not found in system.");
-            }
-        }
-
-        return data.getId();
-    }
-
-    protected String getSystemNameFromIdInt(final Integer id) throws Exception {
-        DictionaryDO data;
-
-        data = idList.get(id);
-        if (data == null) {
-            try {
-                data = (DictionaryDO)service.call("getSystemNameById", id);
-
-                if (data != null) {
-                    systemNameList.put(data.getSystemName(), data);
-                    idList.put(data.getId(), data);
-                }
-            } catch (Exception e) {
-                throw new Exception("DictionaryCache getSystemNameFromId: id \"" + id +
-                                    "\" not found in system.");
-            }
-        }
-
-        return data.getSystemName();
-    }
-
-    protected DictionaryDO getEntryFromIdInt(final Integer id) throws Exception {
-        DictionaryDO data;
-
-        data = idList.get(id);
-        if (data == null) {
-            try {
-                data = (DictionaryDO)service.call("getSystemNameById", id);
-
-                if (data != null) {
-                    systemNameList.put(data.getSystemName(), data);
-                    idList.put(data.getId(), data);
-                }
+                data = (DictionaryDO)service.call("getById", id);
+                add(data);
             } catch (Exception e) {
                 throw new Exception("DictionaryCache.getEntryFromId: id \"" + id +
                                     "\" not found in system.");
@@ -146,70 +63,54 @@ public class DictionaryCache {
         }
 
         return data;
-    }
+    }    
+    
+    public static Integer getIdBySystemName(String systemName) throws Exception {
+        DictionaryDO data;
 
-    protected void preloadByCategorySystemNamesInt(final String... systemNames) throws Exception {
-        DictionaryCacheCategoryListVO cats;
+        data = getBySystemName(systemName);
+        if (data != null)
+            return data.getId();
+
+        return null;
+    }
+    
+    public static DictionaryDO getBySystemName(String systemName) throws Exception {
+        DictionaryDO data;
+
+        data = cache.get(systemName);
+        if (data != null)
+            return data;
 
         try {
-            //
-            // make a list of category system names that we don't have in the
-            // cache
-            cats = new DictionaryCacheCategoryListVO();
-            cats.setList(new ArrayList<DictionaryCacheCategoryVO>());
-
-            for (int i = 0; i < systemNames.length; i++ ) {
-                if ( !categoryNameList.containsKey(systemNames[i])) {
-                    DictionaryCacheCategoryVO cat;
-
-                    cat = new DictionaryCacheCategoryVO();
-                    cat.setSystemName(systemNames[i]);
-                    cats.getList().add(cat);
-                }
-            }
-
-            if (cats.getList().size() > 0)
-                cats = service.call("preloadByCategorySystemNames", cats);
-
-            // put the new values in the screen cache
-            for (DictionaryCacheCategoryVO cat : cats.getList()) {
-                categoryNameList.put(cat.getSystemName(), cat.getDictionaryList());
-
-                // iterate through the results and insert them into the other
-                // lists
-                for (DictionaryDO data : cat.getDictionaryList()) {
-                    systemNameList.put(data.getSystemName(), data);
-                    idList.put(data.getId(), data);
-                }
-            }
+            data = (DictionaryDO)service.call("getBySystemName", systemName);
+            add(data);
         } catch (Exception e) {
-            throw new Exception("DictionaryCache.preloadByCategorySystemNamesInt error."+ e.getMessage());
-        }
-    }
-
-    protected ArrayList<DictionaryDO> getListFromCategorySystemName(String systemName) {
-        ArrayList<DictionaryDO> list;
-
-        list = categoryNameList.get(systemName);
-        if (list == null) {
-            try {
-                list = service.callList("getListByCategorySystemName", systemName);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-            }
-
-            if (list != null) {
-                categoryNameList.put(systemName, list);
-
-                // iterate through the results and insert them into the other
-                // lists
-                for (DictionaryDO data : list) {
-                    systemNameList.put(data.getSystemName(), data);
-                    idList.put(data.getId(), data);
-                }
-            }
+            throw new Exception("DictionaryCache.getBySystemNameInt: \"" + systemName +
+                                "\" not found in system.");
         }
 
-        return list;
+        return data;
+    }  
+
+    public static String getSystemNameById(Integer id) throws Exception {
+        DictionaryDO data;
+
+        data = getById(id);
+        if (data != null)
+            return data.getSystemName();
+
+        return null;
+    }   
+    
+    /**
+     * Friendly method for other caches to add new entries to DictionaryCache
+     */
+    static void add(DictionaryDO data) {
+        if (data != null) {
+            cache.put(data.getId(), data);
+            if (data.getSystemName() != null)
+                cache.put(data.getSystemName(), data);
+        }
     }
 }

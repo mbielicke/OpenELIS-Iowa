@@ -28,10 +28,8 @@ package org.openelis.cache;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.user.client.Window;
 
@@ -43,69 +41,55 @@ import com.google.gwt.user.client.Window;
  */
 
 public class SectionCache {
-    protected ScreenService                                service;
-    protected static HashMap<String, ArrayList<SectionViewDO>> nameList;
-    protected static HashMap<Integer, SectionViewDO>       idList;
-    
-    protected static final String                          SECTION_CACHE_SERVICE_URL = "org.openelis.server.cache.SectionCacheService";
-    private static SectionCache                            instance                  = new SectionCache();    
+    protected static HashMap<Integer, SectionViewDO>  cache;
+    protected static ArrayList<SectionViewDO>         list;    
+    protected static final String                     SERVICE_URL;
+    protected static ScreenService                    service;
 
-    protected SectionCache() {
-        service = new ScreenService("controller?service=" + SECTION_CACHE_SERVICE_URL);
-
-        nameList = new HashMap<String, ArrayList<SectionViewDO>>();
-        OpenELIS.getCacheList().put("SectionsCache-name", nameList);
-
-        idList = new HashMap<Integer, SectionViewDO>();
-        OpenELIS.getCacheList().put("SectionsCache-id", idList);
+    static {
+        cache = new HashMap<Integer, SectionViewDO>();
+        SERVICE_URL = "org.openelis.server.SectionCacheService";
+        service = new ScreenService("controller?service=" + SERVICE_URL);
     }
     
-    public static ArrayList<SectionViewDO> getSectionList() {
-        return instance.getSectionListInt();
-    }
-
-    public static SectionViewDO getSectionFromId(Integer id) throws Exception {
-        return instance.getSectionFromIdInt(id);
-    }
-
-    protected ArrayList<SectionViewDO> getSectionListInt() {
-        ArrayList<SectionViewDO> returnList;
-        
-        returnList = nameList.get("sections");
-
-        if (returnList == null) {
-            try {
-                returnList = service.callList("fetchSectionList", "");
-
-                if (returnList != null)
-                    nameList.put("sections", returnList);
-            } catch (Exception e) {
-                Window.alert("SectionCache getSectionList error: " + e.getMessage());
-            }
-        }
-
-        return returnList;
-    }
-
-    protected SectionViewDO getSectionFromIdInt(Integer id) throws Exception {
+    public static SectionViewDO getById(Integer id) throws Exception {
         SectionViewDO data;
         
-        data = idList.get(id);
-
+        data = cache.get(id);
         if (data == null) {
             try {
-                data = (SectionViewDO)service.call("fetchSectionById", id);
-
-                if (data != null)
-                    idList.put(data.getId(), data);
+                refreshList();
+                data = cache.get(id);
 
             } catch (Exception e) {
-                e.printStackTrace();
-                throw new Exception("SectionCache.getSectionFromId: id \"" + id +
+                throw new Exception("SectionCache.getById: id \"" + id +
                                     "\" not found in system.  Please call the system administrator.");
             }
         }
 
         return data;
     }
+    
+    public static ArrayList<SectionViewDO> getList() {        
+        try {
+            if (cache.size() == 0) 
+                list = refreshList();             
+        } catch (Exception e) {
+            Window.alert("SectionCache getList error: " + e.getMessage());
+        }
+
+        return list;
+    } 
+    
+    protected static ArrayList<SectionViewDO> refreshList() throws Exception {
+        ArrayList<SectionViewDO> list;
+        
+        list = service.callList("getList", "");
+                    
+        for (SectionViewDO data: list) 
+            cache.put(data.getId(), data);                            
+         
+        return list; 
+    }        
+
 }

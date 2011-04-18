@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.InventoryItemCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
@@ -548,7 +548,7 @@ public class ItemTab extends Screen {
                 if("top".equals(item.leafType)) {
                     data = (OrderItemViewDO)item.key;                  
                     try {
-                        invItem = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
+                        invItem = InventoryItemCache.getById(data.getInventoryItemId());
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         e.printStackTrace();
@@ -589,7 +589,7 @@ public class ItemTab extends Screen {
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("cost_centers"); 
+        list = CategoryCache.getBySystemName("cost_centers"); 
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -632,7 +632,7 @@ public class ItemTab extends Screen {
                 parent = model.get(i);
                 item = (OrderItemViewDO)parent.key;
                 try {
-                    invItem = InventoryItemCache.getActiveInventoryItemFromId(item.getInventoryItemId());
+                    invItem = InventoryItemCache.getById(item.getInventoryItemId());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     e.printStackTrace();
@@ -869,7 +869,7 @@ public class ItemTab extends Screen {
         invItem = null;
         data = (OrderItemViewDO)item.key;
         try {
-            invItem = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
+            invItem = InventoryItemCache.getById(data.getInventoryItemId());
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();

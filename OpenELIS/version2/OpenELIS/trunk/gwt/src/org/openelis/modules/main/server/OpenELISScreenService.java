@@ -31,8 +31,9 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpSession;
 
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.modules.main.client.openelis.OpenELISRPC;
+import org.openelis.modules.main.client.OpenELISRPC;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.UserCacheRemote;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 
@@ -43,7 +44,6 @@ public class OpenELISScreenService {
 
         rpc = new OpenELISRPC();
         rpc.appConstants = getConstants();
-        rpc.systemUserPermission = (SystemUserPermission)SessionManager.getSession().getAttribute("UserPermission");
 
         return rpc;
     }
@@ -55,6 +55,7 @@ public class OpenELISScreenService {
         HttpSession session;
 
         try {
+            remote().logout();
             session = SessionManager.getSession();
             if (session != null) {
                 SessionManager.removeSession(session.getId());
@@ -86,6 +87,10 @@ public class OpenELISScreenService {
         }
 
         return consts;
+    }
+    
+    private UserCacheRemote remote() {
+        return (UserCacheRemote)EJBFactory.lookup("openelis/UserCacheBean/remote");
     }
 
 }

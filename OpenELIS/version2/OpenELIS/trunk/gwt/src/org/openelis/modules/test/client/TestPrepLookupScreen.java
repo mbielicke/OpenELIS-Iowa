@@ -278,7 +278,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
 
     private void initializeDropdowns() {
         try {
-            testSectionDefaultId = DictionaryCache.getIdFromSystemName("test_section_default");
+            testSectionDefaultId = DictionaryCache.getIdBySystemName("test_section_default");
         } catch (Exception e) {
             Window.alert("inializeDropdowns: " + e.getMessage());
             window.close();

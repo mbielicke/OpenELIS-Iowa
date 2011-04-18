@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.Datetime;
@@ -51,7 +52,6 @@ import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.manager.StorageViewManager;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.storageLocation.client.StorageLocationLookupScreen;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -327,7 +327,7 @@ public class CurrentTab extends Screen {
                                 list = storageCurrentTree.getSelections();
                                 current = Calendar.getCurrentDatetime(Datetime.YEAR,
                                                                       Datetime.MINUTE);
-                                userId = OpenELIS.getSystemUserPermission().getSystemUserId();
+                                userId = UserCache.getPermission().getSystemUserId();
                                 for (int i = 0; i < list.size(); i++ ) {
                                     item = list.get(i);
                                     oldstorage = (StorageViewDO)item.data;

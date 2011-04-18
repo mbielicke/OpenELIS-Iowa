@@ -3,7 +3,7 @@ package org.openelis.modules.provider.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ProviderLocationDO;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -143,30 +143,38 @@ public class LocationTab extends Screen {
             	}
             }
         });
-        
+
+        removeAddressButton = (AppButton)def.getWidget("removeLocationButton");
+        addScreenHandler(removeAddressButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int r;
+                
+                r = locationTable.getSelectedRow();
+                if (r > -1 && locationTable.numRows() > 0)
+                    locationTable.deleteRow(r);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                removeAddressButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });     
 
         addAddressButton = (AppButton)def.getWidget("addLocationButton");
         addScreenHandler(addAddressButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-            	locationTable.addRow();
+                int n;
+                
+                locationTable.addRow();
+                n = locationTable.numRows() - 1;
+                locationTable.selectRow(n);
+                locationTable.scrollToSelection();
+                locationTable.startEditing(n, 0);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 addAddressButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
-
-        removeAddressButton = (AppButton)def.getWidget("removeLocationButton");
-        addScreenHandler(removeAddressButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-            	int r = locationTable.getSelectedRow();
-            	locationTable.deleteRow(r);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                removeAddressButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
-            }
-        });		
 	}
 	
 	private void initializeDropdowns() {
@@ -177,7 +185,7 @@ public class LocationTab extends Screen {
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("state");
+        list = CategoryCache.getBySystemName("state");
         for (DictionaryDO d : list) {            
             row = new TableDataRow(d.getEntry(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -189,7 +197,7 @@ public class LocationTab extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list =  DictionaryCache.getListByCategorySystemName("country");
+        list =  CategoryCache.getBySystemName("country");
         for (DictionaryDO d : list) {         
             row = new TableDataRow(d.getEntry(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

@@ -34,8 +34,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.InventoryItemCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryXUseViewDO;
@@ -84,7 +86,6 @@ import org.openelis.manager.OrderManager;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.order.client.CustomerNoteTab;
 import org.openelis.modules.order.client.ShipNoteTab;
 import org.openelis.modules.shipping.client.ShippingScreen;
@@ -133,7 +134,7 @@ public class OrderFillScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         shippingService = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("fillorder");
+        userPermission = UserCache.getPermission().getModule("fillorder");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Order Fill Screen");
 
@@ -153,7 +154,7 @@ public class OrderFillScreen extends Screen {
         tab = Tabs.ITEM;
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("order_status", "order_ship_from");
+            CategoryCache.getBySystemNames("order_status", "order_ship_from");
         } catch (Exception e) {
             Window.alert("Order Fill Screen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -490,7 +491,7 @@ public class OrderFillScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("order_status");
+        list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));
@@ -502,7 +503,7 @@ public class OrderFillScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("order_ship_from");
+        list = CategoryCache.getBySystemName("order_ship_from");
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));
@@ -521,8 +522,8 @@ public class OrderFillScreen extends Screen {
         type.setModel(model);
 
         try {
-            status_pending = DictionaryCache.getIdFromSystemName("order_status_pending");
-            status_processed = DictionaryCache.getIdFromSystemName("order_status_processed");
+            status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
+            status_processed = DictionaryCache.getIdBySystemName("order_status_processed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -717,7 +718,7 @@ public class OrderFillScreen extends Screen {
             parent = model.get(i);
             ordItem = (OrderItemViewDO)parent.key;
             try {
-                invItem = InventoryItemCache.getActiveInventoryItemFromId(ordItem.getInventoryItemId());
+                invItem = InventoryItemCache.getById(ordItem.getInventoryItemId());
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 e.printStackTrace();
@@ -1002,7 +1003,7 @@ public class OrderFillScreen extends Screen {
                 for (i = 0; i < orderItemMan.count(); i++ ) {
                     orderItemData = orderItemMan.getItemAt(i);
                     try {
-                        invItem = InventoryItemCache.getActiveInventoryItemFromId(orderItemData.getInventoryItemId());
+                        invItem = InventoryItemCache.getById(orderItemData.getInventoryItemId());
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         e.printStackTrace();

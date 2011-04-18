@@ -40,7 +40,9 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TabPanel;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.NoteViewDO;
@@ -83,7 +85,6 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.meta.WorksheetCompletionMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
 import org.openelis.modules.sample.client.TestPrepUtility;
@@ -94,7 +95,7 @@ public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup, successfulLoad;
     private Integer              statusWorking, statusFailedRun, origStatus;
-    private ScreenService        instrumentService, sysVarService, userService;
+    private ScreenService        instrumentService, sysVarService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
@@ -142,9 +143,8 @@ public class WorksheetCompletionScreen extends Screen {
         service           = new ScreenService("controller?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
         sysVarService     = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
-        userService       = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         
-        userPermission = OpenELIS.getSystemUserPermission().getModule("worksheet");
+        userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Worksheet Completion Screen");
 
@@ -167,7 +167,7 @@ public class WorksheetCompletionScreen extends Screen {
         tab         = Tabs.NOTE;
 
         try {
-            DictionaryCache.preloadByCategorySystemNames("analysis_status",
+            CategoryCache.getBySystemNames("analysis_status",
                                                          "instrument_type",
                                                          "type_of_sample", 
                                                          "test_worksheet_format",
@@ -484,8 +484,8 @@ public class WorksheetCompletionScreen extends Screen {
         ArrayList<TableDataRow> model;
 
         try {
-            statusWorking = DictionaryCache.getIdFromSystemName("worksheet_working");
-            statusFailedRun = DictionaryCache.getIdFromSystemName("worksheet_failed");
+            statusWorking = DictionaryCache.getIdBySystemName("worksheet_working");
+            statusFailedRun = DictionaryCache.getIdBySystemName("worksheet_failed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -494,7 +494,7 @@ public class WorksheetCompletionScreen extends Screen {
         //
         // load worksheet status dropdown model
         //
-        dictList  = DictionaryCache.getListByCategorySystemName("worksheet_status");
+        dictList  = CategoryCache.getBySystemName("worksheet_status");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
@@ -504,7 +504,7 @@ public class WorksheetCompletionScreen extends Screen {
         //
         // load the instrument type model
         //
-        dictList  = DictionaryCache.getListByCategorySystemName("instrument_type");
+        dictList  = CategoryCache.getBySystemName("instrument_type");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO resultDO : dictList)
@@ -668,7 +668,7 @@ public class WorksheetCompletionScreen extends Screen {
 
             userVO = null;
             try {
-                userVO = userService.call("fetchById", manager.getWorksheet().getSystemUserId());
+                userVO = UserCache.getSystemUser(manager.getWorksheet().getSystemUserId());
             } catch (Exception anyE1) {
                 throw new Exception("Error retrieving username for worksheet: "+anyE1.getMessage());
             }
@@ -820,10 +820,10 @@ public class WorksheetCompletionScreen extends Screen {
     protected void openFailedRunNote() {
         ScreenWindow modal;
         
-        if (editNote == null) {
-            userName = OpenELIS.getSystemUserPermission().getLoginName();
-            userId = OpenELIS.getSystemUserPermission().getSystemUserId();
-            try {
+        if (editNote == null) {         
+            userName = UserCache.getPermission().getLoginName();
+            userId = UserCache.getPermission().getSystemUserId();
+            try {                
                 editNote = new EditNoteScreen();
                 editNote.addActionHandler(new ActionHandler<EditNoteScreen.Action>() {
                     public void onAction(ActionEvent<EditNoteScreen.Action> event) {
@@ -877,7 +877,7 @@ public class WorksheetCompletionScreen extends Screen {
             iter = sections.values().iterator();
             while (iter.hasNext()) {
                 section = iter.next();
-                perm = OpenELIS.getSystemUserPermission().getSection(section.getName());
+                perm = UserCache.getPermission().getSection(section.getName());
                 if (perm != null && perm.hasCompletePermission())
                     return true;
             }

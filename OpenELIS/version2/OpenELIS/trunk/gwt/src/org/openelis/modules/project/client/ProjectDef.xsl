@@ -162,7 +162,9 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'owner')" />:
                 </text>
                 <widget>
-                  <autoComplete key="{meta:getOwnerId()}" width="145" case="LOWER" tab="{meta:getIsActive()},{meta:getDescription()}" field="Integer" required="true" />
+                  <autoComplete key="{meta:getOwnerId()}" width="145" case="LOWER" tab="{meta:getIsActive()},{meta:getDescription()}" field="Integer" required="true">
+                	<col width="145"/>
+                  </autoComplete>
                 </widget>
               </row>
               <row>
@@ -185,7 +187,9 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'scriptlet')" />:
                 </text>
-                <autoComplete key="{meta:getScriptletName()}" width="180" case="LOWER" tab="parameterTable,{meta:getReferenceTo()}" field="Integer" />
+                <autoComplete key="{meta:getScriptletName()}" width="180" case="LOWER" tab="parameterTable,{meta:getReferenceTo()}" field="Integer">
+                  <col width="180"/>
+                </autoComplete>              
               </row>
               <row>
                 <text style="Prompt">

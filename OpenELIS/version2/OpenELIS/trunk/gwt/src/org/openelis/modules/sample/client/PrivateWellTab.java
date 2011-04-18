@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
@@ -963,7 +964,7 @@ public class PrivateWellTab extends Screen {
         ArrayList<TableDataRow> model;
 
         try {
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -972,7 +973,7 @@ public class PrivateWellTab extends Screen {
         // state dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("state"))
+        for (DictionaryDO d : CategoryCache.getBySystemName("state"))
             model.add(new TableDataRow(d.getEntry(), d.getEntry()));
 
         addressState.setModel(model);

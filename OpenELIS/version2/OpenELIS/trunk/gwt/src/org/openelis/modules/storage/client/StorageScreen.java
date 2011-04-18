@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -58,7 +59,6 @@ import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.manager.StorageViewManager;
 import org.openelis.meta.StorageMeta;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -98,7 +98,7 @@ public class StorageScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         storageLocationService = new ScreenService("controller?service=org.openelis.modules.storageLocation.server.StorageLocationService");
     
-        userPermission = OpenELIS.getSystemUserPermission().getModule("storage");
+        userPermission = UserCache.getPermission().getModule("storage");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Storage Screen");
 

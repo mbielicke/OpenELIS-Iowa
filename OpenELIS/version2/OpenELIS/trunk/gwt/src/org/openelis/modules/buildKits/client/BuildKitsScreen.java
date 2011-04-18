@@ -30,8 +30,10 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.InventoryItemCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemDO;
@@ -41,8 +43,8 @@ import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -57,6 +59,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
@@ -64,7 +67,6 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -78,7 +80,6 @@ import org.openelis.manager.InventoryTransferManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -112,7 +113,7 @@ public class BuildKitsScreen extends Screen {
         inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
         storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         
-        userPermission = OpenELIS.getSystemUserPermission().getModule("buildkits");
+        userPermission = UserCache.getPermission().getModule("buildkits");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Build Kits Screen");
 
@@ -131,7 +132,7 @@ public class BuildKitsScreen extends Screen {
     private void postConstructor() {
         
         try {
-            DictionaryCache.preloadByCategorySystemNames("inventory_unit");
+            CategoryCache.getBySystemNames("inventory_unit");
         } catch (Exception e) {
             Window.alert("Build Kits Screen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -230,8 +231,8 @@ public class BuildKitsScreen extends Screen {
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = (InventoryItemDO) list.get(i);
-                        store = DictionaryCache.getEntryFromId(data.getStoreId());
-                        units = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
+                        store = DictionaryCache.getById(data.getStoreId());
+                        units = DictionaryCache.getById(data.getDispensedUnitsId());
                         row = new TableDataRow(data.getId(), data.getName(), data.getDescription(),
                                                store.getEntry(), units.getEntry());
                         row.data = data;
@@ -744,7 +745,7 @@ public class BuildKitsScreen extends Screen {
         // units dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("inventory_unit");
+        list = CategoryCache.getBySystemName("inventory_unit");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -885,8 +886,8 @@ public class BuildKitsScreen extends Screen {
                 comp = icman.getComponentAt(selRows[i]);
                 itman.addTransfer();           
                 
-                toItem = InventoryItemCache.getActiveInventoryItemFromId(comp.getComponentId());
-                fromItem = InventoryItemCache.getActiveInventoryItemFromId(toItem.getParentInventoryItemId());                
+                toItem = InventoryItemCache.getById(comp.getComponentId());
+                fromItem = InventoryItemCache.getById(toItem.getParentInventoryItemId());                
                 
                 itman.setToInventoryItemAt(toItem, i);                
                 itman.setFromInventoryItemAt(fromItem, i);

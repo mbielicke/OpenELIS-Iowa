@@ -28,7 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -230,8 +230,8 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
         this.envDO = envDO;
         
         if(!dropdownsInited) {
-            setCountriesModel(DictionaryCache.getListByCategorySystemName("country"));
-            setStatesModel(DictionaryCache.getListByCategorySystemName("state"));
+            setCountriesModel(CategoryCache.getBySystemName("country"));
+            setStatesModel(CategoryCache.getBySystemName("state"));
             dropdownsInited = true;
         }
         

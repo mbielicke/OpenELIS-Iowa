@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.InventoryItemCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
@@ -61,12 +62,12 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -81,7 +82,6 @@ import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.InventoryReceiptMeta;
 import org.openelis.modules.inventoryReceipt.client.ItemTab.Action;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.order.client.ShipNoteTab;
 
 import com.google.gwt.core.client.GWT;
@@ -116,7 +116,6 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
     private TabPanel                                  tabPanel;
     
     private ArrayList<TableDataRow>                   receiptModel; 
-    //private HashMap<Integer, InventoryItemViewDO>     inventoryItemMap;  
     private Query                                     query; 
     private String                                    upcQuery;
     private int                                       newManagerIndex;              
@@ -133,7 +132,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         inventoryItemService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("inventoryreceipt");
+        userPermission = UserCache.getPermission().getModule("inventoryreceipt");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Inventory Receipt Screen");
 
@@ -347,7 +346,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                             if (!upcData.getId().equals(-1)) {
                                 tmpRow = new TableDataRow(upcData.getId(), upcData.getDescription());
                                 try {
-                                    item = InventoryItemCache.getActiveInventoryItemFromId(upcData.getId());
+                                    item = InventoryItemCache.getById(upcData.getId());
                                 } catch (Exception e) {
                                     Window.alert("Inventory Item Cache error:" + e.getMessage());
                                     e.printStackTrace();
@@ -516,8 +515,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = (InventoryItemDO) list.get(i);
-                        store = DictionaryCache.getEntryFromId(data.getStoreId());
-                        units = DictionaryCache.getEntryFromId(data.getDispensedUnitsId());
+                        store = DictionaryCache.getById(data.getStoreId());
+                        units = DictionaryCache.getById(data.getDispensedUnitsId());
                         row = new TableDataRow(data.getId(), data.getName(),
                                                store.getEntry(), units.getEntry());
                         row.data = data;
@@ -658,7 +657,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 vendorTab.setState(event.getState());
             }
         });
-        
+                
         shipNoteTab = new ShipNoteTab(def, window, "notesPanel", "standardNoteButton");
         addScreenHandler(shipNoteTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {                
@@ -681,7 +680,6 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         });
         
         screen = this;
-        //inventoryItemMap = new HashMap<Integer, InventoryItemViewDO>();
     }
     
     protected void query() {    
@@ -722,26 +720,12 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
     }
     
     protected void update() {
-        OrderManager order;
-        
         if (query == null) {
             Window.alert(consts.get("queryExeBeforeUpdate"));
             return;
         }
-        order = OrderManager.getInstance();         
         window.setBusy(consts.get("lockForUpdate"));           
         executeQuery(query);  
-        setState(State.UPDATE);
-        DataChangeEvent.fire(this);
-        
-        itemTab.setManager(null, -1, screen);
-        vendorTab.setManager(null, -1);
-        shipNoteTab.setManager(order);
-        shipNoteTab.setState(State.DISPLAY);
-        
-        drawTabs();
-        
-        window.clearStatus();
     }    
 
     protected void commit() {
@@ -764,8 +748,6 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
 
             query.setFields(fields);
             executeQuery(query);
-            setState(State.DISPLAY);            
-            DataChangeEvent.fire(this);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             success = true;            
@@ -841,7 +823,8 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         vendorTab.setManager(null, receiptTable.getSelectedRow());
         shipNoteTab.setManager(order);
         
-        if (state == State.QUERY) {            
+        if (state == State.QUERY) {    
+            receiptModel = new ArrayList<TableDataRow>();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             drawTabs();
@@ -854,11 +837,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             drawTabs();
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {           
-            executeQuery(query); 
-            setState(State.DISPLAY);           
-            DataChangeEvent.fire(this);
-            drawTabs();
-            window.setDone(consts.get("updateAborted"));
+            executeQuery(query);             
         }
     }
         
@@ -985,6 +964,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                 TableDataRow row;
                 InventoryReceiptViewDO data;
                 OrganizationDO organization;
+                OrderManager order;
                 InventoryItemDO invItem;
                 InventoryReceiptManager manager; 
                 InventoryReceiptDataBundle bundle;
@@ -1009,7 +989,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                                 row.cells.get(1).setValue(data.getOrderItemOrderExternalOrderNumber());
                                 row.cells.get(2).setValue(data.getReceivedDate());
 
-                                invItem = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
+                                invItem = InventoryItemCache.getById(data.getInventoryItemId());
                                 if (invItem != null) {
                                     row.cells.get(3).setValue(new TableDataRow(invItem.getId(), data.getUpc()));
                                     row.cells.get(4).setValue(new TableDataRow(invItem.getId(), invItem.getName()));
@@ -1026,15 +1006,16 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                                 row.cells.get(7).setValue(data.getQuantityReceived());     
                                 if (data.getId() != null)
                                     row.cells.get(8).setValue(data.getUnitCost());
-
-                                if(state == State.UPDATE)
-                                    manager = manager.abortUpdate();
-                                else if(state == State.DISPLAY)
-                                    manager = manager.fetchForUpdate();
                                 bundle = new InventoryReceiptDataBundle(j, data.getOrderItemOrderId(), manager);
                                 row.data = bundle;                                                                 
                                 receiptModel.add(row);
                                 k++;
+                            }
+                            if(state == State.UPDATE) {
+                                manager.getOrder();
+                                manager = manager.abortUpdate();
+                            } else if(state == State.DISPLAY) {
+                                manager = manager.fetchForUpdate();
                             }
                         }                        
                     } else {
@@ -1042,12 +1023,32 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                     }
                 } catch (Exception ex) {
                     receiptModel = null;
-                    ex.printStackTrace();
                     Window.alert(ex.getMessage());
                     window.clearStatus();
+                    return;
                 }
+                if (state == State.DISPLAY) {
+                    setState(State.UPDATE);
+                    DataChangeEvent.fire(screen);
 
-                window.clearStatus();
+                    itemTab.setManager(null, -1, screen);
+                    vendorTab.setManager(null, -1);
+                    order = OrderManager.getInstance();
+                    shipNoteTab.setManager(order);
+                    shipNoteTab.setState(State.DISPLAY);
+
+                    drawTabs();
+                    window.clearStatus();
+                } else if (state == State.UPDATE) {
+                    setState(State.DISPLAY);           
+                    DataChangeEvent.fire(screen);
+                    drawTabs();
+                    window.setDone(consts.get("updateAborted"));
+                } else if (state == State.QUERY){
+                    setState(State.DISPLAY);            
+                    DataChangeEvent.fire(screen);
+                    window.clearStatus();
+                }                 
             }
 
             public void onFailure(Throwable error) {
@@ -1075,34 +1076,19 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         orgColumn.enable(enable);
     } 
     
-    private class InventoryReceiptDataBundle {
-        
+    private class InventoryReceiptDataBundle {        
         private int                     managerIndex;
-        private Integer                 orderId;
         private InventoryReceiptManager manager;   
         
         public InventoryReceiptDataBundle(int managerIndex, Integer orderId,
                                           InventoryReceiptManager manager) {
             this.managerIndex = managerIndex;
-            this.orderId = orderId;
             this.manager = manager;            
-        }
-        
-        protected void setManagerIndex(int managerIndex) {
-            this.managerIndex = managerIndex;
         }
 
         public int getManagerIndex() {
             return managerIndex;
-        }  
-        
-        public Integer getOrderId() {
-            return orderId;
-        }
-
-        protected void setOrderId(Integer orderId) {
-            this.orderId = orderId;
-        }
+        }         
 
         public InventoryReceiptManager getManager() {
             return manager;

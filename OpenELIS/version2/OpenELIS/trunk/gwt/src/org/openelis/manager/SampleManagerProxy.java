@@ -52,22 +52,22 @@ public class SampleManagerProxy {
 
         if (anLoggedInId == null) {
             try {
-                anLoggedInId = DictionaryCache.getIdFromSystemName("analysis_logged_in");
-                anInitiatedId = DictionaryCache.getIdFromSystemName("analysis_initiated");
-                anCompletedId = DictionaryCache.getIdFromSystemName("analysis_completed");
-                anReleasedId = DictionaryCache.getIdFromSystemName("analysis_released");
-                anInPrepId = DictionaryCache.getIdFromSystemName("analysis_inprep");
-                anOnHoldId = DictionaryCache.getIdFromSystemName("analysis_on_hold");
-                anRequeueId = DictionaryCache.getIdFromSystemName("analysis_requeue");
-                anCancelledId = DictionaryCache.getIdFromSystemName("analysis_cancelled");
-                anErrorLoggedInId = DictionaryCache.getIdFromSystemName("analysis_error_logged_in");
-                anErrorInitiatedId = DictionaryCache.getIdFromSystemName("analysis_error_initiated");
-                anErrorInPrepId = DictionaryCache.getIdFromSystemName("analysis_error_inprep");
-                anErrorCompletedId = DictionaryCache.getIdFromSystemName("analysis_error_completed");
-                samLoggedInId = DictionaryCache.getIdFromSystemName("sample_logged_in");
-                samCompletedId = DictionaryCache.getIdFromSystemName("sample_completed");
-                samReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
-                samErrorId = DictionaryCache.getIdFromSystemName("sample_error");
+                anLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
+                anInitiatedId = DictionaryCache.getIdBySystemName("analysis_initiated");
+                anCompletedId = DictionaryCache.getIdBySystemName("analysis_completed");
+                anReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
+                anInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
+                anOnHoldId = DictionaryCache.getIdBySystemName("analysis_on_hold");
+                anRequeueId = DictionaryCache.getIdBySystemName("analysis_requeue");
+                anCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
+                anErrorLoggedInId = DictionaryCache.getIdBySystemName("analysis_error_logged_in");
+                anErrorInitiatedId = DictionaryCache.getIdBySystemName("analysis_error_initiated");
+                anErrorInPrepId = DictionaryCache.getIdBySystemName("analysis_error_inprep");
+                anErrorCompletedId = DictionaryCache.getIdBySystemName("analysis_error_completed");
+                samLoggedInId = DictionaryCache.getIdBySystemName("sample_logged_in");
+                samCompletedId = DictionaryCache.getIdBySystemName("sample_completed");
+                samReleasedId = DictionaryCache.getIdBySystemName("sample_released");
+                samErrorId = DictionaryCache.getIdBySystemName("sample_error");
             } catch (Exception e) {
                 e.printStackTrace();
                 anLoggedInId = null;

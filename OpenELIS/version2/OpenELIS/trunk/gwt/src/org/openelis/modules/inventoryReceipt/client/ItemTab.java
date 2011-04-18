@@ -105,7 +105,8 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 if (manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());                        
+                        if (data.getInventoryItemId() != null)
+                            item = InventoryItemCache.getById(data.getInventoryItemId());                        
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
@@ -139,7 +140,8 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 if (manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId()); 
+                        if (data.getInventoryItemId() != null)
+                            item = InventoryItemCache.getById(data.getInventoryItemId());
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
@@ -184,7 +186,8 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 } else if (manager != null &&  index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());                        
+                        if (data.getInventoryItemId() != null) 
+                            item = InventoryItemCache.getById(data.getInventoryItemId());
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
@@ -210,9 +213,11 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 if (manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
-                        if (item != null)
-                            dict = DictionaryCache.getEntryFromId(item.getStoreId());
+                        if (data.getInventoryItemId() != null) {
+                            item = InventoryItemCache.getById(data.getInventoryItemId());
+                            if (item != null)
+                                dict = DictionaryCache.getById(item.getStoreId());
+                        }
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
@@ -247,9 +252,11 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 if (manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
-                        if (item != null && item.getDispensedUnitsId() != null)
-                            dict = DictionaryCache.getEntryFromId(item.getDispensedUnitsId());
+                        if (data.getInventoryItemId() != null) {
+                            item = InventoryItemCache.getById(data.getInventoryItemId());
+                            if (item != null && item.getDispensedUnitsId() != null)
+                                dict = DictionaryCache.getById(item.getDispensedUnitsId());
+                        }
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
@@ -478,7 +485,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 } else if (manager != null && index != -1) {                    
                     data = manager.getReceiptAt(index);
                     try {
-                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());
+                        item = InventoryItemCache.getById(data.getInventoryItemId());
                     } catch (Exception e) {
                         Window.alert("Inventory Item Cache error:" + e.getMessage());
                         e.printStackTrace();
@@ -564,7 +571,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 } else if(manager != null && index != -1) {
                     try {
                         data = manager.getReceiptAt(index);
-                        item = InventoryItemCache.getActiveInventoryItemFromId(data.getInventoryItemId());                        
+                        item = InventoryItemCache.getById(data.getInventoryItemId());                        
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
@@ -583,8 +590,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
     }   
     
     public void setManager(InventoryReceiptManager manager, int index, 
-                           InventoryReceiptScreen inventoryReceiptScreen) {                   
-                    
+                           InventoryReceiptScreen inventoryReceiptScreen) {                                       
         this.manager = manager;
         this.index = index;  
         this.inventoryReceiptScreen = inventoryReceiptScreen;

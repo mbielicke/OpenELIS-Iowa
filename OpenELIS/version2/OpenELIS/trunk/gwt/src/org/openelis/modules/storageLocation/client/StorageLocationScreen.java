@@ -28,6 +28,7 @@ package org.openelis.modules.storageLocation.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.StorageLocationViewDO;
@@ -73,7 +74,6 @@ import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.StorageLocationMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -104,7 +104,7 @@ public class StorageLocationScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.storageLocation.server.StorageLocationService");
         storageUnitService = new ScreenService("controller?service=org.openelis.modules.storageunit.server.StorageUnitService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("storagelocation");
+        userPermission = UserCache.getPermission().getModule("storagelocation");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "StorageLocation Screen");
 

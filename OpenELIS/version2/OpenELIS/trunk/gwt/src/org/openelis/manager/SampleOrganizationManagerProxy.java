@@ -45,7 +45,7 @@ public class SampleOrganizationManagerProxy {
     
     public Integer getIdFromSystemName(String systemName){
         try{
-            return DictionaryCache.getIdFromSystemName(systemName);
+            return DictionaryCache.getIdBySystemName(systemName);
         }catch(Exception e){
             Window.alert(e.getMessage());
             return null;
@@ -75,10 +75,10 @@ public class SampleOrganizationManagerProxy {
         numReportTo = 0;
         for(int i=0; i<man.count(); i++){
             SampleOrganizationDO orgDO = man.getOrganizationAt(i);
-            if(DictionaryCache.getIdFromSystemName("org_bill_to").equals(orgDO.getTypeId()))
+            if(DictionaryCache.getIdBySystemName("org_bill_to").equals(orgDO.getTypeId()))
                 numBillTo++;
             
-            if(DictionaryCache.getIdFromSystemName("org_report_to").equals(orgDO.getTypeId()))
+            if(DictionaryCache.getIdBySystemName("org_report_to").equals(orgDO.getTypeId()))
                 numReportTo++;
         }
         

@@ -28,7 +28,8 @@ package org.openelis.modules.provider.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.CategoryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.domain.IdNameVO;
@@ -53,18 +54,17 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
 import org.openelis.meta.ProviderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.modules.note.client.NotesTab;
 
 import com.google.gwt.core.client.GWT;
@@ -104,7 +104,7 @@ public class ProviderScreen extends Screen {
         super((ScreenDefInt)GWT.create(ProviderDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.provider.server.ProviderService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("provider");
+        userPermission = UserCache.getPermission().getModule("provider");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Provider Screen");
 
@@ -470,7 +470,7 @@ public class ProviderScreen extends Screen {
         // typeId dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list =  DictionaryCache.getListByCategorySystemName("provider_type");
+        list =  CategoryCache.getBySystemName("provider_type");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

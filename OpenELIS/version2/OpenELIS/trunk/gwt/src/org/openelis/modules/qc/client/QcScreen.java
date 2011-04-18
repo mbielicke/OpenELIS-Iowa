@@ -28,7 +28,9 @@ package org.openelis.modules.qc.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
@@ -60,9 +62,9 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -72,7 +74,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -87,7 +88,6 @@ import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 import org.openelis.utilcommon.ResultRangeNumeric;
 import org.openelis.utilcommon.ResultRangeTiter;
 
@@ -118,20 +118,18 @@ public class QcScreen extends Screen {
 
     private Integer                     typeDict, typeNumeric, typeTiter, typeDefault;
     private DictionaryLookupScreen      dictLookup;
-    private ScreenService               analyteService, inventoryService, userService,
-                                        dictionaryService;
+    private ScreenService               analyteService, inventoryService, dictionaryService;
     private ResultRangeNumeric          rangeNumeric;
     private ResultRangeTiter            rangeTiter;
 
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
-        userService = new ScreenService("controller?service=org.openelis.server.SystemUserService");
         analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
         inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
         dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("qc");
+        userPermission = UserCache.getPermission().getModule("qc");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "QC Screen");
 
@@ -356,7 +354,7 @@ public class QcScreen extends Screen {
                     model = new ArrayList<TableDataRow>();
 
                     for (InventoryItemDO data : list) {
-                        dict = DictionaryCache.getEntryFromId(data.getStoreId());
+                        dict = DictionaryCache.getById(data.getStoreId());
                         model.add(new TableDataRow(data.getId(), data.getName(), dict.getEntry()));
                     }
                     inventoryItem.showAutoMatches(model);
@@ -497,7 +495,7 @@ public class QcScreen extends Screen {
                 parser.parse(event.getMatch());
 
                 try {
-                    users = userService.callList("fetchByLoginName", parser.getParameter().get(0));
+                    users = UserCache.getSystemUsers(parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
                     for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
@@ -794,7 +792,7 @@ public class QcScreen extends Screen {
         // type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list =  DictionaryCache.getListByCategorySystemName("qc_type");
+        list =  CategoryCache.getBySystemName("qc_type");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -806,7 +804,7 @@ public class QcScreen extends Screen {
         // prepareUnit dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("unit_of_measure");
+        list = CategoryCache.getBySystemName("unit_of_measure");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -818,7 +816,7 @@ public class QcScreen extends Screen {
         // analyte table type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = DictionaryCache.getListByCategorySystemName("qc_analyte_type");
+        list = CategoryCache.getBySystemName("qc_analyte_type");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -828,10 +826,10 @@ public class QcScreen extends Screen {
         analyteTypeId.setModel(model);
 
         try {
-            typeDict    = DictionaryCache.getIdFromSystemName("qc_analyte_dictionary");
-            typeNumeric = DictionaryCache.getIdFromSystemName("qc_analyte_numeric");
-            typeTiter   = DictionaryCache.getIdFromSystemName("qc_analyte_titer");
-            typeDefault = DictionaryCache.getIdFromSystemName("qc_analyte_default");
+            typeDict    = DictionaryCache.getIdBySystemName("qc_analyte_dictionary");
+            typeNumeric = DictionaryCache.getIdBySystemName("qc_analyte_numeric");
+            typeTiter   = DictionaryCache.getIdBySystemName("qc_analyte_titer");
+            typeDefault = DictionaryCache.getIdBySystemName("qc_analyte_default");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

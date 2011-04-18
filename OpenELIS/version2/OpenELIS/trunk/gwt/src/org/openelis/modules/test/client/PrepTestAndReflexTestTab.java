@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -696,7 +697,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
         List<DictionaryDO> list;
         TableDataRow row;
 
-        list = DictionaryCache.getListByCategorySystemName("test_reflex_flags");
+        list = CategoryCache.getBySystemName("test_reflex_flags");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         for (DictionaryDO data : list) {
@@ -707,8 +708,8 @@ public class PrepTestAndReflexTestTab extends Screen implements
         ((Dropdown)testReflexTable.getColumnWidget(TestMeta.getReflexFlagsId())).setModel(model);
 
         try {
-            typeDict = DictionaryCache.getIdFromSystemName("test_res_type_dictionary");
-            typeDefault = DictionaryCache.getIdFromSystemName("test_res_type_default");
+            typeDict = DictionaryCache.getIdBySystemName("test_res_type_dictionary");
+            typeDefault = DictionaryCache.getIdBySystemName("test_res_type_default");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();

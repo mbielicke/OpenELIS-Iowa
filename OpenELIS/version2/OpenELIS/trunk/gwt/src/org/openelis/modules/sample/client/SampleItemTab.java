@@ -28,6 +28,7 @@ package org.openelis.modules.sample.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -207,7 +208,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         TableDataRow            row;
 
         try {
-            sampleReleasedId = DictionaryCache.getIdFromSystemName("sample_released");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -216,7 +217,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         // sample type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("type_of_sample")) {
+        for (DictionaryDO d : CategoryCache.getBySystemName("type_of_sample")) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = "Y".equals(d.getIsActive());
             model.add(row);
@@ -227,7 +228,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         // source dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("source_of_sample")) {
+        for (DictionaryDO d : CategoryCache.getBySystemName("source_of_sample")) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = "Y".equals(d.getIsActive());
             model.add(row);
@@ -238,7 +239,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         // sample container dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("sample_container")) {
+        for (DictionaryDO d : CategoryCache.getBySystemName("sample_container")) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = "Y".equals(d.getIsActive());
             model.add(row);
@@ -249,7 +250,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
         // unit of measure dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO d : DictionaryCache.getListByCategorySystemName("unit_of_measure")) {
+        for (DictionaryDO d : CategoryCache.getBySystemName("unit_of_measure")) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = "Y".equals(d.getIsActive());
             model.add(row);

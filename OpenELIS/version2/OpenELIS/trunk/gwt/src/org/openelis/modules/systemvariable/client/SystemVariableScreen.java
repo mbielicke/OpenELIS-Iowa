@@ -28,6 +28,7 @@ package org.openelis.modules.systemvariable.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SystemVariableDO;
@@ -57,7 +58,6 @@ import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.SystemVariableMeta;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.openelis.OpenELIS;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -82,7 +82,7 @@ public class SystemVariableScreen extends Screen {
         super((ScreenDefInt)GWT.create(SystemVariableDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
 
-        userPermission = OpenELIS.getSystemUserPermission().getModule("systemvariable");
+        userPermission = UserCache.getPermission().getModule("systemvariable");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "System Variable Screen");
 

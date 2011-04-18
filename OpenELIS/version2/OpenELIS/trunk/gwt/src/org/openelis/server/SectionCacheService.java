@@ -23,21 +23,25 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.server.cache;
+package org.openelis.server;
 
 import java.util.ArrayList;
 
 import org.openelis.domain.SectionViewDO;
-import org.openelis.server.handlers.SectionCacheHandler;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.SectionCacheRemote;
 
 public class SectionCacheService {
     
-    public ArrayList<SectionViewDO> fetchSectionList(String name) throws Exception {
-        return SectionCacheHandler.getSectionList();
+    public SectionViewDO getById(Integer id) throws Exception {
+        return remote().getById(id);        
+    } 
+    
+    public ArrayList<SectionViewDO> getList(String name) throws Exception {
+        return remote().getList();
     }
     
-    public SectionViewDO fetchSectionById(Integer id) {
-        return SectionCacheHandler.getSectionDOFromId(id);        
-    }  
-
+    public SectionCacheRemote remote() {
+       return (SectionCacheRemote)EJBFactory.lookup("openelis/SectionCacheBean/remote");
+    }
 }

@@ -27,6 +27,7 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
@@ -297,7 +298,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         if (billToDO != null) {
             billToSampOrg.setOrganizationId(billToDO.getId());
             billToSampOrg.setOrganizationAttention(orderDO.getBillToAttention());
-            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
             billToSampOrg.setOrganizationName(billToDO.getName());
             billToSampOrg.setOrganizationCity(billToDO.getAddress().getCity());
             billToSampOrg.setOrganizationState(billToDO.getAddress().getState());
@@ -305,7 +306,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         } else if (reportToDO != null) {
             billToSampOrg.setOrganizationId(reportToDO.getId());
             billToSampOrg.setOrganizationAttention(orderDO.getReportToAttention());
-            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
             billToSampOrg.setOrganizationName(reportToDO.getName());
             billToSampOrg.setOrganizationCity(reportToDO.getAddress().getCity());
             billToSampOrg.setOrganizationState(reportToDO.getAddress().getState());
@@ -313,7 +314,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         } else {
             billToSampOrg.setOrganizationId(shipToDO.getId());
             billToSampOrg.setOrganizationAttention(orderDO.getOrganizationAttention());
-            billToSampOrg.setTypeId(DictionaryCache.getIdFromSystemName("org_bill_to"));
+            billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
             billToSampOrg.setOrganizationName(shipToDO.getName());
             billToSampOrg.setOrganizationCity(shipToDO.getAddress().getCity());
             billToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
@@ -326,7 +327,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         DictionaryDO data;
         boolean valid;
 
-        entries = DictionaryCache.getListByCategorySystemName(dictSystemName);
+        entries = CategoryCache.getBySystemName(dictSystemName);
         valid = false;
 
         for (int i = 0; i < entries.size(); i++ ) {
