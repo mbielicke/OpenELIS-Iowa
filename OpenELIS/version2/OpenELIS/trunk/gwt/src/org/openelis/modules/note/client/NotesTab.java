@@ -15,6 +15,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.NotesPanel;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
 
@@ -33,7 +34,7 @@ public class NotesTab extends Screen {
     protected String         notesPanelKey, editButtonKey;
     protected boolean        loaded;
 
-    public NotesTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey,
+    public NotesTab(ScreenDefInt def, ScreenWindowInt window, String notesPanelKey,
                     String editButtonKey) {
         setDefinition(def);
         setWindow(window);

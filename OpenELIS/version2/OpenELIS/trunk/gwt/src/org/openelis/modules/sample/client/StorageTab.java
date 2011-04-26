@@ -50,6 +50,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -84,7 +85,7 @@ public class StorageTab extends Screen {
 
     private Integer                 analysisCancelledId;
 
-    public StorageTab(ScreenDefInt def, ScreenWindow window) {
+    public StorageTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");
         setDefinition(def);
         setWindow(window);

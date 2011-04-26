@@ -44,6 +44,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.NotesPanel;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
@@ -72,12 +73,12 @@ public class AnalysisNotesTab extends NotesTab {
 
     private Integer           analysisCancelledId, analysisReleasedId;
 
-    public AnalysisNotesTab(ScreenDefInt def, ScreenWindow window, String notesPanelKey,
+    public AnalysisNotesTab(ScreenDefInt def, ScreenWindowInt window, String notesPanelKey,
                             String editButtonKey) {
         super(def, window, notesPanelKey, editButtonKey);
     }
 
-    public AnalysisNotesTab(ScreenDefInt def, ScreenWindow window, String externalNotesPanelKey,
+    public AnalysisNotesTab(ScreenDefInt def, ScreenWindowInt window, String externalNotesPanelKey,
                             String externalEditButtonKey, String internalNotesPanelKey,
                             String internalEditButtonKey) {
 

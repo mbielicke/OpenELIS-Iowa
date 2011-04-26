@@ -53,6 +53,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Popup;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -116,7 +117,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private TestReflexUtility                       reflexTestUtil;
 
-    public ResultTab(ScreenDefInt def, ScreenWindow window, Screen parentScreen) {
+    public ResultTab(ScreenDefInt def, ScreenWindowInt window, Screen parentScreen) {
         setDefinition(def);
         setWindow(window);
 

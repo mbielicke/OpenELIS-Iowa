@@ -40,6 +40,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -74,7 +75,7 @@ public class ItemTab extends Screen {
     private SendoutOrderScreen             sendoutOrderScreen;    
     private boolean                        loaded;
 
-    public ItemTab(ScreenDefInt def, ScreenWindow window) {
+    public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
         this.orderService = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         setDefinition(def);
         setWindow(window);        

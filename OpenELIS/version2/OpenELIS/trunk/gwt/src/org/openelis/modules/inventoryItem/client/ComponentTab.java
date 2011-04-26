@@ -45,6 +45,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -69,7 +70,7 @@ public class ComponentTab extends Screen {
     private AppButton             addComponentButton, removeComponentButton;
     private boolean               loaded;
 
-    public ComponentTab(ScreenDefInt def, ScreenWindow window) {
+    public ComponentTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
         setDefinition(def);

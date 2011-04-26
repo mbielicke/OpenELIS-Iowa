@@ -51,6 +51,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -93,7 +94,7 @@ public class QAEventsTab extends Screen {
 
     protected QaeventLookupScreen    qaEventScreen;
 
-    public QAEventsTab(ScreenDefInt def, ScreenWindow window) {
+    public QAEventsTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.qaevent.server.QaEventService");
         setDefinition(def);
         setWindow(window);

@@ -58,6 +58,7 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -95,11 +96,11 @@ public class PrivateWellTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public PrivateWellTab(ScreenWindow window) throws Exception {        
+    public PrivateWellTab(ScreenWindowInt window) throws Exception {        
         this(null, window);
     }
 
-    public PrivateWellTab(ScreenDefInt def, ScreenWindow window) throws Exception {
+    public PrivateWellTab(ScreenDefInt def, ScreenWindowInt window) throws Exception {
         if (def == null)
             drawScreen((ScreenDefInt)GWT.create(PrivateWellTabDef.class));
         else

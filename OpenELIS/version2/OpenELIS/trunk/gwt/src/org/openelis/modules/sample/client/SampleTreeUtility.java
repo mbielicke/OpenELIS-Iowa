@@ -12,6 +12,7 @@ import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
@@ -29,11 +30,11 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
     protected TestPrepUtility testLookup;
     private Screen parentScreen;
     private SampleManager     manager;
-    private ScreenWindow      window;
+    private ScreenWindowInt   window;
     private TreeWidget        itemsTree;
     private Confirm           cancelAnalysisConfirm;
 
-    public SampleTreeUtility(ScreenWindow window, TreeWidget itemsTree, Screen parentScreen) {
+    public SampleTreeUtility(ScreenWindowInt window, TreeWidget itemsTree, Screen parentScreen) {
         this.window = window;
         this.itemsTree = itemsTree;
         this.parentScreen = parentScreen;
