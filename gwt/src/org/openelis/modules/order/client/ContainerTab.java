@@ -53,6 +53,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -87,7 +88,7 @@ public class ContainerTab extends Screen {
 
     protected ScreenService       analysisService, panelService, testService;
 
-    public ContainerTab(ScreenDefInt def, ScreenWindow window) {
+    public ContainerTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
         panelService  = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");

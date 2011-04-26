@@ -52,6 +52,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -93,7 +94,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
     protected AuxDataManager        manager;
     protected ResultRangeTime       timeRange;
 
-    public AuxDataTab(ScreenDefInt def, ScreenWindow window) {
+    public AuxDataTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
         setDefinition(def);
         setWindow(window);

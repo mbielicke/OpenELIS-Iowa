@@ -54,6 +54,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -93,7 +94,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private AutoComplete                     scriptlet, qcname;
     private ScreenService                    scriptletService, qcService;
 
-    public WorksheetLayoutTab(ScreenDefInt def, ScreenWindow window, ScreenService service,
+    public WorksheetLayoutTab(ScreenDefInt def, ScreenWindowInt window, ScreenService service,
                               ScreenService scriptletService, ScreenService qcService) {
         setDefinition(def);
         setWindow(window);

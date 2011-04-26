@@ -62,6 +62,7 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.ScrollableTabBar;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataCell;
@@ -140,7 +141,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     private ResultRangeNumeric                           rangeNumeric;
     private ResultRangeTiter                             rangeTiter;
 
-    public AnalyteAndResultTab(ScreenDefInt def, ScreenWindow window, ScreenService service,
+    public AnalyteAndResultTab(ScreenDefInt def, ScreenWindowInt window, ScreenService service,
                                ScreenService scriptletService, ScreenService analyteService,
                                ScreenService dictionaryService) {
         setDefinition(def);

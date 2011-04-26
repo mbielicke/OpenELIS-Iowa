@@ -54,6 +54,7 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -88,11 +89,11 @@ public class EnvironmentalTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public EnvironmentalTab(ScreenWindow window) throws Exception {
+    public EnvironmentalTab(ScreenWindowInt window) throws Exception {
         this(null, window);
     }
     
-    public EnvironmentalTab(ScreenDefInt def, ScreenWindow window) throws Exception {
+    public EnvironmentalTab(ScreenDefInt def, ScreenWindowInt window) throws Exception {
         if (def == null)
             drawScreen((ScreenDefInt)GWT.create(EnvironmentalTabDef.class));
         else

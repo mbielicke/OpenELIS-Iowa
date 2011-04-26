@@ -35,6 +35,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.meta.InventoryReceiptMeta;
@@ -50,7 +51,7 @@ public class VendorAddressTab extends Screen {
     private int                     index;
     private boolean                 loaded;  
 
-    public VendorAddressTab(ScreenDefInt def, ScreenWindow window) {
+    public VendorAddressTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");              
 
         setDefinition(def);

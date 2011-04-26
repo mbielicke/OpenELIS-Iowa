@@ -51,6 +51,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -96,7 +97,7 @@ public class SampleItemAnalysisTreeTab extends Screen
     protected SampleItemsPopoutTreeLookup treePopoutScreen;
     protected boolean                     loaded = false;
 
-    public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindow window,
+    public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindowInt window,
                                      HasActionHandlers parentScreen) {
         setDefinition(def);
         setWindow(window);

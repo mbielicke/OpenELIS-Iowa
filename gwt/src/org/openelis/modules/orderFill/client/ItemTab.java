@@ -56,6 +56,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -93,7 +94,7 @@ public class ItemTab extends Screen {
     private HashMap<Integer, OrderManager> combinedMap;   
     private ScreenService                  inventoryLocationService;                 
     
-    public ItemTab(ScreenDefInt def, ScreenWindow window, OrderFillScreen orderFillScreen) {
+    public ItemTab(ScreenDefInt def, ScreenWindowInt window, OrderFillScreen orderFillScreen) {
         inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");              
         this.orderFillScreen = orderFillScreen;
         setDefinition(def);

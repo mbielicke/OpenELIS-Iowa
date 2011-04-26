@@ -55,6 +55,7 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -95,7 +96,7 @@ public class PrepTestAndReflexTestTab extends Screen implements
     private AutoComplete<Integer> prepTestAuto, reflexTestAuto, analyteAuto, resultAuto;
     private Label<String>         prepMethodName, reflexMethodName;
 
-    public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenWindow window, ScreenService service) {
+    public PrepTestAndReflexTestTab(ScreenDefInt def, ScreenWindowInt window, ScreenService service) {
         setDefinition(def);
         setWindow(window);
         this.service = service;

@@ -39,6 +39,7 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AuxDataManager;
@@ -59,9 +60,9 @@ import com.google.gwt.user.client.Window;
 public abstract class SampleHistoryUtility {
     
     private SampleManager     manager;
-    private ScreenWindow      window;
+    private ScreenWindowInt   window;
     
-    public SampleHistoryUtility(ScreenWindow window) {
+    public SampleHistoryUtility(ScreenWindowInt window) {
         this.window = window;
     }
     

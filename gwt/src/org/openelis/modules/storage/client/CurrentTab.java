@@ -43,6 +43,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -70,7 +71,7 @@ public class CurrentTab extends Screen {
     private HashMap<Integer, StorageManager>         storageCache;
     private HashMap<Integer, StorageLocationManager> storageLocationCache;
 
-    public CurrentTab(ScreenDefInt def, ScreenWindow window) {
+    public CurrentTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
         initialize();

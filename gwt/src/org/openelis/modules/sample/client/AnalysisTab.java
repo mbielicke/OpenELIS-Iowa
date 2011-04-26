@@ -73,6 +73,7 @@ import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -144,7 +145,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
     protected ScreenService                             panelService, testService,
                                                         worksheetService;
 
-    public AnalysisTab(ScreenDefInt def, ScreenWindow window) {
+    public AnalysisTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");

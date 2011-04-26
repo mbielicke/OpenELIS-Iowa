@@ -42,6 +42,7 @@ import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
@@ -62,7 +63,7 @@ public class ReportToBillToTab extends Screen {
             
     protected ScreenService       organizationService;
     
-    public ReportToBillToTab(ScreenDefInt def, ScreenWindow window) {
+    public ReportToBillToTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         

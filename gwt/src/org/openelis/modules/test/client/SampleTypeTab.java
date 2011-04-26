@@ -43,6 +43,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -74,7 +75,7 @@ public class SampleTypeTab extends Screen implements HasActionHandlers<SampleTyp
     private TableWidget   table;
     private AppButton     addButton, removeButton;
 
-    public SampleTypeTab(ScreenDefInt def, ScreenWindow window) {
+    public SampleTypeTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);       
         

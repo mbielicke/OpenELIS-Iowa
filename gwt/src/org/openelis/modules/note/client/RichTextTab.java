@@ -14,6 +14,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.manager.HasNotesInt;
 import org.openelis.manager.NoteManager;
 
@@ -34,7 +35,7 @@ public class RichTextTab extends Screen {
     protected Integer            userId;
     protected boolean            loaded;
 
-    public RichTextTab(ScreenDefInt def, ScreenWindow window, String richtextPanelKey,
+    public RichTextTab(ScreenDefInt def, ScreenWindowInt window, String richtextPanelKey,
                        String editButtonKey) {
         setDefinition(def);
         setWindow(window);

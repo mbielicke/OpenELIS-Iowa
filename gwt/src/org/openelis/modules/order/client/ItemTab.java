@@ -20,6 +20,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -48,7 +49,7 @@ public class ItemTab extends Screen {
 
     protected ScreenService       inventoryService;
 
-    public ItemTab(ScreenDefInt def, ScreenWindow window) {
+    public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 

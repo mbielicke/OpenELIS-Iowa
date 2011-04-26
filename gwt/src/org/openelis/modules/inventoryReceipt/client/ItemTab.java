@@ -54,6 +54,7 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.InventoryReceiptManager;
@@ -84,7 +85,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
         STORAGE_LOCATION_CHANGED, LOT_NUMBER_CHANGED 
     }
     
-    public ItemTab(ScreenDefInt def, ScreenWindow window) {
+    public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryReceiptService");                      
         inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
         storageService = new ScreenService("controller?service=org.openelis.modules.storage.server.StorageService");

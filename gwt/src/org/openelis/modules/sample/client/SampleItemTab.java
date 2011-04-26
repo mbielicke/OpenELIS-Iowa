@@ -43,6 +43,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.SampleDataBundle;
@@ -65,7 +66,7 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     protected TextBox           sourceOther, containerReference, quantity;
     protected Dropdown<Integer> typeOfSampleId, sourceOfSampleId, containerId, unitOfMeasureId;
 
-    public SampleItemTab(ScreenDefInt def, ScreenWindow window) {
+    public SampleItemTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
 

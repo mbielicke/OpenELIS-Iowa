@@ -14,6 +14,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
@@ -38,7 +39,7 @@ public class SampleTab extends Screen {
 
     protected AccessionNumberUtility accessionNumUtil;
 
-    public SampleTab(ScreenDefInt def, ScreenWindow window) {
+    public SampleTab(ScreenDefInt def, ScreenWindowInt window) {
 		setDefinition(def);
 		setWindow(window);
 		

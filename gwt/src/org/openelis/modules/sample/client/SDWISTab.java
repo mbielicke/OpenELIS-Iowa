@@ -54,6 +54,7 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
+import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -86,11 +87,11 @@ public class SDWISTab extends Screen {
 
     protected boolean                      loaded = false;
 
-    public SDWISTab(ScreenWindow window) throws Exception {
+    public SDWISTab(ScreenWindowInt window) throws Exception {
         this(null, window);
     }
     
-    public SDWISTab(ScreenDefInt def, ScreenWindow window) throws Exception {
+    public SDWISTab(ScreenDefInt def, ScreenWindowInt window) throws Exception {
         if (def == null)
             drawScreen((ScreenDefInt)GWT.create(SDWISTabDef.class));
         else
