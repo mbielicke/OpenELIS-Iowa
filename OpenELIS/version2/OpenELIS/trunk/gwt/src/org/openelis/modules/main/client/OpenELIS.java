@@ -91,8 +91,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -104,7 +106,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     private Confirm                timeoutPopup;
     private static Timer           timeoutTimer, forceTimer;
     private static int             SESSION_TIMEOUT = 1000 * 60 * 30, FORCE_TIMEOUT = 1000 * 60;
-
+    private HandlerRegistration    closeHandler;
+    
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
 
@@ -117,8 +120,9 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         browser = (WindowBrowser)def.getWidget("browser");
         browser.setBrowserHeight();
 
-        initialize();
+        initializeWindowClose();
         initializeTimeout();
+        initialize();
     }
 
     protected void initialize() {
@@ -1305,7 +1309,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
          */
         ScreenService.setScreenSessionTimer(this);
     }
-
+    
     /**
      * ping the server so we session does not expire
      */
@@ -1320,15 +1324,33 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     }
     
     /**
+     * Sets up the notification for browser close button or navigating away from the application
+     */
+
+    private void initializeWindowClose() {
+        closeHandler = Window.addWindowClosingHandler(new Window.ClosingHandler() {
+            public void onWindowClosing(ClosingEvent event) {
+                logout();
+            }
+        });
+    }
+
+    /**
      * logout the user
      */
     private void logout() {
-        try {
-            service.call("logout");
-            Window.open("OpenELIS.html", "_self", null);
-        } catch (Throwable e) {
-            Window.alert(e.getMessage());
-        }
+        //
+        // close the handler so we don't get called again
+        //
+        closeHandler.removeHandler();
+
+        service.call("logout", new AsyncCallback<RPC>() {
+            public void onSuccess(RPC result) {
+            }
+            public void onFailure(Throwable caught) {
+            }
+        });
+        Window.open("OpenELIS.html", "_self", null);
     }
 
     /**
