@@ -28,6 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 
 import net.sf.ehcache.Cache;
@@ -41,6 +42,7 @@ import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SectionPermission.SectionFlags;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.local.LockLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.UserCacheRemote;
 import org.openelis.utils.EJBFactory;
@@ -55,7 +57,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
 
     @Resource
     private SessionContext ctx;
-
+    
     private Cache          cache, permCache;
 
     public UserCacheBean() {
@@ -80,16 +82,48 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
     }
 
     /**
-     * Returns the system user's login name associated with this context.
+     * Returns the system user's login name associated with this context. Please note that
+     * we concat username, sessionId, and locale on initial login and you will need a special
+     * login class for JBOSS to parse the username.
      */
     public String getName() throws Exception {
-        SystemUserVO data;
-
-        data = getSystemUser();
-        if (data != null)
-            return data.getLoginName();
+        String parts[];
+        
+        parts = ctx.getCallerPrincipal().getName().split(";", 3);
+        if (parts.length == 3)
+            return parts[0];
 
         return null;
+    }
+
+    /**
+     * Returns the system user's session id associated with this context. Please note that
+     * we concat username, sessionId, and locale on initial login and you will need a special
+     * login class for JBOSS to parse the username.
+     */
+    public String getSessionId() throws Exception {
+        String parts[];
+        
+        parts = ctx.getCallerPrincipal().getName().split(";", 3);
+        if (parts.length == 3)
+            return parts[1];
+
+        return "";
+    }
+
+    /**
+     * Returns the system user's locale associated with this context. Please note that
+     * we concat username, sessionId, and locale on initial login and you will need a special
+     * login class for JBOSS to parse the username.
+     */
+    public String getLocale() throws Exception {
+        String parts[];
+        
+        parts = ctx.getCallerPrincipal().getName().split(";", 3);
+        if (parts.length == 3)
+            return parts[2];
+
+        return "";
     }
 
     /**
@@ -99,7 +133,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         Element e;
         String name;
 
-        name = ctx.getCallerPrincipal().getName();
+        name = getName();
         e = cache.get(name);
         if (e != null)
             return (SystemUserVO)e.getValue();
@@ -199,13 +233,19 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         Element e;
         SystemUserPermission data;
 
-        name = ctx.getCallerPrincipal().getName();
-        e = permCache.get(name);
-        if (e != null) {
-            data = (SystemUserPermission)e.getValue();
-            permCache.remove(name);
-            cache.remove(data.getLoginName());
-            cache.remove(data.getSystemUserId());
+        try {
+            name = getName();
+            e = permCache.get(name);
+            if (e != null) {
+                data = (SystemUserPermission)e.getValue();
+                permCache.remove(name);
+                cache.remove(data.getLoginName());
+                cache.remove(data.getSystemUserId());
+            }
+            // we can't use the injected Lock because of circular reference; do it the hard way
+            EJBFactory.getLock().removeLocks();
+        } catch (Exception e1) {
+            e1.printStackTrace();
         }
     }
     
@@ -233,7 +273,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         String name;
         SystemUserPermission data;
 
-        name = ctx.getCallerPrincipal().getName();
+        name = getName();
         e = permCache.get(name);
         if (e != null)
             return (SystemUserPermission)e.getValue();

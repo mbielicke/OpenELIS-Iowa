@@ -41,6 +41,10 @@ public interface UserCacheLocal {
     
     public String getName() throws Exception;
     
+    public String getSessionId() throws Exception;
+    
+    public String getLocale() throws Exception;
+    
     public SystemUserVO getSystemUser() throws Exception;
     
     public SystemUserVO getSystemUser(Integer id) throws Exception;
