@@ -26,24 +26,30 @@
 package org.openelis.bean;
 
 import java.util.Date;
+import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 
 import org.openelis.entity.Lock;
 import org.openelis.entity.Lock.PK;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.LockLocal;
-import org.openelis.utils.EJBFactory;
+import org.openelis.local.UserCacheLocal;
 
 @Stateless
 public class LockBean implements LockLocal {
 
     @PersistenceContext
     private EntityManager manager;
+    
+    @EJB
+    private UserCacheLocal userCache;
 
     private static int    DEFAULT_LOCK_TIME = 15 * 60 * 1000,   // 15 M * 60 S * 1000 Millis
                           GRACE_LOCK_TIME = 2 * 60 * 1000;
@@ -68,7 +74,7 @@ public class LockBean implements LockLocal {
         Integer userId;
         SystemUserVO user;
 
-        userId = EJBFactory.getUserCache().getId();
+        userId = userCache.getId(); 
         timeMillis = System.currentTimeMillis();
         
         pk = new Lock.PK(referenceTableId, referenceId);
@@ -80,6 +86,7 @@ public class LockBean implements LockLocal {
                 lock.setReferenceId(referenceId);
                 lock.setSystemUserId(userId);
                 lock.setExpires(lockTimeMillis+timeMillis);
+                lock.setSessionId(userCache.getSessionId());
                 manager.persist(lock);
             } else if (lock.getExpires() < timeMillis) {
                 //
@@ -87,8 +94,9 @@ public class LockBean implements LockLocal {
                 //
                 lock.setSystemUserId(userId);
                 lock.setExpires(lockTimeMillis+timeMillis);
+                lock.setSessionId(userCache.getSessionId());
             } else {
-                user = EJBFactory.getUserCache().getSystemUser(lock.getSystemUserId());
+                user = userCache.getSystemUser(lock.getSystemUserId());
                 throw new EntityLockedException("entityLockException",
                                                 user.getLoginName(),
                                                 new Date(lock.getExpires()).toString());
@@ -106,14 +114,17 @@ public class LockBean implements LockLocal {
         PK pk;
         Lock lock;
         Integer userId;
+        String sessionId;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
         pk = new Lock.PK(referenceTableId, referenceId);
         try {
-            userId = EJBFactory.getUserCache().getId();
+            userId = userCache.getId();
+            sessionId = userCache.getSessionId();
             lock = manager.find(Lock.class, pk);
-            if (lock != null && lock.getSystemUserId().equals(userId))
+            if (lock != null && lock.getSystemUserId().equals(userId) &&
+                lock.getSessionId().equals(sessionId))
                 manager.remove(lock);
         } catch (Exception e) {
             e.printStackTrace();
@@ -133,17 +144,21 @@ public class LockBean implements LockLocal {
         Lock lock;
         long timeMillis;
         Integer userId;
+        String sessionId;
 
         pk = new Lock.PK(referenceTableId, referenceId);
         try {
             lock = manager.find(Lock.class, pk);
-            userId = EJBFactory.getUserCache().getId();
+            userId = userCache.getId();
+            sessionId = userCache.getSessionId();
         } catch (Exception e) {
             lock = null;
             userId = null;
+            sessionId = null;
         }
 
-        if (lock == null || !lock.getSystemUserId().equals(userId))
+        if (lock == null || !lock.getSystemUserId().equals(userId) ||
+            !lock.getSessionId().equals(sessionId))
             throw new EntityLockedException("expiredLockException");
         //
         // if the lock has expired, we are going to refresh its expiration time
@@ -151,5 +166,34 @@ public class LockBean implements LockLocal {
         timeMillis = System.currentTimeMillis();
         if (lock.getExpires() < timeMillis-GRACE_LOCK_TIME)
             lock.setExpires(timeMillis+GRACE_LOCK_TIME);
+    }
+    
+    /**
+     * Removes all the locks for a user's session. This action is often called from logout.
+     */
+    public void removeLocks() {
+        String sessionId;
+        
+        try {
+            sessionId = userCache.getSessionId();
+            if (sessionId.length() > 0)
+                removeLocks(sessionId);
+        } catch (Exception e) {
+            // ignore
+        }
+    }
+
+    public void removeLocks(String sessionId) {
+        Query query;
+        List<Lock> locks;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+
+        query = manager.createNamedQuery("Lock.FetchBySessionId");
+        query.setParameter("id", sessionId);
+
+        locks = query.getResultList();
+        for (Lock lock: locks)
+            manager.remove(lock);
     }
 }

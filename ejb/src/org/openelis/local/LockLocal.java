@@ -37,4 +37,8 @@ public interface LockLocal {
     public void unlock(int referenceTableId, int referenceId);
             
     public void validateLock(int referenceTableId, int referenceId) throws Exception;
+    
+    public void removeLocks();
+    
+    public void removeLocks(String sessionId);
 }
