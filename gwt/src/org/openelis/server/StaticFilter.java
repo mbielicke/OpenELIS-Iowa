@@ -156,9 +156,10 @@ public class StaticFilter implements Filter {
      */
     
     private void login(HttpServletRequest req, String name, String password, String ipAddress) throws Exception {
-        InitialContext localctx, remotectx;
         File propFile;
-        Properties props;        
+        String parts, locale;
+        Properties props;
+        InitialContext localctx, remotectx;
         UserCacheRemote remote;
         SystemUserPermission perm;
         
@@ -166,13 +167,23 @@ public class StaticFilter implements Filter {
             if (! LoginAttempt.isValid(name, ipAddress))
                 throw new PermissionException();
 
+            /*
+             * JBOSS dependent! Build the security principal by combining username;session-id;locale
+             * and then parse it in the back to get all the parts.
+             * see UserCacheBean.
+             * see OpenELISLDAPModule
+             * see OpenELISRolesModule 
+             */
+            locale = (String) req.getSession().getAttribute("locale");
+            parts = name + ";" + req.getSession().getId() + ";" + (locale==null?"en":locale);
+
             localctx = new InitialContext();
             propFile = new File((String)localctx.lookup( ("java:comp/env/openelisJNDI")));
             props = new Properties();
             props.load(new FileInputStream(propFile));
             props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY, "org.jboss.security.jndi.LoginInitialContextFactory");
             props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
-            props.setProperty(Context.SECURITY_PRINCIPAL, name);
+            props.setProperty(Context.SECURITY_PRINCIPAL, parts);
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
             remotectx = new InitialContext(props);            

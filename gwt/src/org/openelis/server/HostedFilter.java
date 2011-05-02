@@ -121,20 +121,29 @@ public class HostedFilter implements Filter {
     private void login(HttpServletRequest req, String name, String password, String ipAddress) throws Exception {
         InitialContext remotectx;
         File propFile;
+        String parts, locale;
         Properties props;
         UserCacheRemote remote;
         SystemUserPermission perm;
 
-        System.out.println("Checking Credentials");
-
         try {
+            /*
+             * JBOSS dependent! Build the security principal by combining username;session-id;locale
+             * and then parse it in the back to get all the parts.
+             * see UserCacheBean.
+             * see OpenELISLDAPModule
+             * see OpenELISRolesModule 
+             */
+            locale = (String) req.getSession().getAttribute("locale");
+            parts = name + ";" + req.getSession().getId() + ";" + (locale==null?"en":locale);
+
             propFile = new File("/usr/pub/http/var/jndi/jndi.properties");
             props = new Properties();
             props.load(new FileInputStream(propFile));
             props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY,
                               "org.jboss.security.jndi.LoginInitialContextFactory");
             props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
-            props.setProperty(Context.SECURITY_PRINCIPAL, name);
+            props.setProperty(Context.SECURITY_PRINCIPAL, parts);
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
             remotectx = new InitialContext(props);
