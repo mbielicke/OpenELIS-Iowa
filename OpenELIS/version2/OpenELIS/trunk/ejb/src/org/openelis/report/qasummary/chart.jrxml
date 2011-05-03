@@ -39,7 +39,7 @@
 	<summary>
 		<band height="240">
 			<bar3DChart>
-				<chart isShowLegend="false" evaluationTime="Report" customizerClass="org.openelis.utils.QAChartCustomizerLogYAxis" renderType="draw">
+				<chart isShowLegend="false" evaluationTime="Report" customizerClass="org.openelis.report.qasummary.QAChartCustomizerLogYAxis" renderType="draw">
 					<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="576" height="240"/>
 					<chartTitle>
 						<font pdfFontName="Times-Roman"/>
