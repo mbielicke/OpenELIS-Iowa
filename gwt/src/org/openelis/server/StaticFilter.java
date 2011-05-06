@@ -199,7 +199,7 @@ public class StaticFilter implements Filter {
             req.getSession().setAttribute("jndiProps", props);
             req.getSession().setAttribute("USER_NAME", name);
 
-            authLog.info("Login attempt for " + name + " succeeded");
+            LoginAttempt.success(name, ipAddress);
         } catch (Exception e) {
             LoginAttempt.fail(name, ipAddress);
             throw e;
@@ -215,6 +215,10 @@ public class StaticFilter implements Filter {
 
         private static HashMap<String, LoginAttempt> failed = new HashMap<String, StaticFilter.LoginAttempt>();
     
+        /**
+         * Checks to see if the user from ip address has exceeded the number of attempts trying
+         * to login into the system. 
+         */
         public static boolean isValid(String name, String ipAddress) {
             long cutoff;
             LoginAttempt la;
@@ -232,6 +236,22 @@ public class StaticFilter implements Filter {
             return true;
         }
         
+        /**
+         * Clears the failed list for the user and ip address.
+         * TODO: need a sliding window remove for clearing the ip address for better security.
+         */
+        public static void success(String name, String ipAddress) {
+            long now;
+            
+            failed.remove(ipAddress);
+            failed.remove(name);
+
+            authLog.info("Login attempt for "+ name +" - "+ ipAddress + " succeeded");
+        }
+
+        /**
+         * Adds/increments the number of failed attempts from user and ip address.
+         */
         public static void fail(String name, String ipAddress) {
             long now;
             LoginAttempt li, ln;
@@ -244,7 +264,7 @@ public class StaticFilter implements Filter {
                 failed.put(ipAddress, li);
             }
             li.lastTime = now;
-            li.tries = Math.min(li.tries+1, LOGIN_TRY_IP_CNT);
+            li.tries = Math.min(li.tries+1, 9999);
 
             ln = failed.get(name);
             if (ln == null) {
@@ -252,7 +272,7 @@ public class StaticFilter implements Filter {
                 failed.put(name, ln);
             }
             ln.lastTime = now;
-            ln.tries = Math.min(ln.tries+1, LOGIN_TRY_NM_CNT);
+            ln.tries = Math.min(ln.tries+1, 9999);
 
             authLog.info("Login attempt for "+ name +" ["+ ln.tries +"]"+" - "+ ipAddress +" ["+ li.tries +"] failed ");
         }
