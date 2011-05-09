@@ -51,7 +51,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQuery(name = "TestWorksheet.FetchByTestId",
-           query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.batchCapacity," +
+           query = "select distinct new org.openelis.domain.TestWorksheetViewDO(tw.id,tw.testId,tw.subsetCapacity," +
                    "tw.totalCapacity,tw.formatId,tw.scriptletId,s.name)"
                  + " from TestWorksheet tw left join tw.scriptlet s where tw.testId = :testId")
 @Entity
@@ -67,8 +67,8 @@ public class TestWorksheet implements Auditable, Cloneable {
     @Column(name = "test_id")
     private Integer                       testId;
 
-    @Column(name = "batch_capacity")
-    private Integer                       batchCapacity;
+    @Column(name = "subset_capacity")
+    private Integer                       subsetCapacity;
 
     @Column(name = "total_capacity")
     private Integer                       totalCapacity;
@@ -108,13 +108,13 @@ public class TestWorksheet implements Auditable, Cloneable {
             this.testId = testId;
     }
 
-    public Integer getBatchCapacity() {
-        return batchCapacity;
+    public Integer getSubsetCapacity() {
+        return subsetCapacity;
     }
 
-    public void setBatchCapacity(Integer batchCapacity) {
-        if (DataBaseUtil.isDifferent(batchCapacity, this.batchCapacity))
-            this.batchCapacity = batchCapacity;
+    public void setSubsetCapacity(Integer subsetCapacity) {
+        if (DataBaseUtil.isDifferent(subsetCapacity, this.subsetCapacity))
+            this.subsetCapacity = subsetCapacity;
     }
 
     public Integer getTotalCapacity() {
@@ -177,7 +177,7 @@ public class TestWorksheet implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_id", testId, original.testId)
-                 .setField("batch_capacity", batchCapacity, original.batchCapacity)
+                 .setField("subset_capacity", subsetCapacity, original.subsetCapacity)
                  .setField("total_capacity", totalCapacity, original.totalCapacity)
                  .setField("format_id", formatId, original.formatId, ReferenceTable.DICTIONARY)
                  .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);

@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -29,11 +30,11 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "Worksheet.FetchById",
-                query = "select new org.openelis.domain.WorksheetDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.batchCapacity,w.relatedWorksheetId) "
-                      + " from Worksheet w where w.id = :id"),
+                query = "select new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.subsetCapacity,w.relatedWorksheetId,w.instrumentId,i.name) "
+                      + " from Worksheet w left join w.instrument i where w.id = :id"),
     @NamedQuery( name = "Worksheet.FetchByAnalysisId",
-                query = "select distinct new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.batchCapacity,w.relatedWorksheetId) "
-                      + " from Worksheet w left join w.worksheetItem wi left join wi.worksheetAnalysis wa where wa.analysisId = :id")})
+                query = "select distinct new org.openelis.domain.WorksheetViewDO(w.id,w.createdDate,w.systemUserId,w.statusId,w.formatId,w.subsetCapacity,w.relatedWorksheetId,w.instrumentId,i.name) "
+                      + " from Worksheet w left join w.worksheetItem wi left join wi.worksheetAnalysis wa left join w.instrument i where wa.analysisId = :id")})
 
 @Entity
 @Table(name = "worksheet")
@@ -57,15 +58,22 @@ public class Worksheet implements Auditable, Cloneable {
     @Column(name = "format_id")
     private Integer                   formatId;
 
-    @Column(name = "batch_capacity")
-    private Integer                   batchCapacity;
+    @Column(name = "subset_capacity")
+    private Integer                   subsetCapacity;
 
     @Column(name = "related_worksheet_id")
     private Integer                   relatedWorksheetId;
 
+    @Column(name = "instrument_id")
+    private Integer                   instrumentId;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_id")
     private Collection<WorksheetItem> worksheetItem;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "instrument_id", insertable = false, updatable = false)
+    private Instrument                instrument;
 
     @Transient
     private Worksheet                 original;
@@ -115,13 +123,13 @@ public class Worksheet implements Auditable, Cloneable {
             this.formatId = formatId;
     }
 
-    public Integer getBatchCapacity() {
-        return batchCapacity;
+    public Integer getSubsetCapacity() {
+        return subsetCapacity;
     }
 
-    public void setBatchCapacity(Integer batchCapacity) {
-        if (DataBaseUtil.isDifferent(batchCapacity, this.batchCapacity))
-            this.batchCapacity = batchCapacity;
+    public void setSubsetCapacity(Integer subsetCapacity) {
+        if (DataBaseUtil.isDifferent(subsetCapacity, this.subsetCapacity))
+            this.subsetCapacity = subsetCapacity;
     }
 
     public Integer getRelatedWorksheetId() {
@@ -133,12 +141,29 @@ public class Worksheet implements Auditable, Cloneable {
             this.relatedWorksheetId = relatedWorksheetId;
     }
 
+    public Integer getInstrumentId() {
+        return instrumentId;
+    }
+
+    public void setInstrumentId(Integer instrumentId) {
+        if (DataBaseUtil.isDifferent(instrumentId, this.instrumentId))
+            this.instrumentId = instrumentId;
+    }
+
     public Collection<WorksheetItem> getWorksheetItem() {
         return worksheetItem;
     }
 
     public void setWorksheetItem(Collection<WorksheetItem> worksheetItem) {
         this.worksheetItem = worksheetItem;
+    }
+
+    public Instrument getInstrument() {
+        return instrument;
+    }
+
+    public void setInstrument(Instrument instrument) {
+        this.instrument = instrument;
     }
 
     public void setClone() {
@@ -161,8 +186,9 @@ public class Worksheet implements Auditable, Cloneable {
                  .setField("system_user_id", systemUserId, original.systemUserId)
                  .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
                  .setField("format_id", formatId, original.formatId, ReferenceTable.DICTIONARY)
-                 .setField("batch_capacity", batchCapacity, original.batchCapacity)
-                 .setField("related_worksheet_id", relatedWorksheetId, original.relatedWorksheetId, ReferenceTable.WORKSHEET);
+                 .setField("subset_capacity", subsetCapacity, original.subsetCapacity)
+                 .setField("related_worksheet_id", relatedWorksheetId, original.relatedWorksheetId, ReferenceTable.WORKSHEET)
+                 .setField("instrument_id", instrumentId, original.instrumentId, ReferenceTable.INSTRUMENT);
 
         return audit;
     }

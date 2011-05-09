@@ -53,13 +53,29 @@ import org.openelis.util.QueryBuilderV2;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("pws-select")
-public class PwsBean implements PwsLocal, PwsRemote{
+public class PwsBean implements PwsLocal, PwsRemote {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
     
     private static final PwsMeta             meta = new PwsMeta();
 
+    public PwsDO fetchById(Integer id) throws Exception {
+        Query query;
+        PwsDO data;
+        
+        query = manager.createNamedQuery("Pws.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (PwsDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data; 
+    }
+    
     public PwsDO fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         Query query;
         PwsDO data;

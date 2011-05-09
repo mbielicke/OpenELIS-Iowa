@@ -28,6 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -39,11 +40,14 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.WorksheetDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.WorksheetViewDO;
+import org.openelis.entity.InstrumentLog;
 import org.openelis.entity.Worksheet;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -51,6 +55,8 @@ import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
+import org.openelis.local.DictionaryLocal;
+import org.openelis.local.InstrumentLogLocal;
 import org.openelis.local.WorksheetLocal;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
@@ -70,18 +76,61 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
     private EntityManager manager;
 	
 	@EJB
-	private AnalysisLocal analysisLocal;
+	private AnalysisLocal analysis;
 	
+    @EJB
+    private DictionaryLocal dictionary;
+    
+    @EJB
+    private InstrumentLogLocal instrumentLog;
+    
+    private static int logPending, logCompleted, statusComplete;
+
     private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
     
-	public WorksheetDO fetchById(Integer id) throws Exception {		
+    @PostConstruct
+    public void init() {
+        DictionaryDO data;
+
+        if (logPending == 0) {
+            try {
+                data = dictionary.fetchBySystemName("instrument_log_pending");
+                logPending = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                logPending = 0;
+            }
+        }
+
+        if (logCompleted == 0) {
+            try {
+                data = dictionary.fetchBySystemName("instrument_log_completed");
+                logCompleted = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                logCompleted = 0;
+            }
+        }
+
+        if (statusComplete == 0) {
+            try {
+                data = dictionary.fetchBySystemName("worksheet_complete");
+                statusComplete = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                statusComplete = 0;
+            }
+        }
+    }
+
+	public WorksheetViewDO fetchById(Integer id) throws Exception {		
 		Query       query;
-		WorksheetDO data;
+		WorksheetViewDO data;
 		
 		query = manager.createNamedQuery("Worksheet.FetchById");
 		query.setParameter("id", id);
 		try {
-		    data = (WorksheetDO) query.getSingleResult();
+		    data = (WorksheetViewDO) query.getSingleResult();
 		} catch (NoResultException e) {
 		    throw new NotFoundException();
 		} catch (Exception e) {
@@ -142,8 +191,10 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                           WorksheetCompletionMeta.getSystemUserId()+", "+
                           WorksheetCompletionMeta.getStatusId()+", "+
                           WorksheetCompletionMeta.getFormatId()+", "+
-                          WorksheetCompletionMeta.getBatchCapacity()+", "+
-                          WorksheetCompletionMeta.getRelatedWorksheetId()+") ");
+                          WorksheetCompletionMeta.getSubsetCapacity()+", "+
+                          WorksheetCompletionMeta.getRelatedWorksheetId()+", "+
+                          WorksheetCompletionMeta.getInstrumentId()+", "+
+                          WorksheetCompletionMeta.getInstrumentName()+") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCompletionMeta.getId());
 
@@ -174,7 +225,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                 for (k = 0; k < waManager.count(); k++) {
                     analysisId = waManager.getWorksheetAnalysisAt(k).getAnalysisId();
                     if (analysisId != null) {
-                        aVDO = analysisLocal.fetchById(analysisId);
+                        aVDO = analysis.fetchById(analysisId);
                         testId = aVDO.getTestId();
                         methodId = aVDO.getMethodId();
                         if (!analysisMap.containsKey(testId+","+methodId)) {
@@ -195,8 +246,9 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         return list;
     }
 
-	public WorksheetDO add(WorksheetDO data){
-        Worksheet entity;
+	public WorksheetViewDO add(WorksheetViewDO data){
+	    InstrumentLog ilEntity;
+        Worksheet     entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
@@ -205,34 +257,94 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         entity.setSystemUserId(data.getSystemUserId());
         entity.setStatusId(data.getStatusId());
         entity.setFormatId(data.getFormatId());
-        entity.setBatchCapacity(data.getBatchCapacity());
+        entity.setSubsetCapacity(data.getSubsetCapacity());
         entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
+        entity.setInstrumentId(data.getInstrumentId());
 
         manager.persist(entity);
         data.setId(entity.getId());
         
+        if (entity.getInstrumentId() != null) {
+            ilEntity = new InstrumentLog();
+            ilEntity.setInstrumentId(entity.getInstrumentId());
+            ilEntity.setTypeId(logPending);
+            ilEntity.setWorksheetId(entity.getId());
+            ilEntity.setEventBegin(entity.getCreatedDate());
+            manager.persist(ilEntity);
+        }
+
         return data;
     }
     
-    public WorksheetDO update(WorksheetDO data) throws Exception {
-        Worksheet entity;
+    public WorksheetViewDO update(WorksheetViewDO data) throws Exception {
+        InstrumentLog   ilEntity;
+        InstrumentLogDO ilDO;
+        Worksheet       entity;
         
         if (!data.isChanged())
             return data;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Worksheet.class, data.getId());
+        
+        if (DataBaseUtil.isDifferent(entity.getInstrumentId(), data.getInstrumentId())) {
+            if (entity.getInstrumentId() == null) {
+                ilEntity = new InstrumentLog();
+                ilEntity.setInstrumentId(data.getInstrumentId());
+                ilEntity.setWorksheetId(data.getId());
+                ilEntity.setEventBegin(data.getCreatedDate());
+                if (data.getStatusId().equals(statusComplete)) {
+                    ilEntity.setTypeId(logCompleted);
+                    ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                } else {
+                    ilEntity.setTypeId(logPending);
+                }
+                manager.persist(ilEntity);
+            } else {
+                try {
+                    ilDO = instrumentLog.fetchByInstrumentIdWorksheetId(entity.getInstrumentId(),
+                                                                        entity.getId());
+                    ilEntity = manager.find(InstrumentLog.class, ilDO.getId());
+                    if (data.getInstrumentId() != null) {
+                        ilEntity.setInstrumentId(data.getInstrumentId());
+                        if (data.getStatusId().equals(statusComplete) &&
+                            ilEntity.getTypeId().equals(logPending)) {
+                            ilEntity.setTypeId(logCompleted);
+                            ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                        }
+                    } else {
+                        manager.remove(ilEntity);
+                    }
+                } catch (NotFoundException nfE) {
+                    if (data.getInstrumentId() != null) {
+                        ilEntity = new InstrumentLog();
+                        ilEntity.setInstrumentId(data.getInstrumentId());
+                        ilEntity.setWorksheetId(data.getId());
+                        ilEntity.setEventBegin(data.getCreatedDate());
+                        if (data.getStatusId().equals(statusComplete)) {
+                            ilEntity.setTypeId(logCompleted);
+                            ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                        } else {
+                            ilEntity.setTypeId(logPending);
+                        }
+                        manager.persist(ilEntity);
+                    }
+                }
+            }
+        }
+        
         entity.setCreatedDate(data.getCreatedDate());
         entity.setSystemUserId(data.getSystemUserId());
         entity.setStatusId(data.getStatusId());
         entity.setFormatId(data.getFormatId());
-        entity.setBatchCapacity(data.getBatchCapacity());
+        entity.setSubsetCapacity(data.getSubsetCapacity());
         entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
+        entity.setInstrumentId(data.getInstrumentId());
 
         return data;
     }
 
-    public void validate(WorksheetDO data) throws Exception {
+    public void validate(WorksheetViewDO data) throws Exception {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();

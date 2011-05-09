@@ -27,18 +27,41 @@ package org.openelis.manager;
 
 import java.util.Iterator;
 
+import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.WorksheetDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
+import org.openelis.local.InstrumentLogLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetManagerProxy {
+    protected static Integer instrumentLogPendingId, instrumentLogCompletedId, statusCompleteId;
+    
+    public WorksheetManagerProxy() {
+        DictionaryLocal l;
 
+        if (instrumentLogPendingId == null) {
+            l = EJBFactory.getDictionary();
+
+            try {
+                instrumentLogPendingId = l.fetchBySystemName("instrument_log_pending").getId();
+                instrumentLogCompletedId = l.fetchBySystemName("instrument_log_completed").getId();
+                statusCompleteId = l.fetchBySystemName("worksheet_complete").getId();
+            } catch (Exception e) {
+                e.printStackTrace();
+                instrumentLogPendingId = null;
+            }
+        }
+    }
+    
     public WorksheetManager fetchById(Integer id) throws Exception {
         WorksheetManager manager;
-        WorksheetDO      data;
+        WorksheetViewDO  data;
 
         data    = EJBFactory.getWorksheet().fetchById(id);
         manager = WorksheetManager.getInstance();
@@ -79,12 +102,25 @@ public class WorksheetManagerProxy {
     public WorksheetManager add(WorksheetManager manager) throws Exception {
         Integer                 id;
         Iterator<SampleManager> iter;
+        InstrumentLogDO         ilDO;
+        InstrumentLogLocal      il;
         LockLocal               lock;
         SampleManager           sManager;
 
         EJBFactory.getWorksheet().add(manager.getWorksheet());
         id = manager.getWorksheet().getId();
 
+        if (manager.getWorksheet().getInstrumentId() != null) {
+            il = EJBFactory.getInstrumentLog();
+            
+            ilDO = new InstrumentLogDO();
+            ilDO.setInstrumentId(manager.getWorksheet().getInstrumentId());
+            ilDO.setTypeId(instrumentLogPendingId);
+            ilDO.setWorksheetId(id);
+            ilDO.setEventBegin(manager.getWorksheet().getCreatedDate());
+            il.add(ilDO);
+        }
+        
         lock = EJBFactory.getLock();
         if (manager.items != null) {
             manager.getItems().setWorksheetId(id);
@@ -112,13 +148,38 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager update(WorksheetManager manager) throws Exception {
-        Integer                 id;
+        int                     i;
+        Datetime                now;
+        Integer                 id, instrumentId;
         Iterator<SampleManager> iter;
+        InstrumentLogDO         ilDO;
+        InstrumentLogManager    ilManager;
         LockLocal               lock;
         SampleManager           sManager;
 
         EJBFactory.getWorksheet().update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
+        
+        instrumentId = manager.getWorksheet().getInstrumentId();
+        if (instrumentId != null && statusCompleteId.equals(manager.getWorksheet().getStatusId())) {
+            now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
+            
+            try {
+                ilManager = InstrumentLogManager.fetchByInstrumentId(instrumentId);
+            } catch (NotFoundException nfE) {
+                ilManager = InstrumentLogManager.getInstance();
+            }
+            
+            for (i = 0; i < ilManager.count(); i++) {
+                ilDO = ilManager.getLogAt(i);
+                if (id.equals(ilDO.getWorksheetId()) &&
+                    instrumentLogPendingId.equals(manager.getWorksheet().getStatusId())) {
+                    ilDO.setTypeId(instrumentLogCompletedId);
+                    ilDO.setEventEnd(now);
+                }
+            }
+            ilManager.update();
+        }
         
         lock = EJBFactory.getLock();
         if (manager.items != null) {

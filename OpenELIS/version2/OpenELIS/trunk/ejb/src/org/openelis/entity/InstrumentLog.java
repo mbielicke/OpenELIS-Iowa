@@ -49,10 +49,14 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-    @NamedQuery(name = "InstrumentLog.FetchByInstrumentId",
-               query = "select new org.openelis.domain.InstrumentLogDO(il.id,il.instrumentId,il.typeId," + 
-                       "il.worksheetId,il.eventBegin,il.eventEnd,il.text)"
-                     + " from InstrumentLog il where il.instrumentId = :id order by il.eventBegin desc")})
+    @NamedQuery( name = "InstrumentLog.FetchByInstrumentId",
+                query = "select new org.openelis.domain.InstrumentLogDO(il.id,il.instrumentId,il.typeId," + 
+                        "il.worksheetId,il.eventBegin,il.eventEnd,il.text)"
+                      + " from InstrumentLog il where il.instrumentId = :id order by il.eventBegin desc"),
+    @NamedQuery( name = "InstrumentLog.FetchByInstrumentIdWorksheetId",
+                query = "select new org.openelis.domain.InstrumentLogDO(il.id,il.instrumentId,il.typeId," + 
+                        "il.worksheetId,il.eventBegin,il.eventEnd,il.text)"
+                      + " from InstrumentLog il where il.instrumentId = :id and il.worksheetId = :wId")})
 @Entity 
 @Table(name = "instrument_log")
 @EntityListeners( {AuditUtil.class})

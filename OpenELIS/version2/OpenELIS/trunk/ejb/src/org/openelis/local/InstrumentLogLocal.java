@@ -35,6 +35,8 @@ import org.openelis.domain.InstrumentLogDO;
 public interface InstrumentLogLocal {
     public ArrayList<InstrumentLogDO> fetchByInstrumentId(Integer id) throws Exception;
 
+    public InstrumentLogDO fetchByInstrumentIdWorksheetId(Integer id, Integer wId) throws Exception;
+
     public InstrumentLogDO add(InstrumentLogDO data) throws Exception;
 
     public InstrumentLogDO update(InstrumentLogDO data) throws Exception;

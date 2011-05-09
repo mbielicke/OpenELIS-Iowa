@@ -68,7 +68,7 @@ public class SampleSDWISBean implements SampleSDWISLocal {
 
         try{
             data = (SampleSDWISViewDO) query.getSingleResult();
-            pwsData = pws.fetchByNumber0(data.getPwsId());
+            pwsData = pws.fetchById(data.getPwsId());
             data.setPwsName(pwsData.getName());
             
         } catch (NoResultException e) {
@@ -132,7 +132,7 @@ public class SampleSDWISBean implements SampleSDWISLocal {
              
         list = new ValidationErrorsList();
         try {
-            pws.fetchByNumber0(data.getPwsId());
+            pws.fetchById(data.getPwsId());
         } catch (NotFoundException e) {            
             list.add(new FieldErrorException("invalidPwsException",
                                                    SampleMeta.getSDWISPwsId()));

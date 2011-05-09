@@ -155,6 +155,7 @@ public class TestWorksheetManagerProxy {
 
         for (i = 0; i < man.itemCount(); i++ ) {
             item = man.getItemAt(i);
+            item.setSortOrder(i + 1);
             item.setTestWorksheetId(worksheet.getId());
 
             il.add(item);
@@ -212,6 +213,7 @@ public class TestWorksheetManagerProxy {
 
         for (i = 0; i < man.itemCount(); i++ ) {
             item = man.getItemAt(i);
+            item.setSortOrder(i + 1);
             if (item.getId() == null) {
                 item.setTestWorksheetId(data.getId());
                 il.add(item);
@@ -289,7 +291,7 @@ public class TestWorksheetManagerProxy {
         size = items.size();
         il = EJBFactory.getTestWorksheetItem();
         
-        bc = data.getBatchCapacity();
+        bc = data.getSubsetCapacity();
         tc = data.getTotalCapacity();
         posList = new ArrayList<Integer>();
         checkPosition = false;
@@ -318,7 +320,7 @@ public class TestWorksheetManagerProxy {
                                                           "worksheetTable"));
                     checkPosition = false;
                 } else if (bc != null && position > bc) {
-                    list.add(new TableFieldErrorException("posExcBatchCapacityException", i,
+                    list.add(new TableFieldErrorException("posExcSubsetCapacityException", i,
                                                           TestMeta.getWorksheetItemPosition(),
                                                           "worksheetTable"));
                     checkPosition = false;

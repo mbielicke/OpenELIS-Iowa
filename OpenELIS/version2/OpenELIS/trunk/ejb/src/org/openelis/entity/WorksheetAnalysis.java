@@ -4,6 +4,8 @@ package org.openelis.entity;
  * WorksheetAnalysis Entity POJO for database
  */
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -16,16 +18,17 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
-                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId) "+
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate) "+
                         "from WorksheetAnalysis wa where wa.worksheetItemId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchById",
-                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId) "+
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate) "+
                         "from WorksheetAnalysis wa where wa.id = :id")})
 @Entity
 @Table(name = "worksheet_analysis")
@@ -51,6 +54,12 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
 
     @Column(name = "worksheet_analysis_id")
     private Integer           worksheetAnalysisId;
+
+    @Column(name = "qc_system_user_id")
+    private Integer           qcSystemUserId;
+
+    @Column(name = "qc_started_date")
+    private Date              qcStartedDate;
 
     @Transient
     private WorksheetAnalysis original;
@@ -104,7 +113,26 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
     }
 
     public void setWorksheetAnalysisId(Integer worksheetAnalysisId) {
-        this.worksheetAnalysisId = worksheetAnalysisId;
+        if (DataBaseUtil.isDifferent(worksheetAnalysisId, this.worksheetAnalysisId))
+            this.worksheetAnalysisId = worksheetAnalysisId;
+    }
+
+    public Integer getQcSystemUserId() {
+        return qcSystemUserId;
+    }
+
+    public void setQcSystemUserId(Integer qcSystemUserId) {
+        if (DataBaseUtil.isDifferent(qcSystemUserId, this.qcSystemUserId))
+            this.qcSystemUserId = qcSystemUserId;
+    }
+
+    public Datetime getQcStartedDate() {
+        return DataBaseUtil.toYM(qcStartedDate);
+    }
+
+    public void setQcStartedDate(Datetime qcStartedDate) {
+        if (DataBaseUtil.isDifferentYM(qcStartedDate, this.qcStartedDate))
+            this.qcStartedDate = DataBaseUtil.toDate(qcStartedDate);
     }
 
     public void setClone() {
@@ -127,7 +155,9 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
                  .setField("accession_number", accessionNumber, original.accessionNumber)
                  .setField("analysis_id", analysisId, original.analysisId, ReferenceTable.ANALYSIS)
                  .setField("qc_id", qcId, original.qcId, ReferenceTable.QC)
-                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId, ReferenceTable.WORKSHEET_ANALYSIS);
+                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId, ReferenceTable.WORKSHEET_ANALYSIS)
+                 .setField("qc_system_user_id", qcSystemUserId, original.qcSystemUserId)
+                 .setField("qc_started_date", qcStartedDate, original.qcStartedDate);
 
         return audit;
     }
