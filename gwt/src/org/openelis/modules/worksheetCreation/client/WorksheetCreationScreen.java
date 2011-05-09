@@ -42,13 +42,13 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCreationVO;
-import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
@@ -62,14 +62,18 @@ import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.ColumnComparator;
@@ -103,10 +107,11 @@ public class WorksheetCreationScreen extends Screen {
     private Integer                               formatId, formatTotal,
                                                   statusWorking, typeDup, typeFixed,
                                                   typeFixedAlways, typeLastBoth,
-                                                  typeLastRun, typeLastWell, typeRand;
+                                                  typeLastRun, typeLastSubset, typeRand;
     private String                                typeLastBothString, typeLastRunString,
-                                                  typeLastWellString, typeRandString;
-    private ScreenService                         qcService, worksheetService;
+                                                  typeLastSubsetString, typeRandString;
+    private ScreenService                         instrumentService, qcService,
+                                                  worksheetService;
     private ModulePermission                      userPermission;
     private WorksheetManager                      manager;
 
@@ -118,6 +123,7 @@ public class WorksheetCreationScreen extends Screen {
     protected ArrayList<TableDataRow>             analysisItems, qcLastRunList,
                                                   qcLastBothList, qcLinkModel,
                                                   testWorksheetItems;
+    protected AutoComplete<Integer>               instrumentId;
     protected Confirm                             worksheetRemoveDuplicateQCConfirm,
                                                   worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
                                                   worksheetSaveConfirm, worksheetExitConfirm;
@@ -135,9 +141,10 @@ public class WorksheetCreationScreen extends Screen {
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
 
-        service          = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
-        qcService        = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
-        worksheetService = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
+        service           = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
+        qcService         = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
+        worksheetService  = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
 
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
@@ -171,6 +178,7 @@ public class WorksheetCreationScreen extends Screen {
 
         try {
             CategoryCache.getBySystemNames("analysis_status",
+                                           "instrument_type",
                                            "type_of_sample", 
                                            "test_worksheet_format",
                                            "test_worksheet_item_type",
@@ -206,7 +214,7 @@ public class WorksheetCreationScreen extends Screen {
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
-        worksheetId = (TextBox)def.getWidget(WorksheetCreationMeta.getWorksheetId());
+        worksheetId = (TextBox<Integer>)def.getWidget(WorksheetCreationMeta.getWorksheetId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 worksheetId.setValue(manager.getWorksheet().getId());
@@ -217,7 +225,7 @@ public class WorksheetCreationScreen extends Screen {
             }
         });
 
-        relatedWorksheetId = (TextBox)def.getWidget(WorksheetCreationMeta.getWorksheetRelatedWorksheetId());
+        relatedWorksheetId = (TextBox<Integer>)def.getWidget(WorksheetCreationMeta.getWorksheetRelatedWorksheetId());
         addScreenHandler(relatedWorksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 relatedWorksheetId.setValue(manager.getWorksheet().getRelatedWorksheetId());
@@ -237,6 +245,48 @@ public class WorksheetCreationScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 lookupWorksheetButton.enable(true);
             }
+        });
+
+        instrumentId = (AutoComplete)def.getWidget("instrumentId");
+        addScreenHandler(instrumentId, new ScreenEventHandler<Integer>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                instrumentId.enable(true);
+            }
+        });
+
+        instrumentId.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<TableDataRow>     model;
+                ArrayList<InstrumentViewDO> matches;
+                QueryFieldUtil              parser;
+                TableDataRow                row;
+                InstrumentViewDO            iVDO;                
+
+                parser = new QueryFieldUtil();
+                parser.parse(event.getMatch());
+                try {
+                    model = new ArrayList<TableDataRow>();
+                    matches = instrumentService.callList("fetchActiveByName", parser.getParameter().get(0));
+                    for (int i = 0; i < matches.size(); i++) {
+                        iVDO = (InstrumentViewDO)matches.get(i);
+                        
+                        row = new TableDataRow(5);
+                        row.key = iVDO.getId();
+                        row.cells.get(0).value = iVDO.getName();
+                        row.cells.get(1).value = iVDO.getDescription();
+                        row.cells.get(2).value = DictionaryCache.getById(iVDO.getTypeId()).getEntry();
+                        row.cells.get(3).value = iVDO.getLocation();
+                        row.data = iVDO;
+                        
+                        model.add(row);
+                    } 
+                    
+                    instrumentId.showAutoMatches(model);
+                        
+                } catch(Exception e) {
+                    Window.alert(e.getMessage());                     
+                }
+            } 
         });
 
         saveButton = (AppButton)def.getWidget("saveButton");
@@ -369,7 +419,7 @@ public class WorksheetCreationScreen extends Screen {
                                             qcRow = worksheetItemTable.getSelection();
                                             twiDO = (TestWorksheetItemDO) ((ArrayList)qcRow.data).get(0);
                                             
-                                            if (typeLastWell.equals(twiDO.getTypeId()) ||
+                                            if (typeLastSubset.equals(twiDO.getTypeId()) ||
                                                 typeLastRun.equals(twiDO.getTypeId()) ||
                                                 typeLastBoth.equals(twiDO.getTypeId())) {
                                                 if (worksheetRemoveLastOfQCConfirm == null) {
@@ -447,11 +497,11 @@ public class WorksheetCreationScreen extends Screen {
             typeDup = DictionaryCache.getIdBySystemName("pos_duplicate");
             typeFixed = DictionaryCache.getIdBySystemName("pos_fixed");
             typeFixedAlways = DictionaryCache.getIdBySystemName("pos_fixed_always");
-            typeLastBoth = DictionaryCache.getIdBySystemName("pos_last_of_well_&_run");
+            typeLastBoth = DictionaryCache.getIdBySystemName("pos_last_of_subset_&_run");
             typeLastRun = DictionaryCache.getIdBySystemName("pos_last_of_run");
-            typeLastWell = DictionaryCache.getIdBySystemName("pos_last_of_well");
+            typeLastSubset = DictionaryCache.getIdBySystemName("pos_last_of_subset");
             typeRand = DictionaryCache.getIdBySystemName("pos_random");
-            typeLastWellString = DictionaryCache.getById(typeLastWell).getEntry();
+            typeLastSubsetString = DictionaryCache.getById(typeLastSubset).getEntry();
             typeLastRunString = DictionaryCache.getById(typeLastRun).getEntry();
             typeLastBothString = DictionaryCache.getById(typeLastBoth).getEntry();
             typeRandString = DictionaryCache.getById(typeRand).getEntry();
@@ -523,16 +573,16 @@ public class WorksheetCreationScreen extends Screen {
                                     if (!testIds.contains(testId))
                                         testIds.add(testId);
 
-                                    newRow.key = getNextTempId();                           // fake worksheet analysis id
-                                    newRow.cells.get(1).value = row.cells.get(0).value;     // accession #
-                                    newRow.cells.get(2).value = row.cells.get(1).value;     // description
-                                    newRow.cells.get(4).value = row.cells.get(2).value;     // test name
-                                    newRow.cells.get(5).value = row.cells.get(3).value;     // method name
-                                    newRow.cells.get(6).value = row.cells.get(5).value;     // status
-                                    newRow.cells.get(7).value = row.cells.get(6).value;     // collection date
-                                    newRow.cells.get(8).value = row.cells.get(7).value;     // received date and time
-                                    newRow.cells.get(9).value = row.cells.get(8).value;     // due days
-                                    newRow.cells.get(10).value = row.cells.get(9).value;    // expire date and time
+                                    newRow.key = getNextTempId();                                       // fake worksheet analysis id
+                                    newRow.cells.get(1).value = String.valueOf(row.cells.get(0).value); // accession #
+                                    newRow.cells.get(2).value = row.cells.get(1).value;                 // description
+                                    newRow.cells.get(4).value = row.cells.get(2).value;                 // test name
+                                    newRow.cells.get(5).value = row.cells.get(3).value;                 // method name
+                                    newRow.cells.get(6).value = row.cells.get(5).value;                 // status
+                                    newRow.cells.get(7).value = row.cells.get(6).value;                 // collection date
+                                    newRow.cells.get(8).value = row.cells.get(7).value;                 // received date and time
+                                    newRow.cells.get(9).value = row.cells.get(8).value;                 // due days
+                                    newRow.cells.get(10).value = row.cells.get(9).value;                // expire date and time
                                     newRow.data = data;
                                     analysisItems.add(newRow);
                                 }
@@ -568,15 +618,14 @@ public class WorksheetCreationScreen extends Screen {
     @SuppressWarnings("unchecked")
     protected void save() {
         int                      i, j;
-        Object                   position;
         TableDataRow             row;
-        WorksheetDO              wDO;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager = null;
         WorksheetItemDO          wiDO;
         WorksheetItemManager     wiManager = null;
         WorksheetQcResultManager wqrManager, newWqrManager;
         WorksheetQcResultViewDO  wqrVDO, newWqrVDO;
+        WorksheetViewDO          wVDO;
         
         setFocus(null);
         
@@ -587,15 +636,16 @@ public class WorksheetCreationScreen extends Screen {
         
         window.setBusy(consts.get("saving"));
 
-        wDO = manager.getWorksheet();
-        wDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-        wDO.setSystemUserId(UserCache.getPermission().getSystemUserId());
-        wDO.setStatusId(statusWorking);
-        wDO.setFormatId(testWorksheetDO.getFormatId());
-//        if (formatBatch.equals(wDO.getFormatId()))
-            wDO.setBatchCapacity(testWorksheetDO.getBatchCapacity());
+        wVDO = manager.getWorksheet();
+        wVDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+        wVDO.setSystemUserId(UserCache.getPermission().getSystemUserId());
+        wVDO.setStatusId(statusWorking);
+        wVDO.setFormatId(testWorksheetDO.getFormatId());
+        wVDO.setSubsetCapacity(testWorksheetDO.getSubsetCapacity());
         if (relatedWorksheetId.getFieldValue() != null)
-            wDO.setRelatedWorksheetId(relatedWorksheetId.getFieldValue());
+            wVDO.setRelatedWorksheetId(relatedWorksheetId.getFieldValue());
+        if (instrumentId.getSelection() != null && instrumentId.getSelection().key != null)
+            wVDO.setInstrumentId((Integer)instrumentId.getSelection().key);
         
         try {
             wiManager = manager.getItems();
@@ -608,16 +658,12 @@ public class WorksheetCreationScreen extends Screen {
             row = worksheetItemTable.getRow(i);
             
             wiDO = new WorksheetItemDO();
-            position = row.cells.get(0).value;
-//            if (formatBatch.equals(wDO.getFormatId()))
-//                wiDO.setPosition(parseBatchPosition(position, testWorksheetDO.getBatchCapacity()));
-//            else
-                wiDO.setPosition(Integer.valueOf((String)position));
+            wiDO.setPosition((Integer)row.cells.get(0).value);
             wiManager.addWorksheetItem(wiDO);
             
             waDO = new WorksheetAnalysisDO();
             waDO.setId((Integer)row.key);
-            waDO.setAccessionNumber(row.cells.get(1).value.toString());
+            waDO.setAccessionNumber((String)row.cells.get(1).value);
             if (row.data instanceof ArrayList) {
                 waDO.setQcId(((QcDO)((ArrayList<Object>)row.data).get(1)).getId());
             } else {
@@ -696,6 +742,7 @@ public class WorksheetCreationScreen extends Screen {
             saveButton.enable(false);
             insertQCWorksheetButton.enable(false);
             insertQCLookupButton.enable(false);
+            instrumentId.enable(false);
             lookupWorksheetButton.enable(false);
             removeRowButton.enable(false);
             worksheetItemTable.enable(false);
@@ -777,12 +824,12 @@ public class WorksheetCreationScreen extends Screen {
                                 qcErrors.put(-1, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeRandString));
                             } else if (typeLastRun.equals(twiDO.getTypeId())) {
                                 qcErrors.put(-2, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastRunString));
-                            } else if (typeLastWell.equals(twiDO.getTypeId())) {
-                                qcErrors.put(-3, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastWellString));
+                            } else if (typeLastSubset.equals(twiDO.getTypeId())) {
+                                qcErrors.put(-3, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastSubsetString));
                             } else if (typeLastBoth.equals(twiDO.getTypeId())) {
                                 qcErrors.put(-4, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), typeLastBothString));
                             } else {
-                                for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getBatchCapacity())
+                                for (j = twiDO.getPosition(); j < testWorksheetDO.getTotalCapacity(); j += testWorksheetDO.getSubsetCapacity())
                                     qcErrors.put(j, new FormErrorException("noMatchingActiveQc", twiDO.getQcName(), String.valueOf(j)));
                             }
                             continue;
@@ -824,7 +871,7 @@ public class WorksheetCreationScreen extends Screen {
     
     @SuppressWarnings("unchecked")
     private void buildQCWorksheet() {
-        int                      i, j, posNum, randSize, numBatches, startIndex;
+        int                      i, j, posNum, randSize, numSubsets, startIndex;
         String                   accessionNumber;
         ArrayList<TableDataRow>  qcRandList, qcLastWellList, lastOf;
         TableDataRow             qcRow, qcRow1;
@@ -839,10 +886,10 @@ public class WorksheetCreationScreen extends Screen {
         qcLastWellList = new ArrayList<TableDataRow>();
         qcLastRunList.clear();
         qcLastBothList.clear();
-        numBatches = testWorksheetDO.getTotalCapacity() / testWorksheetDO.getBatchCapacity();
+        numSubsets = testWorksheetDO.getTotalCapacity() / testWorksheetDO.getSubsetCapacity();
         
         //
-        // Insert Fixed/Duplicate QCItems into worksheet per batch and store 
+        // Insert Fixed/Duplicate QCItems into worksheet per subset and store 
         // Random and LastOf QC Items for later.
         //
         for (i = 0; i < testWorksheetItems.size(); i++) {
@@ -853,8 +900,8 @@ public class WorksheetCreationScreen extends Screen {
             
             if (typeDup.equals(twiDO.getTypeId()) || typeFixed.equals(twiDO.getTypeId()) ||
                 typeFixedAlways.equals(twiDO.getTypeId())) {
-                for (j = 0; j < numBatches; j++) {
-                    posNum = j * testWorksheetDO.getBatchCapacity() + twiDO.getPosition() - 1;
+                for (j = 0; j < numSubsets; j++) {
+                    posNum = j * testWorksheetDO.getSubsetCapacity() + twiDO.getPosition();
                     
                     //
                     // Do NOT overwrite accession numbers on QCs pulled from other
@@ -862,12 +909,12 @@ public class WorksheetCreationScreen extends Screen {
                     //
                     accessionNumber = (String) qcRow.cells.get(1).value;
                     if (accessionNumber == null || accessionNumber.startsWith("X."))
-                        qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
-                    qcItems[posNum] = qcRow;
+                        qcRow.cells.get(1).value = "X."+posNum;     // qc accession #
+                    qcItems[posNum-1] = qcRow;
                 }
             } else if (typeRand.equals(twiDO.getTypeId())) {
                 qcRandList.add(qcRow);
-            } else if (typeLastWell.equals(twiDO.getTypeId())) {
+            } else if (typeLastSubset.equals(twiDO.getTypeId())) {
                 qcLastWellList.add(qcRow);
             } else if (typeLastRun.equals(twiDO.getTypeId())) {
                 qcLastRunList.add(qcRow);
@@ -877,40 +924,41 @@ public class WorksheetCreationScreen extends Screen {
         }
 
         //
-        // Insert Last of Well/Both QCItems into the worksheet per batch
+        // Insert Last of Well/Both QCItems into the worksheet per subset
         //
         if (! qcLastWellList.isEmpty())
             lastOf = qcLastWellList;
         else
             lastOf = qcLastBothList;
 
-        startIndex = testWorksheetDO.getBatchCapacity() - lastOf.size();
-        for (i = 0; i < numBatches; i++) {
-            posNum = i * testWorksheetDO.getBatchCapacity() + startIndex;
+        startIndex = testWorksheetDO.getSubsetCapacity() - lastOf.size();
+        for (i = 0; i < numSubsets; i++) {
+            posNum = i * testWorksheetDO.getSubsetCapacity() + startIndex + 1;
             for (j = 0; j < lastOf.size(); j++) {
                 qcRow = (TableDataRow) lastOf.get(j).clone();
-                qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
-                qcItems[posNum++] = qcRow;
+                qcRow.cells.get(1).value = "X."+posNum;     // qc accession #
+                qcItems[posNum-1] = qcRow;
+                posNum++;
             }
         }
 
         //
-        // Insert random QCItems into the worksheet per batch
+        // Insert random QCItems into the worksheet per subset
         //
         randSize = qcRandList.size();
-        for (i = 0; i < numBatches; i++) {
+        for (i = 0; i < numSubsets; i++) {
             j = 0;
             while (j < randSize) {
                 qcRow = (TableDataRow) qcRandList.get(j).clone();
-                posNum = (int) (Math.random() * (testWorksheetDO.getBatchCapacity() - 1)) + i * testWorksheetDO.getBatchCapacity();
-                if (qcItems[posNum] == null) {
-                    if (posNum + 1 < testWorksheetDO.getTotalCapacity()) {
-                        qcRow1 = qcItems[posNum+1];
+                posNum = (int) (Math.random() * (testWorksheetDO.getSubsetCapacity() - 1)) + i * testWorksheetDO.getSubsetCapacity() + 1;
+                if (qcItems[posNum-1] == null) {
+                    if (posNum < testWorksheetDO.getTotalCapacity()) {
+                        qcRow1 = qcItems[posNum];
                         if (qcRow1 != null && typeDup.equals(((TestWorksheetItemDO)((ArrayList<Object>)qcRow1.data).get(0)).getTypeId()))
                             continue;
                     }
-                    qcRow.cells.get(1).value = "X."+getPositionNumber(posNum);     // qc accession #
-                    qcItems[posNum] = qcRow;
+                    qcRow.cells.get(1).value = "X."+posNum;     // qc accession #
+                    qcItems[posNum-1] = qcRow;
                     j++;
                 }
             }
@@ -971,7 +1019,7 @@ public class WorksheetCreationScreen extends Screen {
                     row.data = dupedRow.data;
                 }
             }
-            row.cells.get(0).value = getPositionNumber(i);
+            row.cells.get(0).value = i + 1;
             items.add(row);
         }
         
@@ -982,12 +1030,12 @@ public class WorksheetCreationScreen extends Screen {
             row = qcItems[i];
             if (row != null &&
                 typeFixedAlways.equals(((TestWorksheetItemDO)((ArrayList<Object>)row.data).get(0)).getTypeId())) {
-                row.cells.get(0).value = getPositionNumber(i);
+                row.cells.get(0).value = i + 1;
                 items.add(row);
             } else {
                 row = lastOf.get(k);
-                row.cells.get(0).value = getPositionNumber(i);
-                row.cells.get(1).value = "X."+getPositionNumber(i);     // qc accession #
+                row.cells.get(0).value = i + 1;
+                row.cells.get(1).value = "X."+(i + 1);     // qc accession #
                 items.add(row);
                 k++;
             }
@@ -1003,7 +1051,7 @@ public class WorksheetCreationScreen extends Screen {
             if (row != null) {
                 twiDO = (TestWorksheetItemDO) ((ArrayList<Object>)row.data).get(0);
                 if (typeFixedAlways.equals(twiDO.getTypeId())) {
-                    row.cells.get(0).value = getPositionNumber(k);
+                    row.cells.get(0).value = k + 1;
                     items.add(row);
                 }
             }
@@ -1011,7 +1059,7 @@ public class WorksheetCreationScreen extends Screen {
         }
 
         //
-        // If last batch contains only QC items and this is not a QC only worksheet,
+        // If last subset contains only QC items and this is not a QC only worksheet,
         // remove it
         //
         if (analysisItems.size() > 0) {
@@ -1032,7 +1080,7 @@ public class WorksheetCreationScreen extends Screen {
         qcLinkModel.clear();
         qcLinkModel.add(new TableDataRow(null, ""));
         for (i = 0; i < items.size(); i++)
-            qcLinkModel.add(new TableDataRow(items.get(i).key,items.get(i).cells.get(1).value.toString()));
+            qcLinkModel.add(new TableDataRow(items.get(i).key,(String)items.get(i).cells.get(1).value));
         ((Dropdown<Integer>)worksheetItemTable.getColumns().get(3).getColumnWidget()).setModel(qcLinkModel);
         
         worksheetItemTable.load(items);
@@ -1050,7 +1098,6 @@ public class WorksheetCreationScreen extends Screen {
             }
 
             if (message.length() > 0) {
-//                window.setError(message);
                 Window.alert(message);
             }
         }
@@ -1316,62 +1363,19 @@ public class WorksheetCreationScreen extends Screen {
         }
     }
 
-    private String getPositionNumber(int position) {
-//        int    major, minor;a
-        String positionNumber;
-        
-        positionNumber = "";
-//        if (formatBatch.equals(testWorksheetDO.getFormatId())) {
-//            major = getPositionMajorNumber(position+1);
-//            minor = getPositionMinorNumber(position+1);
-//            positionNumber = major+"-"+minor;
-//        } else {
-            positionNumber = String.valueOf(position + 1);
-//        }
-        
-        return positionNumber;
+    private int getNextTempId() {
+        return --tempId;
     }
     
-    /**
-     * Parses the position number and returns the major number
-     * for batch numbering.
-     */
-//   private int getPositionMajorNumber(int position) {
-//       return (int) (position / (double)testWorksheetDO.getBatchCapacity() + .99);
-//   }
-
-   /**
-     * Parses the position number and returns the minor number
-     * for batch numbering.
-     */
-//   private int getPositionMinorNumber(int position) {
-//       return position - (getPositionMajorNumber(position) - 1) * testWorksheetDO.getBatchCapacity();
-//   }
-   
-//   private Integer parseBatchPosition(Object position, Integer batchCapacity) {
-//       int major, minor, splitIndex;
-//       
-//       splitIndex = ((String)position).indexOf("-");
-//       
-//       major = Integer.parseInt(((String)position).substring(0, splitIndex));
-//       minor = Integer.parseInt(((String)position).substring(splitIndex + 1));
-//       
-//       return new Integer(major * batchCapacity.intValue() + minor);
-//   }
-   
-   private int getNextTempId() {
-       return --tempId;
-   }
-   
-   private void clearQCTemplate() {
-       twManager = null;
-       if (testWorksheetDO == null)
-           testWorksheetDO = new TestWorksheetDO();
-       testWorksheetDO.setFormatId(formatTotal);
-       testWorksheetDO.setBatchCapacity(500);
-       testWorksheetDO.setTotalCapacity(500);
-       testWorksheetItems.clear();
-       buildQCWorksheet();
-       isTemplateLoaded = false;
-   }
+    private void clearQCTemplate() {
+        twManager = null;
+        if (testWorksheetDO == null)
+            testWorksheetDO = new TestWorksheetDO();
+        testWorksheetDO.setFormatId(formatTotal);
+        testWorksheetDO.setSubsetCapacity(500);
+        testWorksheetDO.setTotalCapacity(500);
+        testWorksheetItems.clear();
+        buildQCWorksheet();
+        isTemplateLoaded = false;
+    }
 }

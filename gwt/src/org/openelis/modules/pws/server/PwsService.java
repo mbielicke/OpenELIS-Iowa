@@ -110,8 +110,8 @@ public class PwsService {
         }
     }
     
-    public PwsDO fetchByPwsId(String pwsId) throws Exception {
-        return remote().fetchByNumber0(pwsId);
+    public PwsDO fetchByPwsNumber0(String pwsNumber0) throws Exception {
+        return remote().fetchByNumber0(pwsNumber0);
     }
     
     private PwsRemote remote() {

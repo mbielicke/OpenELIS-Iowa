@@ -90,7 +90,7 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
     private TableWidget                      worksheetAnalyteTable, worksheetTable;
     private AppButton                        addWSItemButton, removeWSItemButton,
                                              addWSAnalyteButton, removeWSAnalyteButton;
-    private TextBox<Integer>                 batchCapacity, totalCapacity;
+    private TextBox<Integer>                 subsetCapacity, totalCapacity;
     private AutoComplete                     scriptlet, qcname;
     private ScreenService                    scriptletService, qcService;
 
@@ -135,12 +135,12 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
             }
         });
 
-        batchCapacity = (TextBox)def.getWidget(TestMeta.getWorksheetBatchCapacity());
-        addScreenHandler(batchCapacity, new ScreenEventHandler<Integer>() {
+        subsetCapacity = (TextBox)def.getWidget(TestMeta.getWorksheetSubsetCapacity());
+        addScreenHandler(subsetCapacity, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 try {
                     if(manager != null)
-                        batchCapacity.setValue(manager.getTestWorksheet().getWorksheet().getBatchCapacity());
+                        subsetCapacity.setValue(manager.getTestWorksheet().getWorksheet().getSubsetCapacity());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -148,16 +148,16 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 try {
-                    manager.getTestWorksheet().getWorksheet().setBatchCapacity(event.getValue());
+                    manager.getTestWorksheet().getWorksheet().setSubsetCapacity(event.getValue());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                batchCapacity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                subsetCapacity.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                             .contains(event.getState()));
-                batchCapacity.setQueryMode(event.getState() == State.QUERY);
+                subsetCapacity.setQueryMode(event.getState() == State.QUERY);
             }
         });
 

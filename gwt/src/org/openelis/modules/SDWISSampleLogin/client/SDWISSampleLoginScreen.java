@@ -174,14 +174,13 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         
         try {
             CategoryCache.getBySystemNames("sample_status", "analysis_status",
-                                                         "type_of_sample", "source_of_sample",
-                                                         "sample_container", "unit_of_measure",
-                                                         "qaevent_type", "aux_field_value_type",
-                                                         "organization_type", "user_action",
-                                                         "sdwis_lead_sample_type",
-                                                         "worksheet_status", "sdwis_repeat_code",
-                                                         "sdwis_sample_category",
-                                                         "sdwis_sample_type");
+                                           "type_of_sample", "source_of_sample",
+                                           "sample_container", "unit_of_measure",
+                                           "qaevent_type", "aux_field_value_type",
+                                           "organization_type", "user_action",
+                                           "sdwis_lead_sample_type", "worksheet_status",
+                                           "sdwis_repeat_code", "sdwis_sample_category",
+                                           "sdwis_sample_type");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1257,8 +1256,11 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         
         try {
             autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_sdwis");
+        } catch (NotFoundException nfE) {
+            // ignore not found exceptions since this domain may not have a default note
         } catch (Exception e) {
-            e.printStackTrace();
+            Window.alert(e.getMessage());
+            window.close();
         }
     }
 

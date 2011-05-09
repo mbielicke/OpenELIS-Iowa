@@ -1246,8 +1246,11 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         
         try {
             autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_private_well");
+        } catch (NotFoundException nfE) {
+            // ignore not found exceptions since this domain may not have a default note
         } catch (Exception e) {
-            e.printStackTrace();
+            Window.alert(e.getMessage());
+            window.close();
         }
     }
 

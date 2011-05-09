@@ -28,7 +28,6 @@ package org.openelis.modules.sample.client;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.event.ActionEvent;
@@ -41,9 +40,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.NotesPanel;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
-import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.NoteManager;
-import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
@@ -64,7 +61,7 @@ public class SampleNotesTab extends NotesTab {
 
     protected NoteViewDO     internalNote;
 
-    private Integer          analysisReleasedId, sampleReleasedId;
+    private Integer          sampleReleasedId;
 
     public SampleNotesTab(ScreenDefInt def, ScreenWindowInt window, String externalNotesPanelKey,
                           String externalEditButtonKey, String internalNotesPanelKey,
@@ -75,12 +72,28 @@ public class SampleNotesTab extends NotesTab {
         this.internalNotesPanelKey = internalNotesPanelKey;
         this.internalEditButtonKey = internalEditButtonKey;
 
-        initializeTab();
-
+        initialize();
         initializeDropdowns();
     }
 
-    public void initializeTab() {
+    // overrides the notetab initialize to control the external notes button
+    public void initialize() {
+        // we dont have all the info set yet, dont run through this method
+        if (internalNotesPanelKey == null)
+            return;
+
+        notesPanel = (NotesPanel)def.getWidget(notesPanelKey);
+        addScreenHandler(notesPanel, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                drawNotes();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                if (event.getState() == State.ADD)
+                    notesPanel.clearNotes();
+            }
+        });
+
         standardNote = (AppButton)def.getWidget(editButtonKey);
         addScreenHandler(standardNote, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -207,7 +220,6 @@ public class SampleNotesTab extends NotesTab {
     
     private void initializeDropdowns() {
         try {
-            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
             sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());

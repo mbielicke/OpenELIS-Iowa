@@ -668,15 +668,15 @@ UIRF Software License are applicable instead of those above.
                             <xsl:value-of select="resource:getString($constants,'numberFormat')" />:
                           </text>
                           <widget colspan="4">
-                            <dropdown key="{meta:getWorksheetFormatId()}" width="145" case="MIXED" tab="{meta:getWorksheetBatchCapacity()}, {meta:getWorksheetScriptletName()}" field="Integer" />
+                            <dropdown key="{meta:getWorksheetFormatId()}" width="145" case="MIXED" tab="{meta:getWorksheetSubsetCapacity()}, {meta:getWorksheetScriptletName()}" field="Integer" />
                           </widget>
                         </row>
                         <row>
                           <text style="Prompt">
-                            <xsl:value-of select="resource:getString($constants,'batchCapacity')" />:
+                            <xsl:value-of select="resource:getString($constants,'subsetCapacity')" />:
                           </text>
                           <widget>
-                            <textbox key="{meta:getWorksheetBatchCapacity()}" width="40" tab="{meta:getWorksheetTotalCapacity()},{meta:getWorksheetFormatId()}" field="Integer" />
+                            <textbox key="{meta:getWorksheetSubsetCapacity()}" width="40" tab="{meta:getWorksheetTotalCapacity()},{meta:getWorksheetFormatId()}" field="Integer" />
                           </widget>
                           <widget valign="middle">
                             <text style="Prompt">
@@ -684,7 +684,7 @@ UIRF Software License are applicable instead of those above.
                             </text>
                           </widget>
                           <widget>
-                            <textbox key="{meta:getWorksheetTotalCapacity()}" width="40" tab="{meta:getWorksheetScriptletName()},{meta:getWorksheetBatchCapacity()}" field="Integer" />
+                            <textbox key="{meta:getWorksheetTotalCapacity()}" width="40" tab="{meta:getWorksheetScriptletName()},{meta:getWorksheetSubsetCapacity()}" field="Integer" />
                           </widget>
                         </row>
                         <row>

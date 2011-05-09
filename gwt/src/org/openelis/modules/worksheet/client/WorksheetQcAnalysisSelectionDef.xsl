@@ -46,7 +46,7 @@ UIRF Software License are applicable instead of those above.
       <VerticalPanel padding="0" spacing="0">
         <table key="worksheetQcAnalysisTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" tab="okButton,searchButton" title="">
           <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
-            <label field="String" />
+            <label field="Integer" />
           </col>
           <col key="{meta:getSampleAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
             <label field="String" />
