@@ -38,8 +38,7 @@ public class WorksheetCreationVO implements RPC {
     protected Boolean  hasQaOverride;
     protected Integer  analysisId, accessionNumber, preAnalysisId, priority, sampleId,
                        sectionId, statusId, testId, timeHolding, timeTaAverage,
-                       worksheetFormatId;
-    protected Long     dueDays;
+                       worksheetFormatId, dueDays;
     protected String   domain, envDescription, methodName, privateWellLocation,
                        sdwisLocation, testName;
     protected Datetime collectionDate, collectionTime, expireDate, receivedDate;
@@ -260,11 +259,11 @@ public class WorksheetCreationVO implements RPC {
         this.worksheetFormatId = worksheetFormatId;
     }
 
-    public Long getDueDays() {
+    public Integer getDueDays() {
         return dueDays;
     }
 
-    public void setDueDays(Long dueDays) {
+    public void setDueDays(Integer dueDays) {
         this.dueDays = dueDays;
     }
 

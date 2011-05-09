@@ -39,4 +39,6 @@ public interface InstrumentRemote {
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
     
     public ArrayList<InstrumentViewDO> fetchByName(String name, int maxResults) throws Exception;
+    
+    public ArrayList<InstrumentViewDO> fetchActiveByName(String name, int maxResults) throws Exception;
 }

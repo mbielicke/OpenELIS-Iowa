@@ -32,7 +32,7 @@ import java.util.Iterator;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.domain.WorksheetDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -45,8 +45,8 @@ public class WorksheetManager implements RPC, HasNotesInt {
     protected HashMap<Integer,SampleManager> sampleManagers, lockedManagers;
     protected HashMap<Integer,SectionViewDO> analysisSections;
     protected NoteManager                    notes;
-    protected WorksheetDO                    worksheet;
     protected WorksheetItemManager           items;
+    protected WorksheetViewDO                worksheet;
 
     protected transient static WorksheetManagerProxy proxy;
 
@@ -70,16 +70,16 @@ public class WorksheetManager implements RPC, HasNotesInt {
         WorksheetManager manager;
 
         manager = new WorksheetManager();
-        manager.worksheet = new WorksheetDO();
+        manager.worksheet = new WorksheetViewDO();
 
         return manager;
     }
 
-    public WorksheetDO getWorksheet() {
+    public WorksheetViewDO getWorksheet() {
         return worksheet;
     }
 
-    public void setWorksheet(WorksheetDO worksheet) {
+    public void setWorksheet(WorksheetViewDO worksheet) {
         this.worksheet = worksheet;
     }
     

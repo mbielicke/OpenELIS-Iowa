@@ -109,13 +109,14 @@ public class TestMeta implements Meta, MetaMap {
                                 
                                 WS_ID = "_testWorksheet.id",
                                 WS_TEST_ID = "_testWorksheet.testId",
-                                WS_BATCH_CAPACITY = "_testWorksheet.batchCapacity",
+                                WS_SUBSET_CAPACITY = "_testWorksheet.subsetCapacity",
                                 WS_TOTAL_CAPACITY = "_testWorksheet.totalCapacity",
                                 WS_FORMAT_ID = "_testWorksheet.formatId",
                                 WS_SCRIPTLET_ID ="_testWorksheet.scriptletId",
                                 
                                 WSI_ID = "_testWorksheetItem.id",
                                 WSI_TEST_WORKSHEET_ID = "_testWorksheetItem.testWorksheetId",
+                                WSI_SORT_ORDER = "_testWorksheetItem.sortOrder",
                                 WSI_POSITION = "_testWorksheetItem.position",
                                 WSI_TYPE_ID = "_testWorksheetItem.typeId",
                                 WSI_QC_NAME = "_testWorksheetItem.qcName",
@@ -161,8 +162,8 @@ public class TestMeta implements Meta, MetaMap {
                                                   PREP_PREP_TEST_ID,PREP_IS_OPTIONAL,REF_ID,REF_TEST_ID,
                                                   REF_TEST_ANALYTE_ID,REF_TEST_RESULT_ID,REF_FLAGS_ID,
                                                   REF_ADD_TEST_ID,WS_ID,WS_FORMAT_ID,WS_TOTAL_CAPACITY,
-                                                  WS_BATCH_CAPACITY,WS_SCRIPTLET_ID,WS_SCRIPTLET_NAME,
-                                                  WS_TEST_ID,WSI_ID,WSI_TEST_WORKSHEET_ID,
+                                                  WS_SUBSET_CAPACITY,WS_SCRIPTLET_ID,WS_SCRIPTLET_NAME,
+                                                  WS_TEST_ID,WSI_ID,WSI_TEST_WORKSHEET_ID,WSI_SORT_ORDER,
                                                   WSI_POSITION,WSI_TYPE_ID,WSI_QC_NAME,WSA_ID,WSA_TEST_ID,
                                                   WSA_ANALYTE_ID,WSA_REPEAT,WSA_FLAG_ID,LABEL_NAME,METHOD_NAME,
                                                   TEST_TRAILER_NAME,SCRIPTLET_NAME,ANA_SCRIPTLET_NAME, 
@@ -474,8 +475,8 @@ public class TestMeta implements Meta, MetaMap {
         return WS_TEST_ID;
     } 
 
-    public static String getWorksheetBatchCapacity() {
-        return WS_BATCH_CAPACITY;
+    public static String getWorksheetSubsetCapacity() {
+        return WS_SUBSET_CAPACITY;
     } 
 
     public static String getWorksheetTotalCapacity() {
@@ -500,6 +501,10 @@ public class TestMeta implements Meta, MetaMap {
 
     public static String getWorksheetItemTestWorksheetId() {
         return WSI_TEST_WORKSHEET_ID;
+    } 
+
+    public static String getWorksheetItemSortOrder() {
+        return WSI_SORT_ORDER;
     } 
 
     public static String getWorksheetItemPosition() {

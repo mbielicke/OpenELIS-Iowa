@@ -38,22 +38,24 @@ public class WorksheetDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  id, systemUserId, statusId, formatId, batchCapacity, relatedWorksheetId;
+    protected Integer  id, systemUserId, statusId, formatId, subsetCapacity, relatedWorksheetId,
+                       instrumentId;
     protected Datetime createdDate;
 
     public WorksheetDO() {
     }
 
     public WorksheetDO(Integer id, Date createdDate, Integer systemUserId,
-                       Integer statusId, Integer formatId, Integer batchCapacity, 
-                       Integer relatedWorksheetId) {
+                       Integer statusId, Integer formatId, Integer subsetCapacity, 
+                       Integer relatedWorksheetId, Integer instrumentId) {
         setId(id);
         setCreatedDate(DataBaseUtil.toYM(createdDate));
         setSystemUserId(systemUserId);
         setStatusId(statusId);
         setFormatId(formatId);
-        setBatchCapacity(batchCapacity);
+        setSubsetCapacity(subsetCapacity);
         setRelatedWorksheetId(relatedWorksheetId);
+        setInstrumentId(instrumentId);
         _changed = false;
     }
 
@@ -102,12 +104,12 @@ public class WorksheetDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getBatchCapacity() {
-        return batchCapacity;
+    public Integer getSubsetCapacity() {
+        return subsetCapacity;
     }
 
-    public void setBatchCapacity(Integer batchCapacity) {
-        this.batchCapacity = batchCapacity;
+    public void setSubsetCapacity(Integer subsetCapacity) {
+        this.subsetCapacity = subsetCapacity;
     }
 
     public Integer getRelatedWorksheetId() {
@@ -116,6 +118,15 @@ public class WorksheetDO extends DataObject {
 
     public void setRelatedWorksheetId(Integer relatedWorksheetId) {
         this.relatedWorksheetId = relatedWorksheetId;
+        _changed = true;
+    }
+
+    public Integer getInstrumentId() {
+        return instrumentId;
+    }
+
+    public void setInstrumentId(Integer instrumentId) {
+        this.instrumentId = instrumentId;
         _changed = true;
     }
 }

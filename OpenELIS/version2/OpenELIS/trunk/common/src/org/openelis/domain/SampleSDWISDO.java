@@ -31,14 +31,14 @@ public class SampleSDWISDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer id, sampleId, stateLabId, sampleTypeId, sampleCategoryId;
-    protected String pwsId, facilityId, samplePointId, location, collector;
+    protected Integer id, sampleId, stateLabId, sampleTypeId, sampleCategoryId, pwsId;
+    protected String facilityId, samplePointId, location, collector;
     
     public SampleSDWISDO() {
         
     }
         
-    public SampleSDWISDO(Integer id, Integer sampleId, String pwsId,
+    public SampleSDWISDO(Integer id, Integer sampleId, Integer pwsId,
                          Integer stateLabId, String facilityId, Integer sampleTypeId,
                          Integer sampleCategoryId,  
                          String samplePointId, String location, String collector){
@@ -73,12 +73,12 @@ public class SampleSDWISDO extends DataObject {
         _changed = true;
     }
 
-    public String getPwsId() {
+    public Integer getPwsId() {
         return pwsId;
     }
 
-    public void setPwsId(String pwsId) {
-        this.pwsId = DataBaseUtil.trim(pwsId);
+    public void setPwsId(Integer pwsId) {
+        this.pwsId = pwsId;
         _changed = true;
     }
 

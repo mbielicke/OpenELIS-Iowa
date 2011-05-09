@@ -118,6 +118,8 @@ public class SampleMeta implements Meta, MetaMap {
                     SDWIS_COMPOSITE_SAMPLE_NUMBER = "_sampleSDWIS.compositeSampleNumber",
                     SDWIS_COMPOSITE_DATE = "_sampleSDWIS.compositeDate",
                     SDWIS_COMPOSITE_SEQUENCE = "_sampleSDWIS.compositeSequence",
+                    
+                    SDWIS_PWS_NUMBER0 = "_sampleSDWIS.pws.number0",
 
                     LOCATION_ADDR_MULTIPLE_UNIT = "_locationAddress.multipleUnit",
                     LOCATION_ADDR_STREET_ADDRESS = "_locationAddress.streetAddress", 
@@ -277,7 +279,8 @@ public class SampleMeta implements Meta, MetaMap {
                                                   SDWIS_LOCATION, SDWIS_COLLECTOR, SDWIS_ORIGINAL_SAMPLE_NUMBER,
                                                   SDWIS_REPEAT_CODE_ID, SDWIS_COMPOSITE_INDICATOR,
                                                   SDWIS_COMPOSITE_SAMPLE_NUMBER, SDWIS_COMPOSITE_DATE,
-                                                  SDWIS_COMPOSITE_SEQUENCE, ITEM_ID, ITEM_SAMPLE_ID, ITEM_SAMPLE_ITEM_ID,
+                                                  SDWIS_COMPOSITE_SEQUENCE, SDWIS_PWS_NUMBER0,
+                                                  ITEM_ID, ITEM_SAMPLE_ID, ITEM_SAMPLE_ITEM_ID,
                                                   ITEM_ITEM_SEQUENCE, ITEM_TYPE_OF_SAMPLE_ID,
                                                   ITEM_SOURCE_OF_SAMPLE_ID, ITEM_SOURCE_OTHER,
                                                   ITEM_CONTAINER_ID, ITEM_CONTAINER_REFERENCE,
@@ -657,6 +660,9 @@ public class SampleMeta implements Meta, MetaMap {
     }
     public static String getSDWISCompositeSequence(){
         return SDWIS_COMPOSITE_SEQUENCE;
+    }
+    public static String getSDWISPwsNumber0(){
+        return SDWIS_PWS_NUMBER0;
     }
     
     public static String getItemId() {

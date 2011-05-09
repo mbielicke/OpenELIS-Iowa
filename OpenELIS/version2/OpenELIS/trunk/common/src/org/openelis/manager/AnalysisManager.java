@@ -253,7 +253,7 @@ public class AnalysisManager implements RPC {
             throw errorsList;
         }
 
-        if (proxy().anLoggedInId.equals(data.getStatusId()))
+        if (proxy().anLoggedInId.equals(data.getStatusId()) || proxy().anRequeueId.equals(data.getStatusId()))
             data.setStatusId(proxy().anInitiatedId);
         else if (proxy().anErrorLoggedInId.equals(data.getStatusId()))
             data.setStatusId(proxy().anErrorInitiatedId);

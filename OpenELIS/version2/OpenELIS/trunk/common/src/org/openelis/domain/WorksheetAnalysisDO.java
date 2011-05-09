@@ -25,7 +25,10 @@
  */
 package org.openelis.domain;
 
+import java.util.Date;
+
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.Datetime;
 
 /**
  * Class represents the fields in database table system_variable.
@@ -35,21 +38,25 @@ public class WorksheetAnalysisDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer id, worksheetItemId, worksheetAnalysisId, analysisId, qcId;
-    protected String  accessionNumber;
-
+    protected Integer  id, worksheetItemId, worksheetAnalysisId, analysisId, qcId,
+                       qcSystemUserId;
+    protected String   accessionNumber;
+    protected Datetime qcStartedDate;
+    
     public WorksheetAnalysisDO() {
     }
 
-    public WorksheetAnalysisDO(Integer id, Integer worksheetItemId,
-                               String accessionNumber, Integer analysisId,
-                               Integer qcId, Integer worksheetAnalysisId) {
+    public WorksheetAnalysisDO(Integer id, Integer worksheetItemId, String accessionNumber,
+                               Integer analysisId, Integer qcId, Integer worksheetAnalysisId,
+                               Integer qcSystemUserId, Date qcStartedDate) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
         setAccessionNumber(accessionNumber);
         setAnalysisId(analysisId);
         setQcId(qcId);
         setWorksheetAnalysisId(worksheetAnalysisId);
+        setQcSystemUserId(qcSystemUserId);
+        setQcStartedDate(DataBaseUtil.toYM(qcStartedDate));
         _changed = false;
     }
 
@@ -104,5 +111,24 @@ public class WorksheetAnalysisDO extends DataObject {
 
     public void setWorksheetAnalysisId(Integer worksheetAnalysisId) {
         this.worksheetAnalysisId = worksheetAnalysisId;
+        _changed = true;
+    }
+
+    public Integer getQcSystemUserId() {
+        return qcSystemUserId;
+    }
+
+    public void setQcSystemUserId(Integer qcSystemUserId) {
+        this.qcSystemUserId = qcSystemUserId;
+        _changed = true;
+    }
+
+    public Datetime getQcStartedDate() {
+        return qcStartedDate;
+    }
+
+    public void setQcStartedDate(Datetime qcStartedDate) {
+        this.qcStartedDate = DataBaseUtil.toYM(qcStartedDate);
+        _changed = true;
     }
 }
