@@ -156,7 +156,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
     /*
      * Compute the number of days before the analysis is expected to be finshed
      */
-    private Long computeDueDays(Datetime received, Integer expectedDays) {
+    private Integer computeDueDays(Datetime received, Integer expectedDays) {
         long     due;
         Datetime now, expectedDate;
         
@@ -172,7 +172,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
         // convert from milliseconds to days
         due = due / 1000 / 60 / 60 / 24;
         
-        return due;
+        return (int)due;
     }
     
     /*

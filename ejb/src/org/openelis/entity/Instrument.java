@@ -59,9 +59,13 @@ import org.openelis.utils.Auditable;
                         "inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" 
                       + " from Instrument inst left join inst.scriptlet s where inst.id = :id "),
     @NamedQuery( name = "Instrument.FetchByName",
-                 query = "select new org.openelis.domain.InstrumentViewDO(inst.id,inst.name,inst.description,inst.modelNumber," +
-                         "inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" 
-                       + " from Instrument inst left join inst.scriptlet s where inst.name like :name"),
+                query = "select new org.openelis.domain.InstrumentViewDO(inst.id,inst.name,inst.description,inst.modelNumber," +
+                        "inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" 
+                      + " from Instrument inst left join inst.scriptlet s where inst.name like :name"),
+    @NamedQuery( name = "Instrument.FetchActiveByName",
+                query = "select new org.openelis.domain.InstrumentViewDO(inst.id,inst.name,inst.description,inst.modelNumber," +
+                        "inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" 
+                      + " from Instrument inst left join inst.scriptlet s where inst.name like :name and inst.isActive = 'Y'"),
     @NamedQuery( name = "Instrument.FetchByNameSerialNumber",
                 query = "select new org.openelis.domain.InstrumentViewDO(inst.id,inst.name,inst.description,inst.modelNumber," +
                         "inst.serialNumber,inst.typeId,inst.location,inst.isActive,inst.activeBegin,inst.activeEnd,s.id,s.name)" 

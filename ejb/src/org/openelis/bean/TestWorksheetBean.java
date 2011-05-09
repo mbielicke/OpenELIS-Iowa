@@ -79,7 +79,7 @@ public class TestWorksheetBean implements TestWorksheetLocal {
         
         entity = new TestWorksheet();
         
-        entity.setBatchCapacity(data.getBatchCapacity());
+        entity.setSubsetCapacity(data.getSubsetCapacity());
         entity.setFormatId(data.getFormatId());
         entity.setScriptletId(data.getScriptletId());
         entity.setTestId(data.getTestId());
@@ -103,7 +103,7 @@ public class TestWorksheetBean implements TestWorksheetLocal {
         
         entity = manager.find(TestWorksheet.class, data.getId());
         
-        entity.setBatchCapacity(data.getBatchCapacity());
+        entity.setSubsetCapacity(data.getSubsetCapacity());
         entity.setFormatId(data.getFormatId());
         entity.setScriptletId(data.getScriptletId());
         entity.setTestId(data.getTestId());
@@ -119,13 +119,13 @@ public class TestWorksheetBean implements TestWorksheetLocal {
 
         list = new ValidationErrorsList();
         
-        if (DataBaseUtil.isEmpty(data.getBatchCapacity())) {
+        if (DataBaseUtil.isEmpty(data.getSubsetCapacity())) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             TestMeta.getWorksheetBatchCapacity()));
+                                             TestMeta.getWorksheetSubsetCapacity()));
             checkForMultiple = false;
-        } else if (data.getBatchCapacity() <= 0) {
-            list.add(new FieldErrorException("batchCapacityMoreThanZeroException",
-                                             TestMeta.getWorksheetBatchCapacity()));
+        } else if (data.getSubsetCapacity() <= 0) {
+            list.add(new FieldErrorException("subsetCapacityMoreThanZeroException",
+                                             TestMeta.getWorksheetSubsetCapacity()));
             checkForMultiple = false;
         }
         if (DataBaseUtil.isEmpty(data.getTotalCapacity())) {
@@ -144,7 +144,7 @@ public class TestWorksheetBean implements TestWorksheetLocal {
         }
 
         if (checkForMultiple) {
-            if ( (data.getTotalCapacity() % data.getBatchCapacity()) != 0) {
+            if ( (data.getTotalCapacity() % data.getSubsetCapacity()) != 0) {
                 list.add(new FieldErrorException("totalCapacityMultipleException",
                                                  TestMeta.getWorksheetTotalCapacity()));
             }

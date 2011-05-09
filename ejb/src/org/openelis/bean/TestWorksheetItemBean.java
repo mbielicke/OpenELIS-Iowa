@@ -117,10 +117,11 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         
         testWorksheetItem = new TestWorksheetItem();
         
-        testWorksheetItem.setPosition(data.getPosition());
-        testWorksheetItem.setQcName(data.getQcName());
         testWorksheetItem.setTestWorksheetId(data.getTestWorksheetId());
+        testWorksheetItem.setSortOrder(data.getSortOrder());
+        testWorksheetItem.setPosition(data.getPosition());
         testWorksheetItem.setTypeId(data.getTypeId()); 
+        testWorksheetItem.setQcName(data.getQcName());
         
         manager.persist(testWorksheetItem);
         
@@ -139,10 +140,11 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
         
         testWorksheetItem = manager.find(TestWorksheetItem.class, data.getId());
         
-        testWorksheetItem.setPosition(data.getPosition());
-        testWorksheetItem.setQcName(data.getQcName());
         testWorksheetItem.setTestWorksheetId(data.getTestWorksheetId());
+        testWorksheetItem.setSortOrder(data.getSortOrder());
+        testWorksheetItem.setPosition(data.getPosition());
         testWorksheetItem.setTypeId(data.getTypeId());
+        testWorksheetItem.setQcName(data.getQcName());
         
         return data;
     }

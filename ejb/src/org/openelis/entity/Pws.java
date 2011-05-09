@@ -20,6 +20,11 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.utils.AuditUtil;
 
 @NamedQueries( {
+    @NamedQuery(name = "Pws.FetchById",
+                query = "select new org.openelis.domain.PwsDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
+                        "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
+                        "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
+                      + " from Pws p where p.id = :id"),
     @NamedQuery(name = "Pws.FetchByTinwsysIsNumber",
            query = "select new org.openelis.domain.PwsDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
             	   "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +

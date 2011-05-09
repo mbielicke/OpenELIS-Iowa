@@ -32,6 +32,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -39,6 +40,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.InstrumentLogDO;
 import org.openelis.entity.InstrumentLog;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -67,6 +69,23 @@ public class InstrumentLogBean implements InstrumentLogLocal {
             throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(list);
+    }
+    
+    public InstrumentLogDO fetchByInstrumentIdWorksheetId(Integer id, Integer wId) throws Exception {
+        Query           query;
+        InstrumentLogDO data;
+
+        query = manager.createNamedQuery("InstrumentLog.FetchByInstrumentIdWorksheetId");
+        query.setParameter("id", id);
+        query.setParameter("wId", wId);
+        try {
+            data = (InstrumentLogDO) query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
     }
     
     public InstrumentLogDO add(InstrumentLogDO data) throws Exception {

@@ -413,7 +413,7 @@ public class WorksheetAnalysisManagerProxy {
         for (i = 0; i < results.size(); i++) {
             resultRow = results.get(i);
             result = resultRow.get(0);
-            if (twAnalytes.size() == 0 || twAnalytes.containsKey(result.getTestAnalyteId())) {
+            if (twAnalytes.size() == 0 || !twAnalytes.containsKey(result.getTestAnalyteId())) {
                 wrVDO = new WorksheetResultViewDO();
                 wrVDO.setTestAnalyteId(result.getTestAnalyteId());
                 wrVDO.setResultRow(i);

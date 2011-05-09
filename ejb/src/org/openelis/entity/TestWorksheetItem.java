@@ -45,8 +45,8 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQuery(name = "TestWorksheetItem.FetchByTestWorksheetId",
-            query = "select distinct new org.openelis.domain.TestWorksheetItemDO(twi.id,twi.testWorksheetId,twi.position, twi.typeId,twi.qcName)"
-                  + " from TestWorksheetItem twi where twi.testWorksheetId = :testWorksheetId order by twi.position")
+            query = "select distinct new org.openelis.domain.TestWorksheetItemDO(twi.id,twi.testWorksheetId,twi.sortOrder,twi.position,twi.typeId,twi.qcName)"
+                  + " from TestWorksheetItem twi where twi.testWorksheetId = :testWorksheetId order by twi.sortOrder")
 @Entity
 @Table(name = "test_worksheet_item")
 @EntityListeners( {AuditUtil.class})
@@ -59,6 +59,9 @@ public class TestWorksheetItem implements Auditable, Cloneable {
 
     @Column(name = "test_worksheet_id")
     private Integer           testWorksheetId;
+
+    @Column(name = "sort_order")
+    private Integer           sortOrder;
 
     @Column(name = "position")
     private Integer           position;
@@ -88,6 +91,15 @@ public class TestWorksheetItem implements Auditable, Cloneable {
     public void setTestWorksheetId(Integer testWorksheetId) {
         if (DataBaseUtil.isDifferent(testWorksheetId, this.testWorksheetId))
             this.testWorksheetId = testWorksheetId;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
+            this.sortOrder = sortOrder;
     }
 
     public Integer getPosition() {
@@ -134,6 +146,7 @@ public class TestWorksheetItem implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("test_worksheet_id", testWorksheetId, original.testWorksheetId)
+                 .setField("sort_order", sortOrder, original.sortOrder)
                  .setField("position", position, original.position)
                  .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("qc_name", qcName, original.qcName);

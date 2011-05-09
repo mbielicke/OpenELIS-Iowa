@@ -28,8 +28,11 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -47,8 +50,8 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries( {
     @NamedQuery(name = "SampleSDWIS.FetchBySampleId", query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId, " +
-                       " s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.location, s.collector, '') " +
-                       " from SampleSDWIS s where s.sampleId = :id")})
+                       " s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.location, s.collector, p.name, p.number0) " +
+                       " from SampleSDWIS s left join s.pws p where s.sampleId = :id")})
                        
 @Entity
 @Table(name = "sample_sdwis")
@@ -63,7 +66,7 @@ public class SampleSDWIS implements Auditable, Cloneable {
     private Integer sampleId;
     
     @Column(name = "pws_id")
-    private String pwsId;
+    private Integer pwsId;
     
     @Column(name = "state_lab_id")
     private Integer stateLabId;
@@ -86,6 +89,10 @@ public class SampleSDWIS implements Auditable, Cloneable {
     @Column(name = "collector")
     private String collector;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pws_id", insertable = false, updatable = false)
+    private Pws pws;
+
     @Transient
     private SampleSDWIS original;
     
@@ -107,11 +114,11 @@ public class SampleSDWIS implements Auditable, Cloneable {
             this.sampleId = sampleId;
     }
 
-    public String getPwsId() {
+    public Integer getPwsId() {
         return pwsId;
     }
 
-    public void setPwsId(String pwsId) {
+    public void setPwsId(Integer pwsId) {
         if (DataBaseUtil.isDifferent(pwsId, this.pwsId))
             this.pwsId = pwsId;
     }
@@ -177,6 +184,14 @@ public class SampleSDWIS implements Auditable, Cloneable {
     public void setCollector(String collector) {
         if (DataBaseUtil.isDifferent(collector, this.collector))
             this.collector = collector;
+    }
+
+    public Pws getPws() {
+        return pws;
+    }
+
+    public void setPws(Pws pws) {
+        this.pws = pws;
     }
 
     public void setClone() {
