@@ -107,33 +107,35 @@ public class SDWISTab extends Screen {
     }
 
     public void initialize() {
-        pwsId = (TextBox)def.getWidget(SampleMeta.getSDWISPwsId());
+        pwsId = (TextBox)def.getWidget(SampleMeta.getSDWISPwsNumber0());
         addScreenHandler(pwsId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                pwsId.setValue(getSDWISManager().getSDWIS().getPwsId());
+                pwsId.setValue(getSDWISManager().getSDWIS().getPwsNumber0());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 PwsDO data;
 
-                getSDWISManager().getSDWIS().setPwsId(event.getValue());
-
-                if (getSDWISManager().getSDWIS().getPwsId() != null) {
+                if (event.getValue() != null && event.getValue() != "") { 
                     try {
-                        data = pwsService.call("fetchByPwsId", getSDWISManager().getSDWIS().getPwsId());
+                        data = pwsService.call("fetchByNumber0", event.getValue());
+                        getSDWISManager().getSDWIS().setPwsId(data.getId());
                         getSDWISManager().getSDWIS().setPwsName(data.getName());
+                        getSDWISManager().getSDWIS().setPwsNumber0(data.getNumber0());
                         pwsName.setValue(data.getName());
-
                     } catch (ValidationErrorsList e) {
                         showErrors(e);
+                        getSDWISManager().getSDWIS().setPwsId(null);
                         getSDWISManager().getSDWIS().setPwsName(null);
+                        getSDWISManager().getSDWIS().setPwsNumber0(null);
                         pwsName.setValue(null);
-
                     } catch (Exception e) {
                         Window.alert("pwsId valueChange: " + e.getMessage());
                     }
                 } else {
+                    getSDWISManager().getSDWIS().setPwsId(null);
                     getSDWISManager().getSDWIS().setPwsName(null);
+                    getSDWISManager().getSDWIS().setPwsNumber0(null);
                     pwsName.setValue(null);
                 }
             }
@@ -496,8 +498,9 @@ public class SDWISTab extends Screen {
                     if (state == State.ADD || state == State.UPDATE) {
                         if (event.getAction() == PwsScreen.Action.SELECT) {
                             pwsDO = (PwsDO)event.getData();
-                            getSDWISManager().getSDWIS().setPwsId(pwsDO.getNumber0());
+                            getSDWISManager().getSDWIS().setPwsId(pwsDO.getId());
                             getSDWISManager().getSDWIS().setPwsName(pwsDO.getName());
+                            getSDWISManager().getSDWIS().setPwsNumber0(pwsDO.getNumber0());
 
                             pwsId.clearExceptions();
                             DataChangeEvent.fire(sdwis);

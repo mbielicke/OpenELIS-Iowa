@@ -309,19 +309,26 @@ public class WorksheetCompletionScreen extends Screen {
 
         instrumentId = (AutoComplete)def.getWidget("instrumentId");
         addScreenHandler(instrumentId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                instrumentId.setSelection(manager.getWorksheet().getInstrumentId(),
+                                          manager.getWorksheet().getInstrumentName());
+            }
+                
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getWorksheet().setInstrumentId(event.getValue());
+                manager.getWorksheet().setInstrumentName(instrumentId.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-//                Integer statusId;
-//                
-//                if (manager != null && manager.getWorksheet() != null) {
-//                    statusId = manager.getWorksheet().getStatusId();
-//                    instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
-//                                        statusWorking.equals(statusId));
-//                } else {
+                Integer statusId;
+                
+                if (manager != null && manager.getWorksheet() != null) {
+                    statusId = manager.getWorksheet().getStatusId();
+                    instrumentId.enable(EnumSet.of(State.UPDATE).contains(event.getState()) &&
+                                        statusWorking.equals(statusId));
+                } else {
                     instrumentId.enable(false);
-//                }
+                }
             }
         });
 
@@ -348,6 +355,9 @@ public class WorksheetCompletionScreen extends Screen {
                         row.cells.get(2).value = iVDO.getTypeId();
                         row.cells.get(3).value = iVDO.getLocation();
                         row.data = iVDO;
+                        
+                        if (!"Y".equals(iVDO.getIsActive()))
+                            row.enabled = false;
                         
                         model.add(row);
                     } 
@@ -912,7 +922,7 @@ public class WorksheetCompletionScreen extends Screen {
         
         return dirName+worksheetNumber+"_"+userVO.getLoginName()+".xls";
     }
-/*    
+    
     private ArrayList<TableDataRow> getTableModel() {
         int                      i, j, k, l;
         ArrayList<TableDataRow>  model;
@@ -945,7 +955,7 @@ public class WorksheetCompletionScreen extends Screen {
                 waManager = manager.getItems().getWorksheetAnalysisAt(i);
 
                 row = new TableDataRow(39);
-                row.cells.get(0).value = getPositionNumber(wiDO.getPosition());
+                row.cells.get(0).value = wiDO.getPosition();
                 for (j = 0; j < waManager.count(); j++) {
                     waDO = waManager.getWorksheetAnalysisAt(j);
 
@@ -1059,36 +1069,5 @@ public class WorksheetCompletionScreen extends Screen {
 
         return model;
     }
-
-    private Object getPositionNumber(int position) {
-//        int    major, minor;
-        Object positionNumber;
-        
-        positionNumber = "";
-//        if (formatBatch.equals(manager.getWorksheet().getFormatId())) {
-//            major = getPositionMajorNumber(position);
-//            minor = getPositionMinorNumber(position);
-//            positionNumber = major+"-"+minor;
-//        } else {
-            positionNumber = position;
-//        }
-        
-        return positionNumber;
-    }
 */    
-    /**
-     * Parses the position number and returns the major number
-     * for batch numbering.
-     */
-//    private int getPositionMajorNumber(int position) {
-//        return (int) (position / (double)manager.getWorksheet().getBatchCapacity() + .99);
-//    }
-
-    /**
-      * Parses the position number and returns the minor number
-      * for batch numbering.
-      */
-//    private int getPositionMinorNumber(int position) {
-//        return position - (getPositionMajorNumber(position) - 1) * manager.getWorksheet().getBatchCapacity();
-//    }
 }

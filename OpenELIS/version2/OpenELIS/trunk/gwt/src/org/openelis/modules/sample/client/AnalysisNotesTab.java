@@ -88,7 +88,6 @@ public class AnalysisNotesTab extends NotesTab {
         this.internalEditButtonKey = internalEditButtonKey;
         
         initialize();
-
         initializeDropdowns();
     }
 

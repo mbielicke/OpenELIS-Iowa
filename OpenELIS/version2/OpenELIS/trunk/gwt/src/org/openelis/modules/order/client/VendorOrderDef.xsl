@@ -233,7 +233,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"state")' />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getOrganizationAddressState()}" width="35" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="{meta:getOrganizationAddressState()}" width="35" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
                   <HorizontalPanel width="10" />
@@ -242,7 +242,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                 </text>
                 <widget>
-                  <textbox key="{meta:getOrganizationAddressZipCode()}" width="72" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="{meta:getOrganizationAddressZipCode()}" width="72" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
               </row>
             </TablePanel>

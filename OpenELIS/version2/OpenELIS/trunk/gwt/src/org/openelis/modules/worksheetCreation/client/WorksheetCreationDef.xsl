@@ -69,21 +69,34 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'worksheetNumber')" />:
               </text>
-              <textbox key="{meta:getWorksheetId()}" width="100" case="LOWER" field="String" />
+              <textbox key="{meta:getWorksheetId()}" width="100" field="Integer" />
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'relatedWorksheetNumber')" />:
               </text>
               <HorizontalPanel>
-                <textbox key="{meta:getWorksheetRelatedWorksheetId()}" width="100" case="LOWER" field="String" />
-                <appButton key="lookupWorksheetButton" style="LookupButton" tab="worksheetItemTable,removeRowButton" action="lookupWorksheet">
+                <textbox key="{meta:getWorksheetRelatedWorksheetId()}" width="100" field="Integer" />
+                <appButton key="lookupWorksheetButton" style="LookupButton" tab="instrumentId,removeRowButton" action="lookupWorksheet">
                   <AbsolutePanel style="LookupButtonImage" />
                 </appButton>
               </HorizontalPanel>
             </row>
+            <row>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'instrumentName')" />:
+              </text>
+              <widget colspan="5">
+                <autoComplete key="instrumentId" width="150" case="LOWER" popWidth="auto" tab="worksheetItemTable,lookupWorksheetButton" field="Integer">
+                  <col width="150" header="Name" />
+                  <col width="200" header="Description" />
+                  <col width="200" header="Type"/>
+                  <col width="200" header="Location" />
+                </autoComplete>
+              </widget>
+            </row>
           </TablePanel>
-          <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="insertQCWorksheetButton,lookupWorksheetButton" title="">
+          <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="insertQCWorksheetButton,instrumentId" title="">
             <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
-              <label field="String" />
+              <label field="Integer" />
             </col>
             <col key="{meta:getSampleAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
               <label field="String" />
@@ -134,7 +147,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                 </HorizontalPanel>
               </appButton>
-              <appButton key="removeRowButton" style="Button" tab="{meta:getWorksheetRelatedWorksheetId()},insertQCLookupButton" action="removeRow">
+              <appButton key="removeRowButton" style="Button" tab="lookupWorksheetButton,insertQCLookupButton" action="removeRow">
                 <HorizontalPanel>
                   <AbsolutePanel style="RemoveRowButtonImage" />
                   <text>

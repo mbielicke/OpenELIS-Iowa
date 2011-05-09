@@ -48,6 +48,10 @@ public class InstrumentService {
         return remote().fetchByName(name + "%", 10);
     }
 
+    public ArrayList<InstrumentViewDO> fetchActiveByName(String name) throws Exception {
+        return remote().fetchActiveByName(name + "%", 10);
+    }
+
     public InstrumentManager fetchWithLogs(Integer id) throws Exception {
         return remoteManager().fetchWithLogs(id);
     }

@@ -136,14 +136,10 @@ public class SampleManagerProxy {
             errorsList.add(new FieldErrorException("collectedTooOldException",
                                                    SampleMeta.getCollectionDate()));
 
-        if (data.getCollectionDate() == null)
-            errorsList.add(new FieldErrorWarning("collectedDateMissingWarning",
-                                                 SampleMeta.getCollectionDate()));
-        else if (data.getReceivedDate() != null) {
-            if (data.getCollectionDate().compareTo(data.getReceivedDate()) == 1)
+        if (data.getCollectionDate() != null && data.getReceivedDate() != null &&
+            data.getCollectionDate().compareTo(data.getReceivedDate()) == 1)
                 errorsList.add(new FieldErrorException("collectedDateInvalidError",
                                                        SampleMeta.getReceivedDate()));
-        }
         
         // every unreleased sample needs an internal comment describing the reason
         if (man.unreleaseWithNotes) {

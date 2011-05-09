@@ -1275,8 +1275,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         
         try {
             autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_environmental");
+        } catch (NotFoundException nfE) {
+            // ignore not found exceptions since this domain may not have a default note
         } catch (Exception e) {
-            e.printStackTrace();
+            Window.alert(e.getMessage());
+            window.close();
         }
     }
 

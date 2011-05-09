@@ -97,7 +97,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
     private MonitorTab       monitorTab;
     private FacilityTab      facilityTab;
     private AddressTab       addressTab;
-    private String           pwsId;
+    private String           pwsNumber0;
 
     private enum Tabs {
         FACILITY, ADDRESS, MONITOR
@@ -107,7 +107,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
         this(null);
     }
 
-    public PwsScreen(String pwsId) throws Exception {
+    public PwsScreen(String pwsNumber0) throws Exception {
         super((ScreenDefInt)GWT.create(PwsDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.pws.server.PwsService");
 
@@ -115,7 +115,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
         if (userPermission == null)
             throw new PermissionException("screenPermException", "PWS Screen");
 
-        this.pwsId = pwsId;
+        this.pwsNumber0 = pwsNumber0;
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                 postConstructor();
@@ -135,8 +135,8 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
 
-        if (pwsId != null)
-            queryByPwsId();
+        if (pwsNumber0 != null)
+            queryByPwsNumer0();
     }
 
     private void initialize() {
@@ -200,7 +200,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
         });
 
         selectButton = (AppButton)def.getWidget("select");
-        if (pwsId != null) {
+        if (pwsNumber0 != null) {
             addScreenHandler(selectButton, new ScreenEventHandler<Object>() {
                 public void onClick(ClickEvent event) {
                     select();
@@ -683,9 +683,9 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
         return true;
     }
 
-    private void queryByPwsId() {
+    private void queryByPwsNumer0() {
         query();
-        number0.setValue(pwsId);
+        number0.setValue(pwsNumber0);
         commit();
     }
 

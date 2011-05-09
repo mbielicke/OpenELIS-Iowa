@@ -273,7 +273,7 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                     </text>
                     <widget>
-                      <textbox key="{meta:getOrganizationAddressZipCode()}" width="72" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                      <textbox key="{meta:getOrganizationAddressZipCode()}" width="72" mask="99999-9999" max="30" style="ScreenTextboxDisplayOnly" field="String" />
                     </widget>
                   </row>
                 </TablePanel>

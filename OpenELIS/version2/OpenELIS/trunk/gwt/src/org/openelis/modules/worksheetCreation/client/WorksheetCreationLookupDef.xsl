@@ -103,13 +103,13 @@ UIRF Software License are applicable instead of those above.
         </HorizontalPanel>
         <table key="analysesTable" width="800" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="addButton,searchButton" title="">
           <col key="{meta:getSampleAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
-            <label field="String" />
+            <label field="Integer" />
           </col>
           <col key="{meta:getSampleEnvironmentalDescription()}" width="150" sort="true" header="{resource:getString($constants,'description')}">
             <label field="String" />
           </col>
-          <col key="{meta:getAnalysisTestId()}" width="100" sort="true" header="{resource:getString($constants,'test')}">
-            <label field="Integer" />
+          <col key="{meta:getAnalysisTestName()}" width="100" sort="true" header="{resource:getString($constants,'test')}">
+            <label field="String" />
           </col>
           <col key="{meta:getAnalysisTestMethodName()}" width="100" sort="true" header="{resource:getString($constants,'method')}">
             <label field="String" />
@@ -133,7 +133,7 @@ UIRF Software License are applicable instead of those above.
             <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
           </col>
           <col key="{meta:getSampleEnvironmentalPriority()}" width="65" sort="true" header="{resource:getString($constants,'priority')}">
-            <label field="String" />
+            <label field="Integer" />
           </col>
         </table>
         <widget style="TableFooterPanel">

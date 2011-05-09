@@ -138,7 +138,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'clntRef')" />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getClientReference()}" width="196" case="LOWER" max="20" tab="{meta:getSDWISPwsId()},{meta:getStatusId()}" field="String" />
+                <textbox key="{meta:getClientReference()}" width="196" case="LOWER" max="20" tab="{meta:getSDWISPwsNumber0()},{meta:getStatusId()}" field="String" />
               </widget>
             </row>
           </TablePanel>
@@ -152,7 +152,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'pwsId')" />:
                 </text>
                 <HorizontalPanel>
-                  <textbox key="{meta:getSDWISPwsId()}" width="75" max="9" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String" required="true"/>
+                  <textbox key="{meta:getSDWISPwsNumber0()}" width="75" max="9" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String" required="true"/>
                   <appButton key="pwsButton" style="LookupButton">
                     <AbsolutePanel style="LookupButtonImage" />
                   </appButton>
@@ -160,7 +160,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'pwsName')" />:
                 </text>
-                <textbox key="pwsName" width="250" tab="{meta:getSDWISStateLabId()},{meta:getSDWISPwsId()}" field="String" />
+                <textbox key="pwsName" width="250" tab="{meta:getSDWISStateLabId()},{meta:getSDWISPwsNumber0()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'stateLabNo')" />:
                 </text>

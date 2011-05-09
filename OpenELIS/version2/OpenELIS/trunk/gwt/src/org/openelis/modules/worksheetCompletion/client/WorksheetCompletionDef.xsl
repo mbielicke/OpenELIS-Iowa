@@ -76,7 +76,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'worksheetNumber')" />:
               </text>
-              <textbox key="{meta:getId()}" width="100" case="LOWER" field="String"/>
+              <textbox key="{meta:getId()}" width="100" case="LOWER" field="Integer"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'status')" />:
               </text>
@@ -87,7 +87,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'relatedWorksheetNumber')" />:
               </text>
               <HorizontalPanel>
-                <textbox key="{meta:getRelatedWorksheetId()}" width="100" case="LOWER" field="String" />
+                <textbox key="{meta:getRelatedWorksheetId()}" width="100" case="LOWER" field="Integer" />
                 <appButton key="lookupWorksheetButton" style="LookupButton" tab="instrumentId,{meta:getStatusId()}" action="lookupWorksheet">
                   <AbsolutePanel style="LookupButtonImage" />
                 </appButton>
@@ -141,7 +141,7 @@ UIRF Software License are applicable instead of those above.
               <VerticalPanel padding="0" spacing="0">
                 <table key="worksheetItemTable" width="832" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
                   <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
-                    <label field="String" />
+                    <label field="Integer" />
                   </col>
                   <col key="{meta:getWorksheetAnalysisAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
                     <label field="String" />

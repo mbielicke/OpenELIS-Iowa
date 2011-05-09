@@ -84,7 +84,7 @@ UIRF Software License are applicable instead of those above.
               <label field="Integer" />
             </col>
             <col key="{meta:getSystemUserId()}" width="100" sort="true" header="{resource:getString($constants,'worksheetUser')}">
-              <label field="Integer" />
+              <label field="String" />
             </col>
             <col key="{meta:getCreatedDate()}" width="130" sort="true" header="{resource:getString($constants,'created')}">
               <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
