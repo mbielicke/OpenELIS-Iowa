@@ -41,8 +41,9 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 SYSTEM_USER_ID       = "_worksheet.systemUserId",
                                 STATUS_ID            = "_worksheet.statusId",
                                 FORMAT_ID            = "_worksheet.formatId",
-                                BATCH_CAPACITY       = "_worksheet.batchCapacity",
+                                SUBSET_CAPACITY      = "_worksheet.subsetCapacity",
                                 RELATED_WORKSHEET_ID = "_worksheet.relatedWorksheetId",
+                                INSTRUMENT_ID        = "_worksheet.instrumentId",
 
                                 ITEM_ID             = "_worksheetItem.id",
                                 ITEM_WORKSHEET_ID   = "_worksheetItem.worksheetId",
@@ -100,6 +101,8 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 QC_RESULT_TYPE_ID               = "_worksheetQcResult.typeId",
                                 QC_RESULT_VALUE                 = "_worksheetQcResult.value",
                                 
+                                INSTRUMENT_NAME                 = "_worksheet.instrument.name",
+                                
                                 SAMP_DESCRIPTION                = "_sample.description",   // combined field for all domain descriptions
                                 ANALYSIS_STATUS_ID              = "_analysis.status_id",
                                 ANALYSIS_TEST_NAME              = "_analysis.test.name",
@@ -109,9 +112,9 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
 
     static {
         names = new HashSet<String>(Arrays.asList(ID, CREATED_DATE, SYSTEM_USER_ID,
-                                    STATUS_ID, FORMAT_ID, ITEM_ID, RELATED_WORKSHEET_ID,
-                                    ITEM_WORKSHEET_ID, ITEM_POSITION, ANALYSIS_ID,
-                                    ANALYSIS_WORKSHEET_ITEM_ID, ANALYSIS_ACCESSION_NUMBER,
+                                    STATUS_ID, FORMAT_ID, SUBSET_CAPACITY, RELATED_WORKSHEET_ID,
+                                    INSTRUMENT_ID, ITEM_ID, ITEM_WORKSHEET_ID, ITEM_POSITION,
+                                    ANALYSIS_ID, ANALYSIS_WORKSHEET_ITEM_ID, ANALYSIS_ACCESSION_NUMBER,
                                     ANALYSIS_ANALYSIS_ID, ANALYSIS_QC_ID, ANALYSIS_WORKSHEET_ANALYSIS_ID,
                                     RESULT_ID, RESULT_WORKSHEET_ANALYSIS_ID, RESULT_TEST_ANALYTE_ID,
                                     RESULT_TEST_RESULT_ID, RESULT_RESULT_ROW, RESULT_ANALYTE_ID,
@@ -127,8 +130,8 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                     RESULT_VALUE_27, RESULT_VALUE_28, RESULT_VALUE_29,
                                     RESULT_VALUE_30, QC_RESULT_ID, QC_RESULT_WORKSHEET_ANALYSIS_ID,
                                     QC_RESULT_SORT_ORDER, QC_RESULT_QC_ANALYTE_ID,
-                                    QC_RESULT_TYPE_ID, QC_RESULT_VALUE/*, TEST_NAME,
-                                    METHOD_NAME*/));
+                                    QC_RESULT_TYPE_ID, QC_RESULT_VALUE, INSTRUMENT_NAME/*,
+                                    TEST_NAME, METHOD_NAME*/));
     }
 
     public static String getId() {
@@ -151,12 +154,16 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
         return FORMAT_ID;
     }
 
-    public static String getBatchCapacity() {
-        return BATCH_CAPACITY;
+    public static String getSubsetCapacity() {
+        return SUBSET_CAPACITY;
     }
 
     public static String getRelatedWorksheetId() {
         return RELATED_WORKSHEET_ID;
+    }
+
+    public static String getInstrumentId() {
+        return INSTRUMENT_ID;
     }
 
     public static String getWorksheetItemId() {
@@ -365,6 +372,10 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
 
     public static String getWorksheetQcResultValue() {
         return QC_RESULT_VALUE;
+    }
+
+    public static String getInstrumentName() {
+        return INSTRUMENT_NAME;
     }
 
     public static String getSampleDescription() {

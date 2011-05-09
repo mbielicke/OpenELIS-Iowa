@@ -35,16 +35,17 @@ public class TestWorksheetItemDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, testWorksheetId, position, typeId;
+    protected Integer         id, testWorksheetId, sortOrder, position, typeId;
     protected String          qcName;
 
     public TestWorksheetItemDO() {
     }
 
-    public TestWorksheetItemDO(Integer id, Integer testWorksheetId, Integer position,
-                               Integer typeId, String qcName) {
+    public TestWorksheetItemDO(Integer id, Integer testWorksheetId, Integer sortOrder,
+                               Integer position, Integer typeId, String qcName) {
         setId(id);
         setTestWorksheetId(testWorksheetId);
+        setSortOrder(sortOrder);
         setPosition(position);
         setTypeId(typeId);
         setQcName(qcName);
@@ -68,6 +69,15 @@ public class TestWorksheetItemDO extends DataObject {
         this.testWorksheetId = testWorksheetId;
         _changed = true;
         
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
+        _changed = true;
     }
 
     public Integer getPosition() {

@@ -31,21 +31,22 @@ public class SampleSDWISViewDO extends SampleSDWISDO {
 
     private static final long serialVersionUID = 1L;
     
-    protected String pwsName;
+    protected String pwsName, pwsNumber0;
     
     public SampleSDWISViewDO(){
         
     }
     
-    public SampleSDWISViewDO(Integer id, Integer sampleId, String pwsId,
+    public SampleSDWISViewDO(Integer id, Integer sampleId, Integer pwsId,
                          Integer stateLabId, String facilityId, Integer sampleTypeId,
                          Integer sampleCategoryId, String samplePointId, 
-                         String location, String collector, String pwsName){
+                         String location, String collector, String pwsName, String pwsNumber0) {
         
         super(id, sampleId, pwsId, stateLabId, facilityId, sampleTypeId, sampleCategoryId, 
               samplePointId, location, collector);
         
         setPwsName(pwsName);
+        setPwsNumber0(pwsNumber0);
     }
 
     public String getPwsName() {
@@ -54,5 +55,13 @@ public class SampleSDWISViewDO extends SampleSDWISDO {
 
     public void setPwsName(String pwsName) {
         this.pwsName = DataBaseUtil.trim(pwsName);
+    }
+
+    public String getPwsNumber0() {
+        return pwsNumber0;
+    }
+
+    public void setPwsNumber0(String pwsNumber0) {
+        this.pwsNumber0 = DataBaseUtil.trim(pwsNumber0);
     }
 }

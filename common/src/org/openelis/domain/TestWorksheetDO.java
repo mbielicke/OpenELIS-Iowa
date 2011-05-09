@@ -33,17 +33,17 @@ public class TestWorksheetDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, testId, batchCapacity, totalCapacity, formatId,
+    protected Integer         id, testId, subsetCapacity, totalCapacity, formatId,
                               scriptletId;
 
     public TestWorksheetDO() {
     }
 
-    public TestWorksheetDO(Integer id, Integer testId, Integer batchCapacity,
+    public TestWorksheetDO(Integer id, Integer testId, Integer subsetCapacity,
                            Integer totalCapacity, Integer numberFormatId, Integer scriptletId) {
         setId(id);
         setTestId(testId);
-        setBatchCapacity(batchCapacity);
+        setSubsetCapacity(subsetCapacity);
         setTotalCapacity(totalCapacity);
         setFormatId(numberFormatId);
         setScriptletId(scriptletId);
@@ -68,12 +68,12 @@ public class TestWorksheetDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getBatchCapacity() {
-        return batchCapacity;
+    public Integer getSubsetCapacity() {
+        return subsetCapacity;
     }
 
-    public void setBatchCapacity(Integer batchCapacity) {
-        this.batchCapacity = batchCapacity;
+    public void setSubsetCapacity(Integer subsetCapacity) {
+        this.subsetCapacity = subsetCapacity;
         _changed = true;
     }
 

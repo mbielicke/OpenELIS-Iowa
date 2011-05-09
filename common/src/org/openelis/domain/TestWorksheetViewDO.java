@@ -43,10 +43,10 @@ public class TestWorksheetViewDO extends TestWorksheetDO {
     public TestWorksheetViewDO() {
     }
 
-    public TestWorksheetViewDO(Integer id, Integer testId, Integer batchCapacity,
+    public TestWorksheetViewDO(Integer id, Integer testId, Integer subsetCapacity,
                                Integer totalCapacity, Integer formatId, Integer scriptletId,
                                String scriptletName) {
-        super(id, testId, batchCapacity, totalCapacity, formatId, scriptletId);
+        super(id, testId, subsetCapacity, totalCapacity, formatId, scriptletId);
         setScriptletName(scriptletName);
     }
 

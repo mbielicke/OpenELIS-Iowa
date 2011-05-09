@@ -42,17 +42,18 @@ public class WorksheetViewDO extends WorksheetDO {
     private static final long serialVersionUID = 1L;
 
     protected ArrayList<AnalysisViewDO> testList;
-    protected String                    systemUser;
+    protected String                    systemUser, instrumentName;
 
     public WorksheetViewDO() {
 
     }
 
     public WorksheetViewDO(Integer id, Date createdDate, Integer systemUserId,
-                           Integer statusId, Integer formatId, Integer batchCapacity,
-                           Integer relatedWorksheetId) {
-        super(id, createdDate, systemUserId, statusId, formatId, batchCapacity,
-              relatedWorksheetId);
+                           Integer statusId, Integer formatId, Integer subsetCapacity,
+                           Integer relatedWorksheetId, Integer instrumentId, String instrumentName) {
+        super(id, createdDate, systemUserId, statusId, formatId, subsetCapacity,
+              relatedWorksheetId, instrumentId);
+        setInstrumentName(instrumentName);
     }
 
     public String getSystemUser() {
@@ -61,6 +62,14 @@ public class WorksheetViewDO extends WorksheetDO {
 
     public void setSystemUser(String systemUser) {
         this.systemUser = DataBaseUtil.trim(systemUser);
+    }
+
+    public String getInstrumentName() {
+        return instrumentName;
+    }
+
+    public void setInstrumentName(String instrumentName) {
+        this.instrumentName = DataBaseUtil.trim(instrumentName);
     }
 
     public ArrayList<AnalysisViewDO> getTestList() {
