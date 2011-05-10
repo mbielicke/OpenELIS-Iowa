@@ -76,6 +76,19 @@ UIRF Software License are applicable instead of those above.
             </menuItem>
             <menuItem>
               <menuDisplay>
+                <label style="topMenuBarItem" text="{resource:getString($constants,'label')}" />
+              </menuDisplay>
+              <menuPanel layout="vertical" position="below" style="topMenuContainer">
+	            <code>if(UserCache.getPermission().hasModule("r_loginlabel","SELECT")){</code>
+	            <menuItem key="sampleLoginLabelReport" description="" icon="" enable="true" label="{resource:getString($constants,'loginBarcode')}" />
+	            <code>}</code>
+	            <code>if(UserCache.getPermission().hasModule("r_loginlabelrep","SELECT")){</code>
+	            <menuItem key="sampleLoginLabelAdditionalReport" description="" icon="" enable="true" label="{resource:getString($constants,'loginBarcodeAdd')}" />
+				<code>}</code>                    
+              </menuPanel>
+            </menuItem>
+            <menuItem>
+              <menuDisplay>
                 <label style="topMenuBarItem" text="{resource:getString($constants,'sample')}" />
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
@@ -174,6 +187,37 @@ UIRF Software License are applicable instead of those above.
             </menuItem>
             <menuItem>
               <menuDisplay>
+                <label style="topMenuBarItem" text="{resource:getString($constants,'report')}"/>
+              </menuDisplay>
+              <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'login')}">
+                  <menuPanel layout="vertical" position="beside" style="topMenuContainer">
+                    <menuItem key="verificationReport" description="" icon="" enable="true" label="{resource:getString($constants,'verificationReport')}" />
+                    <menuItem key="testRequestFormReport" description="" icon="" enable="false" label="{resource:getString($constants,'TRFReport')}" />
+                  </menuPanel>
+                </menuItem>
+                <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'reference')}">
+                  <menuPanel layout="vertical" position="beside" style="topMenuContainer">
+                    <menuItem key="testReport" description="" icon="" enable="true" label="{resource:getString($constants,'testReport')}" />
+                    <menuItem key="qaEventReport" description="" icon="" enable="false" label="{resource:getString($constants,'QAEventReport')}" />
+                    <menuItem key="organizationRef" description="" icon="" enable="false" label="{resource:getString($constants,'organization')}" />
+                  </menuPanel>
+                </menuItem>
+                <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'summary')}">
+                  <menuPanel layout="vertical" position="beside" style="topMenuContainer">
+                    <menuItem key="sampleInhouseReport" description="" icon="" enable="true" label="{resource:getString($constants,'sampleInhouseReport')}" />
+                    <menuItem key="volumeReport" description="" icon="" enable="true" label="{resource:getString($constants,'volumeReport')}" />
+	                <menuItem key="sampleDataExport" description="" icon="" enable="false" label="{resource:getString($constants,'sampleDataExport')}" />
+                    <menuItem key="QAByOrganization" description="" icon="" enable="true" label="{resource:getString($constants,'QAByOrganization')}" />
+                    <menuItem key="testCountByFacility" description="" icon="" enable="false" label="{resource:getString($constants,'testCountByFacility')}" />
+                    <menuItem key="turnaround" description="" icon="" enable="true" label="{resource:getString($constants,'turnaround')}" />
+                    <menuItem key="finalReport" description="" icon="" enable="true" label="{resource:getString($constants,'finalReport')}" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
+            </menuItem>
+            <menuItem>
+              <menuDisplay>
                 <label style="topMenuBarItem" text="{resource:getString($constants,'maintenance')}" />
               </menuDisplay>
               <menuPanel layout="vertical" position="below" style="topMenuContainer">
@@ -229,43 +273,6 @@ UIRF Software License are applicable instead of those above.
                 <code>if(UserCache.getPermission().hasModule("pws","SELECT")){</code>
                 <menuItem key="pws" description="{resource:getString($constants,'pwsInformationDescription')}" icon="sdwisSampleLoginIcon" label="{resource:getString($constants,'pwsInformation')}" />
                 <code>}</code>
-              </menuPanel>
-            </menuItem>
-            <menuItem>
-              <menuDisplay>
-                <label style="topMenuBarItem" text="{resource:getString($constants,'report')}"/>
-              </menuDisplay>
-              <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'login')}">
-                  <menuPanel layout="vertical" position="beside" style="topMenuContainer">
-	                <code>if(UserCache.getPermission().hasModule("r_loginlabel","SELECT")){</code>
-                    <menuItem key="sampleLoginLabelReport" description="" icon="" enable="true" label="{resource:getString($constants,'loginBarcode')}" />
-                    <code>}</code>
-	                <code>if(UserCache.getPermission().hasModule("r_loginlabelrep","SELECT")){</code>
-                    <menuItem key="sampleLoginLabelAdditionalReport" description="" icon="" enable="true" label="{resource:getString($constants,'loginBarcodeAdd')}" />
-					<code>}</code>                    
-                    <menuItem key="verificationReport" description="" icon="" enable="true" label="{resource:getString($constants,'verificationReport')}" />
-                    <menuItem key="testRequestFormReport" description="" icon="" enable="false" label="{resource:getString($constants,'TRFReport')}" />
-                  </menuPanel>
-                </menuItem>
-                <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'reference')}">
-                  <menuPanel layout="vertical" position="beside" style="topMenuContainer">
-                    <menuItem key="testReport" description="" icon="" enable="true" label="{resource:getString($constants,'testReport')}" />
-                    <menuItem key="qaEventReport" description="" icon="" enable="false" label="{resource:getString($constants,'QAEventReport')}" />
-                    <menuItem key="organizationRef" description="" icon="" enable="false" label="{resource:getString($constants,'organization')}" />
-                  </menuPanel>
-                </menuItem>
-                <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'summary')}">
-                  <menuPanel layout="vertical" position="beside" style="topMenuContainer">
-                    <menuItem key="sampleInhouseReport" description="" icon="" enable="true" label="{resource:getString($constants,'sampleInhouseReport')}" />
-                    <menuItem key="volumeReport" description="" icon="" enable="true" label="{resource:getString($constants,'volumeReport')}" />
-	                <menuItem key="sampleDataExport" description="" icon="" enable="false" label="{resource:getString($constants,'sampleDataExport')}" />
-                    <menuItem key="QAByOrganization" description="" icon="" enable="true" label="{resource:getString($constants,'QAByOrganization')}" />
-                    <menuItem key="testCountByFacility" description="" icon="" enable="false" label="{resource:getString($constants,'testCountByFacility')}" />
-                    <menuItem key="turnaround" description="" icon="" enable="true" label="{resource:getString($constants,'turnaround')}" />
-                    <menuItem key="finalReport" description="" icon="" enable="true" label="{resource:getString($constants,'finalReport')}" />
-                  </menuPanel>
-                </menuItem>
               </menuPanel>
             </menuItem>
           </menuPanel>
