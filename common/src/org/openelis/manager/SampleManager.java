@@ -446,7 +446,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
         else if (r > 0)
             statusId = proxy().samReleasedId;
 
-        if (statusId != oldStatusId) {
+        if (statusId != null && statusId != oldStatusId) {
             if (statusId == proxy().samReleasedId) {
                 sample.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
             } else {
