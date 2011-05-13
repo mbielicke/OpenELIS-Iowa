@@ -101,12 +101,12 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 QC_RESULT_TYPE_ID               = "_worksheetQcResult.typeId",
                                 QC_RESULT_VALUE                 = "_worksheetQcResult.value",
                                 
-                                INSTRUMENT_NAME                 = "_worksheet.instrument.name",
-                                
+                                INSTRUMENT_NAME                 = "_instrument.name",
                                 SAMP_DESCRIPTION                = "_sample.description",   // combined field for all domain descriptions
                                 ANALYSIS_STATUS_ID              = "_analysis.status_id",
                                 ANALYSIS_TEST_NAME              = "_analysis.test.name",
                                 ANALYSIS_TEST_METHOD_NAME       = "_analysis.test.method.name";
+    
 
     private static HashSet<String> names;
 
@@ -407,10 +407,8 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
 
         from = "Worksheet _worksheet "+
                ", IN (_worksheet.worksheetItem) _worksheetItem "+
-               ", IN (_worksheetItem.worksheetAnalysis) _worksheetAnalysis "/*+
-               ", IN (_worksheetAnalysis.analysis) _analysis "+
-               ", IN (_analysis.test) _test "+
-               ", IN (_test.method) _method "*/;
+               ", IN (_worksheetItem.worksheetAnalysis) _worksheetAnalysis "+
+               " LEFT JOIN _worksheet.instrument _instrument ";
 
         return from;
     }
