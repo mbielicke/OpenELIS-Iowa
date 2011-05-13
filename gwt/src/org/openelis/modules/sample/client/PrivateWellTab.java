@@ -219,7 +219,7 @@ public class PrivateWellTab extends Screen {
                         row = new TableDataRow(4);
                         data = list.get(i);
 
-                        row.key = data.getId();
+                        row.key = data.getName();
                         row.cells.get(0).value = data.getName();
                         row.cells.get(1).value = data.getAddress().getStreetAddress();
                         row.cells.get(2).value = data.getAddress().getCity();
