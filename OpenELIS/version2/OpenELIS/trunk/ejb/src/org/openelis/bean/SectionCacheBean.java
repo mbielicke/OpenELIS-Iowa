@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
@@ -81,14 +80,32 @@ public class SectionCacheBean implements SectionCacheLocal, SectionCacheRemote {
 
     public ArrayList<SectionViewDO> getList() throws Exception {
         ArrayList<SectionViewDO> list;
+        Element e;
         
         if (cache.getSize() == 0) {
             list = EJBFactory.getSection().fetchList();
             for (SectionViewDO data : list)
                 cache.put(new Element(data.getId(), data));
-            cache.put(new Element("orderedList", list));        
-        }
-        return (ArrayList<SectionViewDO>)cache.get("orderedList").getValue();
+            e = new Element("orderedList", list);
+            cache.put(e);        
+        } else {
+            /*
+             * It can happen that "cache" contains expired elements and one of
+             * those elements could be the one with the key "orderedList".
+             * If that's the case then getSize() will return a non-zero number
+             * because it takes into consiration both expired and alive elements.
+             * Thus we have to check to see if "orderedList" is alive before trying
+             * to call getValue() on it and if it's not (e == null), put a new 
+             * element with that key containing the latest data from the database in "cache".
+             */
+            e = cache.get("orderedList");
+            if (e == null) {                
+                list = EJBFactory.getSection().fetchList(); 
+                e = new Element("orderedList", list);
+                cache.put(e);
+            }
+        } 
+        return (ArrayList<SectionViewDO>)e.getValue();
     }
     
     public void evict() throws Exception {
