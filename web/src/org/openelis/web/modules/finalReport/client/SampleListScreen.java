@@ -27,7 +27,6 @@ package org.openelis.web.modules.finalReport.client;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
