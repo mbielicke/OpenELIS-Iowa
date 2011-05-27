@@ -70,7 +70,11 @@ import org.openelis.utils.Auditable;
                         "accessionNumber, revision, orderId, enteredDate, receivedDate," +
                         "receivedById, collectionDate, collectionTime, statusId, packageId," +
                         "clientReference, releasedDate)"
-                      + " from Sample where accessionNumber = :accession")})
+                      + " from Sample where accessionNumber = :accession"),                     
+    @NamedQuery( name = "Sample.FetchProjectsForOrganizations",
+                query = "select new org.openelis.domain.IdNameVO(p.id, p.description)" 
+                     + " from Sample s, SampleOrganization so, SampleProject sp, Project p, Organization o"
+                     + " where s.id = so.sampleId and o.id in (:organizationIds) and so.organizationId = o.id and sp.sampleId = s.id and sp.projectId = p.id")})
                       
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportBatch",     
@@ -115,35 +119,35 @@ import org.openelis.utils.Auditable;
     @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportSingle",     
                 query = "select s.id s_id, so.organization_id o_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so"
-		  			  + " where s.id = :sampleId and s.domain != 'W' and s.status_id not in (select id from dictionary where system_name = 'sample_error') and si.sample_id = s.id and a.sample_item_id = si.id and"  
-		  			  + " a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
-		  			  + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name in ('org_report_to', 'org_second_report_to'))"
-		  			  + " union "
-		  			  + "select s.id s_id, spw.organization_id o_id"
-		  			  + " from sample s, sample_private_well spw, sample_item si, analysis a"
-		  			  + " where s.id = :sampleId and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name = 'sample_error') and spw.sample_id = s.id and"
-		  			  + " si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y'"
-		  			  + " union "
-		  			  + "select s.id s_id, so.organization_id o_id"
-		  			  + " from sample s, sample_private_well spw, sample_item si, analysis a, sample_organization so"
-		  			  + " where s.id = :sampleId and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name = 'sample_error') and spw.sample_id = s.id and"
-		  			  + " si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
-		  			  + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_second_report_to')"
-		  			  + " order by s_id , o_id",
-	  			  resultSetMapping="Sample.FetchSamplesForFinalReportSingleMapping"),              
+                      + " where s.id = :sampleId and s.domain != 'W' and s.status_id not in (select id from dictionary where system_name = 'sample_error') and si.sample_id = s.id and a.sample_item_id = si.id and"  
+                      + " a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
+                      + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name in ('org_report_to', 'org_second_report_to'))"
+                      + " union "
+                      + "select s.id s_id, spw.organization_id o_id"
+                      + " from sample s, sample_private_well spw, sample_item si, analysis a"
+                      + " where s.id = :sampleId and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name = 'sample_error') and spw.sample_id = s.id and"
+                      + " si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y'"
+                      + " union "
+                      + "select s.id s_id, so.organization_id o_id"
+                      + " from sample s, sample_private_well spw, sample_item si, analysis a, sample_organization so"
+                      + " where s.id = :sampleId and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name = 'sample_error') and spw.sample_id = s.id and"
+                      + " si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
+                      + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_second_report_to')"
+                      + " order by s_id , o_id",
+                  resultSetMapping="Sample.FetchSamplesForFinalReportSingleMapping"),              
     @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportPreview",     
                 query = "select s.id s_id, so.organization_id o_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so"
                       + " where s.id = :sampleId and s.domain != 'W' and si.sample_id = s.id and a.sample_item_id = si.id and"  
-		  			  + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y' and"
-		  			  + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_report_to')"
-		  			  + " union "
-		  			  + "select s.id s_id, spw.organization_id o_id"
-		  			  + " from sample s, sample_private_well spw, sample_item si, analysis a"
-		  			  + " where s.id = :sampleId and s.domain = 'W' and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
-		  			  + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y'"
-		  			  + " order by s_id , o_id",
-	  			  resultSetMapping="Sample.FetchSamplesForFinalReportPreviewMapping")})              
+                      + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y' and"
+                      + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_report_to')"
+                      + " union "
+                      + "select s.id s_id, spw.organization_id o_id"
+                      + " from sample s, sample_private_well spw, sample_item si, analysis a"
+                      + " where s.id = :sampleId and s.domain = 'W' and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
+                      + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y'"
+                      + " order by s_id , o_id",
+                  resultSetMapping="Sample.FetchSamplesForFinalReportPreviewMapping")})              
 
 @SqlResultSetMappings({
     @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportBatchMapping",
