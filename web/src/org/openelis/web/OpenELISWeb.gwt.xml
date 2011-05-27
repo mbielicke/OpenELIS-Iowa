@@ -32,25 +32,25 @@ UIRF Software License are applicable instead of those above.
     <inherits name="com.google.gwt.i18n.I18N"/> 
     <inherits name="org.openelis.gwt.Widget"/>
     <inherits name="org.openelis.gwt.Common"/>
-    <inherits name="org.openelis.gwt.Screen"/>
-         
+    <inherits name="org.openelis.gwt.Screen"/> 
+             
     <inherits name='com.allen_sauer.gwt.dnd.gwt-dnd'/> 
     <inherits name="org.openelis.web.modules.main.Main"/>
     <inherits name="org.openelis.web.modules.home.Home"/>
+    <inherits name="org.openelis.Cache"/>
     <inherits name="org.openelis.modules.report.Report"/>
+    <inherits name="org.openelis.web.modules.finalReport.FinalReport"/>
     <inherits name="org.openelis.ELISCommon"/>   
+    <source path = "util"/>
 	<stylesheet src="CSS/web.css"/>
 	<!-- Specify the app entry point class.                   -->
 	<entry-point class='org.openelis.web.modules.main.client.OpenELISWeb'/>
 	
-	 <!-- 
-	<set-property name="user.agent" value="gecko1_8" />
-    --> 
-        <!-- <extend-property name="locale" values="cn"/>
+	<!-- <extend-property name="locale" values="cn"/>
     <extend-property name="locale" values="fa"/>
     <extend-property name="locale" values="sp"/> -->
     
     <define-property name="props" values="org_openelis_web_modules_main_server_constants_OpenELISConstants"/>
     <set-property name="props" value="org_openelis_web_modules_main_server_constants_OpenELISConstants"/>
-        
+    <set-property name="user.agent" value="gecko1_8" />   
 </module>
