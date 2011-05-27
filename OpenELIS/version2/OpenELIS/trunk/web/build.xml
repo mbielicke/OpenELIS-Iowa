@@ -5,9 +5,9 @@
 
 	<path id="project.class.path">
 		<pathelement location="war/WEB-INF/classes" />
-		<pathelement location="../OpenELIS-GWT-Trunk/war/WEB-INF/classes"/>
-		<pathelement location="../OpenELIS-Lib-Trunk/bin" />
-		<pathelement location="../OpenELIS-Common-Trunk/bin" />
+		<pathelement location="../OpenELIS-GWT/war/WEB-INF/classes"/>
+		<pathelement location="../OpenELIS-Lib/bin" />
+		<pathelement location="../OpenELIS-Common/bin" />
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
 		<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
 		<fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
@@ -38,11 +38,11 @@
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
         <pathelement location="src"/>
-        <pathelement location="../OpenELIS-Lib-Trunk/src"/>
-      	<pathelement location="../OpenELIS-GWT-Trunk/src"/>
-        <pathelement location="../OpenELIS-Common-Trunk/src"/>
-		<pathelement location="../OpenELIS-Lib-Trunk/lib/gwt-dnd-3.0.0.jar" />
-		<pathelement location="../OpenELIS-Lib-Trunk/lib/gwtupload-0.6-SNAPSHOT.jar" />
+        <pathelement location="../OpenELIS-Lib/src"/>
+      	<pathelement location="../OpenELIS-GWT/src"/>
+        <pathelement location="../OpenELIS-Common/src"/>
+		<pathelement location="../OpenELIS-Lib/lib/gwt-dnd-3.0.0.jar" />
+		<pathelement location="../OpenELIS-Lib/lib/gwtupload-0.6-SNAPSHOT.jar" />
         <path refid="project.class.path"/>
       </classpath>
       <!-- add jvmarg -Xss16M or similar if you see a StackOverflowError -->
@@ -77,7 +77,7 @@
 	</jar>
 	<delete file="build/openelis-common.jar" />
 	<jar jarfile="build/openelis-common.jar">
-		<fileset dir="../OpenELIS-Common-Trunk/bin">
+		<fileset dir="../OpenELIS-Common/bin">
 			<include name="org/openelis/constants/*" />
 			<include name="org/openelis/domain/*.class" />
 			<include name="org/openelis/exception/*.class" />
@@ -91,12 +91,13 @@
 	</jar>
 	<delete file="build/openelis-lib.jar" />
 	<jar jarfile="build/openelis-lib.jar">
-		<fileset dir="../OpenELIS-Lib-Trunk/bin" />
+		<fileset dir="../OpenELIS-Lib/bin" />
 	</jar>
   	<delete file="build/openelis-gwt.jar" />
   	<jar jarfile="build/openelis-gwt.jar">
-  	    <fileset dir="../OpenELIS-GWT-Trunk/war/WEB-INF/classes">
+  	    <fileset dir="../OpenELIS-GWT/war/WEB-INF/classes">
   		   <include name="org/openelis/modules/report/server/*.class"/>
+  	       <include name="org/openelis/server/*.class"/>
   	    </fileset>
   	</jar>
 	<delete file="build/openelisweb.war" />
