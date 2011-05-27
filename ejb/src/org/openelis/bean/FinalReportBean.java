@@ -488,7 +488,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
         list = new ArrayList<QueryData>();
         fRel = fCol = fAcc = null;
-       
+
         for (i = 0; i < fields.size(); i++ ) {
             field = fields.get(i);
             if ( (field.key).equals("RELEASED_FROM")) {
@@ -556,7 +556,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             } else if ( (field.key).equals("PROJECT_CODE")) {
                 field.key = SampleWebMeta.getProjectId();
                 list.add(field);
-            } else if ( (field.key).equals(SampleWebMeta.getSampleOrgOrganizationId())) {                
+            } else if ( (field.key).equals(SampleWebMeta.getSampleOrgOrganizationId())) {
                 list.add(field);
             }
         }
@@ -568,22 +568,22 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         String str;
         QueryData field;
         ArrayList<IdNameVO> resultList;
-        String [] orgIds;
+        String[] orgIds;
         ArrayList<Integer> organizationId;
-        
-        orgIds=null;
+
+        orgIds = null;
         organizationId = new ArrayList<Integer>();
-        
+
         for (i = 0; i < paramList.size(); i++ ) {
             field = paramList.get(i);
             str = field.query;
             orgIds = str.split("\\|");
         }
-        for(int j = 0;j<orgIds.length;j++)
+        for (int j = 0; j < orgIds.length; j++ )
             organizationId.add(Integer.parseInt(orgIds[j]));
         resultList = sampleBean.fetchProjectsForOrganizations(organizationId);
-        
-        return resultList;   
+
+        return resultList;
     }
     
     public ReportStatus runReportForWeb(ArrayList<QueryData> paramList) throws Exception {
@@ -593,13 +593,13 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         OrganizationPrint orgPrint;
         SampleEnvironmentalWebVO voData;
         String sampleList;
-        ArrayList<Integer>sampleIds, samIds;
+        ArrayList<Integer> sampleIds, samIds;
         String[] selectedVoStr;
         HashMap<Integer, ArrayList<Integer>> map;
         ArrayList<OrganizationPrint> orgPrintList;
         ArrayList<SampleEnvironmentalWebVO> retrievedList;
         Iterator<Integer> orgIter;
-        
+
         samIds = new ArrayList<Integer>();
         /*
          * push status into session so we can query it while the report is
@@ -608,19 +608,19 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         status = new ReportStatus();
         status.setMessage("Initializing report");
         session.setAttribute("FinalReport", status);
-        
+
         field = paramList.get(0);
         selectedVoStr = field.query.split(",");
-        
-        sampleList=null;
+
+        sampleList = null;
         map = new HashMap<Integer, ArrayList<Integer>>();
         retrievedList = (ArrayList<SampleEnvironmentalWebVO>)session.getAttribute("sampleEnvlist");
-        
+
         for (int j = 0; j < selectedVoStr.length; j++ ) {
             voData = retrievedList.get(Integer.parseInt(selectedVoStr[j]));
             orgId = voData.getOrganizationId();
             samId = voData.getId();
-            if(map.get(orgId)==null){
+            if (map.get(orgId) == null) {
                 sampleIds = new ArrayList<Integer>();
                 sampleIds.add(samId);
                 map.put(orgId, sampleIds);
@@ -629,39 +629,37 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 sampleIds.add(samId);
                 map.put(orgId, sampleIds);
             }
-            
         }
-        
+
         orgPrintList = new ArrayList<OrganizationPrint>();
         orgIter = map.keySet().iterator();
         while (orgIter.hasNext()) {
             orgId = orgIter.next();
             samIds = map.get(orgId);
-            if(samIds.size() > 1){   
+            if (samIds.size() > 1) {
                 sampleList = "in (";
-                for(int i = 0;i<samIds.size();i++)                 
+                for (int i = 0; i < samIds.size(); i++ )
                     sampleList += samIds.get(i) + ",";
-                sampleList = sampleList.substring(0, sampleList.length()-1)+")";
-            }
-            else if(samIds.size()==1)
+                sampleList = sampleList.substring(0, sampleList.length() - 1) + ")";
+            } else if (samIds.size() == 1)
                 sampleList = " = " + samIds.get(0);
-            try{
+            try {
                 orgPrint = null;
-                
+
                 orgPrint = new OrganizationPrint();
                 orgPrint.setOrganizationId(orgId);
                 orgPrint.setSampleIds(sampleList);
                 orgPrintList.add(orgPrint);
-                
+
             } catch (Exception e) {
                 e.printStackTrace();
                 throw e;
             }
-            
-        }       
+        }
 
         if (orgPrintList.size() == 0)
-            throw new InconsistencyException("Final report  "+" has incorrect status,\nmissing information, or has no analysis ready to be printed");
+            throw new InconsistencyException("Final report  "
+                                             + " has incorrect status,\nmissing information, or has no analysis ready to be printed");
 
         print(orgPrintList, "R", false, status, "");
 
