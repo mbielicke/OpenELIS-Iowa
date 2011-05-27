@@ -88,7 +88,7 @@ public class OpenELISWebService {
             locale = (String)SessionManager.getSession().getAttribute("locale");
         if (locale == null)
             locale = "en";
-        resource = UTFResource.getBundle("org.openelis.constants.OpenELISConstants", new Locale(locale));
+        resource = UTFResource.getBundle("org.openelis.web.modules.main.server.constants.OpenELISConstants", new Locale(locale));
         
         consts = new HashMap<String, String>();
         keys = resource.getKeys();
