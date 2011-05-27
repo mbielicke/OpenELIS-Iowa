@@ -11,11 +11,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.JRExporter;
@@ -29,9 +33,11 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OptionListItem;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleEnvironmentalWebVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
@@ -39,14 +45,17 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SessionCacheLocal;
+import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.report.finalreport.OrganizationPrint;
 import org.openelis.report.finalreport.StatsDataSource;
+import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.EJBFactory;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
@@ -70,11 +79,30 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 	@EJB
 	private AnalysisLocal analysisBean;
 
+    @EJB
+    private DictionaryLocal dictionary;
+    
 	@Resource
 	private SessionContext ctx;
+	
+	@PersistenceContext(unitName = "openelis")
+    private EntityManager                      manager;
 
 	private static int UNFOLDABLE_PAGE_COUNT = 6;
+	
+	private static Integer organizationTypeId;
 
+    private static final SampleWebMeta meta = new SampleWebMeta();
+    
+    @PostConstruct
+    public void init() {        
+            try {
+                organizationTypeId = dictionary.fetchBySystemName("org_report_to").getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }    
+    
 	/**
 	 * Returns the prompt for a single re-print
 	 */
@@ -419,7 +447,227 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
 		return status;
 	}
+	
+	public ArrayList<SampleEnvironmentalWebVO> getSampleListForEnvironmental(ArrayList<QueryData> fields) throws Exception {
+	    
+	    Query query;
+        QueryBuilderV2 builder;
+        ArrayList<QueryData> list;
+        List finalList;
+        ArrayList<SampleEnvironmentalWebVO> returnList; 
+        
+        returnList=null;
+	   
+        list = createWhereFromParamFields(fields);
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.SampleEnvironmentalWebVO(" + SampleWebMeta.getId() + ", " +
+                          SampleWebMeta.getAccessionNumber() +", "+ SampleWebMeta.getSampleOrgOrganizationId() +", "+
+                          SampleWebMeta.getCollectionDate() +", "+SampleWebMeta.getCollectionTime() +", "+ SampleWebMeta.getEnvLocation()+", "+
+                          SampleWebMeta.getEnvCollector() +", "+SampleWebMeta.getStatusId()+", "+
+                          SampleWebMeta.getLocationAddrCity()+ ") ");
+        builder.constructWhere(list);
+        builder.addWhere(SampleWebMeta.getEnvSampleId() + "=" +SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getSampleOrgTypeId()+ "=" + organizationTypeId);
+        builder.setOrderBy(SampleWebMeta.getAccessionNumber());
 
+        query = manager.createQuery(builder.getEJBQL());
+        builder.setQueryParams(query, list);
+        finalList = query.getResultList();
+        if (finalList.isEmpty())
+            throw new NotFoundException();
+        returnList = DataBaseUtil.toArrayList(finalList);
+        session.setAttribute("sampleEnvlist",returnList);
+        return returnList;        
+	}
+	
+    private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) {
+        int i;
+        QueryData field, fRel, fCol, fAcc;
+        ArrayList<QueryData> list;
+
+        list = new ArrayList<QueryData>();
+        fRel = fCol = fAcc = null;
+       
+        for (i = 0; i < fields.size(); i++ ) {
+            field = fields.get(i);
+            if ( (field.key).equals("RELEASED_FROM")) {
+                if (fRel == null) {
+                    fRel = field;
+                    fRel.key = SampleWebMeta.getReleasedDate();
+                } else {
+                    fRel.query = field.query + ".." + fRel.query;
+                    list.add(fRel);
+                }
+            } else if ( (field.key).equals("RELEASED_TO")) {
+                if (fRel == null) {
+                    fRel = field;
+                    fRel.key = SampleWebMeta.getReleasedDate();
+                } else {
+                    fRel.query = fRel.query + ".." + field.query;
+                    list.add(fRel);
+                }
+
+            } else if ( (field.key).equals("COLLECTED_FROM")) {
+                if (fCol == null) {
+                    fCol = field;
+                    fCol.key = SampleWebMeta.getCollectionDate();
+                } else {
+                    fCol.query = field.query + ".." + fCol.query;
+                    list.add(fCol);
+                }
+            } else if ( (field.key).equals("COLLECTED_TO")) {
+                if (fCol == null) {
+                    fCol = field;
+                    fCol.key = SampleWebMeta.getCollectionDate();
+                } else {
+                    fCol.query = fCol.query + ".." + field.query;
+                    list.add(fCol);
+                }
+
+            } else if ( (field.key).equals("ACCESSION_FROM")) {
+                if (fAcc == null) {
+                    fAcc = field;
+                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                } else {
+                    fAcc.query = field.query + ".." + fAcc.query;
+                    list.add(fAcc);
+                }
+            } else if ( (field.key).equals("ACCESSION_TO")) {
+                if (fAcc == null) {
+                    fAcc = field;
+                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                } else {
+                    fAcc.query = fAcc.query + ".." + field.query;
+                    list.add(fAcc);
+                }
+            } else if ( (field.key).equals("COLLECTOR_NAME")) {
+                field.key = SampleWebMeta.getEnvCollector();
+                list.add(field);
+            } else if ( (field.key).equals("CLIENT_REFERENCE")) {
+                field.key = SampleWebMeta.getClientReference();
+                list.add(field);
+            } else if ( (field.key).equals("COLLECTION_SITE")) {
+                field.key = SampleWebMeta.getEnvLocation();
+                list.add(field);
+            } else if ( (field.key).equals("COLLECTION_TOWN")) {
+                field.key = SampleWebMeta.getLocationAddrCity();
+                list.add(field);
+            } else if ( (field.key).equals("PROJECT_CODE")) {
+                field.key = SampleWebMeta.getProjectId();
+                list.add(field);
+            } else if ( (field.key).equals(SampleWebMeta.getSampleOrgOrganizationId())) {                
+                list.add(field);
+            }
+        }
+        return list;
+    }
+	
+    public ArrayList<IdNameVO> getProjectList(ArrayList<QueryData> paramList) throws Exception {
+        int i;
+        String str;
+        QueryData field;
+        ArrayList<IdNameVO> resultList;
+        String [] orgIds;
+        ArrayList<Integer> organizationId;
+        
+        orgIds=null;
+        organizationId = new ArrayList<Integer>();
+        
+        for (i = 0; i < paramList.size(); i++ ) {
+            field = paramList.get(i);
+            str = field.query;
+            orgIds = str.split("\\|");
+        }
+        for(int j = 0;j<orgIds.length;j++)
+            organizationId.add(Integer.parseInt(orgIds[j]));
+        resultList = sampleBean.fetchProjectsForOrganizations(organizationId);
+        
+        return resultList;   
+    }
+    
+    public ReportStatus runReportForWeb(ArrayList<QueryData> paramList) throws Exception {
+        QueryData field;
+        Integer orgId, samId;
+        ReportStatus status;
+        OrganizationPrint orgPrint;
+        SampleEnvironmentalWebVO voData;
+        String sampleList;
+        ArrayList<Integer>sampleIds, samIds;
+        String[] selectedVoStr;
+        HashMap<Integer, ArrayList<Integer>> map;
+        ArrayList<OrganizationPrint> orgPrintList;
+        ArrayList<SampleEnvironmentalWebVO> retrievedList;
+        Iterator<Integer> orgIter;
+        
+        samIds = new ArrayList<Integer>();
+        /*
+         * push status into session so we can query it while the report is
+         * running
+         */
+        status = new ReportStatus();
+        status.setMessage("Initializing report");
+        session.setAttribute("FinalReport", status);
+        
+        field = paramList.get(0);
+        selectedVoStr = field.query.split(",");
+        
+        sampleList=null;
+        map = new HashMap<Integer, ArrayList<Integer>>();
+        retrievedList = (ArrayList<SampleEnvironmentalWebVO>)session.getAttribute("sampleEnvlist");
+        
+        for (int j = 0; j < selectedVoStr.length; j++ ) {
+            voData = retrievedList.get(Integer.parseInt(selectedVoStr[j]));
+            orgId = voData.getOrganizationId();
+            samId = voData.getId();
+            if(map.get(orgId)==null){
+                sampleIds = new ArrayList<Integer>();
+                sampleIds.add(samId);
+                map.put(orgId, sampleIds);
+            } else {
+                sampleIds = map.get(orgId);
+                sampleIds.add(samId);
+                map.put(orgId, sampleIds);
+            }
+            
+        }
+        
+        orgPrintList = new ArrayList<OrganizationPrint>();
+        orgIter = map.keySet().iterator();
+        while (orgIter.hasNext()) {
+            orgId = orgIter.next();
+            samIds = map.get(orgId);
+            if(samIds.size() > 1){   
+                sampleList = "in (";
+                for(int i = 0;i<samIds.size();i++)                 
+                    sampleList += samIds.get(i) + ",";
+                sampleList = sampleList.substring(0, sampleList.length()-1)+")";
+            }
+            else if(samIds.size()==1)
+                sampleList = " = " + samIds.get(0);
+            try{
+                orgPrint = null;
+                
+                orgPrint = new OrganizationPrint();
+                orgPrint.setOrganizationId(orgId);
+                orgPrint.setSampleIds(sampleList);
+                orgPrintList.add(orgPrint);
+                
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw e;
+            }
+            
+        }       
+
+        if (orgPrintList.size() == 0)
+            throw new InconsistencyException("Final report  "+" has incorrect status,\nmissing information, or has no analysis ready to be printed");
+
+        print(orgPrintList, "R", false, status, "");
+
+        return status;
+    }
+    
 	private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
 	                   boolean forMailing, ReportStatus status, String printer) throws Exception {
 		int i, n;
