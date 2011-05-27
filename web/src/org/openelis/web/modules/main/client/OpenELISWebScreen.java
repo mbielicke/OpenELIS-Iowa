@@ -35,8 +35,8 @@ import org.openelis.gwt.widget.IconContainer;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.web.LinkButton;
 import org.openelis.gwt.widget.web.WebWindow;
-import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
+import org.openelis.web.modules.finalReport.client.FinalReportEnvScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -159,13 +159,13 @@ public class OpenELISWebScreen extends Screen {
 		
 		linksPanel = (AbsolutePanel)def.getWidget("links");
 
-	    finalReport = new LinkButton("finalReportIcon","Final Report");
+	    finalReport = new LinkButton("finalReportIcon","Final Report", "", 60, 60);
 	    finalReport.setSize("60px", "60px");
 		finalReport.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 
 				try {
-					FinalReportScreen screen =  new FinalReportScreen();
+					FinalReportEnvScreen screen =  new FinalReportEnvScreen();
 					screen.setStyleName("WhiteContentPanel");
 					OpenELISWebScreen.setScreen(screen, "Final Report", "finalReport");
 				}catch(Exception e) {
@@ -177,8 +177,7 @@ public class OpenELISWebScreen extends Screen {
 		finalReport.addStyleName("webButton");
 		linksPanel.add(finalReport);
 		
-		testReport = new LinkButton("testReportIcon","Test Report");
-		testReport.setSize("60px", "60px");
+		testReport = new LinkButton("testReportIcon","Test Report","",60, 60);
 		testReport.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				try {
