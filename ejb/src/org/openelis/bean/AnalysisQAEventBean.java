@@ -77,6 +77,20 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
+    public ArrayList<AnalysisQaEventViewDO> fetchExternalByAnalysisId(Integer analysisId) throws Exception {
+        Query query;
+        List returnList;
+        
+        query = manager.createNamedQuery("AnalysisQaevent.FetchExternalByAnalysisId");
+        query.setParameter("id", analysisId);
+        returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
+    
     public AnalysisQaEventViewDO add(AnalysisQaEventViewDO data) {
         AnalysisQaevent entity;
         

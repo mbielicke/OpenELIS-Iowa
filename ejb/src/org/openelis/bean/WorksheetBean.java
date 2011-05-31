@@ -176,8 +176,8 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         ArrayList<AnalysisViewDO>       waList;
         ArrayList<WorksheetViewDO>      list;
         HashMap<String, AnalysisViewDO> analysisMap;
-        SystemUserVO                    user;
         AnalysisViewDO                  aVDO;
+        SystemUserVO                    user;
         WorksheetAnalysisManager        waManager;
         WorksheetItemManager            wiManager;
         WorksheetManager                wManager;

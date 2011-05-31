@@ -32,7 +32,12 @@ import org.openelis.utils.Auditable;
                query = "select new org.openelis.domain.AnalysisQaEventViewDO(aq.id, aq.analysisId, aq.qaeventId, " +
                        "aq.typeId, aq.isBillable, q.name, q.reportingText)"
                      + " from AnalysisQaevent aq left join aq.qaEvent q left join aq.dictionary d"
-                     + " where aq.analysisId = :id and d.systemName = 'qaevent_internal' order by aq.id")})
+                     + " where aq.analysisId = :id and d.systemName = 'qaevent_internal' order by aq.id"),
+   @NamedQuery( name = "AnalysisQaevent.FetchExternalByAnalysisId",
+               query = "select new org.openelis.domain.AnalysisQaEventViewDO(aq.id, aq.analysisId, aq.qaeventId, " +
+                       "aq.typeId, aq.isBillable, q.name, q.reportingText)"
+                     + " from AnalysisQaevent aq left join aq.qaEvent q left join aq.dictionary d"
+                     + " where aq.analysisId = :id and d.systemName != 'qaevent_internal' order by aq.id")})
 @Entity
 @Table(name = "analysis_qaevent")
 @EntityListeners( {AuditUtil.class})

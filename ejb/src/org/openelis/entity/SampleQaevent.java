@@ -30,7 +30,11 @@ import org.openelis.utils.Auditable;
    @NamedQuery( name = "SampleQaevent.FetchInternalBySampleId",
                query = "select new org.openelis.domain.SampleQaEventViewDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable, q.name, q.reportingText)"
                      + " from SampleQaevent sq left join sq.qaEvent q left join sq.dictionary d"
-                     + " where sq.sampleId = :id and d.systemName = 'qaevent_internal' order by sq.id")})
+                     + " where sq.sampleId = :id and d.systemName = 'qaevent_internal' order by sq.id"),
+   @NamedQuery( name = "SampleQaevent.FetchExternalBySampleId",
+               query = "select new org.openelis.domain.SampleQaEventViewDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable, q.name, q.reportingText)"
+                     + " from SampleQaevent sq left join sq.qaEvent q left join sq.dictionary d"
+                     + " where sq.sampleId = :id and d.systemName != 'qaevent_internal' order by sq.id")})
 @Entity 
 @Table(name = "sample_qaevent")
 @EntityListeners( {AuditUtil.class})
