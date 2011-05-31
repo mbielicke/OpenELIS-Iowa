@@ -1,26 +1,111 @@
+.AppBackground {
+    background: url("../Images/desktop.jpg");
+}
+.WhiteContentPanel{
+    margin:6px;
+    background:url("../Images/gray.png");
+}
+.WelcomeLogout{
+    height:22px;
+    padding:6px;
+    background:url("../Images/title.png") no-repeat 6px 6px;    
+}
+.crumbline {
+    height:14px;
+    margin:0 6px 0 6px;
+    padding:8px;
+    border:1px solid white;
+    background:url("../Images/checkers.png");
+}
+.webButton {
+    cursor:pointer;
+    background:url("../Images/gray.png");
+    height:56px;
+}
+.Prompt{
+    color:white;
+}
+.ConfirmWindow .middleRight {
+    background:none;
+}
+.ConfirmWindow .middleRightInner{
+    margin-top:0;
+}
+.ConfirmWindow .middleCenterInner {
+    padding:0;
+}
+.ConfirmWindow .middleLeft {
+    height: 30px;
+}
+.ErrorWindow .middleRightInner{
+    background: transparent url("../Images/popupright-y.png") top repeat-y;
+    height:21px;
+    margin-top:0;
+}
+.ErrorWindow .middleRight {
+    background:none;
+}
+.ErrorWindow .ScreenLabel{
+    padding:4px;
+}
+.popupContent{
+    margin:-44px 0 0 54px;
+}
+.HomeText{
+    color:white;
+    font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+	font-size : 12px;
+	padding-left:4px;
+}
 .webFlowPanel {
 	display :inline;
 }
 
-.webButton {
-	
+.homeIcon, .finalReportIcon, .changePasswordIcon, .webTestIcon, .requestFormIcon, .statusReportIcon, .turnaroundIcon,
+.onholdReportIcon, .caseManagementIcon, .notificationPrefIcon, .reportableIcon, .dataDumpIcon{
+	height : 40px;
+	width : 40px;
 }
-.webTestIcon {
-	height : 60px;
-	width : 60px;
-	background:transparent url(../Images/test.png) no-repeat scroll center;
+.homeIcon{
+	background:url(../Images/house.png) no-repeat center center;
 }
-
+.caseManagementIcon{
+	background:url(../Images/briefcase.png) no-repeat center center;
+}
+.reportableIcon{
+	background:url(../Images/bug.png) no-repeat center center;
+}
+.onholdReportIcon{
+	background:url(../Images/chart_bar.png) no-repeat center center;
+}
+.dataDumpIcon{
+	background:url(../Images/chart_pie.png) no-repeat center center;
+}
+.turnaroundIcon{
+	background:url(../Images/chart_curve.png) no-repeat center center;
+}
+.statusReportIcon{
+	background:url(../Images/chart_line.png) no-repeat center center;
+}
+.notificationPrefIcon{
+	background:url(../Images/bell.png) no-repeat center center;
+}
+.homeIcon {
+	background:url(../Images/house.png) no-repeat center center;
+}
+.requestFormIcon{
+	background:url(../Images/application_form.png) no-repeat center center;	
+}
+.finalReportIcon{
+	background:url(../Images/report.png) no-repeat center center;
+}
+.changePasswordIcon{
+    background:url(../Images/lock_edit.png) no-repeat center center;}
 .webIPodIcon {
-	height : 60px;
-	width : 60px;
-	background:transparent url(../Images/ipod.png) no-repeat scroll center;
+	background:transparent url(../Images/ipod.png) no-repeat scroll center center;
 }
-
 .reportIcon {
-	height : 60px;
-	width : 60px;
-	background:transparent url(../Images/report.png) no-repeat scroll center;
+	background:transparent url(../Images/report.png) no-repeat scroll center center;
 }
 
 
@@ -32,33 +117,17 @@
 
 .menuLabel {
 	font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
-	font-size : 12px;
+	font-size : 10px;
 	color:white;
 }
-
 .clickable {
 	text-decoration : underline;
-	cursor : pointer;	
+	cursor : pointer;
 }
-
-.CrumbLine {
-	height:30px;
-    width:100%;
-    background:black url(../Images/topmenubg.gif) repeat-x;
-}
-
 .HomeContainer {
 	width : 60px;
 	height : 30px;
-	border-right :1px solid grey;
-}
-	
-
-.homeIcon {
-	height : 20px;
-	width : 20px;
-	background:url(../Images/house.png) no-repeat center;
-	margin-left : 15px;	
+	border-right :1px solid gray;
 }
 
 .divider {
@@ -68,5 +137,5 @@
 }
 
 .categories {
-	border-right: 1px solid grey;
+	border-right: 1px solid gray;
 }
