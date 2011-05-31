@@ -87,12 +87,12 @@
                   </header>
                   <leaf key="category">
                     <col>
-                      <label />
+                      <label field="String"/>
                     </col>
                   </leaf>
                   <leaf key="note">
                     <col>
-                      <label />
+                      <label field="String"/>
                     </col>
                   </leaf>
                 </tree>

@@ -140,16 +140,16 @@ UIRF Software License are applicable instead of those above.
               <calendar begin="0" end="4" maxValue="0" pattern="{resource:getString($constants,'dateTimePattern')}"/>
             </col>
             <col width="160" header="{resource:getString($constants,'test')}">
-              <label />
+              <label field="String"/>
             </col>
             <col width="150" header="{resource:getString($constants,'method')}">
-              <label />
+              <label field="String"/>
             </col>
             <col width="150" header="{resource:getString($constants,'sampleType')}">
-              <label />
+              <label field="String"/>
             </col>
             <col width="80" header="{resource:getString($constants,'tubeNum')}">
-              <label />
+              <label field="String"/>
             </col>
             </table>
              <widget style="TableButtonFooter">

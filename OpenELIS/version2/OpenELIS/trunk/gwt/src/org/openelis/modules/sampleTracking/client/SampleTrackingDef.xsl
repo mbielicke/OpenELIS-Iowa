@@ -172,23 +172,23 @@ UIRF Software License are applicable instead of those above.
                   </header>
                   <leaf key="sample">
                     <col>
-                      <label />
+                      <label field="Integer"/>
                     </col>
                     <col>
-                       <label />
+                       <label field="String"/>
                     </col>
                   </leaf>
                   <leaf key="sampleItem">
                     <col>
-                      <label />
+                      <label field="String"/>
                     </col>
                     <col>
-                       <label/>
+                       <label field="String"/>
                     </col>
                   </leaf>
                   <leaf key="analysis">
                     <col>
-                      <label />
+                      <label field="String"/>
                     </col>
                     <col>
                        <dropdown width="110" case="LOWER" popWidth="110" field="Integer" />
@@ -196,27 +196,27 @@ UIRF Software License are applicable instead of those above.
                   </leaf>
                   <leaf key="storage">
                     <col>
-                      <label />
+                      <label field="String"/>
                     </col>
                   </leaf>
                   <leaf key="qaevent">
                     <col>
-                      <label />
+                      <label field="String"/>
                     </col>
                   </leaf>
                   <leaf key="note">
                     <col>
-                      <label />
+                      <label field="String"/>
                     </col>
                   </leaf>
                   <leaf key="auxdata">
                     <col>
-                      <label />
+                      <label field="String"/>
                     </col>
                   </leaf>
                   <leaf key="result">
                     <col>
-                      <label />
+                      <label field="String"/>
                     </col>
                   </leaf>
                 </tree>
