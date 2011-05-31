@@ -76,6 +76,20 @@ public class SampleQAEventBean implements SampleQAEventLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
 
+    public ArrayList<SampleQaEventViewDO> fetchExternalBySampleId(Integer sampleId) throws Exception {
+        Query query;
+        List returnList;
+
+        query = manager.createNamedQuery("SampleQaevent.FetchExternalBySampleId");
+        query.setParameter("id", sampleId);
+        returnList = query.getResultList();
+
+        if (returnList.size() == 0)
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(returnList);
+    }
+
     public void add(SampleQaEventViewDO data) {
         SampleQaevent entity;
 

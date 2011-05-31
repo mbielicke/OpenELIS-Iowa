@@ -90,7 +90,7 @@ public class NoteDataSource implements JRRewindableDataSource {
             // sample level qa events
             try {
                 tmp = new StringBuffer();
-                slist = sl.fetchBySampleId(sampleId);
+                slist = sl.fetchExternalBySampleId(sampleId);
                 for (SampleQaEventViewDO data: slist) {
                     if (overrideId.equals(data.getTypeId()))
                         sOverride = true;
@@ -113,7 +113,7 @@ public class NoteDataSource implements JRRewindableDataSource {
         } else {
             // analysis level qa events + sample qa override
             try {
-                alist = al.fetchByAnalysisId(analysisId);
+                alist = al.fetchExternalByAnalysisId(analysisId);
                 tmp = new StringBuffer();
                 for (AnalysisQaEventViewDO data: alist) {
                     if (overrideId.equals(data.getTypeId()))
