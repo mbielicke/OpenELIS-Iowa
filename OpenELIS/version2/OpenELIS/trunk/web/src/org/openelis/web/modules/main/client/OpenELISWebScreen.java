@@ -35,8 +35,8 @@ import org.openelis.gwt.widget.IconContainer;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.web.LinkButton;
 import org.openelis.gwt.widget.web.WebWindow;
+import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
-import org.openelis.web.modules.finalReport.client.FinalReportEnvScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -112,17 +112,8 @@ public class OpenELISWebScreen extends Screen {
 		screens = new HashMap<String,Screen>();
 		welcome = (Label<String>)def.getWidget("welcome");
 		logout = (Label<String>)def.getWidget("logout");
-		//title = (Label<String>)def.getWidget("title");
-		homeLink = (IconContainer)def.getWidget("home");
 		
 		content.add(window);
-		
-		homeLink.addClickHandler(new ClickHandler() {
-			@Override
-			public void onClick(ClickEvent event) {
-				gotoScreen("home");
-			}
-		});
 	
 		welcome.setText("Welcome "+systemUserPermission.getFirstName());
 		logout.addClickHandler(new ClickHandler() {
@@ -154,18 +145,27 @@ public class OpenELISWebScreen extends Screen {
 	 * based on their permissions.
 	 */
 	private void setLinks() {
-		LinkButton finalReport,testReport;
+		LinkButton finalReport,changePass,requestForms,statusReport,turnaround,dataDump,reportable,onhold,caseManagement,notifPref,homeLink;
 		AbsolutePanel linksPanel;
 		
 		linksPanel = (AbsolutePanel)def.getWidget("links");
+		
+		homeLink = new LinkButton("homeIcon",null,"Home",56,40);
+		homeLink.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				gotoScreen("home");
+			}
+		});
+		homeLink.addStyleName("webButton");
+		linksPanel.add(homeLink);
+		
 
-	    finalReport = new LinkButton("finalReportIcon","Final Report", "", 60, 60);
-	    finalReport.setSize("60px", "60px");
+	    finalReport = new LinkButton("finalReportIcon",null,"Final Report",56,40);
 		finalReport.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 
 				try {
-					FinalReportEnvScreen screen =  new FinalReportEnvScreen();
+					FinalReportScreen screen =  new FinalReportScreen();
 					screen.setStyleName("WhiteContentPanel");
 					OpenELISWebScreen.setScreen(screen, "Final Report", "finalReport");
 				}catch(Exception e) {
@@ -177,21 +177,149 @@ public class OpenELISWebScreen extends Screen {
 		finalReport.addStyleName("webButton");
 		linksPanel.add(finalReport);
 		
-		testReport = new LinkButton("testReportIcon","Test Report","",60, 60);
-		testReport.addClickHandler(new ClickHandler() {
+		changePass = new LinkButton("changePasswordIcon",null,"Change PassWord",56,40);
+		changePass.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				try {
-					TestReportScreen screen = new TestReportScreen();
-					screen.setStyleName("WhiteContentPanel");
-					OpenELISWebScreen.setScreen(screen, "Test Report", "testReport");
+					//TestReportScreen screen = new TestReportScreen();
+					//screen.setStyleName("WhiteContentPanel");
+					//OpenELISWebScreen.setScreen(screen, "Chan", "testReport");
 				}catch(Exception e) {
 					e.printStackTrace();
 					Window.alert(e.getMessage());
 				}
 			}
 		});
-		testReport.addStyleName("webButton");
-		linksPanel.add(testReport);		
+		changePass.addStyleName("webButton");
+		linksPanel.add(changePass);	
+		
+		requestForms = new LinkButton("requestFormIcon",null,"Request Forms",56,40);
+		requestForms.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					//TestReportScreen screen = new TestReportScreen();
+					//screen.setStyleName("WhiteContentPanel");
+					//OpenELISWebScreen.setScreen(screen, "Chan", "testReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		requestForms.addStyleName("webButton");
+		linksPanel.add(requestForms);
+		
+		statusReport = new LinkButton("statusReportIcon",null,"Sample Status Report",56,40);
+		statusReport.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					//TestReportScreen screen = new TestReportScreen();
+					//screen.setStyleName("WhiteContentPanel");
+					//OpenELISWebScreen.setScreen(screen, "Chan", "testReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		statusReport.addStyleName("webButton");
+		linksPanel.add(statusReport);
+		
+		turnaround = new LinkButton("turnaroundIcon",null,"Turnaround Report",56,40);
+		turnaround.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					//TestReportScreen screen = new TestReportScreen();
+					//screen.setStyleName("WhiteContentPanel");
+					//OpenELISWebScreen.setScreen(screen, "Chan", "testReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		turnaround.addStyleName("webButton");
+		linksPanel.add(turnaround);
+		
+		dataDump = new LinkButton("dataDumpIcon",null,"Data Dump Report",56,40);
+		dataDump.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					//TestReportScreen screen = new TestReportScreen();
+					//screen.setStyleName("WhiteContentPanel");
+					//OpenELISWebScreen.setScreen(screen, "Chan", "testReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		dataDump.addStyleName("webButton");
+		linksPanel.add(dataDump);	
+		
+		reportable = new LinkButton("reportableIcon",null,"Reportabel Disease",56,40);
+		reportable.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					//TestReportScreen screen = new TestReportScreen();
+					//screen.setStyleName("WhiteContentPanel");
+					//OpenELISWebScreen.setScreen(screen, "Chan", "testReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		reportable.addStyleName("webButton");
+		linksPanel.add(reportable);	
+		
+		onhold = new LinkButton("onholdReportIcon",null,"Onhold Report",56,40);
+		onhold.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					//TestReportScreen screen = new TestReportScreen();
+					//screen.setStyleName("WhiteContentPanel");
+					//OpenELISWebScreen.setScreen(screen, "Chan", "testReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		onhold.addStyleName("webButton");
+		linksPanel.add(onhold);	
+		
+		caseManagement = new LinkButton("caseManagementIcon",null,"Case Management",56,40);
+		caseManagement.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					//TestReportScreen screen = new TestReportScreen();
+					//screen.setStyleName("WhiteContentPanel");
+					//OpenELISWebScreen.setScreen(screen, "Chan", "testReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		caseManagement.addStyleName("webButton");
+		linksPanel.add(caseManagement);
+		
+		notifPref = new LinkButton("notificationPrefIcon",null,"Notification Preference",56,40);
+		notifPref.addClickHandler(new ClickHandler() {
+			public void onClick(ClickEvent event) {
+				try {
+					//TestReportScreen screen = new TestReportScreen();
+					//screen.setStyleName("WhiteContentPanel");
+					//OpenELISWebScreen.setScreen(screen, "Chan", "testReport");
+				}catch(Exception e) {
+					e.printStackTrace();
+					Window.alert(e.getMessage());
+				}
+			}
+		});
+		notifPref.addStyleName("webButton");
+		linksPanel.add(notifPref);	
 	}
 	
 	/**
@@ -203,8 +331,8 @@ public class OpenELISWebScreen extends Screen {
 	 */
 	public static void setScreen(Screen screen, String name, String key) {
 		window.setContent(screen);
-		screen.setWidth("100%");
-		screen.setHeight("100%");
+		//screen.setWidth("100%");
+		//screen.setHeight("100%");
 		History.newItem(key,false);
 		screens.put(key, screen);
 		screen.getDefinition().setName(name);
