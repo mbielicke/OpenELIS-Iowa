@@ -40,6 +40,8 @@ public class OpenELISWeb implements EntryPoint {
 	public void onModuleLoad() {
 		 try {
 			  RootPanel.get("main").add(new OpenELISWebScreen());
+			  RootPanel.get("main").setHeight("100%");
+			  RootPanel.get().setStyleName("AppBackground");
 		 }catch(Throwable e){
 		  	  e.printStackTrace();
 		  	  Window.alert("Unable to start app : "+e.getMessage());
