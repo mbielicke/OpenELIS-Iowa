@@ -183,7 +183,8 @@ UIRF Software License are applicable instead of those above.
                   </col>
                   <col key="{meta:getDictionaryRelatedEntryEntry()}" width="150" header="{resource:getString($constants,'relEntry')}">
                     <autoComplete width="130" field="Integer">
-                      <col width="200" />
+                      <col width="150" header="{resource:getString($constants,'entry')}"/>
+                      <col width="150" header="{resource:getString($constants,'category')}"/>
                     </autoComplete>
                   </col>
                 </table>

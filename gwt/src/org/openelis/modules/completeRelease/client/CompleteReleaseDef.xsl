@@ -156,7 +156,7 @@ UIRF Software License are applicable instead of those above.
             <AbsolutePanel />
           </tab>
 <!-- Sample deck -->
-          <tab tab="{meta:getAccessionNumber()},{meta:getClientReference()}" visible="false" text="Sample">
+          <tab tab="{meta:getAccessionNumber()},{meta:getClientReference()}" visible="false" text="{resource:getString($constants,'sample')}">
             <xsl:call-template name="SampleTab" />
           </tab>
 <!-- Environmental deck -->

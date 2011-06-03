@@ -59,7 +59,7 @@ import org.openelis.modules.panel.client.PanelScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
 import org.openelis.modules.project.client.ProjectScreen;
 import org.openelis.modules.provider.client.ProviderScreen;
-import org.openelis.modules.pws.client.PwsScreen;
+import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
@@ -82,6 +82,7 @@ import org.openelis.modules.storageunit.client.StorageUnitScreen;
 import org.openelis.modules.systemvariable.client.SystemVariableScreen;
 import org.openelis.modules.test.client.TestScreen;
 import org.openelis.modules.testTrailer.client.TestTrailerScreen;
+import org.openelis.modules.todoList.client.ToDoListScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 
@@ -96,6 +97,7 @@ import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class OpenELIS extends Screen implements ScreenSessionTimer {
@@ -352,8 +354,9 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new ProjectScreen());
-                        } catch (Throwable e) {
-                            e.printStackTrace();
+                        } catch (Throwable caught) {
+                            caught.printStackTrace();
+                            Window.alert(caught.getMessage());
                         }
                     }
 
@@ -492,7 +495,21 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 
         addClickHandler("toDo", new ClickHandler() {
             public void onClick(ClickEvent event) {
-                // browser.addScreen(new )
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new ToDoListScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
             }
         });
         addClickHandler("labelFor", new ClickHandler() {
@@ -1060,7 +1077,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new PwsScreen());
+                            browser.addScreen(new PWSScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1344,8 +1361,9 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         //
         closeHandler.removeHandler();
 
-        service.call("logout", new AsyncCallback<RPC>() {
+        service.call("logout", new SyncCallback<RPC>() {
             public void onSuccess(RPC result) {
+                
             }
             public void onFailure(Throwable caught) {
             }

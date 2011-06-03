@@ -66,7 +66,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.provider.Provider"/>
     <inherits name="org.openelis.modules.panel.Panel"/>
     <inherits name="org.openelis.modules.PTSampleLogin.PTSampleLogin"/>
-    <inherits name="org.openelis.modules.pws.Pws"/>
+    <inherits name="org.openelis.modules.pws.PWS"/>
     <inherits name="org.openelis.modules.qaevent.QAEvent"/>
     <inherits name="org.openelis.modules.qc.QC"/>
     <inherits name="org.openelis.modules.quickEntry.QuickEntry"/>
@@ -88,6 +88,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.ELISCommon"/>     
     <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
     <inherits name="org.openelis.modules.report.Report"/>
+    <inherits name="org.openelis.modules.todoList.ToDoList"/>
     <source path="manager"/>
     <source path="cache"/>
     <source path="common"/>

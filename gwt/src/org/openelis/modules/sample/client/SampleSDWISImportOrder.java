@@ -33,7 +33,7 @@ import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
-import org.openelis.domain.PwsDO;
+import org.openelis.domain.PWSDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
@@ -46,7 +46,7 @@ import org.openelis.manager.SampleSDWISManager;
 
 public class SampleSDWISImportOrder extends ImportOrder {
     protected static final String AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
-    protected static final String PWS_SERVICE_URL = "org.openelis.modules.pws.server.PwsService";
+    protected static final String PWS_SERVICE_URL = "org.openelis.modules.pws.server.PWSService";
     
     protected ScreenService auxDataService, pwsService;
 
@@ -84,7 +84,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
         String analyteId;
         DictionaryDO dictDO;
         Integer value;
-        PwsDO pwsDo;
+        PWSDO pwsDo;
         ValidationErrorsList errorsList;
         
         errorsList = new ValidationErrorsList();

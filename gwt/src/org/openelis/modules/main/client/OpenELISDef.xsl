@@ -96,7 +96,9 @@ UIRF Software License are applicable instead of those above.
 				<code>if(UserCache.getPermission().hasModule("quickentry","SELECT")){</code>
                 <menuItem key="quickEntry" description="{resource:getString($constants,'quickEntryDescription')}" enable="true" icon="quickEntryIcon" label="{resource:getString($constants,'quickEntry')}" />
 				<code>}</code>
+				<code>if(UserCache.getPermission().hasModule("sampletracking","SELECT")){</code>
                 <menuItem key="tracking" description="{resource:getString($constants,'trackingDescription')}" enable="true" icon="trackingIcon" label="{resource:getString($constants,'tracking')}" />
+                <code>}</code>
                 <html>&lt;hr/&gt;</html>
                 <code>if(UserCache.getPermission().hasModule("sampleenvironmental","SELECT")){</code>
                 <menuItem key="environmentalSampleLogin" description="{resource:getString($constants,'environmentalSampleLoginDescription')}" icon="environmentalSampleLoginIcon" label="{resource:getString($constants,'environmentalSampleLogin')}" />
@@ -112,7 +114,9 @@ UIRF Software License are applicable instead of those above.
                 <menuItem key="animalSampleLogin" description="{resource:getString($constants,'animalSampleLoginDescription')}" enable="false" icon="animalSampleLoginIcon" label="{resource:getString($constants,'animalSampleLogin')}" />
                 <menuItem key="ptSampleLogin" description="{resource:getString($constants,'ptSampleLoginDescription')}" enable="false" icon="ptSampleLoginIcon" label="{resource:getString($constants,'ptSampleLogin')}" />
                 <html>&lt;hr/&gt;</html>
+                <code>if(UserCache.getPermission().hasModule("project","SELECT")){</code>
                 <menuItem key="project" description="{resource:getString($constants,'projectDescription')}" icon="projectIcon" label="{resource:getString($constants,'project')}" />
+                <code>}</code>
                 <code>if(UserCache.getPermission().hasModule("provider","SELECT")){</code>
                 <menuItem key="provider" description="{resource:getString($constants,'providerDescription')}" icon="providerIcon" label="{resource:getString($constants,'provider')}" />
                 <code>}</code>
@@ -133,13 +137,17 @@ UIRF Software License are applicable instead of those above.
 				<menuItem key="worksheetCompletion" description="{resource:getString($constants,'worksheetCompletionDescription')}"	enable="true" icon="worksheetCompletionIcon" label="{resource:getString($constants,'worksheetCompletion')}"/>
 				<code>}</code>
                 <menuItem key="addOrCancel" description="{resource:getString($constants,'addOrCancelDescription')}" enable="false" icon="addOrCancelIcon" label="{resource:getString($constants,'addOrCancel')}" />
+                <code>if(UserCache.getPermission().hasModule("samplecompleterelease","SELECT")){</code>
                 <menuItem key="reviewAndRelease" description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="true" icon="reviewAndReleaseIcon" label="{resource:getString($constants,'reviewAndRelease')}" />
+                <code>}</code>
                 <menuItem key="toDo" description="{resource:getString($constants,'toDoDescription')}" enable="false" icon="toDoIcon" label="{resource:getString($constants,'toDo')}" />
                 <menuItem key="labelFor" description="{resource:getString($constants,'labelForDescription')}" enable="false" icon="labelForIcon" label="{resource:getString($constants,'labelFor')}" />
                 <code>if(UserCache.getPermission().hasModule("storage","SELECT")){</code>
                 <menuItem key="storage" description="{resource:getString($constants,'storageDescription')}" enable="true" icon="storageIcon" label="{resource:getString($constants,'storage')}" />
                 <code>}</code>
+                <code>if(UserCache.getPermission().hasModule("qc","SELECT")){</code>
                 <menuItem key="QC" description="{resource:getString($constants,'QCDescription')}" icon="QCIcon" label="{resource:getString($constants,'QC')}" />
+                <code>}</code>
                 <code>if(UserCache.getPermission().hasModule("analyteparameter","SELECT")){</code>
                 <menuItem key="analyteParameter" description="{resource:getString($constants,'analyteParameterDescription')}" icon="QCIcon" label="{resource:getString($constants,'analyteParameter')}" />
                 <code>}</code>
@@ -224,7 +232,9 @@ UIRF Software License are applicable instead of those above.
                 <code>if(UserCache.getPermission().hasModule("test","SELECT")){</code>
                 <menuItem key="test" description="{resource:getString($constants,'testDescription')}" icon="testIcon" label="{resource:getString($constants,'test')}" />
                 <code>}</code>
+                <code>if(UserCache.getPermission().hasModule("method","SELECT")){</code>
                 <menuItem key="method" description="{resource:getString($constants,'methodDescription')}" icon="methodIcon" label="{resource:getString($constants,'method')}" />
+                <code>}</code>
                 <code>if(UserCache.getPermission().hasModule("panel","SELECT")){</code>
                 <menuItem key="panel" description="{resource:getString($constants,'panelDescription')}" enable="true" icon="panelIcon" label="{resource:getString($constants,'panel')}" />
                 <code>}</code>

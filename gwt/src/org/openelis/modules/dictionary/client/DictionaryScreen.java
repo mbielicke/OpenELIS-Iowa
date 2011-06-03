@@ -36,14 +36,13 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -61,6 +60,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
@@ -70,7 +70,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -85,8 +84,8 @@ import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.table.event.RowMovedEvent;
 import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.gwt.widget.table.event.SortEvent;
-import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
+import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
 import org.openelis.meta.CategoryMeta;
@@ -506,7 +505,7 @@ public class DictionaryScreen extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
-                ArrayList<DictionaryDO> list;
+                ArrayList<DictionaryViewDO> list;
 
                 parser = new QueryFieldUtil();
                 parser.parse(event.getMatch());
@@ -514,8 +513,8 @@ public class DictionaryScreen extends Screen {
                 try {
                     list = service.callList("fetchByEntry", parser.getParameter().get(0));
                     model = new ArrayList<TableDataRow>();
-                    for (DictionaryDO data : list)
-                        model.add(new TableDataRow(data.getId(), data.getEntry()));
+                    for (DictionaryViewDO data : list)
+                        model.add(new TableDataRow(data.getId(), data.getEntry(), data.getCategoryName()));
                     relatedEntry.showAutoMatches(model);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
