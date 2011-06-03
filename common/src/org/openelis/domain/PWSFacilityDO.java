@@ -31,7 +31,7 @@ import org.openelis.gwt.common.DataBaseUtil;
  * Class represents the fields in database table pws_facility.
  */
 
-public class PwsFacilityDO extends DataObject {
+public class PWSFacilityDO extends DataObject {
 
     private static final long   serialVersionUID = 1L;
 
@@ -41,12 +41,12 @@ public class PwsFacilityDO extends DataObject {
                                 waterTypeCode, availabilityCode, identificationCd,
                                 descriptionText, sourceTypeCode;
     
-    public PwsFacilityDO() {
+    public PWSFacilityDO() {
     }
 
-    public PwsFacilityDO(Integer id, Integer tinwsysIsNumber, String name, String typeCode, String stAsgnIdentCd, String activityStatusCd,
-                         String waterTypeCode,String availabilityCode,String identificationCd,
-                         String descriptionText, String sourceTypeCode) {
+    public PWSFacilityDO(Integer id, Integer tinwsysIsNumber, String name, String typeCode, String stAsgnIdentCd,
+                         String activityStatusCd, String waterTypeCode,String availabilityCode,
+                         String identificationCd, String descriptionText, String sourceTypeCode) {
         setId(id);
         setTinwsysIsNumber(tinwsysIsNumber);
         setName(name); 

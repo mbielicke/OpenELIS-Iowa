@@ -38,36 +38,36 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.PwsDO;
-import org.openelis.entity.Pws;
+import org.openelis.domain.PWSDO;
+import org.openelis.entity.PWS;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.PwsLocal;
-import org.openelis.meta.PwsMeta;
-import org.openelis.remote.PwsRemote;
+import org.openelis.local.PWSLocal;
+import org.openelis.meta.PWSMeta;
+import org.openelis.remote.PWSRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("pws-select")
-public class PwsBean implements PwsLocal, PwsRemote {
+public class PWSBean implements PWSLocal, PWSRemote {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
     
-    private static final PwsMeta             meta = new PwsMeta();
+    private static final PWSMeta             meta = new PWSMeta();
 
-    public PwsDO fetchById(Integer id) throws Exception {
+    public PWSDO fetchById(Integer id) throws Exception {
         Query query;
-        PwsDO data;
+        PWSDO data;
         
-        query = manager.createNamedQuery("Pws.FetchById");
+        query = manager.createNamedQuery("PWS.FetchById");
         query.setParameter("id", id);
         try {
-            data = (PwsDO)query.getSingleResult();
+            data = (PWSDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -76,14 +76,14 @@ public class PwsBean implements PwsLocal, PwsRemote {
         return data; 
     }
     
-    public PwsDO fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public PWSDO fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         Query query;
-        PwsDO data;
+        PWSDO data;
         
-        query = manager.createNamedQuery("Pws.FetchByTinwsysIsNumber");
+        query = manager.createNamedQuery("PWS.FetchByTinwsysIsNumber");
         query.setParameter("tinwsysIsNumber", tinwsysIsNumber);
         try {
-            data = (PwsDO)query.getSingleResult();
+            data = (PWSDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -92,14 +92,14 @@ public class PwsBean implements PwsLocal, PwsRemote {
         return data; 
     }
     
-    public PwsDO fetchByNumber0(String number0) throws Exception {
+    public PWSDO fetchByNumber0(String number0) throws Exception {
         Query query;
-        PwsDO data;
+        PWSDO data;
         
-        query = manager.createNamedQuery("Pws.FetchByNumber0");
+        query = manager.createNamedQuery("PWS.FetchByNumber0");
         query.setParameter("number0", number0);
         try {
-            data = (PwsDO)query.getSingleResult();
+            data = (PWSDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -117,10 +117,10 @@ public class PwsBean implements PwsLocal, PwsRemote {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
-                          PwsMeta.getTinwsysIsNumber() + ", " +
-                          PwsMeta.getName() + ") ");
+                          PWSMeta.getTinwsysIsNumber() + ", " +
+                          PWSMeta.getName() + ") ");
         builder.constructWhere(fields);
-        builder.setOrderBy(PwsMeta.getName());
+        builder.setOrderBy(PWSMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
@@ -136,12 +136,12 @@ public class PwsBean implements PwsLocal, PwsRemote {
         return (ArrayList<IdNameVO>)list;
     }
         
-    public PwsDO add(PwsDO data) throws Exception {
-        Pws entity;
+    public PWSDO add(PWSDO data) throws Exception {
+        PWS entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        entity = new Pws();
+        entity = new PWS();
         entity.setTinwsysIsNumber(data.getTinwsysIsNumber());
         entity.setNumber0(data.getNumber0());
         entity.setAlternateStNum(data.getAlternateStNum());
@@ -165,14 +165,14 @@ public class PwsBean implements PwsLocal, PwsRemote {
         return data;
     }
 
-    public PwsDO update(PwsDO data) throws Exception {
-        Pws entity;
+    public PWSDO update(PWSDO data) throws Exception {
+        PWS entity;
         
         if (!data.isChanged())
             return data;
         
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(Pws.class, data.getId());
+        entity = manager.find(PWS.class, data.getId());
         entity.setTinwsysIsNumber(data.getTinwsysIsNumber());
         entity.setNumber0(data.getNumber0());
         entity.setAlternateStNum(data.getAlternateStNum());

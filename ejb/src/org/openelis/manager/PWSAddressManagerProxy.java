@@ -27,17 +27,17 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.PwsAddressDO;
+import org.openelis.domain.PWSAddressDO;
 import org.openelis.utils.EJBFactory;
 
-public class PwsAddressManagerProxy {
+public class PWSAddressManagerProxy {
 
-    public PwsAddressManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        PwsAddressManager man;
-        ArrayList<PwsAddressDO> list;
+    public PWSAddressManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+        PWSAddressManager man;
+        ArrayList<PWSAddressDO> list;
 
-        list = EJBFactory.getPwsAddress().fetchByTinwsysIsNumber(tinwsysIsNumber);
-        man = PwsAddressManager.getInstance();
+        list = EJBFactory.getPWSAddress().fetchByTinwsysIsNumber(tinwsysIsNumber);
+        man = PWSAddressManager.getInstance();
         man.setTinwsysIsNumber(tinwsysIsNumber);
         man.setAddresses(list);
 

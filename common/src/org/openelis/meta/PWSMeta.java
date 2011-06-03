@@ -31,7 +31,7 @@ import java.util.HashSet;
 import org.openelis.gwt.common.Meta;
 import org.openelis.gwt.common.MetaMap;
 
-public class PwsMeta implements Meta, MetaMap {
+public class PWSMeta implements Meta, MetaMap {
 
     private static final String ID = "_pws.id",
                                 TINSWYS_IS_NUMBER = "_pws.tinwsysIsNumber",
@@ -317,7 +317,7 @@ public class PwsMeta implements Meta, MetaMap {
     public String buildFrom(String where) {
         String from;
         
-        from = "Pws _pws ";
+        from = "PWS _pws ";
         /*if (where.indexOf("pwsAddress.") > -1)
             from += ",IN (_pws.pwsAddress) _pwsAddress ";
         if (where.indexOf("pwsFacility.") > -1)

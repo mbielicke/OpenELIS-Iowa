@@ -29,15 +29,15 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.PwsMonitorDO;
+import org.openelis.domain.PWSFacilityDO;
 
 @Local
-public interface PwsMonitorLocal {
-    public ArrayList<PwsMonitorDO> fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
-
-    public PwsMonitorDO add(PwsMonitorDO data) throws Exception;
-    
-    public PwsMonitorDO update(PwsMonitorDO data) throws Exception;
-    
-    public void delete(PwsMonitorDO data) throws Exception;
+public interface PWSFacilityLocal {
+   public ArrayList<PWSFacilityDO> fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
+   
+   public PWSFacilityDO add(PWSFacilityDO data) throws Exception;
+   
+   public PWSFacilityDO update(PWSFacilityDO data) throws Exception;
+   
+   public void delete(PWSFacilityDO data) throws Exception;
 }

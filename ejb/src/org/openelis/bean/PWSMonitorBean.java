@@ -36,26 +36,26 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.PwsAddressDO;
-import org.openelis.entity.PwsAddress;
+import org.openelis.domain.PWSMonitorDO;
+import org.openelis.entity.PWSMonitor;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.PwsAddressLocal;
+import org.openelis.local.PWSMonitorLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("pws-select")
-public class PwsAddressBean implements PwsAddressLocal {
+public class PWSMonitorBean implements PWSMonitorLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
     
     @SuppressWarnings("unchecked")
-    public ArrayList<PwsAddressDO> fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public ArrayList<PWSMonitorDO> fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {        
         Query query;
         List list;
 
-        query = manager.createNamedQuery("PwsAddress.FetchByTinwsysIsNumber");
+        query = manager.createNamedQuery("PWSMonitor.FetchByTinwsysIsNumber");
         query.setParameter("tinwsysIsNumber", tinwsysIsNumber);
 
         list = query.getResultList();
@@ -65,22 +65,20 @@ public class PwsAddressBean implements PwsAddressLocal {
         return DataBaseUtil.toArrayList(list);
     }
     
-    public PwsAddressDO add(PwsAddressDO data) throws Exception {
-        PwsAddress entity;
-        
+    public PWSMonitorDO add(PWSMonitorDO data) throws Exception {
+        PWSMonitor entity;
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = new PwsAddress();
+        entity = new PWSMonitor();
         entity.setTinwsysIsNumber(data.getTinwsysIsNumber());
-        entity.setTypeCode(data.getTypeCode());
-        entity.setActiveIndCd(data.getActiveIndCd());
+        entity.setStAsgnIdentCd(data.getStAsgnIdentCd());
         entity.setName(data.getName());
-        entity.setAddrLineOneTxt(data.getAddrLineOneTxt());
-        entity.setAddrLineTwoTxt(data.getAddrLineTwoTxt());
-        entity.setAddressCityName(data.getAddressCityName());
-        entity.setAddressStateCode(data.getAddressStateCode());
-        entity.setAddressZipCode(data.getAddressZipCode());
-        entity.setStateFipsCode(data.getStateFipsCode());
-        entity.setPhoneNumber(data.getPhoneNumber());
+        entity.setTiaanlgpTiaanlytName(data.getTiaanlgpTiaanlytName());
+        entity.setNumberSamples(data.getNumberSamples());
+        entity.setCompBeginDate(data.getCompBeginDate());
+        entity.setCompEndDate(data.getCompEndDate());
+        entity.setFrequencyName(data.getFrequencyName());
+        entity.setPeriodName(data.getPeriodName());
         
         manager.persist(entity);
         data.setId(entity.getId());
@@ -88,36 +86,37 @@ public class PwsAddressBean implements PwsAddressLocal {
         return data;
     }
 
-    public PwsAddressDO update(PwsAddressDO data) throws Exception {
-        PwsAddress entity;
+    public PWSMonitorDO update(PWSMonitorDO data) throws Exception {        
+        PWSMonitor entity;
         
         if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(PwsAddress.class, data.getId());
+        entity = manager.find(PWSMonitor.class, data.getId());
         entity.setTinwsysIsNumber(data.getTinwsysIsNumber());
-        entity.setTypeCode(data.getTypeCode());
-        entity.setActiveIndCd(data.getActiveIndCd());
+        entity.setStAsgnIdentCd(data.getStAsgnIdentCd());
         entity.setName(data.getName());
-        entity.setAddrLineOneTxt(data.getAddrLineOneTxt());
-        entity.setAddrLineTwoTxt(data.getAddrLineTwoTxt());
-        entity.setAddressCityName(data.getAddressCityName());
-        entity.setAddressStateCode(data.getAddressStateCode());
-        entity.setAddressZipCode(data.getAddressZipCode());
-        entity.setStateFipsCode(data.getStateFipsCode());
-        entity.setPhoneNumber(data.getPhoneNumber());
+        entity.setTiaanlgpTiaanlytName(data.getTiaanlgpTiaanlytName());
+        entity.setNumberSamples(data.getNumberSamples());
+        entity.setCompBeginDate(data.getCompBeginDate());
+        entity.setCompEndDate(data.getCompEndDate());
+        entity.setFrequencyName(data.getFrequencyName());
+        entity.setPeriodName(data.getPeriodName());
         
         return data;
     }
     
-    public void delete(PwsAddressDO data) throws Exception {
-        PwsAddress entity;
+    public void delete(PWSMonitorDO data) throws Exception {
+        PWSMonitor entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
-        entity = manager.find(PwsAddress.class, data.getId());
+        entity = manager.find(PWSMonitor.class, data.getId());
+        
         if (entity != null)
             manager.remove(entity);
     }
+
+
 
 }

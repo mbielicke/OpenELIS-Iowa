@@ -23,20 +23,18 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.local;
 
-import java.util.ArrayList;
+import javax.ejb.Local;
 
-import javax.ejb.Remote;
+import org.openelis.domain.PWSDO;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.PwsDO;
-import org.openelis.gwt.common.data.QueryData;
+@Local
+public interface PWSLocal {
+    public PWSDO fetchById(Integer id) throws Exception;
+    public PWSDO fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
+    public PWSDO fetchByNumber0(String number0) throws Exception;
 
-@Remote
-public interface PwsRemote {
-
-   public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
-   public PwsDO fetchByNumber0(String number0) throws Exception;
-
+    public PWSDO add(PWSDO data) throws Exception;
+    public PWSDO update(PWSDO data) throws Exception;
 }

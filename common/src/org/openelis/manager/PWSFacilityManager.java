@@ -27,29 +27,29 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.PwsFacilityDO;
+import org.openelis.domain.PWSFacilityDO;
 import org.openelis.gwt.common.RPC;
 
-public class PwsFacilityManager implements RPC {
+public class PWSFacilityManager implements RPC {
 
     private static final long serialVersionUID = 1L;
     
     protected Integer tinwsysIsNumber;
-    protected ArrayList<PwsFacilityDO> facilities;
+    protected ArrayList<PWSFacilityDO> facilities;
     
-    protected transient static PwsFacilityManagerProxy proxy;
+    protected transient static PWSFacilityManagerProxy proxy;
     
-    protected PwsFacilityManager() {
+    protected PWSFacilityManager() {
     }
     
     /**
      * Creates a new instance of this object.
      */
-    public static PwsFacilityManager getInstance() {
-        return new PwsFacilityManager();
+    public static PWSFacilityManager getInstance() {
+        return new PWSFacilityManager();
     }
     
-    public PwsFacilityDO getFacilityAt(int i) {
+    public PWSFacilityDO getFacilityAt(int i) {
         return facilities.get(i);
     } 
     
@@ -60,7 +60,7 @@ public class PwsFacilityManager implements RPC {
         return facilities.size();
     }
 
-    public static PwsFacilityManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public static PWSFacilityManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         return proxy().fetchByTinwsysIsNumber(tinwsysIsNumber);
     }
     
@@ -72,17 +72,17 @@ public class PwsFacilityManager implements RPC {
         this.tinwsysIsNumber = tinwsysIsNumber;
     }
 
-    ArrayList<PwsFacilityDO> getFacilities() {
+    ArrayList<PWSFacilityDO> getFacilities() {
         return facilities;
     }
 
-    void setFacilities(ArrayList<PwsFacilityDO> facilities) {
+    void setFacilities(ArrayList<PWSFacilityDO> facilities) {
         this.facilities = facilities;
     }
     
-    private static PwsFacilityManagerProxy proxy() {
+    private static PWSFacilityManagerProxy proxy() {
         if (proxy == null)
-            proxy = new PwsFacilityManagerProxy();
+            proxy = new PWSFacilityManagerProxy();
         return proxy;
     }
 }

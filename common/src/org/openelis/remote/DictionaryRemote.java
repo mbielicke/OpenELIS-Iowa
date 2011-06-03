@@ -38,7 +38,7 @@ import org.openelis.gwt.common.data.QueryData;
 @Remote
 public interface DictionaryRemote {
 
-    public ArrayList<DictionaryDO> fetchByEntry(String entry, int max) throws Exception;
+    public ArrayList<DictionaryViewDO> fetchByEntry(String entry, int max) throws Exception;
     
     public DictionaryDO fetchBySystemName(String systemName) throws Exception;   
     

@@ -34,7 +34,7 @@ import org.openelis.gwt.common.Datetime;
  * Class represents the fields in database table pws_monitor.
  */
 
-public class PwsMonitorDO extends DataObject {
+public class PWSMonitorDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
@@ -44,10 +44,10 @@ public class PwsMonitorDO extends DataObject {
 
     protected Datetime        compBeginDate, compEndDate;
     
-    public PwsMonitorDO() {     
+    public PWSMonitorDO() {     
     }
 
-    public PwsMonitorDO(Integer id, Integer tinwsysIsNumber, String stAsgnIdentCd,
+    public PWSMonitorDO(Integer id, Integer tinwsysIsNumber, String stAsgnIdentCd,
                         String name, String tiaanlgpTiaanlytName, Integer numberSamples,
                         Date compBeginDate, Date compEndDate,
                         String frequencyName, String periodName) {   

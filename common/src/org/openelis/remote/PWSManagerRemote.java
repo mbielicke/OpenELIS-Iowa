@@ -27,25 +27,25 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
-import org.openelis.manager.PwsAddressManager;
-import org.openelis.manager.PwsFacilityManager;
-import org.openelis.manager.PwsManager;
-import org.openelis.manager.PwsMonitorManager;
+import org.openelis.manager.PWSAddressManager;
+import org.openelis.manager.PWSFacilityManager;
+import org.openelis.manager.PWSManager;
+import org.openelis.manager.PWSMonitorManager;
 
 @Remote
-public interface PwsManagerRemote {
-    public PwsManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
+public interface PWSManagerRemote {
+    public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
     
-    public PwsManager fetchWithFacilities(Integer tinwsysIsNumber) throws Exception;
+    public PWSManager fetchWithFacilities(Integer tinwsysIsNumber) throws Exception;
     
-    public PwsManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception;
+    public PWSManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception;
     
-    public PwsManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception;
+    public PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception;
     
-    public PwsFacilityManager fetchFacilityByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
+    public PWSFacilityManager fetchFacilityByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
     
-    public PwsAddressManager fetchAddressByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
+    public PWSAddressManager fetchAddressByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
     
-    public PwsMonitorManager fetchMonitorByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
+    public PWSMonitorManager fetchMonitorByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
     
 }

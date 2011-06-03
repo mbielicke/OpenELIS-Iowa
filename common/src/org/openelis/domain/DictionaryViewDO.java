@@ -13,16 +13,17 @@ public class DictionaryViewDO extends DictionaryDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          relatedEntryName;
+    protected String          relatedEntryName, categoryName;
 
     public DictionaryViewDO() {
     }
 
     public DictionaryViewDO(Integer id, Integer sortOrder, Integer categoryId,
                             Integer relatedEntryId, String systemName, String isActive,
-                            String localAbbrev, String entry, String relatedEntryName) {
+                            String localAbbrev, String entry, String relatedEntryName, String categoryName) {
         super(id, sortOrder, categoryId, relatedEntryId, systemName, isActive, localAbbrev, entry);
         setRelatedEntryName(relatedEntryName);
+        setCategoryName(categoryName);
     }
 
     public String getRelatedEntryName() {
@@ -31,5 +32,13 @@ public class DictionaryViewDO extends DictionaryDO {
 
     public void setRelatedEntryName(String relatedEntryName) {
         this.relatedEntryName = DataBaseUtil.trim(relatedEntryName);
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = DataBaseUtil.trim(categoryName);
     }
 }

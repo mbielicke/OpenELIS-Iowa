@@ -91,7 +91,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<DictionaryDO> fetchByEntry(String entry, int max) throws Exception {
+    public ArrayList<DictionaryViewDO> fetchByEntry(String entry, int max) throws Exception {
         Query query;
 
         query = manager.createNamedQuery("Dictionary.FetchByEntry");

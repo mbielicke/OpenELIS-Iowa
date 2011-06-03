@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 
 import javax.annotation.Resource;
-import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 
 import net.sf.ehcache.Cache;
@@ -42,7 +41,6 @@ import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SectionPermission.SectionFlags;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.local.LockLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.UserCacheRemote;
 import org.openelis.utils.EJBFactory;

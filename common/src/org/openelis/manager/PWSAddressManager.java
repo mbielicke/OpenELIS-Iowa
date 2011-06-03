@@ -27,29 +27,29 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.PwsAddressDO;
+import org.openelis.domain.PWSAddressDO;
 import org.openelis.gwt.common.RPC;
 
-public class PwsAddressManager implements RPC {
+public class PWSAddressManager implements RPC {
 
     private static final long serialVersionUID = 1L;
     
     protected Integer tinwsysIsNumber;
-    protected ArrayList<PwsAddressDO> addresses;
+    protected ArrayList<PWSAddressDO> addresses;
     
-    protected transient static PwsAddressManagerProxy proxy;
+    protected transient static PWSAddressManagerProxy proxy;
     
-    protected PwsAddressManager() {
+    protected PWSAddressManager() {
     }
     
     /**
      * Creates a new instance of this object.
      */
-    public static PwsAddressManager getInstance() {
-        return new PwsAddressManager();
+    public static PWSAddressManager getInstance() {
+        return new PWSAddressManager();
     }
     
-    public PwsAddressDO getAddressAt(int i) {
+    public PWSAddressDO getAddressAt(int i) {
         return addresses.get(i);
     } 
     
@@ -60,7 +60,7 @@ public class PwsAddressManager implements RPC {
         return addresses.size();
     }
 
-    public static PwsAddressManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public static PWSAddressManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         return proxy().fetchByTinwsysIsNumber(tinwsysIsNumber);
     }
     
@@ -72,17 +72,17 @@ public class PwsAddressManager implements RPC {
         this.tinwsysIsNumber = tinwsysIsNumber;
     }
 
-    ArrayList<PwsAddressDO> getAddresses() {
+    ArrayList<PWSAddressDO> getAddresses() {
         return addresses;
     }
 
-    void setAddresses(ArrayList<PwsAddressDO> addresses) {
+    void setAddresses(ArrayList<PWSAddressDO> addresses) {
         this.addresses = addresses;
     }
     
-    private static PwsAddressManagerProxy proxy() {
+    private static PWSAddressManagerProxy proxy() {
         if (proxy == null)
-            proxy = new PwsAddressManagerProxy();
+            proxy = new PWSAddressManagerProxy();
         return proxy;
     }
 }

@@ -25,28 +25,28 @@
 */
 package org.openelis.manager;
 
-import org.openelis.domain.PwsDO;
-import org.openelis.local.PwsLocal;
+import org.openelis.domain.PWSDO;
+import org.openelis.local.PWSLocal;
 import org.openelis.utils.EJBFactory;
 
-public class PwsManagerProxy {
+public class PWSManagerProxy {
 
-    public PwsManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        PwsLocal pl;
-        PwsDO data;
-        PwsManager m;
+    public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+        PWSLocal pl;
+        PWSDO data;
+        PWSManager m;
         
-        pl = EJBFactory.getPws();
+        pl = EJBFactory.getPWS();
         data = pl.fetchByTinwsysIsNumber(tinwsysIsNumber);
-        m = PwsManager.getInstance();
+        m = PWSManager.getInstance();
         
-        m.setPws(data);
+        m.setPWS(data);
         
         return m;
     }
     
-    public PwsManager fetchWithFacilitites(Integer tinwsysIsNumber) throws Exception {
-        PwsManager m;
+    public PWSManager fetchWithFacilitites(Integer tinwsysIsNumber) throws Exception {
+        PWSManager m;
         
         m = fetchByTinwsysIsNumber(tinwsysIsNumber);
         m.getFacilities();
@@ -54,8 +54,8 @@ public class PwsManagerProxy {
         return m;
     }
 
-    public PwsManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
-        PwsManager m;
+    public PWSManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
+        PWSManager m;
         
         m = fetchByTinwsysIsNumber(tinwsysIsNumber);
         m.getAddresses();
@@ -63,8 +63,8 @@ public class PwsManagerProxy {
         return m;
     }
 
-    public PwsManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
-        PwsManager m;
+    public PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
+        PWSManager m;
         
         m = fetchByTinwsysIsNumber(tinwsysIsNumber);
         m.getMonitors();
