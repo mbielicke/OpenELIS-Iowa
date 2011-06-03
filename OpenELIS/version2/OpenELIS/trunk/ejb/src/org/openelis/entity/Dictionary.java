@@ -56,24 +56,24 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "Dictionary.FetchByCategoryId",
                 query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder," +
-                   		"d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)"
-                      + " from  Dictionary d left join d.relatedEntry dre  where d.categoryId = :id order by d.sortOrder "),
+                   		"d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry, c.name)"
+                      + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.categoryId = :id order by d.sortOrder "),
     @NamedQuery( name = "Dictionary.FetchBySystemName",
                 query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
                         "d.systemName,d.isActive,  d.localAbbrev, d.entry)"
                       + " from  Dictionary d where d.systemName = :name "),
     @NamedQuery( name = "Dictionary.FetchById",
                 query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry)"
-                      + " from  Dictionary d left join d.relatedEntry dre where d.id = :id"),
+                        "d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry, c.name)"
+                      + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.id = :id"),
     @NamedQuery( name = "Dictionary.FetchByCategorySystemName",
                 query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
                         "d.systemName,d.isActive,  d.localAbbrev, d.entry)"
                       + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),                                        
     @NamedQuery( name = "Dictionary.FetchByEntry",
-                query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.localAbbrev, d.entry)"
-                      + " from  Dictionary d left join d.category c where c.isSystem = 'N' and d.entry like :entry")})
+                query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder," +
+                        "d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry, c.name)"
+                      + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.entry like :entry")})
                                   
  @NamedNativeQueries({@NamedNativeQuery(name = "Dictionary.ReferenceCheckForId",     
                   query = "select operation_id as DICTIONARY_ID from project_parameter where operation_id = :id " +

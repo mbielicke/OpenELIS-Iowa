@@ -96,7 +96,8 @@ public class SectionCacheBean implements SectionCacheLocal, SectionCacheRemote {
              * because it takes into consiration both expired and alive elements.
              * Thus we have to check to see if "orderedList" is alive before trying
              * to call getValue() on it and if it's not (e == null), put a new 
-             * element with that key containing the latest data from the database in "cache".
+             * element with that key and the latest data from the database as the
+             * value in "cache".
              */
             e = cache.get("orderedList");
             if (e == null) {                

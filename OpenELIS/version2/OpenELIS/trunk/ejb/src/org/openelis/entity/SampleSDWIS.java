@@ -91,7 +91,7 @@ public class SampleSDWIS implements Auditable, Cloneable {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pws_id", insertable = false, updatable = false)
-    private Pws pws;
+    private PWS pws;
 
     @Transient
     private SampleSDWIS original;
@@ -186,11 +186,11 @@ public class SampleSDWIS implements Auditable, Cloneable {
             this.collector = collector;
     }
 
-    public Pws getPws() {
+    public PWS getPws() {
         return pws;
     }
 
-    public void setPws(Pws pws) {
+    public void setPws(PWS pws) {
         this.pws = pws;
     }
 

@@ -1,7 +1,7 @@
 package org.openelis.entity;
 
 /**
- * PwsFacility Entity POJO for database
+ * PWSFacility Entity POJO for database
  */
 
 import javax.persistence.Column;
@@ -15,16 +15,15 @@ import javax.persistence.Table;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 
-@NamedQuery(name = "PwsFacility.FetchByTinwsysIsNumber",
-           query = "select new org.openelis.domain.PwsFacilityDO(p.id, p.tinwsysIsNumber, p.name," +
+@NamedQuery(name = "PWSFacility.FetchByTinwsysIsNumber",
+           query = "select new org.openelis.domain.PWSFacilityDO(p.id, p.tinwsysIsNumber, p.name," +
                    "p.typeCode, p.stAsgnIdentCd, p.activityStatusCd, p.waterTypeCode, p.availabilityCode," +
             	   "p.identificationCd, p.descriptionText, p.sourceTypeCode)"
-                 + " from PwsFacility p where p.tinwsysIsNumber = :tinwsysIsNumber")
-
+                 + " from PWSFacility p where p.tinwsysIsNumber = :tinwsysIsNumber")
 @Entity
 @Table(name = "pws_facility")
 @EntityListeners( {AuditUtil.class})
-public class PwsFacility implements Cloneable {
+public class PWSFacility implements Cloneable {
 
     @Id
     @GeneratedValue

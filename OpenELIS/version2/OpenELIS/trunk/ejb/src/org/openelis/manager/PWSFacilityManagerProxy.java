@@ -27,20 +27,20 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.PwsMonitorDO;
+import org.openelis.domain.PWSFacilityDO;
 import org.openelis.utils.EJBFactory;
 
-public class PwsMonitorManagerProxy {
-
-    public PwsMonitorManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        PwsMonitorManager man;
-        ArrayList<PwsMonitorDO> list;
+public class PWSFacilityManagerProxy {
+    
+    public PWSFacilityManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+        PWSFacilityManager man;
+        ArrayList<PWSFacilityDO> list;
         
-        list = EJBFactory.getPwsMonitor().fetchByTinwsysIsNumber(tinwsysIsNumber);
-        man = PwsMonitorManager.getInstance();
+        list = EJBFactory.getPWSFacility().fetchByTinwsysIsNumber(tinwsysIsNumber);
+        man = PWSFacilityManager.getInstance();
         man.setTinwsysIsNumber(tinwsysIsNumber);
-        man.setMonitors(list);
+        man.setFacilities(list);
         
         return man;
-    }   
+    }
 }

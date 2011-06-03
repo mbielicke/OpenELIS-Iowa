@@ -34,7 +34,7 @@ import org.openelis.gwt.common.Datetime;
  * Class represents the fields in database table pws.
  */
 
-public class PwsDO extends DataObject {
+public class PWSDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
@@ -46,10 +46,10 @@ public class PwsDO extends DataObject {
 
     protected Datetime        effBeginDt, effEndDt;
 
-    public PwsDO() {
+    public PWSDO() {
     }
 
-    public PwsDO(Integer id, Integer tinwsysIsNumber, String number0, String alternateStNum, String name,
+    public PWSDO(Integer id, Integer tinwsysIsNumber, String number0, String alternateStNum, String name,
                  String activityStatusCd, String dPrinCitySvdNm, String dPrinCntySvdNm,
                  Integer dPopulationCount, String dPwsStTypeCd, String activityRsnTxt,
                  Integer startDay, Integer startMonth, Integer endDay, Integer endMonth,

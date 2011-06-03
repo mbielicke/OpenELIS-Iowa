@@ -30,19 +30,19 @@ import org.openelis.gwt.common.DataBaseUtil;
 /**
  * Class represents the fields in database table pws_address.
  */
-public class PwsAddressDO extends DataObject {
+public class PWSAddressDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, tinwsysIsNumber;
+    protected Integer         id,tinwsysIsNumber;
 
     protected String          typeCode, activeIndCd, name, addrLineOneTxt, addrLineTwoTxt,
                               addressCityName, addressStateCode, addressZipCode, stateFipsCode, phoneNumber;
 
-    public PwsAddressDO() {
+    public PWSAddressDO() {
     }
 
-    public PwsAddressDO(Integer id, Integer tinwsysIsNumber, String typeCode, String activeIndCd,
+    public PWSAddressDO(Integer id, Integer tinwsysIsNumber, String typeCode, String activeIndCd,
                         String name, String addrLineOneTxt, String addrLineTwoTxt,
                         String addressCityName, String addressStateCode, String addressZipCode,
                         String stateFipsCode, String phoneNumber) {
@@ -168,5 +168,4 @@ public class PwsAddressDO extends DataObject {
         this.phoneNumber = DataBaseUtil.trim(phoneNumber);
         _changed = true;
     }
-
 }

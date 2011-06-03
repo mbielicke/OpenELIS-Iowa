@@ -1,14 +1,13 @@
 package org.openelis.entity;
 
 /**
- * Pws Entity POJO for database
+ * PWS Entity POJO for database
  */
 
 import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
@@ -17,30 +16,26 @@ import javax.persistence.Table;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utils.AuditUtil;
 
 @NamedQueries( {
-    @NamedQuery(name = "Pws.FetchById",
-                query = "select new org.openelis.domain.PwsDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
+    @NamedQuery( name = "PWS.FetchById",
+                query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
                         "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
                         "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
-                      + " from Pws p where p.id = :id"),
-    @NamedQuery(name = "Pws.FetchByTinwsysIsNumber",
-           query = "select new org.openelis.domain.PwsDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
-            	   "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
-             	   "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
-                 + " from Pws p where p.tinwsysIsNumber = :tinwsysIsNumber"),
-    @NamedQuery(name = "Pws.FetchByNumber0",
-           query = "select new org.openelis.domain.PwsDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
-                   " p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
-                   " p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)" +
-                   " from Pws p where p.number0 = :number0")})
-                 
-
+                      + " from PWS p where p.id = :id"),
+    @NamedQuery( name = "PWS.FetchByTinwsysIsNumber",
+                query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
+            	        "p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
+             	        "p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
+                      + " from PWS p where p.tinwsysIsNumber = :tinwsysIsNumber"),               
+    @NamedQuery( name = "PWS.FetchByNumber0",
+                query = "select new org.openelis.domain.PWSDO(p.id, p.tinwsysIsNumber, p.number0, p.alternateStNum, p.name," +
+                        " p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
+                        " p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
+                      + " from PWS p where p.number0 = :number0")})                 
 @Entity
 @Table(name = "pws")
-@EntityListeners( {AuditUtil.class})
-public class Pws {
+public class PWS {
 
     @Id
     @GeneratedValue
@@ -245,6 +240,6 @@ public class Pws {
 
     public void setEffEndDt(Datetime eff_end_dt) {
         if (DataBaseUtil.isDifferentYD(eff_end_dt,this.effEndDt))
-            this.effBeginDt = DataBaseUtil.toDate(eff_end_dt);
+            this.effEndDt = DataBaseUtil.toDate(eff_end_dt);
     }   
 }

@@ -23,21 +23,24 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.ejb.Local;
+import org.openelis.domain.PWSMonitorDO;
+import org.openelis.utils.EJBFactory;
 
-import org.openelis.domain.PwsAddressDO;
+public class PWSMonitorManagerProxy {
 
-@Local
-public interface PwsAddressLocal {
-    public ArrayList<PwsAddressDO> fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception;
-    
-    public PwsAddressDO add(PwsAddressDO data) throws Exception;
-    
-    public PwsAddressDO update(PwsAddressDO data) throws Exception;
-    
-    public void delete(PwsAddressDO data) throws Exception;
+    public PWSMonitorManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+        PWSMonitorManager man;
+        ArrayList<PWSMonitorDO> list;
+        
+        list = EJBFactory.getPWSMonitor().fetchByTinwsysIsNumber(tinwsysIsNumber);
+        man = PWSMonitorManager.getInstance();
+        man.setTinwsysIsNumber(tinwsysIsNumber);
+        man.setMonitors(list);
+        
+        return man;
+    }   
 }

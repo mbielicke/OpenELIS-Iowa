@@ -23,24 +23,20 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.remote;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.PwsFacilityDO;
-import org.openelis.utils.EJBFactory;
+import javax.ejb.Remote;
 
-public class PwsFacilityManagerProxy {
-    
-    public PwsFacilityManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        PwsFacilityManager man;
-        ArrayList<PwsFacilityDO> list;
-        
-        list = EJBFactory.getPwsFacility().fetchByTinwsysIsNumber(tinwsysIsNumber);
-        man = PwsFacilityManager.getInstance();
-        man.setTinwsysIsNumber(tinwsysIsNumber);
-        man.setFacilities(list);
-        
-        return man;
-    }
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.PWSDO;
+import org.openelis.gwt.common.data.QueryData;
+
+@Remote
+public interface PWSRemote {
+
+   public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+   public PWSDO fetchByNumber0(String number0) throws Exception;
+
 }

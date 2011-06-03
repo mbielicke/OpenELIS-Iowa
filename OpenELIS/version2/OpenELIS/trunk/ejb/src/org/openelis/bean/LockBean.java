@@ -176,8 +176,7 @@ public class LockBean implements LockLocal {
         
         try {
             sessionId = userCache.getSessionId();
-            if (sessionId.length() > 0)
-                removeLocks(sessionId);
+            removeLocks(sessionId);
         } catch (Exception e) {
             // ignore
         }
@@ -186,7 +185,9 @@ public class LockBean implements LockLocal {
     public void removeLocks(String sessionId) {
         Query query;
         List<Lock> locks;
-
+        
+        if (sessionId == null || sessionId.trim().length() < 1) 
+            return;
         manager.setFlushMode(FlushModeType.COMMIT);
 
         query = manager.createNamedQuery("Lock.FetchBySessionId");

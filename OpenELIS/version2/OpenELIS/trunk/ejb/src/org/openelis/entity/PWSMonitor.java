@@ -1,7 +1,7 @@
 package org.openelis.entity;
 
 /**
- * PwsMonitor Entity POJO for database
+ * PWSMonitor Entity POJO for database
  */
 
 import java.util.Date;
@@ -18,15 +18,14 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.utils.AuditUtil;
 
-@NamedQuery(name = "PwsMonitor.FetchByTinwsysIsNumber",
-           query = "select new org.openelis.domain.PwsMonitorDO(p.id, p.tinwsysIsNumber, p.stAsgnIdentCd, p.name," +
+@NamedQuery(name = "PWSMonitor.FetchByTinwsysIsNumber",
+           query = "select new org.openelis.domain.PWSMonitorDO(p.id, p.tinwsysIsNumber, p.stAsgnIdentCd, p.name," +
                    "p.tiaanlgpTiaanlytName, p.numberSamples, p.compBeginDate, p.compEndDate, p.frequencyName, p.periodName)"
-                 + " from PwsMonitor p where p.tinwsysIsNumber = :tinwsysIsNumber")
-
+                 + " from PWSMonitor p where p.tinwsysIsNumber = :tinwsysIsNumber")
 @Entity
 @Table(name = "pws_monitor")
 @EntityListeners( {AuditUtil.class})
-public class PwsMonitor {
+public class PWSMonitor {
 
     @Id
     @GeneratedValue
@@ -148,5 +147,5 @@ public class PwsMonitor {
     public void setPeriodName(String periodName) {
         if (DataBaseUtil.isDifferent(periodName, this.periodName))
             this.periodName = periodName;
-    }
+    }        
 }

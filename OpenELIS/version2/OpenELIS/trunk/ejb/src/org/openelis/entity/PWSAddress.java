@@ -1,7 +1,7 @@
 package org.openelis.entity;
 
 /**
- * PwsAddress Entity POJO for database
+ * PWSAddress Entity POJO for database
  */
 
 import javax.persistence.Column;
@@ -15,16 +15,15 @@ import javax.persistence.Table;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.utils.AuditUtil;
 
-@NamedQuery(name = "PwsAddress.FetchByTinwsysIsNumber",
-           query = "select new org.openelis.domain.PwsAddressDO(p.id, p.tinwsysIsNumber," +
+@NamedQuery(name = "PWSAddress.FetchByTinwsysIsNumber",
+           query = "select new org.openelis.domain.PWSAddressDO(p.id, p.tinwsysIsNumber," +
                    "p.typeCode, p.activeIndCd,p.name, p.addrLineOneTxt, p.addrLineTwoTxt," +
             	   "p.addressCityName, p.addressStateCode, p.addressZipCode,p.stateFipsCode, p.phoneNumber)"
-                 + " from PwsAddress p where p.tinwsysIsNumber = :tinwsysIsNumber")
-
+                 + " from PWSAddress p where p.tinwsysIsNumber = :tinwsysIsNumber")
 @Entity
 @Table(name = "pws_address")
 @EntityListeners( {AuditUtil.class})
-public class PwsAddress {
+public class PWSAddress {
 
     @Id
     @GeneratedValue

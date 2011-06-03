@@ -25,26 +25,26 @@
  */
 package org.openelis.manager;
 
-import org.openelis.domain.PwsDO;
+import org.openelis.domain.PWSDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
-public class PwsManager implements RPC {
+public class PWSManager implements RPC {
 
     private static final long                  serialVersionUID = 1L;
 
-    protected PwsDO                            pws;
-    protected PwsAddressManager                addresses;
-    protected PwsFacilityManager               facilities;
-    protected PwsMonitorManager                monitors;
+    protected PWSDO                            pws;
+    protected PWSAddressManager                addresses;
+    protected PWSFacilityManager               facilities;
+    protected PWSMonitorManager                monitors;
 
-    protected transient static PwsManagerProxy proxy;
+    protected transient static PWSManagerProxy proxy;
 
     /**
      * This is a protected constructor. See the three static methods for
      * allocation.
      */
-    protected PwsManager() {
+    protected PWSManager() {
         pws = null;
         addresses = null;
         facilities = null;
@@ -55,48 +55,48 @@ public class PwsManager implements RPC {
      * Creates a new instance of this object. A default pws object is also
      * created.
      */
-    public static PwsManager getInstance() {
-        PwsManager manager;
+    public static PWSManager getInstance() {
+        PWSManager manager;
 
-        manager = new PwsManager();
-        manager.pws = new PwsDO();
+        manager = new PWSManager();
+        manager.pws = new PWSDO();
         
         return manager;
     }
 
-    public PwsDO getPws() {
+    public PWSDO getPWS() {
         return pws;
     }
 
-    public void setPws(PwsDO pws) {
+    public void setPWS(PWSDO pws) {
         this.pws = pws;
     }
 
     // service methods
-    public static PwsManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public static PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         return proxy().fetchByTinwsysIsNumber(tinwsysIsNumber);
     }
 
-    public static PwsManager fetchWithFacilities(Integer tinwsysIsNumber) throws Exception {
+    public static PWSManager fetchWithFacilities(Integer tinwsysIsNumber) throws Exception {
         return proxy().fetchWithFacilitites(tinwsysIsNumber);
     }
 
-    public static PwsManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
+    public static PWSManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
         return proxy().fetchWithAddresses(tinwsysIsNumber);
     }
 
-    public static PwsManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
+    public static PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
         return proxy().fetchWithMonitors(tinwsysIsNumber);
     }
 
     //
     // other managers
     //
-    public PwsFacilityManager getFacilities() throws Exception {
+    public PWSFacilityManager getFacilities() throws Exception {
         if (facilities == null) {
             if (pws.getTinwsysIsNumber() != null) {
                 try {
-                    facilities = PwsFacilityManager.fetchByTinwsysIsNumber(pws.getTinwsysIsNumber());
+                    facilities = PWSFacilityManager.fetchByTinwsysIsNumber(pws.getTinwsysIsNumber());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -104,16 +104,16 @@ public class PwsManager implements RPC {
                 }
             }
             if (facilities == null)
-                facilities = PwsFacilityManager.getInstance();
+                facilities = PWSFacilityManager.getInstance();
         }
         return facilities;
     }
     
-    public PwsAddressManager getAddresses() throws Exception {
+    public PWSAddressManager getAddresses() throws Exception {
         if (addresses == null) {
             if (pws.getTinwsysIsNumber() != null) {
                 try {
-                    addresses = PwsAddressManager.fetchByTinwsysIsNumber(pws.getTinwsysIsNumber());
+                    addresses = PWSAddressManager.fetchByTinwsysIsNumber(pws.getTinwsysIsNumber());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -121,16 +121,16 @@ public class PwsManager implements RPC {
                 }
             }
             if (addresses == null)
-                addresses = PwsAddressManager.getInstance();
+                addresses = PWSAddressManager.getInstance();
         }
         return addresses;
     }
     
-    public PwsMonitorManager getMonitors() throws Exception {
+    public PWSMonitorManager getMonitors() throws Exception {
         if (monitors == null) {
             if (pws.getTinwsysIsNumber() != null) {
                 try {
-                    monitors = PwsMonitorManager.fetchByTinwsysIsNumber(pws.getTinwsysIsNumber());
+                    monitors = PWSMonitorManager.fetchByTinwsysIsNumber(pws.getTinwsysIsNumber());
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -138,14 +138,14 @@ public class PwsManager implements RPC {
                 }
             }
             if (monitors == null)
-                monitors = PwsMonitorManager.getInstance();
+                monitors = PWSMonitorManager.getInstance();
         }
         return monitors;
     }
     
-    private static PwsManagerProxy proxy() {
+    private static PWSManagerProxy proxy() {
         if (proxy == null)
-            proxy = new PwsManagerProxy();
+            proxy = new PWSManagerProxy();
         
         return proxy;
     }

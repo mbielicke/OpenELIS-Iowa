@@ -27,29 +27,29 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.PwsMonitorDO;
+import org.openelis.domain.PWSMonitorDO;
 import org.openelis.gwt.common.RPC;
 
-public class PwsMonitorManager implements RPC {
+public class PWSMonitorManager implements RPC {
 
     private static final long serialVersionUID = 1L;
     
     protected Integer tinwsysIsNumber;
-    protected ArrayList<PwsMonitorDO> monitors;
+    protected ArrayList<PWSMonitorDO> monitors;
     
-    protected transient static PwsMonitorManagerProxy proxy;
+    protected transient static PWSMonitorManagerProxy proxy;
     
-    protected PwsMonitorManager() {
+    protected PWSMonitorManager() {
     }
     
     /**
      * Creates a new instance of this object.
      */
-    public static PwsMonitorManager getInstance() {
-        return new PwsMonitorManager();
+    public static PWSMonitorManager getInstance() {
+        return new PWSMonitorManager();
     }
     
-    public PwsMonitorDO getMonitorAt(int i) {
+    public PWSMonitorDO getMonitorAt(int i) {
         return monitors.get(i);
     } 
     
@@ -60,7 +60,7 @@ public class PwsMonitorManager implements RPC {
         return monitors.size();
     }
 
-    public static PwsMonitorManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public static PWSMonitorManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         return proxy().fetchByTinwsysIsNumber(tinwsysIsNumber);
     }
     
@@ -72,17 +72,17 @@ public class PwsMonitorManager implements RPC {
         this.tinwsysIsNumber = tinwsysIsNumber;
     }
 
-    ArrayList<PwsMonitorDO> getMonitors() {
+    ArrayList<PWSMonitorDO> getMonitors() {
         return monitors;
     }
 
-    void setMonitors(ArrayList<PwsMonitorDO> monitors) {
+    void setMonitors(ArrayList<PWSMonitorDO> monitors) {
         this.monitors = monitors;
     }
     
-    private static PwsMonitorManagerProxy proxy() {
+    private static PWSMonitorManagerProxy proxy() {
         if (proxy == null)
-            proxy = new PwsMonitorManagerProxy();
+            proxy = new PWSMonitorManagerProxy();
         return proxy;
     }
 }

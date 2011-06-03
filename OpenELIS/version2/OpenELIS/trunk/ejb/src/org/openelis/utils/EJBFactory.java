@@ -65,10 +65,10 @@ import org.openelis.local.ProjectLocal;
 import org.openelis.local.ProjectParameterLocal;
 import org.openelis.local.ProviderLocal;
 import org.openelis.local.ProviderLocationLocal;
-import org.openelis.local.PwsAddressLocal;
-import org.openelis.local.PwsFacilityLocal;
-import org.openelis.local.PwsLocal;
-import org.openelis.local.PwsMonitorLocal;
+import org.openelis.local.PWSAddressLocal;
+import org.openelis.local.PWSFacilityLocal;
+import org.openelis.local.PWSLocal;
+import org.openelis.local.PWSMonitorLocal;
 import org.openelis.local.QaeventLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.local.QcLocal;
@@ -260,20 +260,20 @@ public class EJBFactory {
         return (ProviderLocationLocal)lookup("openelis/ProviderLocationBean/local");
     }
     
-    public static PwsAddressLocal getPwsAddress() {
-        return (PwsAddressLocal)lookup("openelis/PwsAddressBean/local");
+    public static PWSAddressLocal getPWSAddress() {
+        return (PWSAddressLocal)lookup("openelis/PWSAddressBean/local");
     }
     
-    public static PwsFacilityLocal getPwsFacility() {
-        return (PwsFacilityLocal)lookup("openelis/PwsFacilityBean/local");
+    public static PWSFacilityLocal getPWSFacility() {
+        return (PWSFacilityLocal)lookup("openelis/PWSFacilityBean/local");
     }        
     
-    public static PwsLocal getPws() {
-        return (PwsLocal)lookup("openelis/PwsBean/local");
+    public static PWSLocal getPWS() {
+        return (PWSLocal)lookup("openelis/PWSBean/local");
     }
     
-    public static PwsMonitorLocal getPwsMonitor() {
-        return (PwsMonitorLocal)lookup("openelis/PwsMonitorBean/local");
+    public static PWSMonitorLocal getPWSMonitor() {
+        return (PWSMonitorLocal)lookup("openelis/PWSMonitorBean/local");
     }
 
     public static QaeventLocal getQaevent() {
