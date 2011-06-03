@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleDO;
 
 @Local
@@ -21,5 +22,6 @@ public interface SampleLocal {
 	public SampleDO add(SampleDO data) throws Exception;
 
 	public SampleDO update(SampleDO data) throws Exception;
-
+  
+    public ArrayList<IdNameVO> fetchProjectsForOrganizations(ArrayList<Integer> organizationId) throws Exception;
 }
