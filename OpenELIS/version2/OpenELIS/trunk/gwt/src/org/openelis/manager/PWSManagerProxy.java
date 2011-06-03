@@ -27,15 +27,28 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-public class PwsAddressManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.pws.server.PwsService";
+public class PWSManagerProxy {
+
+    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.pws.server.PWSService";
     protected ScreenService       service;
     
-    public PwsAddressManagerProxy() {
+    public PWSManagerProxy() {
         service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
     
-    public PwsAddressManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        return service.call("fetchAddressByTinwsysIsNumber", tinwsysIsNumber);
+    public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+        return service.call("fetchByTinwsysIsNumber", tinwsysIsNumber);
+    }
+    
+    public PWSManager fetchWithFacilitites(Integer tinwsysIsNumber) throws Exception {
+        return service.call("fetchWithFacilities", tinwsysIsNumber);
+    }
+
+    public PWSManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
+        return service.call("fetchWithAddresses", tinwsysIsNumber);
+    }
+
+    public PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
+        return service.call("fetchWithMonitors", tinwsysIsNumber);
     }
 }

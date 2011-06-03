@@ -23,32 +23,9 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.pws.client;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.main.client.OpenELISDef;
 
-public class PwsManagerProxy {
-
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.pws.server.PwsService";
-    protected ScreenService       service;
-    
-    public PwsManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
-    }
-    
-    public PwsManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        return service.call("fetchByTinwsysIsNumber", tinwsysIsNumber);
-    }
-    
-    public PwsManager fetchWithFacilitites(Integer tinwsysIsNumber) throws Exception {
-        return service.call("fetchWithFacilities", tinwsysIsNumber);
-    }
-
-    public PwsManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
-        return service.call("fetchWithAddresses", tinwsysIsNumber);
-    }
-
-    public PwsManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
-        return service.call("fetchWithMonitors", tinwsysIsNumber);
-    }
+public interface PWSDef extends OpenELISDef {
 }

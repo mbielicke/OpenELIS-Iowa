@@ -54,7 +54,7 @@ public class DictionaryService {
         return remote().fetchByName(name);
     }
 
-    public ArrayList<DictionaryDO> fetchByEntry(String entry) throws Exception {
+    public ArrayList<DictionaryViewDO> fetchByEntry(String entry) throws Exception {
         return dictRemote().fetchByEntry(entry + "%", 10);
     }
 

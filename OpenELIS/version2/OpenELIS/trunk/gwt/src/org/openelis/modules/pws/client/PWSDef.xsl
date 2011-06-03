@@ -35,7 +35,7 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.PwsMeta">
+  xmlns:meta="xalan://org.openelis.meta.PWSMeta">
 
   <xsl:import href="IMPORT/aToZOneColumn.xsl" />
   <xsl:template match="doc">
@@ -105,6 +105,24 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="language" />
                 </xsl:with-param>
               </xsl:call-template>
+              <xsl:call-template name="buttonPanelDivider" />
+              <menuPanel key="optionsMenu" layout="vertical" style="topBarItemHolder">
+                <menuItem>
+                  <menuDisplay>
+                    <appButton style="ButtonPanelButton" action="option">
+                      <HorizontalPanel>
+                        <text>
+                          <xsl:value-of select='resource:getString($constants,"options")' />
+                        </text>
+                        <AbsolutePanel width="20" height="20" style="OptionsButtonImage" />
+                      </HorizontalPanel>
+                    </appButton>
+                  </menuDisplay>
+                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                    <menuItem key="parse" description="" enable="true" icon="historyIcon" label="Parse" />
+                  </menuPanel>
+                </menuItem>
+              </menuPanel>
             </HorizontalPanel>
           </AbsolutePanel>
 <!--end button panel-->
@@ -296,7 +314,7 @@ UIRF Software License are applicable instead of those above.
                       <textbox field="String" />
                     </col>
                     <col key="{meta:getMonitorNumberSamples()}" width="60" header="{resource:getString($constants,'numSample')}">
-                      <textbox field="String" />
+                      <textbox field="Integer" />
                     </col>
                     <col key="{meta:getMonitorCompBeginDate()}" width="80" header="{resource:getString($constants,'beginDate')}">
                       <textbox pattern="{resource:getString($constants,'datePattern')}" field="Date" />

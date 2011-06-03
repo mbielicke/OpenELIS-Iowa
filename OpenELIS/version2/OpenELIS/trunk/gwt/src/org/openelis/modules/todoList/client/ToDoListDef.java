@@ -23,19 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.todoList.client;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.modules.main.client.OpenELISDef;
 
-public class PwsFacilityManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.pws.server.PwsService";
-    protected ScreenService       service;
-    
-    public PwsFacilityManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
-    }
-    
-    public PwsFacilityManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
-        return service.call("fetchFacilityByTinwsysIsNumber", tinwsysIsNumber);
-    }    
+public interface ToDoListDef extends OpenELISDef {
+
 }

@@ -28,22 +28,22 @@ package org.openelis.modules.pws.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.PwsDO;
+import org.openelis.domain.PWSDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.manager.PwsAddressManager;
-import org.openelis.manager.PwsFacilityManager;
-import org.openelis.manager.PwsManager;
-import org.openelis.manager.PwsMonitorManager;
+import org.openelis.manager.PWSAddressManager;
+import org.openelis.manager.PWSFacilityManager;
+import org.openelis.manager.PWSManager;
+import org.openelis.manager.PWSMonitorManager;
 import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.PwsManagerRemote;
-import org.openelis.remote.PwsRemote;
+import org.openelis.remote.PWSManagerRemote;
+import org.openelis.remote.PWSRemote;
 
-public class PwsService {
+public class PWSService {
     
     private static final int rowPP = 20;
     
-    public PwsManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
             return remoteManager().fetchByTinwsysIsNumber(tinwsysIsNumber);
         } catch (RuntimeException e) {
@@ -51,7 +51,7 @@ public class PwsService {
         }
     }
     
-    public PwsManager fetchWithFacilities(Integer tinwsysIsNumber) throws Exception {
+    public PWSManager fetchWithFacilities(Integer tinwsysIsNumber) throws Exception {
         try {
             return remoteManager().fetchWithFacilities(tinwsysIsNumber);
         } catch (RuntimeException e) {
@@ -59,7 +59,7 @@ public class PwsService {
         }
     }
     
-    public PwsManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
+    public PWSManager fetchWithAddresses(Integer tinwsysIsNumber) throws Exception {
         try {
             return remoteManager().fetchWithAddresses(tinwsysIsNumber);
         } catch (RuntimeException e) {
@@ -67,7 +67,7 @@ public class PwsService {
         }
     }
     
-    public PwsManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
+    public PWSManager fetchWithMonitors(Integer tinwsysIsNumber) throws Exception {
         try {
             return remoteManager().fetchWithMonitors(tinwsysIsNumber);
         } catch (RuntimeException e) {
@@ -86,7 +86,7 @@ public class PwsService {
     //
     // support for OrganizationContactManager and OrganizationParameterManager
     //
-    public PwsFacilityManager fetchFacilityByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public PWSFacilityManager fetchFacilityByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
             return remoteManager().fetchFacilityByTinwsysIsNumber(tinwsysIsNumber);
         } catch (RuntimeException e) {
@@ -94,7 +94,7 @@ public class PwsService {
         }
     }
     
-    public PwsAddressManager fetchAddressByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public PWSAddressManager fetchAddressByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
             return remoteManager().fetchAddressByTinwsysIsNumber(tinwsysIsNumber);
         } catch (RuntimeException e) {
@@ -102,7 +102,7 @@ public class PwsService {
         }
     }
     
-    public PwsMonitorManager fetchMonitorByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
+    public PWSMonitorManager fetchMonitorByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
             return remoteManager().fetchMonitorByTinwsysIsNumber(tinwsysIsNumber);
         } catch (RuntimeException e) {
@@ -110,16 +110,15 @@ public class PwsService {
         }
     }
     
-    public PwsDO fetchByPwsNumber0(String pwsNumber0) throws Exception {
+    public PWSDO fetchByPwsNumber0(String pwsNumber0) throws Exception {
         return remote().fetchByNumber0(pwsNumber0);
-    }
+    }    
     
-    private PwsRemote remote() {
-        return (PwsRemote)EJBFactory.lookup("openelis/PwsBean/remote");  
-    }
+    private PWSRemote remote() {
+        return (PWSRemote)EJBFactory.lookup("openelis/PWSBean/remote");  
+    }   
     
-    private PwsManagerRemote remoteManager() {
-        return (PwsManagerRemote)EJBFactory.lookup("openelis/PwsManagerBean/remote");  
+    private PWSManagerRemote remoteManager() {
+        return (PWSManagerRemote)EJBFactory.lookup("openelis/PWSManagerBean/remote");  
     } 
-
 }

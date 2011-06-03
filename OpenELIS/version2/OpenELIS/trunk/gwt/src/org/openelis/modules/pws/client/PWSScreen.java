@@ -32,10 +32,10 @@ import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
@@ -51,16 +51,17 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextArea;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.PwsManager;
-import org.openelis.meta.PwsMeta;
+import org.openelis.manager.PWSManager;
+import org.openelis.meta.PWSMeta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -73,13 +74,13 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Action> {
+public class PWSScreen extends Screen implements HasActionHandlers<PWSScreen.Action> {
 
     public enum Action {
         SELECT
     };
 
-    private PwsManager       manager;
+    private PWSManager       manager;
     protected Tabs           tab;
     private ModulePermission userPermission;
 
@@ -98,18 +99,19 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
     private FacilityTab      facilityTab;
     private AddressTab       addressTab;
     private String           pwsNumber0;
+    private MenuItem         parse;
 
     private enum Tabs {
         FACILITY, ADDRESS, MONITOR
     };
 
-    public PwsScreen() throws Exception {
+    public PWSScreen() throws Exception {
         this(null);
     }
 
-    public PwsScreen(String pwsNumber0) throws Exception {
-        super((ScreenDefInt)GWT.create(PwsDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.pws.server.PwsService");
+    public PWSScreen(String pwsNumber0) throws Exception {
+        super((ScreenDefInt)GWT.create(PWSDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.pws.server.PWSService");
 
         userPermission = UserCache.getPermission().getModule("pws");
         if (userPermission == null)
@@ -130,7 +132,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
      */
     private void postConstructor() {
         tab = Tabs.FACILITY;
-        manager = PwsManager.getInstance();
+        manager = PWSManager.getInstance();
         initialize();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
@@ -212,15 +214,26 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             });
         } else
             selectButton.setVisible(false);
+                
+        parse = (MenuItem)def.getWidget("parse");
+        addScreenHandler(parse, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                parse();
+            }
 
-        number0 = (TextBox)def.getWidget(PwsMeta.getNumber0());
+            public void onStateChange(StateChangeEvent<State> event) {
+                parse.enable(true);
+            }
+        });
+
+        number0 = (TextBox)def.getWidget(PWSMeta.getNumber0());
         addScreenHandler(number0, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                number0.setValue(manager.getPws().getNumber0());
+                number0.setValue(manager.getPWS().getNumber0());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getPws().setTinwsysIsNumber(event.getValue());
+                manager.getPWS().setTinwsysIsNumber(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -229,14 +242,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        alternateStNum = (TextBox)def.getWidget(PwsMeta.getAlternateStNum());
+        alternateStNum = (TextBox)def.getWidget(PWSMeta.getAlternateStNum());
         addScreenHandler(alternateStNum, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                alternateStNum.setValue(manager.getPws().getAlternateStNum());
+                alternateStNum.setValue(manager.getPWS().getAlternateStNum());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getPws().setAlternateStNum(event.getValue());
+                manager.getPWS().setAlternateStNum(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -245,14 +258,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        name = (TextBox)def.getWidget(PwsMeta.getName());
+        name = (TextBox)def.getWidget(PWSMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                name.setValue(manager.getPws().getName());
+                name.setValue(manager.getPWS().getName());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getPws().setName(event.getValue());
+                manager.getPWS().setName(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -261,14 +274,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        dPrinCitySvdNm = (TextBox)def.getWidget(PwsMeta.getDPrinCitySvdNm());
+        dPrinCitySvdNm = (TextBox)def.getWidget(PWSMeta.getDPrinCitySvdNm());
         addScreenHandler(dPrinCitySvdNm, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                dPrinCitySvdNm.setValue(manager.getPws().getDPrinCitySvdNm());
+                dPrinCitySvdNm.setValue(manager.getPWS().getDPrinCitySvdNm());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getPws().setDPrinCitySvdNm(event.getValue());
+                manager.getPWS().setDPrinCitySvdNm(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -277,14 +290,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        dPrinCntySvdNm = (TextBox)def.getWidget(PwsMeta.getDPrinCntySvdNm());
+        dPrinCntySvdNm = (TextBox)def.getWidget(PWSMeta.getDPrinCntySvdNm());
         addScreenHandler(dPrinCntySvdNm, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                dPrinCntySvdNm.setValue(manager.getPws().getDPrinCntySvdNm());
+                dPrinCntySvdNm.setValue(manager.getPWS().getDPrinCntySvdNm());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getPws().setDPrinCntySvdNm(event.getValue());
+                manager.getPWS().setDPrinCntySvdNm(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -293,14 +306,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        dPwsStTypeCd = (TextBox)def.getWidget(PwsMeta.getDPwsStTypeCd());
+        dPwsStTypeCd = (TextBox)def.getWidget(PWSMeta.getDPwsStTypeCd());
         addScreenHandler(dPwsStTypeCd, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                dPwsStTypeCd.setValue(manager.getPws().getDPwsStTypeCd());
+                dPwsStTypeCd.setValue(manager.getPWS().getDPwsStTypeCd());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getPws().setDPwsStTypeCd(event.getValue());
+                manager.getPWS().setDPwsStTypeCd(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -309,14 +322,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        activityStatusCd = (TextBox)def.getWidget(PwsMeta.getActivityStatusCd());
+        activityStatusCd = (TextBox)def.getWidget(PWSMeta.getActivityStatusCd());
         addScreenHandler(activityStatusCd, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                activityStatusCd.setValue(manager.getPws().getActivityStatusCd());
+                activityStatusCd.setValue(manager.getPWS().getActivityStatusCd());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getPws().setActivityStatusCd(event.getValue());
+                manager.getPWS().setActivityStatusCd(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -325,14 +338,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        dPopulationCount = (TextBox)def.getWidget(PwsMeta.getDPopulationCount());
+        dPopulationCount = (TextBox)def.getWidget(PWSMeta.getDPopulationCount());
         addScreenHandler(dPopulationCount, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                dPopulationCount.setValue(manager.getPws().getDPopulationCount());
+                dPopulationCount.setValue(manager.getPWS().getDPopulationCount());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getPws().setDPopulationCount(event.getValue());
+                manager.getPWS().setDPopulationCount(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -341,14 +354,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        activityRsnTxt = (TextArea)def.getWidget(PwsMeta.getActivityRsnTxt());
+        activityRsnTxt = (TextArea)def.getWidget(PWSMeta.getActivityRsnTxt());
         addScreenHandler(activityRsnTxt, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                activityRsnTxt.setValue(manager.getPws().getActivityRsnTxt());
+                activityRsnTxt.setValue(manager.getPWS().getActivityRsnTxt());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getPws().setActivityRsnTxt(event.getValue());
+                manager.getPWS().setActivityRsnTxt(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -357,14 +370,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        startDay = (TextBox)def.getWidget(PwsMeta.getStartDay());
+        startDay = (TextBox)def.getWidget(PWSMeta.getStartDay());
         addScreenHandler(startDay, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                startDay.setValue(manager.getPws().getStartDay());
+                startDay.setValue(manager.getPWS().getStartDay());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getPws().setStartDay(event.getValue());
+                manager.getPWS().setStartDay(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -373,14 +386,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        startMonth = (TextBox)def.getWidget(PwsMeta.getStartMonth());
+        startMonth = (TextBox)def.getWidget(PWSMeta.getStartMonth());
         addScreenHandler(startMonth, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                startMonth.setValue(manager.getPws().getStartMonth());
+                startMonth.setValue(manager.getPWS().getStartMonth());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getPws().setStartMonth(event.getValue());
+                manager.getPWS().setStartMonth(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -389,14 +402,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        effBeginDt = (CalendarLookUp)def.getWidget(PwsMeta.getEffBeginDt());
+        effBeginDt = (CalendarLookUp)def.getWidget(PWSMeta.getEffBeginDt());
         addScreenHandler(effBeginDt, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                effBeginDt.setValue(manager.getPws().getEffBeginDt());
+                effBeginDt.setValue(manager.getPWS().getEffBeginDt());
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
-                manager.getPws().setEffBeginDt(event.getValue());
+                manager.getPWS().setEffBeginDt(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -405,14 +418,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        endDay = (TextBox)def.getWidget(PwsMeta.getEndDay());
+        endDay = (TextBox)def.getWidget(PWSMeta.getEndDay());
         addScreenHandler(endDay, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                endDay.setValue(manager.getPws().getEndDay());
+                endDay.setValue(manager.getPWS().getEndDay());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getPws().setEndDay(event.getValue());
+                manager.getPWS().setEndDay(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -421,14 +434,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        endMonth = (TextBox)def.getWidget(PwsMeta.getEndMonth());
+        endMonth = (TextBox)def.getWidget(PWSMeta.getEndMonth());
         addScreenHandler(endMonth, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                endMonth.setValue(manager.getPws().getEndMonth());
+                endMonth.setValue(manager.getPWS().getEndMonth());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getPws().setEndMonth(event.getValue());
+                manager.getPWS().setEndMonth(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -437,14 +450,14 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             }
         });
 
-        effEndDt = (CalendarLookUp)def.getWidget(PwsMeta.getEffEndDt());
+        effEndDt = (CalendarLookUp)def.getWidget(PWSMeta.getEffEndDt());
         addScreenHandler(effEndDt, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                effEndDt.setValue(manager.getPws().getEffEndDt());
+                effEndDt.setValue(manager.getPWS().getEffEndDt());
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
-                manager.getPws().setEffEndDt(event.getValue());
+                manager.getPWS().setEffEndDt(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -570,7 +583,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
                 QueryData field;
 
                 field = new QueryData();
-                field.key = PwsMeta.getName();
+                field.key = PWSMeta.getName();
                 field.query = ((AppButton)event.getSource()).action;
                 field.type = QueryData.Type.STRING;
 
@@ -594,7 +607,7 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
      * basic button methods
      */
     protected void query() {
-        manager = PwsManager.getInstance();
+        manager = PWSManager.getInstance();
 
         setState(State.QUERY);
         DataChangeEvent.fire(this);
@@ -642,26 +655,26 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
     }
 
     protected void select() {
-        ActionEvent.fire(this, Action.SELECT, manager.getPws());
+        ActionEvent.fire(this, Action.SELECT, manager.getPWS());
         window.close();
     }
 
     protected boolean fetchByTinwsysIsNumber(Integer tinwsysIsNumber) {
         if (tinwsysIsNumber == null) {
-            manager = PwsManager.getInstance();
+            manager = PWSManager.getInstance();
             setState(State.DEFAULT);
         } else {
             window.setBusy(consts.get("fetching"));
             try {
                 switch (tab) {
                     case FACILITY:
-                        manager = PwsManager.fetchWithFacilities(tinwsysIsNumber);
+                        manager = PWSManager.fetchWithFacilities(tinwsysIsNumber);
                         break;
                     case ADDRESS:
-                        manager = PwsManager.fetchWithAddresses(tinwsysIsNumber);
+                        manager = PWSManager.fetchWithAddresses(tinwsysIsNumber);
                         break;
                     case MONITOR:
-                        manager = PwsManager.fetchWithMonitors(tinwsysIsNumber);
+                        manager = PWSManager.fetchWithMonitors(tinwsysIsNumber);
                         break;
                 }
                 setState(State.DISPLAY);
@@ -700,6 +713,15 @@ public class PwsScreen extends Screen implements HasActionHandlers<PwsScreen.Act
             case MONITOR:
                 monitorTab.draw();
                 break;
+        }
+    }
+    
+    private void parse() {
+        try {
+            service.call("parse");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
         }
     }
 

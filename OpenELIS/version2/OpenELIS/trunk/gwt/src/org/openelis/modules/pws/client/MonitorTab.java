@@ -27,7 +27,7 @@ package org.openelis.modules.pws.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.PwsMonitorDO;
+import org.openelis.domain.PWSMonitorDO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -39,14 +39,14 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.manager.PwsManager;
-import org.openelis.manager.PwsMonitorManager;
+import org.openelis.manager.PWSManager;
+import org.openelis.manager.PWSMonitorManager;
 
 import com.google.gwt.user.client.Window;
 
 public class MonitorTab extends Screen{
 
-    private PwsManager  manager;
+    private PWSManager  manager;
     private boolean     loaded;
     private TableWidget monitorTable;    
 
@@ -79,8 +79,8 @@ public class MonitorTab extends Screen{
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model;
         TableDataRow row;
-        PwsMonitorDO data;
-        PwsMonitorManager man;
+        PWSMonitorDO data;
+        PWSMonitorManager man;
         
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -110,7 +110,7 @@ public class MonitorTab extends Screen{
         return model;
     }
 
-    public void setManager(PwsManager manager) {
+    public void setManager(PWSManager manager) {
         this.manager = manager;
         loaded = false;        
     }

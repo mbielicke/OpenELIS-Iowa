@@ -32,7 +32,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.PwsDO;
+import org.openelis.domain.PWSDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.TableFieldErrorException;
@@ -61,7 +61,7 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
-import org.openelis.modules.pws.client.PwsScreen;
+import org.openelis.modules.pws.client.PWSScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -100,7 +100,7 @@ public class SDWISTab extends Screen {
         setWindow(window);
         
         orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        pwsService = new ScreenService("controller?service=org.openelis.modules.pws.server.PwsService");
+        pwsService = new ScreenService("controller?service=org.openelis.modules.pws.server.PWSService");
 
         initialize();
         initializeDropdowns();
@@ -114,7 +114,7 @@ public class SDWISTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                PwsDO data;
+                PWSDO data;
 
                 if (event.getValue() != null && event.getValue() != "") { 
                     try {
@@ -485,19 +485,19 @@ public class SDWISTab extends Screen {
     }
 
     private void openPwsScreen() {
-        PwsScreen pwsScreen;
+        PWSScreen pwsScreen;
         ScreenWindow modal;
 
         try {
             final SDWISTab sdwis = this;
-            pwsScreen = new PwsScreen(pwsId.getValue());
+            pwsScreen = new PWSScreen(pwsId.getValue());
 
-            pwsScreen.addActionHandler(new ActionHandler<PwsScreen.Action>() {
-                public void onAction(ActionEvent<PwsScreen.Action> event) {
-                    PwsDO pwsDO;
+            pwsScreen.addActionHandler(new ActionHandler<PWSScreen.Action>() {
+                public void onAction(ActionEvent<PWSScreen.Action> event) {
+                    PWSDO pwsDO;
                     if (state == State.ADD || state == State.UPDATE) {
-                        if (event.getAction() == PwsScreen.Action.SELECT) {
-                            pwsDO = (PwsDO)event.getData();
+                        if (event.getAction() == PWSScreen.Action.SELECT) {
+                            pwsDO = (PWSDO)event.getData();
                             getSDWISManager().getSDWIS().setPwsId(pwsDO.getId());
                             getSDWISManager().getSDWIS().setPwsName(pwsDO.getName());
                             getSDWISManager().getSDWIS().setPwsNumber0(pwsDO.getNumber0());
