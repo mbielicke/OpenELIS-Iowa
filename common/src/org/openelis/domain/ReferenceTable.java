@@ -127,5 +127,7 @@ public class ReferenceTable {
                             PWS_MONITOR =                   102,
                             ORDER_CONTAINER =               103,
                             ORDER_TEST =                    104,
-                            ANALYTE_PARAMETER =             105;
+                            ANALYTE_PARAMETER =             105,
+                            SECTION_PARAMETER =             106,
+                            ANALYSIS_REPORT_FLAGS =         107;
 }
