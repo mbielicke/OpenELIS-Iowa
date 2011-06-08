@@ -29,6 +29,7 @@ import javax.naming.InitialContext;
 
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AnalysisQAEventLocal;
+import org.openelis.local.AnalysisReportFlagsLocal;
 import org.openelis.local.AnalysisUserLocal;
 import org.openelis.local.AnalyteParameterLocal;
 import org.openelis.local.AuxDataLocal;
@@ -122,6 +123,10 @@ public class EJBFactory {
 
     public static AnalysisQAEventLocal getAnalysisQAEvent() {
         return (AnalysisQAEventLocal)lookup("openelis/AnalysisQAEventBean/local");
+    }
+
+    public static AnalysisReportFlagsLocal getAnalysisReportFlags() {
+        return (AnalysisReportFlagsLocal)lookup("openelis/AnalysisReportFlagsBean/local");
     }
 
     public static AnalysisUserLocal getAnalysisUser() {
