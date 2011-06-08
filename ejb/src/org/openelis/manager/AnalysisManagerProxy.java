@@ -28,9 +28,11 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionViewDO;
+import org.openelis.entity.AnalysisReportFlags;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -268,14 +270,15 @@ public class AnalysisManagerProxy {
     }
 
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
-        Integer analysisRefId;
-        AnalysisListItem item;
-
-        analysisRefId = ReferenceTable.ANALYSIS;
+        AnalysisListItem      item;
+        AnalysisReportFlagsDO arfDO;
 
         analysisDO.setSampleItemId(man.getSampleItemId());
         EJBFactory.getAnalysis().add(analysisDO);
 
+        arfDO = new AnalysisReportFlagsDO(analysisDO.getId(), "N", "N", null, 0, "N");
+        EJBFactory.getAnalysisReportFlags().add(arfDO);
+        
         item = man.getItemAt(i);
 
         if (item.analysisUsers != null) {
@@ -295,19 +298,19 @@ public class AnalysisManagerProxy {
 
         if (item.analysisInternalNotes != null) {
             man.getInternalNotesAt(i).setReferenceId(analysisDO.getId());
-            man.getInternalNotesAt(i).setReferenceTableId(analysisRefId);
+            man.getInternalNotesAt(i).setReferenceTableId(ReferenceTable.ANALYSIS);
             man.getInternalNotesAt(i).add();
         }
 
         if (item.analysisExternalNote != null) {
             man.getExternalNoteAt(i).setReferenceId(analysisDO.getId());
-            man.getExternalNoteAt(i).setReferenceTableId(analysisRefId);
+            man.getExternalNoteAt(i).setReferenceTableId(ReferenceTable.ANALYSIS);
             man.getExternalNoteAt(i).add();
         }
 
         if (item.storages != null) {
             man.getStorageAt(i).setReferenceId(analysisDO.getId());
-            man.getStorageAt(i).setReferenceTableId(analysisRefId);
+            man.getStorageAt(i).setReferenceTableId(ReferenceTable.ANALYSIS);
             man.getStorageAt(i).add();
         }
     }
