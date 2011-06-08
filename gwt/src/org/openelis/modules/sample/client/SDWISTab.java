@@ -118,7 +118,7 @@ public class SDWISTab extends Screen {
 
                 if (event.getValue() != null && event.getValue() != "") { 
                     try {
-                        data = pwsService.call("fetchByNumber0", event.getValue());
+                        data = pwsService.call("fetchByPwsNumber0", event.getValue());
                         getSDWISManager().getSDWIS().setPwsId(data.getId());
                         getSDWISManager().getSDWIS().setPwsName(data.getName());
                         getSDWISManager().getSDWIS().setPwsNumber0(data.getNumber0());
