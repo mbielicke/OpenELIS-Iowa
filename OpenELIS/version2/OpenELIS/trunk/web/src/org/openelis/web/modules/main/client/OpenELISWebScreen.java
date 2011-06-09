@@ -37,6 +37,7 @@ import org.openelis.gwt.widget.web.LinkButton;
 import org.openelis.gwt.widget.web.WebWindow;
 import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
+import org.openelis.web.modules.finalReport.client.FinalReportEnvScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -165,7 +166,7 @@ public class OpenELISWebScreen extends Screen {
 			public void onClick(ClickEvent event) {
 
 				try {
-					FinalReportScreen screen =  new FinalReportScreen();
+					FinalReportEnvScreen screen =  new FinalReportEnvScreen();
 					screen.setStyleName("WhiteContentPanel");
 					OpenELISWebScreen.setScreen(screen, "Final Report", "finalReport");
 				}catch(Exception e) {
@@ -330,12 +331,13 @@ public class OpenELISWebScreen extends Screen {
 	 * @param key
 	 */
 	public static void setScreen(Screen screen, String name, String key) {
-		window.setContent(screen);
+		//window.setContent(screen);
 		//screen.setWidth("100%");
 		//screen.setHeight("100%");
-		History.newItem(key,false);
 		screens.put(key, screen);
 		screen.getDefinition().setName(name);
+		History.newItem(key,true);
+
 	}
 	
 	/**
@@ -348,7 +350,7 @@ public class OpenELISWebScreen extends Screen {
 		screen = screens.get(key);
 		
 		window.setContent(screen);
-		History.newItem(key,false);
+		//History.newItem(key,false);
 	}
 
 }
