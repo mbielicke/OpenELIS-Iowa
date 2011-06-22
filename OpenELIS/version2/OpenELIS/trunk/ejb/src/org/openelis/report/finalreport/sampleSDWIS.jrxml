@@ -11,23 +11,33 @@
 	<parameter name="ORGANIZATION_PRINT" class="org.openelis.report.finalreport.OrganizationPrint" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT
-     s.received_date s_received_date, s.collection_date s_collection_date,
-     s.collection_time s_collection_time, s.client_reference s_client_reference, s.released_date s_released_date,
-     ss.collector ss_collector
+     s.released_date, s.received_date, s.collection_date, s.collection_time, ss.collector,
+     p.number0, p.name, ss.facility_id, d1.entry sdwis_sample_type,
+     d2.entry sdwis_sample_category, ss.sample_point_id, ss.location, s.client_reference
 FROM
-     sample s, sample_sdwis ss
+     sample s, sample_sdwis ss, pws p, dictionary d1, dictionary d2
 WHERE
      s.domain = 'S' and s.id = $P{SAMPLE_ID} and
-     ss.sample_id = s.id]]>
+     ss.sample_id = s.id and
+     ss.pws_id = p.id and
+     ss.sample_type_id = d1.id and
+     ss.sample_category_id = d2.id]]>
 	</queryString>
-	<field name="s_received_date" class="java.sql.Timestamp"/>
-	<field name="s_collection_date" class="java.sql.Timestamp"/>
-	<field name="s_collection_time" class="java.sql.Time"/>
-	<field name="s_client_reference" class="java.lang.String"/>
-	<field name="s_released_date" class="java.sql.Timestamp"/>
-	<field name="ss_collector" class="java.lang.String"/>
+	<field name="released_date" class="java.sql.Timestamp"/>
+	<field name="received_date" class="java.sql.Timestamp"/>
+	<field name="collection_date" class="java.sql.Timestamp"/>
+	<field name="collection_time" class="java.sql.Time"/>
+	<field name="collector" class="java.lang.String"/>
+	<field name="number0" class="java.lang.String"/>
+	<field name="name" class="java.lang.String"/>
+	<field name="facility_id" class="java.lang.String"/>
+	<field name="sdwis_sample_type" class="java.lang.String"/>
+	<field name="sdwis_sample_category" class="java.lang.String"/>
+	<field name="sample_point_id" class="java.lang.String"/>
+	<field name="location" class="java.lang.String"/>
+	<field name="client_reference" class="java.lang.String"/>
 	<detail>
-		<band height="120" splitType="Stretch">
+		<band height="144" splitType="Stretch">
 			<staticText>
 				<reportElement x="284" y="0" width="140" height="12"/>
 				<textElement textAlignment="Right">
@@ -35,12 +45,18 @@ WHERE
 				</textElement>
 				<text><![CDATA[Date Sample Finalized]]></text>
 			</staticText>
+			<line>
+				<reportElement mode="Opaque" x="429" y="0" width="1" height="144"/>
+				<graphicElement>
+					<pen lineWidth="1.0"/>
+				</graphicElement>
+			</line>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
 				<reportElement x="434" y="0" width="142" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{s_released_date}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{released_date}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="284" y="12" width="140" height="12"/>
@@ -56,63 +72,43 @@ WHERE
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{s_received_date}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{received_date}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="284" y="36" width="140" height="12"/>
+				<reportElement x="284" y="24" width="140" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Date Collected]]></text>
 			</staticText>
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement x="434" y="36" width="80" height="12"/>
+				<reportElement x="434" y="24" width="80" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{s_collection_date}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{collection_date}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm" isBlankWhenNull="true">
-				<reportElement mode="Transparent" x="483" y="36" width="49" height="12"/>
+				<reportElement mode="Transparent" x="483" y="24" width="49" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Time"><![CDATA[$F{s_collection_time}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Time"><![CDATA[$F{collection_time}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="284" y="84" width="140" height="12"/>
-				<textElement textAlignment="Right">
-					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
-				</textElement>
-				<text><![CDATA[Client Reference]]></text>
-			</staticText>
-			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="84" width="180" height="12"/>
-				<textElement>
-					<font size="10" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{s_client_reference}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement x="284" y="96" width="140" height="12"/>
+				<reportElement x="284" y="36" width="140" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
 				<text><![CDATA[Collector]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement x="434" y="96" width="180" height="12"/>
+				<reportElement x="434" y="36" width="180" height="12"/>
 				<textElement>
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{ss_collector}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{collector}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement mode="Opaque" x="429" y="0" width="1" height="120"/>
-				<graphicElement>
-					<pen lineWidth="1.0"/>
-				</graphicElement>
-			</line>
 			<subreport>
 				<reportElement x="72" y="48" width="250" height="60">
 					<printWhenExpression><![CDATA[$P{ORGANIZATION_ID} != null]]></printWhenExpression>
@@ -132,6 +128,118 @@ WHERE
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleOrganization.jasper"]]></subreportExpression>
 			</subreport>
+			<staticText>
+				<reportElement x="284" y="48" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[PWS ID]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="48" width="180" height="12"/>
+				<textElement>
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{number0}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="60" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[PWS Name]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="60" width="180" height="12"/>
+				<textElement>
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="72" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Facility ID]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="72" width="180" height="12"/>
+				<textElement>
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{facility_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="84" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Sample Type]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="84" width="180" height="12"/>
+				<textElement>
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sdwis_sample_type}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="96" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Sample Category]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="96" width="180" height="12"/>
+				<textElement>
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sdwis_sample_category}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="108" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Sampling Point ID]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="108" width="180" height="12"/>
+				<textElement>
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_point_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="120" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Samp. Pt. Description]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="120" width="180" height="12"/>
+				<textElement>
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{location}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="284" y="132" width="140" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Client Reference]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="434" y="132" width="180" height="12"/>
+				<textElement>
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{client_reference}]]></textFieldExpression>
+			</textField>
 		</band>
 	</detail>
 </jasperReport>
