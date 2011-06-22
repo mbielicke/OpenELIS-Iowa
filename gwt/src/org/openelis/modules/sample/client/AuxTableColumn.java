@@ -35,6 +35,7 @@ import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.DateField;
+import org.openelis.gwt.widget.DoubleField;
 import org.openelis.gwt.widget.IntegerField;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.StringField;
@@ -48,15 +49,13 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class AuxTableColumn extends TableColumn {
     protected GetMatchesHandler     screen;
-    protected TextBox<String>       alphaTextBox;
-    protected TextBox<Integer>      numericTextBox;
-    protected TextBox<Double>       numTextBox;
+    protected TextBox<String>       alphaTextBox, numericTextBox;
     protected CalendarLookUp        calendar;
     protected AutoComplete<Integer> autoComplete;
     protected Label                 label;
 
-    protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId, numericId,
-                    dateId, dateTimeId, dictionaryId;
+    protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId,
+                                    numericId, dateId, dateTimeId, dictionaryId;
 
     public Widget getDisplayWidget(TableDataRow row) {
         setColumnWidget(getCellWidget(row));
@@ -116,16 +115,16 @@ public class AuxTableColumn extends TableColumn {
     }
 
     private TextBox getNumericTextbox() {
-        if(((Screen)screen).state == State.QUERY)
-            return getAlphaTextbox(Case.MIXED);
-        
         if (numericTextBox == null) {
-            numericTextBox = new TextBox<Integer>();
+            numericTextBox = new TextBox<String>();
             numericTextBox.setStyleName("ScreenTextBox");
-            numericTextBox.setField(new IntegerField());
+            numericTextBox.setField(new StringField());
             numericTextBox.setLength(80);
+            numericTextBox.setCase(Case.MIXED);
         }
         
+        numericTextBox.setQueryMode( ((Screen)screen).state == State.QUERY);
+
         return numericTextBox;
     }
 
