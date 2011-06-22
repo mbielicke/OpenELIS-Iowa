@@ -88,6 +88,25 @@ WHERE
 					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleEnvironmental.jasper"]]></subreportExpression>
 				</subreport>
+				<subreport>
+					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
+						<printWhenExpression><![CDATA["S".equals($F{s_domain})]]></printWhenExpression>
+					</reportElement>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="SAMPLE_ID">
+						<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="ORGANIZATION_PRINT">
+						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="ORGANIZATION_ID">
+						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleSDWIS.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 		</groupHeader>
 	</group>
