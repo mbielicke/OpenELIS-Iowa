@@ -478,11 +478,9 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             return null;
 
         if (alphaLowerId.equals(typeId) || alphaUpperId.equals(typeId) ||
-            alphaMixedId.equals(typeId) || timeId.equals(typeId))
+            alphaMixedId.equals(typeId) || timeId.equals(typeId) ||
+            numericId.equals(typeId))
             return value;
-
-        else if (numericId.equals(typeId))
-            return new Double(value);
 
         else if (dateId.equals(typeId))
             return new Datetime(Datetime.YEAR, Datetime.DAY, new Date(value));
@@ -532,7 +530,7 @@ public class AuxDataTab extends Screen implements GetMatchesHandler {
             alphaMixedId.equals(typeId) || timeId.equals(typeId)) {
             return (String)value;
         } else if (numericId.equals(typeId) && value != null) {
-            return ((Integer)value).toString();
+            return (String)value;
         } else if (dateId.equals(typeId)) {
             df = new DateField();
             df.setBegin(Datetime.YEAR);

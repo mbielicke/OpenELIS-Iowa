@@ -111,7 +111,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'testSection')" />:
               </text>
               <widget colspan="5">
-              	<dropdown key="testSection" width="419" popWidth="auto" field="String" tab="entry, entry"/>
+              	<dropdown key="testSection" width="419" popWidth="auto" field="Integer" tab="entry, entry"/>
               </widget>
               </row>
               <row>
@@ -134,7 +134,7 @@ UIRF Software License are applicable instead of those above.
           </TablePanel>
           <table key="quickEntryTable" width="auto" maxRows="15" style="ScreenTableWithSides" showScroll="ALWAYS" title="" tab="entry,entry">
             <col width="90" header="{resource:getString($constants,'accessionNum')}">
-              <label />
+              <label field="Integer"/>
             </col>
             <col width="130" header="{resource:getString($constants,'received')}">
               <calendar begin="0" end="4" maxValue="0" pattern="{resource:getString($constants,'dateTimePattern')}"/>

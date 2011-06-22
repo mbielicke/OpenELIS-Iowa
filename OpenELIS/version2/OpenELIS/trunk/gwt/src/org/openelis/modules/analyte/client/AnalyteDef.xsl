@@ -154,7 +154,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"parentAnalyte")' />:
                 </text>
                 <widget>
-                  <autoComplete key="{meta:getParentAnalyteName()}" width="184" tab="{meta:getExternalId()},{meta:getName()}" field="String">
+                  <autoComplete key="{meta:getParentAnalyteName()}" width="184" tab="{meta:getExternalId()},{meta:getName()}" field="Integer">
                     <col width="300" />
                   </autoComplete>
                 </widget>

@@ -455,7 +455,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     if (quickEntryMan != null) {
                         if (state == State.ADD) {
                             manager = quickEntryMan;
-                            manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+                            manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
                             manager.createEmptyDomainManager();
                             DeferredCommand.addCommand(new Command() {
                                 public void execute() {
