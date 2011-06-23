@@ -187,9 +187,9 @@ UIRF Software License are applicable instead of those above.
                 </text>
                 <textbox key="{meta:getSDWISSamplePointId()}" width="75" max="11" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String" required="true"/>
                 <text style="Prompt">
-                  <xsl:value-of select="resource:getString($constants,'pointDesc')" />:
+                  <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
-                <textbox key="{meta:getSDWISLocation()}" width="250" max="20" tab="{meta:getSDWISCollector()},{meta:getSDWISSamplePointId()}" field="String" />
+                <textbox key="{meta:getSDWISLocation()}" case = "LOWER" width="250" max="20" tab="{meta:getSDWISCollector()},{meta:getSDWISSamplePointId()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>
