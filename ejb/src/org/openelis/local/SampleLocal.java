@@ -22,6 +22,8 @@ public interface SampleLocal {
 	public SampleDO add(SampleDO data) throws Exception;
 
 	public SampleDO update(SampleDO data) throws Exception;
-  
+        
     public ArrayList<IdNameVO> fetchProjectsForOrganizations(ArrayList<Integer> organizationId) throws Exception;
+    
+    public ArrayList<IdNameVO> fetchProjectsForPvtOrganizations(ArrayList<Integer> organizationId) throws Exception;    
 }
