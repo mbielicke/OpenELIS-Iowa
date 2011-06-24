@@ -50,128 +50,107 @@ UIRF Software License are applicable instead of those above.
   </xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-    <screen id="FinalReport" name="{resource:getString($constants,'finalReport')}">
-      <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+    <screen id="FinalReport" name="{resource:getString($constants,'finalReport')}">  
+    <DeckPanel key="deck" height = "100%" width = "100%">
+	  <deck>	  
+	    <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         <TablePanel style="Form">
-          <row>
+          <row>          
+          <AbsolutePanel style = "step1"></AbsolutePanel>
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'commentOne')" />
             </text>
           </row>
         </TablePanel>
         <VerticalPanel style="subform">
-          <text style="FormTitle">
-            <xsl:value-of select='resource:getString($constants,"resultCriteria")' />
-          </text>
           <TablePanel style="Form">
             <row>
               <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"dateReleased")' />:
-              </text>
-              <text>
-                <xsl:value-of select="resource:getString($constants,'from')" />
-              </text>
-              <text>
-                <xsl:value-of select="resource:getString($constants,'to')" />
-              </text>
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"calendarformat")' />
+                <xsl:value-of select="resource:getString($constants,'dateReleased')" />:
               </text>
               <widget>
                 <calendar begin="0" end="2" key="RELEASED_FROM" pattern="{resource:getString($constants,'datePattern')}"  width="90" />
               </widget>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'to')" />:
+              </text>
               <widget>
                 <calendar begin="0" end="2" key="RELEASED_TO" pattern="{resource:getString($constants,'datePattern')}" width="90" />
               </widget>
-            </row>
+            </row>            
             <row>
               <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"dateCollected")' />:
-              </text>
-              <text>
-                <xsl:value-of select="resource:getString($constants,'from')" />
-              </text>
-              <text>
-                <xsl:value-of select="resource:getString($constants,'to')" />
-              </text>
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"calendarformat")' />
+                <xsl:value-of select="resource:getString($constants,'dateCollected')" />:
               </text>
               <widget>
                 <calendar begin="0" end="2" key="COLLECTED_FROM" pattern="{resource:getString($constants,'datePattern')}" width="90" />
               </widget>
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'to')" />:
+              </text>
               <widget>
                 <calendar begin="0" end="2" key="COLLECTED_TO" pattern="{resource:getString($constants,'datePattern')}"  width="90" />
+              </widget>
+            </row>
+            <row>
+            <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'accessionNumber')" />:
+              </text>
+             <widget>
+                <textbox  field="Integer" key="ACCESSION_FROM" max="60" width="86" />
+              </widget> 
+              <text style="Prompt">
+                <xsl:value-of select="resource:getString($constants,'to')" />:
+              </text>
+               <widget>
+                <textbox field="Integer" key="ACCESSION_TO" max="60" width="86" />
               </widget>
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"collectorName")' />:
               </text>
-              <widget colspan="2">
-                <textbox case="MIXED" field="String" key="COLLECTOR_NAME" max="60" width="180" />
-              </widget>
-            </row>
-            <row>
-              <text style="Prompt"></text>
-              <text>
-                <xsl:value-of select="resource:getString($constants,'from')" />
-              </text>
-              <text>
-                <xsl:value-of select="resource:getString($constants,'to')" />
-              </text>
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"accessionNumber")' />:
-              </text>
-              <widget>
-                <textbox  field="Integer" key="ACCESSION_FROM" max="60" width="90" />
-              </widget>
-              <widget>
-                <textbox field="Integer" key="ACCESSION_TO" max="60" width="90" />
+              <widget colspan="4">
+                <textbox case="MIXED" field="String" key="COLLECTOR_NAME" max="60" width="202" />
               </widget>
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"clientReference")' />:
               </text>
-              <widget colspan="2">
-                <textbox case="MIXED" field="String" key="CLIENT_REFERENCE" max="60" width="180" />
+              <widget colspan="4">
+                <textbox case="MIXED" field="String" key="CLIENT_REFERENCE" max="60" width="202" />
               </widget>
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"collectionSite")' />:
               </text>
-              <widget colspan="2">
-                <textbox case="MIXED" field="String" key="COLLECTION_SITE" max="60" width="180" />
+              <widget colspan="4">
+                <textbox case="MIXED" field="String" key="COLLECTION_SITE" max="60" width="202" />
               </widget>
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"collectionTown")' />:
               </text>
-              <widget colspan="2">
-                <textbox case="MIXED" field="String" key="COLLECTION_TOWN" max="60" width="180" />
+              <widget colspan="4">
+                <textbox case="MIXED" field="String" key="COLLECTION_TOWN" max="60" width="202" />
               </widget>
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"projectCode")' />:
               </text>
-              <widget colspan="2">
-                <dropdown field="Integer" key="PROJECT_CODE" width="180" />
+              <widget colspan="4">
+                <dropdown field="Integer" key="PROJECT_CODE" width="202" />
               </widget>
             </row>
           </TablePanel>
         </VerticalPanel>
         <TablePanel style="Form">
           <row>
+          <AbsolutePanel style = "step2"></AbsolutePanel>
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'commentTwo')" />
             </text>
@@ -199,7 +178,76 @@ UIRF Software License are applicable instead of those above.
             </appButton>
           </widget>
         </HorizontalPanel>
-      </VerticalPanel>
-    </screen>
+      </VerticalPanel>      
+	  </deck>
+	  <deck>	 
+	  <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">             
+          <VerticalPanel>           
+              <widget valign="top">
+                <table key="sampleEntTable" width="auto" maxRows="12"  style="ScreenTableWithSides"  title="">
+                  <col key="select" width="60" header="{resource:getString($constants,'select')}">
+                    <check/>
+                  </col>
+                  <col key="accessionNumber" width="120" header="{resource:getString($constants,'AccessionNo')}">
+                    <textbox field="Integer" />
+                  </col>
+                  <col key="collectionSite" width="120" header="{resource:getString($constants,'collectionSite')}">
+                    <textbox field="String" />
+                  </col>
+                  <col key="collectedDate" width="120" header="{resource:getString($constants,'dateCollected')}">
+                    <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}"/>
+                  </col>
+                   <col key="collectorName" width="120" header="{resource:getString($constants,'collectorName')}">
+                    <textbox field="String" />
+                  </col> 
+                  <col key="status" width="120" header="{resource:getString($constants,'status')}">
+                    <dropdown  width="120"  field="Integer"  />
+                  </col>                   
+                  <col key="town" width="120" header="{resource:getString($constants,'collectionTown')}">
+                    <textbox field="String" />
+                  </col>                        
+                </table>
+              </widget>
+        </VerticalPanel>
+        <VerticalPanel height = "20">
+        <label field="String" key="numSampleSelected" style="Prompt"/>
+        </VerticalPanel>
+        <HorizontalPanel style="TableFooterPanel">     
+          <widget halign="center">
+            <appButton key="selectAllButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel />
+                <text>
+                  <xsl:value-of select='resource:getString($constants,"selectAll")' />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+          </widget>   
+         <widget halign="center">
+            <appButton key="runReportButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel />
+                <text>
+                  <xsl:value-of select='resource:getString($constants,"runReport")' />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+          </widget>
+          <widget halign="center">
+            <appButton key="resettButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel />
+                <text>
+                  <xsl:value-of select='resource:getString($constants,"reset")' />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+          </widget>
+        </HorizontalPanel>
+      </VerticalPanel>	
+	  </deck>
+    
+    </DeckPanel>
+   </screen>   
   </xsl:template>
 </xsl:stylesheet>

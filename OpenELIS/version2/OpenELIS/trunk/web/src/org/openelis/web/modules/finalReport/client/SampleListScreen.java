@@ -30,7 +30,7 @@ import java.util.Date;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.SampleEnvironmentalWebVO;
+import org.openelis.domain.SampleFinalReportWebVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
@@ -60,7 +60,7 @@ public class SampleListScreen extends Screen {
     private CheckBox                 selectAll;
     private TableWidget              sampleEntTable;
     private AppButton                runReportButton, resetButton;
-    private ArrayList<SampleEnvironmentalWebVO> results;
+    private ArrayList<SampleFinalReportWebVO> results;
     private String                   organizationIds;
 
     /**
@@ -152,7 +152,7 @@ public class SampleListScreen extends Screen {
         ((Dropdown<Integer>)(sampleEntTable.getColumnWidget("status"))).setModel(model);
     }
     
-    public void setResults(ArrayList<SampleEnvironmentalWebVO> results) {
+    public void setResults(ArrayList<SampleFinalReportWebVO> results) {
         this.results = results;
         DataChangeEvent.fire(this);
     }
@@ -212,7 +212,7 @@ public class SampleListScreen extends Screen {
 
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model;
-        SampleEnvironmentalWebVO data;
+        SampleFinalReportWebVO data;
         TableDataRow tr;
         Date temp;
         model = new ArrayList<TableDataRow>();
@@ -228,8 +228,8 @@ public class SampleListScreen extends Screen {
                     temp.setMinutes(data.getCollectionTime().getDate().getMinutes());                  
                 }                    
                  tr = new TableDataRow(data.getAccessionNumber(),
-                                      "N", data.getAccessionNumber(),data.getCollectionSite(), Datetime.getInstance(Datetime.YEAR,Datetime.MINUTE,temp),
-                                      data.getCollector(),data.getStatus(),data.getTown());
+                                      "N", data.getAccessionNumber(),data.getLocation(), Datetime.getInstance(Datetime.YEAR,Datetime.MINUTE,temp),
+                                      data.getCollector(),data.getStatus(),data.getLocationAddressCity());
                 tr.data = data;
                 model.add(tr);
             }
