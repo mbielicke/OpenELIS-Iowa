@@ -28,7 +28,7 @@ package org.openelis.modules.report.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SampleEnvironmentalWebVO;
+import org.openelis.domain.SampleFinalReportWebVO;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
@@ -76,17 +76,17 @@ public class FinalReportService {
         return st;
     }
 
-    public ArrayList<SampleEnvironmentalWebVO> getSampleList(Query query) throws Exception {        
+    public ArrayList<SampleFinalReportWebVO> getSampleList(Query query) throws Exception {        
         
-        ArrayList<SampleEnvironmentalWebVO> sampleList;
+        ArrayList<SampleFinalReportWebVO> sampleList;
         try{
-            sampleList = remote().getSampleListForEnvironmental(query.getFields());
+            sampleList = remote().getSampleListForDomain(query.getFields());
         }catch (Exception e){
             e.printStackTrace();
             throw e;
         }           
         return sampleList;
-    }    
+    }       
     
     public ReportStatus runReportForWeb(Query query) throws Exception {
         ReportStatus st;       
@@ -101,8 +101,8 @@ public class FinalReportService {
     public ArrayList<IdNameVO> getProjectList(Query query) throws Exception {        
         return remote().getProjectList(query.getFields());
     }
-     
-
+    
+    
     private FinalReportRemote remote() {
         return (FinalReportRemote)EJBFactory.lookup("openelis/FinalReportBean/remote");
     }
