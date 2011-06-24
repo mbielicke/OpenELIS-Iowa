@@ -600,7 +600,7 @@ public class FinalReportEnvScreen extends Screen {
         field.query = "E";
         query.setFields(field);
         
-        if ( field.query != null) {
+        if(query.getFields().get(0).query != null) {
             try {
                 st = service.call("runReportForWeb", query);
                 if (st.getStatus() == ReportStatus.Status.SAVED) {

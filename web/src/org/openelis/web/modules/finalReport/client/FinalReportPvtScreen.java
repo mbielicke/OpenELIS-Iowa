@@ -616,7 +616,7 @@ public class FinalReportPvtScreen extends Screen {
         field.query = "W";
         query.setFields(field);
         
-        if ( field.query != null) {
+        if(query.getFields().get(0).query != null) {
             try {
                 st = service.call("runReportForWeb", query);
                 if (st.getStatus() == ReportStatus.Status.SAVED) {
