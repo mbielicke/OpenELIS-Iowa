@@ -11,7 +11,6 @@
     background:url("../Images/title.png") no-repeat 6px 6px;    
 }
 .crumbline {
-    height:14px;
     margin:0 6px 0 6px;
     padding:8px;
     border:1px solid white;
@@ -138,4 +137,34 @@
 
 .categories {
 	border-right: 1px solid gray;
+}
+
+.step1{
+
+background: url("../Images/step_1.png") no-repeat;
+
+  height: 50px;
+
+  width: 45px;
+
+}
+
+.step2{
+
+background: url("../Images/step_2.png") no-repeat;
+
+  height: 50px;
+
+  width: 45px;
+
+}
+
+.step3{
+
+background: url("../Images/step_3.png") no-repeat;
+
+  height: 50px;
+
+  width: 45px;
+
 }
