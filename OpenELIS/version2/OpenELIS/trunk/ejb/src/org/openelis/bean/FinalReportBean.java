@@ -37,7 +37,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OptionListItem;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
-import org.openelis.domain.SampleEnvironmentalWebVO;
+import org.openelis.domain.SampleFinalReportWebVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
@@ -50,6 +50,7 @@ import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SessionCacheLocal;
+import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
@@ -90,14 +91,16 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
 	private static int UNFOLDABLE_PAGE_COUNT = 6;
 	
-	private static Integer organizationTypeId;
+	private static Integer organizationReportToId, sampleInErrorId, analysisReleasedId;
 
     private static final SampleWebMeta meta = new SampleWebMeta();
     
     @PostConstruct
     public void init() {        
             try {
-                organizationTypeId = dictionary.fetchBySystemName("org_report_to").getId();
+                organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
+                sampleInErrorId = dictionary.fetchBySystemName("sample_error").getId();
+                analysisReleasedId = dictionary.fetchBySystemName("analysis_released").getId();
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -158,85 +161,87 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 	 * Final report for a single or reprint. The report is printed for the
 	 * primary or secondary organization(s) ordered by organization.
 	 */
-	public ReportStatus runReportForSingle(ArrayList<QueryData> paramList) throws Exception {
-		SampleDO data;
-		Integer orgId;
-		ReportStatus status;
-		OrganizationPrint orgPrint;
-		String orgParam, accession, printer;
-		HashMap<String, QueryData> param;
-		ArrayList<Object[]> results;
-		ArrayList<OrganizationPrint> orgPrintList;
+    public ReportStatus runReportForSingle(ArrayList<QueryData> paramList) throws Exception {
+        SampleDO data;
+        Integer orgId;
+        ReportStatus status;
+        OrganizationPrint orgPrint;
+        String orgParam, accession, printer;
+        HashMap<String, QueryData> param;
+        ArrayList<Object[]> results;
+        ArrayList<OrganizationPrint> orgPrintList;
 
-		/*
-		 * push status into session so we can query it while the report is
-		 * running
-		 */
-		status = new ReportStatus();
-		session.setAttribute("FinalReport", status);
+        /*
+         * push status into session so we can query it while the report is
+         * running
+         */
+        status = new ReportStatus();
+        session.setAttribute("FinalReport", status);
 
-		/*
-		 * Recover all the parameters and build a specific where clause
-		 */
-		param = ReportUtil.parameterMap(paramList);
+        /*
+         * Recover all the parameters and build a specific where clause
+         */
+        param = ReportUtil.parameterMap(paramList);
 
-		accession = ReportUtil.getSingleParameter(param, "ACCESSION_NUMBER");
-		orgParam = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
-		printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        accession = ReportUtil.getSingleParameter(param, "ACCESSION_NUMBER");
+        orgParam = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
+        printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
-		if (DataBaseUtil.isEmpty(accession) || DataBaseUtil.isEmpty(printer))
-			throw new InconsistencyException("You must specify the accession number and printer for this report");
-		/*
-		 * find the sample
-		 */
-		try {
-			data = sampleBean.fetchByAccessionNumber(Integer.parseInt(accession));
-		} catch (NotFoundException e) {
-			throw new NotFoundException("A sample with accession number " + accession + " is not valid or does not exists");
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+        if (DataBaseUtil.isEmpty(accession) || DataBaseUtil.isEmpty(printer))
+            throw new InconsistencyException("You must specify the accession number and printer for this report");
+        /*
+         * find the sample
+         */
+        try {
+            data = sampleBean.fetchByAccessionNumber(Integer.parseInt(accession));
+        } catch (NotFoundException e) {
+            throw new NotFoundException("A sample with accession number " + accession +
+                                        " is not valid or does not exists");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
 
-		/*
-		 * find all the report to organizations for given sample
-		 */
-		orgPrintList = new ArrayList<OrganizationPrint>();
-		try {
-			results = sampleBean.fetchSamplesForFinalReportSingle(data.getId());
-			status.setMessage("Initializing report");
-			/*
-			 * if the user didn't specify an id for an organization then a
-			 * report is created for all the organizations associated with the
-			 * sample, otherwise a report is created for the organization, the
-			 * id for which is specified by the user if it can be found in the
-			 * list of organizations for that sample
-			 */
-			orgId = null;
-			if (orgParam != null)
-				orgId = Integer.parseInt(orgParam);
+        /*
+         * find all the report to organizations for given sample
+         */
+        orgPrintList = new ArrayList<OrganizationPrint>();
+        try {
+            results = sampleBean.fetchSamplesForFinalReportSingle(data.getId());
+            status.setMessage("Initializing report");
+            /*
+             * if the user didn't specify an id for an organization then a
+             * report is created for all the organizations associated with the
+             * sample, otherwise a report is created for the organization, the
+             * id for which is specified by the user if it can be found in the
+             * list of organizations for that sample
+             */
+            orgId = null;
+            if (orgParam != null)
+                orgId = Integer.parseInt(orgParam);
 
-			orgPrint = null;
-			for (Object[] result : results) {
-				if (orgId == null || DataBaseUtil.isSame(orgId, result[1])) {
-					orgPrint = new OrganizationPrint();
-					orgPrint.setOrganizationId((Integer)result[1]);
-					orgPrint.setSampleIds("="+data.getId());
-					orgPrintList.add(orgPrint);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+            orgPrint = null;
+            for (Object[] result : results) {
+                if (orgId == null || DataBaseUtil.isSame(orgId, result[1])) {
+                    orgPrint = new OrganizationPrint();
+                    orgPrint.setOrganizationId((Integer)result[1]);
+                    orgPrint.setSampleIds("=" + data.getId());
+                    orgPrintList.add(orgPrint);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
 
-		if (orgPrintList.size() == 0)
-			throw new InconsistencyException("Final report for accession number "+ accession+ " has incorrect status,\nmissing information, or has no analysis ready to be printed");
+        if (orgPrintList.size() == 0)
+            throw new InconsistencyException("Final report for accession number " + accession +
+                                             " has incorrect status,\nmissing information, or has no analysis ready to be printed");
 
-		print(orgPrintList, "R", false, status, printer);
+        print(orgPrintList, "R", false, status, printer);
 
-		return status;
-	}
+        return status;
+    }
 
 	/**
 	 * Final report for a single or reprint. The report is printed for the
@@ -448,36 +453,40 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 		return status;
 	}
 	
-	public ArrayList<SampleEnvironmentalWebVO> getSampleListForEnvironmental(ArrayList<QueryData> fields) throws Exception {
-	    
+	public ArrayList<SampleFinalReportWebVO> getSampleListForDomain(ArrayList<QueryData> fields) throws Exception {
+	    String domain;
 	    Query query;
+	    QueryData field;
         QueryBuilderV2 builder;
         ArrayList<QueryData> list;
-        List finalList;
-        ArrayList<SampleEnvironmentalWebVO> returnList; 
+        ArrayList<SampleFinalReportWebVO> returnList; 
         
         returnList=null;
-	   
-        list = createWhereFromParamFields(fields);
+        domain = null;
         builder = new QueryBuilderV2();
+        
+        for (int i = 0; i < fields.size(); i++ ) {
+            field = fields.get(i);
+            if ( (field.key).equals(SampleWebMeta.getSampleOrgOrganizationId())) 
+                domain = "E";
+            else if ( (field.key).equals(SampleWebMeta.getWellOrganizationId())) 
+                domain = "W";
+        }
+        list = createWhereFromParamFields(fields);        
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.SampleEnvironmentalWebVO(" + SampleWebMeta.getId() + ", " +
-                          SampleWebMeta.getAccessionNumber() +", "+ SampleWebMeta.getSampleOrgOrganizationId() +", "+
-                          SampleWebMeta.getCollectionDate() +", "+SampleWebMeta.getCollectionTime() +", "+ SampleWebMeta.getEnvLocation()+", "+
-                          SampleWebMeta.getEnvCollector() +", "+SampleWebMeta.getStatusId()+", "+
-                          SampleWebMeta.getLocationAddrCity()+ ") ");
-        builder.constructWhere(list);
-        builder.addWhere(SampleWebMeta.getEnvSampleId() + "=" +SampleWebMeta.getId());
-        builder.addWhere(SampleWebMeta.getSampleOrgTypeId()+ "=" + organizationTypeId);
+        if (domain.equals("E"))
+            builder = createBuilderForEnvironmental(builder, list);
+        else if (domain.equals("W"))
+            builder = createBuilderForPrivate(builder, list);
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
 
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, list);
-        finalList = query.getResultList();
-        if (finalList.isEmpty())
-            throw new NotFoundException();
-        returnList = DataBaseUtil.toArrayList(finalList);
-        session.setAttribute("sampleEnvlist",returnList);
+        returnList = DataBaseUtil.toArrayList(query.getResultList());
+        if (domain.equals("E"))
+            session.setAttribute("sampleEnvlist",returnList);
+        else if (domain.equals("W"))
+            session.setAttribute("samplePvtlist", returnList);
         return returnList;        
 	}
 	
@@ -507,7 +516,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                     fRel.query = fRel.query + ".." + field.query;
                     list.add(fRel);
                 }
-
             } else if ( (field.key).equals("COLLECTED_FROM")) {
                 if (fCol == null) {
                     fCol = field;
@@ -524,7 +532,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                     fCol.query = fCol.query + ".." + field.query;
                     list.add(fCol);
                 }
-
             } else if ( (field.key).equals("ACCESSION_FROM")) {
                 if (fAcc == null) {
                     fAcc = field;
@@ -558,49 +565,96 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 list.add(field);
             } else if ( (field.key).equals(SampleWebMeta.getSampleOrgOrganizationId())) {
                 list.add(field);
+            } else if ( (field.key).equals(SampleWebMeta.getWellOrganizationId())) {
+                list.add(field);
             }
         }
         return list;
+    }    
+    
+    public QueryBuilderV2 createBuilderForEnvironmental (QueryBuilderV2 builder, ArrayList<QueryData> list) throws Exception {
+        builder.setSelect("distinct new org.openelis.domain.SampleFinalReportWebVO(" + SampleWebMeta.getId() + ", " +
+                          SampleWebMeta.getAccessionNumber() +", "+ SampleWebMeta.getSampleOrgOrganizationId() +", "+
+                          SampleWebMeta.getCollectionDate() +", "+SampleWebMeta.getCollectionTime() +", "+ SampleWebMeta.getEnvLocation()+", "+
+                          SampleWebMeta.getEnvCollector() +", "+SampleWebMeta.getStatusId()+", "+
+                          SampleWebMeta.getLocationAddrCity()+ ") ");
+        builder.constructWhere(list);
+        builder.addWhere(SampleWebMeta.getEnvSampleId() + "=" +SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getSampleOrgTypeId()+ "=" + organizationReportToId);
+        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleInErrorId );
+        builder.addWhere(SampleWebMeta.getItemSampleId() +" = " + SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() +"=" + SampleWebMeta.getItemId());
+        builder.addWhere(SampleWebMeta.getAnalysisStatusId() +" = "+ analysisReleasedId);
+        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() +" = "+ "'Y'");
+        
+        return builder;
     }
+    
+    public QueryBuilderV2 createBuilderForPrivate (QueryBuilderV2 builder, ArrayList<QueryData> list) throws Exception {
+        builder.setSelect("distinct new org.openelis.domain.SampleFinalReportWebVO(" +
+                          SampleWebMeta.getId() + ", " + SampleWebMeta.getAccessionNumber() + ", " +
+                          SampleWebMeta.getWellOrganizationId() + ", " +
+                          SampleWebMeta.getCollectionDate() + ", " +
+                          SampleWebMeta.getCollectionTime() + ", " +
+                          SampleWebMeta.getWellLocation() + ", " + SampleWebMeta.getWellCollector() + ", " + SampleWebMeta.getStatusId() + ", " +
+                          SampleWebMeta.getWellOrganizationAddrCity() + ", "+SampleWebMeta.getWellOwner()+") ");
+        builder.constructWhere(list);
+        builder.addWhere(SampleWebMeta.getWellSampleId() + "=" + SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getWellOrganizationAddressId() +"=" +SampleWebMeta.getWellOrganizationAddrId());
+        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleInErrorId);
+        builder.addWhere(SampleWebMeta.getItemSampleId() + " = " + SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" + SampleWebMeta.getItemId());
+        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + " = " + analysisReleasedId);
+        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + " = " + "'Y'");
+        
+        return builder;
+    }      
 	
     public ArrayList<IdNameVO> getProjectList(ArrayList<QueryData> paramList) throws Exception {
         int i;
-        String str;
+        String key,str;
+        String[] orgIds;
         QueryData field;
         ArrayList<IdNameVO> resultList;
-        String[] orgIds;
         ArrayList<Integer> organizationId;
 
         orgIds = null;
         organizationId = new ArrayList<Integer>();
-
+        key = null;
+        resultList = null;
+        
         for (i = 0; i < paramList.size(); i++ ) {
             field = paramList.get(i);
+            key = field.key;
             str = field.query;
             orgIds = str.split("\\|");
         }
         for (int j = 0; j < orgIds.length; j++ )
             organizationId.add(Integer.parseInt(orgIds[j]));
-        resultList = sampleBean.fetchProjectsForOrganizations(organizationId);
-
+        if(key.equals(SampleMeta.getWellOrganizationId()))
+            resultList = sampleBean.fetchProjectsForPvtOrganizations(organizationId);
+        else if(key.equals(SampleMeta.getSampleOrgOrganizationId()))
+            resultList = sampleBean.fetchProjectsForOrganizations(organizationId);
         return resultList;
     }
+
     
     public ReportStatus runReportForWeb(ArrayList<QueryData> paramList) throws Exception {
         QueryData field;
         Integer orgId, samId;
         ReportStatus status;
         OrganizationPrint orgPrint;
-        SampleEnvironmentalWebVO voData;
-        String sampleList;
+        SampleFinalReportWebVO voData;
+        String sampleList, domain;
         ArrayList<Integer> sampleIds, samIds;
         String[] selectedVoStr;
         HashMap<Integer, ArrayList<Integer>> map;
         ArrayList<OrganizationPrint> orgPrintList;
-        ArrayList<SampleEnvironmentalWebVO> retrievedList;
+        ArrayList<SampleFinalReportWebVO> retrievedList;
         Iterator<Integer> orgIter;
 
         samIds = new ArrayList<Integer>();
+        retrievedList = null;
         /*
          * push status into session so we can query it while the report is
          * running
@@ -611,11 +665,17 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
         field = paramList.get(0);
         selectedVoStr = field.query.split(",");
-
+        
+        field = paramList.get(1);
+        domain = field.query; 
+            
         sampleList = null;
         map = new HashMap<Integer, ArrayList<Integer>>();
-        retrievedList = (ArrayList<SampleEnvironmentalWebVO>)session.getAttribute("sampleEnvlist");
-
+        
+        if(domain.equals("E"))
+            retrievedList = (ArrayList<SampleFinalReportWebVO>)session.getAttribute("sampleEnvlist");
+        else if(domain.equals("W"))
+            retrievedList = (ArrayList<SampleFinalReportWebVO>)session.getAttribute("samplePvtlist");
         for (int j = 0; j < selectedVoStr.length; j++ ) {
             voData = retrievedList.get(Integer.parseInt(selectedVoStr[j]));
             orgId = voData.getOrganizationId();
@@ -664,7 +724,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         print(orgPrintList, "R", false, status, "");
 
         return status;
-    }
+    }   
+    
     
 	private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
 	                   boolean forMailing, ReportStatus status, String printer) throws Exception {
@@ -796,12 +857,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 		}			
 	}
 
-	/*
-	 * 
-	 */
+
 	class MyComparator implements Comparator<OrganizationPrint> {
 		public int compare(OrganizationPrint o1, OrganizationPrint o2) {
 			return o1.getJprint().getPages().size() - o2.getJprint().getPages().size();
-		}
-	}
+        }
+    }
 }
