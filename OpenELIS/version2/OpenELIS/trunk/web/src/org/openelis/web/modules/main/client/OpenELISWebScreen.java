@@ -35,9 +35,8 @@ import org.openelis.gwt.widget.IconContainer;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.web.LinkButton;
 import org.openelis.gwt.widget.web.WebWindow;
-import org.openelis.modules.report.client.FinalReportScreen;
-import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportEnvScreen;
+import org.openelis.web.modules.finalReport.client.FinalReportPvtScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -146,7 +145,7 @@ public class OpenELISWebScreen extends Screen {
 	 * based on their permissions.
 	 */
 	private void setLinks() {
-		LinkButton finalReport,changePass,requestForms,statusReport,turnaround,dataDump,reportable,onhold,caseManagement,notifPref,homeLink;
+		LinkButton finalReport,finalReportPvt, changePass,requestForms,statusReport,turnaround,dataDump,reportable,onhold,caseManagement,notifPref,homeLink;
 		AbsolutePanel linksPanel;
 		
 		linksPanel = (AbsolutePanel)def.getWidget("links");
@@ -161,12 +160,12 @@ public class OpenELISWebScreen extends Screen {
 		linksPanel.add(homeLink);
 		
 
-	    finalReport = new LinkButton("finalReportIcon",null,"Final Report",56,40);
+		finalReport = new LinkButton("finalReportIcon",null,"Final Report",56,40);
 		finalReport.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 
 				try {
-					FinalReportEnvScreen screen =  new FinalReportEnvScreen();
+					FinalReportEnvScreen screen = new FinalReportEnvScreen();
 					screen.setStyleName("WhiteContentPanel");
 					OpenELISWebScreen.setScreen(screen, "Final Report", "finalReport");
 				}catch(Exception e) {
@@ -321,6 +320,23 @@ public class OpenELISWebScreen extends Screen {
 		});
 		notifPref.addStyleName("webButton");
 		linksPanel.add(notifPref);	
+		
+		finalReportPvt = new LinkButton("finalReportIcon",null,"Final Report Privates",56,40);
+		finalReportPvt.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+
+                try {
+                    FinalReportPvtScreen screen = new FinalReportPvtScreen();
+                    screen.setStyleName("WhiteContentPanel");
+                    OpenELISWebScreen.setScreen(screen, "Final Report", "finalReportPvt");
+                }catch(Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+		finalReportPvt.addStyleName("webButton");
+        linksPanel.add(finalReportPvt);
 	}
 	
 	/**
