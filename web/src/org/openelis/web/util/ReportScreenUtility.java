@@ -143,7 +143,8 @@ public class ReportScreenUtility {
 
         field = tb.getField();
 
-        if (field.getValue() == null)
+        //if (field.getValue() == null)
+        if (DataBaseUtil.isEmpty(field.getValue()))
             return null;
 
         qd = new QueryData();
