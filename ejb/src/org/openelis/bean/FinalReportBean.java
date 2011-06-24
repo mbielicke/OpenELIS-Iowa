@@ -664,6 +664,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         session.setAttribute("FinalReport", status);
 
         field = paramList.get(0);
+        if((field.query)== null) {
+            throw new InconsistencyException("Please select atleast one sample to run the report");
+        }            
         selectedVoStr = field.query.split(",");
         
         field = paramList.get(1);
