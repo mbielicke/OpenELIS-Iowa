@@ -74,6 +74,11 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Sample.FetchProjectsForOrganizations",
                 query = "select new org.openelis.domain.IdNameVO(p.id, p.description)" 
                      + " from Sample s, SampleOrganization so, SampleProject sp, Project p, Organization o"
+                     + " where s.id = so.sampleId and o.id in (:organizationIds) and so.typeId in(select id from Dictionary where systemName in ('org_report_to')) and" +
+                       " so.organizationId = o.id and sp.sampleId = s.id and sp.projectId = p.id"),
+   @NamedQuery( name = "Sample.FetchProjectsForPvtOrganizations",
+               query = "select new org.openelis.domain.IdNameVO(p.id, p.description)" 
+                     + " from Sample s, SamplePrivateWell so, SampleProject sp, Project p, Organization o"
                      + " where s.id = so.sampleId and o.id in (:organizationIds) and so.organizationId = o.id and sp.sampleId = s.id and sp.projectId = p.id")})
                       
 @NamedNativeQueries({
