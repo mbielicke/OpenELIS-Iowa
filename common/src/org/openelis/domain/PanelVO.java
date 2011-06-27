@@ -32,14 +32,14 @@ public class PanelVO implements RPC {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id;
-    protected String          testName, methodName, sectionName;
+    protected String          name, methodName, sectionName;
 
     public PanelVO() {
     }
 
-    public PanelVO(Integer id, String testName, String methodName, String sectionName) {
+    public PanelVO(Integer id, String name, String methodName, String sectionName) {
         setId(id);
-        setTestName(testName);
+        setName(name);
         setMethodName(methodName);
         setSectionName(sectionName);
     }
@@ -52,12 +52,12 @@ public class PanelVO implements RPC {
         this.id = testId;
     }
 
-    public String getTestName() {
-        return testName;
+    public String getName() {
+        return name;
     }
 
-    public void setTestName(String testName) {
-        this.testName = DataBaseUtil.trim(testName);
+    public void setName(String testName) {
+        this.name = DataBaseUtil.trim(testName);
     }
 
     public String getMethodName() {

@@ -25,17 +25,26 @@
 */
 package org.openelis.remote;
 
-import java.util.ArrayList;
-
 import javax.ejb.Remote;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SectionDO;
-import org.openelis.gwt.common.data.QueryData;
+import org.openelis.manager.SectionManager;
+import org.openelis.manager.SectionParameterManager;
 
 @Remote
-public interface SectionRemote {        
-    public ArrayList<SectionDO> fetchByName(String match, int maxResults) throws Exception; 
-    
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int rowPP) throws Exception;
+public interface SectionManagerRemote {
+
+    public SectionManager fetchById(Integer id) throws Exception;
+
+    public SectionManager fetchWithParameters(Integer id) throws Exception;
+
+    public SectionManager add(SectionManager man) throws Exception;
+
+    public SectionManager update(SectionManager man) throws Exception;
+
+    public SectionManager fetchForUpdate(Integer id) throws Exception;
+
+    public SectionManager abortUpdate(Integer id) throws Exception;
+
+    public SectionParameterManager fetchParameterBySectionId(Integer id) throws Exception;
+
 }

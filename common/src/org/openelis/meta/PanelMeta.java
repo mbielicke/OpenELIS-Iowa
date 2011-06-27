@@ -43,17 +43,17 @@ public class PanelMeta implements Meta,MetaMap {
                                 
                                 ITEM_ID = "_panelItem.id",
                                 ITEM_PANEL_ID = "_panelItem.panelId",
-                                ITEM_SORT_ORDER = "_panelItem.sortOrder",
-                                
-                                ITEM_TEST_NAME = "_panelItem.testName",
+                                ITEM_TYPE = "_panelItem.type",
+                                ITEM_SORT_ORDER = "_panelItem.sortOrder",                                
+                                ITEM_NAME = "_panelItem.name",
                                 ITEM_METHOD_NAME = "_panelItem.methodName";
 
 	private static HashSet<String> names;
     
     static {
         names = new HashSet<String>(Arrays.asList(ID,NAME,DESCRIPTION,ITEM_ID,
-                                                  ITEM_PANEL_ID,ITEM_SORT_ORDER,
-                                                  ITEM_TEST_NAME,ITEM_METHOD_NAME));
+                                                  ITEM_PANEL_ID,ITEM_TYPE,ITEM_SORT_ORDER,
+                                                  ITEM_NAME,ITEM_METHOD_NAME));
     }
     
     public static String getId() {
@@ -75,13 +75,17 @@ public class PanelMeta implements Meta,MetaMap {
     public static String getItemPanelId() {
         return ITEM_PANEL_ID;
     } 
+    
+    public static String getType() {
+        return ITEM_TYPE;
+    } 
 
     public static String getItemSortOrderId() {
         return ITEM_SORT_ORDER;
     } 
 
-    public static String getItemTestName() {
-        return ITEM_TEST_NAME;
+    public static String getItemName() {
+        return ITEM_NAME;
     } 
 
     public static String getItemMethodName() {

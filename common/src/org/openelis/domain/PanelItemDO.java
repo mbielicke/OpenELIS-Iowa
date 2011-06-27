@@ -36,17 +36,18 @@ public class PanelItemDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, panelId, sortOrder;
-    protected String          testName, methodName;
+    protected String          type, name, methodName;
 
     public PanelItemDO() {
     }
 
-    public PanelItemDO(Integer id, Integer panelId, Integer sortOrder, String testName,
-                       String methodName) {
+    public PanelItemDO(Integer id, Integer panelId, String type, Integer sortOrder,
+                       String name, String methodName) {
         setId(id);
         setPanelId(panelId);
+        setType(type);
         setSortOrder(sortOrder);
-        setTestName(testName);
+        setName(name);
         setMethodName(methodName);
         _changed = false;
     }
@@ -69,6 +70,15 @@ public class PanelItemDO extends DataObject {
         _changed = true;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = DataBaseUtil.trim(type);
+        _changed = true;
+    }
+
     public Integer getSortOrder() {
         return sortOrder;
     }
@@ -80,12 +90,12 @@ public class PanelItemDO extends DataObject {
         }
     }
 
-    public String getTestName() {
-        return testName;
+    public String getName() {
+        return name;
     }
 
-    public void setTestName(String testName) {
-        this.testName = DataBaseUtil.trim(testName);
+    public void setName(String name) {
+        this.name = DataBaseUtil.trim(name);
         _changed = true;
     }
 
