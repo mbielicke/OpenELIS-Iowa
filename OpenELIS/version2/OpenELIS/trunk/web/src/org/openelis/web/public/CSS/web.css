@@ -168,3 +168,14 @@ background: url("../Images/step_3.png") no-repeat;
   width: 45px;
 
 }
+
+.gwt-TabPanelBottom{
+    background:none;
+    border:0px;
+}
+
+.subform{
+    border:0px;
+    margin:4px 4px ;
+    margin-left:53px;
+}
