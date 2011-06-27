@@ -29,14 +29,17 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.AuxFieldGroupDO;
+import org.openelis.domain.SectionParameterDO;
 
 @Local
-public interface AuxFieldGroupLocal {
-    public AuxFieldGroupDO fetchById(Integer id) throws Exception;
-    public AuxFieldGroupDO fetchActiveByName(String name) throws Exception;
-    public ArrayList<AuxFieldGroupDO> fetchByName(String name) throws Exception;
-    public AuxFieldGroupDO add(AuxFieldGroupDO data) throws Exception;
-    public AuxFieldGroupDO update(AuxFieldGroupDO data) throws Exception;
-    public void validate(AuxFieldGroupDO data) throws Exception;
+public interface SectionParameterLocal {
+    public ArrayList<SectionParameterDO> fetchBySectionId(Integer id) throws Exception;
+    
+    public SectionParameterDO add(SectionParameterDO data) throws Exception;
+
+    public SectionParameterDO update(SectionParameterDO data) throws Exception;
+    
+    public void delete(SectionParameterDO data) throws Exception;
+
+    public void validate(SectionParameterDO data) throws Exception;
 }

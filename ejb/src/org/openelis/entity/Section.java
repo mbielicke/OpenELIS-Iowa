@@ -29,6 +29,8 @@ package org.openelis.entity;
  * Section Entity POJO for database
  */
 
+import java.util.Collection;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -39,6 +41,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -90,6 +93,10 @@ public class Section implements Auditable, Cloneable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_section_id", insertable = false, updatable = false)
     private Section      parentSection;
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "section_id")
+    private Collection<SectionParameter> sectionParameter;
 
     @Transient
     private Section      original;
@@ -163,6 +170,14 @@ public class Section implements Auditable, Cloneable {
     public void setParentSection(Section parentSection) {
         this.parentSection = parentSection;
     }
+    
+    public Collection<SectionParameter> getSectionParameter() {
+        return sectionParameter;
+    }
+
+    public void setSectionParameter(Collection<SectionParameter> sectionParameter) {
+        this.sectionParameter = sectionParameter;
+    }
 
     public void setClone() {
         try {
@@ -188,5 +203,6 @@ public class Section implements Auditable, Cloneable {
 
         return audit;
     }
+    
 
 }

@@ -93,7 +93,7 @@ public class SectionCacheBean implements SectionCacheLocal, SectionCacheRemote {
              * It can happen that "cache" contains expired elements and one of
              * those elements could be the one with the key "orderedList".
              * If that's the case then getSize() will return a non-zero number
-             * because it takes into consiration both expired and alive elements.
+             * because it takes into consideration both expired and alive elements.
              * Thus we have to check to see if "orderedList" is alive before trying
              * to call getValue() on it and if it's not (e == null), put a new 
              * element with that key and the latest data from the database as the

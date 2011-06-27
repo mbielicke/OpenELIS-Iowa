@@ -90,7 +90,7 @@ import org.openelis.utils.Auditable;
                        + " from Test t left join t.method m INNER JOIN t.testTypeOfSample type LEFT JOIN type.dictionary d where t.isActive='Y' order by t.name, m.name, d.entry"),
     @NamedQuery( name = "Test.FetchByPanelId",
                 query = "select distinct new org.openelis.domain.TestMethodVO(t.id, t.name, t.description, t.method.id, t.method.name, t.method.description)"
-                      + " from Test t, PanelItem i where t.name = i.testName and t.method.name = i.methodName and t.isActive ='Y' and i.panelId = :panelId order by t.name "),
+                      + " from Test t, PanelItem i where t.name = i.name and t.method.name = i.methodName and t.isActive ='Y' and i.panelId = :panelId order by t.name "),
     @NamedQuery( name = "Test.FetchList", 
                 query = "select new org.openelis.domain.TestMethodVO(t.id, t.name,t.description, m.id, m.name,m.description)"
                       + " from Test t LEFT JOIN t.method m where t.isActive='Y' order by t.name") })

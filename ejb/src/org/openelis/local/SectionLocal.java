@@ -32,8 +32,14 @@ import javax.ejb.Local;
 import org.openelis.domain.SectionViewDO;
 
 @Local
-public interface SectionLocal {
+public interface SectionLocal {    
     public SectionViewDO fetchById(Integer id) throws Exception;
     
     public ArrayList<SectionViewDO> fetchList() throws Exception;
+
+    public SectionViewDO add(SectionViewDO data) throws Exception;
+
+    public SectionViewDO update(SectionViewDO data) throws Exception;
+    
+    public void validate(SectionViewDO data) throws Exception;
 }
