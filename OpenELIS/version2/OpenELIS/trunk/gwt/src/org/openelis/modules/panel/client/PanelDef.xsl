@@ -160,7 +160,7 @@ UIRF Software License are applicable instead of those above.
               <VerticalPanel style="Form">
                 <widget valign="top">
                   <table key="panelItemTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getDescription()}" title="">
-                    <col key="{meta:getItemTestName()}" width="135" align="left" header="{resource:getString($constants,'test')}">
+                    <col key="{meta:getItemName()}" width="135" align="left" header="{resource:getString($constants,'name')}">
                       <textbox field="String" />
                     </col>
                     <col key="{meta:getItemMethodName()}" width="135" align="left" header="{resource:getString($constants,'method')}">
@@ -213,8 +213,8 @@ UIRF Software License are applicable instead of those above.
               </widget>
               <HorizontalPanel width="10" />
               <VerticalPanel style="Form">
-                <table key="allTestsTable" width="auto" maxRows="9" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-                  <col key="test" width="90" align="left" sort="true" header="{resource:getString($constants,'test')}">
+                <table key="allTestAuxTable" width="auto" maxRows="9" multiSelect="true" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
+                  <col key="name" width="90" align="left" sort="true" header="{resource:getString($constants,'name')}">
                     <label field="String" />
                   </col>
                   <col key="method" width="90" align="left" sort="true" header="{resource:getString($constants,'method')}">

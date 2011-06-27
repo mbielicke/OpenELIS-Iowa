@@ -28,11 +28,16 @@ package org.openelis.modules.section.client;
 import java.util.ArrayList;
 import java.util.EnumSet;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.AuxFieldValueViewDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrganizationContactDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionParameterDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -52,17 +57,31 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.manager.QcManager;
+import org.openelis.manager.SectionManager;
+import org.openelis.manager.SectionParameterManager;
 import org.openelis.meta.SectionMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 
@@ -75,15 +94,16 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SectionScreen extends Screen {
-    private SectionViewDO    data;
+    private SectionManager   manager;
     private ModulePermission userPermission;
 
     private AutoComplete<Integer> parentName, organizationName;
     private TextBox               name, description;
     private CheckBox              isExternal;
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  commitButton, abortButton;
-    protected MenuItem            history;
+                                  commitButton, abortButton, addParamButton, removeParamButton;
+    private TableWidget           table;
+    protected MenuItem            sectionHistory, sectionParameterHistory;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
     private ScreenService         organizationService;
@@ -110,10 +130,11 @@ public class SectionScreen extends Screen {
      * command.
      */
     private void postConstructor() {
-        data = new SectionViewDO();
+        manager = SectionManager.getInstance();
 
         initialize();
         setState(State.DEFAULT);
+        initializeDropdowns();
         DataChangeEvent.fire(this);
     }
 
@@ -208,25 +229,36 @@ public class SectionScreen extends Screen {
             }
         });
 
-        history = (MenuItem)def.getWidget("sectionHistory");
-        addScreenHandler(history, new ScreenEventHandler<Object>() {
+        sectionHistory = (MenuItem)def.getWidget("sectionHistory");
+        addScreenHandler(sectionHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                history();
+                sectionHistory();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                history.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                sectionHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        sectionParameterHistory = (MenuItem)def.getWidget("sectionParameterHistory");
+        addScreenHandler(sectionParameterHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                sectionParameterHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sectionParameterHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
         name = (TextBox)def.getWidget(SectionMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                name.setValue(data.getName());
+                name.setValue(manager.getSection().getName());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setName(event.getValue());
+                manager.getSection().setName(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -239,11 +271,11 @@ public class SectionScreen extends Screen {
         description = (TextBox)def.getWidget(SectionMeta.getDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                description.setValue(data.getDescription());
+                description.setValue(manager.getSection().getDescription());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setDescription(event.getValue());
+                manager.getSection().setDescription(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -256,11 +288,11 @@ public class SectionScreen extends Screen {
         isExternal = (CheckBox)def.getWidget(SectionMeta.getIsExternal());
         addScreenHandler(isExternal, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                isExternal.setValue(data.getIsExternal());
+                isExternal.setValue(manager.getSection().getIsExternal());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setIsExternal(event.getValue());
+                manager.getSection().setIsExternal(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -273,12 +305,13 @@ public class SectionScreen extends Screen {
         organizationName = (AutoComplete)def.getWidget(SectionMeta.getOrganizationName());
         addScreenHandler(organizationName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                organizationName.setSelection(data.getOrganizationId(), data.getOrganizationName());
+                organizationName.setSelection(manager.getSection().getOrganizationId(), 
+                                              manager.getSection().getOrganizationName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                data.setOrganizationId(event.getValue());
-                data.setOrganizationName(organizationName.getTextBoxDisplay());
+                manager.getSection().setOrganizationId(event.getValue());
+                manager.getSection().setOrganizationName(organizationName.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -291,12 +324,13 @@ public class SectionScreen extends Screen {
         parentName = (AutoComplete)def.getWidget(SectionMeta.getParentSectionName());
         addScreenHandler(parentName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                parentName.setSelection(data.getParentSectionId(), data.getParentSectionName());
+                parentName.setSelection(manager.getSection().getParentSectionId(),
+                                        manager.getSection().getParentSectionName());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                data.setParentSectionId(event.getValue());
-                data.setParentSectionName(parentName.getTextBoxDisplay());
+                manager.getSection().setParentSectionId(event.getValue());
+                manager.getSection().setParentSectionName(parentName.getTextBoxDisplay());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -367,6 +401,106 @@ public class SectionScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
                 window.clearStatus();
+            }
+        });
+        
+        table = (TableWidget)def.getWidget("sectionParamTable");
+        addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {
+                if (state != State.QUERY)
+                    table.load(getTableModel());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                table.enable(true);
+                table.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {                
+                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
+                    event.cancel();
+            }            
+        });
+
+        table.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                Object val;
+                SectionParameterDO data;
+
+                r = event.getRow();
+                c = event.getCol();
+                val = table.getObject(r,c);
+
+                try {
+                    data = manager.getParameters().getParameterAt(r);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    return;
+                }
+
+                switch (c) {
+                    case 0:
+                        data.setTypeId((Integer)val);
+                        break;
+                    case 1:
+                        data.setValue((String)val);
+                        break;
+                }
+            }
+        });
+
+        table.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                try {
+                    manager.getParameters().addParameter(new SectionParameterDO());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+
+        table.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                try {
+                    manager.getParameters().removeParameterAt(event.getIndex());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        addParamButton = (AppButton)def.getWidget("addParamButton");
+        addScreenHandler(addParamButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int n;
+                
+                table.addRow();
+                n = table.numRows() - 1;
+                table.selectRow(n);
+                table.scrollToSelection();
+                table.startEditing(n, 0);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addParamButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        removeParamButton = (AppButton)def.getWidget("removeParamButton");
+        addScreenHandler(removeParamButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int r;
+                
+                r = table.getSelectedRow();
+                if (r > -1 && table.numRows() > 0)
+                    table.deleteRow(r);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                removeParamButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -450,12 +584,31 @@ public class SectionScreen extends Screen {
             }
         });
     }
+        
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+        ArrayList<DictionaryDO> list;
+        TableDataRow row;
+        Dropdown<Integer> type;
+     
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        list = CategoryCache.getBySystemName("section_parameter_type");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getId(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+        type = ((Dropdown<Integer>)table.getColumns().get(0).getColumnWidget());
+        type.setModel(model);
+    }
 
     /*
      * basic button methods
      */
     protected void query() {
-        data = new SectionViewDO();
+        manager =SectionManager.getInstance();
+        
         setState(State.QUERY);
         DataChangeEvent.fire(this);
 
@@ -472,8 +625,8 @@ public class SectionScreen extends Screen {
     }
 
     protected void add() {
-        data = new SectionViewDO();
-        data.setIsExternal("N");
+        manager = SectionManager.getInstance();
+        manager.getSection().setIsExternal("N");
 
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -486,7 +639,7 @@ public class SectionScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            data = service.call("fetchForUpdate", data.getId());
+            manager = manager.fetchForUpdate();
 
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -497,7 +650,7 @@ public class SectionScreen extends Screen {
         window.clearStatus();
     }
 
-    protected void commit() {
+    public void commit() {
         setFocus(null);
 
         if ( !validate()) {
@@ -514,7 +667,7 @@ public class SectionScreen extends Screen {
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
-                data = service.call("add", data);
+                manager = manager.add();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -528,7 +681,7 @@ public class SectionScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
-                data = service.call("update", data);
+                manager = manager.update();
 
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
@@ -555,7 +708,7 @@ public class SectionScreen extends Screen {
             window.setDone(consts.get("addAborted"));
         } else if (state == State.UPDATE) {
             try {
-                data = service.call("abortUpdate", data.getId());
+                manager = manager.abortUpdate();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
             } catch (Exception e) {
@@ -568,21 +721,45 @@ public class SectionScreen extends Screen {
         }
     }
 
-    protected void history() {
+    protected void sectionHistory() {
         IdNameVO hist;
 
-        hist = new IdNameVO(data.getId(), data.getName());
+        hist = new IdNameVO(manager.getSection().getId(), manager.getSection().getName());
         HistoryScreen.showHistory(consts.get("sectionHistory"), ReferenceTable.SECTION, hist);
+    }
+    
+    protected void sectionParameterHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        SectionParameterDO data;
+        SectionParameterManager man;
+        
+        try {
+            man = manager.getParameters();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getParameterAt(i);                
+                refVoList[i] = new IdNameVO(data.getId(), data.getValue());                
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("sectionParameterHistory"),
+                                  ReferenceTable.SECTION_PARAMETER, refVoList);
     }
 
     protected boolean fetchById(Integer id) {
         if (id == null) {
-            data = new SectionViewDO();
+            manager = SectionManager.getInstance();
             setState(State.DEFAULT);
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                data = service.call("fetchById", id);
+                manager = SectionManager.fetchWithParameters(id);
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
@@ -600,5 +777,32 @@ public class SectionScreen extends Screen {
 
         return true;
     }
-
+    
+    private ArrayList<TableDataRow> getTableModel() {        
+        SectionParameterDO  data;
+        SectionParameterManager man;
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
+        
+        model = new ArrayList<TableDataRow>();
+        if (manager == null)
+            return model;
+        
+        try {
+            man = manager.getParameters();
+            for (int i = 0; i < man.count(); i++) { 
+                data = man.getParameterAt(i);
+                row = new TableDataRow(2);
+                row.key = data.getId();
+                row.cells.get(0).setValue(data.getTypeId());
+                row.cells.get(1).setValue(data.getValue());                
+                model.add(row);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+                                          
+        return model;
+    }
 }
