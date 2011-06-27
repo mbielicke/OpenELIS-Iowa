@@ -23,67 +23,44 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.section.server;
+package org.openelis.manager;
 
-import java.util.ArrayList;
+import org.openelis.gwt.services.ScreenService;
 
-import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SectionDO;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.manager.SectionManager;
-import org.openelis.manager.SectionParameterManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SectionManagerRemote;
-import org.openelis.remote.SectionRemote;
+public class SectionManagerProxy {
 
-public class SectionService {
+    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.section.server.SectionService";
+    protected ScreenService       service;
 
-    private static final int rowPP = 13;
+    public SectionManagerProxy() {
+        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
+    }
 
     public SectionManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return service.call("fetchById", id);
     }
 
-    public ArrayList<SectionDO> fetchByName(String search) throws Exception {
-        return remote().fetchByName(search + "%", 10);
-    }
-    
     public SectionManager fetchWithParameters(Integer id) throws Exception {
-        return remoteManager().fetchWithParameters(id);
-    }
-
-    public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return service.call("fetchWithParameters", id);
     }
 
     public SectionManager add(SectionManager man) throws Exception {
-        return remoteManager().add(man);
+        return service.call("add", man);
     }
 
     public SectionManager update(SectionManager man) throws Exception {
-        return remoteManager().update(man);
+        return service.call("update", man);
     }
 
     public SectionManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return service.call("fetchForUpdate", id);
     }
 
     public SectionManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
-    }
-    
-    //
-    // support for SectionParameterManager
-    //   
-    public SectionParameterManager fetchParameterBySectionId(Integer id) throws Exception {
-        return remoteManager().fetchParameterBySectionId(id);
+        return service.call("abortUpdate", id);
     }
 
-    private SectionRemote remote() {
-        return (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
-    }
-    
-    private SectionManagerRemote remoteManager() {
-        return (SectionManagerRemote)EJBFactory.lookup("openelis/SectionManagerBean/remote");
+    @SuppressWarnings("unused")
+    public void validate(SectionManager man) throws Exception {
     }
 }

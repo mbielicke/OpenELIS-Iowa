@@ -32,7 +32,6 @@ import java.util.EnumSet;
 
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;

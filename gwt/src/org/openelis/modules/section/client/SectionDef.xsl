@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="9" style="atozTable">
+              <table key="atozTable" width="auto" maxRows="13" style="atozTable">
                 <col width="175" header="{resource:getString($constants,'name')}">
                   <label field="String" />
                 </col>
@@ -126,6 +126,7 @@ UIRF Software License are applicable instead of those above.
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
                     <menuItem key="sectionHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'sectionHistory')}" />
+                    <menuItem key="sectionParameterHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'sectionParameterHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -139,7 +140,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'name')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},{meta:getParentSectionName()}" field="String" />
+                  <textbox key="{meta:getName()}" width="145" case="LOWER" max="20" tab="{meta:getDescription()},sectionParamTable" field="String" />
                 </widget>
               </row>
               <row>
@@ -147,7 +148,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'description')" />:
                 </text>
                 <widget colspan="6">
-                  <textbox key="{meta:getDescription()}" width="425" case="MIXED" max="60" tab="{meta:getIsExternal()},{meta:getName()}" field="String" />
+                  <textbox key="{meta:getDescription()}" width="425" max="60" tab="{meta:getIsExternal()},{meta:getName()}" field="String" />
                 </widget>
               </row>
               <row>
@@ -173,11 +174,40 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'parentSection')" />:
                 </text>
-                <autoComplete key="{meta:getParentSectionName()}" width="180" case="LOWER" popWidth="auto" tab="{meta:getName()},{meta:getOrganizationName()}" field="Integer">
+                <autoComplete key="{meta:getParentSectionName()}" width="180" case="LOWER" popWidth="auto" tab="sectionParamTable,{meta:getOrganizationName()}" field="Integer">
                   <col width="180" />
                 </autoComplete>
               </row>
             </TablePanel>
+            <VerticalPanel height = "5"/>
+            <table key="sectionParamTable" width="560" maxRows="5" showScroll="ALWAYS" tab="{meta:getName()},{meta:getParentSectionName()}" style="ScreenTableWithSides" title="">
+              <col key="{meta:getParameterTypeId()}" width="100" align="left" header="{resource:getString($constants,'type')}">
+                <dropdown width="110" field="Integer" required="true" /> 
+              </col>
+              <col key="{meta:getParameterValue()}" width="450" align="left" header="{resource:getString($constants,'value')}">
+                <textbox max="80" field="String" required="true" />
+              </col>
+            </table>
+            <widget style="TableButtonFooter">
+                <HorizontalPanel>
+                  <appButton key="addParamButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="AddRowButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addRow')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                  <appButton key="removeParamButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="RemoveRowButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </HorizontalPanel>
+              </widget>
           </VerticalPanel>
         </VerticalPanel>
       </HorizontalPanel>

@@ -29,15 +29,16 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.UserCache;
+import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -51,11 +52,11 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -90,13 +91,14 @@ public class PanelScreen extends Screen {
                              deleteButton, commitButton, abortButton, addTestButton, removeTestButton,
                              moveUpButton, moveDownButton, refreshButton;
     protected MenuItem       panelHistory, panelItemHistory;
-    private TableWidget      panelItemTable, allTestsTable;
-    private ScreenService    testService;
+    private TableWidget      panelItemTable, allTestAuxTable;
+    private ScreenService    testService, auxiliaryService;
 
     public PanelScreen() throws Exception {
         super((ScreenDefInt)GWT.create(PanelDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
+        auxiliaryService = new ScreenService("controller?service=org.openelis.modules.auxiliary.server.AuxiliaryService");
 
         userPermission = UserCache.getPermission().getModule("panel");
         if (userPermission == null)
@@ -309,14 +311,17 @@ public class PanelScreen extends Screen {
 
         panelItemTable.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
-                PanelItemDO data;
                 int r;
+                PanelItemDO data;
+                TableDataRow row;
 
                 r = event.getIndex();
+                row = panelItemTable.getRow(r);
                 try {
-                    data = new PanelItemDO();
-                    data.setTestName((String)panelItemTable.getObject(r, 0));
-                    data.setMethodName((String)panelItemTable.getObject(r, 1));
+                    data = new PanelItemDO();                    
+                    data.setName((String)row.cells.get(0).getValue());
+                    data.setMethodName((String)row.cells.get(1).getValue());
+                    data.setType((String)row.data);
                     manager.getItems().addItem(data);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -337,23 +342,25 @@ public class PanelScreen extends Screen {
         addTestButton = (AppButton)def.getWidget("addTestButton");
         addScreenHandler(addTestButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                TableDataRow selRow;
-                PanelVO pvo;
-                ArrayList<TableDataRow> selRows;
                 boolean ok;
+                TableDataRow row;
+                ArrayList<TableDataRow> rows;                
 
-                selRows = allTestsTable.getSelections();
+                rows = allTestAuxTable.getSelections();
                 try {
-                    for (int i = 0; i < selRows.size(); i++ ) {
-                        selRow = selRows.get(i);
-                        pvo = (PanelVO)selRow.data;
+                    for (int i = 0; i < rows.size(); i++ ) {
+                        row = rows.get(i);
 
-                        if (itemExistsInPanel(pvo)) {
+                        if (itemExistsInPanel(row)) {
+                            if ("A".equals(row.data)) {
+                                Window.alert(consts.get("auxAlreadyAddedException"));
+                                return;
+                            }
                             ok = Window.confirm(consts.get("testAlreadyAdded"));
                             if (ok)
-                                panelItemTable.addRow(getPanelItemRow(pvo));
+                                panelItemTable.addRow(getPanelItemRow(row));
                         } else {
-                            panelItemTable.addRow(getPanelItemRow(pvo));
+                            panelItemTable.addRow(getPanelItemRow(row));
                         }
                     }
                 } catch (Exception e) {
@@ -366,11 +373,11 @@ public class PanelScreen extends Screen {
             }
         });
 
-        allTestsTable = (TableWidget)def.getWidget("allTestsTable");
-        addScreenHandler(allTestsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        allTestAuxTable = (TableWidget)def.getWidget("allTestAuxTable");
+        addScreenHandler(allTestAuxTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
 
             public void onStateChange(StateChangeEvent<State> event) {
-                allTestsTable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                allTestAuxTable.enable(true);
             }
         });
 
@@ -536,20 +543,29 @@ public class PanelScreen extends Screen {
     }
 
     private void initializeAllTestTable() {
-        ArrayList<PanelVO> list;
+        ArrayList<PanelVO> testList;
+        ArrayList<AuxFieldGroupDO> auxList;
         ArrayList<TableDataRow> model;
         TableDataRow row;
 
         try {
-            list = testService.callList("fetchNameMethodSectionByName", "");
+            testList = testService.callList("fetchNameMethodSectionByName", "");
             model = new ArrayList<TableDataRow>();
-            for (PanelVO data : list) {
-                row = new TableDataRow(data.getId(), data.getTestName(), data.getMethodName(),
+            for (PanelVO data : testList) {
+                row = new TableDataRow(data.getId(), data.getName(), data.getMethodName(),
                                        data.getSectionName());
-                row.data = data;
+                row.data = "T";
                 model.add(row);
             }
-            allTestsTable.load(model);
+            
+            auxList = auxiliaryService.callList("fetchActive");
+            for (AuxFieldGroupDO data : auxList) {
+                row = new TableDataRow(data.getId(), data.getName(), null, null);
+                row.data = "A";
+                model.add(row);
+            }
+            
+            allTestAuxTable.load(model);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -617,7 +633,7 @@ public class PanelScreen extends Screen {
 
     protected void commit() {
         setFocus(null);
-        allTestsTable.clearSelections();
+        allTestAuxTable.clearSelections();
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -676,7 +692,7 @@ public class PanelScreen extends Screen {
 
     protected void abort() {
         setFocus(null);
-        allTestsTable.clearSelections();
+        allTestAuxTable.clearSelections();
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 
@@ -720,6 +736,7 @@ public class PanelScreen extends Screen {
 
     protected void panelItemHistory() {
         int i, count;
+        String name, mname, iname;
         IdNameVO refVoList[];
         PanelItemManager man;
         PanelItemDO data;
@@ -730,8 +747,14 @@ public class PanelScreen extends Screen {
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
                 data = man.getItemAt(i);
-                refVoList[i] = new IdNameVO(data.getId(), data.getTestName() + "," +
-                                                          data.getMethodName());
+                name = data.getName();
+                mname = data.getMethodName();
+                
+                if (mname == null)
+                    iname = name;
+                else
+                    iname = name + "," + mname;
+                refVoList[i] = new IdNameVO(data.getId(), iname);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -784,7 +807,7 @@ public class PanelScreen extends Screen {
                 data = manager.getItems().getItemAt(i);
                 row = new TableDataRow(2);
                 row.key = data.getId();
-                row.cells.get(0).setValue(data.getTestName());
+                row.cells.get(0).setValue(data.getName());
                 row.cells.get(1).setValue(data.getMethodName());
 
                 model.add(row);
@@ -796,23 +819,32 @@ public class PanelScreen extends Screen {
         return model;
     }
 
-    private TableDataRow getPanelItemRow(PanelVO data) {
+    private TableDataRow getPanelItemRow(TableDataRow trow) {
         TableDataRow row;
 
         row = new TableDataRow(2);
-        row.cells.get(0).setValue(data.getTestName());
-        row.cells.get(1).setValue(data.getMethodName());
-
+        row.cells.get(0).setValue((String)trow.cells.get(0).getValue());
+        row.cells.get(1).setValue((String)trow.cells.get(1).getValue());
+        row.data = trow.data;
         return row;
     }
 
-    private boolean itemExistsInPanel(PanelVO pvo) throws Exception {
+    private boolean itemExistsInPanel(TableDataRow row) throws Exception {        
         PanelItemDO data;
+        String name, method;
+        
+        name = (String)row.cells.get(0).getValue();
+        method = (String)row.cells.get(1).getValue();
+        
         for (int j = 0; j < manager.getItems().count(); j++ ) {
             data = manager.getItems().getItemAt(j);
-            if (data.getTestName().equals(pvo.getTestName()) &&
-                data.getMethodName().equals(pvo.getMethodName())) {
-                return true;
+            if (data.getName().equals(name)) {                
+                if (data.getMethodName() != null) {
+                    if (data.getMethodName().equals(method)) 
+                        return true;                                                                     
+                } else {
+                    return true;
+                }
             }
         }
         return false;
