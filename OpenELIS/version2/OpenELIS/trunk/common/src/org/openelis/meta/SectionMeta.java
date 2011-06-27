@@ -44,14 +44,20 @@ public class SectionMeta implements Meta, MetaMap {
                                 IS_EXTERNAL	= "_section.isExternal",
                                 ORGANIZATION_ID = "_section.organizationId",
                                 
+                                PAR_ID = "_sectionParameter.id",
+	                            PAR_SECTION_ID =  "_sectionParameter.sectionId",
+	                            PAR_TYPE_ID =  "_sectionParameter.typeId",
+	                            PAR_VALUE =  "_sectionParameter.value",
+                                
                                 PARENT_SECTION_NAME = "_section.parentSection.name",
                                 ORGANIZATION_NAME = "_section.organization.name";
-
+	
     private static HashSet<String> names;
     
     static {
         names = new HashSet<String>(Arrays.asList(ID,PARENT_SECTION_ID,NAME,
                                                   DESCRIPTION,IS_EXTERNAL,ORGANIZATION_ID,
+                                                  PAR_ID,PAR_SECTION_ID,PAR_TYPE_ID,PAR_VALUE,                                                  
                                                   PARENT_SECTION_NAME,ORGANIZATION_NAME));
     }
     
@@ -79,6 +85,22 @@ public class SectionMeta implements Meta, MetaMap {
         return ORGANIZATION_ID;
     }
     
+    public static String getParameterId() {
+        return PAR_ID;
+    }
+    
+    public static String getParameterSectionId() {
+        return PAR_SECTION_ID;
+    }
+    
+    public static String getParameterTypeId() {
+        return PAR_TYPE_ID;
+    } 
+    
+    public static String getParameterValue() {   
+        return PAR_VALUE;
+    }
+    
     public static String getParentSectionName() {
         return PARENT_SECTION_NAME;
     }
@@ -92,7 +114,14 @@ public class SectionMeta implements Meta, MetaMap {
     }
     
     public String buildFrom(String where) {
-        return "Section _section ";                 
+        String from;
+        
+        from = "Section _section ";
+        
+        if (where.indexOf("sectionParameter.") > -1)
+            from += ",IN (_section.sectionParameter) _sectionParameter ";
+        
+        return from;
     }
   
 }   
