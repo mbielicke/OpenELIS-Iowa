@@ -45,7 +45,7 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQuery(name = "PanelItem.FetchByPanelId", 
-           query = "select distinct new org.openelis.domain.PanelItemDO(p.id,p.panelId,p.sortOrder,p.testName,p.methodName)"
+           query = "select distinct new org.openelis.domain.PanelItemDO(p.id,p.panelId,p.type,p.sortOrder,p.name,p.methodName)"
                  + " from PanelItem p where p.panelId = :id order by p.sortOrder")
 
 @Entity
@@ -60,12 +60,15 @@ public class PanelItem implements Auditable, Cloneable {
 
     @Column(name = "panel_id")
     private Integer   panelId;
+    
+    @Column(name = "type")
+    private String    type;
 
     @Column(name = "sort_order")
     private Integer   sortOrder;
 
-    @Column(name = "test_name")
-    private String    testName;
+    @Column(name = "name")
+    private String    name;
 
     @Column(name = "method_name")
     private String    methodName;
@@ -91,6 +94,15 @@ public class PanelItem implements Auditable, Cloneable {
             this.panelId = panelId;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        if (DataBaseUtil.isDifferent(type,this.type))
+            this.type = type;
+    }
+
     public Integer getSortOrder() {
         return sortOrder;
     }
@@ -100,13 +112,13 @@ public class PanelItem implements Auditable, Cloneable {
             this.sortOrder = sortOrder;
     }
 
-    public String getTestName() {
-        return testName;
+    public String getName() {
+        return name;
     }
 
-    public void setTestName(String testName) {
-        if (DataBaseUtil.isDifferent(testName,this.testName))
-            this.testName = testName;
+    public void setName(String name) {
+        if (DataBaseUtil.isDifferent(name,this.name))
+            this.name = name;
     }
 
     public String getMethodName() {
@@ -135,8 +147,9 @@ public class PanelItem implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("panel_id", panelId, original.panelId)
+                 .setField("type", type, original.type)
                  .setField("sort_order", sortOrder, original.sortOrder)
-                 .setField("test_name", testName, original.testName)
+                 .setField("name", name, original.name)
                  .setField("method_name", methodName, original.methodName);
 
         return audit;

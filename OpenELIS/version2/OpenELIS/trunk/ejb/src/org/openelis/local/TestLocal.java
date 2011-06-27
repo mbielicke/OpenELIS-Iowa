@@ -36,6 +36,8 @@ import org.openelis.domain.TestViewDO;
 public interface TestLocal {
     public TestViewDO fetchById(Integer testId) throws Exception;
     
+    public ArrayList<TestMethodVO> fetchByName(String name, int max) throws Exception;
+    
     public ArrayList<TestMethodVO> fetchList() throws Exception;
 
     public TestViewDO add(TestViewDO data) throws Exception;

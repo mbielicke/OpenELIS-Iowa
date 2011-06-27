@@ -94,6 +94,23 @@ public class AuxFieldGroupBean implements AuxFieldGroupRemote, AuxFieldGroupLoca
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
+    public AuxFieldGroupDO fetchActiveByName(String name) throws Exception {
+        Query query;
+        AuxFieldGroupDO data;
+        
+        query = manager.createNamedQuery("AuxFieldGroup.FetchActiveByName");
+        query.setParameter("name", name);
+        
+        try {
+            data = (AuxFieldGroupDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+    
     @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
 

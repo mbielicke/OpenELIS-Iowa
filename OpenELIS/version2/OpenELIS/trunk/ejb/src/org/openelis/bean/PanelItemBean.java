@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -36,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.entity.PanelItem;
@@ -43,7 +45,9 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.AuxFieldGroupLocal;
 import org.openelis.local.PanelItemLocal;
+import org.openelis.local.TestLocal;
 import org.openelis.meta.PanelMeta;
 
 @Stateless
@@ -53,6 +57,12 @@ public class PanelItemBean implements PanelItemLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
+    
+    @EJB 
+    private TestLocal                  test;
+    
+    @EJB
+    private AuxFieldGroupLocal         auxFieldGroup;
     
     @SuppressWarnings("unchecked")
     public ArrayList<PanelItemDO> fetchByPanelId(Integer id) throws Exception {
@@ -77,8 +87,9 @@ public class PanelItemBean implements PanelItemLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = new PanelItem();       
         entity.setPanelId(data.getPanelId());
+        entity.setType(data.getType());
         entity.setSortOrder(data.getSortOrder());
-        entity.setTestName(data.getTestName());
+        entity.setName(data.getName());
         entity.setMethodName(data.getMethodName());
         
         manager.persist(entity);
@@ -97,8 +108,9 @@ public class PanelItemBean implements PanelItemLocal {
         
         entity = manager.find(PanelItem.class, data.getId());       
         entity.setPanelId(data.getPanelId());
+        entity.setType(data.getType());
         entity.setSortOrder(data.getSortOrder());
-        entity.setTestName(data.getTestName());
+        entity.setName(data.getName());
         entity.setMethodName(data.getMethodName());        
 
         return data;
@@ -114,37 +126,43 @@ public class PanelItemBean implements PanelItemLocal {
             manager.remove(entity);
     }
 
-    public void validate(PanelItemDO data) throws Exception {      
-        ValidationErrorsList list; 
-        List<TestMethodVO> tests;
-        TestMethodVO test;
-        Query query;
+    public void validate(PanelItemDO data) throws Exception {
         boolean match;
-        
-        query = manager.createNamedQuery("Test.FetchWithMethodByName");
-        query.setParameter("name", data.getTestName());
-        tests = query.getResultList();
-        list = new ValidationErrorsList();
-        match = false;
-        
-        if(tests.size() == 0) {            
-            list.add(new FieldErrorException("noActiveTestsException",PanelMeta.getItemTestName()));
-            throw list;
-        } else {
-            for(int i = 0; i < tests.size(); i++) {
-                test = tests.get(i);
-                if(DataBaseUtil.isSame(test.getMethodName(), data.getMethodName())) {
-                    match = true;
-                    break;
-                }                                 
-            }
-            
-            if(!match) {
-                list.add(new FieldErrorException("noActiveTestsException",PanelMeta.getItemTestName()));
-                throw list;
-            }                
-        }
-        
-    }
+        ValidationErrorsList list;
+        TestMethodVO tm;
+        ArrayList<TestMethodVO> tests;
 
+        list = new ValidationErrorsList();
+        if ("T".equals(data.getType())) {
+            tests = test.fetchByName(data.getName(), 10000);
+            match = false;
+
+            if (tests.size() == 0) {
+                list.add(new FieldErrorException("noActiveTestsException", PanelMeta.getItemName()));
+                throw list;
+            } else {
+                for (int i = 0; i < tests.size(); i++ ) {
+                    tm = tests.get(i);
+                    if (DataBaseUtil.isSame(tm.getMethodName(), data.getMethodName())) {
+                        match = true;
+                        break;
+                    }
+                }
+
+                if ( !match) {
+                    list.add(new FieldErrorException("noActiveTestsException",
+                                                     PanelMeta.getItemName()));
+                    throw list;
+                }
+            }
+        } else if ("A".equals(data.getType())) {
+            try {
+                auxFieldGroup.fetchActiveByName(data.getName());
+            } catch (NotFoundException e) {
+                list.add(new FieldErrorException("noActiveAuxGrpException",
+                                                 PanelMeta.getItemName()));
+                throw list;
+            }
+        }
+    }
 }

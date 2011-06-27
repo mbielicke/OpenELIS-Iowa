@@ -85,6 +85,7 @@ import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SectionCacheLocal;
 import org.openelis.local.SectionLocal;
+import org.openelis.local.SectionParameterLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.ShippingItemLocal;
 import org.openelis.local.ShippingLocal;
@@ -336,6 +337,10 @@ public class EJBFactory {
     public static SectionLocal getSection() {
         return (SectionLocal)lookup("openelis/SectionBean/local");
     }    
+    
+    public static SectionParameterLocal getSectionParameter() {
+        return (SectionParameterLocal)lookup("openelis/SectionParameterBean/local");    
+    }
     
     public static ShippingItemLocal getShippingItem() {
         return (ShippingItemLocal)lookup("openelis/ShippingItemBean/local");

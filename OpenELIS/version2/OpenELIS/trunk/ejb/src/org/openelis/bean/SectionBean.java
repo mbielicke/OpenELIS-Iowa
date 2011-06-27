@@ -206,7 +206,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
         return fetchById(id);
     }
 
-    private void validate(SectionViewDO data) throws Exception {
+    public void validate(SectionViewDO data) throws Exception {
         String name;
         ValidationErrorsList exceptionList;
         Query query;
@@ -232,9 +232,8 @@ public class SectionBean implements SectionRemote, SectionLocal {
             }
         }
 
-        if ("Y".equals(data.getIsExternal()) && data.getOrganizationId() == null) {
-            exceptionList.add(new FormErrorException("orgNotSpecForExtSectionException"));
-        }
+        if ("Y".equals(data.getIsExternal()) && data.getOrganizationId() == null) 
+            exceptionList.add(new FieldErrorException("orgNotSpecForExtSectionException", null));        
 
         psecId = data.getParentSectionId();
         if (psecId != null && psecId.equals(data.getId())) {

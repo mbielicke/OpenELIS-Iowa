@@ -57,7 +57,7 @@ import org.openelis.meta.QcMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("organization-select")
+@RolesAllowed("qc-select")
 public class QcAnalyteBean implements QcAnalyteLocal {
 
     @PersistenceContext(unitName = "openelis")
@@ -67,7 +67,6 @@ public class QcAnalyteBean implements QcAnalyteLocal {
     private DictionaryLocal     dictionary;
 
     private static int          typeDict;
-    private static final QcMeta meta = new QcMeta();
     private static final Logger log  = Logger.getLogger(QcAnalyteBean.class.getName());
     
     @PostConstruct
@@ -194,10 +193,10 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getAnalyteId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getQcAnalyteId()));
+                                             QcMeta.getQcAnalyteId()));
         if (DataBaseUtil.isEmpty(data.getTypeId()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getQcAnalyteTypeId()));
+                                             QcMeta.getQcAnalyteTypeId()));
         if (list.size() > 0)
             throw list;
     }
