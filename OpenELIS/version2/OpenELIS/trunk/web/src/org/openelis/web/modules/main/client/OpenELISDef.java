@@ -30,6 +30,6 @@ import org.openelis.gwt.screen.ScreenDefInt;
 /**
  * This is a marker interface for the UI Generator to create the Main screen of OpenELIS web
  */
-public interface OpenELISWebDef extends ScreenDefInt {
+public interface OpenELISDef extends ScreenDefInt {
 
 }

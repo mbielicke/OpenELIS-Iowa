@@ -31,39 +31,34 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpSession;
 
-import org.openelis.gwt.common.SystemUserPermission;
-import org.openelis.web.modules.main.client.OpenELISRPC;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.UserCacheRemote;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
+import org.openelis.web.modules.main.client.OpenELISRPC;
 
 /**
  * This class loads initial data for the main screen of the OpenELIS Web app
  */
 public class OpenELISWebService {
 
-    public static String APP_ROOT; 
-
-    /**
-     * Method called by client to retrieve initial Data
-     * @return
-     */
     public OpenELISRPC initialData() {
         OpenELISRPC rpc;
 
         rpc = new OpenELISRPC();
         rpc.appConstants = getConstants();
-        rpc.systemUserPermission = (SystemUserPermission)SessionManager.getSession().getAttribute("UserPermission");
 
         return rpc;
     }
 
-    /**
-     * Method called by client to logout the calling user
-     */
+    public void keepAlive() {
+    }
+
     public void logout() {
         HttpSession session;
 
         try {
+            remote().logout();
             session = SessionManager.getSession();
             if (session != null) {
                 SessionManager.removeSession(session.getId());
@@ -100,4 +95,7 @@ public class OpenELISWebService {
         return consts;
     }
 
+    private UserCacheRemote remote() {
+        return (UserCacheRemote)EJBFactory.lookup("openelis/UserCacheBean/remote");
+    }
 }

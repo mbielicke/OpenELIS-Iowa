@@ -42,9 +42,4 @@ public class OpenELISRPC implements RPC {
      * Map of string literals used in the Application
      */
     public HashMap<String,String> appConstants;
-    
-    /**
-     * User permissions belonging to the logged in user
-     */
-    public SystemUserPermission systemUserPermission;
 }
