@@ -161,8 +161,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         addClickHandler("Logout", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
-                    service.call("logout");        
-                    Window.open("OpenELIS.html", "_self", null);
+                    logout();
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
@@ -1363,7 +1362,6 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 
         service.call("logout", new SyncCallback<RPC>() {
             public void onSuccess(RPC result) {
-                
             }
             public void onFailure(Throwable caught) {
             }
