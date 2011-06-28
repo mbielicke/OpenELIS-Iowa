@@ -114,7 +114,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"collectorName")' />:
               </text>
               <widget colspan="4">
-                <textbox case="MIXED" field="String" key="COLLECTOR_NAME" max="60" width="202" />
+                <textbox case="MIXED" field="String" key="COLLECTOR_NAME_PVT" max="60" width="202" />
               </widget>
             </row>
             <row>
@@ -130,7 +130,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"collectionSite")' />:
               </text>
               <widget colspan="4">
-                <textbox case="MIXED" field="String" key="COLLECTION_SITE" max="60" width="202" />
+                <textbox case="MIXED" field="String" key="COLLECTION_SITE_PVT" max="60" width="202" />
               </widget>
             </row>
             <row>
