@@ -61,24 +61,10 @@ UIRF Software License are applicable instead of those above.
     <servlet-class>org.openelis.gwt.server.ScreenControllerServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
-  
-  
-  <servlet>
-    <servlet-name>PreferencesServlet</servlet-name>
-    <servlet-class>org.openelis.web.server.PreferencesServlet</servlet-class>
-    <load-on-startup>4</load-on-startup>
-  </servlet>
-  
 
   <servlet-mapping>
     <servlet-name>OpenELISServlet</servlet-name>
     <url-pattern>/openelisweb/OpenELISServlet</url-pattern>
-  </servlet-mapping>
-  
-  
-  <servlet-mapping>
-    <servlet-name>PreferencesServlet</servlet-name>
-    <url-pattern>/openelisweb/PreferencesServlet</url-pattern>
   </servlet-mapping>
   
   <servlet>

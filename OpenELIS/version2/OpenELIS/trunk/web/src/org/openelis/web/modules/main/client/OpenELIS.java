@@ -29,18 +29,14 @@ import java.util.HashMap;
 
 import org.openelis.cache.UserCache;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenSessionTimer;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Confirm;
-import org.openelis.gwt.widget.IconContainer;
 import org.openelis.gwt.widget.Label;
-import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.web.LinkButton;
 import org.openelis.gwt.widget.web.WebWindow;
-import org.openelis.modules.main.client.OpenELISDef;
 import org.openelis.web.modules.finalReport.client.FinalReportEnvScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportPvtScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
