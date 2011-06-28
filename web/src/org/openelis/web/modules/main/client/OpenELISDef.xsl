@@ -55,7 +55,7 @@ UIRF Software License are applicable instead of those above.
         	    <TablePanel spacing="0" padding="0">
         	      <row>
         	      <AbsolutePanel style="title"/>
-              	  <label style="webLabel" key="welcome"/>
+              	  <label style="webLabel" key="userName"/>
               	  <text style="webLabel"> | </text>
               	  <label style="webLabel,clickable" key="logout" text="Logout"/>
               	  </row>
