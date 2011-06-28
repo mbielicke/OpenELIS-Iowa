@@ -203,7 +203,7 @@ public class FinalReportPvtScreen extends Screen {
             }
         });
 
-        collectorName = (TextBox)def.getWidget("COLLECTOR_NAME");
+        collectorName = (TextBox)def.getWidget("COLLECTOR_NAME_PVT");
         addScreenHandler(collectorName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                     collectorName.setValue(data.getCollectorName());
@@ -263,7 +263,7 @@ public class FinalReportPvtScreen extends Screen {
             }
         });
 
-        collectionSite = (TextBox)def.getWidget("COLLECTION_SITE");
+        collectionSite = (TextBox)def.getWidget("COLLECTION_SITE_PVT");
         addScreenHandler(collectionSite, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                     collectionSite.setValue(data.getCollectionSite());
