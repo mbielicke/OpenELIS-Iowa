@@ -650,8 +650,17 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             } else if ( (field.key).equals("COLLECTION_TOWN")) {
                 field.key = SampleWebMeta.getLocationAddrCity();
                 list.add(field);
+            } else if ( (field.key).equals("COLLECTOR_NAME_PVT")) {
+                field.key = SampleWebMeta.getWellCollector();
+                list.add(field);
+            } else if ( (field.key).equals("COLLECTION_SITE_PVT")) {
+                field.key = SampleWebMeta.getWellLocation();
+                list.add(field);
             } else if ( (field.key).equals("PROJECT_CODE")) {
                 field.key = SampleWebMeta.getProjectId();
+                list.add(field);
+            } else if ( (field.key).equals("OWNER")) {
+                field.key = SampleWebMeta.getWellOwner();
                 list.add(field);
             } else if ( (field.key).equals(SampleWebMeta.getSampleOrgOrganizationId())) {
                 list.add(field);
