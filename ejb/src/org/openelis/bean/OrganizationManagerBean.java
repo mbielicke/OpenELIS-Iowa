@@ -25,6 +25,8 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -60,13 +62,24 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
     public OrganizationManager fetchById(Integer id) throws Exception {
         return OrganizationManager.fetchById(id);
     }
-
+    
     public OrganizationManager fetchWithContacts(Integer id) throws Exception {
         return OrganizationManager.fetchWithContacts(id);
     }
 
     public OrganizationManager fetchWithParameters(Integer id) throws Exception {
         return OrganizationManager.fetchWithParameters(id);
+    }
+    
+    public ArrayList<OrganizationManager> fetchByIdList(ArrayList<Integer> ids) throws Exception {
+        ArrayList<OrganizationManager> list;        
+        
+        list = new ArrayList<OrganizationManager>();
+        
+        for (Integer id : ids) 
+            list.add(fetchById(id));        
+        
+        return list;
     }
 
     public OrganizationManager fetchWithNotes(Integer id) throws Exception {

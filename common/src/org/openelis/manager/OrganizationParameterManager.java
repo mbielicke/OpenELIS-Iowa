@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.OrganizationParameterDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
 
 public class OrganizationParameterManager implements RPC {
@@ -76,6 +77,34 @@ public class OrganizationParameterManager implements RPC {
             parameters = new ArrayList<OrganizationParameterDO>();
         parameters.add(i, parameter);
     }
+    
+    public int deleteCount() {
+        if (deleted == null)
+            return 0;
+        return deleted.size();
+    }
+
+    public OrganizationParameterDO getDeletedAt(int i) {
+        return deleted.get(i);
+    }
+    
+    public void removeParameter(OrganizationParameterDO parameter) {
+        OrganizationParameterDO tmp;
+        if (parameters == null)
+            return;
+
+        for (int i = 0; i < parameters.size(); i++) {
+            tmp = parameters.get(i);
+            if (DataBaseUtil.isSame(tmp.getId(), parameter.getId())) {                
+                if (tmp.getId() != null) {
+                    parameters.remove(tmp);
+                    if (deleted == null)
+                        deleted = new ArrayList<OrganizationParameterDO>();
+                    deleted.add(tmp);
+                }
+            }
+        }
+    }
 
     public void removeParameterAt(int i) {
         OrganizationParameterDO tmp;
@@ -90,7 +119,7 @@ public class OrganizationParameterManager implements RPC {
             deleted.add(tmp);
         }
     }
-
+    
     // service methods
     public static OrganizationParameterManager fetchByOrganizationId(Integer id) throws Exception {
         return proxy().fetchByOrganizationId(id);
@@ -123,16 +152,6 @@ public class OrganizationParameterManager implements RPC {
 
     void setParameters(ArrayList<OrganizationParameterDO> parameters) {
         this.parameters = parameters;
-    }
-
-    int deleteCount() {
-        if (deleted == null)
-            return 0;
-        return deleted.size();
-    }
-
-    OrganizationParameterDO getDeletedAt(int i) {
-        return deleted.get(i);
     }
 
     private static OrganizationParameterManagerProxy proxy() {
