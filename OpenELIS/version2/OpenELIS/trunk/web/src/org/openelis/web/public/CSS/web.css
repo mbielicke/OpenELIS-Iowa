@@ -5,6 +5,10 @@
     margin:6px;
     background:url("../Images/gray.png");
 }
+ .BluePopUpPanel {
+	color:gray;
+	background: #DEECFD;
+}
 .WelcomeLogout{
     height:22px;
     padding:6px;
