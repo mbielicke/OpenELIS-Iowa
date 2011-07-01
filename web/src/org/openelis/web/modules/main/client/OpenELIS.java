@@ -40,6 +40,7 @@ import org.openelis.gwt.widget.web.WebWindow;
 import org.openelis.web.modules.finalReport.client.FinalReportEnvScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportPvtScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
+import org.openelis.web.modules.notificationPreference.client.NotificationPreferenceScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -239,6 +240,18 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         addLinkHandler("onholdReportIcon", "Onhold Report", "w_onhold", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        addLinkHandler("notificationPrefIcon", "Notification Preference", "w_notify", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                try {
+                    Screen screen = new NotificationPreferenceScreen();
+                    setScreen(screen, "Notification Preference", "notificationPref");
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
