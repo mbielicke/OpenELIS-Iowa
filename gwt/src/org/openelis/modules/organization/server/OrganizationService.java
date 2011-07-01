@@ -32,6 +32,7 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
@@ -50,7 +51,21 @@ public class OrganizationService {
     public OrganizationManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
-
+    
+    public ArrayList<OrganizationManager> fetchByIdList(Query query) throws Exception {
+        Integer id;
+        ArrayList<Integer> ids;
+        ArrayList<OrganizationManager> list;
+        
+        ids = new ArrayList<Integer>();
+        for (QueryData f : query.getFields()) {
+            id = Integer.parseInt(f.query);
+            ids.add(id);
+        }
+        list = remoteManager().fetchByIdList(ids);
+        return list; 
+    }
+    
     public ArrayList<OrganizationDO> fetchByIdOrName(String search) throws Exception {
         int id;
         ArrayList<OrganizationDO> list;
@@ -67,12 +82,12 @@ public class OrganizationService {
             throw new DatabaseException(e);
         }
         return list;
-    }
+    }       
 
     public OrganizationManager fetchWithContacts(Integer id) throws Exception {
         return remoteManager().fetchWithContacts(id);
     }
-
+    
     public OrganizationManager fetchWithNotes(Integer id) throws Exception {
         return remoteManager().fetchWithNotes(id);
     }
@@ -80,7 +95,7 @@ public class OrganizationService {
     public OrganizationManager fetchWithParameters(Integer id) throws Exception {
         return remoteManager().fetchWithParameters(id);
     }
-
+    
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
     }
