@@ -131,7 +131,8 @@ public class SampleWebMeta implements Meta, MetaMap {
     SDWIS_COMPOSITE_DATE = "_sampleSDWIS.compositeDate",
     SDWIS_COMPOSITE_SEQUENCE = "_sampleSDWIS.compositeSequence",
     
-    SDWIS_PWS_NUMBER0 = "_sampleSDWIS.pws.number0",
+    PWS_NUMBER0 = "_pws.number0",
+    PWS_ID = "_pws.id",
 
     LOCATION_ADDR_MULTIPLE_UNIT = "_locationAddress.multipleUnit",
     LOCATION_ADDR_STREET_ADDRESS = "_locationAddress.streetAddress", 
@@ -298,7 +299,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   SDWIS_LOCATION, SDWIS_COLLECTOR, SDWIS_ORIGINAL_SAMPLE_NUMBER,
                                                   SDWIS_REPEAT_CODE_ID, SDWIS_COMPOSITE_INDICATOR,
                                                   SDWIS_COMPOSITE_SAMPLE_NUMBER, SDWIS_COMPOSITE_DATE,
-                                                  SDWIS_COMPOSITE_SEQUENCE, SDWIS_PWS_NUMBER0,
+                                                  SDWIS_COMPOSITE_SEQUENCE, PWS_NUMBER0, PWS_ID,
                                                   ITEM_ID, ITEM_SAMPLE_ID, ITEM_SAMPLE_ITEM_ID,
                                                   ITEM_ITEM_SEQUENCE, ITEM_TYPE_OF_SAMPLE_ID,
                                                   ITEM_SOURCE_OF_SAMPLE_ID, ITEM_SOURCE_OTHER,
@@ -740,8 +741,11 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getSDWISCompositeSequence(){
         return SDWIS_COMPOSITE_SEQUENCE;
     }
-    public static String getSDWISPwsNumber0(){
-        return SDWIS_PWS_NUMBER0;
+    public static String getPwsNumber0(){
+        return PWS_NUMBER0;
+    }
+    public static String getPwsId(){
+        return PWS_ID;
     }
     
     public static String getItemId() {
@@ -1174,7 +1178,13 @@ public class SampleWebMeta implements Meta, MetaMap {
         //sample sdwis
         if(where.indexOf("sampleSDWIS.") > -1)
             from += ", IN (_sample.sampleSDWIS) _sampleSDWIS ";
-            
+        //pws
+        if (where.indexOf("pws.") > -1) {
+            if (where.indexOf("sampleSDWIS.") == -1)
+                from += ", IN (_sample.sampleSDWIS) _sampleSDWIS ";
+            from += ", IN ( _sampleSDWIS.pws) _pws ";
+        }            
+        
         //common sample fields
         if (where.indexOf("project.") > -1){
             from += ", IN (_sample.sampleProject) _sampleProject ";
