@@ -492,6 +492,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             retrievedList = (ArrayList<SampleFinalReportWebVO>)session.getAttribute("sampleEnvlist");
         else if(domain.equals("W"))
             retrievedList = (ArrayList<SampleFinalReportWebVO>)session.getAttribute("samplePvtlist");
+        else if(domain.equals("S"))
+            retrievedList = (ArrayList<SampleFinalReportWebVO>)session.getAttribute("sampleSDWISlist");
         
         for (int j = 0; j < selectedVoStr.length; j++ ) {
             voData = retrievedList.get(Integer.parseInt(selectedVoStr[j]));
@@ -556,11 +558,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         builder = new QueryBuilderV2();
         
         for (int i = 0; i < fields.size(); i++ ) {
-            field = fields.get(i);
-            if ( (field.key).equals(SampleWebMeta.getSampleOrgOrganizationId())) 
-                domain = "E";
-            else if ( (field.key).equals(SampleWebMeta.getWellOrganizationId())) 
-                domain = "W";
+            field = fields.get(i);            
+            if((field.key).equals("DOMAIN"))
+                domain = field.query;
         }
         list = createWhereFromParamFields(fields);        
         builder.setMeta(meta);
@@ -568,6 +568,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             builder = setQueryBuilderForEnvironmental(builder, list);
         else if (domain.equals("W"))
             builder = setQueryBuilderForPrivate(builder, list);
+        else if (domain.equals("S"))
+            builder = setQueryBuilderForSDWIS(builder, list);
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
 
         query = manager.createQuery(builder.getEJBQL());
@@ -577,6 +579,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             session.setAttribute("sampleEnvlist",returnList);
         else if (domain.equals("W"))
             session.setAttribute("samplePvtlist", returnList);
+        else if (domain.equals("S"))
+            session.setAttribute("sampleSDWISlist", returnList);
         return returnList;        
 	}
 	
@@ -650,6 +654,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             } else if ( (field.key).equals("COLLECTION_TOWN")) {
                 field.key = SampleWebMeta.getLocationAddrCity();
                 list.add(field);
+            } else if ( (field.key).equals("COLLECTION_TOWN_PVT")) {
+                field.key = SampleWebMeta.getWellOrganizationAddrCity();
+                list.add(field);
             } else if ( (field.key).equals("COLLECTOR_NAME_PVT")) {
                 field.key = SampleWebMeta.getWellCollector();
                 list.add(field);
@@ -661,6 +668,18 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 list.add(field);
             } else if ( (field.key).equals("OWNER")) {
                 field.key = SampleWebMeta.getWellOwner();
+                list.add(field);
+            } else if ( (field.key).equals("COLLECTOR_NAME_SDWIS")) {
+                field.key = SampleWebMeta.getSDWISCollector();
+                list.add(field);
+            } else if ( (field.key).equals("COLLECTION_SITE_SDWIS")) {
+                field.key = SampleWebMeta.getSDWISLocation();
+                list.add(field);
+            } else if ( (field.key).equals("PWS_Number0")) {
+                field.key = SampleWebMeta.getPwsNumber0();
+                list.add(field);
+            } else if ( (field.key).equals("FACILITY_ID")) {
+                field.key = SampleWebMeta.getSDWISFacilityId();
                 list.add(field);
             } else if ( (field.key).equals(SampleWebMeta.getSampleOrgOrganizationId())) {
                 list.add(field);
@@ -709,6 +728,25 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         return builder;
     }      
 	
+    private QueryBuilderV2 setQueryBuilderForSDWIS (QueryBuilderV2 builder, ArrayList<QueryData> list) throws Exception {
+        builder.setSelect("distinct new org.openelis.domain.SampleFinalReportWebVO(" + SampleWebMeta.getId() + ", " + 
+                          SampleWebMeta.getAccessionNumber() +", "+ SampleWebMeta.getSampleOrgOrganizationId() +", "+ SampleWebMeta.getStatusId()+", "+
+                          SampleWebMeta.getCollectionDate() +", "+SampleWebMeta.getCollectionTime() +", "+ SampleWebMeta.getSDWISLocation()+", "+
+                          SampleWebMeta.getSDWISCollector() +", "+
+                          SampleWebMeta.getPwsNumber0()+ ", "+SampleWebMeta.getSDWISFacilityId() + ") ");
+        builder.constructWhere(list);
+        builder.addWhere(SampleWebMeta.getSDWISSampleId() + "=" +SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getSDWISPwsId() + "=" +SampleWebMeta.getPwsId());
+        builder.addWhere(SampleWebMeta.getSampleOrgTypeId()+ "=" + organizationReportToId);
+        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleInErrorId );
+        builder.addWhere(SampleWebMeta.getItemSampleId() +" = " + SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() +"=" + SampleWebMeta.getItemId());
+        builder.addWhere(SampleWebMeta.getAnalysisStatusId() +" = "+ analysisReleasedId);
+        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() +" = "+ "'Y'");
+        
+        return builder;
+    }
+    
     public ArrayList<IdNameVO> getProjectList(ArrayList<QueryData> paramList) throws Exception {
         int i;
         String key,str;
