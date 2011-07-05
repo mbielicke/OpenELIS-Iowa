@@ -39,6 +39,7 @@ import org.openelis.gwt.widget.web.LinkButton;
 import org.openelis.gwt.widget.web.WebWindow;
 import org.openelis.web.modules.finalReport.client.FinalReportEnvScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportPvtScreen;
+import org.openelis.web.modules.finalReport.client.FinalReportSDWISScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
 import org.openelis.web.modules.notificationPreference.client.NotificationPreferenceScreen;
 
@@ -163,7 +164,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addLinkHandler("finalReportIcon", "Environmental Final Report", "w_finalrep_e", new ClickHandler() {
+        addLinkHandler("finalReportIcon", "Environmental Final Report", "w_final_environmental", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     Screen screen = new FinalReportEnvScreen();
@@ -175,11 +176,23 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addLinkHandler("finalReportIcon", "Private Well Final Report", "w_finalrep_p", new ClickHandler() {
+        addLinkHandler("finalReportIcon", "Private Well Final Report", "w_final_privatewell", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     Screen screen = new FinalReportPvtScreen();
                     setScreen(screen, "Private Well Final Report", "finalReportPvt");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        addLinkHandler("finalReportIcon", "SDWIS Final Report", "w_final_sdwis", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                try {
+                    Screen screen = new FinalReportSDWISScreen();
+                    setScreen(screen, "SDWIS Final Report", "finalReportSDWIS");
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
