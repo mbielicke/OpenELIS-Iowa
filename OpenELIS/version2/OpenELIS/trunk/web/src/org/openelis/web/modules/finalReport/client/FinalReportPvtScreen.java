@@ -74,25 +74,26 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class FinalReportPvtScreen extends Screen {
 
-    private FinalReportPrivateVO data;
-    private ModulePermission           userPermission;
-    private CalendarLookUp             releasedFrom, releasedTo, collectedFrom, collectedTo;
-    private TextBox                    collectorName, accessionFrom, accessionTo, clientReference, collectionSite,
-                                       collectionTown, owner;
-    private Dropdown<Integer>          projectCode;  
-    private ReportScreenUtility        util;
-    private String                     clause;
-    private HashMap<String, String>    map;
-    private String                     valueOrg;
-    private DeckPanel                  deckpanel;
-    private Decks                      deck;
-    private HorizontalPanel            hp;
-    private AbsolutePanel              ap;
-    private TableWidget                sampleEntTable;
-    private Label<String>              queryDeckLabel, numSampleSelected;
-    private AppButton                  getSamplesButton, resetButton, runReportButton, resettButton, backButton, selectAllButton;
+    private FinalReportPrivateVO              data;
+    private ModulePermission                  userPermission;
+    private CalendarLookUp                    releasedFrom, releasedTo, collectedFrom, collectedTo;
+    private TextBox                           collectorName, accessionFrom, accessionTo,
+                    clientReference, collectionSite, collectionTown, owner;
+    private Dropdown<Integer>                 projectCode;
+    private ReportScreenUtility               util;
+    private String                            clause;
+    private HashMap<String, String>           map;
+    private String                            valueOrg;
+    private DeckPanel                         deckpanel;
+    private Decks                             deck;
+    private HorizontalPanel                   hp;
+    private AbsolutePanel                     ap, noSampleSelectedPanel;
+    private TableWidget                       sampleEntTable;
+    private Label<String>                     queryDeckLabel, noSampleSelected, numSampleSelected;
+    private AppButton                         getSamplesButton, resetButton, runReportButton,
+                    resettButton, backButton, selectAllButton;
     private ArrayList<SampleFinalReportWebVO> results;
-    
+
     private enum Decks {
         QUERY, LIST
     };
@@ -139,19 +140,18 @@ public class FinalReportPvtScreen extends Screen {
 
         util = new ReportScreenUtility(def);
         map = util.parseClause(clause);
-        
+
         deckpanel = (DeckPanel)def.getWidget("deck");
-      
+
         releasedFrom = (CalendarLookUp)def.getWidget("RELEASED_FROM");
         addScreenHandler(releasedFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                    releasedFrom.setValue(data.getReleasedFrom());
+                releasedFrom.setValue(data.getReleasedFrom());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    releasedFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                releasedFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 data.setReleasedFrom(event.getValue());
@@ -161,13 +161,13 @@ public class FinalReportPvtScreen extends Screen {
         releasedTo = (CalendarLookUp)def.getWidget("RELEASED_TO");
         addScreenHandler(releasedTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                    releasedTo.setValue(data.getReleasedTo());
+                releasedTo.setValue(data.getReleasedTo());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    releasedTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                releasedTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 data.setReleasedTo(event.getValue());
             }
@@ -176,13 +176,13 @@ public class FinalReportPvtScreen extends Screen {
         collectedFrom = (CalendarLookUp)def.getWidget("COLLECTED_FROM");
         addScreenHandler(collectedFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                    collectedFrom.setValue(data.getCollectedFrom());
+                collectedFrom.setValue(data.getCollectedFrom());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    collectedFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                collectedFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 data.setCollectedFrom(event.getValue());
             }
@@ -191,13 +191,13 @@ public class FinalReportPvtScreen extends Screen {
         collectedTo = (CalendarLookUp)def.getWidget("COLLECTED_TO");
         addScreenHandler(collectedTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                    collectedTo.setValue(data.getCollectedTo());
+                collectedTo.setValue(data.getCollectedTo());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    collectedTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                collectedTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 data.setCollectedTo(event.getValue());
             }
@@ -206,13 +206,13 @@ public class FinalReportPvtScreen extends Screen {
         collectorName = (TextBox)def.getWidget("COLLECTOR_NAME_PVT");
         addScreenHandler(collectorName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                    collectorName.setValue(data.getCollectorName());
+                collectorName.setValue(data.getCollectorName());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    collectorName.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                collectorName.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setCollectorName(event.getValue());
             }
@@ -221,13 +221,13 @@ public class FinalReportPvtScreen extends Screen {
         accessionFrom = (TextBox)def.getWidget("ACCESSION_FROM");
         addScreenHandler(accessionFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                    accessionFrom.setValue(data.getAccessionFrom());
+                accessionFrom.setValue(data.getAccessionFrom());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    accessionFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                accessionFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 data.setAccessionFrom(event.getValue());
             }
@@ -236,13 +236,13 @@ public class FinalReportPvtScreen extends Screen {
         accessionTo = (TextBox)def.getWidget("ACCESSION_TO");
         addScreenHandler(accessionTo, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                    accessionTo.setValue(data.getAccessionTo());
+                accessionTo.setValue(data.getAccessionTo());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    accessionTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                accessionTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 data.setAccessionTo(event.getValue());
             }
@@ -251,13 +251,13 @@ public class FinalReportPvtScreen extends Screen {
         clientReference = (TextBox)def.getWidget("CLIENT_REFERENCE");
         addScreenHandler(clientReference, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                    clientReference.setValue(data.getClientReference());
+                clientReference.setValue(data.getClientReference());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    clientReference.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                clientReference.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setClientReference(event.getValue());
             }
@@ -266,43 +266,43 @@ public class FinalReportPvtScreen extends Screen {
         collectionSite = (TextBox)def.getWidget("COLLECTION_SITE_PVT");
         addScreenHandler(collectionSite, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                    collectionSite.setValue(data.getCollectionSite());
+                collectionSite.setValue(data.getCollectionSite());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    collectionSite.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                collectionSite.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setCollectionSite(event.getValue());
-            }  
+            }
         });
 
-        collectionTown = (TextBox)def.getWidget("COLLECTION_TOWN");
+        collectionTown = (TextBox)def.getWidget("COLLECTION_TOWN_PVT");
         addScreenHandler(collectionTown, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                    collectionTown.setValue(data.getCollectionTown());
+                collectionTown.setValue(data.getCollectionTown());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    collectionTown.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                collectionTown.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setCollectionTown(event.getValue());
             }
         });
-        
+
         owner = (TextBox)def.getWidget("OWNER");
         addScreenHandler(owner, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                    owner.setValue(data.getOwner());
+                owner.setValue(data.getOwner());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    owner.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                owner.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setOwner(event.getValue());
             }
@@ -311,15 +311,37 @@ public class FinalReportPvtScreen extends Screen {
         projectCode = (Dropdown)def.getWidget("PROJECT_CODE");
         addScreenHandler(projectCode, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                    projectCode.setSelection(data.getProjectCode());
+                projectCode.setSelection(data.getProjectCode());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    projectCode.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                projectCode.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-            
+
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 data.setProjectCode(event.getValue());
+            }
+        });
+
+        noSampleSelectedPanel = (AbsolutePanel)def.getWidget("noSampleSelectedPanel");
+        addScreenHandler(noSampleSelectedPanel, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                // noSampleSelectedPanel.enable(EnumSet.of(State.ADD).contains(event.getState()));
+            }
+        });
+
+        noSampleSelected = (Label<String>)def.getWidget("noSampleSelected");
+        addScreenHandler(noSampleSelected, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                noSampleSelected.setText(null);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                noSampleSelected.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
 
@@ -344,54 +366,53 @@ public class FinalReportPvtScreen extends Screen {
                 resetButton.enable(true);
             }
         });
-        
+
         sampleEntTable = (TableWidget)def.getWidget("sampleEntTable");
         addScreenHandler(sampleEntTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {       
-                    sampleEntTable.load(getTableModel());
-                    if(sampleEntTable.numRows() > 0)
-                        numSampleSelected.setValue(" "+sampleEntTable.numRows()+" samples have been found.");
-                    else 
-                        numSampleSelected.setValue(" 0 samples have been found. Please change your search criteria to get more samples.");
-                        
+            public void onDataChange(DataChangeEvent event) {
+                sampleEntTable.load(getTableModel());
+                if (sampleEntTable.numRows() > 0)
+                    numSampleSelected.setValue(" " + sampleEntTable.numRows() +
+                                               " samples have been found.");
+                else
+                    numSampleSelected.setValue(" 0 samples have been found. Please change your search criteria to get more samples.");
+
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                    sampleEntTable.enable(true);
+                sampleEntTable.enable(true);
             }
         });
-        
+
         sampleEntTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-               if (event.getCol() > 0)
+                if (event.getCol() > 0)
                     event.cancel();
             }
-        });      
-        
-        
+        });
+
         selectAllButton = (AppButton)def.getWidget("selectAllButton");
-        addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {            
-            
-            public void onClick(ClickEvent event) { 
-                for(int i = 0;i< sampleEntTable.numRows();i++)
-                    sampleEntTable.setCell(i, 0, "Y");                
+        addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
+
+            public void onClick(ClickEvent event) {
+                for (int i = 0; i < sampleEntTable.numRows(); i++ )
+                    sampleEntTable.setCell(i, 0, "Y");
             }
-            
+
             public void onStateChange(StateChangeEvent<State> event) {
                 selectAllButton.enable(true);
             }
         });
-        
+
         numSampleSelected = (Label<String>)def.getWidget("numSampleSelected");
         addScreenHandler(numSampleSelected, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {                
-             }
+            public void onDataChange(DataChangeEvent event) {
+            }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 numSampleSelected.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
-
 
         runReportButton = (AppButton)def.getWidget("runReportButton");
         addScreenHandler(runReportButton, new ScreenEventHandler<Object>() {
@@ -414,9 +435,9 @@ public class FinalReportPvtScreen extends Screen {
                 resettButton.enable(true);
             }
         });
-        
+
         backButton = new AppButton();
-        queryDeckLabel = new Label("Query"); 
+        queryDeckLabel = new Label("Query");
         queryDeckLabel.setStyleName("ScreenLabel");
         hp = new HorizontalPanel();
         ap = new AbsolutePanel();
@@ -433,8 +454,7 @@ public class FinalReportPvtScreen extends Screen {
                 backButton.enable(true);
             }
         });
-        
-       
+
     }
 
     protected void getSamples() {
@@ -455,39 +475,50 @@ public class FinalReportPvtScreen extends Screen {
         /*
          * if user does not enter any search details, throw an error.
          */
-        if(queryList.size()<=0){
+        if (queryList.size() <= 0) {
             window.setError(consts.get("nofieldSelectedError"));
             return;
         }
-        
+
         query.setFields(queryList);
-        
+
         valueOrg = map.get(SampleMeta.getSampleOrgOrganizationId());
         qd = new QueryData();
         qd.key = SampleMeta.getWellOrganizationId();
         qd.query = valueOrg;
         qd.type = QueryData.Type.INTEGER;
         query.setFields(qd);
-        
-       window.setBusy("Retrieving Samples");
-        
-        try {           
+
+        qd = new QueryData();
+        qd.key = "DOMAIN";
+        qd.query = "W";
+        query.setFields(qd);
+
+        window.setBusy("Retrieving Samples");
+
+        try {
             list = service.callList("getSampleList", query);
             if (list != null) {
-                loadDeck(list);
-                setResults(list);
+                if (list.size() > 0) {
+                    noSampleSelectedPanel.setVisible(false);
+                    loadDeck(list);
+                    setResults(list);
+                } else {
+                    noSampleSelectedPanel.setVisible(true);
+                    noSampleSelected.setValue(" No samples have been found. Please change your search criteria to get more samples.");
+                }
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
-       window.clearStatus();
+        window.clearStatus();
     }
 
     protected void setWidgetValues() {
 
         /*
-         * completes the fields which don't have values for released and collected dates and accession
-         * number
+         * completes the fields which don't have values for released and
+         * collected dates and accession number
          */
         if (releasedFrom.getValue() != null && releasedTo.getValue() == null)
             releasedTo.setValue(releasedFrom.getValue().add(1));
@@ -499,10 +530,10 @@ public class FinalReportPvtScreen extends Screen {
             collectedFrom.setValue(collectedTo.getValue().add( -1));
         if ( !DataBaseUtil.isEmpty(accessionFrom.getValue()) &&
             DataBaseUtil.isEmpty(accessionTo.getValue()))
-            accessionTo.setValue(accessionFrom.getValue());
+            accessionTo.setFieldValue(accessionFrom.getValue());
         if (DataBaseUtil.isEmpty(accessionFrom.getValue()) &&
             !DataBaseUtil.isEmpty(accessionTo.getValue()))
-            accessionFrom.setValue(accessionTo.getValue());
+            accessionFrom.setFieldValue(accessionTo.getValue());
     }
 
     /**
@@ -513,7 +544,7 @@ public class FinalReportPvtScreen extends Screen {
         DataChangeEvent.fire(this);
         clearErrors();
     }
-    
+
     /**
      * Resets all the fields to their original report specified values
      */
@@ -521,23 +552,23 @@ public class FinalReportPvtScreen extends Screen {
         DataChangeEvent.fire(this);
         clearErrors();
     }
-    
+
     protected void loadDeck(ArrayList<SampleFinalReportWebVO> list) {
-        switch(deck){
+        switch (deck) {
             case QUERY:
                 deckpanel.showWidget(1);
                 deck = Decks.LIST;
                 setState(State.ADD);
-                setResults(list);                
+                setResults(list);
                 ((WebWindow)window).setCrumbLink(backButton);
                 break;
-            case LIST :
+            case LIST:
                 deckpanel.showWidget(0);
-                deck = Decks.QUERY;                 
+                deck = Decks.QUERY;
                 ((WebWindow)window).setCrumbLink(null);
-                break;            
+                break;
         }
-        
+
     }
 
     private void initializeDropdowns() {
@@ -572,23 +603,23 @@ public class FinalReportPvtScreen extends Screen {
             model.add(row);
         }
         projectCode.setModel(model);
-        
+
         model.add(new TableDataRow(null, ""));
         lst = CategoryCache.getBySystemName("sample_status");
-        for (DictionaryDO d : lst) {         
+        for (DictionaryDO d : lst) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        ((Dropdown<Integer>)(sampleEntTable.getColumnWidget("status"))).setModel(model);
+        ((Dropdown<Integer>) (sampleEntTable.getColumnWidget("status"))).setModel(model);
     }
-    
+
     public void setResults(ArrayList<SampleFinalReportWebVO> results) {
         this.results = results;
         DataChangeEvent.fire(this);
     }
-    
-   protected void runReport() {
+
+    protected void runReport() {
         Query query;
         String value;
         QueryData field;
@@ -604,10 +635,10 @@ public class FinalReportPvtScreen extends Screen {
             value = (String)row.cells.get(0).getValue();
             val = String.valueOf(i);
             if ("Y".equals(value)) {
-                if(field.query==null)               
+                if (field.query == null)
                     field.query = val;
                 else
-                    field.query +=","+ val;           
+                    field.query += "," + val;
             }
         }
         query.setFields(field);
@@ -615,23 +646,22 @@ public class FinalReportPvtScreen extends Screen {
         field.key = "DOMAIN";
         field.query = "W";
         query.setFields(field);
-        
-        if(query.getFields().get(0).query != null) {
+
+        if (query.getFields().get(0).query != null) {
             try {
                 st = service.call("runReportForWeb", query);
                 if (st.getStatus() == ReportStatus.Status.SAVED) {
                     url = "report?file=" + st.getMessage();
 
                     Window.open(URL.encode(url), "Final Report", null);
-                    window.setStatus("Generated file " + st.getMessage(),"");
+                    window.setStatus("Generated file " + st.getMessage(), "");
                 } else {
-                    window.setStatus(st.getMessage(),"");
+                    window.setStatus(st.getMessage(), "");
                 }
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
-        }
-        else {
+        } else {
             window.setError(consts.get("noSampleSelectedError"));
             return;
         }
@@ -642,27 +672,33 @@ public class FinalReportPvtScreen extends Screen {
         SampleFinalReportWebVO data;
         TableDataRow tr;
         Date temp;
-        
+        Datetime temp1;
+
         model = new ArrayList<TableDataRow>();
-        if (results == null) 
-            return null;        
+        if (results == null)
+            return null;
         if (results.size() > 0) {
             try {
                 for (int i = 0; i < results.size(); i++ ) {
                     data = results.get(i);
-                    temp = data.getCollectionDate().getDate();
-                    if (data.getCollectionTime() == null) {
-                        temp.setHours(0);
-                        temp.setMinutes(0);
-                    } else {
-                        temp.setHours(data.getCollectionTime().getDate().getHours());
-                        temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
-                    }
+                    if (data.getCollectionDate() != null) {
+                        temp = data.getCollectionDate().getDate();
+                        if (data.getCollectionTime() == null) {
+                            temp.setHours(0);
+                            temp.setMinutes(0);
+                        } else {
+                            temp.setHours(data.getCollectionTime().getDate().getHours());
+                            temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
+                        }
+                        temp1 = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
+                    } else
+                        temp1 = null;
+
                     tr = new TableDataRow(data.getAccessionNumber(),
                                           "N",
                                           data.getAccessionNumber(),
                                           data.getLocation(),
-                                          Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp),
+                                          temp1,
                                           data.getCollector(),
                                           data.getStatus(),
                                           data.getLocationAddressCity(),
@@ -681,16 +717,17 @@ public class FinalReportPvtScreen extends Screen {
         return model;
     }
 
-    private class FinalReportPrivateVO {        
+    private class FinalReportPrivateVO {
 
         private Datetime releasedFrom, releasedTo, collectedFrom, collectedTo;
-        private String   collectorName, clientReference, collectionSite, collectionTown, owner, numSampleSelected;
+        private String   collectorName, clientReference, collectionSite, collectionTown, owner,
+                        numSampleSelected;
         private Integer  accessionFrom, accessionTo, projectCode;
 
         public Datetime getReleasedFrom() {
             return releasedFrom;
         }
-        
+
         public void setReleasedFrom(Datetime releasedFrom) {
             this.releasedFrom = releasedFrom;
         }
@@ -698,7 +735,7 @@ public class FinalReportPvtScreen extends Screen {
         public Datetime getReleasedTo() {
             return releasedTo;
         }
-        
+
         public void setReleasedTo(Datetime releasedTo) {
             this.releasedTo = releasedTo;
         }
@@ -706,7 +743,7 @@ public class FinalReportPvtScreen extends Screen {
         public Datetime getCollectedFrom() {
             return collectedFrom;
         }
-        
+
         public void setCollectedFrom(Datetime collectedFrom) {
             this.collectedFrom = collectedFrom;
         }
@@ -714,7 +751,7 @@ public class FinalReportPvtScreen extends Screen {
         public Datetime getCollectedTo() {
             return collectedTo;
         }
-        
+
         public void setCollectedTo(Datetime collectedTo) {
             this.collectedTo = collectedTo;
         }
@@ -722,7 +759,7 @@ public class FinalReportPvtScreen extends Screen {
         public String getCollectorName() {
             return collectorName;
         }
-        
+
         public void setCollectorName(String collectorName) {
             this.collectorName = collectorName;
         }
@@ -730,7 +767,7 @@ public class FinalReportPvtScreen extends Screen {
         public String getClientReference() {
             return clientReference;
         }
-        
+
         public void setClientReference(String clientReference) {
             this.clientReference = clientReference;
         }
@@ -738,7 +775,7 @@ public class FinalReportPvtScreen extends Screen {
         public String getCollectionSite() {
             return collectionSite;
         }
-        
+
         public void setCollectionSite(String collectionSite) {
             this.collectionSite = collectionSite;
         }
@@ -746,23 +783,23 @@ public class FinalReportPvtScreen extends Screen {
         public String getCollectionTown() {
             return collectionTown;
         }
-        
+
         public void setCollectionTown(String collectionTown) {
             this.collectionTown = collectionTown;
         }
-        
+
         public String getOwner() {
             return owner;
         }
-        
+
         public void setOwner(String owner) {
             this.owner = owner;
         }
-        
+
         public String getNumSampleSelected() {
             return numSampleSelected;
         }
-        
+
         public void setNumSampleSelected(String numSampleSelected) {
             this.numSampleSelected = numSampleSelected;
         }
@@ -770,7 +807,7 @@ public class FinalReportPvtScreen extends Screen {
         public Integer getAccessionFrom() {
             return accessionFrom;
         }
-        
+
         public void setAccessionFrom(Integer accessionFrom) {
             this.accessionFrom = accessionFrom;
         }
@@ -778,7 +815,7 @@ public class FinalReportPvtScreen extends Screen {
         public Integer getAccessionTo() {
             return accessionTo;
         }
-        
+
         public void setAccessionTo(Integer accessionTo) {
             this.accessionTo = accessionTo;
         }
@@ -786,7 +823,7 @@ public class FinalReportPvtScreen extends Screen {
         public Integer getProjectCode() {
             return projectCode;
         }
-        
+
         public void setProjectCode(Integer projectCode) {
             this.projectCode = projectCode;
         }

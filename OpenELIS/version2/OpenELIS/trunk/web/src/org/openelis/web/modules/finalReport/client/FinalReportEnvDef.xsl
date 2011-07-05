@@ -156,6 +156,13 @@ UIRF Software License are applicable instead of those above.
             </text>
           </row>
         </TablePanel>
+        <TablePanel style="Form">
+          <row>
+          <AbsolutePanel key="noSampleSelectedPanel" style = "largeWarnIcon" visible = "false"></AbsolutePanel>
+            <label field="String" key="noSampleSelected" style="Prompt">
+            </label>
+          </row>
+        </TablePanel>
         <HorizontalPanel style="TableFooterPanel">
           <widget halign="center">
             <appButton key="getSampleListButton" style="Button">
@@ -184,11 +191,11 @@ UIRF Software License are applicable instead of those above.
 	  <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">             
           <VerticalPanel>           
               <widget valign="top">
-                <table key="sampleEntTable" width="auto" maxRows="12"  style="ScreenTableWithSides"  title="">
+                <table key="sampleEntTable" width="710" maxRows="12"  style="ScreenTableWithSides" showScroll="ALWAYS" title="">
                   <col key="select" width="60" header="{resource:getString($constants,'select')}">
                     <check/>
                   </col>
-                  <col key="accessionNumber" width="120" header="{resource:getString($constants,'AccessionNo')}">
+                  <col key="accessionNumber" width="80" header="{resource:getString($constants,'AccessionNo')}">
                     <textbox field="Integer" />
                   </col>
                   <col key="collectionSite" width="120" header="{resource:getString($constants,'collectionSite')}">
@@ -200,8 +207,8 @@ UIRF Software License are applicable instead of those above.
                    <col key="collectorName" width="120" header="{resource:getString($constants,'collectorName')}">
                     <textbox field="String" />
                   </col> 
-                  <col key="status" width="120" header="{resource:getString($constants,'status')}">
-                    <dropdown  width="120"  field="Integer"  />
+                  <col key="status" width="70" header="{resource:getString($constants,'status')}">
+                    <dropdown  width="70"  field="Integer"  />
                   </col>                   
                   <col key="town" width="120" header="{resource:getString($constants,'collectionTown')}">
                     <textbox field="String" />

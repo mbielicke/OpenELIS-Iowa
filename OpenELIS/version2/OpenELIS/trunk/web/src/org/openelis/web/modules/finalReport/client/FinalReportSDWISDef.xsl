@@ -50,22 +50,19 @@ UIRF Software License are applicable instead of those above.
   </xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-    <screen id="FinalReportPvt" name="{resource:getString($constants,'finalReport')}">  
+    <screen id="FinalReportSDWIS" name="{resource:getString($constants,'finalReport')}">  
     <DeckPanel key="deck" height = "100%" width = "100%">
-	  <deck>
-	  <HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
-	    <VerticalPanel padding="0" spacing="0" >
+	  <deck>	  
+	    <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         <TablePanel style="Form">
-          <row>
+          <row>          
+          <AbsolutePanel style = "step1"></AbsolutePanel>
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'commentOne')" />
             </text>
           </row>
         </TablePanel>
         <VerticalPanel style="subform">
-          <text style="FormTitle">
-            <xsl:value-of select='resource:getString($constants,"resultCriteria")' />
-          </text>
           <TablePanel style="Form">
             <row>
               <text style="Prompt">
@@ -114,7 +111,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"collectorName")' />:
               </text>
               <widget colspan="4">
-                <textbox case="MIXED" field="String" key="COLLECTOR_NAME_PVT" max="60" width="202" />
+                <textbox case="MIXED" field="String" key="COLLECTOR_NAME_SDWIS" max="60" width="202" />
               </widget>
             </row>
             <row>
@@ -130,37 +127,30 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"collectionSite")' />:
               </text>
               <widget colspan="4">
-                <textbox case="MIXED" field="String" key="COLLECTION_SITE_PVT" max="60" width="202" />
+                <textbox case="MIXED" field="String" key="COLLECTION_SITE_SDWIS" max="60" width="202" />
               </widget>
             </row>
             <row>
               <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"collectionTown")' />:
+                <xsl:value-of select='resource:getString($constants,"pwsId")' />:
               </text>
               <widget colspan="4">
-                <textbox case="MIXED" field="String" key="COLLECTION_TOWN_PVT" max="60" width="202" />
+                <textbox field="String" key="PWS_Number0" max="60" width="202" />
               </widget>
             </row>
             <row>
               <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"owner")' />:
+                <xsl:value-of select='resource:getString($constants,"facilityId")' />:
               </text>
               <widget colspan="4">
-                <textbox case="MIXED" field="String" key="OWNER" max="60" width="202" />
+                <textbox field="String" key="FACILITY_ID" max="60" width="202" />
               </widget>
-            </row>
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"projectCode")' />:
-              </text>
-              <widget colspan="4">
-                <dropdown field="Integer" key="PROJECT_CODE" width="202" />
-              </widget>
-            </row>
+            </row>            
           </TablePanel>
         </VerticalPanel>
         <TablePanel style="Form">
           <row>
+          <AbsolutePanel style = "step2"></AbsolutePanel>
             <text style="Prompt">
               <xsl:value-of select="resource:getString($constants,'commentTwo')" />
             </text>
@@ -196,13 +186,12 @@ UIRF Software License are applicable instead of those above.
           </widget>
         </HorizontalPanel>
       </VerticalPanel>      
-      </HorizontalPanel>
 	  </deck>
-	  <deck>
+	  <deck>	 
 	  <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">             
           <VerticalPanel>           
               <widget valign="top">
-                <table key="sampleEntTable" width="auto" maxRows="12"  style="ScreenTableWithSides" showScroll="ALWAYS" title="">
+                <table key="sampleEntTable" width="auto" maxRows="12"  style="ScreenTableWithSides"  showScroll="ALWAYS" title="">
                   <col key="select" width="60" header="{resource:getString($constants,'select')}">
                     <check/>
                   </col>
@@ -221,12 +210,12 @@ UIRF Software License are applicable instead of those above.
                   <col key="status" width="120" header="{resource:getString($constants,'status')}">
                     <dropdown  width="120"  field="Integer"  />
                   </col>                   
-                  <col key="town" width="120" header="{resource:getString($constants,'collectionTown')}">
+                  <col key="pwsId" width="120" header="{resource:getString($constants,'pwsId')}">
                     <textbox field="String" />
-                  </col>
-                  <col key="owner" width="120" header="{resource:getString($constants,'owner')}">
-                    <textbox field="String" />
-                  </col>                        
+                  </col>  
+                  <col key="facilityId" width="120" header="{resource:getString($constants,'facilityId')}">
+                    <textbox field="Integer" />
+                  </col>                       
                 </table>
               </widget>
         </VerticalPanel>
@@ -265,8 +254,7 @@ UIRF Software License are applicable instead of those above.
             </appButton>
           </widget>
         </HorizontalPanel>
-      </VerticalPanel>	  
-	  
+      </VerticalPanel>	
 	  </deck>
     
     </DeckPanel>

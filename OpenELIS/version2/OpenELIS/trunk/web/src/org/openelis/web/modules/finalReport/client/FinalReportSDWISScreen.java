@@ -33,7 +33,6 @@ import java.util.HashMap;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleFinalReportWebVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -72,28 +71,26 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
-public class FinalReportEnvScreen extends Screen {
+public class FinalReportSDWISScreen extends Screen {
 
-    private FinalReportEnvironmentalVO        data;
-    private ModulePermission                  userPermission;
-    private CalendarLookUp                    releasedFrom, releasedTo, collectedFrom, collectedTo;
-    private TextBox                           collectorName, accessionFrom, accessionTo,
-                    clientReference, collectionSite, collectionTown;
-    private Dropdown<Integer>                 projectCode;
-    private ReportScreenUtility               util;
-    private String                            clause;
-    private HashMap<String, String>           map;
-    private String                            valueOrg;
-    private DeckPanel                         deckpanel;
-    private Decks                             deck;
-    private HorizontalPanel                   hp;
-    private AbsolutePanel                     ap, noSampleSelectedPanel;
-    private TableWidget                       sampleEntTable;
-    private Label<String>                     queryDeckLabel, noSampleSelected, numSampleSelected;
-    private AppButton                         getSamplesButton, resetButton, runReportButton,
-                    resettButton, backButton, selectAllButton;
+    private FinalReportSDWISVO data;
+    private ModulePermission           userPermission;
+    private CalendarLookUp             releasedFrom, releasedTo, collectedFrom, collectedTo;
+    private TextBox                    collectorName, accessionFrom, accessionTo, clientReference, collectionSite,
+                                       pwsId,facilityId;
+    private ReportScreenUtility        util;
+    private String                     clause;
+    private HashMap<String, String>    map;
+    private String                     valueOrg;
+    private DeckPanel                  deckpanel;
+    private Decks                      deck;
+    private HorizontalPanel            hp;
+    private AbsolutePanel              ap, noSampleSelectedPanel;
+    private TableWidget                sampleEntTable;
+    private Label<String>              queryDeckLabel, noSampleSelected, numSampleSelected;
+    private AppButton                  getSamplesButton, resetButton, runReportButton, resettButton, backButton, selectAllButton;
     private ArrayList<SampleFinalReportWebVO> results;
-
+    
     private enum Decks {
         QUERY, LIST
     };
@@ -101,13 +98,13 @@ public class FinalReportEnvScreen extends Screen {
     /**
      * No-Arg constructor
      */
-    public FinalReportEnvScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(FinalReportEnvDef.class));
+    public FinalReportSDWISScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(FinalReportSDWISDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
-
-        userPermission = UserCache.getPermission().getModule("w_final_environmental");
+        //todo chnage domain
+        userPermission = UserCache.getPermission().getModule("w_final_sdwis");
         if (userPermission == null)
-            throw new PermissionException("screenPermException", "w_final_environmental Screen");
+            throw new PermissionException("screenPermException", "w_final_sdwis Screen");
 
         clause = userPermission.getClause();
 
@@ -125,7 +122,7 @@ public class FinalReportEnvScreen extends Screen {
      */
     private void postConstructor() {
         deck = Decks.QUERY;
-        data = new FinalReportEnvironmentalVO();
+        data = new FinalReportSDWISVO();
 
         initialize();
         setState(State.ADD);
@@ -140,18 +137,19 @@ public class FinalReportEnvScreen extends Screen {
 
         util = new ReportScreenUtility(def);
         map = util.parseClause(clause);
-
+        
         deckpanel = (DeckPanel)def.getWidget("deck");
-
+      
         releasedFrom = (CalendarLookUp)def.getWidget("RELEASED_FROM");
         addScreenHandler(releasedFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                releasedFrom.setValue(data.getReleasedFrom());
+                    releasedFrom.setValue(data.getReleasedFrom());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                releasedFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    releasedFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
+            
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 data.setReleasedFrom(event.getValue());
@@ -161,13 +159,13 @@ public class FinalReportEnvScreen extends Screen {
         releasedTo = (CalendarLookUp)def.getWidget("RELEASED_TO");
         addScreenHandler(releasedTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                releasedTo.setValue(data.getReleasedTo());
+                    releasedTo.setValue(data.getReleasedTo());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                releasedTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    releasedTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
+            
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 data.setReleasedTo(event.getValue());
             }
@@ -176,13 +174,13 @@ public class FinalReportEnvScreen extends Screen {
         collectedFrom = (CalendarLookUp)def.getWidget("COLLECTED_FROM");
         addScreenHandler(collectedFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                collectedFrom.setValue(data.getCollectedFrom());
+                    collectedFrom.setValue(data.getCollectedFrom());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    collectedFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
+            
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 data.setCollectedFrom(event.getValue());
             }
@@ -191,28 +189,28 @@ public class FinalReportEnvScreen extends Screen {
         collectedTo = (CalendarLookUp)def.getWidget("COLLECTED_TO");
         addScreenHandler(collectedTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                collectedTo.setValue(data.getCollectedTo());
+                    collectedTo.setValue(data.getCollectedTo());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    collectedTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
+            
             public void onValueChange(ValueChangeEvent<Datetime> event) {
                 data.setCollectedTo(event.getValue());
             }
         });
 
-        collectorName = (TextBox)def.getWidget("COLLECTOR_NAME");
+        collectorName = (TextBox)def.getWidget("COLLECTOR_NAME_SDWIS");
         addScreenHandler(collectorName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                collectorName.setValue(data.getCollectorName());
+                    collectorName.setValue(data.getCollectorName());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectorName.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    collectorName.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
+            
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setCollectorName(event.getValue());
             }
@@ -221,13 +219,13 @@ public class FinalReportEnvScreen extends Screen {
         accessionFrom = (TextBox)def.getWidget("ACCESSION_FROM");
         addScreenHandler(accessionFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionFrom.setValue(data.getAccessionFrom());
+                    accessionFrom.setValue(data.getAccessionFrom());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    accessionFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
+            
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 data.setAccessionFrom(event.getValue());
             }
@@ -236,13 +234,13 @@ public class FinalReportEnvScreen extends Screen {
         accessionTo = (TextBox)def.getWidget("ACCESSION_TO");
         addScreenHandler(accessionTo, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                accessionTo.setValue(data.getAccessionTo());
+                    accessionTo.setValue(data.getAccessionTo());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                accessionTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    accessionTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
+            
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 data.setAccessionTo(event.getValue());
             }
@@ -251,79 +249,79 @@ public class FinalReportEnvScreen extends Screen {
         clientReference = (TextBox)def.getWidget("CLIENT_REFERENCE");
         addScreenHandler(clientReference, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                clientReference.setValue(data.getClientReference());
+                    clientReference.setValue(data.getClientReference());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                clientReference.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    clientReference.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
+            
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setClientReference(event.getValue());
             }
         });
 
-        collectionSite = (TextBox)def.getWidget("COLLECTION_SITE");
+        collectionSite = (TextBox)def.getWidget("COLLECTION_SITE_SDWIS");
         addScreenHandler(collectionSite, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                collectionSite.setValue(data.getCollectionSite());
+                    collectionSite.setValue(data.getCollectionSite());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectionSite.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    collectionSite.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
+            
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setCollectionSite(event.getValue());
-            }
+            }  
         });
 
-        collectionTown = (TextBox)def.getWidget("COLLECTION_TOWN");
-        addScreenHandler(collectionTown, new ScreenEventHandler<String>() {
+        pwsId = (TextBox)def.getWidget("PWS_Number0");
+        addScreenHandler(pwsId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                collectionTown.setValue(data.getCollectionTown());
+                pwsId.setValue(data.getPwsId());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectionTown.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                    pwsId.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
+            
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setCollectionTown(event.getValue());
+                data.setPwsId(event.getValue());
             }
         });
-
-        projectCode = (Dropdown)def.getWidget("PROJECT_CODE");
-        addScreenHandler(projectCode, new ScreenEventHandler<Integer>() {
+        
+        facilityId = (TextBox)def.getWidget("FACILITY_ID");
+        addScreenHandler(facilityId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                projectCode.setSelection(data.getProjectCode());
+                facilityId.setValue(data.getFacilityId());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                projectCode.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                facilityId.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                data.setProjectCode(event.getValue());
+            
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setFacilityId(event.getValue());
             }
-        });
-
+        }); 
+        
         noSampleSelectedPanel = (AbsolutePanel)def.getWidget("noSampleSelectedPanel");
         addScreenHandler(noSampleSelectedPanel, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-
-            }
+                
+             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                // noSampleSelectedPanel.enable(EnumSet.of(State.ADD).contains(event.getState()));
+               // noSampleSelectedPanel.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
-
+        
         noSampleSelected = (Label<String>)def.getWidget("noSampleSelected");
         addScreenHandler(noSampleSelected, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 noSampleSelected.setText(null);
-            }
+             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 noSampleSelected.enable(EnumSet.of(State.ADD).contains(event.getState()));
@@ -351,54 +349,54 @@ public class FinalReportEnvScreen extends Screen {
                 resetButton.enable(true);
             }
         });
-
+        
         sampleEntTable = (TableWidget)def.getWidget("sampleEntTable");
         addScreenHandler(sampleEntTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-                sampleEntTable.load(getTableModel());
-                if (sampleEntTable.numRows() > 0)
-                    numSampleSelected.setValue(" " + sampleEntTable.numRows() +
-                                               " samples have been found.");
-                else
-                    numSampleSelected.setValue(" 0 samples have been found. Please change your search criteria to get more samples.");
-
+            public void onDataChange(DataChangeEvent event) {       
+                    sampleEntTable.load(getTableModel());
+                    if(sampleEntTable.numRows() > 0)
+                        numSampleSelected.setValue(" "+sampleEntTable.numRows()+" samples have been found.");
+                    else 
+                        numSampleSelected.setValue(" 0 samples have been found. Please change your search criteria to get more samples.");
+                        
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleEntTable.enable(true);
+                    sampleEntTable.enable(true);
             }
         });
-
+        
         sampleEntTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if (event.getCol() > 0)
+               if (event.getCol() > 0)
                     event.cancel();
             }
-        });
-
+        });      
+        
+        
         selectAllButton = (AppButton)def.getWidget("selectAllButton");
-        addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
-
-            public void onClick(ClickEvent event) {
-                for (int i = 0; i < sampleEntTable.numRows(); i++ )
-                    sampleEntTable.setCell(i, 0, "Y");
+        addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {            
+            
+            public void onClick(ClickEvent event) { 
+                for(int i = 0;i< sampleEntTable.numRows();i++)
+                    sampleEntTable.setCell(i, 0, "Y");                
             }
-
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 selectAllButton.enable(true);
             }
         });
-
+        
         numSampleSelected = (Label<String>)def.getWidget("numSampleSelected");
         addScreenHandler(numSampleSelected, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-
-            }
+            public void onDataChange(DataChangeEvent event) {                
+             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 numSampleSelected.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
+
 
         runReportButton = (AppButton)def.getWidget("runReportButton");
         addScreenHandler(runReportButton, new ScreenEventHandler<Object>() {
@@ -421,9 +419,9 @@ public class FinalReportEnvScreen extends Screen {
                 resettButton.enable(true);
             }
         });
-
+        
         backButton = new AppButton();
-        queryDeckLabel = new Label("Query");
+        queryDeckLabel = new Label("Query"); 
         queryDeckLabel.setStyleName("ScreenLabel");
         hp = new HorizontalPanel();
         ap = new AbsolutePanel();
@@ -440,6 +438,8 @@ public class FinalReportEnvScreen extends Screen {
                 backButton.enable(true);
             }
         });
+        
+       
     }
 
     protected void getSamples() {
@@ -460,30 +460,31 @@ public class FinalReportEnvScreen extends Screen {
         /*
          * if user does not enter any search details, throw an error.
          */
-        if (queryList.size() <= 0) {
+        if(queryList.size() <= 0){
             window.setError(consts.get("nofieldSelectedError"));
             return;
         }
+        
         query.setFields(queryList);
-
+        
         valueOrg = map.get(SampleMeta.getSampleOrgOrganizationId());
         qd = new QueryData();
         qd.key = SampleMeta.getSampleOrgOrganizationId();
         qd.query = valueOrg;
         qd.type = QueryData.Type.INTEGER;
         query.setFields(qd);
-
+        
         qd = new QueryData();
         qd.key = "DOMAIN";
-        qd.query = "E";
+        qd.query = "S";
         query.setFields(qd);
-
+        
         window.setBusy("Retrieving Samples");
-
-        try {
+        
+        try {           
             list = service.callList("getSampleList", query);
             if (list != null) {
-                if (list.size() > 0) {
+                if(list.size() > 0) {
                     noSampleSelectedPanel.setVisible(false);
                     loadDeck(list);
                     setResults(list);
@@ -495,14 +496,14 @@ public class FinalReportEnvScreen extends Screen {
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
-        window.clearStatus();
+       window.clearStatus();
     }
 
     protected void setWidgetValues() {
 
         /*
-         * completes the fields which don't have values for released and
-         * collected dates and accession number
+         * completes the fields which don't have values for released and collected dates and accession
+         * number
          */
         if (releasedFrom.getValue() != null && releasedTo.getValue() == null)
             releasedTo.setValue(releasedFrom.getValue().add(1));
@@ -524,11 +525,11 @@ public class FinalReportEnvScreen extends Screen {
      * Resets all the fields to their original report specified values
      */
     protected void reset() {
-        data = new FinalReportEnvironmentalVO();
+        data = new FinalReportSDWISVO();
         DataChangeEvent.fire(this);
         clearErrors();
     }
-
+    
     /**
      * Resets all the fields to their original report specified values
      */
@@ -536,74 +537,48 @@ public class FinalReportEnvScreen extends Screen {
         DataChangeEvent.fire(this);
         clearErrors();
     }
-
+    
     protected void loadDeck(ArrayList<SampleFinalReportWebVO> list) {
-        switch (deck) {
+        switch(deck){
             case QUERY:
                 deckpanel.showWidget(1);
                 deck = Decks.LIST;
                 setState(State.ADD);
-                setResults(list);
+                setResults(list);                
                 ((WebWindow)window).setCrumbLink(backButton);
                 break;
-            case LIST:
+            case LIST :
                 deckpanel.showWidget(0);
-                deck = Decks.QUERY;
+                deck = Decks.QUERY;                 
                 ((WebWindow)window).setCrumbLink(null);
-                break;
+                break;            
         }
+        
     }
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
-        ArrayList<IdNameVO> list;
-        ArrayList<DictionaryDO> lst;
+        ArrayList<DictionaryDO> list;
         TableDataRow row;
-        Query query;
-        QueryData qd;
 
-        list = null;
-        model = new ArrayList<TableDataRow>();
+        model = new ArrayList<TableDataRow>();        
+        
         model.add(new TableDataRow(null, ""));
-
-        query = new Query();
-
-        valueOrg = map.get(SampleMeta.getSampleOrgOrganizationId());
-        qd = new QueryData();
-        qd.key = SampleMeta.getSampleOrgOrganizationId();
-        qd.query = valueOrg;
-        qd.type = QueryData.Type.INTEGER;
-        query.setFields(qd);
-
-        try {
-            list = service.callList("getProjectList", query);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        for (int counter = 0; counter < list.size(); counter++ ) {
-            row = new TableDataRow(list.get(counter).getId(), list.get(counter).getName());
-            model.add(row);
-        }
-        projectCode.setModel(model);
-
-        model.add(new TableDataRow(null, ""));
-        lst = CategoryCache.getBySystemName("sample_status");
-        for (DictionaryDO d : lst) {
+        list = CategoryCache.getBySystemName("sample_status");
+        for (DictionaryDO d : list) {         
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        ((Dropdown<Integer>) (sampleEntTable.getColumnWidget("status"))).setModel(model);
-
+        ((Dropdown<Integer>)(sampleEntTable.getColumnWidget("status"))).setModel(model);
     }
-
+    
     public void setResults(ArrayList<SampleFinalReportWebVO> results) {
         this.results = results;
         DataChangeEvent.fire(this);
     }
-
-    protected void runReport() {
+    
+   protected void runReport() {
         Query query;
         String value;
         QueryData field;
@@ -619,34 +594,34 @@ public class FinalReportEnvScreen extends Screen {
             value = (String)row.cells.get(0).getValue();
             val = String.valueOf(i);
             if ("Y".equals(value)) {
-                if (field.query == null)
+                if(field.query==null)               
                     field.query = val;
                 else
-                    field.query += "," + val;
+                    field.query +=","+ val;           
             }
         }
         query.setFields(field);
-
         field = new QueryData();
         field.key = "DOMAIN";
-        field.query = "E";
+        field.query = "S";
         query.setFields(field);
-
-        if (query.getFields().get(0).query != null) {
+        
+        if(query.getFields().get(0).query != null) {
             try {
                 st = service.call("runReportForWeb", query);
                 if (st.getStatus() == ReportStatus.Status.SAVED) {
                     url = "report?file=" + st.getMessage();
 
                     Window.open(URL.encode(url), "Final Report", null);
-                    window.setStatus("Generated file " + st.getMessage(), "");
+                    window.setStatus("Generated file " + st.getMessage(),"");
                 } else {
-                    window.setStatus(st.getMessage(), "");
+                    window.setStatus(st.getMessage(),"");
                 }
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
-        } else {
+        }
+        else {
             window.setError(consts.get("noSampleSelectedError"));
             return;
         }
@@ -658,15 +633,15 @@ public class FinalReportEnvScreen extends Screen {
         TableDataRow tr;
         Date temp;
         Datetime temp1;
-
+        
         model = new ArrayList<TableDataRow>();
-        if (results == null)
-            return null;
+        if (results == null) 
+            return null;        
         if (results.size() > 0) {
             try {
                 for (int i = 0; i < results.size(); i++ ) {
                     data = results.get(i);
-                    if (data.getCollectionDate() != null) {
+                    if(data.getCollectionDate()!=null) {
                         temp = data.getCollectionDate().getDate();
                         if (data.getCollectionTime() == null) {
                             temp.setHours(0);
@@ -676,7 +651,8 @@ public class FinalReportEnvScreen extends Screen {
                             temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
                         }
                         temp1 = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
-                    } else
+                    }
+                    else
                         temp1 = null;
                     tr = new TableDataRow(data.getAccessionNumber(),
                                           "N",
@@ -685,7 +661,8 @@ public class FinalReportEnvScreen extends Screen {
                                           temp1,
                                           data.getCollector(),
                                           data.getStatus(),
-                                          data.getLocationAddressCity());
+                                          data.getPwsId(),
+                                          data.getFacilityId());
                     tr.data = data;
                     model.add(tr);
                 }
@@ -700,17 +677,16 @@ public class FinalReportEnvScreen extends Screen {
         return model;
     }
 
-    private class FinalReportEnvironmentalVO {
+    private class FinalReportSDWISVO {        
 
         private Datetime releasedFrom, releasedTo, collectedFrom, collectedTo;
-        private String   collectorName, clientReference, collectionSite, collectionTown,
-                        noSampleSelected, numSampleSelected;
+        private String   collectorName, clientReference, collectionSite, numSampleSelected, pwsId, facilityId;
         private Integer  accessionFrom, accessionTo, projectCode;
 
         public Datetime getReleasedFrom() {
             return releasedFrom;
         }
-
+        
         public void setReleasedFrom(Datetime releasedFrom) {
             this.releasedFrom = releasedFrom;
         }
@@ -718,7 +694,7 @@ public class FinalReportEnvScreen extends Screen {
         public Datetime getReleasedTo() {
             return releasedTo;
         }
-
+        
         public void setReleasedTo(Datetime releasedTo) {
             this.releasedTo = releasedTo;
         }
@@ -726,7 +702,7 @@ public class FinalReportEnvScreen extends Screen {
         public Datetime getCollectedFrom() {
             return collectedFrom;
         }
-
+        
         public void setCollectedFrom(Datetime collectedFrom) {
             this.collectedFrom = collectedFrom;
         }
@@ -734,7 +710,7 @@ public class FinalReportEnvScreen extends Screen {
         public Datetime getCollectedTo() {
             return collectedTo;
         }
-
+        
         public void setCollectedTo(Datetime collectedTo) {
             this.collectedTo = collectedTo;
         }
@@ -742,7 +718,7 @@ public class FinalReportEnvScreen extends Screen {
         public String getCollectorName() {
             return collectorName;
         }
-
+        
         public void setCollectorName(String collectorName) {
             this.collectorName = collectorName;
         }
@@ -750,7 +726,7 @@ public class FinalReportEnvScreen extends Screen {
         public String getClientReference() {
             return clientReference;
         }
-
+        
         public void setClientReference(String clientReference) {
             this.clientReference = clientReference;
         }
@@ -758,31 +734,15 @@ public class FinalReportEnvScreen extends Screen {
         public String getCollectionSite() {
             return collectionSite;
         }
-
+        
         public void setCollectionSite(String collectionSite) {
             this.collectionSite = collectionSite;
         }
-
-        public String getCollectionTown() {
-            return collectionTown;
-        }
-
-        public void setCollectionTown(String collectionTown) {
-            this.collectionTown = collectionTown;
-        }
-
-        public String getNoSampleSelected() {
-            return noSampleSelected;
-        }
-
-        public void setNoSampleSelected(String noSampleSelected) {
-            this.noSampleSelected = noSampleSelected;
-        }
-
+        
         public String getNumSampleSelected() {
             return numSampleSelected;
         }
-
+        
         public void setNumSampleSelected(String numSampleSelected) {
             this.numSampleSelected = numSampleSelected;
         }
@@ -790,7 +750,7 @@ public class FinalReportEnvScreen extends Screen {
         public Integer getAccessionFrom() {
             return accessionFrom;
         }
-
+        
         public void setAccessionFrom(Integer accessionFrom) {
             this.accessionFrom = accessionFrom;
         }
@@ -798,7 +758,7 @@ public class FinalReportEnvScreen extends Screen {
         public Integer getAccessionTo() {
             return accessionTo;
         }
-
+        
         public void setAccessionTo(Integer accessionTo) {
             this.accessionTo = accessionTo;
         }
@@ -806,9 +766,25 @@ public class FinalReportEnvScreen extends Screen {
         public Integer getProjectCode() {
             return projectCode;
         }
-
+        
         public void setProjectCode(Integer projectCode) {
             this.projectCode = projectCode;
+        }
+        
+        public String getPwsId() {
+            return pwsId;
+        }
+
+        public void setPwsId(String pwsId) {
+            this.pwsId = pwsId;
+        }
+
+        public String getFacilityId() {
+            return facilityId;
+        }
+
+        public void setFacilityId(String facilityId) {
+            this.facilityId = facilityId;
         }
     }
 }
