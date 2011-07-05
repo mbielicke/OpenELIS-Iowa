@@ -37,7 +37,7 @@ public class SampleFinalReportWebVO implements RPC {
 
     protected Integer         id, accessionNumber, organizationId, statusId;
     protected Datetime        collectionDate, collectionTime;
-    protected String          location, collector, locationAddressCity, pvtWellOwner;
+    protected String          location, collector, locationAddressCity, pvtWellOwner, pwsId, facilityId;
 
     public SampleFinalReportWebVO() {
     }
@@ -71,6 +71,22 @@ public class SampleFinalReportWebVO implements RPC {
         setLocationAddressCity(locationAddressCity);
         setPvtWellOwner(pvtWellOwner);
     }
+    
+    public SampleFinalReportWebVO(Integer id, Integer accessionNumber, Integer organizationId, Integer statusId, 
+                                  Date collectionDate, Date collectionTime, String location,
+                                  String collector, String pwsId, 
+                                  String facilityId) {
+      setId(id);
+      setAccessionNumber(accessionNumber);
+      setOrganizationId(organizationId);
+      setCollectionDate(DataBaseUtil.toYD(collectionDate));
+      setCollectionTime(DataBaseUtil.toHM(collectionTime));
+      setLocation(location);
+      setCollector(collector);
+      setStatus(statusId);
+      setPwsId(pwsId);
+      setFacilityId(facilityId);
+  }
 
     public Integer getId() {
         return id;
@@ -134,6 +150,22 @@ public class SampleFinalReportWebVO implements RPC {
 
     public void setStatus(Integer statusId) {
         this.statusId = statusId;
+    }
+    
+    public String getPwsId() {
+        return pwsId;
+    }
+
+    public void setPwsId(String pwsId) {
+        this.pwsId = pwsId;
+    }
+
+    public String getFacilityId() {
+        return facilityId;
+    }
+
+    public void setFacilityId(String facilityId) {
+        this.facilityId = facilityId;
     }
 
     public String getLocationAddressCity() {
