@@ -161,6 +161,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         addLinkHandler("homeIcon", "Home", null, new ClickHandler() {
             public void onClick(ClickEvent event) {
                 gotoScreen("home");
+                window.setCrumbLink(null);
             }
         });
 
@@ -169,6 +170,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 try {
                     Screen screen = new FinalReportEnvScreen();
                     setScreen(screen, "Final Report", "finalReport");
+                    window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
@@ -181,6 +183,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 try {
                     Screen screen = new FinalReportPvtScreen();
                     setScreen(screen, "Private Well Final Report", "finalReportPvt");
+                    window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
@@ -193,6 +196,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 try {
                     Screen screen = new FinalReportSDWISScreen();
                     setScreen(screen, "SDWIS Final Report", "finalReportSDWIS");
+                    window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
@@ -265,6 +269,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 try {
                     Screen screen = new NotificationPreferenceScreen();
                     setScreen(screen, "Notification Preference", "notificationPref");
+                    window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
