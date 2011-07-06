@@ -597,11 +597,15 @@ public class FinalReportPvtScreen extends Screen {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        for (int counter = 0; counter < list.size(); counter++ ) {
-            row = new TableDataRow(list.get(counter).getId(), list.get(counter).getName());
-            model.add(row);
-        }
+        
+        if (list != null) {
+            if(list.size() > 0) {
+                for (int counter = 0; counter < list.size(); counter++ ) {
+                    row = new TableDataRow(list.get(counter).getId(), list.get(counter).getName());
+                    model.add(row);
+                } 
+            }            
+        }        
         projectCode.setModel(model);
 
         model.add(new TableDataRow(null, ""));
