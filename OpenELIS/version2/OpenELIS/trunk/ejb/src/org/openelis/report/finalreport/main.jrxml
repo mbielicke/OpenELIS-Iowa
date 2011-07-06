@@ -296,7 +296,7 @@ WHERE
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}.toString()+" of"]]></textFieldExpression>
 			</textField>
-			<textField evaluationTime="Report">
+			<textField evaluationTime="Group" evaluationGroup="Sample_Organization">
 				<reportElement x="300" y="5" width="27" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
@@ -420,7 +420,7 @@ WHERE
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}.toString()+" of"]]></textFieldExpression>
 			</textField>
-			<textField evaluationTime="Report">
+			<textField evaluationTime="Group" evaluationGroup="Sample_Organization">
 				<reportElement x="300" y="3" width="27" height="12"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
