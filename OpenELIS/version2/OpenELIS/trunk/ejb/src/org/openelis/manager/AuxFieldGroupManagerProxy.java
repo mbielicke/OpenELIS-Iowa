@@ -46,7 +46,7 @@ public class AuxFieldGroupManagerProxy {
         return m;
     }
     
-    public AuxFieldGroupManager fetchWithFields(Integer id) throws Exception{
+    public AuxFieldGroupManager fetchByIdWithFields(Integer id) throws Exception{
         AuxFieldGroupManager m;
 
         m = fetchById(id);

@@ -37,6 +37,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.PanelDO;
@@ -176,6 +177,7 @@ public class PanelBean implements PanelRemote, PanelLocal {
     }
     
     public ArrayList<IdVO> fetchTestIdsFromPanel(Integer panelId) throws Exception {
+        int i;
         List<PanelItemDO> panelItemList;
         PanelItemDO panelItem;
         TestViewDO testDO;
@@ -190,18 +192,59 @@ public class PanelBean implements PanelRemote, PanelLocal {
         //fetch the testid from each row by test name, method name
         returnList = new ArrayList<IdVO>();
         query = manager.createNamedQuery("Test.FetchByNameMethodName");
-        for(int i=0; i<panelItemList.size(); i++){
+        for (i = 0; i < panelItemList.size(); i++) {
             panelItem = panelItemList.get(i);
+            
+            if (!"T".equals(panelItem.getType()))
+                continue;
             
             query.setParameter("name", panelItem.getName());
             query.setParameter("methodName", panelItem.getMethodName());            
-            try{
+            try {
                 testDO = (TestViewDO)query.getSingleResult();
                 idVO = new IdVO();
                 idVO.setId(testDO.getId());
                 
                 returnList.add(idVO);
-            }catch(NoResultException e){
+            } catch (NoResultException e) {
+                //do nothing
+            }
+        }
+        
+        return returnList;
+    }
+
+    public ArrayList<IdVO> fetchAuxIdsFromPanel(Integer panelId) throws Exception {
+        int i;
+        List<PanelItemDO> panelItemList;
+        PanelItemDO panelItem;
+        AuxFieldGroupDO auxDO;
+        ArrayList<IdVO> returnList;
+        IdVO idVO;
+        Query query;
+        
+        //fetch the panelitems
+        query = manager.createNamedQuery("PanelItem.FetchByPanelId");
+        query.setParameter("id", panelId);
+        panelItemList = query.getResultList();
+        
+        //fetch the testid from each row by test name, method name
+        returnList = new ArrayList<IdVO>();
+        query = manager.createNamedQuery("AuxFieldGroup.FetchActiveByName");
+        for (i = 0; i < panelItemList.size(); i++) {
+            panelItem = panelItemList.get(i);
+            
+            if (!"A".equals(panelItem.getType()))
+                continue;
+            
+            query.setParameter("name", panelItem.getName());
+            try {
+                auxDO = (AuxFieldGroupDO)query.getSingleResult();
+                idVO = new IdVO();
+                idVO.setId(auxDO.getId());
+                
+                returnList.add(idVO);
+            } catch (NoResultException e) {
                 //do nothing
             }
         }

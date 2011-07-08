@@ -44,8 +44,8 @@ import org.openelis.utils.EJBFactory;
 public class SampleManagerProxy {
     protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId, anInPrepId,
                              anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId, anErrorInitiatedId,
-                             anErrorInPrepId, anErrorCompletedId, samLoggedInId, samCompletedId,
-                             samReleasedId, samErrorId;
+                             anErrorInPrepId, anErrorCompletedId, samNotVerifiedId, samLoggedInId,
+                             samCompletedId, samReleasedId, samErrorId;
 
     public SampleManagerProxy() {
         DictionaryLocal l;
@@ -65,6 +65,7 @@ public class SampleManagerProxy {
                 anErrorInitiatedId = l.fetchBySystemName("analysis_error_initiated").getId();
                 anErrorInPrepId = l.fetchBySystemName("analysis_error_inprep").getId();
                 anErrorCompletedId = l.fetchBySystemName("analysis_error_completed").getId();
+                samNotVerifiedId = l.fetchBySystemName("sample_not_verified").getId();
                 samLoggedInId = l.fetchBySystemName("sample_logged_in").getId();
                 samCompletedId = l.fetchBySystemName("sample_completed").getId();
                 samReleasedId = l.fetchBySystemName("sample_released").getId();

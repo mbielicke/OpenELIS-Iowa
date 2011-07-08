@@ -86,12 +86,27 @@ public class AuxFieldManagerProxy {
 
     public AuxFieldManager fetchById(Integer id) throws Exception {
         AuxFieldLocal l;
-        ArrayList<AuxFieldViewDO> data;
+        AuxFieldViewDO data;
         AuxFieldManager m;
 
         l = EJBFactory.getAuxField();
         data = l.fetchById(id);
         m = AuxFieldManager.getInstance();
+
+        m.addAuxField(data);
+
+        return m;
+    }
+
+    public AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
+        AuxFieldLocal l;
+        ArrayList<AuxFieldViewDO> data;
+        AuxFieldManager m;
+
+        l = EJBFactory.getAuxField();
+        data = l.fetchByGroupId(auxFieldGroupId);
+        m = AuxFieldManager.getInstance();
+        m.setAuxFieldGroupId(auxFieldGroupId);
 
         for (int i = 0; i < data.size(); i++ )
             m.addAuxField(data.get(i));
@@ -142,22 +157,6 @@ public class AuxFieldManagerProxy {
             data = fields.get(k);
             m.addAuxFieldAndValues(data, valueHash.get(data.getId()));
         }
-
-        return m;
-    }
-
-    public AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
-        AuxFieldLocal l;
-        ArrayList<AuxFieldViewDO> data;
-        AuxFieldManager m;
-
-        l = EJBFactory.getAuxField();
-        data = l.fetchByGroupId(auxFieldGroupId);
-        m = AuxFieldManager.getInstance();
-        m.setAuxFieldGroupId(auxFieldGroupId);
-
-        for (int i = 0; i < data.size(); i++ )
-            m.addAuxField(data.get(i));
 
         return m;
     }

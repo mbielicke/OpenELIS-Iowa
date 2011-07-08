@@ -60,9 +60,8 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
         return AuxFieldGroupManager.fetchById(id);
     }
     
-    public AuxFieldGroupManager fetchWithFields(Integer id) throws Exception {
-        return AuxFieldGroupManager.fetchWithFields(id);
-        
+    public AuxFieldGroupManager fetchByIdWithFields(Integer id) throws Exception {
+        return AuxFieldGroupManager.fetchByIdWithFields(id);
     }
 
     public AuxFieldGroupManager add(AuxFieldGroupManager man) throws Exception {
@@ -129,20 +128,20 @@ public class AuxFieldGroupManagerBean implements AuxFieldGroupManagerRemote {
         return fetchById(id);
     }
     
-    public AuxFieldManager fetchAuxFieldById(Integer id) throws Exception {
+    public AuxFieldManager fetchFieldById(Integer id) throws Exception {
         return AuxFieldManager.fetchById(id);
     }
     
-    public AuxFieldManager fetchByGroupId(Integer id) throws Exception {
+    public AuxFieldManager fetchFieldByGroupId(Integer id) throws Exception {
         return AuxFieldManager.fetchByGroupId(id);
     }
 
-    public AuxFieldValueManager fetchFieldValueByFieldId(Integer id) throws Exception {
-        return AuxFieldValueManager.fetchByAuxFieldId(id);
+    public AuxFieldManager fetchFieldByGroupIdWithValues(Integer groupId) throws Exception {
+        return AuxFieldManager.fetchByGroupIdWithValues(groupId);
     }
     
-    public AuxFieldManager fetchByGroupIdWithValues(Integer groupId) throws Exception {
-        return AuxFieldManager.fetchByGroupIdWithValues(groupId);
+    public AuxFieldValueManager fetchFieldValueByFieldId(Integer fieldId) throws Exception {
+        return AuxFieldValueManager.fetchByFieldId(fieldId);
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {

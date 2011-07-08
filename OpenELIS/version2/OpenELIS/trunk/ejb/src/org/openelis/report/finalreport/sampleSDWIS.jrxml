@@ -217,7 +217,7 @@ WHERE
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false" isItalic="true" pdfFontName="Times-Italic"/>
 				</textElement>
-				<text><![CDATA[Samp. Pt. Description]]></text>
+				<text><![CDATA[Collection Site]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
 				<reportElement x="434" y="132" width="180" height="12"/>

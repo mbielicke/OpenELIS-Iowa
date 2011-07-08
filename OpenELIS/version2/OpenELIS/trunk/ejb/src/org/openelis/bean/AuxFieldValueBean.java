@@ -34,6 +34,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -42,6 +43,7 @@ import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.AuxFieldValue;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -150,38 +152,32 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<AuxFieldValueViewDO> fetchById(Integer id) throws Exception {
+    public AuxFieldValueViewDO fetchById(Integer id) throws Exception {
         Query query;
         List list;
         AuxFieldValueViewDO data;
         DictionaryDO dict;
         
         query = manager.createNamedQuery("AuxFieldValue.FetchById");
-        query.setParameter("auxFieldId", id);
+        query.setParameter("id", id);
 
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-
-        list = DataBaseUtil.toArrayList(list);
-        //
-        // for entries that are dictionary, we want to fetch the dictionary
-        // text and set it for display
-        //
-        try {                       
-            for (int i = 0 ; i < list.size(); i++) {
-                data = (AuxFieldValueViewDO)list.get(i);                
-                if (typeDict == data.getTypeId()) {
-                    dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
-                    if (dict != null)
-                        data.setDictionary(dict.getEntry());
-                }
+        try {
+            data = (AuxFieldValueViewDO)query.getSingleResult();
+            if (typeDict == data.getTypeId()) {
+                //
+                // for entries that are dictionary, we want to fetch the dictionary
+                // text and set it for display
+                //
+                dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
+                if (dict != null)
+                    data.setDictionary(dict.getEntry());
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
         }
-
-        return (ArrayList) list;
+        return data;
     }
     
     @SuppressWarnings("unchecked")
@@ -220,6 +216,41 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         return (ArrayList) list;
     }
     
+    @SuppressWarnings("unchecked")
+    public ArrayList<AuxFieldValueViewDO> fetchByFieldId(Integer fieldId) throws Exception {
+        Query query;
+        List list;
+        AuxFieldValueViewDO data;
+        DictionaryDO dict;
+        
+        query = manager.createNamedQuery("AuxFieldValue.FetchByFieldId");
+        query.setParameter("fieldId", fieldId);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        list = DataBaseUtil.toArrayList(list);
+        //
+        // for entries that are dictionary, we want to fetch the dictionary
+        // text and set it for display
+        //
+        try {                       
+            for (int i = 0 ; i < list.size(); i++) {
+                data = (AuxFieldValueViewDO)list.get(i);                
+                if (typeDict == data.getTypeId()) {
+                    dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
+                    if (dict != null)
+                        data.setDictionary(dict.getEntry());
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return (ArrayList) list;
+    }
+
     @SuppressWarnings("unchecked")
     public ArrayList<AuxFieldValueViewDO> fetchByGroupId(Integer groupId) throws Exception {
         Query query;

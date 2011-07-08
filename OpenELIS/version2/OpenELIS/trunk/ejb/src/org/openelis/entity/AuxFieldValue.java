@@ -48,7 +48,10 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "AuxFieldValue.FetchById",
                 query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId,afv.typeId,afv.value,'')"
-                      + " from AuxFieldValue afv where afv.auxFieldId = :auxFieldId"),
+                      + " from AuxFieldValue afv where afv.id = :id"),
+    @NamedQuery( name = "AuxFieldValue.FetchByFieldId",
+                query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId, afv.typeId,afv.value,'')"
+                      + " from AuxFieldValue afv where afv.auxFieldId = :fieldId order by afv.id "),
     @NamedQuery( name = "AuxFieldValue.FetchByGroupId",
                 query = "select distinct new org.openelis.domain.AuxFieldValueViewDO(afv.id,afv.auxFieldId, afv.typeId,afv.value,'')"
                       + " from AuxField af left join af.auxFieldValue afv where af.auxFieldGroupId = :groupId order by afv.auxFieldId "),

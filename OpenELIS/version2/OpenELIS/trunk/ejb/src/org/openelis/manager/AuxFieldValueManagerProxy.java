@@ -34,13 +34,13 @@ import org.openelis.local.AuxFieldValueLocal;
 import org.openelis.utils.EJBFactory;
 
 public class AuxFieldValueManagerProxy {
-    public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {
+    public AuxFieldValueManager fetchByFieldId(Integer auxFieldId) throws Exception {
         AuxFieldValueLocal l;
         ArrayList<AuxFieldValueViewDO> data;
         AuxFieldValueManager m;
 
         l = EJBFactory.getAuxFieldValue();
-        data = l.fetchById(auxFieldId);
+        data = l.fetchByFieldId(auxFieldId);
         m = AuxFieldValueManager.getInstance();
         m.setAuxiliaryFieldId(auxFieldId);
         

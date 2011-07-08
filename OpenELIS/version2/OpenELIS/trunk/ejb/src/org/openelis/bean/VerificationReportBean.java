@@ -60,21 +60,21 @@ public class VerificationReportBean implements VerificationReportRemote {
         try {
             p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("BEGIN_ENTERED", Prompt.Type.DATETIME)
-                    .setPrompt("Begin Entered:")
-                    .setWidth(120)
-                    .setDatetimeStartCode(Prompt.Datetime.YEAR)
-                    .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                    .setDefaultValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE).toString())
-                    .setRequired(true));
-
-            p.add(new Prompt("END_ENTERED", Prompt.Type.DATETIME)
-                    .setPrompt("End Entered:")
-                    .setWidth(120)
-                    .setDatetimeStartCode(Prompt.Datetime.YEAR)
-                    .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                    .setDefaultValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE).toString())
-                    .setRequired(true));
+//            p.add(new Prompt("BEGIN_ENTERED", Prompt.Type.DATETIME)
+//                    .setPrompt("Begin Entered:")
+//                    .setWidth(120)
+//                    .setDatetimeStartCode(Prompt.Datetime.YEAR)
+//                    .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+//                    .setDefaultValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE).toString())
+//                    .setRequired(true));
+//
+//            p.add(new Prompt("END_ENTERED", Prompt.Type.DATETIME)
+//                    .setPrompt("End Entered:")
+//                    .setWidth(120)
+//                    .setDatetimeStartCode(Prompt.Datetime.YEAR)
+//                    .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+//                    .setDefaultValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE).toString())
+//                    .setRequired(true));
 
             p.add(new Prompt("USER_LIST", Prompt.Type.ARRAY)
                     .setPrompt("User ID:")
@@ -109,7 +109,7 @@ public class VerificationReportBean implements VerificationReportRemote {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String beginEntered, endEntered, userIds, userWhere, userNames, printer,
+        String /*beginEntered, endEntered,*/ userIds, userWhere, userNames, printer,
                dir, printstat, loginName, token;
         StringTokenizer tokenizer;
         SystemUserVO  sysUserVO;
@@ -129,12 +129,12 @@ public class VerificationReportBean implements VerificationReportRemote {
         ucl = EJBFactory.getUserCache();
         loginName = ucl.getName();
         
-        beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
-        if (beginEntered != null && beginEntered.length() > 0)
-            beginEntered += ":00";
-        endEntered = ReportUtil.getSingleParameter(param, "END_ENTERED");
-        if (endEntered != null && endEntered.length() > 0)
-            endEntered += ":59";
+//        beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
+//        if (beginEntered != null && beginEntered.length() > 0)
+//            beginEntered += ":00";
+//        endEntered = ReportUtil.getSingleParameter(param, "END_ENTERED");
+//        if (endEntered != null && endEntered.length() > 0)
+//            endEntered += ":59";
         userWhere = ReportUtil.getListParameter(param, "USER_LIST");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
         
@@ -185,8 +185,8 @@ public class VerificationReportBean implements VerificationReportRemote {
             tempFile = File.createTempFile("verification", ".pdf", new File("/tmp"));
 
             jparam = new HashMap<String, Object>();
-            jparam.put("BEGIN_ENTERED", beginEntered);
-            jparam.put("END_ENTERED", endEntered);
+//            jparam.put("BEGIN_ENTERED", beginEntered);
+//            jparam.put("END_ENTERED", endEntered);
             jparam.put("USER_WHERE", userWhere);
             jparam.put("USER_NAMES", userNames);
             jparam.put("LOGIN_NAME", loginName);

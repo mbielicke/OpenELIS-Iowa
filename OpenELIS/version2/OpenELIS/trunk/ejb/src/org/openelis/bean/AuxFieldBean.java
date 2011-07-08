@@ -54,14 +54,14 @@ public class AuxFieldBean implements AuxFieldLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
 
-    public ArrayList<AuxFieldViewDO> fetchById(Integer id) throws Exception {
+    public AuxFieldViewDO fetchById(Integer id) throws Exception {
         Query query;
-        ArrayList<AuxFieldViewDO> data;
+        AuxFieldViewDO data;
 
         query = manager.createNamedQuery("AuxField.FetchById");
         query.setParameter("id", id);
         try {
-            data = DataBaseUtil.toArrayList(query.getResultList());
+            data = (AuxFieldViewDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
