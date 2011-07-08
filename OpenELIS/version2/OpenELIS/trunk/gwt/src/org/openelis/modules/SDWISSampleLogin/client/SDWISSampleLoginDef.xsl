@@ -160,11 +160,11 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'pwsName')" />:
                 </text>
-                <textbox key="pwsName" width="250" tab="{meta:getSDWISStateLabId()},{meta:getSDWISPwsNumber0()}" field="String" />
+                <textbox key="pwsName" width="215" tab="{meta:getSDWISStateLabId()},{meta:getSDWISPwsNumber0()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'stateLabNo')" />:
                 </text>
-                <textbox key="{meta:getSDWISStateLabId()}" width="102" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer" required="true"/>
+                <textbox key="{meta:getSDWISStateLabId()}" width="109" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer" required="true"/>
               </row>
               <row>
               
@@ -179,7 +179,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'sampleCat')" />:
                 </text>
-                <dropdown key="{meta:getSDWISSampleCategoryId()}" width="108" tab="{meta:getSDWISSamplePointId()},{meta:getSDWISSampleTypeId()}" field="Integer" required="true"/>
+                <dropdown key="{meta:getSDWISSampleCategoryId()}" width="109" tab="{meta:getSDWISSamplePointId()},{meta:getSDWISSampleTypeId()}" field="Integer" required="true"/>
               </row>
               <row>
                 <text style="Prompt">
@@ -189,7 +189,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
-                <textbox key="{meta:getSDWISLocation()}" case = "LOWER" width="250" max="20" tab="{meta:getSDWISCollector()},{meta:getSDWISSamplePointId()}" field="String" />
+                <textbox key="{meta:getSDWISLocation()}" case="LOWER" width="215" max="20" tab="{meta:getSDWISCollector()},{meta:getSDWISSamplePointId()}" field="String" />
               </row>
             </TablePanel>
           </VerticalPanel>

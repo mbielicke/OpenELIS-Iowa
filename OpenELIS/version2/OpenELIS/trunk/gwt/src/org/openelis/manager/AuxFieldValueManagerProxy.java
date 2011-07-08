@@ -37,9 +37,8 @@ public class AuxFieldValueManagerProxy {
         service = new ScreenService("controller?service="+AUXILIARY_SERVICE_URL);
     }
     
-    public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {
-        return service.call("fetchByAuxFieldId", auxFieldId);
-        
+    public AuxFieldValueManager fetchByFieldId(Integer auxFieldId) throws Exception {
+        return service.call("fetchFieldValueByFieldId", auxFieldId);
     }
     
     public AuxFieldValueManager add(AuxFieldValueManager man) throws Exception {

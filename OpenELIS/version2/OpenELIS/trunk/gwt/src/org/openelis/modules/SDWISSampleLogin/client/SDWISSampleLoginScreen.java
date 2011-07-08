@@ -814,7 +814,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     analysisNotesTab.setData(data);
                     storageTab.setData(data);
                     qaEventsTab.setData(data);
-
+                    auxDataTab.setManager(manager);
+                    
                     drawTabs();
                 }
             }

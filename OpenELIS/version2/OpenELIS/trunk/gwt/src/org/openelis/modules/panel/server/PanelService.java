@@ -80,6 +80,10 @@ public class PanelService {
         return remote().fetchTestIdsFromPanel(panelId);
     }
 
+    public ArrayList<IdVO> fetchAuxIdsByPanelId(Integer panelId) throws Exception {
+        return remote().fetchAuxIdsFromPanel(panelId);
+    }
+
     private PanelRemote remote() {
         return (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
     }

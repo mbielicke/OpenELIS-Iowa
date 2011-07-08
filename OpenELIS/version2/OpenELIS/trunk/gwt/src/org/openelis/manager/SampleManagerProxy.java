@@ -44,8 +44,8 @@ public class SampleManagerProxy {
     protected ScreenService       service;
     protected static Integer      anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
                                   anInPrepId, anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId,
-                                  anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId, samLoggedInId,
-                                  samCompletedId, samReleasedId, samErrorId;
+                                  anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId, samNotVerifiedId,
+                                  samLoggedInId, samCompletedId, samReleasedId, samErrorId;
 
     public SampleManagerProxy() {
         service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
@@ -64,6 +64,7 @@ public class SampleManagerProxy {
                 anErrorInitiatedId = DictionaryCache.getIdBySystemName("analysis_error_initiated");
                 anErrorInPrepId = DictionaryCache.getIdBySystemName("analysis_error_inprep");
                 anErrorCompletedId = DictionaryCache.getIdBySystemName("analysis_error_completed");
+                samNotVerifiedId = DictionaryCache.getIdBySystemName("sample_not_verified");
                 samLoggedInId = DictionaryCache.getIdBySystemName("sample_logged_in");
                 samCompletedId = DictionaryCache.getIdBySystemName("sample_completed");
                 samReleasedId = DictionaryCache.getIdBySystemName("sample_released");

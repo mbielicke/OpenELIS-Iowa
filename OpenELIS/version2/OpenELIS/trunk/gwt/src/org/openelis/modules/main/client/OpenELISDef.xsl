@@ -96,6 +96,9 @@ UIRF Software License are applicable instead of those above.
 				<code>if(UserCache.getPermission().hasModule("quickentry","SELECT")){</code>
                 <menuItem key="quickEntry" description="{resource:getString($constants,'quickEntryDescription')}" enable="true" icon="quickEntryIcon" label="{resource:getString($constants,'quickEntry')}" />
 				<code>}</code>
+				<code>if(UserCache.getPermission().hasModule("verification","SELECT")){</code>
+                <menuItem key="verification" description="{resource:getString($constants,'verificationDescription')}" enable="true" icon="QCIcon" label="{resource:getString($constants,'verification')}" />
+                <code>}</code>
 				<code>if(UserCache.getPermission().hasModule("sampletracking","SELECT")){</code>
                 <menuItem key="tracking" description="{resource:getString($constants,'trackingDescription')}" enable="true" icon="trackingIcon" label="{resource:getString($constants,'tracking')}" />
                 <code>}</code>
@@ -210,7 +213,6 @@ UIRF Software License are applicable instead of those above.
                     <menuItem key="qaEventReport" description="" icon="" enable="false" label="{resource:getString($constants,'QAEventReport')}" />
                     <menuItem key="organizationRef" description="" icon="" enable="true" label="{resource:getString($constants,'organizationRef')}" />
                     <menuItem key="organizationRelRef" description="" icon="" enable="true" label="{resource:getString($constants,'organizationRelRef')}" />
-                    
                   </menuPanel>
                 </menuItem>
                 <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'summary')}">
@@ -221,6 +223,7 @@ UIRF Software License are applicable instead of those above.
                     <menuItem key="QAByOrganization" description="" icon="" enable="true" label="{resource:getString($constants,'QAByOrganization')}" />
                     <menuItem key="testCountByFacility" description="" icon="" enable="false" label="{resource:getString($constants,'testCountByFacility')}" />
                     <menuItem key="turnaround" description="" icon="" enable="true" label="{resource:getString($constants,'turnaround')}" />
+                    <menuItem key="sdwisUnloadReport" description="" icon="" enable="true" label="{resource:getString($constants,'sdwisUnloadReport')}" />
                     <menuItem key="finalReport" description="" icon="" enable="true" label="{resource:getString($constants,'finalReport')}" />
                   </menuPanel>
                 </menuItem>

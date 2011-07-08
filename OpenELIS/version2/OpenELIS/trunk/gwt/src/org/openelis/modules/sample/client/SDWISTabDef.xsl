@@ -86,15 +86,17 @@ UIRF Software License are applicable instead of those above.
                        </text>
                        <textbox key="{meta:getSDWISSamplePointId()}" width="75" max="11" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String" required="true"/>
                        <text style="Prompt">
-                         <xsl:value-of select="resource:getString($constants,'pointDesc')" />:
+                         <xsl:value-of select="resource:getString($constants,'location')" />:
                        </text>
-                       <textbox key="{meta:getSDWISLocation()}" width="250" max="20" tab="itemsTestsTree,{meta:getSDWISSamplePointId()}" field="String" />
+                       <textbox key="{meta:getSDWISLocation()}" width="250" max="20" tab="{meta:getSDWISCollector()},{meta:getSDWISSamplePointId()}" field="String" />
                      </row>
                      <row>
                        <text style="Prompt">
                          <xsl:value-of select="resource:getString($constants,'collector')" />:
                        </text>
-                       <textbox key="{meta:getSDWISCollector()}" width="162" case="LOWER" max="20" tab="{meta:getOrgName()},itemsTestsTree" field="String" />
+                       <textbox key="{meta:getSDWISCollector()}" width="162" case="LOWER" max="20" tab="{meta:getOrgName()},{meta:getSDWISLocation()}" field="String" />
+                     </row>
+                     <row>
                        <text style="Prompt">
                          <xsl:value-of select="resource:getString($constants,'reportTo')" />:
                        </text>
@@ -109,8 +111,6 @@ UIRF Software License are applicable instead of those above.
                            <AbsolutePanel style="LookupButtonImage" />
                          </appButton>
                        </HorizontalPanel>
-                     </row>
-                     <row>
                        <text style="Prompt">
                          <xsl:value-of select="resource:getString($constants,'billTo')" />:
                        </text>

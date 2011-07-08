@@ -30,10 +30,17 @@ import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldValueViewDO;
+import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.TestSectionViewDO;
+import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.FormErrorWarning;
+import org.openelis.gwt.common.TableFieldErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -42,11 +49,14 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AuxDataManager;
+import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
 import org.openelis.modules.test.client.TestPrepLookupScreen;
+import org.openelis.utilcommon.ResultValidator;
 
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
@@ -60,32 +70,43 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         DONE
     };
 
-//    protected SampleManager             manager;
-    protected Integer                   anInPrepId;
-    protected Screen                    screen;
+    protected Integer anInPrepId, auxAlphaLowerId, auxAlphaMixedId, auxAlphaUpperId,
+                      auxDateId, auxDateTimeId, auxDefaultId, auxDictionaryId, auxNumericId,
+                      auxTimeId;
+    protected Screen  screen;
 
-    private ArrayList<SampleDataBundle> bundles, analysisDataBundles;
-    private ScreenService               panelService;
-    private ValidationErrorsList        errorsList;
+    private ArrayList<SampleDataBundle>            bundles, analysisDataBundles;
+    private HashMap<Integer, ResultValidator.Type> types;
+    private ScreenService                          panelService;
+    private ValidationErrorsList                   errorsList;
 
     public TestPrepUtility() {
-        panelService = new ScreenService(
-                                         "controller?service=org.openelis.modules.panel.server.PanelService");
-
+        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
+        types = new HashMap<Integer, ResultValidator.Type>();
         try {
             anInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
+            auxAlphaLowerId = DictionaryCache.getIdBySystemName("aux_alpha_lower");
+            types.put(auxAlphaLowerId, ResultValidator.Type.ALPHA_LOWER);
+            auxAlphaMixedId = DictionaryCache.getIdBySystemName("aux_alpha_mixed");
+            types.put(auxAlphaMixedId, ResultValidator.Type.ALPHA_MIXED);
+            auxAlphaUpperId = DictionaryCache.getIdBySystemName("aux_alpha_upper");
+            types.put(auxAlphaUpperId, ResultValidator.Type.ALPHA_UPPER);
+            auxDateId = DictionaryCache.getIdBySystemName("aux_date");
+            types.put(auxDateId, ResultValidator.Type.DATE);
+            auxDateTimeId = DictionaryCache.getIdBySystemName("aux_date_time");
+            types.put(auxDateTimeId, ResultValidator.Type.DATE_TIME);
+            auxDefaultId = DictionaryCache.getIdBySystemName("aux_default");
+            types.put(auxDefaultId, ResultValidator.Type.DEFAULT);
+            auxDictionaryId = DictionaryCache.getIdBySystemName("aux_dictionary");
+            types.put(auxDictionaryId, ResultValidator.Type.DICTIONARY);
+            auxNumericId = DictionaryCache.getIdBySystemName("aux_numeric");
+            types.put(auxNumericId, ResultValidator.Type.NUMERIC);
+            auxTimeId = DictionaryCache.getIdBySystemName("aux_time");
+            types.put(auxTimeId, ResultValidator.Type.TIME);
         } catch (Exception e) {
             Window.alert("testlookup constructor: " + e.getMessage());
         }
     }
-
-//    public SampleManager getManager() {
-//        return manager;
-//    }
-//
-//    public void setManager(SampleManager manager) {
-//        this.manager = manager;
-//    }
 
     public Screen getScreen() {
         return screen;
@@ -117,11 +138,12 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
      * @throws Exception
      */
     public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id, TestSectionViewDO tsVDO) throws Exception {
-        ArrayList<IdVO> testIds;
+        ArrayList<IdVO> testIds, auxIds;
 
 //        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
 
+        auxIds = null;
         bundles = new ArrayList<SampleDataBundle>();
         errorsList = new ValidationErrorsList();
 
@@ -129,14 +151,17 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         analysisDataBundles.add(analysisDataBundle);
 
         // we need to expand a panel to test ids
-        if (type == Type.PANEL)
+        if (type == Type.PANEL) {
             testIds = panelService.callList("fetchTestIdsByPanelId", id);
-        else {
+            auxIds  = panelService.callList("fetchAuxIdsByPanelId", id);
+        } else {
             testIds = new ArrayList<IdVO>(1);
             testIds.add(new IdVO(id));
         }
 
         processTestListAndCheckPrepTests(testIds, tsVDO);
+        if (auxIds != null && auxIds.size() > 0)
+            addAuxGroups(auxIds);
     }
     
     /**
@@ -262,6 +287,72 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             drawTestPrepScreen(prepBundles);
         else
             fireFinished();
+    }
+
+    private void addAuxGroups(ArrayList<IdVO> auxIds) throws Exception {
+        int                            i, j, k;
+        ArrayList<AuxFieldValueViewDO> values;
+        AuxDataManager                 adMan;
+        AuxDataViewDO                  dataDO;
+        AuxFieldManager                afMan;
+        AuxFieldViewDO                 fieldDO;
+        AuxFieldValueViewDO            defaultDO, valueDO;
+        Integer                        validId;
+        ResultValidator                validator;
+        SampleDataBundle               bundle;
+        SampleManager                  sMan;
+
+        bundle = analysisDataBundles.get(0);
+        sMan   = bundle.getSampleManager();
+        adMan  = sMan.getAuxData();
+
+        for (i = 0; i < auxIds.size(); i++) {
+            try {
+                afMan = AuxFieldManager.fetchByGroupIdWithValues(auxIds.get(i).getId());
+                for (j = 0; j < afMan.count(); j++) {
+                    fieldDO = afMan.getAuxFieldAt(j);
+                    if ("Y".equals(fieldDO.getIsActive())) {
+                        values = afMan.getValuesAt(j).getValues();
+                        defaultDO = afMan.getValuesAt(j).getDefaultValue();
+    
+                        dataDO = new AuxDataViewDO();
+                        dataDO.setAuxFieldId(fieldDO.getId());
+                        dataDO.setIsReportable(fieldDO.getIsReportable());
+                        
+                        validator = getValidatorForValues(values);
+                        if (defaultDO != null) {
+                            try {
+                                validId = validator.validate(null, defaultDO.getValue());
+                                for (k = 0; k < values.size(); k++) {
+                                    valueDO = values.get(k);
+                                    if (valueDO.getId().equals(validId)) {
+                                        if (auxDictionaryId.equals(valueDO.getTypeId())) {
+                                            dataDO.setTypeId(valueDO.getTypeId());
+                                            dataDO.setValue(valueDO.getValue());
+                                            dataDO.setDictionary(valueDO.getDictionary());
+                                        } else {
+                                            dataDO.setTypeId(valueDO.getTypeId());
+                                            dataDO.setValue(defaultDO.getValue());
+                                        }
+                                        break;
+                                    }
+                                }
+                            } catch (ParseException parE) {
+                                errorsList.add(new FormErrorWarning("illegalDefaultValueForAuxFieldException",
+                                                                    defaultDO.getValue(),
+                                                                    fieldDO.getAnalyteName()));
+                            }
+                        } else {
+                            dataDO.setTypeId(auxAlphaMixedId);
+                        }
+    
+                        adMan.addAuxDataFieldAndValues(dataDO, fieldDO, values);
+                    }
+                }
+            } catch (Exception anyE) {
+                errorsList.add(anyE);
+            }
+        }
     }
     
     private void drawTestPrepScreen(ArrayList<ArrayList<Object>> prepBundles) {
@@ -428,6 +519,34 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             drawTestPrepScreen(prepBundles);
         else
             fireFinished();
+    }
+
+    private ResultValidator getValidatorForValues(ArrayList<AuxFieldValueViewDO> values) {
+        AuxFieldValueViewDO  af;
+        DictionaryDO         dict;
+        ResultValidator      rv;
+        ResultValidator.Type type;
+        String               dictEntry;
+        
+        rv = new ResultValidator();
+        try {
+            for (int i = 0; i < values.size(); i++ ) {
+                af = values.get(i);
+                dictEntry = null;
+                rv = new ResultValidator();
+                
+                type = types.get(af.getTypeId());
+                if (type == ResultValidator.Type.DICTIONARY) {
+                    dict = DictionaryCache.getById(new Integer(af.getValue()));
+                    dictEntry = dict.getEntry();
+                }
+                rv.addResult(af.getId(), null, type, null, null, af.getValue(), dictEntry);                    
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+                
+        return rv;
     }
 
     private void fireFinished() {

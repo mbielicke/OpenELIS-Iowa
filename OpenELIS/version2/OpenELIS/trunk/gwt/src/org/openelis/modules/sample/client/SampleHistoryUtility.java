@@ -387,7 +387,7 @@ public abstract class SampleHistoryUtility {
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
                 data = man.getAuxDataAt(i);
-                fieldDO = man.getFieldsAt(i).getAuxFieldAt(0);
+                fieldDO = man.getAuxFieldAt(i);
                 refVoList[i] = new IdNameVO(data.getId(), fieldDO.getAnalyteName());
             }
             

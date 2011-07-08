@@ -80,6 +80,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
     }
     
     private ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId, SampleManager manager) throws Exception {
+        int i;
         AuxDataViewDO auxData;
         String analyteId;
         DictionaryDO dictDO;
@@ -89,69 +90,67 @@ public class SampleSDWISImportOrder extends ImportOrder {
         
         errorsList = new ValidationErrorsList();
         //aux data
-        for(int i=0; i<auxDataList.size(); i++){
+        for (i = 0; i < auxDataList.size(); i++) {
             auxData = auxDataList.get(i);
-            try{
-                if(auxData.getGroupId().equals(envAuxGroupId)){
+            try {
+                if (auxData.getGroupId().equals(envAuxGroupId)) {
                     analyteId = auxData.getAnalyteExternalId();
                     
-                    if(analyteId.equals("smpl_collected_date"))
+                    if (analyteId.equals("smpl_collected_date")) {
                         manager.getSample().setCollectionDate(
                                             Datetime.getInstance(Datetime.YEAR, Datetime.DAY, new Date(auxData.getValue())));
-                    else if(analyteId.equals("smpl_collected_time")){
+                    } else if (analyteId.equals("smpl_collected_time")) {
                         DateField df = new DateField();
                         df.setBegin(Datetime.HOUR);
                         df.setEnd(Datetime.MINUTE);
                         df.setStringValue(auxData.getValue());
                         manager.getSample().setCollectionTime(df.getValue());
-                    }else if(analyteId.equals("smpl_client_ref"))
+                    } else if (analyteId.equals("smpl_client_ref")) {
                         manager.getSample().setClientReference(auxData.getValue());
-                    else if(analyteId.equals("pws_id")){
-                        if(auxData.getValue() != null){
-                            try{
+                    } else if (analyteId.equals("pws_id")) {
+                        if (auxData.getValue() != null) {
+                            try {
                                 pwsDo = pwsService.call("fetchByNumber0", auxData.getValue());
                                 ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setPwsId(pwsDo.getId());
                                 ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setPwsName(pwsDo.getName());
                                 ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setPwsNumber0(pwsDo.getNumber0());
-                            }catch(NotFoundException e){
+                            } catch (NotFoundException e) {
                                 errorsList.add(new FormErrorException("orderImportError", "pws id", auxData.getValue()));
                             }
                         }
-                    }else if(analyteId.equals("state_lab_num"))
+                    } else if (analyteId.equals("state_lab_num")) {
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setStateLabId(new Integer(auxData.getValue()));
-                    else if(analyteId.equals("facility_id"))
+                    } else if (analyteId.equals("facility_id")) {
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setFacilityId(auxData.getValue());
-                    else if(analyteId.equals("sample_type")){
+                    } else if (analyteId.equals("sample_type")) {
                         value = null;
                         dictDO = validateDropdownValue(auxData.getValue(), "sdwis_sample_type");
-                        if(dictDO != null)
+                        if (dictDO != null)
                             value = dictDO.getId();
-                        else if(auxData.getValue() != null)
+                        else if (auxData.getValue() != null)
                             errorsList.add(new FormErrorException("orderImportError", "sample type", auxData.getValue()));
                         
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setSampleTypeId(value);
-                        
-                    }else if(analyteId.equals("sample_cat")){
+                    } else if (analyteId.equals("sample_cat")) {
                         value = null;
                         dictDO = validateDropdownValue(auxData.getValue(), "sdwis_sample_category");
-                        if(dictDO != null)
+                        if (dictDO != null)
                             value = dictDO.getId();
-                        else if(auxData.getValue() != null)
+                        else if (auxData.getValue() != null)
                             errorsList.add(new FormErrorException("orderImportError", "sample category", auxData.getValue()));
                         
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setSampleCategoryId(value);
-                        
-                    }else if(analyteId.equals("sample_pt_id"))
+                    } else if (analyteId.equals("sample_pt_id")) {
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setSamplePointId(auxData.getValue());
-                    else if(analyteId.equals("sample_point_desc"))
+                    } else if (analyteId.equals("sample_point_desc")) {
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setLocation(auxData.getValue());
-                    else if(analyteId.equals("collector"))
+                    } else if (analyteId.equals("collector")) {
                         ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setCollector(auxData.getValue());
-                    
-                }else{
+                    }
+                } else {
                     manager.getAuxData().addAuxData(auxData);
                 }
-            }catch(Exception e){
+            } catch(Exception e) {
                 //problem with aux input, ignore
             }
         }
@@ -162,7 +161,8 @@ public class SampleSDWISImportOrder extends ImportOrder {
         return null;
     }
     
-    private DictionaryDO validateDropdownValue(String entry, String dictSystemName){
+    private DictionaryDO validateDropdownValue(String entry, String dictSystemName) {
+        int i;
         ArrayList<DictionaryDO> entries;
         DictionaryDO dictDO;
         
@@ -171,10 +171,10 @@ public class SampleSDWISImportOrder extends ImportOrder {
         
         entries = CategoryCache.getBySystemName(dictSystemName);
         
-        for(int i=0; i<entries.size(); i++){
+        for (i = 0; i < entries.size(); i++) {
             dictDO = entries.get(i);
             
-            if(entry.equals(dictDO.getEntry()))
+            if (entry.equals(dictDO.getEntry()))
                 return dictDO;
         }
         

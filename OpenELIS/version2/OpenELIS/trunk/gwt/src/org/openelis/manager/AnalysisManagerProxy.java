@@ -46,7 +46,8 @@ public class AnalysisManagerProxy {
     protected ScreenService       service;
     protected static Integer      anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
                                   anInPrepId, anOnHoldId, anRequeueId, anCancelledId, anErrorLoggedInId,
-                                  anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,sampleReleasedId;
+                                  anErrorInitiatedId, anErrorInPrepId, anErrorCompletedId,
+                                  sampleNotVerifiedId, sampleReleasedId;
 
     public AnalysisManagerProxy() {
         service = new ScreenService("controller?service=" + ANALYSIS_SERVICE_URL);
@@ -65,6 +66,7 @@ public class AnalysisManagerProxy {
                 anErrorInitiatedId = DictionaryCache.getIdBySystemName("analysis_error_initiated");
                 anErrorInPrepId = DictionaryCache.getIdBySystemName("analysis_error_inprep");
                 anErrorCompletedId = DictionaryCache.getIdBySystemName("analysis_error_completed");
+                sampleNotVerifiedId = DictionaryCache.getIdBySystemName("sample_not_verified");
                 sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
             } catch (Exception e) {
                 e.printStackTrace();
