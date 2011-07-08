@@ -25,6 +25,10 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -34,10 +38,13 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisReportFlagsDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.AnalysisReportFlags;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisReportFlagsLocal;
+import org.openelis.local.LockLocal;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -45,7 +52,10 @@ import org.openelis.local.AnalysisReportFlagsLocal;
 public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                    manager;
+    private EntityManager manager;
+
+    @EJB
+    private LockLocal     lock;
 
     public AnalysisReportFlagsDO fetchByAnalysisId(Integer id) throws Exception {
         Query query;
@@ -100,6 +110,35 @@ public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
         entity.setBilledZero(data.getBilledZero());
 
         return data;
+    }
+
+    public ArrayList<AnalysisReportFlagsDO> fetchForUpdateBySampleId(List<Integer> id) throws Exception {
+        Query query;
+        AnalysisReportFlagsDO data;
+        ArrayList<AnalysisReportFlagsDO> returnList;
+        List list;
+
+        data = null;
+        query = manager.createNamedQuery("AnalysisReportFlags.FetchBySampleId");
+        query.setParameter("id", id);
+
+        list = query.getResultList();
+        returnList = new ArrayList<AnalysisReportFlagsDO>();
+        for (int i = 0; i < list.size(); i++ ) {
+            data = (AnalysisReportFlagsDO)list.get(i);
+            try {
+                lock.lock(ReferenceTable.ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
+                returnList.add(data);
+            } catch (EntityLockedException e) {
+                // ignore
+            }
+        }
+        return returnList;
+    }
+
+    public AnalysisReportFlagsDO abortUpdate(Integer analysis_id) throws Exception {
+        lock.unlock(ReferenceTable.ANALYSIS_REPORT_FLAGS, analysis_id);
+        return fetchByAnalysisId(analysis_id);
     }
 
     public void delete(AnalysisReportFlagsDO data) throws Exception {
