@@ -79,7 +79,14 @@ import org.openelis.utils.Auditable;
    @NamedQuery( name = "Sample.FetchProjectsForPvtOrganizations",
                query = "select new org.openelis.domain.IdNameVO(p.id, p.description)" 
                      + " from Sample s, SamplePrivateWell so, SampleProject sp, Project p, Organization o"
-                     + " where s.id = so.sampleId and o.id in (:organizationIds) and so.organizationId = o.id and sp.sampleId = s.id and sp.projectId = p.id")})
+                     + " where s.id = so.sampleId and o.id in (:organizationIds) and so.organizationId = o.id and sp.sampleId = s.id and sp.projectId = p.id"),
+    @NamedQuery( name = "Sample.FetchSDWISByReleasedAndLocation",
+                query = "select distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain," +
+                        "s.accessionNumber, s.revision, s.orderId, s.enteredDate, s.receivedDate," +
+                        "s.receivedById, s.collectionDate, s.collectionTime, s.statusId, s.packageId," +
+                        "s.clientReference, s.releasedDate)"
+                     + " from Sample s, SampleItem si, Analysis a, Section se" +
+                       " where s.id = si.sampleId and si.id = a.sampleItemId and a.sectionId = se.id and s.domain = 'S' and s.releasedDate between :startDate and :endDate and se.name like :location")})
                       
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportBatch",     
@@ -91,7 +98,7 @@ import org.openelis.utils.Auditable;
                       + " union "
                       + "select s.id s_id, so.organization_id o_id, a.id a_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so, test t"
-                      + " where s.domain != 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error')) and si.sample_id = s.id and a.sample_item_id = si.id and"  
+                      + " where s.domain != 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error', 'sample_not_verified')) and si.sample_id = s.id and a.sample_item_id = si.id and"  
                       + " a.printed_date is null and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released') and"
                       + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name in ('org_report_to', 'org_second_report_to'))"
@@ -103,7 +110,7 @@ import org.openelis.utils.Auditable;
                       + " union "
                       + "select s.id s_id, spw.organization_id o_id, a.id a_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, test t"
-                      + " where s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error')) and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
+                      + " where s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error', 'sample_not_verified')) and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.printed_date is null and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released')"
                       + " union "
@@ -115,7 +122,7 @@ import org.openelis.utils.Auditable;
                       + " union "
                       + "select s.id s_id, so.organization_id o_id, a.id a_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, sample_organization so, test t"
-                      + " where s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error')) and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
+                      + " where s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error', 'sample_not_verified')) and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.printed_date is null and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released') and"
                       + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_second_report_to')"
@@ -124,18 +131,18 @@ import org.openelis.utils.Auditable;
     @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportSingle",     
                 query = "select s.id s_id, so.organization_id o_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so"
-                      + " where s.id = :sampleId and s.domain != 'W' and s.status_id not in (select id from dictionary where system_name = 'sample_error') and si.sample_id = s.id and a.sample_item_id = si.id and"  
+                      + " where s.id = :sampleId and s.domain != 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_error', 'sample_not_verified')) and si.sample_id = s.id and a.sample_item_id = si.id and"  
                       + " a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name in ('org_report_to', 'org_second_report_to'))"
                       + " union "
                       + "select s.id s_id, spw.organization_id o_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a"
-                      + " where s.id = :sampleId and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name = 'sample_error') and spw.sample_id = s.id and"
+                      + " where s.id = :sampleId and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_error', 'sample_not_verified')) and spw.sample_id = s.id and"
                       + " si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y'"
                       + " union "
                       + "select s.id s_id, so.organization_id o_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, sample_organization so"
-                      + " where s.id = :sampleId and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name = 'sample_error') and spw.sample_id = s.id and"
+                      + " where s.id = :sampleId and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_error', 'sample_not_verified')) and spw.sample_id = s.id and"
                       + " si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_second_report_to')"
                       + " order by s_id , o_id",

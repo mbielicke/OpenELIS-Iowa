@@ -45,7 +45,7 @@ public class AnalysisManagerProxy {
     protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anReleasedId,
                              anInPrepId, anOnHoldId, anRequeueId, anCancelledId,
                              anErrorLoggedInId, anErrorInitiatedId, anErrorInPrepId,
-                             anErrorCompletedId, sampleReleasedId;
+                             anErrorCompletedId, sampleNotVerifiedId, sampleReleasedId;
 
     public AnalysisManagerProxy() {
         DictionaryLocal l;
@@ -66,6 +66,7 @@ public class AnalysisManagerProxy {
                 anErrorInitiatedId = l.fetchBySystemName("analysis_error_initiated").getId();
                 anErrorInPrepId = l.fetchBySystemName("analysis_error_inprep").getId();
                 anErrorCompletedId = l.fetchBySystemName("analysis_error_completed").getId();
+                sampleNotVerifiedId = l.fetchBySystemName("sample_not_verified").getId();
                 sampleReleasedId = l.fetchBySystemName("sample_released").getId();
             } catch (Exception e) {
                 e.printStackTrace();

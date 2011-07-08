@@ -33,7 +33,7 @@ import org.openelis.domain.AuxFieldViewDO;
 
 @Local
 public interface AuxFieldLocal {
-    public ArrayList<AuxFieldViewDO> fetchById(Integer id) throws Exception;
+    public AuxFieldViewDO fetchById(Integer id) throws Exception;
     public ArrayList<AuxFieldViewDO> fetchByGroupId(Integer groupId) throws Exception;
     public ArrayList<AuxFieldViewDO> fetchByAuxDataRefIdRefTableId(Integer referenceId, Integer referenceTableId) throws Exception;
     public AuxFieldViewDO add(AuxFieldViewDO data) throws Exception;

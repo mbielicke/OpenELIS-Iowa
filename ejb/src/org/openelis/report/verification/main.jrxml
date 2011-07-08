@@ -3,8 +3,6 @@
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<parameter name="BEGIN_ENTERED" class="java.lang.String"/>
-	<parameter name="END_ENTERED" class="java.lang.String"/>
 	<parameter name="REFERENCE_TABLE_ID" class="java.lang.Integer" isForPrompting="false">
 		<defaultValueExpression><![CDATA[8]]></defaultValueExpression>
 	</parameter>
@@ -28,8 +26,8 @@ FROM
      history h, sample s, dictionary d
 WHERE
      d.id = s.status_id AND
+     d.system_name = 'sample_not_verified' AND
      h.reference_id = s.id  AND h.reference_table_id = $P{REFERENCE_TABLE_ID}
-     AND h.timestamp BETWEEN $P{BEGIN_ENTERED} AND $P{END_ENTERED}
      AND h.activity_id IN (1,2) $P!{USER_WHERE}
 ORDER BY
      s.accession_number]]>
@@ -48,7 +46,7 @@ ORDER BY
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
 	<pageHeader>
-		<band height="48" splitType="Stretch">
+		<band height="36" splitType="Stretch">
 			<textField pattern="MMM dd, yyyy">
 				<reportElement key="headerDate" mode="Transparent" x="0" y="0" width="75" height="12"/>
 				<textElement verticalAlignment="Bottom">
@@ -84,34 +82,6 @@ ORDER BY
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
-			<staticText>
-				<reportElement key="beginEntered.label" mode="Transparent" x="263" y="12" width="30" height="12" backcolor="#FFFFFF"/>
-				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
-				</textElement>
-				<text><![CDATA[From]]></text>
-			</staticText>
-			<textField pattern="yyyy-MM-dd HH:mm">
-				<reportElement key="beginEntered" mode="Transparent" x="269" y="12" width="100" height="12" backcolor="#FFFFFF"/>
-				<textElement textAlignment="Right" verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
-				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[java.sql.Timestamp.valueOf($P{BEGIN_ENTERED})]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement key="endEntered.label" mode="Transparent" x="369" y="12" width="15" height="12" backcolor="#FFFFFF"/>
-				<textElement textAlignment="Center" verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
-				</textElement>
-				<text><![CDATA[to]]></text>
-			</staticText>
-			<textField pattern="yyyy-MM-dd HH:mm">
-				<reportElement key="endEntered" mode="Transparent" x="384" y="12" width="100" height="12" backcolor="#FFFFFF"/>
-				<textElement verticalAlignment="Bottom">
-					<font pdfFontName="Times-Roman" pdfEncoding="Cp1252"/>
-				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[java.sql.Timestamp.valueOf($P{END_ENTERED})]]></textFieldExpression>
-			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement key="loginName" mode="Transparent" x="702" y="12" width="50" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
@@ -120,14 +90,14 @@ ORDER BY
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="userNames.label" mode="Transparent" x="273" y="24" width="20" height="12"/>
+				<reportElement key="userNames.label" mode="Transparent" x="273" y="12" width="20" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[For]]></text>
 			</staticText>
 			<textField isBlankWhenNull="true">
-				<reportElement key="userNames" mode="Transparent" x="298" y="24" width="215" height="12"/>
+				<reportElement key="userNames" mode="Transparent" x="298" y="12" width="215" height="12"/>
 				<textElement verticalAlignment="Bottom">
 					<font pdfFontName="Times-Roman"/>
 				</textElement>

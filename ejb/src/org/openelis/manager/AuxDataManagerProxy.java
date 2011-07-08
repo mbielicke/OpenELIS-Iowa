@@ -28,6 +28,8 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.xml.crypto.Data;
+
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
@@ -38,50 +40,25 @@ import org.openelis.utils.EJBFactory;
 public class AuxDataManagerProxy {
     
     public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
-        AuxDataViewDO dataDO;
-        ArrayList<AuxDataViewDO> data;
-        ArrayList<AuxFieldViewDO> fields;
-        ArrayList<AuxFieldValueViewDO> values, tmpValue;
-        int fieldId;
-        HashMap<Integer, AuxFieldViewDO> fieldHash;
-        HashMap<Integer, ArrayList<AuxFieldValueViewDO>> valueHash;
-        
-        
-        AuxDataManager m;
+        int                            i;
+        ArrayList<AuxDataViewDO>       data;
+        ArrayList<AuxFieldValueViewDO> values;
+        AuxDataManager                 man;
+        AuxDataViewDO                  dataDO;
+        AuxFieldViewDO                 fieldDO;
+
+        man = AuxDataManager.getInstance();
         
         data = EJBFactory.getAuxData().fetchById(referenceId, referenceTableId);
-        fields = EJBFactory.getAuxField().fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId); //ordered by groupid
-        
-        //put the fields in the hash to guarantee they match up with data entries
-        fieldHash = new HashMap<Integer, AuxFieldViewDO>();
-        for(int i=0; i<fields.size(); i++)
-            fieldHash.put(fields.get(i).getId(), fields.get(i));
-        
-        values = EJBFactory.getAuxFieldValue().fetchByAuxDataRefIdRefTableId(referenceId, referenceTableId);
-        
-        //split the values up by field id
-        valueHash = new HashMap<Integer, ArrayList<AuxFieldValueViewDO>>();
-        tmpValue = null;
-        fieldId = -1;
-        for(int j=0; j<values.size(); j++){
-            if(fieldId == values.get(j).getAuxFieldId()){
-                tmpValue.add(values.get(j));
-            }else{
-                fieldId = values.get(j).getAuxFieldId();
-                tmpValue = new ArrayList<AuxFieldValueViewDO>();
-                valueHash.put(fieldId, tmpValue);
-                
-                tmpValue.add(values.get(j));
-            }
+        for (i = 0; i < data.size(); i++) {
+            dataDO = data.get(i);
+            fieldDO = EJBFactory.getAuxField().fetchById(dataDO.getAuxFieldId());
+            values = EJBFactory.getAuxFieldValue().fetchByFieldId(fieldDO.getId());
+            
+            man.addAuxDataFieldAndValues(dataDO, fieldDO, values);
         }
         
-        m = AuxDataManager.getInstance();
-        for(int k=0; k<data.size(); k++){
-            dataDO = data.get(k);
-            m.addAuxDataFieldsAndValues(dataDO, fieldHash.get(dataDO.getAuxFieldId()), valueHash.get(dataDO.getAuxFieldId()));
-        }
-        
-        return m;
+        return man;
     }
     
     public AuxDataManager add(AuxDataManager man) throws Exception {
