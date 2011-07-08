@@ -158,7 +158,7 @@ public class AuxFieldManager implements RPC {
         if (item.values == null) {
             if (item.field != null && item.field.getId() != null) {
                 try {
-                    item.values = AuxFieldValueManager.fetchByAuxFieldId(item.field.getId());
+                    item.values = AuxFieldValueManager.fetchByFieldId(item.field.getId());
 
                 } catch (NotFoundException e) {
                     // ignore

@@ -10,7 +10,7 @@ import org.openelis.manager.AuxFieldValueManager;
 public interface AuxFieldGroupManagerRemote {
     public AuxFieldGroupManager fetchById(Integer id) throws Exception;
     
-    public AuxFieldGroupManager fetchWithFields(Integer id) throws Exception;
+    public AuxFieldGroupManager fetchByIdWithFields(Integer id) throws Exception;
     
     public AuxFieldGroupManager add(AuxFieldGroupManager man) throws Exception;
 
@@ -20,11 +20,11 @@ public interface AuxFieldGroupManagerRemote {
     
     public AuxFieldGroupManager abortUpdate(Integer id) throws Exception;
 
-    public AuxFieldManager fetchAuxFieldById(Integer id) throws Exception;
+    public AuxFieldManager fetchFieldById(Integer id) throws Exception;
     
-    public AuxFieldManager fetchByGroupIdWithValues(Integer groupId) throws Exception;
+    public AuxFieldManager fetchFieldByGroupId(Integer id) throws Exception;
     
-    public AuxFieldManager fetchByGroupId(Integer id) throws Exception;
+    public AuxFieldManager fetchFieldByGroupIdWithValues(Integer groupId) throws Exception;
     
     public AuxFieldValueManager fetchFieldValueByFieldId(Integer id) throws Exception;
 }

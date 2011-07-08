@@ -141,7 +141,7 @@ public class ResultValidator implements RPC {
                 hasOnlyDictionary = false;
                 break;
         }
-        list = units.get(unitId);
+        list = getUnits(unitId);
         if (list == null) {
             list = new ArrayList<Item>();
             units.put(unitId, list);

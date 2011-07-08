@@ -43,4 +43,6 @@ public interface PanelRemote {
     public ArrayList<TestMethodVO> fetchByNameWithTests(String name, int maxResults) throws Exception;
     
     public ArrayList<IdVO> fetchTestIdsFromPanel(Integer panelId) throws Exception;
+    
+    public ArrayList<IdVO> fetchAuxIdsFromPanel(Integer panelId) throws Exception;
  }
