@@ -49,13 +49,13 @@ UIRF Software License are applicable instead of those above.
         <row>
           <widget colspan="6">
             <table key="auxValsTable" width="auto" maxRows="{string($maxRows)}" showScroll="ALWAYS" title="">
-              <col width="85" header="{resource:getString($constants,'reportable')}">
+              <col key="auxDataReportable" width="85" header="{resource:getString($constants,'reportable')}">
                 <check />
               </col>
-              <col width="{string($col2Width)}" header="{resource:getString($constants,'name')}">
+              <col key="auxFieldAnalyte" width="{string($col2Width)}" header="{resource:getString($constants,'name')}">
               	<label field="String" />
               </col>
-              <col width="{string($col3Width)}" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
+              <col key="auxDataValue" width="{string($col3Width)}" class="org.openelis.modules.sample.client.AuxTableColumn" header="{resource:getString($constants,'value')}">
                 <label field="String" />
               </col>
             </table>

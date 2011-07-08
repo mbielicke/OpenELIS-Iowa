@@ -52,7 +52,7 @@ public class AuxiliaryService {
     }
 
     public AuxFieldGroupManager fetchGroupByIdWithFields(Integer id) throws Exception {
-        return remoteManager().fetchWithFields(id);
+        return remoteManager().fetchByIdWithFields(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
@@ -75,20 +75,20 @@ public class AuxiliaryService {
         return remoteManager().abortUpdate(id);
     }
 
-    public AuxFieldManager fetchAuxFieldById(Integer id) throws Exception {
-        return remoteManager().fetchAuxFieldById(id);
-
+    // other managers
+    public AuxFieldManager fetchFieldById(Integer id) throws Exception {
+        return remoteManager().fetchFieldById(id);
     }
 
-    public AuxFieldManager fetchByGroupIdWithValues(Integer groupId) throws Exception {
-        return remoteManager().fetchByGroupIdWithValues(groupId);
+    public AuxFieldManager fetchFieldByGroupId(Integer groupId) throws Exception {
+        return remoteManager().fetchFieldByGroupId(groupId);
     }
 
-    public AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
-        return remoteManager().fetchByGroupId(auxFieldGroupId);
+    public AuxFieldManager fetchFieldByGroupIdWithValues(Integer groupId) throws Exception {
+        return remoteManager().fetchFieldByGroupIdWithValues(groupId);
     }
 
-    public AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {
+    public AuxFieldValueManager fetchFieldValueByFieldId(Integer auxFieldId) throws Exception {
         return remoteManager().fetchFieldValueByFieldId(auxFieldId);
     }
 
@@ -99,5 +99,4 @@ public class AuxiliaryService {
     private AuxFieldGroupManagerRemote remoteManager() {
         return (AuxFieldGroupManagerRemote)EJBFactory.lookup("openelis/AuxFieldGroupManagerBean/remote");
     }
-
 }

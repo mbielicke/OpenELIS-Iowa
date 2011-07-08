@@ -226,6 +226,25 @@ public class SDWISTab extends Screen {
             }
         });
 
+        sampleCategoryId = (Dropdown)def.getWidget(SampleMeta.getSDWISSampleCategoryId());
+        addScreenHandler(sampleCategoryId, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleCategoryId.setSelection(getSDWISManager().getSDWIS()
+                                                                    .getSampleCategoryId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                getSDWISManager().getSDWIS().setSampleCategoryId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sampleCategoryId.enable(event.getState() == State.QUERY ||
+                                        (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                             .contains(event.getState())));
+                sampleCategoryId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
         samplePointId = (TextBox)def.getWidget(SampleMeta.getSDWISSamplePointId());
         addScreenHandler(samplePointId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -259,25 +278,6 @@ public class SDWISTab extends Screen {
                                  (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                       .contains(event.getState())));
                 pointDesc.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        sampleCategoryId = (Dropdown)def.getWidget(SampleMeta.getSDWISSampleCategoryId());
-        addScreenHandler(sampleCategoryId, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                sampleCategoryId.setSelection(getSDWISManager().getSDWIS()
-                                                                    .getSampleCategoryId());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                getSDWISManager().getSDWIS().setSampleCategoryId(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                sampleCategoryId.enable(event.getState() == State.QUERY ||
-                                        (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
-                                                             .contains(event.getState())));
-                sampleCategoryId.setQueryMode(event.getState() == State.QUERY);
             }
         });
 

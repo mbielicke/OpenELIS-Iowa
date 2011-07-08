@@ -1200,7 +1200,7 @@ public class AuxiliaryScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             try {
                 window.setBusy(consts.get("fetching"));
-                manager = AuxFieldGroupManager.fetchWithFields(id);
+                manager = AuxFieldGroupManager.fetchByIdWithFields(id);
             } catch (Exception e) {
                 fetchById(null);
                 e.printStackTrace();

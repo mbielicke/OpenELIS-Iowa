@@ -108,7 +108,7 @@ public class QuickEntryScreen extends Screen {
     private TableWidget            quickEntryTable;
     private TableDataRow           rowToBeAdded;
 
-    private Integer                sampleLoggedInId, testSectionDefaultId;
+    private Integer                sampleNotVerifiedId, testSectionDefaultId;
     private Datetime               todaysDate;
     private AccessionNumberUtility accNumUtil;
     private ScreenService          calendarService, panelService;
@@ -431,7 +431,7 @@ public class QuickEntryScreen extends Screen {
             try {
                 item = itr.next();
                 manager = item.sampleManager;
-                manager.getSample().setStatusId(sampleLoggedInId);
+                manager.getSample().setStatusId(sampleNotVerifiedId);
                 
                 if (manager.getSample().getId() == null)
                     manager.add();
@@ -896,7 +896,7 @@ public class QuickEntryScreen extends Screen {
         TableDataRow row;
 
         try {
-            sampleLoggedInId = DictionaryCache.getIdBySystemName("sample_logged_in");
+            sampleNotVerifiedId = DictionaryCache.getIdBySystemName("sample_not_verified");
             testSectionDefaultId = DictionaryCache.getIdBySystemName("test_section_default");
             todaysDate = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
             

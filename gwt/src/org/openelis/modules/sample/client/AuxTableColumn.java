@@ -27,35 +27,21 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.DictionaryCache;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.event.GetMatchesHandler;
-import org.openelis.gwt.screen.Screen;
-import org.openelis.gwt.screen.Screen.State;
-import org.openelis.gwt.widget.AutoComplete;
-import org.openelis.gwt.widget.CalendarLookUp;
-import org.openelis.gwt.widget.DateField;
-import org.openelis.gwt.widget.DoubleField;
-import org.openelis.gwt.widget.IntegerField;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.StringField;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.TextBox.Case;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.utilcommon.ResultValidator;
+import org.openelis.utilcommon.ResultValidator.OptionItem;
 
-import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HasAlignment;
 import com.google.gwt.user.client.ui.Widget;
 
 public class AuxTableColumn extends TableColumn {
-    protected GetMatchesHandler     screen;
-    protected TextBox<String>       alphaTextBox, numericTextBox;
-    protected CalendarLookUp        calendar;
-    protected AutoComplete<Integer> autoComplete;
-    protected Label                 label;
-
-    protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId,
-                                    numericId, dateId, dateTimeId, dictionaryId;
+    protected Label           label;
+    protected TextBox<String> textBox;
 
     public Widget getDisplayWidget(TableDataRow row) {
         setColumnWidget(getCellWidget(row));
@@ -72,82 +58,15 @@ public class AuxTableColumn extends TableColumn {
         return super.getWidgetEditor(row);
     }
 
-    private AutoComplete<Integer> getAutoComplete(Case boxCase) {
-        if (autoComplete == null) {
-            autoComplete = new AutoComplete<Integer>();
-            autoComplete.setWidth("270");
-            autoComplete.setTableWidth("auto");
-            autoComplete.setField(new IntegerField());
-            autoComplete.textbox.setLength(80);
-
-            ArrayList<TableColumn> cols = new ArrayList<TableColumn>();
-            TableColumn col = new TableColumn();
-            col.controller = autoComplete;
-            col.setCurrentWidth(290);
-            Label label = new Label();
-            label.setField(new StringField());
-            col.setColumnWidget(label);
-            cols.add(col);
-            autoComplete.setColumns(cols);
-
-            autoComplete.init();
-            autoComplete.addGetMatchesHandler(screen);
-            autoComplete.enable(true);
+    private TextBox<String> getTextbox() {
+        if (textBox == null) {
+            textBox = new TextBox<String>();
+            textBox.setStyleName("ScreenTextBox");
+            textBox.setField(new StringField());
+            textBox.setLength(80);
         }
-
-        autoComplete.setCase(boxCase);
-
-        return autoComplete;
-    }
-
-    private TextBox<String> getAlphaTextbox(Case boxCase) {
-        if (alphaTextBox == null) {
-            alphaTextBox = new TextBox<String>();
-            alphaTextBox.setStyleName("ScreenTextBox");
-            alphaTextBox.setField(new StringField());
-            alphaTextBox.setLength(80);
-        }
-
-        alphaTextBox.setCase(boxCase);
-        alphaTextBox.setQueryMode( ((Screen)screen).state == State.QUERY);
-
-        return alphaTextBox;
-    }
-
-    private TextBox getNumericTextbox() {
-        if (numericTextBox == null) {
-            numericTextBox = new TextBox<String>();
-            numericTextBox.setStyleName("ScreenTextBox");
-            numericTextBox.setField(new StringField());
-            numericTextBox.setLength(80);
-            numericTextBox.setCase(Case.MIXED);
-        }
-        
-        numericTextBox.setQueryMode( ((Screen)screen).state == State.QUERY);
-
-        return numericTextBox;
-    }
-
-    private CalendarLookUp getCalendar(byte begin, byte end) {
-        if (calendar == null) {
-            calendar = new CalendarLookUp();
-            calendar.setStyleName("ScreenCalendar");
-        }
-
-        DateField field = new DateField();
-        field.setBegin(begin);
-        field.setEnd(end);
-
-        if (end == Datetime.DAY)
-            field.setFormat( ((Screen)screen).consts.get("datePattern"));
-        else
-            field.setFormat( ((Screen)screen).consts.get("dateTimePattern"));
-
-        calendar.setField(field);
-        calendar.init(begin, end, false);
-        //calendar.setQueryMode( ((Screen)screen).state == State.QUERY);
-
-        return calendar;
+        textBox.enable(true);
+        return textBox;
     }
 
     private Label getLabel() {
@@ -156,61 +75,65 @@ public class AuxTableColumn extends TableColumn {
             label.setStyleName("ScreenLabel");
             label.setField(new StringField());
         }
-
+        setAlign(HasAlignment.ALIGN_LEFT);
         return label;
     }
 
-    private Widget getCellWidget(TableDataRow row) {
-        Integer typeId;
-        typeId = getCellTypeId(row);
+    private Dropdown<String> createDropdown(ArrayList<OptionItem> options) {
+        int i;
+        ArrayList<TableDataRow> model;
+        Dropdown<String> d;
+        TableColumn c;
+        TableDataRow row;
+        Label<String> dl;
+        StringField f;
+        OptionItem item;
 
-        if (alphaLowerId == null) {
-            try {
-                alphaLowerId = DictionaryCache.getIdBySystemName("aux_alpha_lower");
-                alphaUpperId = DictionaryCache.getIdBySystemName("aux_alpha_upper");
-                alphaMixedId = DictionaryCache.getIdBySystemName("aux_alpha_mixed");
-                timeId = DictionaryCache.getIdBySystemName("aux_time");
-                numericId = DictionaryCache.getIdBySystemName("aux_numeric");
-                dateId = DictionaryCache.getIdBySystemName("aux_date");
-                dateTimeId = DictionaryCache.getIdBySystemName("aux_date_time");
-                dictionaryId = DictionaryCache.getIdBySystemName("aux_dictionary");
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-            }
+        //
+        // create a new dropdown
+        //
+        d = new Dropdown<String>();
+        f = new StringField();
+        f.required = false;
+        d.setField(f);
+        d.setTableWidth("auto");
+        d.dropwidth = currentWidth + "px";
+        d.setMultiSelect(false);        
+        
+        dl = new Label<String>();
+        dl.setField(f);
+        dl.setWidth(d.dropwidth);
+
+        d.setColumns(new ArrayList<TableColumn>());
+        c = new TableColumn();
+        c.controller = d;
+        c.setCurrentWidth(currentWidth);
+        c.setColumnWidget(dl);
+        d.getColumns().add(c);
+        d.setup();
+
+        model = new ArrayList<TableDataRow>();
+        for (i = 0; i < options.size(); i++) {
+            item = options.get(i);
+            row = new TableDataRow(item.getValue(), item.getValue());
+            model.add(row);
         }
+        d.load(model);
+        d.enable(true);
+        
+        return d;
+    }
 
-        if (typeId == null)
+    private Widget getCellWidget(TableDataRow row) {
+        ResultValidator validator;
+        
+        validator = (ResultValidator) row.data;
+        if (validator == null) {
             return getLabel();
-        else if (alphaLowerId.equals(typeId))
-            return getAlphaTextbox(Case.LOWER);
-        else if (alphaUpperId.equals(typeId))
-            return getAlphaTextbox(Case.UPPER);
-        else if (alphaMixedId.equals(typeId) || timeId.equals(typeId))
-            return getAlphaTextbox(Case.MIXED);
-        else if (numericId.equals(typeId))
-            return getNumericTextbox();
-        else if (dateId.equals(typeId))
-            return getCalendar(Datetime.YEAR, Datetime.DAY);
-        else if (dateTimeId.equals(typeId))
-            return getCalendar(Datetime.YEAR, Datetime.MINUTE);
-        else if (timeId.equals(typeId))
-            return getAlphaTextbox(Case.MIXED);
-        else if (dictionaryId.equals(typeId))
-            return getAutoComplete(Case.MIXED);
-
-        return null;
-    }
-
-    private Integer getCellTypeId(TableDataRow row) {
-        AuxDataBundle data = (AuxDataBundle)row.data;
-
-        if (data == null)
-            return null;
-        else
-            return data.fieldDO.getTypeId();
-    }
-
-    public void setScreen(GetMatchesHandler screen) {
-        this.screen = screen;
+        } else if (validator.hasOnlyDictionary()) {
+            return createDropdown(validator.getDictionaryRanges());
+        } else {
+            return getTextbox();
+        }
     }
 }

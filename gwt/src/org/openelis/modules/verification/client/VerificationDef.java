@@ -23,18 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.sample.client;
+package org.openelis.modules.verification.client;
 
-import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.utilcommon.ResultValidator;
+import org.openelis.modules.main.client.OpenELISDef;
 
-public class AuxDataBundle {
-    
-    public ResultValidator validator;
-    public AuxFieldViewDO fieldDO;
-    
-    public AuxDataBundle(ResultValidator validator, AuxFieldViewDO fieldDO){
-        this.validator = validator;
-        this.fieldDO = fieldDO;
-    }
+public interface VerificationDef extends OpenELISDef {
+
 }

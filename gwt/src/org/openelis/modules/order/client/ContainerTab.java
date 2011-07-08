@@ -38,11 +38,14 @@ import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
 import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -75,9 +78,10 @@ import org.openelis.meta.OrderMeta;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class ContainerTab extends Screen {
+public class ContainerTab extends Screen implements HasActionHandlers<ContainerTab.Action> {
 
     private OrderManager          manager;
     private AutoComplete<Integer> test;
@@ -87,6 +91,10 @@ public class ContainerTab extends Screen {
     private boolean               loaded;
 
     protected ScreenService       analysisService, panelService, testService;
+
+    public enum Action {
+        ADD_AUX
+    };
 
     public ContainerTab(ScreenDefInt def, ScreenWindowInt window) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
@@ -629,9 +637,15 @@ public class ContainerTab extends Screen {
                 orderTestTable.setCell(index, 1, null);
                 orderTestTable.setCell(index, 2, null);
             }
+            
+            ActionEvent.fire(this, Action.ADD_AUX, panelId);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
     } 
+
+    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    }
 }

@@ -37,15 +37,15 @@ public class AuxFieldManagerProxy {
     }
     
     public AuxFieldManager fetchById(Integer id) throws Exception {
-        return service.call("fetchAuxFieldById", id);
-    }
-    
-    public AuxFieldManager fetchByGroupIdWithValues(Integer id) throws Exception {
-        return service.call("fetchByGroupIdWithValues", id);
+        return service.call("fetchFieldById", id);
     }
     
     public AuxFieldManager fetchByGroupId(Integer auxFieldGroupId) throws Exception {
-        return service.call("fetchByGroupId", auxFieldGroupId);
+        return service.call("fetchFieldByGroupId", auxFieldGroupId);
+    }
+    
+    public AuxFieldManager fetchByGroupIdWithValues(Integer id) throws Exception {
+        return service.call("fetchFieldByGroupIdWithValues", id);
     }
     
     public AuxFieldManager add(AuxFieldManager man) throws Exception {

@@ -27,13 +27,17 @@ package org.openelis.modules.order.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldValueViewDO;
+import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
@@ -41,7 +45,9 @@ import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -50,6 +56,8 @@ import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -75,14 +83,17 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AuxDataManager;
+import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.SampleDataBundle;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
+import org.openelis.utilcommon.ResultValidator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -123,10 +134,15 @@ public class SendoutOrderScreen extends Screen {
     private AutoComplete<Integer> organizationName;
     private AutoComplete<String>  description;
     private TabPanel              tabPanel;
-    private Integer               status_pending;
+    private Integer               status_pending, auxAlphaLowerId, auxAlphaMixedId,
+                                  auxAlphaUpperId, auxDateId, auxDateTimeId, auxDefaultId,
+                                  auxDictionaryId, auxNumericId,
+    auxTimeId;
     private String                descQuery;
 
-    protected ScreenService       organizationService;
+    private HashMap<Integer, ResultValidator.Type> types;
+
+    protected ScreenService       organizationService, panelService;
 
     private enum Tabs {
         ITEM, FILL, SHIP_NOTE, CUSTOMER_NOTE, REPORT_TO, CONTAINER, AUX_DATA
@@ -148,6 +164,7 @@ public class SendoutOrderScreen extends Screen {
     private void SendoutOrderScreenImpl() throws Exception {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
 
         userPermission = UserCache.getPermission().getModule("sendoutorder");
         if (userPermission == null)
@@ -177,7 +194,7 @@ public class SendoutOrderScreen extends Screen {
             CategoryCache.getBySystemNames("order_status", "cost_centers",
                                            "inventory_store", "inventory_unit",
                                            "order_ship_from", "sample_container",
-                                           "type_of_sample");
+                                           "type_of_sample","aux_field_value_type");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -862,6 +879,14 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
+        containerTab.addActionHandler(new ActionHandler<ContainerTab.Action>() {
+            public void onAction(ActionEvent<ContainerTab.Action> event) {
+                if (event.getAction() == ContainerTab.Action.ADD_AUX) {
+                    addAuxGroupsFromPanel((Integer)event.getData());
+                }
+            }
+        });
+        
         //
         // left hand navigation panel
         //
@@ -990,7 +1015,26 @@ public class SendoutOrderScreen extends Screen {
 
         shipFromId.setModel(model);
 
+        types = new HashMap<Integer, ResultValidator.Type>();
         try {
+            auxAlphaLowerId = DictionaryCache.getIdBySystemName("aux_alpha_lower");
+            types.put(auxAlphaLowerId, ResultValidator.Type.ALPHA_LOWER);
+            auxAlphaMixedId = DictionaryCache.getIdBySystemName("aux_alpha_mixed");
+            types.put(auxAlphaMixedId, ResultValidator.Type.ALPHA_MIXED);
+            auxAlphaUpperId = DictionaryCache.getIdBySystemName("aux_alpha_upper");
+            types.put(auxAlphaUpperId, ResultValidator.Type.ALPHA_UPPER);
+            auxDateId = DictionaryCache.getIdBySystemName("aux_date");
+            types.put(auxDateId, ResultValidator.Type.DATE);
+            auxDateTimeId = DictionaryCache.getIdBySystemName("aux_date_time");
+            types.put(auxDateTimeId, ResultValidator.Type.DATE_TIME);
+            auxDefaultId = DictionaryCache.getIdBySystemName("aux_default");
+            types.put(auxDefaultId, ResultValidator.Type.DEFAULT);
+            auxDictionaryId = DictionaryCache.getIdBySystemName("aux_dictionary");
+            types.put(auxDictionaryId, ResultValidator.Type.DICTIONARY);
+            auxNumericId = DictionaryCache.getIdBySystemName("aux_numeric");
+            types.put(auxNumericId, ResultValidator.Type.NUMERIC);
+            auxTimeId = DictionaryCache.getIdBySystemName("aux_time");
+            types.put(auxTimeId, ResultValidator.Type.TIME);
             status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -1488,5 +1532,108 @@ public class SendoutOrderScreen extends Screen {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
+    }
+    
+    private void addAuxGroupsFromPanel(Integer panelId) {
+        int                            i, j, k;
+        ArrayList<AuxFieldValueViewDO> values;
+        ArrayList<IdVO>                auxIds;
+        AuxDataManager                 adMan;
+        AuxDataViewDO                  dataDO;
+        AuxFieldManager                afMan;
+        AuxFieldViewDO                 fieldDO;
+        AuxFieldValueViewDO            defaultDO, valueDO;
+        Integer                        validId;
+        ResultValidator                validator;
+        ValidationErrorsList           errorsList;
+
+        errorsList = new ValidationErrorsList();
+
+        try {
+            adMan  = manager.getAuxData();
+            auxIds = panelService.callList("fetchAuxIdsByPanelId", panelId);
+            for (i = 0; i < auxIds.size(); i++) {
+                try {
+                    afMan = AuxFieldManager.fetchByGroupIdWithValues(auxIds.get(i).getId());
+                    for (j = 0; j < afMan.count(); j++) {
+                        fieldDO = afMan.getAuxFieldAt(j);
+                        if ("Y".equals(fieldDO.getIsActive())) {
+                            values = afMan.getValuesAt(j).getValues();
+                            defaultDO = afMan.getValuesAt(j).getDefaultValue();
+        
+                            dataDO = new AuxDataViewDO();
+                            dataDO.setAuxFieldId(fieldDO.getId());
+                            dataDO.setIsReportable(fieldDO.getIsReportable());
+                            
+                            validator = getValidatorForValues(values);
+                            if (defaultDO != null) {
+                                try {
+                                    validId = validator.validate(null, defaultDO.getValue());
+                                    for (k = 0; k < values.size(); k++) {
+                                        valueDO = values.get(k);
+                                        if (valueDO.getId().equals(validId)) {
+                                            if (auxDictionaryId.equals(valueDO.getTypeId())) {
+                                                dataDO.setTypeId(valueDO.getTypeId());
+                                                dataDO.setValue(valueDO.getValue());
+                                                dataDO.setDictionary(valueDO.getDictionary());
+                                            } else {
+                                                dataDO.setTypeId(valueDO.getTypeId());
+                                                dataDO.setValue(defaultDO.getValue());
+                                            }
+                                            break;
+                                        }
+                                    }
+                                } catch (ParseException parE) {
+                                    errorsList.add(new FormErrorWarning("illegalDefaultValueForAuxFieldException",
+                                                                        defaultDO.getValue(),
+                                                                        fieldDO.getAnalyteName()));
+                                }
+                            } else {
+                                dataDO.setTypeId(auxAlphaMixedId);
+                            }
+        
+                            adMan.addAuxDataFieldAndValues(dataDO, fieldDO, values);
+                        }
+                    }
+                } catch (Exception anyE2) {
+                    errorsList.add(anyE2);
+                }
+            }
+            
+            
+        } catch (Exception anyE) {
+            Window.alert(anyE.getMessage());
+        }
+        
+        if (errorsList.size() > 0)
+            showErrors(errorsList);
+    }
+
+    private ResultValidator getValidatorForValues(ArrayList<AuxFieldValueViewDO> values) {
+        AuxFieldValueViewDO  af;
+        DictionaryDO         dict;
+        ResultValidator      rv;
+        ResultValidator.Type type;
+        String               dictEntry;
+        
+        rv = new ResultValidator();
+        try {
+            for (int i = 0; i < values.size(); i++ ) {
+                af = values.get(i);
+                dictEntry = null;
+                rv = new ResultValidator();
+                
+                type = types.get(af.getTypeId());
+                if (type == ResultValidator.Type.DICTIONARY) {
+                    dict = DictionaryCache.getById(new Integer(af.getValue()));
+                    dictEntry = dict.getEntry();
+                }
+                rv.addResult(af.getId(), null, type, null, null, af.getValue(), dictEntry);                    
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+                
+        return rv;
     }
 }

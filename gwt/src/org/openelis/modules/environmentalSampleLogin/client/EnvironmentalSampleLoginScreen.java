@@ -844,6 +844,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                     analysisNotesTab.setData(data);
                     storageTab.setData(data);
                     qaEventsTab.setData(data);
+                    auxDataTab.setManager(manager);
 
                     drawTabs();
                 }

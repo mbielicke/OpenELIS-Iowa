@@ -832,6 +832,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                     analysisNotesTab.setData(data);
                     storageTab.setData(data);
                     qaEventsTab.setData(data);
+                    auxDataTab.setManager(manager);
 
                     drawTabs();
                 }
