@@ -37,10 +37,22 @@ import com.google.gwt.user.client.Window;
 
 public class SampleOrganizationManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.sample.server.SampleService";
-    protected ScreenService service;
+    protected ScreenService       service;
+    protected static Integer      orgBillToId, orgReportToId, orgSecondaryReportToId;
     
     public SampleOrganizationManagerProxy(){
         service = new ScreenService("controller?service="+SAMPLE_SERVICE_URL);
+        
+        if (orgBillToId == null) {
+            try {
+                orgBillToId = DictionaryCache.getIdBySystemName("org_bill_to");
+                orgReportToId = DictionaryCache.getIdBySystemName("org_report_to");
+                orgSecondaryReportToId = DictionaryCache.getIdBySystemName("org_second_report_to");                
+            } catch (Exception e) {
+                e.printStackTrace();
+                orgBillToId = null;
+            }
+        }
     }
     
     public Integer getIdFromSystemName(String systemName){
