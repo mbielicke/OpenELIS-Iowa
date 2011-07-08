@@ -25,17 +25,25 @@
  */
 package org.openelis.local;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ejb.Local;
+
 import org.openelis.domain.AnalysisReportFlagsDO;
 
 @Local
 public interface AnalysisReportFlagsLocal {
-    public AnalysisReportFlagsDO fetchByAnalysisId(Integer id) throws Exception;
-
+    public AnalysisReportFlagsDO fetchByAnalysisId(Integer id) throws Exception; 
+    
     public AnalysisReportFlagsDO add(AnalysisReportFlagsDO data) throws Exception;
 
     public AnalysisReportFlagsDO update(AnalysisReportFlagsDO data) throws Exception;
+    
+    public ArrayList<AnalysisReportFlagsDO> fetchForUpdateBySampleId(List<Integer> id) throws Exception;
 
+    public AnalysisReportFlagsDO abortUpdate(Integer analysis_id) throws Exception;
+    
     public void delete(AnalysisReportFlagsDO data) throws Exception;
 
     public void validate(AnalysisReportFlagsDO data) throws Exception;
