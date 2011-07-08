@@ -143,7 +143,7 @@ UIRF Software License are applicable instead of those above.
                 <code>if(UserCache.getPermission().hasModule("samplecompleterelease","SELECT")){</code>
                 <menuItem key="reviewAndRelease" description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="true" icon="reviewAndReleaseIcon" label="{resource:getString($constants,'reviewAndRelease')}" />
                 <code>}</code>
-                <menuItem key="toDo" description="{resource:getString($constants,'toDoDescription')}" enable="false" icon="toDoIcon" label="{resource:getString($constants,'toDo')}" />
+                <menuItem key="toDo" description="{resource:getString($constants,'toDoDescription')}" enable="true" icon="toDoIcon" label="{resource:getString($constants,'toDo')}" />
                 <menuItem key="labelFor" description="{resource:getString($constants,'labelForDescription')}" enable="false" icon="labelForIcon" label="{resource:getString($constants,'labelFor')}" />
                 <code>if(UserCache.getPermission().hasModule("storage","SELECT")){</code>
                 <menuItem key="storage" description="{resource:getString($constants,'storageDescription')}" enable="true" icon="storageIcon" label="{resource:getString($constants,'storage')}" />

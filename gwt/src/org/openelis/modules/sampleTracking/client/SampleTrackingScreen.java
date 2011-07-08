@@ -46,6 +46,7 @@ import org.openelis.gwt.event.DropEnterEvent.DropPosition;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -157,6 +158,16 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     public SampleTrackingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
+        SampleTrackingScreenImpl();   
+    }
+    
+    public SampleTrackingScreen(ScreenWindow window) throws Exception {
+        super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
+        this.window = window;
+        SampleTrackingScreenImpl();
+    }
+
+    private void SampleTrackingScreenImpl() throws Exception {
         service = new ScreenService("controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
         finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
@@ -167,13 +178,22 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         if (unreleasePermission == null)
             unreleasePermission = new ModulePermission();
 
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
+        /*
+         * this is done here in order to make sure that if the screen is brought
+         * up from some other screen (i.e. window != null) then its widgets are 
+         * initialized before the constructor ends execution
+         */
+        if (window != null) {
+            postConstructor();
+        } else {
+            DeferredCommand.addCommand(new Command() {
+                public void execute() {
+                    postConstructor();
+                }
+            });
+        }
     }
-
+    
     public void postConstructor() {
         tab = Tabs.BLANK;
         manager = SampleManager.getInstance();
@@ -1310,6 +1330,20 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 }
             }
         });
+    }
+    
+    public void loadSample(SampleManager manager) { 
+        ArrayList<SampleManager> result;
+        
+        result = new ArrayList<SampleManager>();
+        result.add(manager);
+        
+        setState(State.DEFAULT);        
+        trackingTree.load(getModel(result));        
+        trackingTree.select(0);
+        trackingTree.toggle(0);
+
+        window.clearStatus();
     }
 
     private void initializeDropdowns() {

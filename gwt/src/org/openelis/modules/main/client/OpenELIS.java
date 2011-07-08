@@ -85,7 +85,7 @@ import org.openelis.modules.storageunit.client.StorageUnitScreen;
 import org.openelis.modules.systemvariable.client.SystemVariableScreen;
 import org.openelis.modules.test.client.TestScreen;
 import org.openelis.modules.testTrailer.client.TestTrailerScreen;
-import org.openelis.modules.todoList.client.ToDoListScreen;
+import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
@@ -103,6 +103,8 @@ import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.visualization.client.VisualizationUtils;
+import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 
 public class OpenELIS extends Screen implements ScreenSessionTimer {
 
@@ -520,7 +522,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new ToDoListScreen());
+                            browser.addScreen(new ToDoScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1353,6 +1355,12 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
+        
+        Runnable onLoadCallback = new Runnable() {
+            public void run() {
+            }
+       };
+      VisualizationUtils.loadVisualizationApi(onLoadCallback,PieChart.PACKAGE);
     }
 
     /**

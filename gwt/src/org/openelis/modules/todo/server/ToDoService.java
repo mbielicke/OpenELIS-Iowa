@@ -23,10 +23,35 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.todoList.client;
+package org.openelis.modules.todo.server;
 
-import org.openelis.modules.main.client.OpenELISDef;
+import java.util.ArrayList;
 
-public interface ToDoListDef extends OpenELISDef {
+import org.openelis.domain.AnalysisCacheVO;
+import org.openelis.domain.SampleCacheVO;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.ToDoCacheRemote;
 
+public class ToDoService {
+
+    public ArrayList<AnalysisCacheVO> getLoggedIn() throws Exception {
+        return remote().getLoggedIn();
+    }
+    
+    public ArrayList<AnalysisCacheVO> getInitiated() throws Exception {
+        return remote().getInitiated();
+    }
+    
+    public ArrayList<AnalysisCacheVO> getCompleted() throws Exception {
+        return remote().getCompleted();
+    }
+    
+    public ArrayList<SampleCacheVO> getToBeVerified() throws Exception {
+        return remote().getToBeVerified();
+    }
+    
+    private ToDoCacheRemote remote() {
+        return (ToDoCacheRemote)EJBFactory.lookup("openelis/ToDoCacheBean/remote");
+    } 
 }
+

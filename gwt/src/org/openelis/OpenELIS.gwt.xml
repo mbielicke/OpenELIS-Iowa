@@ -37,6 +37,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="com.google.gwt.widgetideas.GWTCanvas"/>
     -->
     <inherits name="com.allen_sauer.gwt.dnd.gwt-dnd"/> 
+    <inherits name="com.google.gwt.visualization.Visualization"/>
     <inherits name="org.openelis.modules.main.Main"/>
     <inherits name="org.openelis.modules.analyte.Analyte"/>
     <inherits name="org.openelis.modules.animalSampleLogin.AnimalSampleLogin"/>
@@ -89,7 +90,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.ELISCommon"/>     
     <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
     <inherits name="org.openelis.modules.report.Report"/>
-    <inherits name="org.openelis.modules.todoList.ToDoList"/>
+    <inherits name="org.openelis.modules.todo.ToDo"/>
     <source path="manager"/>
     <source path="cache"/>
     <source path="common"/>
