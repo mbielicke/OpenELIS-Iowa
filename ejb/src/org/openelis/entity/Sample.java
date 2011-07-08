@@ -152,15 +152,94 @@ import org.openelis.utils.Auditable;
                       + " where s.id = :sampleId and s.domain = 'W' and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y'"
                       + " order by s_id , o_id",
-                  resultSetMapping="Sample.FetchSamplesForFinalReportPreviewMapping")})              
-
+                  resultSetMapping="Sample.FetchSamplesForFinalReportPreviewMapping"),
+    @NamedNativeQuery(name = "Sample.FetchForClientEmailReceivedReport",     
+               query = "select unique o.id o_id, o.name o_name,  s.accession_number s_anum, s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec, op.value email, sq.type_id qaevent_id,"
+                      + "s.domain, s.client_reference ref_field1, se.location ref_field2, p.name ref_field3"
+                      + " from sample s, sample_item si, outer(sample_project sp, project p), analysis a, organization o, sample_organization so, organization_parameter op, dictionary d1, dictionary d2, dictionary d3, outer sample_qaevent sq,  sample_environmental se"
+                      + " where s.domain = 'E' and s.received_date between :start_received_date and :end_received_date and se.sample_id = s.id and sp.sample_id = s.id and p.id = sp.project_id and"
+                      + " s.id = si.sample_id and si.id = a.sample_item_id  and s.id = so.sample_id and so.organization_id = o.id and so.type_id = d1.id and"
+                      + " d1.system_name = 'org_report_to' and o.id =  op.organization_id and op.type_id = d2.id and d2.system_name = 'receivable_reportto_email' and"
+                      + " sq.sample_id = s.id and sq.type_id = d3.id and d3.system_name = 'qaevent_override' and sp.is_permanent = 'Y' and"
+                      + " a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_received = 'Y' )"
+                      + " union "
+                      + "select unique o.id o_id, o.name o_name, s.accession_number s_anum, s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec, op.value email, sq.type_id qaevent_id,"
+                      + " s.domain, s.client_reference ref_field1, se.location ref_field2, p.name ref_field3"
+                      + " from sample s, organization o, sample_item si, outer(sample_project sp, project p), analysis a, sample_organization so, organization_parameter op, dictionary d1, dictionary d2, dictionary d3,  analysis_qaevent sq,  sample_environmental se"
+                      + " where s.domain = 'E' and s.received_date between :start_received_date and :end_received_date and s.id = si.sample_id and si.id = a.sample_item_id  and  se.sample_id = s.id and  sp.sample_id = s.id and p.id = sp.project_id and"
+                      + " s.id = so.sample_id and so.organization_id = o.id and so.type_id = d1.id and sp.is_permanent = 'Y' and"
+                      + " d1.system_name = 'org_report_to' and o.id =  op.organization_id and op.type_id = d2.id and d2.system_name = 'receivable_reportto_email' and"
+                      + " sq.analysis_id = a.id and sq.type_id = d3.id and d3.system_name = 'qaevent_override' and"
+                      + " a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_received = 'Y' )"
+                      + " union "
+                      + "select unique o.id o_id, o.name o_name, s.accession_number s_anum, s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec, op.value email, sq.type_id qaevent_id,  s.domain, so.owner ref_field1, so.location ref_field2, so.collector ref_field3"
+                      + " from sample s, sample_item si, analysis a, organization o, sample_private_well so, address ad, organization_parameter op, dictionary d1, dictionary d2, outer sample_qaevent sq"
+                      + " where s.domain = 'W' and s.received_date between :start_received_date and :end_received_date and"
+                      + " s.id = si.sample_id and si.id = a.sample_item_id and s.id = so.sample_id and so.organization_id = o.id and o.address_id = ad.id and o.id =  op.organization_id and op.type_id = d1.id and d1.system_name = 'receivable_reportto_email' and"
+                      + " sq.sample_id = s.id and sq.type_id = d2.id and d2.system_name = 'qaevent_override' and"
+                      + " a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_received = 'Y' )"
+                      + " union "
+                      + "select unique o.id o_id, o.name o_name, s.accession_number s_anum,s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec, op.value email, sq.type_id qaevent_id,  s.domain, so.owner ref_field1, so.location ref_field2, so.collector ref_field3"
+                      + " from sample s, sample_item si, analysis a, organization o, sample_private_well so, address ad, organization_parameter op, dictionary d1, dictionary d2,  analysis_qaevent sq"
+                      + " where s.domain = 'W' and s.received_date between :start_received_date and :end_received_date and"
+                      + " s.id = si.sample_id and si.id = a.sample_item_id and s.id = so.sample_id and so.organization_id = o.id and o.address_id = ad.id and o.id =  op.organization_id and op.type_id = d1.id and d1.system_name = 'receivable_reportto_email' and"
+                      + " sq.analysis_id = a.id and sq.type_id = d2.id and d2.system_name = 'qaevent_override' and"
+                      + " a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_received = 'Y' )"
+                      + " order by s_anum",
+                  resultSetMapping="Sample.FetchForClientEmailReceivedReportMapping"),
+     @NamedNativeQuery(name = "Sample.FetchForClientEmailReleasedReport",     
+                query = "select unique o.id o_id, s.accession_number s_anum, s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec,op.value email,"
+                      +"s.domain, s.client_reference ref_field1, se.location ref_field2, p.name ref_field3"
+                      +" from sample s,sample_item si, analysis a, outer(sample_project sp, project p), organization o, sample_organization so, sample_environmental se, organization_parameter op,  dictionary d1,dictionary d2"
+                      +" where s.domain = 'E' and s.received_date between :start_received_date and :end_received_date and se.sample_id = s.id and sp.sample_id = s.id and p.id = sp.project_id and"
+                      +" s.status_id in (select id from dictionary where system_name = 'sample_released') and si.sample_id = s.id and a.sample_item_id = si.id and"
+                      +" a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
+                      +" s.id = so.sample_id and so.organization_id = o.id and so.type_id = d1.id and"
+                      +" d1.system_name = 'org_report_to' and o.id =  op.organization_id and op.type_id = d2.id and d2.system_name = 'released_reportto_email' and"                                    
+                      +" a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_released = 'Y' )"
+                      +" union "
+                      +"select unique o.id o_id, s.accession_number s_anum, s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec,op.value email,"
+                      +"s.domain, s.client_reference ref_field1, se.location ref_field2, p.name ref_field3"
+                      +" from sample s,sample_item si, analysis a, outer(sample_project sp, project p), organization o, sample_organization so, sample_environmental se, test t, organization_parameter op,  dictionary d1,dictionary d2"
+                      +" where s.domain = 'E' and a.available_date between :start_received_date and :end_received_date  and se.sample_id = s.id and sp.sample_id = s.id and p.id = sp.project_id and" 
+                      +" s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error')) and"
+                      +" si.sample_id = s.id and a.sample_item_id = si.id and"
+                      +" a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
+                      +" a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released') and"
+                      +" s.id = so.sample_id and so.organization_id = o.id and so.type_id = d1.id and"
+                      +" d1.system_name = 'org_report_to' and o.id =  op.organization_id and op.type_id = d2.id and d2.system_name = 'released_reportto_email' and"                                    
+                      +" a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_released = 'Y' )"
+                      +" union "
+                      +"select unique o.id o_id, s.accession_number s_anum, s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec, op.value email, s.domain, so.owner ref_field1, so.location ref_field2, so.collector ref_field3"
+                      +" from sample s,sample_item si, analysis a,organization o, sample_private_well so, address ad, organization_parameter op, dictionary d1"
+                      +" where s.domain = 'W' and s.received_date between :start_received_date and :end_received_date and"
+                      +" s.status_id in (select id from dictionary where system_name = 'sample_released') and si.sample_id = s.id and a.sample_item_id = si.id and"
+                      +" a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
+                      +" s.id = so.sample_id and so.organization_id = o.id and o.address_id = ad.id and o.id =  op.organization_id and op.type_id = d1.id and d1.system_name = 'released_reportto_email' and"
+                      +" a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_released = 'Y' )"                                    
+                      +" union "
+                      +"select unique o.id o_id, s.accession_number s_anum, s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec, op.value email, s.domain, so.owner ref_field1, so.location ref_field2, so.collector ref_field3"
+                      +" from sample s,sample_item si, analysis a, organization o, sample_private_well so, address ad, test t, organization_parameter op, dictionary d1"
+                      +" where s.domain = 'W' and a.available_date between :start_received_date and :end_received_date and"
+                      +" s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error')) and"
+                      +" si.sample_id = s.id and a.sample_item_id = si.id and" 
+                      +" a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
+                      +" a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released') and"
+                      +" s.id = so.sample_id and so.organization_id = o.id and o.address_id = ad.id and o.id =  op.organization_id and op.type_id = d1.id and d1.system_name = 'released_reportto_email' and"
+                      +" a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_released = 'Y' )"    
+                      +" order by s_anum",
+                resultSetMapping="Sample.FetchForClientEmailReleasedReportMapping")})  
 @SqlResultSetMappings({
     @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportBatchMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),  @ColumnResult(name="a_id")}),
     @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportSingleMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id")}),
     @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportPreviewMapping",
-                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id")})})
+                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id")}),
+    @SqlResultSetMapping(name="Sample.FetchForClientEmailReceivedReportMapping",
+                         columns={@ColumnResult(name="o_id"),  @ColumnResult(name="o_name"),  @ColumnResult(name="s_anum"), @ColumnResult(name="s_col_date"), @ColumnResult(name="s_col_time"), @ColumnResult(name="s_rec"), @ColumnResult(name="email"),  @ColumnResult(name="qaevent_id"), @ColumnResult(name="domain"), @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"), @ColumnResult(name="ref_field3")}),
+    @SqlResultSetMapping(name="Sample.FetchForClientEmailReleasedReportMapping",
+                         columns={@ColumnResult(name="o_id"),  @ColumnResult(name="s_anum"), @ColumnResult(name="s_col_date"), @ColumnResult(name="s_col_time"), @ColumnResult(name="s_rec"), @ColumnResult(name="email"),  @ColumnResult(name="domain"), @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"), @ColumnResult(name="ref_field3")})})
 @Entity
 @Table(name = "sample")
 @EntityListeners( {AuditUtil.class})
