@@ -34,7 +34,7 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.report.Prompt;
 
 @Remote
-public interface VerificationReportRemote {
+public interface SDWISUnloadReportRemote {
 
     public ArrayList<Prompt> getPrompts() throws Exception;
     

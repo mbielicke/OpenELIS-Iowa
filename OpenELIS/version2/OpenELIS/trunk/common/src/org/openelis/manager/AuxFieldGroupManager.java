@@ -34,8 +34,8 @@ public class AuxFieldGroupManager implements RPC {
         return proxy().fetchById(id);
     }
     
-    public static AuxFieldGroupManager fetchWithFields(Integer id) throws Exception {
-        return proxy().fetchWithFields(id);
+    public static AuxFieldGroupManager fetchByIdWithFields(Integer id) throws Exception {
+        return proxy().fetchByIdWithFields(id);
     }
 
     public AuxFieldGroupDO getGroup() {

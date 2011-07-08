@@ -7,7 +7,6 @@ public class AuxFieldViewDO extends AuxFieldDO {
     private static final long serialVersionUID = 1L;
     
     protected String analyteName, methodName, scriptletName, unitOfMeasureName;
-    protected Integer typeId;
     
     public AuxFieldViewDO(){
         
@@ -56,13 +55,5 @@ public class AuxFieldViewDO extends AuxFieldDO {
 
     public void setUnitOfMeasureName(String unitOfMeasureName) {
         this.unitOfMeasureName = unitOfMeasureName;
-    }
-
-    public Integer getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Integer typeId) {
-        this.typeId = typeId;
     }
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
@@ -27,8 +26,7 @@ public class AuxDataManager implements RPC {
         return adm;
     }
 
-    public static AuxDataManager fetchById(Integer referenceId, Integer referenceTableId)
-                                                                                         throws Exception {
+    public static AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
         return proxy().fetchById(referenceId, referenceTableId);
     }
 
@@ -43,39 +41,56 @@ public class AuxDataManager implements RPC {
 
     public AuxDataViewDO getAuxDataAt(int i) {
         return items.get(i).data;
-
     }
 
     public void setAuxDataAt(AuxDataViewDO auxData, int i) {
         items.get(i).data = auxData;
     }
 
+    public AuxFieldViewDO getAuxFieldAt(int i) {
+        return items.get(i).field;
+    }
+
+    public void setAuxFieldAt(AuxFieldViewDO auxField, int i) {
+        items.get(i).field = auxField;
+    }
+
+    public ArrayList<AuxFieldValueViewDO> getAuxValuesAt(int i) {
+        return items.get(i).values;
+    }
+
+    public void setAuxValuesAt(ArrayList<AuxFieldValueViewDO> auxValues, int i) {
+        items.get(i).values = auxValues;
+    }
+
     public void addAuxData(AuxDataViewDO auxData) {
-        AuxDataListItem item = new AuxDataListItem();
+        AuxDataListItem item;
+        
+        item = new AuxDataListItem();
         item.data = auxData;
 
         items.add(item);
     }
 
-    public void addAuxDataFieldsAndValues(AuxDataViewDO auxData,
-                                          AuxFieldViewDO field,
-                                          ArrayList<AuxFieldValueViewDO> values) {
-        AuxDataListItem item = new AuxDataListItem();
+    public void addAuxDataFieldAndValues(AuxDataViewDO auxData, AuxFieldViewDO auxField,
+                                         ArrayList<AuxFieldValueViewDO> auxValues) {
+        AuxDataListItem item;
+        
+        item = new AuxDataListItem();
         item.data = auxData;
-
-        AuxFieldManager fieldMan = AuxFieldManager.getInstance();
-        fieldMan.setAuxFieldGroupId(field.getAuxFieldGroupId());
-        fieldMan.addAuxFieldAndValues(field, values);
-        item.fields = fieldMan;
+        item.field = auxField;
+        item.values = auxValues;
 
         items.add(item);
     }
 
     public void removeAuxDataAt(int i) {
+        AuxDataListItem tmp;
+
         if (items == null || i >= items.size())
             return;
 
-        AuxDataListItem tmp = items.remove(i);
+        tmp = items.remove(i);
 
         if (deletedList == null)
             deletedList = new ArrayList<AuxDataListItem>();
@@ -85,20 +100,22 @@ public class AuxDataManager implements RPC {
     }
 
     public void removeAuxDataGroupAt(int i) {
-        Integer groupId;
+        int             j;
+        AuxDataListItem tmp;
+        Integer         groupId;
+
         if (items == null || i >= items.size())
             return;
 
         // need to get the group id to remove
-        groupId = items.get(i).fields.getAuxFieldGroupId();
+        groupId = items.get(i).data.getGroupId();
 
         if (deletedList == null)
             deletedList = new ArrayList<AuxDataListItem>();
 
-        for (int j = count() - 1; j > -1; j-- ) {
-            if (groupId.equals(items.get(j).fields.getAuxFieldGroupId())) {
-                AuxDataListItem tmp = items.remove(j);
-
+        for (j = count() - 1; j > -1; j--) {
+            if (groupId.equals(items.get(j).field.getAuxFieldGroupId())) {
+                tmp = items.remove(j);
                 if (tmp.data.getId() != null)
                     deletedList.add(tmp);
             }
@@ -108,30 +125,6 @@ public class AuxDataManager implements RPC {
     //
     // other managers
     //
-    public AuxFieldManager getFieldsAt(int i) throws Exception {
-        AuxDataListItem item = items.get(i);
-        if (item.fields == null) {
-            if (item.data != null && item.data.getAuxFieldId() != null) {
-                try {
-                    item.fields = AuxFieldManager.fetchById(item.data.getAuxFieldId());
-
-                } catch (NotFoundException e) {
-                    // ignore
-                } catch (Exception e) {
-                    throw e;
-                }
-            }
-        }
-
-        if (item.fields == null)
-            item.fields = AuxFieldManager.getInstance();
-
-        return item.fields;
-    }
-
-    public void setFieldsAt(AuxFieldManager fieldManager, int i) {
-        items.get(i).fields = fieldManager;
-    }
 
     public int count() {
         if (items == null)
@@ -191,7 +184,8 @@ public class AuxDataManager implements RPC {
     static class AuxDataListItem implements RPC {
         private static final long serialVersionUID = 1L;
 
-        AuxDataViewDO             data;
-        AuxFieldManager           fields;
+        AuxDataViewDO                  data;
+        AuxFieldViewDO                 field;
+        ArrayList<AuxFieldValueViewDO> values;
     }
 }

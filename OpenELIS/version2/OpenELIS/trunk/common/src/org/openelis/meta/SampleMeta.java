@@ -108,16 +108,9 @@ public class SampleMeta implements Meta, MetaMap {
                     SDWIS_FACILITY_ID = "_sampleSDWIS.facilityId",
                     SDWIS_SAMPLE_TYPE_ID = "_sampleSDWIS.sampleTypeId",
                     SDWIS_SAMPLE_CATEGORY_ID = "_sampleSDWIS.sampleCategoryId",
-                    SDWIS_PB_SAMPLE_TYPE_ID = "_sampleSDWIS.pbSampleTypeId",
                     SDWIS_SAMPLE_POINT_ID = "_sampleSDWIS.samplePointId",
                     SDWIS_LOCATION = "_sampleSDWIS.location",
                     SDWIS_COLLECTOR = "_sampleSDWIS.collector",
-                    SDWIS_ORIGINAL_SAMPLE_NUMBER = "_sampleSDWIS.originalSampleNumber",
-                    SDWIS_REPEAT_CODE_ID = "_sampleSDWIS.repeatCodeId",
-                    SDWIS_COMPOSITE_INDICATOR = "_sampleSDWIS.compositeIndicator",
-                    SDWIS_COMPOSITE_SAMPLE_NUMBER = "_sampleSDWIS.compositeSampleNumber",
-                    SDWIS_COMPOSITE_DATE = "_sampleSDWIS.compositeDate",
-                    SDWIS_COMPOSITE_SEQUENCE = "_sampleSDWIS.compositeSequence",
                     
                     SDWIS_PWS_NUMBER0 = "_sampleSDWIS.pws.number0",
 
@@ -275,11 +268,8 @@ public class SampleMeta implements Meta, MetaMap {
                                                   WELL_LOCATION_ADDR_COUNTRY, SDWIS_ID, SDWIS_SAMPLE_ID,
                                                   SDWIS_PWS_ID, SDWIS_STATE_LAB_ID, SDWIS_FACILITY_ID,
                                                   SDWIS_SAMPLE_TYPE_ID, SDWIS_SAMPLE_CATEGORY_ID,
-                                                  SDWIS_PB_SAMPLE_TYPE_ID, SDWIS_SAMPLE_POINT_ID,
-                                                  SDWIS_LOCATION, SDWIS_COLLECTOR, SDWIS_ORIGINAL_SAMPLE_NUMBER,
-                                                  SDWIS_REPEAT_CODE_ID, SDWIS_COMPOSITE_INDICATOR,
-                                                  SDWIS_COMPOSITE_SAMPLE_NUMBER, SDWIS_COMPOSITE_DATE,
-                                                  SDWIS_COMPOSITE_SEQUENCE, SDWIS_PWS_NUMBER0,
+                                                  SDWIS_SAMPLE_POINT_ID, SDWIS_LOCATION, SDWIS_COLLECTOR,
+                                                  SDWIS_PWS_NUMBER0,
                                                   ITEM_ID, ITEM_SAMPLE_ID, ITEM_SAMPLE_ITEM_ID,
                                                   ITEM_ITEM_SEQUENCE, ITEM_TYPE_OF_SAMPLE_ID,
                                                   ITEM_SOURCE_OF_SAMPLE_ID, ITEM_SOURCE_OTHER,
@@ -631,9 +621,6 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getSDWISSampleCategoryId(){
         return SDWIS_SAMPLE_CATEGORY_ID;
     }
-    public static String getSDWISPbSampleTypeId(){
-        return SDWIS_PB_SAMPLE_TYPE_ID;
-    }
     public static String getSDWISSamplePointId(){
         return SDWIS_SAMPLE_POINT_ID;
     }
@@ -642,24 +629,6 @@ public class SampleMeta implements Meta, MetaMap {
     }
     public static String getSDWISCollector(){
         return SDWIS_COLLECTOR;
-    }
-    public static String getSDWISOriginalSampleNumber(){
-        return SDWIS_ORIGINAL_SAMPLE_NUMBER;
-    }
-    public static String getSDWISRepeatCodeId(){
-        return SDWIS_REPEAT_CODE_ID;
-    }
-    public static String getSDWISCompositeIndicator(){
-        return SDWIS_COMPOSITE_INDICATOR;
-    }
-    public static String getSDWISCompositeSampleNumber(){
-        return SDWIS_COMPOSITE_SAMPLE_NUMBER;
-    }
-    public static String getSDWISCompositeDate(){
-        return SDWIS_COMPOSITE_DATE;
-    }
-    public static String getSDWISCompositeSequence(){
-        return SDWIS_COMPOSITE_SEQUENCE;
     }
     public static String getSDWISPwsNumber0(){
         return SDWIS_PWS_NUMBER0;

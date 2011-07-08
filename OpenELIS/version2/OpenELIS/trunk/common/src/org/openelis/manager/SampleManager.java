@@ -155,7 +155,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
             sample.setRevision(0);
             sample.setEnteredDate(date);
             sample.setReceivedDate(date);
-            sample.setStatusId(proxy().samLoggedInId);
+            sample.setStatusId(proxy().samNotVerifiedId);
     
         } catch (Exception e) {
             // ignore, we catch this on the validation
@@ -400,6 +400,13 @@ public class SampleManager implements RPC, HasAuxDataInt {
         statusId = null;
         e = l = c = r = 0;
         oldStatusId = sample.getStatusId();
+        
+        //
+        // The only way for a sample to come out of 'Not Verified' status is 
+        // through the verification screen
+        //
+        if (proxy().samNotVerifiedId.equals(oldStatusId))
+            return;
         
         //
         // find the lowest common status between all the analysis

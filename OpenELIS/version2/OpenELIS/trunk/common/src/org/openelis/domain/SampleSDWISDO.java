@@ -31,17 +31,16 @@ public class SampleSDWISDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer id, sampleId, stateLabId, sampleTypeId, sampleCategoryId, pwsId;
+    protected Integer id, sampleId, pwsId, stateLabId, sampleTypeId, sampleCategoryId;
     protected String facilityId, samplePointId, location, collector;
     
     public SampleSDWISDO() {
         
     }
         
-    public SampleSDWISDO(Integer id, Integer sampleId, Integer pwsId,
-                         Integer stateLabId, String facilityId, Integer sampleTypeId,
-                         Integer sampleCategoryId,  
-                         String samplePointId, String location, String collector){
+    public SampleSDWISDO(Integer id, Integer sampleId, Integer pwsId, Integer stateLabId,
+                         String facilityId, Integer sampleTypeId, Integer sampleCategoryId,
+                         String samplePointId, String location, String collector) {
         setId(id);
         setSampleId(sampleId);
         setPwsId(pwsId);

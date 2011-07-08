@@ -31,6 +31,7 @@ import java.util.HashMap;
 import org.openelis.cache.SectionCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.domain.TestTypeOfSampleDO;
@@ -335,6 +336,7 @@ public class AnalysisManager implements RPC {
 
     public void releaseAnalysisAt(int index) throws Exception {
         AnalysisViewDO data;
+        SampleDO sample;
         SectionViewDO section;
         SystemUserPermission perm;
         ValidationErrorsList errorsList;
@@ -350,6 +352,16 @@ public class AnalysisManager implements RPC {
         } else if ( !proxy().anCompletedId.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("completeStatusRequiredToRelease",
+                                                  data.getTestName(), data.getMethodName()));
+            throw errorsList;
+        }
+        
+        // sample must not be in 'Not Verified' status
+        sample = items.get(index).bundle.getSampleManager().getSample();
+        if (proxy().sampleNotVerifiedId.equals(sample.getStatusId())) {
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("sampleNotVerifiedForAnalysisRelease",
+                                                  sample.getAccessionNumber().toString(),
                                                   data.getTestName(), data.getMethodName()));
             throw errorsList;
         }

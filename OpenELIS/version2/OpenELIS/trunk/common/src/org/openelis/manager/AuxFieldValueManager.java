@@ -29,10 +29,11 @@ public class AuxFieldValueManager implements RPC {
     }
 
     /**
-     * Creates a new instance of this object with the specified auxiliary field id. Use this function to load an instance of this object from database.
+     * Creates a new instance of this object with the specified auxiliary field id.
+     * Use this function to load an instance of this object from database.
      */
-    public static AuxFieldValueManager fetchByAuxFieldId(Integer auxFieldId) throws Exception {
-        return proxy().fetchByAuxFieldId(auxFieldId);
+    public static AuxFieldValueManager fetchByFieldId(Integer fieldId) throws Exception {
+        return proxy().fetchByFieldId(fieldId);
     }
     
     public int count() {
