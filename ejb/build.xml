@@ -69,6 +69,7 @@
 			    <include name="lib/ehcache-1.2.jar"/>
 		    	<include name="lib/commons-beanutils-1.8.2.jar" />
 			    <include name="lib/jasperreports-4.0.1.jar" />
+				<include name="lib/javamail.jar" />
 			</fileset>
 		</ear>
 	</target>
