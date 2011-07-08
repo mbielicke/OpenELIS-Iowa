@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -203,6 +204,44 @@ public class SampleBean implements SampleLocal, SampleRemote {
         query.setParameter("sampleId", sampleId);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
+    public ArrayList<Object[]> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception {
+        Query query;
+        ArrayList<Object[]> list;       
+        query = manager.createNamedQuery("Sample.FetchForClientEmailReceivedReport");     
+        query.setParameter("start_received_date", stDate);
+        query.setParameter("end_received_date", endDate);
+            
+        try {
+            list = DataBaseUtil.toArrayList(query.getResultList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        if (list.isEmpty()|| list==null)
+            throw new NotFoundException("noRecordsFound");
+        else
+            return list;        
+    } 
+    
+    public ArrayList<Object[]> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception {
+        Query query;
+        ArrayList<Object[]> list;       
+        query = manager.createNamedQuery("Sample.FetchForClientEmailReleasedReport");     
+        query.setParameter("start_received_date", stDate);
+        query.setParameter("end_received_date", endDate);
+        
+        try {
+            list = DataBaseUtil.toArrayList(query.getResultList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        if (list.isEmpty()|| list==null)
+            throw new NotFoundException("noRecordsFound");
+        else
+            return list;        
+    } 
 
     public ArrayList<IdNameVO> fetchProjectsForOrganizations(ArrayList<Integer> organizationIdList) throws Exception {
         Query query;
