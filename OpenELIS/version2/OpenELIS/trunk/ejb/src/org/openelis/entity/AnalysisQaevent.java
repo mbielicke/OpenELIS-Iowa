@@ -37,7 +37,14 @@ import org.openelis.utils.Auditable;
                query = "select new org.openelis.domain.AnalysisQaEventViewDO(aq.id, aq.analysisId, aq.qaeventId, " +
                        "aq.typeId, aq.isBillable, q.name, q.reportingText)"
                      + " from AnalysisQaevent aq left join aq.qaEvent q left join aq.dictionary d"
-                     + " where aq.analysisId = :id and d.systemName != 'qaevent_internal' order by aq.id")})
+                     + " where aq.analysisId = :id and d.systemName != 'qaevent_internal' order by aq.id"),
+   @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideByAnalysisIdList",
+               query = "select new org.openelis.domain.AnalysisQaEventDO(aq.id, aq.analysisId, aq.qaeventId, " +
+                       "aq.typeId, aq.isBillable) "
+                     + " from AnalysisQaevent aq where aq.analysisId in ( :ids ) and aq.dictionary.systemName = 'qaevent_override'"),
+   @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideBySampleIdList",
+               query = "select aq from AnalysisQaevent as aq left join aq.analysis a left join a.sampleItem si left join si.sample s"
+                     + " where s.id in (:ids) and aq.dictionary.systemName = 'qaevent_override'")})
 @Entity
 @Table(name = "analysis_qaevent")
 @EntityListeners( {AuditUtil.class})
@@ -59,7 +66,11 @@ public class AnalysisQaevent implements Auditable, Cloneable {
 
     @Column(name = "is_billable")
     private String          isBillable;
-
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
+    private Analysis         analysis;
+    
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qaevent_id", insertable = false, updatable = false)
     private QaEvent         qaEvent;
@@ -114,6 +125,14 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     public void setIsBillable(String isBillable) {
         if (DataBaseUtil.isDifferent(isBillable, this.isBillable))
             this.isBillable = isBillable;
+    }
+    
+    public Analysis getAnalysis() {
+        return analysis;
+    }
+
+    public void setAnalysis(Analysis analysis) {
+        this.analysis = analysis;
     }
 
     public QaEvent getQaEvent() {

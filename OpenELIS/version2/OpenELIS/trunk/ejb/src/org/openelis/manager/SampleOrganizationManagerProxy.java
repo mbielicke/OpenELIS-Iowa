@@ -37,7 +37,7 @@ import org.openelis.utils.EJBFactory;
 
 public class SampleOrganizationManagerProxy {
     
-    protected static Integer orgBillToId,orgReportToId;
+    protected static Integer orgBillToId,orgReportToId,orgSecondaryReportToId;
     
     public SampleOrganizationManagerProxy() {
         DictionaryLocal l;
@@ -46,7 +46,8 @@ public class SampleOrganizationManagerProxy {
 
             try {
                 orgBillToId = l.fetchBySystemName("org_bill_to").getId();
-                orgReportToId = l.fetchBySystemName("org_report_to").getId();                
+                orgReportToId = l.fetchBySystemName("org_report_to").getId();            
+                orgSecondaryReportToId = l.fetchBySystemName("org_second_report_to").getId(); 
             } catch (Exception e) {
                 e.printStackTrace();
                 orgBillToId = null;

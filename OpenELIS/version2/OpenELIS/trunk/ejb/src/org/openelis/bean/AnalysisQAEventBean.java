@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.entity.AnalysisQaevent;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -83,6 +84,36 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         
         query = manager.createNamedQuery("AnalysisQaevent.FetchExternalByAnalysisId");
         query.setParameter("id", analysisId);
+        returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisIdList(ArrayList<Integer> ids) throws Exception {
+        Query query;
+        List returnList;
+        
+        query = manager.createNamedQuery("AnalysisQaevent.FetchResultOverrideByAnalysisIdList");
+        query.setParameter("ids", ids);
+        
+        returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleIdList(ArrayList<Integer> ids) throws Exception {
+        Query query;
+        List returnList;
+        
+        query = manager.createNamedQuery("AnalysisQaevent.FetchResultOverrideBySampleIdList");
+        query.setParameter("ids", ids);
+        
         returnList = query.getResultList();
         
         if(returnList.size() == 0)

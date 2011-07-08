@@ -71,8 +71,11 @@ import org.openelis.utils.Auditable;
                         "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
                         "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, pam.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.sampleItemId = :id order by t.name, t.method.name "),
-    })
-                
+    @NamedQuery( name = "Analysis.FetchForCachingByStatusId",
+                query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, s.id, s.domain, s.accessionNumber," +
+                		"s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name, '', '', '')"
+                      + " from Analysis a, SampleItem si, Sample s, Test t"
+                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = :statusId order by s.accessionNumber ")})            
 @Entity
 @Table(name="analysis")
 @EntityListeners({AuditUtil.class})
@@ -146,7 +149,7 @@ public class Analysis implements Auditable, Cloneable {
 
     // analysis qa events
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "analysis_id")
+    @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
     private Collection<AnalysisQaevent> analysisQAEvent;
 
     @Transient

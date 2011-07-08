@@ -3,6 +3,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 
@@ -118,15 +119,14 @@ public class SampleOrganizationManager implements RPC {
     // helper methods
     //
     public void setBillTo(SampleOrganizationViewDO billToDO) {
-        setRowFor(proxy().getIdFromSystemName("org_bill_to"), billToDO);
+        setRowFor(proxy().orgBillToId, billToDO);
     }
 
     public SampleOrganizationViewDO getBillTo() {
-        Integer billToId = proxy().getIdFromSystemName("org_bill_to");
         int i = 0;
 
         while (i < organizations.size() &&
-               !billToId.equals(organizations.get(i).getTypeId()))
+               !DataBaseUtil.isSame(proxy().orgBillToId, organizations.get(i).getTypeId()))
             i++ ;
 
         if (i < organizations.size())
@@ -136,15 +136,14 @@ public class SampleOrganizationManager implements RPC {
     }
 
     public void setReportTo(SampleOrganizationViewDO reportToDO) {
-        setRowFor(proxy().getIdFromSystemName("org_report_to"), reportToDO);
+        setRowFor(proxy().orgReportToId, reportToDO);
     }
 
     public SampleOrganizationViewDO getReportTo() {
-        Integer reportToId = proxy().getIdFromSystemName("org_report_to");
         int i = 0;
 
         while (i < organizations.size() &&
-               !reportToId.equals(organizations.get(i).getTypeId()))
+               !DataBaseUtil.isSame(proxy().orgReportToId,organizations.get(i).getTypeId()))
             i++ ;
 
         if (i < organizations.size())
@@ -154,13 +153,11 @@ public class SampleOrganizationManager implements RPC {
     }
 
     public SampleOrganizationViewDO getFirstSecondaryReportTo() {
-        Integer reportToId;
         int i;
 
-        reportToId = proxy().getIdFromSystemName("org_second_report_to");
         i = 0;
         while (i < organizations.size() &&
-               !reportToId.equals(organizations.get(i).getTypeId()))
+               !DataBaseUtil.isSame(proxy().orgSecondaryReportToId, organizations.get(i).getTypeId()))
             i++ ;
 
         if (i < organizations.size())
