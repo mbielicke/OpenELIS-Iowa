@@ -1,6 +1,7 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.ejb.Local;
 
@@ -22,6 +23,10 @@ public interface SampleLocal {
 	public SampleDO add(SampleDO data) throws Exception;
 
 	public SampleDO update(SampleDO data) throws Exception;
+	
+	public ArrayList<Object[]> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception;
+    
+    public ArrayList<Object[]> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception;
         
     public ArrayList<IdNameVO> fetchProjectsForOrganizations(ArrayList<Integer> organizationId) throws Exception;
     
