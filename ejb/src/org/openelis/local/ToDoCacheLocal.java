@@ -25,17 +25,13 @@
 */
 package org.openelis.local;
 
-import java.util.ArrayList;
-
 import javax.ejb.Local;
 
-import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.AnalysisCacheVO;
+import org.openelis.domain.SampleCacheVO;
 
 @Local
-public interface SampleOrganizationLocal {
-    public ArrayList<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
-    public ArrayList<SampleOrganizationViewDO> fetchReportToBySampleId(Integer sampleId) throws Exception;
-    public SampleOrganizationViewDO add(SampleOrganizationViewDO sampleOrgDO);
-    public SampleOrganizationViewDO update(SampleOrganizationViewDO sampleOrgDO); 
-    public void delete(SampleOrganizationViewDO sampleOrgDO);
+public interface ToDoCacheLocal {
+    public void update(AnalysisCacheVO data);
+    public void update(SampleCacheVO data);
 }

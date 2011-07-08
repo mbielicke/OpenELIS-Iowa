@@ -35,6 +35,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AnalysisQaEventDO;
+import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.entity.SampleQaevent;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -87,6 +89,21 @@ public class SampleQAEventBean implements SampleQAEventLocal {
         if (returnList.size() == 0)
             throw new NotFoundException();
 
+        return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIdList(ArrayList<Integer> ids) throws Exception {
+        Query query;
+        List returnList;
+        
+        query = manager.createNamedQuery("SampleQaevent.FetchResultOverrideBySampleIdList");
+        query.setParameter("ids", ids);
+        
+        returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
         return DataBaseUtil.toArrayList(returnList);
     }
 

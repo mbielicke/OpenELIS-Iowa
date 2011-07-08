@@ -38,10 +38,15 @@ import javax.persistence.NoResultException;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleCacheVO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
@@ -49,13 +54,18 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleManagerLocal;
+import org.openelis.local.SectionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
+import org.openelis.local.ToDoCacheLocal;
 import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
+import org.openelis.manager.SampleQaEventManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleManagerRemote;
 import org.openelis.utils.EJBFactory;
@@ -77,7 +87,10 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     private SystemVariableLocal systemVariable;
     
     @EJB
-    private SampleLocal sample;
+    private SampleLocal sample;     
+    
+    @EJB
+    private ToDoCacheLocal todoCache;
 
     public SampleManager fetchById(Integer id) throws Exception {
         return SampleManager.fetchById(id);
@@ -106,12 +119,12 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         try {
             ut.begin(); 
             man.add();
-            ut.commit();
+            ut.commit(); 
+            updateCache(man);
         } catch (Exception e) {
             ut.rollback();
             throw e;
-        }
-        
+        }                
         return man;
     }
 
@@ -128,12 +141,12 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             lock.validateLock(ReferenceTable.SAMPLE, man.getSample().getId());
             man.update();
             lock.unlock(ReferenceTable.SAMPLE, man.getSample().getId());  
-            ut.commit();
+            ut.commit();    
+            updateCache(man);
         } catch (Exception e) {
             ut.rollback();
             throw e;
         }
-        
         return man;
     }
 
@@ -248,6 +261,108 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             throw errorsList;
         
         return null;
+    }
+    
+    private void updateCache(SampleManager man) {
+        boolean override;
+        String orgName;
+        AnalysisManager am;
+        SampleItemManager im;
+        AnalysisViewDO ana;
+        AnalysisCacheVO avo;  
+        SampleCacheVO svo;
+        SectionCacheLocal scl;
+        SampleQaEventManager sqm;
+        AnalysisQaEventManager aqm;
+        SamplePrivateWellManager spwm;
+        SamplePrivateWellViewDO spw;
+        SampleOrganizationViewDO rt;
+        TestViewDO test;
+        SampleDO sample;
+               
+        try {
+            scl = EJBFactory.getSectionCache();
+            sample = man.getSample();
+            rt = man.getOrganizations().getReportTo();
+            orgName = null;
+
+            if (rt != null) {
+                orgName = rt.getOrganizationName();
+            } else if ("W".equals(sample.getDomain())) {
+                spwm = (SamplePrivateWellManager)man.getDomainManager();
+                spw = spwm.getPrivateWell();
+                if (spw.getOrganizationId() == null)
+                    orgName = spw.getReportToName();
+                else
+                    orgName = spw.getOrganization().getName();
+            }
+            
+            /*
+             * a SampleCacheVO is created for this sample and is used to update
+             * the various caches used for the ToDo lists   
+             */
+            svo = new SampleCacheVO();
+            svo.setId(sample.getId());
+            svo.setStatusId(sample.getStatusId());
+            svo.setDomain(sample.getDomain());
+            svo.setAccessionNumber(sample.getAccessionNumber());
+            svo.setReceivedDate(sample.getReceivedDate());
+            svo.setCollectionDate(sample.getCollectionDate());
+            svo.setCollectionTime(sample.getCollectionTime());
+            sqm = man.getQaEvents();
+            if (sqm.hasResultOverrideQA()) 
+                override = true;
+            else 
+                override = false;
+            
+            svo.setReportToName(orgName);            
+            
+            im = man.getSampleItems();
+            /*
+             * AnalysisCacheVOs are created for each analysis under this sample 
+             * and are used to update the various caches used for the ToDo lists   
+             */
+            for (int i = 0; i < im.count(); i++ ) {
+                am = im.getAnalysisAt(i);
+                for (int j = 0; j < am.count(); j++ ) {
+                    ana = am.getAnalysisAt(j);
+                    test = am.getTestAt(j).getTest();
+                    avo = new AnalysisCacheVO();
+                    avo.setId(ana.getId());
+                    avo.setStatusId(ana.getStatusId());
+                    avo.setStartedDate(ana.getStartedDate());
+                    avo.setCompletedDate(ana.getCompletedDate());
+                    avo.setTestName(test.getName());
+                    avo.setTestTimeHolding(test.getTimeHolding());
+                    avo.setTestTimeTaAverage(test.getTimeTaAverage());
+                    avo.setTestMethodName(ana.getMethodName());
+                    avo.setSectionName(scl.getById(ana.getSectionId()).getName());
+                    aqm = am.getQAEventAt(j);
+                    if (aqm.hasResultOverrideQA()) {
+                        override = true;
+                        avo.setQaeventResultOverride("Y");
+                    } else {
+                        avo.setQaeventResultOverride("N");
+                    }
+                    avo.setSampleDomain(sample.getDomain());
+                    avo.setSampleAccessionNumber(sample.getAccessionNumber());
+                    avo.setSampleReportToName(orgName);
+                    avo.setSampleReceivedDate(sample.getReceivedDate());
+                    avo.setSampleCollectionDate(sample.getCollectionDate());
+                    avo.setSampleCollectionTime(sample.getCollectionTime());
+                    todoCache.update(avo);   
+                }
+            }       
+            
+            if (override) 
+                svo.setQaeventResultOverride("Y");
+            else 
+                svo.setQaeventResultOverride("N");
+            
+            todoCache.update(svo);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {

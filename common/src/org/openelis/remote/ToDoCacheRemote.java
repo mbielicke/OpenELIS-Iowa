@@ -23,19 +23,19 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.remote;
 
 import java.util.ArrayList;
 
-import javax.ejb.Local;
+import javax.ejb.Remote;
 
-import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.AnalysisCacheVO;
+import org.openelis.domain.SampleCacheVO;
 
-@Local
-public interface SampleOrganizationLocal {
-    public ArrayList<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
-    public ArrayList<SampleOrganizationViewDO> fetchReportToBySampleId(Integer sampleId) throws Exception;
-    public SampleOrganizationViewDO add(SampleOrganizationViewDO sampleOrgDO);
-    public SampleOrganizationViewDO update(SampleOrganizationViewDO sampleOrgDO); 
-    public void delete(SampleOrganizationViewDO sampleOrgDO);
+@Remote
+public interface ToDoCacheRemote {
+    public ArrayList<SampleCacheVO> getToBeVerified() throws Exception;    
+    public ArrayList<AnalysisCacheVO> getLoggedIn() throws Exception;    
+    public ArrayList<AnalysisCacheVO> getInitiated() throws Exception;
+    public ArrayList<AnalysisCacheVO> getCompleted() throws Exception;
 }

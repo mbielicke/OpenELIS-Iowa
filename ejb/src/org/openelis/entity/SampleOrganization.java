@@ -55,7 +55,15 @@ import org.openelis.utils.Auditable;
                 		"so.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, " +
                 		"o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
                 		"o.address.faxPhone)"
-                      + " from SampleOrganization so LEFT JOIN so.organization o where so.sampleId = :id")})
+                      + " from SampleOrganization so LEFT JOIN so.organization o where so.sampleId = :id"), 
+    @NamedQuery( name = "SampleOrganization.FetchReportToBySampleId",
+                query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, " +
+                        "so.sampleId, so.organizationId, so.organizationAttention, " +
+                        "so.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, " +
+                        "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
+                        "o.address.faxPhone)"
+                      + " from SampleOrganization so LEFT JOIN so.organization o "
+                      + " where so.sampleId = :id and so.typeId in (select id from Dictionary d where d.systemName = 'org_report_to') ")})
 @Entity
 @Table(name = "sample_organization")
 @EntityListeners( {AuditUtil.class})
@@ -84,7 +92,7 @@ public class SampleOrganization implements Auditable, Cloneable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
-    private Sample             sample;
+    private Sample             sample;      
 
     @Transient
     private SampleOrganization original;

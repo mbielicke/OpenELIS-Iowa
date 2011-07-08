@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleQaEventViewDO;
 
 @Local
@@ -36,6 +37,7 @@ public interface SampleQAEventLocal {
     public ArrayList<SampleQaEventViewDO> fetchBySampleId(Integer sampleId) throws Exception;
     public ArrayList<SampleQaEventViewDO> fetchInternalBySampleId(Integer sampleId) throws Exception;
     public ArrayList<SampleQaEventViewDO> fetchExternalBySampleId(Integer sampleId) throws Exception;
+    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIdList(ArrayList<Integer> ids) throws Exception;
     public void add(SampleQaEventViewDO sampleQAEventDO) throws Exception;
     public void update(SampleQaEventViewDO sampleQAEventDO) throws Exception;
     public void delete(SampleQaEventViewDO sampleQAEventDO) throws Exception;
