@@ -41,7 +41,12 @@ import org.openelis.gwt.common.Datetime;
     @NamedQuery( name = "AnalysisReportFlags.FetchByAnalysisId",
                 query = "select new org.openelis.domain.AnalysisReportFlagsDO(rf.analysisId," +
                         "rf.notifiedReceived,rf.notifiedReleased,rf.billedDate,rf.billedAnalytes,rf.billedZero)"
-                      + " from AnalysisReportFlags rf where rf.analysisId = :id")})
+                      + " from AnalysisReportFlags rf where rf.analysisId = :id"),
+   @NamedQuery( name = "AnalysisReportFlags.FetchBySampleId",
+                query = "select new org.openelis.domain.AnalysisReportFlagsDO(rf.analysisId," +
+                       "rf.notifiedReceived,rf.notifiedReleased,rf.billedDate,rf.billedAnalytes,rf.billedZero)" +
+                       " from Sample s, SampleItem si, Analysis a, AnalysisReportFlags rf where s.id = si.sampleId and" +
+                       " si.id = a.sampleItemId and a.id = rf.analysisId and s.accessionNumber in (:id)")})
 
 @Entity
 @Table(name = "analysis_report_flags")
