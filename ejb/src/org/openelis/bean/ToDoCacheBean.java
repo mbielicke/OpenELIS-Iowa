@@ -368,7 +368,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         try {
             sqeList = sqel.fetchResultOverrideBySampleIdList(sidList);
             for (SampleQaEventDO sqe : sqeList) {
-                elem = cache.get(sqe.getId());
+                elem = cache.get(sqe.getSampleId());
                 svo = (SampleCacheVO)elem.getValue();
                 svo.setQaeventResultOverride("Y");
                 sidList.remove(svo.getId());
