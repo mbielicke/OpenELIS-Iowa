@@ -402,13 +402,6 @@ public class SampleManager implements RPC, HasAuxDataInt {
         oldStatusId = sample.getStatusId();
         
         //
-        // The only way for a sample to come out of 'Not Verified' status is 
-        // through the verification screen
-        //
-        if (proxy().samNotVerifiedId.equals(oldStatusId))
-            return;
-        
-        //
         // find the lowest common status between all the analysis
         //
         itemMan = getSampleItems();
@@ -441,6 +434,13 @@ public class SampleManager implements RPC, HasAuxDataInt {
             }
         }
 
+        //
+        // The only way for a sample to come out of 'Not Verified' status is 
+        // through the verification screen
+        //
+        if (proxy().samNotVerifiedId.equals(oldStatusId))
+            return;
+        
         //
         // change the sample status to lowest
         //
