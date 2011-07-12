@@ -75,7 +75,18 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, s.id, s.domain, s.accessionNumber," +
                 		"s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name, '', '', '')"
                       + " from Analysis a, SampleItem si, Sample s, Test t"
-                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = :statusId order by s.accessionNumber ")})            
+                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = :statusId order by s.accessionNumber "),
+    @NamedQuery( name = "Analysis.FetchForCachingOther",
+                query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, s.id, s.domain, s.accessionNumber," +
+                        "s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name, '', '', '')"
+                      + " from Analysis a, SampleItem si, Sample s, Test t, Dictionary d"
+                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = d.id and d.systemName not in ('analysis_logged_in', 'analysis_initiated',"
+                      + " 'analysis_completed', 'analysis_released')) order by s.accessionNumber "),                  
+    @NamedQuery( name = "Analysis.FetchForCachingBySampleId",
+                query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, s.id, s.domain, s.accessionNumber," +
+                        "s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name, '', '', '')"
+                      + " from Analysis a, SampleItem si, Sample s, Test t"
+                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and si.sampleId = :sampleId order by s.accessionNumber ")})            
 @Entity
 @Table(name="analysis")
 @EntityListeners({AuditUtil.class})
