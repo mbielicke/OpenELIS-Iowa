@@ -64,14 +64,15 @@ import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;
 public class ToBeVerifiedTab extends Screen {
             
     private boolean                    loadedFromCache, reattachChart;
-    //private long                       day, twodays, threedays,sevendays, tendays;    
-    //private ArrayList<String>          ranges;         
-    //private Date                       midNight;
-    private ArrayList<SampleCacheVO> fullList;
+    private long                       day, twodays, threedays,sevendays, tendays;    
+    private String                     loadBySection;
+    private ArrayList<String>          ranges;         
+    private Date                       midNight;
+    private ArrayList<SampleCacheVO>   fullList;
     private TableWidget                table;
     private VerticalPanel              toBeVerifiedPanel; 
-    //private ColumnChart                chart;
-    //private Options                    options;
+    private ColumnChart                chart;
+    private Options                    options;
     
     public ToBeVerifiedTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
@@ -84,7 +85,8 @@ public class ToBeVerifiedTab extends Screen {
         table = (TableWidget)def.getWidget("toBeVerifiedTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                table.load(getTableModel());                
+                table.load(getTableModel());         
+                refreshChart();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -100,10 +102,32 @@ public class ToBeVerifiedTab extends Screen {
            
         table.addFilterHandler(new FilterHandler() {           
             public void onFilter(FilterEvent event) {
-                //refreshChart();                
+                refreshChart();                
             }
         });
         toBeVerifiedPanel = (VerticalPanel)def.getWidget("toBeVerifiedPanel");  
+        
+        loadBySection = "N";
+        
+        ranges = new ArrayList<String>();
+        ranges.add("Today");
+        ranges.add("Yesterday");
+        ranges.add("2 days ago");
+        ranges.add("3 days ago");
+        ranges.add("4 - 7 days ago");
+        ranges.add("8 - 10 days ago");
+        ranges.add("> 10 days ago");
+        
+        midNight = new Date();
+        midNight.setHours(0);
+        midNight.setMinutes(0);
+        midNight.setSeconds(0);
+        
+        day = 86400000;
+        twodays = 2 * day; 
+        threedays = 3 * day;
+        sevendays = 7 * day;
+        tendays = 10 * day;
     }
     
     private ArrayList<TableDataRow> getTableModel() {
@@ -156,6 +180,10 @@ public class ToBeVerifiedTab extends Screen {
         loadedFromCache = false;
     }
     
+    public void reattachChart() {
+        reattachChart = true;
+    }
+    
     public Integer getSelectedSampleId() {
         TableDataRow row;
         SampleCacheVO data; 
@@ -168,9 +196,158 @@ public class ToBeVerifiedTab extends Screen {
         return data.getId();
     }
     
-    public void draw() {        
-        if (!loadedFromCache)              
-            DataChangeEvent.fire(this);                
+    public void draw(String loadBySection) {                
+        if (!loadedFromCache || !loadBySection.equals(this.loadBySection)) {             
+            this.loadBySection = loadBySection;              
+            DataChangeEvent.fire(this);   
+        }
+        if (reattachChart) {
+            refreshChart();
+            reattachChart = false;            
+        }
         loadedFromCache = true;
+    }
+    
+    private void refreshChart() {
+        long avdur, mdur;
+        Integer val;
+        ArrayList<TableDataRow> model;
+        Datetime now, srd;
+        SampleCacheVO data;
+        HashMap<String, Integer> map;
+        
+        now = Datetime.getInstance();
+        map = new HashMap<String, Integer>();        
+        model = table.getData();        
+        //
+        // the length of the time duration between right now and last midnight 
+        //
+        mdur = Math.abs(now.getDate().getTime() - midNight.getTime());
+        for (TableDataRow row : model) {
+            if (!row.shown)
+                 continue;
+            data = (SampleCacheVO)row.data;
+            srd = data.getReceivedDate();
+            if (srd == null)
+                srd = now;
+            //
+            // the length of the time duration between right now and available date 
+            //
+            avdur = Math.abs(now.getDate().getTime() - srd.getDate().getTime());                        
+            
+            /*
+             * If avdur <= mdur then it means that the available date is today. If 
+             * however avdur lies somewhere between the length of x number of days
+             * (mdur+x) and y number of days (mdur+y), then it means that the 
+             * available date was somewhere between x and y number of days ago.
+             * E.g. if x is 3 and y is 7, then the available date was somewhere
+             * between 4 and 7 days ago (inclusive of 4 and 7).
+             */
+            if (avdur <= mdur) {
+                val = map.get(ranges.get(0));
+                if (val == null)
+                    val = 0;
+                map.put(ranges.get(0), ++val);
+            } else if (mdur < avdur && avdur <= (mdur + day)) {
+                val = map.get(ranges.get(1));
+                if (val == null)
+                    val = 0;
+                map.put(ranges.get(1), ++val);
+            } else if ((mdur + day) < avdur && avdur <= (mdur + twodays)) {
+                val = map.get(ranges.get(2));
+                if (val == null)
+                    val = 0;
+                map.put(ranges.get(2), ++val);
+            } else if ((mdur + twodays) < avdur && avdur <= (mdur + threedays)) {
+                val = map.get(ranges.get(3));
+                if (val == null)
+                    val = 0;
+                map.put(ranges.get(3), ++val);
+            } else if ((mdur + threedays) < avdur && avdur <= (mdur + sevendays)) {
+                val = map.get(ranges.get(4));
+                if (val == null)
+                    val = 0;
+                map.put(ranges.get(4), ++val);
+            } else if ((mdur + sevendays) < avdur && avdur <= (mdur + tendays)) {
+                val = map.get(ranges.get(5));
+                if (val == null)
+                    val = 0;
+                map.put(ranges.get(5), ++val);
+            } else if (avdur > (mdur + tendays)) {
+                val = map.get(ranges.get(6));
+                if (val == null)
+                    val = 0;
+                map.put(ranges.get(6), ++val);
+            }
+        }
+        
+        drawCharts(map);
+    }
+    
+    private void drawCharts(HashMap<String, Integer> map) {
+        int size;
+        Integer val;
+        String range;
+        DataTable data;
+
+        data = DataTable.create();
+        data.addColumn(ColumnType.STRING);
+        data.addColumn(ColumnType.NUMBER, "Samples");       
+        size = ranges.size();
+        data.addRows(size);
+        for (int i = 0; i < size; i++) {
+            range = ranges.get(i);
+            data.setValue(i, 0, range);            
+            val = map.get(range);
+            if (val == null)
+                val = 0;
+            data.setValue(i, 1, val);        
+        }
+        
+        if (options == null)
+            options = getOptions();
+        /*
+         * If "chart" is null then this is the first time that it's being drawn,
+         * i.e. the tab was opened for the first time. If "reattachChart" is true
+         * then chart needs to be re-attached to the panel it's being diplayed in
+         * because the screen's being dragged caused chart to get detached. 
+         * Otherwise, chart can just be redrawn because only the data showing 
+         * in it changed.    
+         */
+        if (chart == null) {
+            chart = new ColumnChart(data, options);            
+            toBeVerifiedPanel.add(chart);
+        } else if (reattachChart){            
+            toBeVerifiedPanel.clear();
+            chart = new ColumnChart(data, options);              
+            toBeVerifiedPanel.add(chart);
+        } else {
+            chart.draw(data, options );
+        }                
+    }
+    
+    private Options getOptions() {        
+        Options ops;
+        AxisOptions aops;
+        TextStyle fts;        
+        
+        ops = ColumnChart.createOptions(); 
+        ops.setLegend(LegendPosition.NONE);                      
+        
+        aops = AxisOptions.create();
+        aops.setTitle("No of Samples");
+        ops.setVAxisOptions(aops);
+        
+        aops = AxisOptions.create();
+        fts = TextStyle.create();
+        fts.setFontSize(10);
+        
+        aops.setTextStyle(fts);
+        
+        ops.setHAxisOptions(aops);                  
+        ops.setWidth(625);
+        ops.setHeight(215);        
+        ops.setTitle(consts.get("timeSinceSamplesReceived")); 
+        return ops;      
     }
 }

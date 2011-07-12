@@ -50,6 +50,10 @@ public class ToDoService {
         return remote().getToBeVerified();
     }
     
+    public ArrayList<AnalysisCacheVO> getOther() throws Exception {
+        return remote().getOther();
+    }
+    
     private ToDoCacheRemote remote() {
         return (ToDoCacheRemote)EJBFactory.lookup("openelis/ToDoCacheBean/remote");
     } 

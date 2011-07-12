@@ -38,4 +38,5 @@ public interface ToDoCacheRemote {
     public ArrayList<AnalysisCacheVO> getLoggedIn() throws Exception;    
     public ArrayList<AnalysisCacheVO> getInitiated() throws Exception;
     public ArrayList<AnalysisCacheVO> getCompleted() throws Exception;
+    public ArrayList<AnalysisCacheVO> getOther() throws Exception;
 }

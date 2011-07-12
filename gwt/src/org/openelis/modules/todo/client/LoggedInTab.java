@@ -348,16 +348,9 @@ public class LoggedInTab extends Screen {
         
         aops = AxisOptions.create();
         aops.setTitle(consts.get("numAnalyses"));
-        /*tts = TextStyle.create();
-        tts.setColor("Purple");
-        aops.setTitleTextStyle(tts);*/
         ops.setVAxisOptions(aops);
         
         aops = AxisOptions.create();
-        /*aops.setTitle(consts.get("days"));
-        tts = TextStyle.create();
-        tts.setColor("Purple");
-        aops.setTitleTextStyle(tts);*/
         fts = TextStyle.create();
         fts.setFontSize(10);
         aops.setTextStyle(fts);
@@ -365,6 +358,7 @@ public class LoggedInTab extends Screen {
                 
         ops.setWidth(625);
         ops.setHeight(215);
+        ops.setTitle(consts.get("timeSinceAnalysesLoggedIn"));
         return ops;      
     }
 }

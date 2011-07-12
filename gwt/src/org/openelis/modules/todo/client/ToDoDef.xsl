@@ -75,36 +75,6 @@ UIRF Software License are applicable instead of those above.
         </HorizontalPanel>
         <VerticalPanel height = "5"/>
         <TabPanel key="tabPanel" width="625" height="550">
-          <tab text= "{resource:getString($constants,'toBeVerified')}" >
-            <VerticalPanel>
-              <widget valign="top">
-                <table key="toBeVerifiedTable" width="605" maxRows="14" showScroll="ALWAYS" style="ScreenTableWithSides" title="">                 
-                  <col key="accessionNumber" width="50" sort="true" header="{resource:getString($constants,'accNum')}">
-                    <label field="Integer" />
-                  </col>        
-                  <col key="domain" width="50" header="{resource:getString($constants,'domain')}" filter = "true">
-                    <label field = "String"/>
-                  </col>          
-                  <col key="datec" width="105" header="{resource:getString($constants,'collected')}" sort = "true">
-                    <label field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
-                  </col>                                        
-                  <col key="daterec" width="105" header="{resource:getString($constants,'received')}" sort = "true">
-                    <label field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
-                  </col>
-                  <col key="qaResOver" width="55" header="{resource:getString($constants,'override')}" filter = "true">
-                    <check/>
-                  </col>
-                  <col key="mush" width="150" header="{resource:getString($constants,'domainSpecField')}">
-                    <label field = "String"/>
-                  </col>
-                  <col key="reportTo" width="200" header="{resource:getString($constants,'reportTo')}" sort = "true" filter = "true">
-                    <label field = "String" />
-                  </col>
-                </table>
-              </widget>
-              <VerticalPanel key = "toBeVerifiedPanel" width = "623" height = "200"/>
-            </VerticalPanel>
-          </tab>
           <tab text="{resource:getString($constants,'loggedIn')}">
             <VerticalPanel>
               <widget valign="top">
@@ -170,7 +140,7 @@ UIRF Software License are applicable instead of those above.
 					  <range threshold="100" color="red"/>
 					</percentBar>
                   </col>                                        
-                  <col key="avgTATime" width="100" sort = "true" header="{resource:getString($constants,'avgTA')}">
+                  <col key="avgTATime" width="105" sort = "true" header="{resource:getString($constants,'avgTA')}">
                     <percentBar>
                       <range threshold="25" color="green"/>
 					  <range threshold="50" color="yellow"/>
@@ -225,27 +195,74 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel key = "completedPanel" width = "605" height = "200"/>
            </VerticalPanel>    
           </tab>
-          <tab text="{resource:getString($constants,'other')}">
-           <!-- <VerticalPanel>
-            <table key="tablee" width="auto" maxRows="20" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-                  <col key="section" width="100" header="{resource:getString($constants,'section')}">
+          <tab text= "{resource:getString($constants,'toBeVerified')}" >
+            <VerticalPanel>
+              <widget valign="top">
+                <table key="toBeVerifiedTable" width="605" maxRows="14" showScroll="ALWAYS" style="ScreenTableWithSides" title="">                 
+                  <col key="accessionNumber" width="50" sort="true" header="{resource:getString($constants,'accNum')}">
+                    <label field="Integer" />
+                  </col>        
+                  <col key="domain" width="50" header="{resource:getString($constants,'domain')}" filter = "true">
                     <label field = "String"/>
-                  </col>                  
-                  <col key="accessionNumber" width="100" sort="true" header="Accession #">
-                    <textbox max="255" field="String" required="true" />
-                  </col>           
-                  <col key="status" width="60" header="Status">
-                    <label field = "String"/>
+                  </col>          
+                  <col key="datec" width="105" header="{resource:getString($constants,'collected')}" sort = "true">
+                    <label field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
+                  </col>                                        
+                  <col key="daterec" width="105" header="{resource:getString($constants,'received')}" sort = "true">
+                    <label field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
                   </col>
-                  <col key="analysis" width="180" sort="true" header="Analysis">
-                    <textbox max="255" field="String" />
-                  </col>                                                
-                  <col key="override" width="100" header="Result Override">
+                  <col key="qaResOver" width="55" header="{resource:getString($constants,'override')}" filter = "true">
                     <check/>
                   </col>
+                  <col key="mush" width="150" header="{resource:getString($constants,'domainSpecField')}">
+                    <label field = "String"/>
+                  </col>
+                  <col key="reportTo" width="200" header="{resource:getString($constants,'reportTo')}" sort = "true" filter = "true">
+                    <label field = "String" />
+                  </col>
+                </table>
+              </widget>
+              <VerticalPanel key = "toBeVerifiedPanel" width = "623" height = "200"/>
+            </VerticalPanel>
+          </tab>
+          <tab text="{resource:getString($constants,'other')}">
+           <VerticalPanel>
+                <table key="otherTable" width="605" maxRows="25" showScroll="ALWAYS" style="ScreenTableWithSides" title="">                 
+                  <col key="accessionNumber" width="50" header="{resource:getString($constants,'accNum')}" sort="true">
+                    <label field="Integer" />
+                  </col>        
+                  <col key="domain" width="50" header="{resource:getString($constants,'domain')}" filter = "true">
+                    <label field = "String"/>
+                  </col>   
+                  <col key="section" width="100" header="{resource:getString($constants,'section')}" sort = "true" filter = "true">
+                    <label field = "String"/>
+                  </col>
+                  <col key="status" width="100" header="{resource:getString($constants,'status')}" sort = "true" filter = "true">
+                    <dropdown field="Integer" width="100" />
+                  </col>
+                  <col key="test" width="70" header="{resource:getString($constants,'test')}" sort = "true" filter = "true">
+                    <label field="String" />
+                  </col>
+                  <col key="method" width="60" header="{resource:getString($constants,'method')}" sort = "true" filter = "true">
+                    <label field = "String"/>
+                  </col>        
+                  <col key="datec" width="105" header="{resource:getString($constants,'collected')}" sort = "true">
+                    <label field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
+                  </col>                                        
+                  <col key="daterec" width="105" header="{resource:getString($constants,'received')}" sort = "true">
+                    <label field = "Date" pattern="{resource:getString($constants,'dateTimePattern')}"/>
+                  </col>
+                  <col key="qaResOver" width="55" header="{resource:getString($constants,'override')}" filter = "true">
+                    <check/>
+                  </col>
+                  <col key="mush" width="150" header="{resource:getString($constants,'domainSpecField')}">
+                    <label field = "String"/>
+                  </col>
+                  <col key="reportTo" width="200" header="{resource:getString($constants,'reportTo')}" sort = "true" filter = "true">
+                    <label field = "String" />
+                  </col>
                 </table> 
-            </VerticalPanel> --> 
-            <text/>   
+             </VerticalPanel> 
           </tab>
           <tab text="{resource:getString($constants,'worksheet')}">
            <!-- <VerticalPanel>

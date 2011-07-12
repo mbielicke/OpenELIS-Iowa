@@ -211,7 +211,7 @@ public class CompletedTab extends Screen {
         
         now = Datetime.getInstance();
         map = new HashMap<String, Integer>();        
-        model = table.getData();
+        model = table.getData();        
         //
         // the length of the time duration between right now and last midnight 
         //
@@ -317,24 +317,18 @@ public class CompletedTab extends Screen {
         ops.setLegend(LegendPosition.NONE);
         
         aops = AxisOptions.create();
-        aops.setTitle(consts.get("numAnalyses"));
-        /*tts = TextStyle.create();
-        tts.setColor("Purple");
-        aops.setTitleTextStyle(tts);*/
+        aops.setTitle(consts.get("numAnalyses"));        
         ops.setVAxisOptions(aops);
         
         aops = AxisOptions.create();
-        /*aops.setTitle(consts.get("days"));
-        tts = TextStyle.create();
-        tts.setColor("Purple");
-        aops.setTitleTextStyle(tts);*/
         fts = TextStyle.create();
         fts.setFontSize(10);
         aops.setTextStyle(fts);
-        ops.setHAxisOptions(aops);  
-                
+        
+        ops.setHAxisOptions(aops);                  
         ops.setWidth(625);
         ops.setHeight(215);
+        ops.setTitle(consts.get("timeSinceAnalysesCompleted"));
         return ops;      
     }
 }

@@ -53,14 +53,15 @@ public class ToDoScreen extends Screen {
     private AppButton            refreshButton, trackingButton;
     private TabPanel             tabPanel;
     private Tabs                 tab;
-    private ToBeVerifiedTab      toBeVerifiedTab;
     private LoggedInTab          loggedIntab;
     private InitiatedTab         initiatedTab;
     private CompletedTab         completedTab;
+    private ToBeVerifiedTab      toBeVerifiedTab;
+    private OtherTab             otherTab;
     private SampleTrackingScreen sampleTrackingScreen;
     
     private enum Tabs {
-        TO_BE_VERIFIED, LOGGED_IN, INITIATED, COMPLETED, OTHER, WORKSHEET, INSTRUMENT;
+        LOGGED_IN, INITIATED, COMPLETED, TO_BE_VERIFIED, OTHER, WORKSHEET, INSTRUMENT;
     };
     
     public ToDoScreen() throws Exception {
@@ -74,7 +75,7 @@ public class ToDoScreen extends Screen {
     }
 
     private void postConstructor() {
-        tab = Tabs.TO_BE_VERIFIED;
+        tab = Tabs.LOGGED_IN;
     
         initialize();
         setState(State.DEFAULT);
@@ -113,11 +114,6 @@ public class ToDoScreen extends Screen {
                 
                 try {
                     switch (tab) {
-                        case TO_BE_VERIFIED:
-                            id = toBeVerifiedTab.getSelectedSampleId();
-                            if (id != null)
-                                showTrackingScreen(id);
-                            break;
                         case LOGGED_IN:
                             id = loggedIntab.getSelectedSampleId();
                             if (id != null)
@@ -133,6 +129,16 @@ public class ToDoScreen extends Screen {
                             if (id != null)
                                 showTrackingScreen(id);
                             break;
+                        case TO_BE_VERIFIED:
+                            id = toBeVerifiedTab.getSelectedSampleId();
+                            if (id != null)
+                                showTrackingScreen(id);
+                            break;
+                        case OTHER:
+                            id = otherTab.getSelectedSampleId();
+                            if (id != null)
+                                showTrackingScreen(id);
+                            break;    
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -159,19 +165,6 @@ public class ToDoScreen extends Screen {
                 tab = Tabs.values()[i];
                 
                 drawTabs(false);                
-            }
-        });
-        
-        toBeVerifiedTab = new ToBeVerifiedTab(def, window);
-        addScreenHandler(toBeVerifiedTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                toBeVerifiedTab.reloadFromCache();
-                if (tab == Tabs.TO_BE_VERIFIED)
-                    drawTabs(false);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                toBeVerifiedTab.setState(event.getState());
             }
         });
         
@@ -212,6 +205,32 @@ public class ToDoScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 completedTab.setState(event.getState());
             }
+        }); 
+        
+        toBeVerifiedTab = new ToBeVerifiedTab(def, window);
+        addScreenHandler(toBeVerifiedTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                toBeVerifiedTab.reloadFromCache();
+                if (tab == Tabs.TO_BE_VERIFIED)
+                    drawTabs(false);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                toBeVerifiedTab.setState(event.getState());
+            }
+        });
+        
+        otherTab = new OtherTab(def, window);
+        addScreenHandler(otherTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                otherTab.reloadFromCache();
+                if (tab == Tabs.OTHER)
+                    drawTabs(false);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                otherTab.setState(event.getState());
+            }
         });        
     }
     
@@ -233,7 +252,7 @@ public class ToDoScreen extends Screen {
          * initialized when that happens because onAttach() is also called when
          * the screen gets attached to the browser for the first time
          */        
-        if (mySection == null)
+        if (window == null || mySection == null)
             return;
         val = mySection.getValue();
         /*
@@ -245,13 +264,11 @@ public class ToDoScreen extends Screen {
         if (reattachChart) {
             loggedIntab.reattachChart();                    
             initiatedTab.reattachChart();
-            completedTab.reattachChart();                                      
+            completedTab.reattachChart();        
+            toBeVerifiedTab.reattachChart();
         }
 
         switch (tab) {
-            case TO_BE_VERIFIED:
-                toBeVerifiedTab.draw();
-                break;
             case LOGGED_IN:
                 loggedIntab.draw(val);
                 break;
@@ -260,7 +277,13 @@ public class ToDoScreen extends Screen {
                 break;     
             case COMPLETED:
                 completedTab.draw(val);
-                break;                  
+                break;
+            case TO_BE_VERIFIED:
+                toBeVerifiedTab.draw(val);
+                break;
+            case OTHER:
+                otherTab.draw(val);
+                break;                        
         }
     }   
 
