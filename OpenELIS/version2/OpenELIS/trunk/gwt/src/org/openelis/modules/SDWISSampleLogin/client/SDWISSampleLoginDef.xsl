@@ -171,7 +171,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'facilityId')" />:
                 </text>
-                <textbox key="{meta:getSDWISFacilityId()}" width="75" max="12" tab="{meta:getSDWISSampleTypeId()},{meta:getSDWISStateLabId()}" field="String" />
+                <textbox key="{meta:getSDWISFacilityId()}" width="75" max="12" case="UPPER" tab="{meta:getSDWISSampleTypeId()},{meta:getSDWISStateLabId()}" field="String" />
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'sampleType')" />:
                 </text>
@@ -185,7 +185,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'samplePtId')" />:
                 </text>
-                <textbox key="{meta:getSDWISSamplePointId()}" width="75" max="11" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String" required="true"/>
+                <textbox key="{meta:getSDWISSamplePointId()}" width="75" max="11" case="UPPER" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String" required="true"/>
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'location')" />:
                 </text>
