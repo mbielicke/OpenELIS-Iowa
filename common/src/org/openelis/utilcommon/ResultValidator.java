@@ -141,7 +141,7 @@ public class ResultValidator implements RPC {
                 hasOnlyDictionary = false;
                 break;
         }
-        list = getUnits(unitId);
+        list = units.get(unitId);
         if (list == null) {
             list = new ArrayList<Item>();
             units.put(unitId, list);
@@ -222,8 +222,10 @@ public class ResultValidator implements RPC {
                                         if (item.significantDigits != null)
                                             value = SignificantFigures.format(value,
                                                                               item.significantDigits);
+                                        break;
                                     case INTEGER:
                                         value = String.valueOf(Math.round(Double.valueOf(value)));
+                                        break;
                                 }
                             }
                             if (compOp != null)
