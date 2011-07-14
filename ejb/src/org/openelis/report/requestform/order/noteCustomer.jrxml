@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="noteCustomer" pageWidth="490" pageHeight="12" columnWidth="490" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" isIgnorePagination="true">
+	<property name="ireport.scriptlethandling" value="2"/>
+	<property name="com.jasperassistant.designer.DataSource" value="elis"/>
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="ORDER_ID" class="java.lang.Integer"/>
+	<parameter name="ORDER_REFERENCE_TABLE_ID" class="java.lang.Integer" isForPrompting="false">
+		<defaultValueExpression><![CDATA[39]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[select n.text
+from note n
+where n.reference_id = $P{ORDER_ID} and
+      n.reference_table_id = $P{ORDER_REFERENCE_TABLE_ID} and
+      n.is_external = "Y"]]>
+	</queryString>
+	<field name="text" class="java.lang.String"/>
+	<detail>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="30" height="12"/>
+				<textElement>
+					<font fontName="Arial" size="8" isItalic="true" pdfFontName="Helvetica"/>
+				</textElement>
+				<text><![CDATA[Notes:]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true">
+				<reportElement positionType="Float" x="25" y="0" width="464" height="12"/>
+				<textElement>
+					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{text}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
