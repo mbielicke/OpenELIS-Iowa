@@ -65,8 +65,7 @@ public class CompletedTab extends Screen {
     private boolean                    loadedFromCache, reattachChart;
     private long                       day, twodays, threedays, hour;
     private String                     loadBySection;
-    private ArrayList<String>          ranges;      
-    private Date                       midNight;
+    private ArrayList<String>          ranges;          
     private ArrayList<AnalysisCacheVO> fullList;
     private TableWidget                table;
     private VerticalPanel              completedPanel; 
@@ -110,16 +109,11 @@ public class CompletedTab extends Screen {
         loadBySection = "N";    
         
         ranges = new ArrayList<String>();
-        ranges.add("Today");
-        ranges.add("Yesterday");
-        ranges.add("2 days ago");
-        ranges.add("3 days ago");
-        ranges.add("> 3 days ago");
-        
-        midNight = new Date();
-        midNight.setHours(0);
-        midNight.setMinutes(0);
-        midNight.setSeconds(0);
+        ranges.add(consts.get("today"));
+        ranges.add(consts.get("yesterday"));
+        ranges.add(consts.get("twoDays"));
+        ranges.add(consts.get("threeDays"));
+        ranges.add(consts.get("moreThanThreeDays"));
         
         hour = 3600000;
         day = 24 * hour;
@@ -176,7 +170,7 @@ public class CompletedTab extends Screen {
         reattachChart = true;
     }
     
-    public Integer getSelectedSampleId() {
+    public Integer getSelectedId() {
         TableDataRow row;
         AnalysisCacheVO data; 
         
@@ -206,12 +200,18 @@ public class CompletedTab extends Screen {
         Integer val;
         ArrayList<TableDataRow> model;
         Datetime now, cmpd;
+        Date midNight;
         AnalysisCacheVO data;
         HashMap<String, Integer> map;
         
         now = Datetime.getInstance();
         map = new HashMap<String, Integer>();        
         model = table.getData();        
+        
+        midNight = new Date();
+        midNight.setHours(0);
+        midNight.setMinutes(0);
+        midNight.setSeconds(0);
         //
         // the length of the time duration between right now and last midnight 
         //

@@ -66,7 +66,6 @@ public class LoggedInTab extends Screen {
     private long                       day, twodays, threedays,sevendays, tendays;
     private String                     loadBySection;
     private ArrayList<String>          ranges;         
-    private Date                       midNight;
     private ArrayList<AnalysisCacheVO> fullList;
     private TableWidget                table;
     private VerticalPanel              loggedInPanel; 
@@ -109,18 +108,13 @@ public class LoggedInTab extends Screen {
         loadBySection = "N";
         
         ranges = new ArrayList<String>();
-        ranges.add("Today");
-        ranges.add("Yesterday");
-        ranges.add("2 days ago");
-        ranges.add("3 days ago");
-        ranges.add("4 - 7 days ago");
-        ranges.add("8 - 10 days ago");
-        ranges.add("> 10 days ago");
-        
-        midNight = new Date();
-        midNight.setHours(0);
-        midNight.setMinutes(0);
-        midNight.setSeconds(0);
+        ranges.add(consts.get("today"));
+        ranges.add(consts.get("yesterday"));
+        ranges.add(consts.get("twoDays"));
+        ranges.add(consts.get("threeDays"));
+        ranges.add(consts.get("fourToSevenDays"));
+        ranges.add(consts.get("eightToTenDays"));
+        ranges.add(consts.get("moreThenTenDays"));      
         
         day = 86400000;
         twodays = 2 * day; 
@@ -196,7 +190,7 @@ public class LoggedInTab extends Screen {
         reattachChart = true;
     }
     
-    public Integer getSelectedSampleId() {
+    public Integer getSelectedId() {
         TableDataRow row;
         AnalysisCacheVO data; 
         
@@ -225,12 +219,18 @@ public class LoggedInTab extends Screen {
         Integer val;
         ArrayList<TableDataRow> model;
         Datetime now, avd;
+        Date midNight;
         AnalysisCacheVO data;
         HashMap<String, Integer> map;
         
         now = Datetime.getInstance();
         map = new HashMap<String, Integer>();        
         model = table.getData();        
+        
+        midNight = new Date();
+        midNight.setHours(0);
+        midNight.setMinutes(0);
+        midNight.setSeconds(0);
         //
         // the length of the time duration between right now and last midnight 
         //
@@ -344,7 +344,7 @@ public class LoggedInTab extends Screen {
         TextStyle fts;        
         
         ops = ColumnChart.createOptions(); 
-        ops.setLegend(LegendPosition.NONE);
+        ops.setLegend(LegendPosition.NONE);        
         
         aops = AxisOptions.create();
         aops.setTitle(consts.get("numAnalyses"));

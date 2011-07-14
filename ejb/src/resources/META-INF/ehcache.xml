@@ -70,9 +70,10 @@ Predefined caches.  Add your cache configuration settings here.
 <cache name="user" maxElementsInMemory="200" timeToLiveSeconds="36000" />
 <cache name="userperm" maxElementsInMemory="200" timeToLiveSeconds="36000" />
 <cache name="session" maxElementsInMemory="200" timeToLiveSeconds="36000" />
-<cache name="loggedIn" maxElementsInMemory="3000" timeToLiveSeconds="86400" />
-<cache name="initiated" maxElementsInMemory="3000" timeToLiveSeconds="86400" />
-<cache name="completed" maxElementsInMemory="3000" timeToLiveSeconds="86400" />
-<cache name="toBeVerified" maxElementsInMemory="3000" timeToLiveSeconds="86400" />
-<cache name="other" maxElementsInMemory="3000" timeToLiveSeconds="86400" />
+<cache name="loggedIn" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
+<cache name="initiated" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
+<cache name="completed" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
+<cache name="released" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
+<cache name="toBeVerified" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
+<cache name="other" maxElementsInMemory="3000" overflowToDisk = "true" timeToLiveSeconds="86400" />
 </ehcache>

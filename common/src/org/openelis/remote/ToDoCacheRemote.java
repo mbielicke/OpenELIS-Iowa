@@ -31,12 +31,15 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.SampleCacheVO;
+import org.openelis.domain.WorksheetCacheVO;
 
 @Remote
 public interface ToDoCacheRemote {
-    public ArrayList<SampleCacheVO> getToBeVerified() throws Exception;    
     public ArrayList<AnalysisCacheVO> getLoggedIn() throws Exception;    
     public ArrayList<AnalysisCacheVO> getInitiated() throws Exception;
     public ArrayList<AnalysisCacheVO> getCompleted() throws Exception;
+    public ArrayList<AnalysisCacheVO> getReleased() throws Exception;
+    public ArrayList<SampleCacheVO> getToBeVerified() throws Exception;    
     public ArrayList<AnalysisCacheVO> getOther() throws Exception;
+    public ArrayList<WorksheetCacheVO> getWorksheet() throws Exception;
 }

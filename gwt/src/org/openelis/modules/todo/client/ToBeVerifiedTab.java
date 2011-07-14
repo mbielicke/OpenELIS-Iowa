@@ -30,11 +30,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
-import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.SampleCacheVO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -67,7 +64,6 @@ public class ToBeVerifiedTab extends Screen {
     private long                       day, twodays, threedays,sevendays, tendays;    
     private String                     loadBySection;
     private ArrayList<String>          ranges;         
-    private Date                       midNight;
     private ArrayList<SampleCacheVO>   fullList;
     private TableWidget                table;
     private VerticalPanel              toBeVerifiedPanel; 
@@ -110,18 +106,13 @@ public class ToBeVerifiedTab extends Screen {
         loadBySection = "N";
         
         ranges = new ArrayList<String>();
-        ranges.add("Today");
-        ranges.add("Yesterday");
-        ranges.add("2 days ago");
-        ranges.add("3 days ago");
-        ranges.add("4 - 7 days ago");
-        ranges.add("8 - 10 days ago");
-        ranges.add("> 10 days ago");
-        
-        midNight = new Date();
-        midNight.setHours(0);
-        midNight.setMinutes(0);
-        midNight.setSeconds(0);
+        ranges.add(consts.get("today"));
+        ranges.add(consts.get("yesterday"));
+        ranges.add(consts.get("twoDays"));
+        ranges.add(consts.get("threeDays"));
+        ranges.add(consts.get("fourToSevenDays"));
+        ranges.add(consts.get("eightToTenDays"));
+        ranges.add(consts.get("moreThenTenDays"));
         
         day = 86400000;
         twodays = 2 * day; 
@@ -184,7 +175,7 @@ public class ToBeVerifiedTab extends Screen {
         reattachChart = true;
     }
     
-    public Integer getSelectedSampleId() {
+    public Integer getSelectedId() {
         TableDataRow row;
         SampleCacheVO data; 
         
@@ -213,12 +204,18 @@ public class ToBeVerifiedTab extends Screen {
         Integer val;
         ArrayList<TableDataRow> model;
         Datetime now, srd;
+        Date midNight;
         SampleCacheVO data;
         HashMap<String, Integer> map;
         
         now = Datetime.getInstance();
         map = new HashMap<String, Integer>();        
-        model = table.getData();        
+        model = table.getData();    
+        
+        midNight = new Date();
+        midNight.setHours(0);
+        midNight.setMinutes(0);
+        midNight.setSeconds(0);
         //
         // the length of the time duration between right now and last midnight 
         //
@@ -335,7 +332,7 @@ public class ToBeVerifiedTab extends Screen {
         ops.setLegend(LegendPosition.NONE);                      
         
         aops = AxisOptions.create();
-        aops.setTitle("No of Samples");
+        aops.setTitle(consts.get("numSamples"));
         ops.setVAxisOptions(aops);
         
         aops = AxisOptions.create();

@@ -35,6 +35,7 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.manager.SampleManager;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
+import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -48,20 +49,22 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 public class ToDoScreen extends Screen {
 
-    private ToDoScreen           screen;
-    private CheckBox             mySection;
-    private AppButton            refreshButton, trackingButton;
-    private TabPanel             tabPanel;
-    private Tabs                 tab;
-    private LoggedInTab          loggedIntab;
-    private InitiatedTab         initiatedTab;
-    private CompletedTab         completedTab;
-    private ToBeVerifiedTab      toBeVerifiedTab;
-    private OtherTab             otherTab;
-    private SampleTrackingScreen sampleTrackingScreen;
+    private ToDoScreen                screen;
+    private CheckBox                  mySection;
+    private AppButton                 refreshButton, trackingButton;
+    private TabPanel                  tabPanel;
+    private Tabs                      tab;
+    private LoggedInTab               loggedIntab;
+    private InitiatedTab              initiatedTab;
+    private CompletedTab              completedTab;
+    private ReleasedTab               releasedTab;
+    private ToBeVerifiedTab           toBeVerifiedTab;
+    private OtherTab                  otherTab;
+    private WorksheetTab              worksheetTab;
+    private SampleTrackingScreen      sampleTrackingScreen;
     
     private enum Tabs {
-        LOGGED_IN, INITIATED, COMPLETED, TO_BE_VERIFIED, OTHER, WORKSHEET, INSTRUMENT;
+        LOGGED_IN, INITIATED, COMPLETED, RELEASED, TO_BE_VERIFIED, OTHER, WORKSHEET, INSTRUMENT;
     };
     
     public ToDoScreen() throws Exception {
@@ -115,29 +118,39 @@ public class ToDoScreen extends Screen {
                 try {
                     switch (tab) {
                         case LOGGED_IN:
-                            id = loggedIntab.getSelectedSampleId();
+                            id = loggedIntab.getSelectedId();
                             if (id != null)
                                 showTrackingScreen(id);
                             break;
                         case INITIATED:
-                            id = initiatedTab.getSelectedSampleId();
+                            id = initiatedTab.getSelectedId();
                             if (id != null)
                                 showTrackingScreen(id);
                             break;
                         case COMPLETED:
-                            id = completedTab.getSelectedSampleId();
+                            id = completedTab.getSelectedId();
                             if (id != null)
                                 showTrackingScreen(id);
                             break;
+                        case RELEASED:
+                            id = releasedTab.getSelectedId();
+                            if (id != null)
+                                showTrackingScreen(id);
+                            break;    
                         case TO_BE_VERIFIED:
-                            id = toBeVerifiedTab.getSelectedSampleId();
+                            id = toBeVerifiedTab.getSelectedId();
                             if (id != null)
                                 showTrackingScreen(id);
                             break;
                         case OTHER:
-                            id = otherTab.getSelectedSampleId();
+                            id = otherTab.getSelectedId();
                             if (id != null)
                                 showTrackingScreen(id);
+                            break;    
+                        case WORKSHEET:
+                            id = worksheetTab.getSelectedId();
+                            if (id != null)
+                                showCompletionScreen(id);
                             break;    
                     }
                 } catch (Exception e) {
@@ -207,6 +220,19 @@ public class ToDoScreen extends Screen {
             }
         }); 
         
+        releasedTab = new ReleasedTab(def, window);
+        addScreenHandler(releasedTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                releasedTab.reloadFromCache();
+                if (tab == Tabs.RELEASED)
+                    drawTabs(false);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                releasedTab.setState(event.getState());
+            }
+        });
+        
         toBeVerifiedTab = new ToBeVerifiedTab(def, window);
         addScreenHandler(toBeVerifiedTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -231,7 +257,20 @@ public class ToDoScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 otherTab.setState(event.getState());
             }
-        });        
+        });     
+        
+        worksheetTab = new WorksheetTab(def, window);
+        addScreenHandler(worksheetTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                worksheetTab.reloadFromCache();
+                if (tab == Tabs.WORKSHEET)
+                    drawTabs(false);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                worksheetTab.setState(event.getState());
+            }
+        });  
     }
     
     protected void onAttach() {
@@ -278,29 +317,44 @@ public class ToDoScreen extends Screen {
             case COMPLETED:
                 completedTab.draw(val);
                 break;
+            case RELEASED:
+                releasedTab.draw(val);
+                break;    
             case TO_BE_VERIFIED:
                 toBeVerifiedTab.draw(val);
                 break;
             case OTHER:
                 otherTab.draw(val);
-                break;                        
+                break;      
+            case WORKSHEET:
+                worksheetTab.draw(val);
+                break;    
         }
     }   
 
-    private void showTrackingScreen(Integer id) throws Exception {       
+    private void showTrackingScreen(Integer id) throws Exception {
         SampleManager man;
         ScreenWindow modal;
-        
-        man = SampleManager.fetchById(id); 
-        if (man != null) {
-            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(consts.get("sampleTracking"));
-            if (sampleTrackingScreen == null)
-                sampleTrackingScreen = new SampleTrackingScreen(modal);
 
-            modal.setContent(sampleTrackingScreen);
-            sampleTrackingScreen.loadSample(man);
-            window.clearStatus();
-        }
+        man = SampleManager.fetchById(id);
+        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+        modal.setName(consts.get("sampleTracking"));
+        if (sampleTrackingScreen == null)
+            sampleTrackingScreen = new SampleTrackingScreen(modal);
+
+        modal.setContent(sampleTrackingScreen);
+        sampleTrackingScreen.loadSample(man);
+        window.clearStatus();
+    }
+    
+    private void showCompletionScreen(Integer id) throws Exception {
+        ScreenWindow modal;    
+        WorksheetCompletionScreen wcScreen;
+        
+        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+        modal.setName(consts.get("worksheetCompletion"));
+        wcScreen = new WorksheetCompletionScreen(id);
+        modal.setContent(wcScreen);
+        window.clearStatus();
     }
 }

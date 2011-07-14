@@ -28,12 +28,9 @@ package org.openelis.modules.todo.client;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
-import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisCacheVO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -42,7 +39,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -53,26 +49,25 @@ import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 
 import com.google.gwt.user.client.Window;
 
-public class OtherTab extends Screen {
+public class ReleasedTab extends Screen {
             
     private boolean                    loadedFromCache;
-    private String                     loadBySection;
+    private String                     loadBySection;  
     private ArrayList<AnalysisCacheVO> fullList;
     private TableWidget                table;
     
-    public OtherTab(ScreenDefInt def, ScreenWindowInt window) {
+    public ReleasedTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
         service = new ScreenService("controller?service=org.openelis.modules.todo.server.ToDoService");        
         initialize();        
-        initializeDropdowns();        
     }
     
     private void initialize() {                
-        table = (TableWidget)def.getWidget("otherTable");
+        table = (TableWidget)def.getWidget("releasedTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                table.load(getTableModel());                
+                table.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -84,30 +79,9 @@ public class OtherTab extends Screen {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {                                 
                 event.cancel();
             }            
-        });                  
-        
+        });
+           
         loadBySection = "N";
-    }
-    
-    private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
-        TableDataRow row;
-        List<DictionaryDO> list;
-        Dropdown<Integer> status;
-        
-        model = new ArrayList<TableDataRow>();
-        try {
-            list = CategoryCache.getBySystemName("analysis_status");
-            for (DictionaryDO data : list) {
-                row = new TableDataRow(data.getId(), data.getEntry());
-                model.add(row);
-            }            
-            status = ((Dropdown<Integer>)table.getColumnWidget("status"));
-            status.setModel(model);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
     
     private ArrayList<TableDataRow> getTableModel() {
@@ -125,7 +99,7 @@ public class OtherTab extends Screen {
             perm = UserCache.getPermission(); 
             if (!loadedFromCache) {
                 window.setBusy(consts.get("fetching"));
-                fullList = service.callList("getOther");
+                fullList = service.callList("getReleased");
                 window.clearStatus();
             }
             sectOnly = "Y".equals(loadBySection);
@@ -133,13 +107,12 @@ public class OtherTab extends Screen {
                 sectName = data.getSectionName();                
                 if (sectOnly && perm.getSection(sectName) == null)
                     continue;                
-                row = new TableDataRow(11);                
+                row = new TableDataRow(10);                
                 row.cells.get(0).setValue(data.getSampleAccessionNumber());
                 row.cells.get(1).setValue(data.getSampleDomain());
                 row.cells.get(2).setValue(sectName);
-                row.cells.get(3).setValue(data.getStatusId());
-                row.cells.get(4).setValue(data.getTestName());
-                row.cells.get(5).setValue(data.getTestMethodName());
+                row.cells.get(3).setValue(data.getTestName());
+                row.cells.get(4).setValue(data.getTestMethodName());
                 
                 scd = data.getSampleCollectionDate();
                 sct = data.getSampleCollectionTime();
@@ -153,11 +126,11 @@ public class OtherTab extends Screen {
                         temp.setMinutes(sct.getDate().getMinutes());
                     }
 
-                    row.cells.get(6).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE,temp));
+                    row.cells.get(5).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE,temp));
                 }
-                row.cells.get(7).setValue(data.getSampleReceivedDate());                
-                row.cells.get(8).setValue(data.getQaeventResultOverride());
-                row.cells.get(10).setValue(data.getSampleReportToName());
+                row.cells.get(6).setValue(data.getReleasedDate());                
+                row.cells.get(7).setValue(data.getQaeventResultOverride());
+                row.cells.get(9).setValue(data.getSampleReportToName());
                 row.data = data;
                 model.add(row);
             }

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.SampleCacheVO;
+import org.openelis.domain.WorksheetCacheVO;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.ToDoCacheRemote;
 
@@ -46,12 +47,20 @@ public class ToDoService {
         return remote().getCompleted();
     }
     
+    public ArrayList<AnalysisCacheVO> getReleased() throws Exception {
+        return remote().getReleased();
+    }
+    
     public ArrayList<SampleCacheVO> getToBeVerified() throws Exception {
         return remote().getToBeVerified();
     }
     
     public ArrayList<AnalysisCacheVO> getOther() throws Exception {
         return remote().getOther();
+    }
+    
+    public ArrayList<WorksheetCacheVO> getWorksheet() throws Exception {
+        return remote().getWorksheet();
     }
     
     private ToDoCacheRemote remote() {

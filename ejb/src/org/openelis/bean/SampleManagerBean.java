@@ -323,15 +323,18 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
              * and are used to update the various caches used for the ToDo lists   
              */
             for (int i = 0; i < im.count(); i++ ) {
-                am = im.getAnalysisAt(i);
+                am = im.getAnalysisAt(i);                
                 for (int j = 0; j < am.count(); j++ ) {
                     ana = am.getAnalysisAt(j);
+                    if (!ana.isChanged())
+                        continue;
                     test = am.getTestAt(j).getTest();
                     avo = new AnalysisCacheVO();
                     avo.setId(ana.getId());
                     avo.setStatusId(ana.getStatusId());
                     avo.setStartedDate(ana.getStartedDate());
                     avo.setCompletedDate(ana.getCompletedDate());
+                    avo.setReleasedDate(ana.getReleasedDate());
                     avo.setTestName(test.getName());
                     avo.setTestTimeHolding(test.getTimeHolding());
                     avo.setTestTimeTaAverage(test.getTimeTaAverage());

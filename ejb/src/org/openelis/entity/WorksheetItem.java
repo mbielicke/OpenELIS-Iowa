@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -48,6 +49,10 @@ public class WorksheetItem implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_item_id")
     private Collection<WorksheetAnalysis> worksheetAnalysis;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "worksheet_id", insertable = false, updatable = false)
+    private Worksheet                     worksheet;
 
     @Transient
     private WorksheetItem                 original;
@@ -85,6 +90,14 @@ public class WorksheetItem implements Auditable, Cloneable {
 
     public void setWorksheetAnalysis(Collection<WorksheetAnalysis> worksheetAnalysis) {
         this.worksheetAnalysis = worksheetAnalysis;
+    }
+
+    public Worksheet getWorksheet() {
+        return worksheet;
+    }
+
+    public void setWorksheet(Worksheet worksheet) {
+        this.worksheet = worksheet;
     }
 
     public void setClone() {

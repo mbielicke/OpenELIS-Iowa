@@ -30,12 +30,15 @@ import java.util.ArrayList;
 import javax.ejb.Local;
 
 import org.openelis.domain.WorksheetAnalysisDO;
+import org.openelis.domain.WorksheetCacheVO;
 
 @Local
 public interface WorksheetAnalysisLocal {
     public ArrayList<WorksheetAnalysisDO> fetchByWorksheetItemId(Integer id) throws Exception;
 
     public WorksheetAnalysisDO fetchById(Integer testId) throws Exception;
+    
+    public ArrayList<WorksheetCacheVO> fetchByWorking() throws Exception;
 
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception;
 

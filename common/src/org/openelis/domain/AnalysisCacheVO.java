@@ -37,16 +37,19 @@ public class AnalysisCacheVO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, statusId, sectionId, sampleId, sampleAccessionNumber, testTimeHolding,testTimeTaAverage;                              
-    protected String          sampleDomain, sampleReportToName, testName, testMethodName, sectionName, qaeventResultOverride;
-    protected Datetime        availableDate, startedDate, completedDate, sampleReceivedDate, sampleCollectionDate,
+    protected Integer         id, statusId, sectionId, sampleId, sampleAccessionNumber,
+                              testTimeHolding,testTimeTaAverage;                              
+    protected String          sampleDomain, sampleReportToName, testName, testMethodName,
+                              sectionName, qaeventResultOverride;
+    protected Datetime        availableDate, startedDate, completedDate, releasedDate,
+                              sampleReceivedDate, sampleCollectionDate,
                               sampleCollectionTime;
     
     public AnalysisCacheVO() {        
     }
     
     public AnalysisCacheVO(Integer id, Integer statusId, Integer sectionId,Date availableDate,
-                           Date startedDate, Date completedDate, Integer sampleId,
+                           Date startedDate, Date completedDate, Date releasedDate, Integer sampleId,
                            String sampleDomain, Integer sampleAccessionNumber, Date sampleReceivedDate,
                            Date sampleCollectionDate, Date sampleCollectionTime, String testName,
                            Integer testTimeHolding, Integer testTimeTaAverage, String testMethodName,
@@ -57,6 +60,7 @@ public class AnalysisCacheVO extends DataObject {
         setAvailableDate(DataBaseUtil.toYM(availableDate));
         setStartedDate(DataBaseUtil.toYM(startedDate));
         setCompletedDate(DataBaseUtil.toYM(completedDate));
+        setReleasedDate(DataBaseUtil.toYM(releasedDate));
         setSampleId(sampleId);
         setSampleDomain(sampleDomain);
         setSampleAccessionNumber(sampleAccessionNumber);
@@ -126,6 +130,14 @@ public class AnalysisCacheVO extends DataObject {
     
     public void setCompletedDate(Datetime completedDate) {
         this.completedDate = DataBaseUtil.toYM(completedDate);
+    }
+    
+    public Datetime getReleasedDate() {
+        return releasedDate;
+    }
+
+    public void setReleasedDate(Datetime releasedDate) {
+        this.releasedDate = DataBaseUtil.toYM(releasedDate);
     }
         
     public String getSampleDomain() {
