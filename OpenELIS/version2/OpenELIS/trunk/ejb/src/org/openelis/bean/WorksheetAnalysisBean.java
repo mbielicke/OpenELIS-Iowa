@@ -28,7 +28,9 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -38,12 +40,16 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.WorksheetAnalysisDO;
+import org.openelis.domain.WorksheetCacheVO;
 import org.openelis.entity.WorksheetAnalysis;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.meta.WorksheetCompletionMeta;
 
@@ -52,6 +58,25 @@ import org.openelis.meta.WorksheetCompletionMeta;
 @RolesAllowed("worksheet-select")
 public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
 
+    @EJB
+    private DictionaryLocal dictionary;
+    
+    @EJB 
+    private UserCacheLocal  userCache; 
+
+    private static Integer workingId;
+    
+    @PostConstruct
+    public void init() {
+        if (workingId == null) {
+            try {                
+                workingId = dictionary.fetchBySystemName("worksheet_working").getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
@@ -85,6 +110,23 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         }
         
         return data;
+    }
+    
+    public ArrayList<WorksheetCacheVO> fetchByWorking() throws Exception {
+        Query query;
+        List<WorksheetCacheVO> list;
+        SystemUserVO user;
+                
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetStatusId");
+        query.setParameter("statusId", workingId);
+        list = query.getResultList();          
+        
+        /*for (WorksheetCacheVO data : list) {            
+            user = userCache.getSystemUser(data.getSystemUserId());
+            if (user != null)
+                data.setSystemUserName(user.getLoginName());
+        }*/
+        return DataBaseUtil.toArrayList(list);
     }
     
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {

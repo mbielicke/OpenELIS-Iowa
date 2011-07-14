@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,8 +48,10 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SectionDO;
+import org.openelis.domain.WorksheetCacheVO;
 import org.openelis.entity.AnalysisQaevent;
 import org.openelis.entity.Sample;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.SampleOrganizationLocal;
@@ -71,7 +74,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
     private EntityManager manager;
 
     private Cache         loggedInCache, initiatedCache, completedCache, 
-                          toBeVerifiedCache,  otherCache;
+                          releasedCache, toBeVerifiedCache, otherCache;
     
     public ToDoCacheBean() {
         CacheManager cm;
@@ -80,6 +83,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         loggedInCache = cm.getCache("loggedIn");       
         initiatedCache = cm.getCache("initiated");
         completedCache = cm.getCache("completed");
+        releasedCache = cm.getCache("released");
         toBeVerifiedCache = cm.getCache("toBeVerified");
         otherCache = cm.getCache("other");
     }     
@@ -150,6 +154,25 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         return list;
     }
     
+    public ArrayList<AnalysisCacheVO> getReleased() throws Exception {
+        int size;
+        ArrayList<AnalysisCacheVO> list;        
+        List entryList;
+        
+        entryList = releasedCache.getKeysWithExpiryCheck();
+        size = entryList.size();
+        /*
+         * if either there are no entries in the cache or the alive entries are
+         * less than the total entries, the cache is reloaded from the database 
+         */
+        if (size == 0 || releasedCache.getSize() > size)             
+            list = reloadAnalysisCache(releasedCache, null);
+        else 
+            list = getAnalysisListFromCache(releasedCache);        
+        
+        return list;
+    }
+    
     public ArrayList<SampleCacheVO> getToBeVerified() throws Exception {
         int size;
         ArrayList<SampleCacheVO> list;        
@@ -192,6 +215,17 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         return list;
     }
     
+    public ArrayList<WorksheetCacheVO> getWorksheet() throws Exception {
+        ArrayList<WorksheetCacheVO> list;
+        try {
+        list = EJBFactory.getWorksheetAnalysis().fetchByWorking();
+        return list;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }                
+    }
+        
     public void update(SampleCacheVO data) {
         Integer id, statusId;
         String sname;
@@ -228,9 +262,11 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         }
     } 
     
-    public void update(AnalysisCacheVO data) {
+    public void update(AnalysisCacheVO data) {        
         Integer id, statusId;
         String sname;
+        Datetime rd;
+        Date mn;
 
         id = data.getId();
         statusId = data.getStatusId();
@@ -254,6 +290,8 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     initiatedCache.remove(id);
                 else if (completedCache.get(id) != null)
                     completedCache.remove(id);
+                else if (releasedCache.get(id) != null)
+                    releasedCache.remove(id);
                 else if (otherCache.get(id) != null)
                     otherCache.remove(id);
             } else if ("analysis_initiated".equals(sname)) {
@@ -263,6 +301,8 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     loggedInCache.remove(id);
                 else if (completedCache.get(id) != null)
                     completedCache.remove(id);
+                else if (releasedCache.get(id) != null)
+                    releasedCache.remove(id);
                 else if (otherCache.get(id) != null)
                     otherCache.remove(id);
             } else if ("analysis_completed".equals(sname)) {
@@ -272,10 +312,28 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     loggedInCache.remove(id);
                 else if (initiatedCache.get(id) != null)
                     initiatedCache.remove(id);
+                else if (releasedCache.get(id) != null)
+                    releasedCache.remove(id);
                 else if (otherCache.get(id) != null)
                     otherCache.remove(id);
             } else if ("analysis_released".equals(sname)) {
-                
+                rd = data.getReleasedDate();
+                mn = new Date();
+                mn.setHours(0);
+                mn.setMinutes(0);
+                mn.setSeconds(0);
+                if ((rd.getDate().getTime()) >= (mn.getTime() - 4*86400000)) {   
+                    getReleased();
+                    releasedCache.put(new Element(id, data));
+                    if (loggedInCache.get(id) != null)
+                        loggedInCache.remove(id);
+                    else if (initiatedCache.get(id) != null)
+                        initiatedCache.remove(id);
+                    else if (completedCache.get(id) != null)
+                        completedCache.remove(id);
+                    else if (otherCache.get(id) != null)
+                        otherCache.remove(id);
+                } 
             } else {
                 /*
                  * this is done so that if the analysis' status has changed to 
@@ -284,10 +342,12 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                  */
                 if (loggedInCache.get(id) != null)
                     loggedInCache.remove(id);
+                else if (initiatedCache.get(id) != null)
+                    initiatedCache.remove(id);
                 else if (completedCache.get(id) != null)
                     completedCache.remove(id);
-                else if (completedCache.get(id) != null)
-                    completedCache.remove(id);
+                else if (releasedCache.get(id) != null)
+                    releasedCache.remove(id);
                 
                 getOther();
                 otherCache.put(new Element(id, data));
@@ -313,13 +373,24 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
     private ArrayList<AnalysisCacheVO> reloadAnalysisCache(Cache cache, Integer statusId) throws Exception {
         Query query;
         ArrayList<AnalysisCacheVO> list;        
-        List queryList;
+        List queryList;                
+        //Datetime d;
+        Date rd,mn;
         
         if (statusId != null) {
             query = manager.createNamedQuery("Analysis.FetchForCachingByStatusId");
             query.setParameter("statusId", statusId);
+        } else if (cache == releasedCache) {
+            //d = Datetime.getInstance(Datetime.YEAR, Datetime.MONTH);
+            mn = new Date();
+            mn.setHours(0);
+            mn.setMinutes(0);
+            mn.setSeconds(0);
+            rd = new Date(mn.getTime() - 4*86400000);
+            query = manager.createNamedQuery("Analysis.FetchReleasedForCaching");
+            query.setParameter("releasedDate", rd);
         } else {
-            query = manager.createNamedQuery("Analysis.FetchForCachingOther");
+            query = manager.createNamedQuery("Analysis.FetchOtherForCaching");
         }
         queryList = query.getResultList();
         list = createAnalysisCacheEntries(cache, queryList);

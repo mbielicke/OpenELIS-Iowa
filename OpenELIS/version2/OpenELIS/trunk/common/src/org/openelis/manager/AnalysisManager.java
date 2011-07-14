@@ -735,7 +735,7 @@ public class AnalysisManager implements RPC {
 
         oldTestName = data.getTestName();
         oldMethodName = data.getMethodName();
-
+        
         data.setTestId(test.getId());
         data.setTestName(test.getName());
         data.setMethodId(test.getMethodId());

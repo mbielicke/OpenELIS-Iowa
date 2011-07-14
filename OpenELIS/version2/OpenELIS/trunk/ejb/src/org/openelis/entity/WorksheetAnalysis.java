@@ -9,10 +9,13 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -29,7 +32,11 @@ import org.openelis.utils.Auditable;
                         "from WorksheetAnalysis wa where wa.worksheetItemId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchById",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate) "+
-                        "from WorksheetAnalysis wa where wa.id = :id")})
+                        "from WorksheetAnalysis wa where wa.id = :id"),
+    @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetStatusId",
+                query = "select distinct new org.openelis.domain.WorksheetCacheVO(w.id, w.createdDate, w.systemUserId, w.statusId, t.name, m.name, s.name)"
+                      + " from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Analysis a, Test t, Method m, Section s where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and w.statusId = :statusId"
+                      +	" and wa.analysisId = a.id and a.testId = t.id and t.methodId = m.id and a.sectionId = s.id")})
 @Entity
 @Table(name = "worksheet_analysis")
 @EntityListeners( {AuditUtil.class})
@@ -60,6 +67,14 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
 
     @Column(name = "qc_started_date")
     private Date              qcStartedDate;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "worksheet_item_id", insertable = false, updatable = false)
+    private WorksheetItem     worksheetItem;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
+    private Analysis          analysis;
 
     @Transient
     private WorksheetAnalysis original;
@@ -133,6 +148,22 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
     public void setQcStartedDate(Datetime qcStartedDate) {
         if (DataBaseUtil.isDifferentYM(qcStartedDate, this.qcStartedDate))
             this.qcStartedDate = DataBaseUtil.toDate(qcStartedDate);
+    }
+
+    public WorksheetItem getWorksheetItem() {
+        return worksheetItem;
+    }
+
+    public void setWorksheetItem(WorksheetItem worksheetItem) {
+        this.worksheetItem = worksheetItem;
+    }
+
+    public Analysis getAnalysis() {
+        return analysis;
+    }
+
+    public void setAnalysis(Analysis analysis) {
+        this.analysis = analysis;
     }
 
     public void setClone() {

@@ -42,6 +42,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InstrumentLogDO;
+import org.openelis.domain.WorksheetCacheVO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.InstrumentLog;
 import org.openelis.entity.Worksheet;
