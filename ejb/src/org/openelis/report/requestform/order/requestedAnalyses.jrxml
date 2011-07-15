@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="requestedAnalyses" columnCount="2" printOrder="Horizontal" pageWidth="490" pageHeight="40" columnWidth="245" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.scriptlethandling" value="2"/>
 	<property name="com.jasperassistant.designer.DataSource" value="elis"/>
-	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.zoom" value="6.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<reportFont name="times" isDefault="true" fontName="Times New Roman" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
@@ -40,7 +40,7 @@ order by 1]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{REPORT_COUNT}+". "]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement key="analysis" x="15" y="0" width="225" height="10"/>
+				<reportElement key="analysis" x="20" y="0" width="225" height="10"/>
 				<box padding="0">
 					<pen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
@@ -50,7 +50,7 @@ order by 1]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{reporting_description}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement key="analysis.line" mode="Transparent" x="15" y="10" width="225" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
+				<reportElement key="analysis.line" mode="Transparent" x="20" y="10" width="225" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>

@@ -60,11 +60,11 @@ ORDER BY aux_data.sort_order]]>
 	<detail>
 		<band height="24" splitType="Stretch">
 			<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true">
-				<reportElement x="0" y="0" width="116" height="12"/>
+				<reportElement x="0" y="0" width="111" height="12"/>
 				<textElement textAlignment="Right" markup="styled">
 					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()+": "]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()+":"]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
 				<reportElement x="116" y="0" width="374" height="12" isRemoveLineWhenBlank="true"/>
@@ -80,9 +80,9 @@ ORDER BY aux_data.sort_order]]>
 				</graphicElement>
 			</line>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement x="116" y="12" width="374" height="8" forecolor="#C0C0C0"/>
+				<reportElement x="116" y="12" width="374" height="9" forecolor="#999999"/>
 				<textElement markup="styled">
-					<font fontName="Arial" size="6" pdfFontName="Helvetica"/>
+					<font fontName="Arial" size="7" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{field_description}]]></textFieldExpression>
 			</textField>
