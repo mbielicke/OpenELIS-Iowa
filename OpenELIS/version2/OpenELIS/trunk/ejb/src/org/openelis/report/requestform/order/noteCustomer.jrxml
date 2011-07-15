@@ -22,12 +22,12 @@ where n.reference_id = $P{ORDER_ID} and
 			<staticText>
 				<reportElement x="0" y="0" width="30" height="12"/>
 				<textElement>
-					<font fontName="Arial" size="8" isItalic="true" pdfFontName="Helvetica"/>
+					<font fontName="Arial" size="8" isBold="true" isItalic="false" pdfFontName="Helvetica-Bold"/>
 				</textElement>
 				<text><![CDATA[Notes:]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true">
-				<reportElement positionType="Float" x="25" y="0" width="464" height="12"/>
+				<reportElement positionType="Float" x="30" y="0" width="459" height="12"/>
 				<textElement>
 					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
 				</textElement>
