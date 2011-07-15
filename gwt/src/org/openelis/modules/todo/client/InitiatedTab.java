@@ -221,6 +221,7 @@ public class InitiatedTab extends Screen {
                 row.data = data;
                 model.add(row);
             }
+            Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
         } catch (NotFoundException e) {
             window.setDone(consts.get("noRecordsFound"));
         } catch (Exception e) {
@@ -228,7 +229,6 @@ public class InitiatedTab extends Screen {
             e.printStackTrace();
             window.clearStatus();
         }
-        Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
         return model;
     }
     

@@ -73,6 +73,7 @@ import org.openelis.modules.report.client.SampleLoginLabelReportScreen;
 import org.openelis.modules.report.client.SDWISUnloadReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.modules.report.client.TurnaroundReportScreen;
+import org.openelis.modules.report.client.RequestformReportScreen;
 import org.openelis.modules.report.client.VerificationReportScreen;
 import org.openelis.modules.report.client.VolumeReportScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
@@ -1202,6 +1203,26 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new VerificationReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addClickHandler("orderRequestForm", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new RequestformReportScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

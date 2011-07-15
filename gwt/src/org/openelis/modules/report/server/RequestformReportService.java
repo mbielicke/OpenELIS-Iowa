@@ -23,16 +23,36 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.report.client;
+package org.openelis.modules.report.server;
 
-import org.openelis.gwt.screen.ScreenDef;
-import org.openelis.gwt.services.ScreenService;
+import java.util.ArrayList;
 
-public class RequestformReportScreen extends ReportScreen {
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.persistence.EJBFactory;
+import org.openelis.remote.RequestformReportRemote;
+import org.openelis.report.Prompt;
+import org.openelis.util.SessionManager;
 
-    public RequestformReportScreen() throws Exception { 
-        drawScreen(new ScreenDef());        
-        setName(consts.get("orderRequestForm"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.RequestformReportService");
+public class RequestformReportService {    
+    
+    public ArrayList<Prompt> getPrompts() throws Exception{
+        return remote().getPrompts();      
     }
+    
+    public ReportStatus runReport(Query query) throws Exception { 
+        ReportStatus st;
+        
+        st = remote().runReport(query.getFields());
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            SessionManager.getSession().setAttribute(st.getMessage(), st);
+
+        return st;
+    }
+    
+    private RequestformReportRemote remote() {
+        return (RequestformReportRemote)EJBFactory.lookup("openelis/RequestformReportBean/remote");
+    } 
 }
+
+
