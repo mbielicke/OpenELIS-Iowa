@@ -32,6 +32,7 @@ import java.util.HashMap;
 
 import org.openelis.domain.SampleCacheVO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -158,6 +159,8 @@ public class ToBeVerifiedTab extends Screen {
                 row.data = data;
                 model.add(row);
             }
+        } catch (NotFoundException e) {
+            window.setDone(consts.get("noRecordsFound"));
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();

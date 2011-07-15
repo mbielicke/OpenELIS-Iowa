@@ -35,6 +35,7 @@ import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
@@ -161,6 +162,8 @@ public class OtherTab extends Screen {
                 row.data = data;
                 model.add(row);
             }
+        } catch (NotFoundException e) {
+            window.setDone(consts.get("noRecordsFound"));
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
