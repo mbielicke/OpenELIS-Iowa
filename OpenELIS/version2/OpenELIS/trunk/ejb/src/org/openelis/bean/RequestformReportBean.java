@@ -23,11 +23,15 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OptionListItem;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.OrderLocal;
 import org.openelis.local.SessionCacheLocal;
+import org.openelis.remote.RequestformReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
@@ -35,13 +39,16 @@ import org.openelis.utils.ReportUtil;
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-public class RequestformReportBean {
+public class RequestformReportBean implements RequestformReportRemote {
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext    ctx;
 
     @EJB
     private SessionCacheLocal session;
+
+    @EJB
+    private OrderLocal        order;
 
     /*
      * Returns the prompt for a single re-print
@@ -85,6 +92,7 @@ public class RequestformReportBean {
         JasperPrint jprint;
         JRExporter jexport;
         String orderId, printer, dir, printstat;
+        OrderViewDO data;
 
         /*
          * push status into session so we can query it while the report is
@@ -101,9 +109,20 @@ public class RequestformReportBean {
         orderId = ReportUtil.getSingleParameter(param, "ORDERID");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
-		if (DataBaseUtil.isEmpty(orderId) || DataBaseUtil.isEmpty(printer))
+		if (DataBaseUtil.isEmpty(orderId) || DataBaseUtil.isEmpty(printer)) {
 			throw new InconsistencyException("You must specify the order # and printer for this report");
-
+		} else {
+		    try {
+		        data = order.fetchById(Integer.parseInt(orderId));
+		        if (!"S".equals(data.getType()))
+		            throw new InconsistencyException("You must specify a valid Send-out order #");
+		    } catch (NumberFormatException  e) {
+                throw new InconsistencyException("You must specify a valid Send-out order #");
+            } catch (NotFoundException  e) {
+		        throw new InconsistencyException("You must specify a valid Send-out order #");
+            }
+		}
+		
         /*
          * start the report
          */

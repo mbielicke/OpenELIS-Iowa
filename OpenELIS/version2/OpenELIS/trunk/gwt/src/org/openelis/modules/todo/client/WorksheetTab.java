@@ -114,14 +114,14 @@ public class WorksheetTab extends Screen {
                 row.data = data;
                 model.add(row);
             }
+            Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
         } catch (NotFoundException e) {
-            window.setDone(consts.get("noRecordsFound"));
+            window.clearStatus();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
             window.clearStatus();
-        }
-        Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
+        }        
         return model;
     }
     

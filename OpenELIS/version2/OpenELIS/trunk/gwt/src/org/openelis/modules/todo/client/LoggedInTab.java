@@ -174,14 +174,14 @@ public class LoggedInTab extends Screen {
                 row.data = data;
                 model.add(row);
             }
+            Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
         } catch (NotFoundException e) {
             window.clearStatus();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
             window.clearStatus();
-        }
-        Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
+        }        
         return model;
     }
     

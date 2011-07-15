@@ -205,6 +205,7 @@ UIRF Software License are applicable instead of those above.
                   <menuPanel layout="vertical" position="beside" style="topMenuContainer">
                     <menuItem key="verificationReport" description="" icon="" enable="true" label="{resource:getString($constants,'verificationReport')}" />
                     <menuItem key="testRequestFormReport" description="" icon="" enable="false" label="{resource:getString($constants,'TRFReport')}" />
+                    <menuItem key="orderRequestForm" description="" icon="" enable="true" label="{resource:getString($constants,'orderRequestForm')}" />
                   </menuPanel>
                 </menuItem>
                 <menuItem style="TopMenuRowContainer" description="" icon="" label="{resource:getString($constants,'reference')}">
