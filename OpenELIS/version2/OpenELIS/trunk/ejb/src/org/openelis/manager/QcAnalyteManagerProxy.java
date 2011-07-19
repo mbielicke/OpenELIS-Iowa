@@ -55,6 +55,7 @@ public class QcAnalyteManagerProxy {
         for (int i = 0; i < man.count(); i++ ) {
             analyte = man.getAnalyteAt(i);
             analyte.setQcId(man.getQcId());
+            analyte.setSortOrder(i + 1);
             cl.add(analyte);
         }
 
@@ -71,7 +72,7 @@ public class QcAnalyteManagerProxy {
 
         for (int i = 0; i < man.count(); i++ ) {
             analyte = man.getAnalyteAt(i);
-
+            analyte.setSortOrder(i + 1);
             if (analyte.getId() == null) {
                 analyte.setQcId(man.getQcId());
                 cl.add(analyte);
