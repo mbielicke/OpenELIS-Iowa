@@ -27,6 +27,7 @@ public class QcMeta implements Meta, MetaMap {
                                   
                                   ANA_ID = "_qcAnalyte.id",
                                   ANA_QC_ID = "_qcAnalyte.qcId",
+                                  ANA_SORT_ORDER = "_qcAnalyte.sortOrder",
                                   ANA_ANALYTE_ID = "_qcAnalyte.analyteId",
                                   ANA_TYPE_ID = "_qcAnalyte.typeId",
                                   ANA_VALUE = "_qcAnalyte.value",
@@ -43,8 +44,9 @@ public class QcMeta implements Meta, MetaMap {
                                                   PREPARED_VOLUME, PREPARED_UNIT_ID,
                                                   PREPARED_BY_ID, USABLE_DATE, EXPIRE_DATE,
                                                   IS_ACTIVE,
-                                                  ANA_ID, ANA_QC_ID, ANA_ANALYTE_ID,
-                                                  ANA_TYPE_ID, ANA_VALUE, ANA_IS_TRENDABLE,
+                                                  ANA_ID, ANA_QC_ID, ANA_SORT_ORDER,
+                                                  ANA_ANALYTE_ID, ANA_TYPE_ID, ANA_VALUE,
+                                                  ANA_IS_TRENDABLE,
                                                   INVENTORY_ITEM_NAME, ANA_ANALYTE_NAME));
     }
 
@@ -106,6 +108,10 @@ public class QcMeta implements Meta, MetaMap {
 
     public static String getQcAnalyteQcId() {
         return ANA_QC_ID;
+    }
+
+    public static String getQcAnalyteSortOrder() {
+        return ANA_SORT_ORDER;
     }
 
     public static String getQcAnalyteAnalyteId() {
