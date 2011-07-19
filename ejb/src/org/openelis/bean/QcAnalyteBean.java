@@ -148,6 +148,7 @@ public class QcAnalyteBean implements QcAnalyteLocal {
 
         entity = new QcAnalyte();
         entity.setQcId(data.getQcId());
+        entity.setSortOrder(data.getSortOrder());
         entity.setAnalyteId(data.getAnalyteId());
         entity.setTypeId(data.getTypeId());
         entity.setValue(data.getValue());
@@ -169,6 +170,7 @@ public class QcAnalyteBean implements QcAnalyteLocal {
 
         entity = manager.find(QcAnalyte.class, data.getId());
         entity.setQcId(data.getQcId());
+        entity.setSortOrder(data.getSortOrder());
         entity.setAnalyteId(data.getAnalyteId());
         entity.setTypeId(data.getTypeId());
         entity.setValue(data.getValue());

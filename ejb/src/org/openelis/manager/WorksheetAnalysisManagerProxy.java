@@ -430,7 +430,7 @@ public class WorksheetAnalysisManagerProxy {
      */
 /*
     private void synchronizeWorksheetResults(AnalysisViewDO aVDO, AnalysisResultManager arManager,
-                                             WorksheetAnalysisManager waManager, int index) throws Exception {
+                                             WorksheetAnalysisManager waManager) throws Exception {
         int                                         i, j;
         ArrayList<ResultViewDO>                     resultRow;
         ArrayList<ArrayList<ResultViewDO>>          results;
@@ -455,7 +455,7 @@ public class WorksheetAnalysisManagerProxy {
                 resultRow = results.get(i);
                 result = resultRow.get(0);
                 
-                if (twAnalytes.size() == 0 || twAnalytes.containsKey(result.getTestAnalyteId())) {
+                if (twAnalytes.size() == 0 || !twAnalytes.containsKey(result.getTestAnalyteId())) {
                     wrVDO = new WorksheetResultViewDO();
                     wrVDO.setTestAnalyteId(result.getTestAnalyteId());
                     wrVDO.setResultRow(i);

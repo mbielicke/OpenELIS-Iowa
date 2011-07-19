@@ -50,13 +50,13 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "QcAnalyte.FetchById",
-                query = "select new org.openelis.domain.QcAnalyteViewDO(qca.id,qca.qcId,qca.analyteId," +
+                query = "select new org.openelis.domain.QcAnalyteViewDO(qca.id,qca.qcId,qca.sortOrder,qca.analyteId," +
                 		"qca.typeId,qca.value,qca.isTrendable,a.name,'')"
                       + " from QcAnalyte qca left join qca.analyte a where qca.id = :id"),
     @NamedQuery( name = "QcAnalyte.FetchByQcId",
-                query = "select new org.openelis.domain.QcAnalyteViewDO(qca.id,qca.qcId,qca.analyteId," +
+                query = "select new org.openelis.domain.QcAnalyteViewDO(qca.id,qca.qcId,qca.sortOrder,qca.analyteId," +
                         "qca.typeId,qca.value,qca.isTrendable,a.name,'')"
-                      + " from QcAnalyte qca left join qca.analyte a where qca.qcId = :id")})
+                      + " from QcAnalyte qca left join qca.analyte a where qca.qcId = :id order by qca.sortOrder")})
 @Entity
 @Table(name = "qc_analyte")
 @EntityListeners( {AuditUtil.class})
@@ -69,6 +69,9 @@ public class QcAnalyte implements Auditable, Cloneable {
 
     @Column(name = "qc_id")
     private Integer   qcId;
+
+    @Column(name = "sort_order")
+    private Integer   sortOrder;
 
     @Column(name = "analyte_id")
     private Integer   analyteId;
@@ -105,6 +108,15 @@ public class QcAnalyte implements Auditable, Cloneable {
     public void setQcId(Integer qcId) {
         if (DataBaseUtil.isDifferent(qcId, this.qcId))
             this.qcId = qcId;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
+            this.sortOrder = sortOrder;
     }
 
     public Integer getAnalyteId() {
@@ -168,6 +180,7 @@ public class QcAnalyte implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("qc_id", qcId, original.qcId)
+                 .setField("sort_order", sortOrder, original.sortOrder)
                  .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
                  .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
                  .setField("value", value, original.value)

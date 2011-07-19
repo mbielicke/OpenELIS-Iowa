@@ -103,10 +103,13 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
     @EJB
     UserCacheLocal       userCache;
 
-    private static Integer releasedStatusId, typeDictionaryId; 
+    private static Integer releasedStatusId, typeDictionaryId;
+    private static HashMap<String, String> methodCodes, contaminantIds;
     
     @PostConstruct
     public void init() {
+        initMethodCodes();
+        initContaminantIds();
         try {
             releasedStatusId = dictionaryCache.getBySystemName("analysis_released").getId();
             typeDictionaryId = dictionaryCache.getBySystemName("test_res_type_dictionary").getId();
@@ -277,16 +280,16 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         format = new SimpleDateFormat("MM/dd/yyyy");
         
         row = new StringBuilder();
-        row.append("#HDR")
-           .append(" ")
-           .append("CREATED ")
-           .append(" ")
-           .append(format.format(today.getDate()))
-           .append(" ")
-           .append("LAB-ID")
-           .append(" ");
+        row.append("#HDR")                              // col 1-4
+           .append(" ")                                 // col 5
+           .append("CREATED")                           // col 6-12
+           .append(" ")                                 // col 13
+           .append(format.format(today.getDate()))      // col 14-23
+           .append(" ")                                 // col 24
+           .append("LAB-ID")                            // col 25-30
+           .append(" ");                                // col 31
         
-        if ("-an".equals(location))
+        if ("-an".equals(location))                     // col 32-36
             row.append("397  ");            // Ankemy DNR ID
         else if ("-ic".equals(location))
             row.append("027  ");            // Iowa City DNR ID
@@ -295,22 +298,22 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         else
             row.append("     ");
            
-        row.append(" ")
-           .append("AGENCY")
-           .append(" ")
-           .append("IA")
-           .append(" ")
-           .append("PURPOSE")
-           .append(" ")
-           .append("NEW")
-           .append(" ")
-           .append("TYPE")
-           .append(" ")
-           .append("RT")
-           .append(" ")
-           .append("REFERENCE")
-           .append(" ")
-           .append("                              ");   // TODO: transaction reference number
+        row.append(" ")                                 // col 37
+           .append("AGENCY")                            // col 38-43
+           .append(" ")                                 // col 44
+           .append("IA")                                // col 45-46
+           .append(" ")                                 // col 47
+           .append("PURPOSE")                           // col 48-54
+           .append(" ")                                 // col 55
+           .append("NEW")                               // col 56-58
+           .append(" ")                                 // col 59
+           .append("TYPE")                              // col 60-63
+           .append(" ")                                 // col 64
+           .append("RT")                                // col 65-66
+           .append(" ")                                 // col 67
+           .append("REFERENCE")                         // col 68-76
+           .append(" ")                                 // col 77
+           .append("                              ");   // col 78-107 TODO: transaction reference number
         
         writer.println(row.toString());
     }
@@ -377,27 +380,27 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         }
         
         row = new StringBuilder();
-        row.append("#SAM")
-           .append(sampCatDO.getLocalAbbrev())
-           .append(sampTypeDO.getLocalAbbrev())
-           .append(getPaddedString(pbType, 3))
-           .append(getPaddedString(ssVDO.getPwsNumber0().substring(2), 9))
-           .append(ssVDO.getFacilityId())
-           .append(ssVDO.getSamplePointId())
-           .append(ssVDO.getLocation())
-           .append(dateFormat.format(sVDO.getCollectionDate().getDate()))
-           .append(timeFormat.format(sVDO.getCollectionTime().getDate()))
-           .append(getPaddedString(ssVDO.getCollector(), 20))
-           .append(dateFormat.format(sVDO.getReceivedDate().getDate()))
-           .append(getPaddedString(sVDO.getAccessionNumber().toString(), 20))
-           .append(getPaddedString(origSampleNumber, 20))
-           .append(getPaddedString(repeatCode, 2))
-           .append(getPaddedString(freeChlorine, 5))
-           .append(getPaddedString(totalChlorine, 5))
-           .append(getPaddedString(compIndicator, 1))
-           .append(getPaddedString(compLabNumber, 20));
+        row.append("#SAM")                                                      // col 1-3
+           .append(sampCatDO.getLocalAbbrev())                                  // col 5-6
+           .append(sampTypeDO.getLocalAbbrev())                                 // col 7-8
+           .append(getPaddedString(pbType, 3))                                  // col 9-11
+           .append(getPaddedString(ssVDO.getPwsNumber0(), 9))                   // col 12-20
+           .append(ssVDO.getFacilityId())                                       // col 21-32
+           .append(ssVDO.getSamplePointId())                                    // col 33-43
+           .append(ssVDO.getLocation())                                         // col 44-63
+           .append(dateFormat.format(sVDO.getCollectionDate().getDate()))       // col 64-71
+           .append(timeFormat.format(sVDO.getCollectionTime().getDate()))       // col 72-75
+           .append(getPaddedString(ssVDO.getCollector(), 20))                   // col 76-95
+           .append(dateFormat.format(sVDO.getReceivedDate().getDate()))         // col 96-103
+           .append(getPaddedString(sVDO.getAccessionNumber().toString(), 20))   // col 104-123
+           .append(getPaddedString(origSampleNumber, 20))                       // col 124-143
+           .append(getPaddedString(repeatCode, 2))                              // col 144-145
+           .append(getPaddedString(freeChlorine, 5))                            // col 146-150
+           .append(getPaddedString(totalChlorine, 5))                           // col 151-155
+           .append(getPaddedString(compIndicator, 1))                           // col 156
+           .append(getPaddedString(compLabNumber, 20));                         // col 157-176
         
-        if (compDateString != null && compDateString.length() > 0) {
+        if (compDateString != null && compDateString.length() > 0) {            // col 177-184
             try {
                 compDateString = dateFormat.format(dateSlashFormat.parse(compDateString));
                 row.append(compDateString);
@@ -408,7 +411,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             row.append(getPaddedString(compDateString, 8));
         }
         
-        row.append(getPaddedString(compQuarter, 1));
+        row.append(getPaddedString(compQuarter, 1));                            // col 185
         
         writer.println(row.toString());
     }
@@ -465,7 +468,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                 methodCode = rVDO.getValue();
             } else {
                 rowData = new HashMap<String,String>();
-                rowData.put("contaminantId", rVDO.getAnalyteId().toString());
+                rowData.put("contaminantId", contaminantIds.get(rVDO.getAnalyte()));
                 if ("BA".equals(sampCatDO.getLocalAbbrev())) {
                     if (typeDictionaryId.equals(rVDO.getTypeId())) {
                         try {
@@ -475,10 +478,13 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                         }
                     } else {
                         rowData.put("count", rVDO.getValue());
-                        if ("HPC".equals(rVDO.getAnalyte()))
-                            rowData.put("countType", "CFU");
-                        else
-                            rowData.put("countType", "Tubes");
+                    }
+                    if ("HPC".equals(rVDO.getAnalyte())) {
+                        rowData.put("countType", "CFU");
+                        rowData.put("countUnits", "mL");
+                    } else {
+                        rowData.put("countType", "Tubes");
+                        rowData.put("countUnits", "100 mL");
                     }
                     resultData.add(rowData);
                 } else {
@@ -514,23 +520,23 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             rowData = resultData.get(i);
             
             row = new StringBuilder();
-            row.append("#RES")
-               .append(getPaddedString(rowData.get("contaminantId"), 4))
-               .append(getPaddedString(methodCode, 12))
-               .append(dateFormat.format(analysis.getStartedDate().getDate()))
-               .append(timeFormat.format(analysis.getStartedDate().getDate()))
-               .append(dateFormat.format(analysis.getCompletedDate().getDate()))
-               .append(getPaddedString(rowData.get("microbe"), 1))
-               .append(getPaddedString(rowData.get("count"), 5))
-               .append(getPaddedString(rowData.get("countType"), 10))
-               .append(getPaddedString(rowData.get("countUnits"), 9))
-               .append(getPaddedString(rowData.get("ltIndicator"), 1))
-               .append("MRL")
-               .append(getPaddedString(rowData.get("concentration"), 14))
-               .append(getPaddedString(rowData.get("concentrationUnit"), 9))
-               .append(getPaddedString(rowData.get("detection"), 16))
-               .append(getPaddedString(rowData.get("detectionUnit"), 9))
-               .append(getPaddedString(rowData.get("radMeasureError"), 9));
+            row.append("#RES")                                                      // col 1-4
+               .append(getPaddedString(rowData.get("contaminantId"), 4))            // col 5-8
+               .append(getPaddedString(methodCode, 12))                             // col 9-20
+               .append(dateFormat.format(analysis.getStartedDate().getDate()))      // col 21-28
+               .append(timeFormat.format(analysis.getStartedDate().getDate()))      // col 29-32
+               .append(dateFormat.format(analysis.getCompletedDate().getDate()))    // col 33-40
+               .append(getPaddedString(rowData.get("microbe"), 1))                  // col 41
+               .append(getPaddedString(rowData.get("count"), 5))                    // col 42-46
+               .append(getPaddedString(rowData.get("countType"), 10))               // col 47-56
+               .append(getPaddedString(rowData.get("countUnits"), 9))               // col 57-65
+               .append(getPaddedString(rowData.get("ltIndicator"), 1))              // col 66
+               .append("MRL")                                                       // col 67-69
+               .append(getPaddedString(rowData.get("concentration"), 14))           // col 70-83
+               .append(getPaddedString(rowData.get("concentrationUnit"), 9))        // col 84-92
+               .append(getPaddedString(rowData.get("detection"), 16))               // col 93-108
+               .append(getPaddedString(rowData.get("detectionUnit"), 9))            // col 109-117
+               .append(getPaddedString(rowData.get("radMeasureError"), 9));         // col 118-126
             
             writer.println(row.toString());
         }
@@ -552,5 +558,19 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         }
 
         return value;
+    }
+    
+    private void initMethodCodes() {
+        methodCodes = new HashMap<String, String>();
+        
+        methodCodes.put("", "");
+    }
+    
+    private void initContaminantIds() {
+        contaminantIds = new HashMap<String, String>();
+        
+        contaminantIds.put("E.coli",                  "3014");
+        contaminantIds.put("Nitrite Nitrogen as N",   "1041");
+        contaminantIds.put("Total Coliform Bacteria", "3100");
     }
 }

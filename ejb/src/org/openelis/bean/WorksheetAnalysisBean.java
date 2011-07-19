@@ -121,11 +121,11 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         query.setParameter("statusId", workingId);
         list = query.getResultList();          
         
-        /*for (WorksheetCacheVO data : list) {            
+        for (WorksheetCacheVO data : list) {            
             user = userCache.getSystemUser(data.getSystemUserId());
             if (user != null)
                 data.setSystemUserName(user.getLoginName());
-        }*/
+        }
         return DataBaseUtil.toArrayList(list);
     }
     
