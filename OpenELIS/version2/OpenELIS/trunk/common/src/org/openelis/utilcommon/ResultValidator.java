@@ -225,6 +225,9 @@ public class ResultValidator implements RPC {
                                         break;
                                     case INTEGER:
                                         value = String.valueOf(Math.round(Double.valueOf(value)));
+                                        if (item.significantDigits != null)
+                                            value = SignificantFigures.format(value,
+                                                                              item.significantDigits);
                                         break;
                                 }
                             }

@@ -44,9 +44,10 @@ public class QcAnalyteViewDO extends QcAnalyteDO {
     public QcAnalyteViewDO() {
     }
 
-    public QcAnalyteViewDO(Integer id, Integer qcId, Integer analyteId, Integer typeId,
-                           String value, String isTrendable, String analyteName,String dictionary) {
-        super(id, qcId, analyteId, typeId, value, isTrendable);
+    public QcAnalyteViewDO(Integer id, Integer qcId, Integer sortOrder, Integer analyteId,
+                           Integer typeId, String value, String isTrendable, String analyteName,
+                           String dictionary) {
+        super(id, qcId, sortOrder, analyteId, typeId, value, isTrendable);
         setAnalyteName(analyteName);
         setDictionary(dictionary);
     }

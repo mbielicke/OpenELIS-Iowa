@@ -35,16 +35,17 @@ public class QcAnalyteDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, qcId, analyteId, typeId;
+    protected Integer         id, qcId, sortOrder, analyteId, typeId;
     protected String          value, isTrendable;
 
     public QcAnalyteDO() {
     }
 
-    public QcAnalyteDO(Integer id, Integer qcId, Integer analyteId, Integer typeId, String value,
-                       String isTrendable) {
+    public QcAnalyteDO(Integer id, Integer qcId, Integer sortOrder, Integer analyteId,
+                       Integer typeId, String value, String isTrendable) {
         setId(id);
         setQcId(qcId);
+        setSortOrder(sortOrder);
         setAnalyteId(analyteId);
         setTypeId(typeId);
         setValue(value);
@@ -67,6 +68,15 @@ public class QcAnalyteDO extends DataObject {
 
     public void setQcId(Integer qcId) {
         this.qcId = qcId;
+        _changed = true;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        this.sortOrder = sortOrder;
         _changed = true;
     }
 
