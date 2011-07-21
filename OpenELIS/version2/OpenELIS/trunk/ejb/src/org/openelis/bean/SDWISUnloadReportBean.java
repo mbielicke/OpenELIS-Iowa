@@ -434,14 +434,14 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         dateFormat = new SimpleDateFormat("yyyyMMdd");
         timeFormat = new SimpleDateFormat("HHmm");
 
-        methodCode = "";
-        
         try {
             sampCatDO = dictionaryCache.getById(sampleSDWIS.getSampleCategoryId());
         } catch (Exception anyE) {
             throw new Exception("Error looking up dictionary entry for Sample Category; "+anyE.getMessage());
         }
 
+        methodCode = methodCodes.get(analysis.getMethodName());
+        
         try {
             unitDO = dictionaryCache.getById(analysis.getUnitOfMeasureId());
         } catch (Exception anyE) {
@@ -459,60 +459,51 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         while (rowIter.hasNext()) {
             resultRow = rowIter.next();
             rVDO = resultRow.get(0);
-            try {
-                alVDO = analyte.fetchById(rVDO.getAnalyteId());
-            } catch (Exception anyE) {
-                throw new Exception("Error looking up result row analyte; "+anyE.getMessage());
-            }
-            if ("method_code".equals(alVDO.getExternalId())) {
-                methodCode = rVDO.getValue();
-            } else {
-                rowData = new HashMap<String,String>();
-                rowData.put("contaminantId", contaminantIds.get(rVDO.getAnalyte()));
-                if ("BA".equals(sampCatDO.getLocalAbbrev())) {
-                    if (typeDictionaryId.equals(rVDO.getTypeId())) {
-                        try {
-                            rowData.put("microbe", dictionaryCache.getById(Integer.valueOf(rVDO.getValue())).getEntry());
-                        } catch (Exception anyE) {
-                            throw new Exception("Error looking up dictionary result; "+anyE.getMessage());
-                        }
-                    } else {
-                        rowData.put("count", rVDO.getValue());
+            rowData = new HashMap<String,String>();
+            rowData.put("contaminantId", contaminantIds.get(rVDO.getAnalyte()));
+            if ("BA".equals(sampCatDO.getLocalAbbrev())) {
+                if (typeDictionaryId.equals(rVDO.getTypeId())) {
+                    try {
+                        rowData.put("microbe", dictionaryCache.getById(Integer.valueOf(rVDO.getValue())).getEntry());
+                    } catch (Exception anyE) {
+                        throw new Exception("Error looking up dictionary result; "+anyE.getMessage());
                     }
-                    if ("HPC".equals(rVDO.getAnalyte())) {
-                        rowData.put("countType", "CFU");
-                        rowData.put("countUnits", "mL");
-                    } else {
-                        rowData.put("countType", "Tubes");
-                        rowData.put("countUnits", "100 mL");
-                    }
-                    resultData.add(rowData);
                 } else {
-                    if (rVDO.getValue().startsWith("<"))
-                        rowData.put("ltIndicator", "Y");
-                    else
-                        rowData.put("ltIndicator", "N");
-                    rowData.put("concentration", rVDO.getValue());
-                    rowData.put("concentrationUnit", unitDO.getEntry());
-                    
-                    colIter = resultRow.iterator();
-                    while (colIter.hasNext()) {
-                        rVDO = colIter.next();
-                        try {
-                            alVDO = analyte.fetchById(rVDO.getAnalyteId());
-                        } catch (Exception anyE) {
-                            throw new Exception("Error looking up result column analyte; "+anyE.getMessage());
-                        }
-                        if ("mcl".equals(alVDO.getExternalId())) {
-                            rowData.put("detection", rVDO.getValue());
-                            rowData.put("detectionUnit", unitDO.getEntry());
-                        } else if ("rad_measure_error".equals(alVDO.getExternalId())) {
-                            rowData.put("radMeasureError", rVDO.getValue());
-                        }
-                    }
-                    
-                    resultData.add(rowData);
+                    rowData.put("count", rVDO.getValue());
                 }
+                if ("HPC".equals(rVDO.getAnalyte())) {
+                    rowData.put("countType", "CFU");
+                    rowData.put("countUnits", "mL");
+                } else {
+                    rowData.put("countType", "Tubes");
+                    rowData.put("countUnits", "100 mL");
+                }
+                resultData.add(rowData);
+            } else {
+                if (rVDO.getValue().startsWith("<"))
+                    rowData.put("ltIndicator", "Y");
+                else
+                    rowData.put("ltIndicator", "N");
+                rowData.put("concentration", rVDO.getValue());
+                rowData.put("concentrationUnit", unitDO.getEntry());
+                
+                colIter = resultRow.iterator();
+                while (colIter.hasNext()) {
+                    rVDO = colIter.next();
+                    try {
+                        alVDO = analyte.fetchById(rVDO.getAnalyteId());
+                    } catch (Exception anyE) {
+                        throw new Exception("Error looking up result column analyte; "+anyE.getMessage());
+                    }
+                    if ("mcl".equals(alVDO.getExternalId())) {
+                        rowData.put("detection", rVDO.getValue());
+                        rowData.put("detectionUnit", unitDO.getEntry());
+                    } else if ("rad_measure_error".equals(alVDO.getExternalId())) {
+                        rowData.put("radMeasureError", rVDO.getValue());
+                    }
+                }
+                
+                resultData.add(rowData);
             }
         }
         
@@ -563,13 +554,18 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
     private void initMethodCodes() {
         methodCodes = new HashMap<String, String>();
         
-        methodCodes.put("", "");
+        methodCodes.put("colilert mpn sdwa am", "9223B-10");
+        methodCodes.put("colilert mpn sdwa pm", "9223B-10");
+        methodCodes.put("colilert pa sdwa am",  "9223B-10");
+        methodCodes.put("colilert pa sdwa pm",  "9223B-10");
+        methodCodes.put("epa 353.2 as n drink", "353.2");
     }
     
     private void initContaminantIds() {
         contaminantIds = new HashMap<String, String>();
         
         contaminantIds.put("E.coli",                  "3014");
+        contaminantIds.put("Nitrate Nitrogen as N",   "1040");
         contaminantIds.put("Nitrite Nitrogen as N",   "1041");
         contaminantIds.put("Total Coliform Bacteria", "3100");
     }
