@@ -62,9 +62,11 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.SystemVariableDO;
@@ -83,6 +85,7 @@ import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalyteLocal;
+import org.openelis.local.AnalyteParameterLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.local.SampleManagerLocal;
@@ -112,6 +115,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     @EJB
     AnalyteLocal analyteLocal;
+    @EJB
+    AnalyteParameterLocal analyteParameterLocal;
     @EJB
     DictionaryLocal dictionaryLocal;
     @EJB
@@ -402,7 +407,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         cellNameIndex = i+"."+a;
                         r = createQcResultCellsForFormat(resultSheet, row, tRow,
                                                          cellNameIndex, tCellNames,
-                                                         wqrManager);
+                                                         qcManager, wqrManager);
                     }
 
                     //
@@ -498,12 +503,19 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         overrideSheet.addValidationData(dateTimeValidation);
 
         //
-        // Auto resize columns on result sheet and overriddes sheet
+        // Auto resize columns on result sheet and override sheet
         //
-        for (c = 0; c < hRow.getLastCellNum(); c++)
-            resultSheet.autoSizeColumn(c, true);
-        for (c = 0; c < 8; c++)
-            overrideSheet.autoSizeColumn(c, true);
+        resultSheet.autoSizeColumn(2, true);            // Description
+        resultSheet.autoSizeColumn(4, true);            // Test
+        resultSheet.autoSizeColumn(5, true);            // Method
+        resultSheet.autoSizeColumn(7, true);            // Analyte
+//        for (c = 9; c < hRow.getLastCellNum(); c++)
+//            resultSheet.autoSizeColumn(c, true);        // Result(s)
+        
+        overrideSheet.autoSizeColumn(2, true);          // Description
+        overrideSheet.autoSizeColumn(3, true);          // Test
+        overrideSheet.autoSizeColumn(4, true);          // Method
+        overrideSheet.autoSizeColumn(5, true);          // User(s)
         
         try {
             out = new FileOutputStream(outFileName);
@@ -859,15 +871,16 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     private int createResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow, String nameIndexPrefix,
                                            HashMap<String,String> cellNames, AnalysisResultManager arManager,
                                            WorksheetResultManager wrManager) {
-        int                   c, i, r;
-        Integer               resultTypeDictionary;
-        String                cellNameIndex, name;
-        Cell                  cell, tCell;
-        Name                  cellName;
-        AnalyteDO             aDO;
-        DictionaryViewDO      dVDO;
-        ResultViewDO          rVDO;
-        WorksheetResultViewDO wrVDO;
+        int                    c, i, r;
+        Integer                resultTypeDictionary;
+        String                 cellNameIndex, name;
+        Cell                   cell, tCell;
+        Name                   cellName;
+        AnalyteDO              aDO;
+        AnalyteParameterViewDO apVDO;
+        DictionaryViewDO       dVDO;
+        ResultViewDO           rVDO;
+        WorksheetResultViewDO  wrVDO;
         
         r = row.getRowNum();
         
@@ -906,6 +919,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             cellName.setRefersToFormula("Worksheet!$"+CellReference.convertNumToColString(8)+
                                         "$"+(row.getRowNum()+1));
             
+            apVDO = null;
             for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
                 
@@ -925,6 +939,29 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     cell.setCellFormula(tCell.getCellFormula());
                 } else {
                     setCellValue(cell, wrVDO.getValueAt(c-9));
+                }
+                if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
+                    if (wrVDO.getValueAt(c-9) == null) {
+                        if (apVDO == null) {
+                            try {
+                                apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wrVDO.getAnalyteId(),
+                                                                                                                arManager.getTestManager().getTest().getId(),
+                                                                                                                ReferenceTable.TEST);
+                            } catch (Exception anyE) {
+                                // TODO: Code proper exception handling
+                                anyE.printStackTrace();
+                                continue;
+                            }
+                        }
+                        
+                        if ("p_1".equals(name)) {
+                            setCellValue(cell, String.valueOf(apVDO.getP1()));
+                        } else if ("p_2".equals(name)) {
+                            setCellValue(cell, String.valueOf(apVDO.getP2()));
+                        } else if ("p_3".equals(name)) {
+                            setCellValue(cell, String.valueOf(apVDO.getP3()));
+                        }
+                    }
                 }
             }
             
@@ -960,12 +997,13 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     private int createQcResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow,
                                              String nameIndexPrefix, HashMap<String,String> cellNames,
-                                             WorksheetQcResultManager wqrManager) {
+                                             QcManager qcManager, WorksheetQcResultManager wqrManager) {
         int                     c, i, r;
         Object                  value;
         String                  cellNameIndex, name;
         Cell                    cell, tCell;
         Name                    cellName;
+        AnalyteParameterViewDO  apVDO;
         QcAnalyteViewDO         qcaVDO;
         WorksheetQcResultViewDO wqrVDO;
         
@@ -993,6 +1031,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             cell.setCellStyle(styles.get("row_no_edit"));
             cell.setCellValue("N");
             
+            apVDO = null;
             for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
                 
@@ -1012,6 +1051,29 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     cell.setCellFormula(tCell.getCellFormula());
                 } else {
                     setCellValue(cell, wqrVDO.getValueAt(c-9));
+                }
+                if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
+                    if (wqrVDO.getValueAt(c-9) == null) {
+                        if (apVDO == null) {
+                            try {
+                                apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wqrVDO.getQcAnalyteId(),
+                                                                                                                qcManager.getQc().getId(),
+                                                                                                                ReferenceTable.QC);
+                            } catch (Exception anyE) {
+                                // TODO: Code proper exception handling
+                                anyE.printStackTrace();
+                                continue;
+                            }
+                        }
+                        
+                        if ("p_1".equals(name)) {
+                            setCellValue(cell, String.valueOf(apVDO.getP1()));
+                        } else if ("p_2".equals(name)) {
+                            setCellValue(cell, String.valueOf(apVDO.getP2()));
+                        } else if ("p_3".equals(name)) {
+                            setCellValue(cell, String.valueOf(apVDO.getP3()));
+                        }
+                    }
                 }
             }
             
