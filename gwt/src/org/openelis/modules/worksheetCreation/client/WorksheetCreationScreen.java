@@ -398,12 +398,30 @@ public class WorksheetCreationScreen extends Screen {
         removeRowButton = (AppButton)def.getWidget("removeRowButton");
         addScreenHandler(removeRowButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int                 rowIndex;
-                TableDataRow        dataRow, qDataRow;
+                int                 i, rowIndex;
+                Integer             tempKey;
+                TableDataRow        dataRow, tempRow;
                 
+                worksheetItemTable.finishEditing();
                 rowIndex = worksheetItemTable.getSelectedRow();
                 if (rowIndex > -1 && worksheetItemTable.numRows() > 0) {
                     dataRow = worksheetItemTable.getRow(rowIndex);
+                    
+                    for (i = 0; i < worksheetItemTable.numRows(); i++) {
+                        tempRow = worksheetItemTable.getRow(i);
+                        if (tempRow != dataRow && tempRow.cells.get(3).getValue() != null) {
+                            if (tempRow.cells.get(3).getValue() instanceof ArrayList)
+                                tempKey = (Integer)((ArrayList<Object>)tempRow.cells.get(3).getValue()).get(0);
+                            else
+                                tempKey = (Integer)tempRow.cells.get(3).getValue();
+                            
+                            if (((Integer)dataRow.key).equals(tempKey)) {
+                                Window.alert(consts.get("oneOrMoreQcLinkOnRemove"));
+                                return;
+                            }
+                        }
+                    }
+                    
                     if (dataRow.data instanceof ArrayList) {
                         if (worksheetRemoveQCConfirm == null) {
                             worksheetRemoveQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
