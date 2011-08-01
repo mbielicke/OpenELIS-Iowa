@@ -34,6 +34,7 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -147,9 +148,19 @@ public class VerificationScreen extends Screen {
                 
                 manager = manager.fetchForUpdate();
                 manager.getSample().setStatusId(loggedInId);
-                manager.update();
-
-                window.setDone(consts.get("updatingComplete"));
+                try {
+                    manager.validate();
+                    manager.update();
+                    window.setDone(consts.get("updatingComplete"));
+                } catch (ValidationErrorsList e) {
+                    if (e.hasErrors()) {
+                        showErrors(e);
+                    } else if (e.hasWarnings()) {
+                        manager.setStatusWithError(true);
+                        manager.update();
+                        window.setDone(consts.get("updatingComplete"));
+                    }
+                }
             } catch (NotFoundException nfE) {
                 le = new LocalizedException("invalidEntryException", code);
                 window.setError(le.getMessage());
