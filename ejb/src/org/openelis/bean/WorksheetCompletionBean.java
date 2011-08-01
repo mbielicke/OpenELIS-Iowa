@@ -1056,7 +1056,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     if (wqrVDO.getValueAt(c-9) == null) {
                         if (apVDO == null) {
                             try {
-                                apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wqrVDO.getQcAnalyteId(),
+                                apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wqrVDO.getAnalyteId(),
                                                                                                                 qcManager.getQc().getId(),
                                                                                                                 ReferenceTable.QC);
                             } catch (Exception anyE) {

@@ -506,8 +506,9 @@ public class WorksheetAnalysisManagerProxy {
             wqrVDO = new WorksheetQcResultViewDO();
             wqrVDO.setSortOrder(i+1);
             wqrVDO.setQcAnalyteId(qcaVDO.getId());
-            wqrVDO.setAnalyteName(qcaVDO.getAnalyteName());
             wqrVDO.setTypeId(qcaVDO.getTypeId());
+            wqrVDO.setAnalyteId(qcaVDO.getAnalyteId());
+            wqrVDO.setAnalyteName(qcaVDO.getAnalyteName());
             wqrManager.addWorksheetQcResult(wqrVDO);
         }
     }

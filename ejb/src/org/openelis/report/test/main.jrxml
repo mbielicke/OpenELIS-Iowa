@@ -35,7 +35,7 @@ SELECT unique "P" ref_type, p.id t_id, "" s_name, p.name t_name,
 FROM panel p, panel_item pi, test t, method m, test_section ts, section s
 WHERE $P{DETAIL} != "FD" and
       pi.panel_id = p.id and
-      pi.test_name = t.name and
+      pi.name = t.name and
       pi.method_name = m.name and
       t.method_id = m.id and
       t.is_active = "Y" and
