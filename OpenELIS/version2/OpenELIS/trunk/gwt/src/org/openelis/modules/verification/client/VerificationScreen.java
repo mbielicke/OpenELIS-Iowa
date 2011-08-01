@@ -90,6 +90,7 @@ public class VerificationScreen extends Screen {
         }
         initialize();
         setState(State.DEFAULT);
+        setFocus(barcode);                
     }       
     
     private void initialize() {
