@@ -708,7 +708,6 @@ public class WorksheetCreationScreen extends Screen {
                         newWqrVDO = new WorksheetQcResultViewDO();
                         newWqrVDO.setSortOrder(wqrVDO.getSortOrder());
                         newWqrVDO.setQcAnalyteId(wqrVDO.getQcAnalyteId());
-                        newWqrVDO.setAnalyteName(wqrVDO.getAnalyteName());
                         newWqrVDO.setTypeId(wqrVDO.getTypeId());
                         newWqrVDO.setValueAt(0, wqrVDO.getValueAt(0));
                         newWqrVDO.setValueAt(1, wqrVDO.getValueAt(1));
@@ -740,6 +739,8 @@ public class WorksheetCreationScreen extends Screen {
                         newWqrVDO.setValueAt(27, wqrVDO.getValueAt(27));
                         newWqrVDO.setValueAt(28, wqrVDO.getValueAt(28));
                         newWqrVDO.setValueAt(29, wqrVDO.getValueAt(29));
+                        newWqrVDO.setAnalyteId(wqrVDO.getAnalyteId());
+                        newWqrVDO.setAnalyteName(wqrVDO.getAnalyteName());
                         newWqrManager.addWorksheetQcResult(newWqrVDO);
                     }
                 }
