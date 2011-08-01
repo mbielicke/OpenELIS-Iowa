@@ -35,23 +35,34 @@ public class WorksheetQcResultViewDO extends WorksheetQcResultDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String analyteName;
+    protected Integer analyteId;
+    protected String  analyteName;
 
     public WorksheetQcResultViewDO() {
     }
 
     public WorksheetQcResultViewDO(Integer id, Integer worksheetAnalysisId, Integer sortOrder,
-                               Integer qcAnalyteId, Integer typeId, String v1, String v2,
-                               String v3, String v4, String v5, String v6, String v7,
-                               String v8, String v9, String v10, String v11, String v12,
-                               String v13, String v14, String v15, String v16, String v17,
-                               String v18, String v19, String v20, String v21, String v22,
-                               String v23, String v24, String v25, String v26, String v27,
-                               String v28, String v29, String v30, String analyteName) {
+                                   Integer qcAnalyteId, Integer typeId, String v1, String v2,
+                                   String v3, String v4, String v5, String v6, String v7,
+                                   String v8, String v9, String v10, String v11, String v12,
+                                   String v13, String v14, String v15, String v16, String v17,
+                                   String v18, String v19, String v20, String v21, String v22,
+                                   String v23, String v24, String v25, String v26, String v27,
+                                   String v28, String v29, String v30, Integer analyteId,
+                                   String analyteName) {
         super(id, worksheetAnalysisId, sortOrder, qcAnalyteId, typeId, v1, v2, v3,
               v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18,
               v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30);
+        setAnalyteId(analyteId);
         setAnalyteName(analyteName);
+    }
+
+    public Integer getAnalyteId() {
+        return analyteId;
+    }
+
+    public void setAnalyteId(Integer analyteId) {
+        this.analyteId = analyteId;
     }
 
     public String getAnalyteName() {
