@@ -38,7 +38,7 @@ public class OrderDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, statusId, neededInDays, costCenterId, organizationId, reportToId,
+    protected Integer         id, parentOrderId, statusId, neededInDays, costCenterId, organizationId, reportToId,
                               billToId, shipFromId;
     protected String          description, requestedBy, type, externalOrderNumber, organizationAttention, reportToAttention, billToAttention;
     protected Datetime        orderedDate;
@@ -46,13 +46,14 @@ public class OrderDO extends DataObject {
     public OrderDO() {
     }
 
-    public OrderDO(Integer id, String description, Integer statusId, Date orderedDate, 
-                   Integer neededInDays, String requestedBy, Integer costCenterId, 
-                   Integer organizationId,String organizationAttention, 
-                   String type, String externalOrderNumber,
-                   Integer reportToId, String reportToAttention,
-                   Integer billToId, String billToAttention, Integer shipFromId) {
+    public OrderDO(Integer id, Integer parentOrderId, String description, Integer statusId,
+                   Date orderedDate, Integer neededInDays, String requestedBy, 
+                   Integer costCenterId, Integer organizationId,String organizationAttention, 
+                   String type, String externalOrderNumber, Integer reportToId,
+                   String reportToAttention, Integer billToId, String billToAttention,
+                   Integer shipFromId) {
         setId(id);
+        setParentOrderId(parentOrderId);
         setDescription(description);
         setStatusId(statusId);
         setOrderedDate(DataBaseUtil.toYD(orderedDate));
@@ -77,6 +78,15 @@ public class OrderDO extends DataObject {
 
     public void setId(Integer id) {
         this.id = id;
+        _changed = true;
+    }
+
+    public Integer getParentOrderId() {
+        return parentOrderId;
+    }
+
+    public void setParentOrderId(Integer parentOrderId) {
+        this.parentOrderId = parentOrderId;
         _changed = true;
     }
 

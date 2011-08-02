@@ -55,7 +55,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "Order.FetchById",
-                query = "select new org.openelis.domain.OrderViewDO(o.id,o.description,o.statusId,o.orderedDate," +
+                query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
                 		"o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
                 		"o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId)"
                 	  + " from Order o where o.id = :id"),
@@ -63,7 +63,7 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.IdNameVO(o.id,o.description)"
                       + " from Order o where o.description like :description"),
     @NamedQuery( name = "Order.FetchByShippingItemId",
-               query  = "select new org.openelis.domain.OrderViewDO(o.id,o.description,o.statusId,o.orderedDate," +
+               query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
                         "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
                         "o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId)"
                       + " from Order o left join o.orderItem i "
@@ -78,6 +78,9 @@ public class Order implements Auditable, Cloneable {
     @GeneratedValue
     @Column(name = "id")
     private Integer               id;
+    
+    @Column(name = "parent_order_id")
+    private Integer               parentOrderId;
 
     @Column(name = "description")
     private String                description;
@@ -151,6 +154,10 @@ public class Order implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_id")
     private Collection<AuxData> auxData;
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Collection<OrderRecurrence>     orderRecurrence;    
 
     @Transient
     private Order                 original;
@@ -162,6 +169,15 @@ public class Order implements Auditable, Cloneable {
     protected void setId(Integer id) {
         if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
+    }
+
+    public Integer getParentOrderId() {
+        return parentOrderId;
+    }
+
+    public void setParentOrderId(Integer parentOrderId) {
+        if (DataBaseUtil.isDifferent(parentOrderId, this.parentOrderId))
+            this.parentOrderId = parentOrderId;
     }
 
     public String getDescription() {
@@ -344,6 +360,14 @@ public class Order implements Auditable, Cloneable {
         this.auxData = auxData;
     }  
 
+    public Collection<OrderRecurrence> getOrderRecurrence() {
+        return orderRecurrence;
+    }
+
+    public void setOrderRecurrence(Collection<OrderRecurrence> orderRecurrence) {
+        this.orderRecurrence = orderRecurrence;
+    }
+
     public void setClone() {
         try {
             original = (Order)this.clone();
@@ -360,6 +384,7 @@ public class Order implements Auditable, Cloneable {
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
+                 .setField("parentOrderId", parentOrderId, original.parentOrderId)
                  .setField("description", description, original.description)
                  .setField("status_id", statusId, original.statusId)
                  .setField("ordered_date", orderedDate, original.orderedDate)

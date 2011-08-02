@@ -151,6 +151,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.OrderViewDO(" +
                           OrderMeta.getId()+", " +
+                          OrderMeta.getParentOrderId()+", "+
                           OrderMeta.getDescription()+", " +                          
                           OrderMeta.getStatusId()+", " +
                           OrderMeta.getOrderedDate()+", " +
@@ -200,6 +201,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new Order();
+        entity.setParentOrderId(data.getParentOrderId());
         entity.setDescription(data.getDescription());
         entity.setStatusId(data.getStatusId());
         entity.setOrderedDate(data.getOrderedDate());
@@ -230,6 +232,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Order.class, data.getId());
+        entity.setParentOrderId(data.getParentOrderId());
         entity.setDescription(data.getDescription());
         entity.setStatusId(data.getStatusId());
         entity.setOrderedDate(data.getOrderedDate());

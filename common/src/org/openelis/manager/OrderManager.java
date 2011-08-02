@@ -25,6 +25,7 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.NotFoundException;
@@ -41,7 +42,8 @@ public class OrderManager implements RPC, HasAuxDataInt {
     protected OrderContainerManager              containers; 
     protected OrderTestManager                   tests; 
     protected NoteManager                        shipNotes, customerNotes;
-    protected AuxDataManager                     auxData;    
+    protected AuxDataManager                     auxData;
+    protected OrderRecurrenceDO                  recurrence;
 
     public static final String   TYPE_INTERNAL = "I",
                                  TYPE_VENDOR   = "V",
@@ -58,7 +60,8 @@ public class OrderManager implements RPC, HasAuxDataInt {
         items = null;
         fills = null;
         receipts = null;
-        shipNotes = null;
+        shipNotes = null;      
+        recurrence = null;
     }
 
     /**
@@ -86,7 +89,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
     public static OrderManager fetchById(Integer id) throws Exception {
         return proxy().fetchById(id);
     }
-
+    
     public static OrderManager fetchWithItems(Integer id) throws Exception {
         return proxy().fetchWithItems(id);
     }
@@ -101,6 +104,19 @@ public class OrderManager implements RPC, HasAuxDataInt {
     
     public static OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
         return proxy().fetchWithTestsAndContainers(id);
+    }
+    
+    public static OrderManager fetchWithRecurrence(Integer id) throws Exception {
+        return proxy().fetchWithRecurring(id);
+    }
+    
+    /*
+     * this method enables us to get the OrderRecurrenceDO associated with a
+     * manager in OrderManagerBean or anywhere else without creating a new instance
+     * of the manager       
+     */
+    public static OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
+        return proxy().fetchRecurrenceByOrderId(id);
     }
 
     public OrderManager add() throws Exception {
@@ -181,7 +197,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
         if (shipNotes == null) {
             if (order.getId() != null) {
                 try {
-                    shipNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER, order.getId(), false);
+                    shipNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER_SHIPPING_NOTE, order.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -190,7 +206,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
             }
             if (shipNotes == null){
                 shipNotes = NoteManager.getInstance();
-                shipNotes.setIsExternal(false);
+                shipNotes.setIsExternal(true);
             }
         }
         return shipNotes;
@@ -200,7 +216,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
         if (customerNotes == null) {
             if (order.getId() != null) {
                 try {
-                    customerNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER, order.getId(), true);
+                    customerNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER_CUSTOMER_NOTE, order.getId(), true);
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
@@ -267,6 +283,25 @@ public class OrderManager implements RPC, HasAuxDataInt {
     
         return auxData;
     }
+    
+    public OrderRecurrenceDO getRecurrence() throws Exception {
+        if (recurrence == null) {
+            if (order.getId() != null) {
+                try {
+                    recurrence = fetchRecurrenceByOrderId(order.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+    
+            if (recurrence == null) 
+                recurrence = new OrderRecurrenceDO();            
+        }
+    
+        return recurrence;
+    }
 
     private static OrderManagerProxy proxy() {
         if (proxy == null)
@@ -274,5 +309,4 @@ public class OrderManager implements RPC, HasAuxDataInt {
 
         return proxy;
     }
-
 }

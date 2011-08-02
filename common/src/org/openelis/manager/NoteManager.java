@@ -186,7 +186,7 @@ public class NoteManager implements RPC {
         return deletedList.get(i);
     }
 
-    private void addNote(NoteViewDO note) throws Exception {
+    public void addNote(NoteViewDO note) throws Exception {
         // we are only going to allow 1 external note. External notes can be
         // modified so there is no reason to have more than 1.
         if ("Y".equals(note.getIsExternal()) && count() > 0)

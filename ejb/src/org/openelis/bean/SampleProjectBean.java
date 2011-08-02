@@ -61,6 +61,20 @@ public class SampleProjectBean implements SampleProjectLocal {
         
         return DataBaseUtil.toArrayList(returnList);
     }
+    
+    public ArrayList<SampleProjectViewDO> fetchPermanentBySampleId(Integer sampleId) throws Exception {
+        Query query;
+        List<SampleProjectViewDO> returnList;
+        
+        query = manager.createNamedQuery("SampleProject.FetchPermanentBySampleId");
+        query.setParameter("id", sampleId);
+        returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
 
     public SampleProjectViewDO add(SampleProjectViewDO data) {
         SampleProject entity;

@@ -66,13 +66,21 @@ public class OrderItemManager implements RPC {
 
         return count() - 1;
     }
-
+    
     public int addItemAt(int i) {
         if (items == null)
             items = new ArrayList<OrderItemViewDO>();
         items.add(i, new OrderItemViewDO());
 
         return i;
+    }
+    
+    public int addItem(OrderItemViewDO item) {
+        if (items == null)
+            items = new ArrayList<OrderItemViewDO>();
+        items.add(item);
+
+        return count() - 1;
     }
 
     public void removeItemAt(int i) {

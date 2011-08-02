@@ -65,6 +65,12 @@ public class OrderTestManager implements RPC {
         tests.add(new OrderTestViewDO());        
     }
     
+    public void addTest(OrderTestViewDO test) {
+        if(tests == null)
+            tests = new ArrayList<OrderTestViewDO>();
+        tests.add(test);        
+    }
+    
     public void addTestAt(int i) {
         if(tests == null)
             tests = new ArrayList<OrderTestViewDO>();

@@ -38,9 +38,10 @@ public class AnalysisCacheVO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, statusId, sectionId, sampleId, sampleAccessionNumber,
-                              testTimeHolding,testTimeTaAverage;                              
+                              testTimeHolding,testTimeTaAverage, sampleEnvironmentalPriority;                              
     protected String          sampleDomain, sampleReportToName, testName, testMethodName,
-                              sectionName, qaeventResultOverride;
+                              sectionName, qaeventResultOverride, sampleProjectName,
+                              samplePrivateWellOwner, sampleSDWISPWSName;
     protected Datetime        availableDate, startedDate, completedDate, releasedDate,
                               sampleReceivedDate, sampleCollectionDate,
                               sampleCollectionTime;
@@ -52,8 +53,7 @@ public class AnalysisCacheVO extends DataObject {
                            Date startedDate, Date completedDate, Date releasedDate, Integer sampleId,
                            String sampleDomain, Integer sampleAccessionNumber, Date sampleReceivedDate,
                            Date sampleCollectionDate, Date sampleCollectionTime, String testName,
-                           Integer testTimeHolding, Integer testTimeTaAverage, String testMethodName,
-                           String sectionName, String qaeventResultOverride, String sampleReportToName) {
+                           Integer testTimeHolding, Integer testTimeTaAverage, String testMethodName) {
         setId(id);
         setStatusId(statusId);
         setSectionId(sectionId);
@@ -71,9 +71,6 @@ public class AnalysisCacheVO extends DataObject {
         setTestTimeHolding(testTimeHolding);
         setTestTimeTaAverage(testTimeTaAverage);
         setTestMethodName(testMethodName);
-        setSectionName(sectionName);
-        setQaeventResultOverride(qaeventResultOverride);
-        setSampleReportToName(sampleReportToName);
     }
     
     public Integer getId() {
@@ -234,5 +231,37 @@ public class AnalysisCacheVO extends DataObject {
     
     public void setSampleReportToName(String sampleReportToName) {
         this.sampleReportToName = DataBaseUtil.trim(sampleReportToName);
+    }
+
+    public Integer getSampleEnvironmentalPriority() {
+        return sampleEnvironmentalPriority;
+    }
+
+    public void setSampleEnvironmentalPriority(Integer sampleEnvironmentalPriority) {
+        this.sampleEnvironmentalPriority = sampleEnvironmentalPriority;
+    }
+
+    public String getSampleProjectName() {
+        return sampleProjectName;
+    }
+
+    public void setSampleProjectName(String sampleProjectName) {
+        this.sampleProjectName = DataBaseUtil.trim(sampleProjectName);
+    }
+    
+    public String getSamplePrivateWellOwner() {
+        return samplePrivateWellOwner;
+    }
+
+    public void setSamplePrivateWellOwner(String samplePrivateWellOwner) {
+        this.samplePrivateWellOwner = DataBaseUtil.trim(samplePrivateWellOwner);
+    }
+
+    public String getSampleSDWISPWSName() {
+        return sampleSDWISPWSName;
+    }
+
+    public void setSampleSDWISPWSName(String sampleSDWISPWSName) {
+        this.sampleSDWISPWSName = DataBaseUtil.trim(sampleSDWISPWSName);
     }
 }
