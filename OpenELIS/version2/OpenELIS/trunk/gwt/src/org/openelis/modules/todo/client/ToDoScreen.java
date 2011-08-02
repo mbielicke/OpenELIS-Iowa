@@ -64,7 +64,7 @@ public class ToDoScreen extends Screen {
     private SampleTrackingScreen      sampleTrackingScreen;
     
     private enum Tabs {
-        LOGGED_IN, INITIATED, COMPLETED, RELEASED, TO_BE_VERIFIED, OTHER, WORKSHEET, INSTRUMENT;
+        LOGGED_IN, INITIATED, WORKSHEET, COMPLETED, RELEASED, TO_BE_VERIFIED, OTHER, INSTRUMENT;
     };
     
     public ToDoScreen() throws Exception {
@@ -127,6 +127,11 @@ public class ToDoScreen extends Screen {
                             if (id != null)
                                 showTrackingScreen(id);
                             break;
+                        case WORKSHEET:
+                            id = worksheetTab.getSelectedId();
+                            if (id != null)
+                                showCompletionScreen(id);
+                            break;    
                         case COMPLETED:
                             id = completedTab.getSelectedId();
                             if (id != null)
@@ -146,11 +151,6 @@ public class ToDoScreen extends Screen {
                             id = otherTab.getSelectedId();
                             if (id != null)
                                 showTrackingScreen(id);
-                            break;    
-                        case WORKSHEET:
-                            id = worksheetTab.getSelectedId();
-                            if (id != null)
-                                showCompletionScreen(id);
                             break;    
                     }
                 } catch (Exception e) {
@@ -207,6 +207,19 @@ public class ToDoScreen extends Screen {
             }
         });
         
+        worksheetTab = new WorksheetTab(def, window);
+        addScreenHandler(worksheetTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                worksheetTab.reloadFromCache();
+                if (tab == Tabs.WORKSHEET)
+                    drawTabs(false);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                worksheetTab.setState(event.getState());
+            }
+        });  
+        
         completedTab = new CompletedTab(def, window);
         addScreenHandler(completedTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -257,20 +270,7 @@ public class ToDoScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 otherTab.setState(event.getState());
             }
-        });     
-        
-        worksheetTab = new WorksheetTab(def, window);
-        addScreenHandler(worksheetTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                worksheetTab.reloadFromCache();
-                if (tab == Tabs.WORKSHEET)
-                    drawTabs(false);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                worksheetTab.setState(event.getState());
-            }
-        });  
+        });             
     }
     
     protected void onAttach() {
@@ -314,6 +314,9 @@ public class ToDoScreen extends Screen {
             case INITIATED:
                 initiatedTab.draw(val);                
                 break;     
+            case WORKSHEET:
+                worksheetTab.draw(val);
+                break;
             case COMPLETED:
                 completedTab.draw(val);
                 break;
@@ -326,9 +329,6 @@ public class ToDoScreen extends Screen {
             case OTHER:
                 otherTab.draw(val);
                 break;      
-            case WORKSHEET:
-                worksheetTab.draw(val);
-                break;    
         }
     }   
 

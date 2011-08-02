@@ -124,7 +124,8 @@ public class CompletedTab extends Screen {
     
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
-        String sectName;
+        Integer priority;
+        String domain, sectName, project;  
         TableDataRow row;
         ArrayList<TableDataRow> model;
         SystemUserPermission perm;
@@ -150,7 +151,27 @@ public class CompletedTab extends Screen {
                 row.cells.get(3).setValue(data.getTestName());
                 row.cells.get(4).setValue(data.getTestMethodName());
                 row.cells.get(5).setValue(data.getQaeventResultOverride());
-                row.cells.get(6).setValue(data.getCompletedDate());                                
+                row.cells.get(6).setValue(data.getCompletedDate());       
+                
+                domain = data.getSampleDomain();                
+                if ("E".equals(domain)) {
+                    priority = data.getSampleEnvironmentalPriority();
+                    project = data.getSampleProjectName();
+                    if (priority == null)  {
+                        if (project != null)
+                            row.cells.get(7).setValue(project);
+                    } else {
+                        if (project == null)
+                            row.cells.get(7).setValue(priority);
+                        else 
+                            row.cells.get(7).setValue(priority +", "+ project);
+                    }                    
+                } else if ("W".equals(domain)) {
+                    row.cells.get(7).setValue(data.getSamplePrivateWellOwner());
+                } else if ("S".equals(domain)) {
+                    row.cells.get(7).setValue(data.getSampleSDWISPWSName());
+                }
+                
                 row.cells.get(8).setValue(data.getSampleReportToName());
                 row.data = data;
                 model.add(row);

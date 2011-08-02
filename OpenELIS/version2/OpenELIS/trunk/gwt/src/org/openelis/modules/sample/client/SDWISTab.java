@@ -34,7 +34,9 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
@@ -114,9 +116,11 @@ public class SDWISTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
+                boolean clearValue;
                 PWSDO data;
 
-                if (event.getValue() != null && event.getValue() != "") { 
+                clearValue = false;
+                if (!DataBaseUtil.isEmpty(event.getValue())) { 
                     try {
                         data = pwsService.call("fetchByPwsNumber0", event.getValue());
                         getSDWISManager().getSDWIS().setPwsId(data.getId());
@@ -125,19 +129,24 @@ public class SDWISTab extends Screen {
                         pwsName.setValue(data.getName());
                     } catch (ValidationErrorsList e) {
                         showErrors(e);
-                        getSDWISManager().getSDWIS().setPwsId(null);
-                        getSDWISManager().getSDWIS().setPwsName(null);
-                        getSDWISManager().getSDWIS().setPwsNumber0(null);
-                        pwsName.setValue(null);
-                    } catch (Exception e) {
+                        clearValue = true;
+                    } catch (NotFoundException e) {
+                        clearValue = true;
+                    }catch (Exception e) {
                         Window.alert("pwsId valueChange: " + e.getMessage());
                     }
                 } else {
+                    clearValue = true;
+                }
+                
+                if (clearValue) {
                     getSDWISManager().getSDWIS().setPwsId(null);
                     getSDWISManager().getSDWIS().setPwsName(null);
                     getSDWISManager().getSDWIS().setPwsNumber0(null);
+                    pwsId.setValue(null);
                     pwsName.setValue(null);
                 }
+                    
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

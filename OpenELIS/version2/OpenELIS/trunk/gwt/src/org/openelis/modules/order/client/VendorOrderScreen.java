@@ -776,6 +776,11 @@ public class VendorOrderScreen extends Screen {
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO d : list) {
+            //
+            // we're not showing recurring orders on this screen
+            //
+            if ("order_status_recurring".equals(d.getSystemName()))
+                continue;
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);

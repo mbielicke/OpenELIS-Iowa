@@ -25,6 +25,7 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.gwt.services.ScreenService;
 
 public class OrderManagerProxy {
@@ -54,6 +55,14 @@ public class OrderManagerProxy {
     
     public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
         return service.call("fetchWithTestsAndContainers", id);
+    }
+    
+    public OrderManager fetchWithRecurring(Integer id) throws Exception {
+        return service.call("fetchWithRecurring", id);
+    }
+    
+    public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
+        return service.call("fetchRecurrenceByOrderId", id);
     }
 
     public OrderManager add(OrderManager man) throws Exception {

@@ -123,10 +123,12 @@ public class ToBeVerifiedTab extends Screen {
     }
     
     private ArrayList<TableDataRow> getTableModel() {
+        Integer priority;
+        String domain, project;
         TableDataRow row;
         ArrayList<TableDataRow> model;
         Datetime scd, sct;
-        Date temp;        
+        Date temp;           
         
         model = new ArrayList<TableDataRow>();
         try {            
@@ -155,6 +157,26 @@ public class ToBeVerifiedTab extends Screen {
                 }
                 row.cells.get(3).setValue(data.getReceivedDate());                
                 row.cells.get(4).setValue(data.getQaeventResultOverride());
+                
+                domain = data.getDomain();                
+                if ("E".equals(domain)) {
+                    priority = data.getSampleEnvironmentalPriority();
+                    project = data.getSampleProjectName();
+                    if (priority == null)  {
+                        if (project != null)
+                            row.cells.get(5).setValue(project);
+                    } else {
+                        if (project == null)
+                            row.cells.get(5).setValue(priority);
+                        else 
+                            row.cells.get(5).setValue(priority +", "+ project);
+                    }                    
+                } else if ("W".equals(domain)) {
+                    row.cells.get(5).setValue(data.getSamplePrivateWellOwner());
+                } else if ("S".equals(domain)) {
+                    row.cells.get(5).setValue(data.getSampleSDWISPWSName());
+                }
+                
                 row.cells.get(6).setValue(data.getReportToName());
                 row.data = data;
                 model.add(row);

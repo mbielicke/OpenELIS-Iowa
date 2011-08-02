@@ -300,7 +300,6 @@ public class AuxDataTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 auxMethod.enable(false);
-                auxMethod.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -312,7 +311,6 @@ public class AuxDataTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 auxUnits.enable(false);
-                auxUnits.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -324,14 +322,16 @@ public class AuxDataTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 auxDesc.enable(false);
-                auxDesc.setQueryMode(event.getState() == State.QUERY);
             }
         });
     }
     
-    private boolean canEdit() {
-        return (parentMan != null && parentMan instanceof SampleManager &&
-                !sampleReleasedId.equals(((SampleManager)parentMan).getSample().getStatusId()));
+    private boolean canEdit() {        
+        if (parentMan == null)
+            return false;
+        else if (parentMan instanceof SampleManager) 
+            return !sampleReleasedId.equals(((SampleManager)parentMan).getSample().getStatusId());        
+        return true;
     }
 
     private ArrayList<TableDataRow> getTableModel() {
@@ -397,6 +397,7 @@ public class AuxDataTab extends Screen {
                         dataDO = new AuxDataViewDO();
                         dataDO.setAuxFieldId(fieldDO.getId());
                         dataDO.setIsReportable(fieldDO.getIsReportable());
+                        dataDO.setGroupId(fieldDO.getAuxFieldGroupId());
 
                         row = new TableDataRow(3);
                         row.cells.get(0).value = fieldDO.getIsReportable();
