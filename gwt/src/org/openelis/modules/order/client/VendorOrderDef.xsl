@@ -343,7 +343,7 @@ UIRF Software License are applicable instead of those above.
                     <HorizontalPanel>
                       <AbsolutePanel style="StandardNoteButtonImage" />
                       <text>
-                        <xsl:value-of select="resource:getString($constants,'addNote')" />
+                        <xsl:value-of select="resource:getString($constants,'editNote')" />
                       </text>
                     </HorizontalPanel>
                   </appButton>

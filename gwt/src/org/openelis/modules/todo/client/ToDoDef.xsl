@@ -152,7 +152,7 @@ UIRF Software License are applicable instead of those above.
                     <range color="red" threshold="100" />
                   </percentBar>
                 </col>
-                <col header="{resource:getString($constants,'daysInInitiated')}" key="daysInInitiated" sort="true" width="100">
+                <col header="{resource:getString($constants,'daysInInitiated')}" align = "center" key="daysInInitiated" sort="true" width="100">
                   <label field="Integer" />
                 </col>
                 <col header="{resource:getString($constants,'domainSpecField')}" key="mush" width="150">
@@ -163,6 +163,30 @@ UIRF Software License are applicable instead of those above.
                 </col>
               </table>
               <VerticalPanel height="200" key="initiatedPanel" width="605" />
+            </VerticalPanel>
+          </tab>
+          <tab text="{resource:getString($constants,'worksheet')}">
+            <VerticalPanel>
+              <table key="worksheetTable" maxRows="24" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="605">
+                <col header="{resource:getString($constants,'worksheetNumber')}" key="worksheetNum" sort="true" width="80">
+                  <label field="Integer" />
+                </col>
+                <col filter="true" header="{resource:getString($constants,'worksheetUser')}" key="user" sort="true" width="122">
+                  <label field="String" />
+                </col>
+                <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="120">
+                  <label field="String" />
+                </col>
+                <col filter="true" header="{resource:getString($constants,'test')}" key="test" sort="true" width="80">
+                  <label field="String" />
+                </col>
+                <col filter="true" header="{resource:getString($constants,'method')}" key="method" sort="true" width="80">
+                  <label field="String" />
+                </col>
+                <col header="{resource:getString($constants,'created')}" key="createdDate" sort="true" width="105">
+                  <label field="Date" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                </col>
+              </table>
             </VerticalPanel>
           </tab>
           <tab text="{resource:getString($constants,'completed')}">
@@ -302,30 +326,6 @@ UIRF Software License are applicable instead of those above.
                 </col>
                 <col filter="true" header="{resource:getString($constants,'reportTo')}" key="reportTo" sort="true" width="200">
                   <label field="String" />
-                </col>
-              </table>
-            </VerticalPanel>
-          </tab>
-          <tab text="{resource:getString($constants,'worksheet')}">
-            <VerticalPanel>
-              <table key="worksheetTable" maxRows="24" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="605">
-                <col header="{resource:getString($constants,'worksheetNumber')}" key="worksheetNum" sort="true" width="80">
-                  <label field="Integer" />
-                </col>
-                <col filter="true" header="{resource:getString($constants,'worksheetUser')}" key="user" sort="true" width="122">
-                  <label field="String" />
-                </col>
-                <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="120">
-                  <label field="String" />
-                </col>
-                <col filter="true" header="{resource:getString($constants,'test')}" key="test" sort="true" width="80">
-                  <label field="String" />
-                </col>
-                <col filter="true" header="{resource:getString($constants,'method')}" key="method" sort="true" width="80">
-                  <label field="String" />
-                </col>
-                <col header="{resource:getString($constants,'created')}" key="createdDate" sort="true" width="105">
-                  <label field="Date" pattern="{resource:getString($constants,'dateTimePattern')}" />
                 </col>
               </table>
             </VerticalPanel>

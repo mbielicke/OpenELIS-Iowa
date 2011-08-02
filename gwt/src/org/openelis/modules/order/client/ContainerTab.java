@@ -55,7 +55,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;

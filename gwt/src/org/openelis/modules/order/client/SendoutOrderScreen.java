@@ -41,6 +41,7 @@ import org.openelis.domain.IdVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
@@ -71,6 +72,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -80,7 +82,6 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.AuxFieldManager;
@@ -89,7 +90,6 @@ import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderTestManager;
-import org.openelis.manager.SampleDataBundle;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
@@ -107,45 +107,50 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SendoutOrderScreen extends Screen {
 
-    private OrderManager          manager;
-    private ModulePermission      userPermission;
+    private OrderManager                           manager;
+    private ModulePermission                       userPermission;
 
-    private ButtonGroup           atoz;
-    private ScreenNavigator       nav;
+    private ButtonGroup                            atoz;
+    private ScreenNavigator                        nav;
 
-    private ItemTab               itemTab;
-    private FillTab               fillTab;
-    private ShipNoteTab           shipNoteTab;
-    private CustomerNoteTab       custNoteTab;
-    private ReportToBillToTab     reportToBillToTab;
-    private AuxDataTab            auxDataTab;
-    private ContainerTab          containerTab;
-    private Tabs                  tab;
+    private ReportToBillToTab                      reportToBillToTab;
+    private AuxDataTab                             auxDataTab;
+    private ContainerTab                           containerTab;
+    private ItemTab                                itemTab;
+    private ShipNoteTab                            shipNoteTab;
+    private CustomerNoteTab                        custNoteTab;
+    private FillTab                                fillTab;
+    private RecurrenceTab                          recurrenceTab;
+    private Tabs                                   tab;
 
-    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                                  commitButton, abortButton;
-    private MenuItem              duplicate, orderHistory, itemHistory, testHistory,
-                                  containerHistory;
-    private TextBox               id, neededInDays, requestedBy, organizationAttention,
-                                  organizationAddressMultipleUnit, organizationAddressStreetAddress,
-                                  organizationAddressCity, organizationAddressState, organizationAddressZipCode;
-    private CalendarLookUp        orderedDate;
-    private Dropdown<Integer>     statusId, shipFromId, costCenterId;
-    private AutoComplete<Integer> organizationName;
-    private AutoComplete<String>  description;
-    private TabPanel              tabPanel;
-    private Integer               status_pending, auxAlphaLowerId, auxAlphaMixedId,
-                                  auxAlphaUpperId, auxDateId, auxDateTimeId, auxDefaultId,
-                                  auxDictionaryId, auxNumericId,
-    auxTimeId;
-    private String                descQuery;
+    private AppButton                              queryButton, previousButton, nextButton,
+                                                   addButton, updateButton, commitButton,
+                                                   abortButton;
+    private MenuItem                               duplicate, orderHistory, itemHistory,
+                                                   testHistory, containerHistory;
+    private TextBox                                id, neededInDays, requestedBy,
+                                                   organizationAttention, organizationAddressMultipleUnit,
+                                                   organizationAddressStreetAddress,
+                                                   organizationAddressCity, organizationAddressState,
+                                                   organizationAddressZipCode;
+    private CalendarLookUp                         orderedDate;
+    private Dropdown<Integer>                      statusId, shipFromId, costCenterId;
+    private AutoComplete<Integer>                  organizationName;
+    private AutoComplete<String>                   description;
+    private TabPanel                               tabPanel;
+    private Integer                                status_pending, status_recurring,
+                                                   auxAlphaLowerId, auxAlphaMixedId, 
+                                                   auxAlphaUpperId, auxDateId, auxDateTimeId,
+                                                   auxDefaultId, auxDictionaryId, 
+                                                   auxNumericId, auxTimeId;
+    private String                                 descQuery;
 
     private HashMap<Integer, ResultValidator.Type> types;
 
-    protected ScreenService       organizationService, panelService;
+    protected ScreenService                        organizationService, panelService;
 
     private enum Tabs {
-        ITEM, FILL, SHIP_NOTE, CUSTOMER_NOTE, REPORT_TO, CONTAINER, AUX_DATA
+        REPORT_TO, AUX_DATA, CONTAINER, ITEM, SHIP_NOTE, CUSTOMER_NOTE, RECURRENCE, FILL 
     };
 
     public SendoutOrderScreen() throws Exception {
@@ -170,11 +175,11 @@ public class SendoutOrderScreen extends Screen {
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Send-out Order Screen");
 
-        //
-        // this is done here in order to make sure that if the screen is brought
-        // up from some other screen then its widgets are initialized before the
-        // constructor ends execution
-        //
+        /*
+         * this is done here in order to make sure that if the screen is brought
+         * up from some other screen then its widgets are initialized before the
+         * constructor ends execution
+         */
         if (window != null) {
             postConstructor();
         } else {
@@ -353,7 +358,7 @@ public class SendoutOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 containerHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
-        });
+        });       
 
         //
         // screen fields
@@ -788,58 +793,6 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        itemTab = new ItemTab(def, window);
-        addScreenHandler(itemTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                itemTab.setManager(manager);
-                if (tab == Tabs.ITEM)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                itemTab.setState(event.getState());
-            }
-        });
-
-        fillTab = new FillTab(def, window);
-        addScreenHandler(fillTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                fillTab.setManager(manager);
-                if (tab == Tabs.FILL)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                fillTab.setState(event.getState());
-            }
-        });
-
-        shipNoteTab = new ShipNoteTab(def, window, "notesPanel", "standardNoteButton");
-        addScreenHandler(shipNoteTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                shipNoteTab.setManager(manager);
-                if (tab == Tabs.SHIP_NOTE)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                shipNoteTab.setState(event.getState());
-            }
-        });
-
-        custNoteTab = new CustomerNoteTab(def, window, "customerNotesPanel", "editNoteButton");
-        addScreenHandler(custNoteTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                custNoteTab.setManager(manager);
-                if (tab == Tabs.CUSTOMER_NOTE)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                custNoteTab.setState(event.getState());
-            }
-        });
-
         reportToBillToTab = new ReportToBillToTab(def, window);
         addScreenHandler(reportToBillToTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -851,8 +804,8 @@ public class SendoutOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 reportToBillToTab.setState(event.getState());
             }
-        });
-
+        });      
+        
         auxDataTab = new AuxDataTab(def, window);
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -884,6 +837,71 @@ public class SendoutOrderScreen extends Screen {
                 if (event.getAction() == ContainerTab.Action.ADD_AUX) {
                     addAuxGroupsFromPanel((Integer)event.getData());
                 }
+            }
+        });
+
+        itemTab = new ItemTab(def, window);
+        addScreenHandler(itemTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                itemTab.setManager(manager);
+                if (tab == Tabs.ITEM)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                itemTab.setState(event.getState());
+            }
+        });
+        
+        shipNoteTab = new ShipNoteTab(def, window, "notesPanel", "standardNoteButton");
+        addScreenHandler(shipNoteTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                shipNoteTab.setManager(manager);
+                if (tab == Tabs.SHIP_NOTE)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                shipNoteTab.setState(event.getState());
+            }
+        });
+
+        custNoteTab = new CustomerNoteTab(def, window, "customerNotesPanel", "editNoteButton");
+        addScreenHandler(custNoteTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                custNoteTab.setManager(manager);
+                if (tab == Tabs.CUSTOMER_NOTE)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                custNoteTab.setState(event.getState());
+            }
+        });
+        
+        recurrenceTab = new RecurrenceTab(def, window);
+        addScreenHandler(recurrenceTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                recurrenceTab.setManager(manager);
+                if (tab == Tabs.RECURRENCE)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                recurrenceTab.setState(event.getState());
+            }
+        });
+        
+        fillTab = new FillTab(def, window);
+        addScreenHandler(fillTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                fillTab.setManager(manager);
+                if (tab == Tabs.FILL)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                fillTab.setState(event.getState());
             }
         });
         
@@ -1036,6 +1054,7 @@ public class SendoutOrderScreen extends Screen {
             auxTimeId = DictionaryCache.getIdBySystemName("aux_time");
             types.put(auxTimeId, ResultValidator.Type.TIME);
             status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
+            status_recurring = DictionaryCache.getIdBySystemName("order_status_recurring");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1044,21 +1063,23 @@ public class SendoutOrderScreen extends Screen {
 
     public void setManager(OrderManager manager) {
         this.manager = manager;
-        itemTab.setManager(manager);
-        fillTab.setManager(manager);
-        shipNoteTab.setManager(manager);
-        custNoteTab.setManager(manager);
         reportToBillToTab.setManager(manager);
         auxDataTab.setManager(manager);
         containerTab.setManager(manager);
+        itemTab.setManager(manager);
+        shipNoteTab.setManager(manager);
+        custNoteTab.setManager(manager);
+        recurrenceTab.setManager(manager);
+        fillTab.setManager(manager);
 
+        reportToBillToTab.draw();
+        auxDataTab.draw();
+        containerTab.draw();
         itemTab.draw();
-        fillTab.draw();
         shipNoteTab.draw();
         custNoteTab.draw();
-        reportToBillToTab.draw();
-        containerTab.draw();
-        auxDataTab.draw();
+        recurrenceTab.draw();
+        fillTab.draw();
 
         if (manager.getOrder().getId() != null)
             setState(State.DISPLAY);
@@ -1070,7 +1091,6 @@ public class SendoutOrderScreen extends Screen {
     /*
      * basic button methods
      */
-
     protected void query() {
         manager = OrderManager.getInstance();
 
@@ -1078,11 +1098,14 @@ public class SendoutOrderScreen extends Screen {
         DataChangeEvent.fire(this);
 
         // clear all the tabs
+        reportToBillToTab.draw();
+        auxDataTab.draw();
+        containerTab.draw();
         itemTab.draw();
-        fillTab.draw();
         shipNoteTab.draw();
         custNoteTab.draw();
-        reportToBillToTab.draw();
+        recurrenceTab.draw();
+        fillTab.draw();
 
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
@@ -1122,12 +1145,14 @@ public class SendoutOrderScreen extends Screen {
     }
 
     protected void update() {
+        Integer stId;
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
             manager = manager.fetchForUpdate();
-            if ( !status_pending.equals(manager.getOrder().getStatusId())) {
-                Window.alert(consts.get("orderStatusNotPendingForUpdate"));
+            stId = manager.getOrder().getStatusId();
+            if ( !status_pending.equals(stId) && !status_recurring.equals(stId)) {
+                Window.alert(consts.get("orderStatusNotPendingOrRecurForUpdate"));
                 manager = manager.abortUpdate();
             } else {
                 setState(State.UPDATE);
@@ -1142,6 +1167,11 @@ public class SendoutOrderScreen extends Screen {
     }
 
     protected void commit() {
+        Query query;
+        OrderViewDO data;
+        OrderRecurrenceDO orec;
+        ArrayList<QueryData> queryFields;
+        
         setFocus(null);
 
         if ( !validate()) {
@@ -1150,22 +1180,21 @@ public class SendoutOrderScreen extends Screen {
         }
 
         if (state == State.QUERY) {
-            Query query;
-            QueryData field;
-
-            // this screen should only query for internal orders
-            field = new QueryData();
-            field.key = OrderMeta.getType();
-            field.query = OrderManager.TYPE_SEND_OUT;
-            field.type = QueryData.Type.STRING;
-
+            queryFields = getQueryFields();
             query = new Query();
-            query.setFields(getQueryFields());
-            query.setFields(field);
+            query.setFields(queryFields);           
+
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
             try {
+                data = manager.getOrder();
+                orec = manager.getRecurrence();
+                if (orec.isChanged())  {
+                    data.setStatusId(status_recurring);
+                    if (orec.getIsActive() == null)
+                        orec.setIsActive("N");
+                }
                 manager = manager.add();
 
                 setState(State.DISPLAY);
@@ -1180,6 +1209,14 @@ public class SendoutOrderScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
+                data = manager.getOrder();
+                orec = manager.getRecurrence();
+                if (orec.isChanged())  {
+                    data.setStatusId(status_recurring);
+                    if (orec.getIsActive() == null)
+                        orec.setIsActive("N");
+                }
+                
                 manager = manager.update();
 
                 setState(State.DISPLAY);
@@ -1246,6 +1283,7 @@ public class SendoutOrderScreen extends Screen {
             reportToBillToTab.setManager(manager);
             containerTab.setManager(manager);
             auxDataTab.setManager(manager);
+            recurrenceTab.setManager(manager);
 
             manager.getItems();
             manager.getShippingNotes();
@@ -1253,15 +1291,17 @@ public class SendoutOrderScreen extends Screen {
             manager.getTests();
             manager.getContainers();
             manager.getAuxData();
+            manager.getRecurrence();
 
             clearKeys();
 
-            itemTab.draw();
-            shipNoteTab.draw();
-            custNoteTab.draw();
             reportToBillToTab.draw();
-            containerTab.draw();
             auxDataTab.draw();
+            containerTab.draw();
+            shipNoteTab.draw();
+            itemTab.draw();
+            custNoteTab.draw();
+            recurrenceTab.draw();
 
             setState(State.ADD);
             DataChangeEvent.fire(this);
@@ -1383,6 +1423,9 @@ public class SendoutOrderScreen extends Screen {
                     case AUX_DATA:
                         manager = OrderManager.fetchById(id);
                         break;
+                    case RECURRENCE:
+                        manager = OrderManager.fetchById(id);                        
+                        break;    
 
                 }
                 setState(State.DISPLAY);
@@ -1404,38 +1447,51 @@ public class SendoutOrderScreen extends Screen {
     }
 
     public ArrayList<QueryData> getQueryFields() {
-        ArrayList<QueryData> returnList, auxFields;
-        QueryData queryData;
+        int i;
+        ArrayList<QueryData> fields, auxFields;
+        QueryData field;
 
-        returnList = super.getQueryFields();
+        fields = super.getQueryFields();
 
         // add aux data values if necessary
         auxFields = auxDataTab.getQueryFields();
 
+        // add the type
+        field = new QueryData();
+        field.key = OrderMeta.getType();
+        field.query = OrderManager.TYPE_SEND_OUT;
+        field.type = QueryData.Type.STRING;        
+        
         if (auxFields.size() > 0) {
             // add ref table
-            queryData = new QueryData();
-            queryData.key = OrderMeta.getAuxDataReferenceTableId();
-            queryData.type = QueryData.Type.INTEGER;
-            queryData.query = String.valueOf(ReferenceTable.ORDER);
-            returnList.add(queryData);
+            field = new QueryData();
+            field.key = OrderMeta.getAuxDataReferenceTableId();
+            field.type = QueryData.Type.INTEGER;
+            field.query = String.valueOf(ReferenceTable.ORDER);
+            fields.add(field);
 
             // add aux fields
-            for (int i = 0; i < auxFields.size(); i++ ) {                
-                returnList.add(auxFields.get(i));            
+            for (i = 0; i < auxFields.size(); i++ ) {                
+                fields.add(auxFields.get(i));            
             } 
         }
 
-        return returnList;
+        return fields;
     }
 
     private void drawTabs() {
         switch (tab) {
+            case REPORT_TO:
+                reportToBillToTab.draw();
+                break;
+            case AUX_DATA:
+                auxDataTab.draw();
+                break;
+            case CONTAINER:
+                containerTab.draw();
+                break;
             case ITEM:
                 itemTab.draw();
-                break;
-            case FILL:
-                fillTab.draw();
                 break;
             case SHIP_NOTE:
                 shipNoteTab.draw();
@@ -1443,14 +1499,11 @@ public class SendoutOrderScreen extends Screen {
             case CUSTOMER_NOTE:
                 custNoteTab.draw();
                 break;
-            case REPORT_TO:
-                reportToBillToTab.draw();
-                break;
-            case CONTAINER:
-                containerTab.draw();
-                break;
-            case AUX_DATA:
-                auxDataTab.draw();
+            case RECURRENCE:
+                recurrenceTab.draw();
+                break;    
+            case FILL:
+                fillTab.draw();
                 break;
         }
     }
@@ -1527,6 +1580,9 @@ public class SendoutOrderScreen extends Screen {
                 aux.setReferenceId(null);
                 aux.setReferenceTableId(null);
             }
+            
+            manager.getRecurrence().setId(null);
+            manager.getRecurrence().setOrderId(null);
 
         } catch (Exception e) {
             Window.alert(e.getMessage());

@@ -87,7 +87,8 @@ public class ReleasedTab extends Screen {
     
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
-        String sectName;
+        Integer priority;
+        String domain, sectName, project;      
         TableDataRow row;
         ArrayList<TableDataRow> model;
         Datetime scd, sct;
@@ -131,6 +132,26 @@ public class ReleasedTab extends Screen {
                 }
                 row.cells.get(6).setValue(data.getReleasedDate());                
                 row.cells.get(7).setValue(data.getQaeventResultOverride());
+                
+                domain = data.getSampleDomain();                
+                if ("E".equals(domain)) {
+                    priority = data.getSampleEnvironmentalPriority();
+                    project = data.getSampleProjectName();
+                    if (priority == null)  {
+                        if (project != null)
+                            row.cells.get(8).setValue(project);
+                    } else {
+                        if (project == null)
+                            row.cells.get(8).setValue(priority);
+                        else 
+                            row.cells.get(8).setValue(priority +", "+ project);
+                    }                    
+                } else if ("W".equals(domain)) {
+                    row.cells.get(8).setValue(data.getSamplePrivateWellOwner());
+                } else if ("S".equals(domain)) {
+                    row.cells.get(8).setValue(data.getSampleSDWISPWSName());
+                }
+                
                 row.cells.get(9).setValue(data.getSampleReportToName());
                 row.data = data;
                 model.add(row);

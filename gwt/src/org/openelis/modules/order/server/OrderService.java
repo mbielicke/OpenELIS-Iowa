@@ -28,7 +28,9 @@ package org.openelis.modules.order.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
@@ -38,7 +40,9 @@ import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.OrderManagerRemote;
+import org.openelis.remote.OrderRecurrenceReportRemote;
 import org.openelis.remote.OrderRemote;
+import org.openelis.report.Prompt;
 
 public class OrderService {
     private static final int rowPP = 20;
@@ -69,7 +73,11 @@ public class OrderService {
     
     public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
         return remoteManager().fetchWithTestsAndContainers(id);
-    }   
+    } 
+    
+    public OrderManager fetchWithRecurring(Integer id) throws Exception {
+        return remoteManager().fetchWithRecurring(id);
+    }  
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
@@ -77,6 +85,14 @@ public class OrderService {
     
     public ArrayList<OrderViewDO> queryOrderFill(Query query) throws Exception {
         return remote().queryOrderFill(query.getFields());
+    }
+    
+    public void recurOrders() {
+        remoteRecurReport().recurOrders();
+    }
+    
+    public ArrayList<Prompt> getPrompts() {
+        return remoteRecurReport().getPrompts();
     }
 
     public OrderManager add(OrderManager man) throws Exception {
@@ -117,6 +133,10 @@ public class OrderService {
     public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {
         return remoteManager().fetchContainerByOrderId(id);
     }
+    
+    public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
+        return remoteManager().fetchRecurrenceByOrderId(id);
+    }
 
     private OrderRemote remote() {
         return (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
@@ -124,5 +144,9 @@ public class OrderService {
 
     private OrderManagerRemote remoteManager() {
         return (OrderManagerRemote)EJBFactory.lookup("openelis/OrderManagerBean/remote");
+    }
+    
+    private OrderRecurrenceReportRemote remoteRecurReport() {
+        return (OrderRecurrenceReportRemote)EJBFactory.lookup("openelis/OrderRecurrenceReportBean/remote");
     }
 }

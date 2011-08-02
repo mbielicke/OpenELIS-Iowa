@@ -490,9 +490,13 @@ public class OrderFillScreen extends Screen {
         Dropdown<Integer> status, shipFrom, type;
 
         model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("order_status");
         for (DictionaryDO resultDO : list) {
+            //
+            // we're not showing recurring orders on this screen
+            //
+            if ("order_status_recurring".equals(resultDO.getSystemName()))
+                continue;
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));
             model.add(row);
