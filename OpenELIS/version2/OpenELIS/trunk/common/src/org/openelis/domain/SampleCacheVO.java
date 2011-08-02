@@ -37,8 +37,9 @@ public class SampleCacheVO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, statusId, accessionNumber;                              
-    protected String          domain, reportToName, qaeventResultOverride;
+    protected Integer         id, statusId, accessionNumber, sampleEnvironmentalPriority;                              
+    protected String          domain, reportToName, qaeventResultOverride, sampleProjectName,
+                              samplePrivateWellOwner, sampleSDWISPWSName;
     protected Datetime        receivedDate, collectionDate, collectionTime;
     
     public SampleCacheVO() {        
@@ -128,5 +129,37 @@ public class SampleCacheVO extends DataObject {
     
     public void setReportToName(String reportToName) {
         this.reportToName = DataBaseUtil.trim(reportToName);
+    }
+    
+    public Integer getSampleEnvironmentalPriority() {
+        return sampleEnvironmentalPriority;
+    }
+
+    public void setSampleEnvironmentalPriority(Integer sampleEnvironmentalPriority) {
+        this.sampleEnvironmentalPriority = sampleEnvironmentalPriority;
+    }
+
+    public String getSampleProjectName() {
+        return sampleProjectName;
+    }
+
+    public void setSampleProjectName(String sampleProjectName) {
+        this.sampleProjectName = DataBaseUtil.trim(sampleProjectName);
+    }
+    
+    public String getSamplePrivateWellOwner() {
+        return samplePrivateWellOwner;
+    }
+
+    public void setSamplePrivateWellOwner(String samplePrivateWellOwner) {
+        this.samplePrivateWellOwner = DataBaseUtil.trim(samplePrivateWellOwner);
+    }
+
+    public String getSampleSDWISPWSName() {
+        return sampleSDWISPWSName;
+    }
+
+    public void setSampleSDWISPWSName(String sampleSDWISPWSName) {
+        this.sampleSDWISPWSName = DataBaseUtil.trim(sampleSDWISPWSName);
     }
 }

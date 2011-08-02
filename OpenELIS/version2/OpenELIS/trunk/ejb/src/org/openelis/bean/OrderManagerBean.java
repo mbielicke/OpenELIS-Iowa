@@ -35,6 +35,7 @@ import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.LockLocal;
@@ -78,6 +79,10 @@ public class OrderManagerBean implements OrderManagerRemote {
     
     public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {        
         return OrderManager.fetchWithTestsAndContainers(id);
+    }
+    
+    public OrderManager fetchWithRecurring(Integer id) throws Exception {
+        return OrderManager.fetchWithRecurrence(id);
     }
 
     public OrderManager add(OrderManager man) throws Exception {
@@ -131,6 +136,7 @@ public class OrderManagerBean implements OrderManagerRemote {
             ut.begin();
             lockBean.lock(ReferenceTable.ORDER, id);
             man = fetchById(id);
+            man.getRecurrence();
             ut.commit();
             return man;
         } catch (Exception e) {
@@ -156,16 +162,19 @@ public class OrderManagerBean implements OrderManagerRemote {
         return OrderReceiptManager.fetchByOrderId(id);
     }
     
+    public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {       
+        return OrderTestManager.fetchByOrderId(id);
+    }
+    
     public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {        
         return OrderContainerManager.fetchByOrderId(id);
     }
     
-    public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {       
-        return OrderTestManager.fetchByOrderId(id);
+    public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {        
+        return OrderManager.fetchRecurrenceByOrderId(id);
     }
-
+    
     private void checkSecurity(ModuleFlags flag) throws Exception {
         EJBFactory.getUserCache().applyPermission("order", flag);
     }
-
 }

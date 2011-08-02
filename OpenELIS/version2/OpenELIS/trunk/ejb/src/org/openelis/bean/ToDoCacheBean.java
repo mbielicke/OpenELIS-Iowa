@@ -44,9 +44,12 @@ import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleCacheVO;
+import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
+import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventDO;
+import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SectionDO;
 import org.openelis.domain.WorksheetCacheVO;
 import org.openelis.entity.AnalysisQaevent;
@@ -54,9 +57,12 @@ import org.openelis.entity.Sample;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisQAEventLocal;
+import org.openelis.local.SampleEnvironmentalLocal;
 import org.openelis.local.SampleOrganizationLocal;
 import org.openelis.local.SamplePrivateWellLocal;
+import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SampleQAEventLocal;
+import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.ToDoCacheLocal;
 import org.openelis.remote.ToDoCacheRemote;
@@ -374,19 +380,18 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         Query query;
         ArrayList<AnalysisCacheVO> list;        
         List queryList;                
-        //Datetime d;
         Date rd,mn;
         
         if (statusId != null) {
             query = manager.createNamedQuery("Analysis.FetchForCachingByStatusId");
             query.setParameter("statusId", statusId);
         } else if (cache == releasedCache) {
-            //d = Datetime.getInstance(Datetime.YEAR, Datetime.MONTH);
             mn = new Date();
             mn.setHours(0);
             mn.setMinutes(0);
-            mn.setSeconds(0);
-            rd = new Date(mn.getTime() - 4*86400000);
+            mn.setSeconds(0);            
+            // 345600000 = 4 days           
+            rd = new Date(mn.getTime() - 345600000);
             query = manager.createNamedQuery("Analysis.FetchReleasedForCaching");
             query.setParameter("releasedDate", rd);
         } else {
@@ -400,18 +405,23 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
     
     private ArrayList<SampleCacheVO> createSampleCacheEntries(Cache cache, List<SampleCacheVO> queryList) throws Exception {
         Integer id;
-        String name;      
+        String name, prjName;     
         Sample sample;       
         AnalysisQAEventLocal aqel;
         SampleQAEventLocal sqel;
         SampleOrganizationLocal sol;
+        SampleEnvironmentalLocal sel;
         SamplePrivateWellLocal spwl;
+        SampleSDWISLocal ssdl;
+        SampleProjectLocal spl;
         SamplePrivateWellViewDO spw;
+        SampleEnvironmentalDO senv;
+        SampleSDWISViewDO ssd;
         SampleCacheVO svo;
         Element elem;
-        HashMap<Integer, String> sorgMap;
         ArrayList<Integer> sidList;
         ArrayList<SampleOrganizationViewDO> sorgList;
+        ArrayList<SampleProjectViewDO> sprjList;
         ArrayList<SampleQaEventDO> sqeList;
         ArrayList<AnalysisQaevent> aqeList;
         ArrayList<SampleCacheVO> voList;
@@ -419,28 +429,18 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         aqel = EJBFactory.getAnalysisQAEvent();
         sqel = EJBFactory.getSampleQAEvent();
         sol = EJBFactory.getSampleOrganization();
+        sel = EJBFactory.getSampleEnvironmental();
         spwl = EJBFactory.getSamplePrivateWell();
-        sorgMap = new HashMap<Integer, String>();
+        ssdl = EJBFactory.getSampleSDWIS();
+        spl = EJBFactory.getSampleProject();
         sidList = new ArrayList<Integer>();
         
         try {
             for (SampleCacheVO data : queryList) {
                 data.setQaeventResultOverride("N");
                 id = data.getId();
-                name = sorgMap.get(id);
-                if (name == null) {
-                    /*
-                     * if the sample's domain is private well(W) then it may not have
-                     * its "report to" linked to sample_organization, but present
-                     * in sample_private_well     
-                     */
-                    if ("W".equals(data.getDomain())) {
-                        spw = spwl.fetchBySampleId(id);
-                        if (spw.getOrganization() != null)
-                            name = spw.getOrganization().getName();
-                        else
-                            name = spw.getReportToName();
-                    } else if (!"Q".equals(data.getDomain())) {
+                //if (name == null) {
+                    if ("E".equals(data.getDomain())) {
                         //
                         // there is no "report to" for quick-entry (Q) samples 
                         //
@@ -450,13 +450,50 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                         } catch (NotFoundException e) {
                             name = "";
                         }
+                        data.setReportToName(name);
+                        
+                        senv = sel.fetchBySampleId(id);
+                        data.setSampleEnvironmentalPriority(senv.getPriority());
+                        
+                        try {
+                            sprjList = spl.fetchPermanentBySampleId(id);
+                            prjName = sprjList.get(0).getProjectName();
+                        } catch (NotFoundException e) {
+                            prjName = "";
+                        }
+                        data.setSampleProjectName(prjName);
+                    } else if ("W".equals(data.getDomain())) {
+                        /*
+                         * if the sample's domain is private well(W) then it may not have
+                         * its "report to" linked to sample_organization, but present
+                         * in sample_private_well     
+                         */
+                        spw = spwl.fetchBySampleId(id);
+                        if (spw.getOrganization() != null)
+                            name = spw.getOrganization().getName();
+                        else
+                            name = spw.getReportToName();
+                        data.setReportToName(name);
+                        data.setSamplePrivateWellOwner(spw.getOwner());
+                    } else if ("S".equals(data.getDomain())) {
+                        //
+                        // there is no "report to" for quick-entry (Q) samples 
+                        //
+                        try {
+                            sorgList = sol.fetchReportToBySampleId(id);
+                            name = sorgList.get(0).getOrganizationName();
+                        } catch (NotFoundException e) {
+                            name = "";
+                        }
+                        data.setReportToName(name);
+                        
+                        ssd = ssdl.fetchBySampleId(id);
+                        data.setSampleSDWISPWSName(ssd.getPwsName());
                     }
-                    sorgMap.put(id, name);
-                }
-                data.setReportToName(name);
-                cache.put(new Element(data.getId(), data));
-                sidList.add(data.getId());
-            }
+                    cache.put(new Element(data.getId(), data));
+                    sidList.add(data.getId());
+                }                                
+            //}
         } catch (Exception e) {
             throw e;
         }
@@ -507,30 +544,49 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         return voList;
     }
     
-    private ArrayList<AnalysisCacheVO> createAnalysisCacheEntries(Cache cache, List<AnalysisCacheVO> queryList) throws Exception {
+    private ArrayList<AnalysisCacheVO> createAnalysisCacheEntries(Cache cache,
+                                                                  List<AnalysisCacheVO> queryList)
+                                                                                                  throws Exception {
         Integer secId, sampleId;
-        String name;
+        String domain, orgName, prjName;
+        Element elem;
         SectionLocal sl;
+        SectionDO sec;
         AnalysisQAEventLocal aqel;
         SampleOrganizationLocal sol;
+        SampleEnvironmentalLocal sel;
         SamplePrivateWellLocal spwl;
-        SectionDO sec;
+        SampleSDWISLocal ssdl;
+        SampleProjectLocal spl;
         SamplePrivateWellViewDO spw;
-        Element elem;
+        SampleEnvironmentalDO senv;
+        SampleSDWISViewDO ssd;
         AnalysisCacheVO cvo;
         HashMap<Integer, SectionDO> secMap;
-        HashMap<Integer, String> sorgMap;
+        HashMap<Integer, String> sorgMap, sprjMap;
+        HashMap<Integer, SampleEnvironmentalDO> senvMap;
+        HashMap<Integer, SamplePrivateWellViewDO> spwMap;
+        HashMap<Integer, SampleSDWISViewDO> ssdMap;
         ArrayList<Integer> aidList;
         ArrayList<SampleOrganizationViewDO> sorgList;
+        ArrayList<SampleProjectViewDO> sprjList;
         ArrayList<AnalysisCacheVO> voList;
         ArrayList<AnalysisQaEventDO> aqeList;
 
         sl = EJBFactory.getSection();
         aqel = EJBFactory.getAnalysisQAEvent();
         sol = EJBFactory.getSampleOrganization();
+        sel = EJBFactory.getSampleEnvironmental();
         spwl = EJBFactory.getSamplePrivateWell();
+        ssdl = EJBFactory.getSampleSDWIS();
+        spl = EJBFactory.getSampleProject();
+
         secMap = new HashMap<Integer, SectionDO>();
         sorgMap = new HashMap<Integer, String>();
+        sprjMap = new HashMap<Integer, String>();
+        senvMap = new HashMap<Integer, SampleEnvironmentalDO>();
+        spwMap = new HashMap<Integer, SamplePrivateWellViewDO>();
+        ssdMap = new HashMap<Integer, SampleSDWISViewDO>();
         voList = new ArrayList<AnalysisCacheVO>();
         aidList = new ArrayList<Integer>();
 
@@ -548,35 +604,78 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
 
                 data.setQaeventResultOverride("N");
                 sampleId = data.getSampleId();
-                name = sorgMap.get(sampleId);
-                if (name == null) {
-                    /*
-                     * if the sample's domain is private well(W) then it may not have
-                     * its "report to" linked to sample_organization, but present
-                     * in sample_private_well     
-                     */
-                    if ("W".equals(data.getSampleDomain())) {
-                        spw = spwl.fetchBySampleId(sampleId);
-                        if (spw.getOrganization() != null)
-                            name = spw.getOrganization().getName();
-                        else
-                            name = spw.getReportToName();
-                    } else if ( !"Q".equals(data.getSampleDomain())) {
-                         //
-                         // there is no "report to" for quick-entry (Q) samples 
-                         //
+                domain = data.getSampleDomain();
+
+                if ("E".equals(domain)) {
+                    orgName = sorgMap.get(sampleId);
+                    if (orgName == null) {
                         try {
                             sorgList = sol.fetchReportToBySampleId(sampleId);
-                            name = sorgList.get(0).getOrganizationName();
+                            orgName = sorgList.get(0).getOrganizationName();
+                            sorgMap.put(sampleId, orgName);
                         } catch (NotFoundException e) {
-                            name = "";
+                            orgName = "";
                         }
                     }
-                    sorgMap.put(sampleId, name);
-                }
-                data.setSampleReportToName(name);
-                cache.put(new Element(data.getId(), data));
+                    data.setSampleReportToName(orgName);
 
+                    senv = senvMap.get(sampleId);
+                    if (senv == null) {
+                        senv = sel.fetchBySampleId(sampleId);
+                        senvMap.put(sampleId, senv);
+                    }
+                    data.setSampleEnvironmentalPriority(senv.getPriority());
+
+                    prjName = sprjMap.get(sampleId);
+                    if (prjName == null) {
+                        try {
+                            sprjList = spl.fetchPermanentBySampleId(sampleId);
+                            prjName = sprjList.get(0).getProjectName();
+                        } catch (NotFoundException e) {
+                            prjName = "";
+                        }
+                        sprjMap.put(sampleId, prjName);
+                    }
+                    data.setSampleProjectName(prjName);
+                } else if ("W".equals(domain)) {
+                    /*
+                     * if the sample's domain is private well(W) then it may not
+                     * have its "report to" linked to sample_organization, but
+                     * present in sample_private_well
+                     */
+                    spw = spwMap.get(sampleId);
+                    if (spw == null) {
+                        spw = spwl.fetchBySampleId(sampleId);
+                        spwMap.put(sampleId, spw);
+                    }
+                    
+                    if (spw.getOrganization() != null)
+                        orgName = spw.getOrganization().getName();
+                    else
+                        orgName = spw.getReportToName();
+                    data.setSampleReportToName(orgName);
+                    data.setSamplePrivateWellOwner(spw.getOwner());
+                } else if ("S".equals(domain)) {
+                    orgName = sorgMap.get(sampleId);
+                    if (orgName == null) {
+                        try {
+                            sorgList = sol.fetchReportToBySampleId(sampleId);
+                            orgName = sorgList.get(0).getOrganizationName();
+                            sorgMap.put(sampleId, orgName);
+                        } catch (NotFoundException e) {
+                            orgName = "";
+                        }
+                    }
+                    data.setSampleReportToName(orgName);
+
+                    ssd = ssdMap.get(sampleId);
+                    if (ssd == null) {
+                        ssd = ssdl.fetchBySampleId(sampleId);
+                        ssdMap.put(sampleId, ssd);
+                    }
+                    data.setSampleSDWISPWSName(ssd.getPwsName());
+                }
+                cache.put(new Element(data.getId(), data));
                 aidList.add(data.getId());
             }
         } catch (Exception e) {
@@ -584,10 +683,10 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         }
 
         /*
-         * We find all the analysis_qa_events that are linked to the analyses 
-         * in the cache and have the type "Result Override". We then set the flag
-         * corresponding to this field to "Y" in the VO for the analysis that a 
-         * given analysis_qa_event belongs to. 
+         * We find all the analysis_qa_events that are linked to the analyses in
+         * the cache and have the type "Result Override". We then set the flag
+         * corresponding to this field to "Y" in the VO for the analysis that a
+         * given analysis_qa_event belongs to.
          */
         try {
             if (aidList != null && aidList.size() > 0) {

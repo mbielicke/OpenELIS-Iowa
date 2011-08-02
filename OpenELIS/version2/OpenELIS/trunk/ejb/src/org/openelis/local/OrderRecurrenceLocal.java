@@ -29,15 +29,17 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.SampleProjectViewDO;
-
+import org.openelis.domain.OrderRecurrenceDO;
 
 @Local
-public interface SampleProjectLocal {
-
-    public ArrayList<SampleProjectViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
-    public ArrayList<SampleProjectViewDO> fetchPermanentBySampleId(Integer sampleId) throws Exception;   
-    public SampleProjectViewDO add(SampleProjectViewDO sampleProjectDO);
-    public SampleProjectViewDO update(SampleProjectViewDO sampleProjectDO);
-    public void delete(SampleProjectViewDO sampleProjectDO);
+public interface OrderRecurrenceLocal {
+    public OrderRecurrenceDO fetchByOrderId(Integer orderId) throws Exception;
+    
+    public ArrayList<OrderRecurrenceDO> fetchActiveList() throws Exception;
+    
+    public OrderRecurrenceDO add(OrderRecurrenceDO data) throws Exception;
+    
+    public OrderRecurrenceDO update(OrderRecurrenceDO data) throws Exception;
+    
+    public void validate(OrderRecurrenceDO data) throws Exception;
 }

@@ -25,6 +25,7 @@
  */
 package org.openelis.manager;
 
+import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -41,7 +42,7 @@ public class OrderManagerProxy {
         m = OrderManager.getInstance();
 
         m.setOrder(data);
-
+        
         return m;
     }
 
@@ -82,13 +83,24 @@ public class OrderManagerProxy {
 
         return m;
     }
+    
+    
+    public OrderManager fetchWithRecurring(Integer id) throws Exception {
+        return fetchById(id);
+    }
+    
+    public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
+        return EJBFactory.getOrderRecurrence().fetchByOrderId(id);
+    }
 
     public OrderManager add(OrderManager man) throws Exception {
         Integer id;
-
-        EJBFactory.getOrder().add(man.getOrder());
-        id = man.getOrder().getId();
-
+        OrderViewDO data;
+                
+        data = man.getOrder();
+        EJBFactory.getOrder().add(data);
+        id = data.getId();   
+        
         if (man.items != null) {
             man.getItems().setOrderId(id);
             man.getItems().add();
@@ -101,13 +113,13 @@ public class OrderManagerProxy {
         
         if (man.shipNotes != null) {
             man.getShippingNotes().setReferenceId(id);
-            man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER_SHIPPING_NOTE);
             man.getShippingNotes().add();
         }
         
         if (man.customerNotes != null) {
             man.getCustomerNotes().setReferenceId(id);
-            man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER_CUSTOMER_NOTE);
             man.getCustomerNotes().add();
         }
         
@@ -127,15 +139,23 @@ public class OrderManagerProxy {
             man.getTests().add();
         }
 
+        if (man.recurrence != null && man.recurrence.isChanged()) {
+            man.recurrence.setOrderId(id);            
+            EJBFactory.getOrderRecurrence().add(man.recurrence);
+        }
+        
         return man;
     }
 
     public OrderManager update(OrderManager man) throws Exception {
         Integer id;
+        OrderViewDO data;
 
-        EJBFactory.getOrder().update(man.getOrder());
-        id = man.getOrder().getId();
+        data = man.getOrder();        
+        id = data.getId();                 
 
+        EJBFactory.getOrder().update(data);
+        
         if (man.items != null) {
             man.getItems().setOrderId(id);
             man.getItems().update();
@@ -148,13 +168,13 @@ public class OrderManagerProxy {
         
         if (man.shipNotes != null) {
             man.getShippingNotes().setReferenceId(id);
-            man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getShippingNotes().setReferenceTableId(ReferenceTable.ORDER_SHIPPING_NOTE);
             man.getShippingNotes().update();
         }
         
         if (man.customerNotes != null) {
             man.getCustomerNotes().setReferenceId(id);
-            man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER_CUSTOMER_NOTE);
             man.getCustomerNotes().update();
         }
         
@@ -172,6 +192,15 @@ public class OrderManagerProxy {
         if (man.tests != null) {
             man.getTests().setOrderId(id);
             man.getTests().update();
+        }   
+        
+        if (man.recurrence != null && man.recurrence.isChanged()) {
+            if (man.recurrence.getOrderId() == null) {
+                man.recurrence.setOrderId(id);            
+                EJBFactory.getOrderRecurrence().add(man.recurrence);
+            } else {
+                EJBFactory.getOrderRecurrence().update(man.recurrence);
+            }
         }
 
         return man;
@@ -228,6 +257,14 @@ public class OrderManagerProxy {
         if(man.auxData != null)
             man.getAuxData().validate(list);
         
+        if (man.recurrence != null && man.recurrence.isChanged()) {
+            try {
+                EJBFactory.getOrderRecurrence().validate(man.recurrence);
+            } catch (Exception e) {
+                DataBaseUtil.mergeException(list, e);
+            }
+        }
+                
         if (list.size() > 0)
             throw list;
     }

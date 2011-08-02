@@ -23,21 +23,16 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.remote;
 
 import java.util.ArrayList;
 
-import javax.ejb.Local;
+import javax.ejb.Remote;
 
-import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.report.Prompt;
 
-
-@Local
-public interface SampleProjectLocal {
-
-    public ArrayList<SampleProjectViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
-    public ArrayList<SampleProjectViewDO> fetchPermanentBySampleId(Integer sampleId) throws Exception;   
-    public SampleProjectViewDO add(SampleProjectViewDO sampleProjectDO);
-    public SampleProjectViewDO update(SampleProjectViewDO sampleProjectDO);
-    public void delete(SampleProjectViewDO sampleProjectDO);
+@Remote
+public interface OrderRecurrenceReportRemote {
+    public ArrayList<Prompt> getPrompts();
+    public void recurOrders();
 }

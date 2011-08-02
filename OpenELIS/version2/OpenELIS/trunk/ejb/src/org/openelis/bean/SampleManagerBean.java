@@ -45,6 +45,7 @@ import org.openelis.domain.SampleCacheVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
+import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.FieldErrorException;
@@ -60,12 +61,14 @@ import org.openelis.local.ToDoCacheLocal;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.AnalysisResultManager;
+import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
+import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleManagerRemote;
 import org.openelis.utils.EJBFactory;
@@ -265,16 +268,20 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     
     private void updateCache(SampleManager man) {
         boolean override;
-        String orgName;
+        Integer priority;
+        String domain, orgName, prjName, owner, pwsName;
         AnalysisManager am;
         SampleItemManager im;
         AnalysisViewDO ana;
+        SampleProjectViewDO sproj;
         AnalysisCacheVO avo;  
         SampleCacheVO svo;
         SectionCacheLocal scl;
         SampleQaEventManager sqm;
         AnalysisQaEventManager aqm;
+        SampleEnvironmentalManager sem;        
         SamplePrivateWellManager spwm;
+        SampleSDWISManager ssdm;
         SamplePrivateWellViewDO spw;
         SampleOrganizationViewDO rt;
         TestViewDO test;
@@ -284,17 +291,34 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             scl = EJBFactory.getSectionCache();
             sample = man.getSample();
             rt = man.getOrganizations().getReportTo();
+            priority = null;
             orgName = null;
+            prjName = null;
+            owner = null;
+            pwsName= null;
+            domain = sample.getDomain();
 
-            if (rt != null) {
-                orgName = rt.getOrganizationName();
-            } else if ("W".equals(sample.getDomain())) {
+            if ("E".equals(domain)) {                 
+                if (rt != null)             
+                    orgName = rt.getOrganizationName();
+                sem = (SampleEnvironmentalManager)man.getDomainManager();
+                priority = sem.getEnvironmental().getPriority();
+                sproj = man.getProjects().getFirstPermanentProject();
+                if (sproj != null)
+                    prjName = sproj.getProjectName();
+            } else if ("W".equals(domain)) {
                 spwm = (SamplePrivateWellManager)man.getDomainManager();
                 spw = spwm.getPrivateWell();
                 if (spw.getOrganizationId() == null)
                     orgName = spw.getReportToName();
                 else
                     orgName = spw.getOrganization().getName();
+                owner = spw.getOwner();
+            } else if ("S".equals(domain)) { 
+                if (rt != null)             
+                    orgName = rt.getOrganizationName();
+                ssdm = (SampleSDWISManager)man.getDomainManager();
+                pwsName = ssdm.getSDWIS().getPwsName();
             }
             
             /*
@@ -304,7 +328,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             svo = new SampleCacheVO();
             svo.setId(sample.getId());
             svo.setStatusId(sample.getStatusId());
-            svo.setDomain(sample.getDomain());
+            svo.setDomain(domain);
             svo.setAccessionNumber(sample.getAccessionNumber());
             svo.setReceivedDate(sample.getReceivedDate());
             svo.setCollectionDate(sample.getCollectionDate());
@@ -315,7 +339,11 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             else 
                 override = false;
             
-            svo.setReportToName(orgName);            
+            svo.setReportToName(orgName); 
+            svo.setSampleEnvironmentalPriority(priority);
+            svo.setSampleProjectName(prjName);
+            svo.setSamplePrivateWellOwner(owner);
+            svo.setSampleSDWISPWSName(pwsName);
             
             im = man.getSampleItems();
             /*
@@ -347,12 +375,16 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                     } else {
                         avo.setQaeventResultOverride("N");
                     }
-                    avo.setSampleDomain(sample.getDomain());
+                    avo.setSampleDomain(domain);
                     avo.setSampleAccessionNumber(sample.getAccessionNumber());
                     avo.setSampleReportToName(orgName);
                     avo.setSampleReceivedDate(sample.getReceivedDate());
                     avo.setSampleCollectionDate(sample.getCollectionDate());
                     avo.setSampleCollectionTime(sample.getCollectionTime());
+                    avo.setSampleEnvironmentalPriority(priority);
+                    avo.setSampleProjectName(prjName);
+                    avo.setSamplePrivateWellOwner(owner);
+                    avo.setSampleSDWISPWSName(pwsName);
                     todoCache.update(avo);   
                 }
             }       

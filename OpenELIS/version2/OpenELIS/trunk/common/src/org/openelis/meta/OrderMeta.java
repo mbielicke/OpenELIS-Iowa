@@ -37,6 +37,7 @@ import org.openelis.gwt.common.MetaMap;
 
 public class OrderMeta implements Meta, MetaMap {
 	private static final String    ID = "_order.id",
+	                               PARENT_ORDER_ID = "_order.parentOrderId", 
 	                               DESCRIPTION = "_order.description",
 	                               STATUS_ID = "_order.statusId",
 	                               ORDERED_DATE = "_order.orderedDate",
@@ -129,6 +130,14 @@ public class OrderMeta implements Meta, MetaMap {
 	                               AUX_DATA_IS_REPORTABLE = "_auxData.isReportable",
 	                               AUX_DATA_TYPE_ID = "_auxData.typeId",
 	                               AUX_DATA_VALUE = "_auxData.value",
+	                               
+                                   RECUR_ID = "_orderRecurrence.id",
+                                   RECUR_ORDER_ID = "_orderRecurrence.orderId",
+                                   RECUR_IS_ACTIVE = "_orderRecurrence.isActive",
+                                   RECUR_ACTIVE_BEGIN = "_orderRecurrence.activeBegin",
+                                   RECUR_ACTIVE_END = "_orderRecurrence.activeEnd",
+                                   RECUR_FREQUENCY = "_orderRecurrence.frequency",
+                                   RECUR_UNIT_ID = "_orderRecurrence.unitId",
 	                               	                               
 	                               ORGANIZATION_NAME = "_order.organization.name",
 	                               REPORT_TO_NAME = "_reportTo.name",
@@ -141,7 +150,7 @@ public class OrderMeta implements Meta, MetaMap {
     private static HashSet<String> names;
 
     static {
-        names = new HashSet<String>(Arrays.asList(ID, DESCRIPTION, STATUS_ID, ORDERED_DATE,
+        names = new HashSet<String>(Arrays.asList(ID, PARENT_ORDER_ID, DESCRIPTION, STATUS_ID, ORDERED_DATE,
                                                   NEEDED_IN_DAYS, REQUESTED_BY, COST_CENTER_ID,
                                                   ORGANIZATION_ID,ORGANIZATION_ATTENTION, TYPE,
                                                   EXTERNAL_ORDER_NUMBER, REPORT_TO_ID, REPORT_TO_ATTENTION,
@@ -186,6 +195,9 @@ public class OrderMeta implements Meta, MetaMap {
                                                   AUX_DATA_REFERENCE_TABLE_ID, AUX_DATA_IS_REPORTABLE,
                                                   AUX_DATA_TYPE_ID, AUX_DATA_VALUE,
                                                   
+                                                  RECUR_ID, RECUR_ORDER_ID, RECUR_IS_ACTIVE, RECUR_ACTIVE_BEGIN,
+                                                  RECUR_ACTIVE_END, RECUR_FREQUENCY, RECUR_UNIT_ID,
+                                                  
                                                   ORGANIZATION_NAME, REPORT_TO_NAME, BILL_TO_NAME,
                                                   ITEM_INVENTORY_ITEM_NAME, ITEM_INVENTORY_ITEM_STORE_ID,
                                                   TEST_NAME));
@@ -193,6 +205,10 @@ public class OrderMeta implements Meta, MetaMap {
 
     public static String getId() {
         return ID;
+    }
+    
+    public static String getParentOrderId() {
+        return PARENT_ORDER_ID;
     }
 
     public static String getDescription() {
@@ -531,6 +547,34 @@ public class OrderMeta implements Meta, MetaMap {
         return AUX_DATA_VALUE;
     }
     
+    public static String getRecurrenceId(){
+        return RECUR_ID;
+    }
+    
+    public static String getRecurrenceOrderId(){
+        return RECUR_ORDER_ID;
+    }
+    
+    public static String getRecurrenceIsActive(){
+        return RECUR_IS_ACTIVE;
+    }
+    
+    public static String getRecurrenceActiveBegin(){
+        return RECUR_ACTIVE_BEGIN;
+    }
+    
+    public static String getRecurrenceActiveEnd(){
+        return RECUR_ACTIVE_END;
+    }
+    
+    public static String getRecurrenceFrequency(){
+        return RECUR_FREQUENCY;
+    }
+    
+    public static String getRecurrenceUnitId(){
+        return RECUR_UNIT_ID;
+    }
+    
     public static String getOrganizationName() {
         return ORGANIZATION_NAME;
     }
@@ -585,6 +629,8 @@ public class OrderMeta implements Meta, MetaMap {
             from += ",IN (_order.orderTest) _orderTest ";        
         if(where.indexOf("auxData.") > -1)
             from += ", IN (_order.auxData) _auxData ";
+        if(where.indexOf("orderRecurrence.") > -1)
+            from += ", IN (_order.orderRecurrence) _orderRecurrence ";
 
         return from;
     }
