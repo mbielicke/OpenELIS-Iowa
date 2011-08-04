@@ -62,7 +62,6 @@ import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;
 public class ToBeVerifiedTab extends Screen {
             
     private boolean                    loadedFromCache, reattachChart;
-    private long                       day, twodays, threedays,sevendays, tendays;    
     private String                     loadBySection;
     private ArrayList<String>          ranges;         
     private ArrayList<SampleCacheVO>   fullList;
@@ -114,12 +113,6 @@ public class ToBeVerifiedTab extends Screen {
         ranges.add(consts.get("fourToSevenDays"));
         ranges.add(consts.get("eightToTenDays"));
         ranges.add(consts.get("moreThenTenDays"));
-        
-        day = 86400000;
-        twodays = 2 * day; 
-        threedays = 3 * day;
-        sevendays = 7 * day;
-        tendays = 10 * day;
     }
     
     private ArrayList<TableDataRow> getTableModel() {
@@ -225,7 +218,7 @@ public class ToBeVerifiedTab extends Screen {
     }
     
     private void refreshChart() {
-        long avdur, mdur;
+        long day, twodays, threedays,sevendays, tendays, avdur, mdur;
         Integer val;
         ArrayList<TableDataRow> model;
         Datetime now, srd;
@@ -236,6 +229,12 @@ public class ToBeVerifiedTab extends Screen {
         now = Datetime.getInstance();
         map = new HashMap<String, Integer>();        
         model = table.getData();    
+        
+        day = 86400000;
+        twodays = 2 * day; 
+        threedays = 3 * day;
+        sevendays = 7 * day;
+        tendays = 10 * day;
         
         midNight = new Date();
         midNight.setHours(0);

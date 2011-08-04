@@ -54,6 +54,7 @@ import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -107,8 +108,9 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class SendoutOrderScreen extends Screen {
 
-    private OrderManager                           manager;
-    private ModulePermission                       userPermission;
+    private OrderManager                           manager;    
+    private ModulePermission                       userModulePermission;
+    private SystemUserPermission                   userPermission;
 
     private ButtonGroup                            atoz;
     private ScreenNavigator                        nav;
@@ -119,8 +121,10 @@ public class SendoutOrderScreen extends Screen {
     private ItemTab                                itemTab;
     private ShipNoteTab                            shipNoteTab;
     private CustomerNoteTab                        custNoteTab;
-    private FillTab                                fillTab;
+    private InternalNoteTab                        internalNoteTab;
     private RecurrenceTab                          recurrenceTab;
+    private FillTab                                fillTab;
+    
     private Tabs                                   tab;
 
     private AppButton                              queryButton, previousButton, nextButton,
@@ -150,7 +154,7 @@ public class SendoutOrderScreen extends Screen {
     protected ScreenService                        organizationService, panelService;
 
     private enum Tabs {
-        REPORT_TO, AUX_DATA, CONTAINER, ITEM, SHIP_NOTE, CUSTOMER_NOTE, RECURRENCE, FILL 
+        REPORT_TO, AUX_DATA, CONTAINER, ITEM, SHIP_NOTE, CUSTOMER_NOTE, INTERNAL_NOTE, RECURRENCE, FILL 
     };
 
     public SendoutOrderScreen() throws Exception {
@@ -171,8 +175,9 @@ public class SendoutOrderScreen extends Screen {
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
 
-        userPermission = UserCache.getPermission().getModule("sendoutorder");
-        if (userPermission == null)
+        userPermission = UserCache.getPermission();
+        userModulePermission = userPermission.getModule("sendoutorder");
+        if (userModulePermission == null)
             throw new PermissionException("screenPermException", "Send-out Order Screen");
 
         /*
@@ -192,7 +197,7 @@ public class SendoutOrderScreen extends Screen {
     }
 
     private void postConstructor() {
-        tab = Tabs.ITEM;
+        tab = Tabs.REPORT_TO;
         manager = OrderManager.getInstance();
 
         try {
@@ -212,6 +217,7 @@ public class SendoutOrderScreen extends Screen {
     }
 
     private void initialize() {
+        
         //
         // button panel buttons
         //
@@ -224,7 +230,7 @@ public class SendoutOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 queryButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                           .contains(event.getState()) &&
-                                   userPermission.hasSelectPermission());
+                                   userModulePermission.hasSelectPermission());
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -261,7 +267,7 @@ public class SendoutOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 addButton.enable(EnumSet.of(State.DEFAULT, State.DISPLAY)
                                         .contains(event.getState()) &&
-                                 userPermission.hasAddPermission());
+                                 userModulePermission.hasAddPermission());
                 if (event.getState() == State.ADD)
                     addButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -275,7 +281,7 @@ public class SendoutOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 updateButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    userPermission.hasUpdatePermission());
+                                    userModulePermission.hasUpdatePermission());
                 if (event.getState() == State.UPDATE)
                     updateButton.setState(ButtonState.LOCK_PRESSED);
             }
@@ -771,7 +777,6 @@ public class SendoutOrderScreen extends Screen {
                 }
                 window.clearStatus();
             }
-
         });
 
         //
@@ -879,6 +884,19 @@ public class SendoutOrderScreen extends Screen {
             }
         });
         
+        internalNoteTab = new InternalNoteTab(def, window, userPermission.getLoginName(), userPermission.getSystemUserId());
+        addScreenHandler(internalNoteTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                internalNoteTab.setManager(manager);
+                if (tab == Tabs.INTERNAL_NOTE)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                internalNoteTab.setState(event.getState());
+            }
+        });
+        
         recurrenceTab = new RecurrenceTab(def, window);
         addScreenHandler(recurrenceTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -964,7 +982,7 @@ public class SendoutOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 boolean enable;
                 enable = EnumSet.of(State.DEFAULT, State.DISPLAY).contains(event.getState()) &&
-                         userPermission.hasSelectPermission();
+                         userModulePermission.hasSelectPermission();
                 atoz.enable(enable);
                 nav.enable(enable);
             }
@@ -1069,6 +1087,7 @@ public class SendoutOrderScreen extends Screen {
         itemTab.setManager(manager);
         shipNoteTab.setManager(manager);
         custNoteTab.setManager(manager);
+        internalNoteTab.setManager(manager);
         recurrenceTab.setManager(manager);
         fillTab.setManager(manager);
 
@@ -1078,6 +1097,7 @@ public class SendoutOrderScreen extends Screen {
         itemTab.draw();
         shipNoteTab.draw();
         custNoteTab.draw();
+        internalNoteTab.draw();
         recurrenceTab.draw();
         fillTab.draw();
 
@@ -1104,6 +1124,7 @@ public class SendoutOrderScreen extends Screen {
         itemTab.draw();
         shipNoteTab.draw();
         custNoteTab.draw();
+        internalNoteTab.draw();
         recurrenceTab.draw();
         fillTab.draw();
 
@@ -1277,31 +1298,28 @@ public class SendoutOrderScreen extends Screen {
             data.setRequestedBy(UserCache.getPermission().getLoginName());
             data.setType(OrderManager.TYPE_SEND_OUT);
 
+            reportToBillToTab.setManager(manager);
+            auxDataTab.setManager(manager);
+            containerTab.setManager(manager);
             itemTab.setManager(manager);
             shipNoteTab.setManager(manager);
             custNoteTab.setManager(manager);
-            reportToBillToTab.setManager(manager);
-            containerTab.setManager(manager);
-            auxDataTab.setManager(manager);
-            recurrenceTab.setManager(manager);
 
+            manager.getAuxData();
+            manager.getTests();
+            manager.getContainers();
             manager.getItems();
             manager.getShippingNotes();
             manager.getCustomerNotes();
-            manager.getTests();
-            manager.getContainers();
-            manager.getAuxData();
-            manager.getRecurrence();
 
             clearKeys();
 
             reportToBillToTab.draw();
             auxDataTab.draw();
             containerTab.draw();
-            shipNoteTab.draw();
             itemTab.draw();
+            shipNoteTab.draw();
             custNoteTab.draw();
-            recurrenceTab.draw();
 
             setState(State.ADD);
             DataChangeEvent.fire(this);
@@ -1334,14 +1352,12 @@ public class SendoutOrderScreen extends Screen {
                 data = man.getItemAt(i);
                 refVoList[i] = new IdNameVO(data.getId(), data.getInventoryItemName());
             }
+            HistoryScreen.showHistory(consts.get("orderItemHistory"), ReferenceTable.ORDER_ITEM,
+                                      refVoList);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
-            return;
         }
-
-        HistoryScreen.showHistory(consts.get("orderItemHistory"), ReferenceTable.ORDER_ITEM,
-                                  refVoList);
     }
 
     protected void testHistory() {
@@ -1358,15 +1374,12 @@ public class SendoutOrderScreen extends Screen {
                 data = man.getTestAt(i);
                 refVoList[i] = new IdNameVO(data.getId(), data.getTestName());
             }
+            HistoryScreen.showHistory(consts.get("orderTestHistory"), ReferenceTable.ORDER_TEST,
+                                      refVoList);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
-            return;
         }
-
-        HistoryScreen.showHistory(consts.get("orderTestHistory"), ReferenceTable.ORDER_TEST,
-                                  refVoList);
-
     }
 
     protected void containerHistory() {
@@ -1385,15 +1398,12 @@ public class SendoutOrderScreen extends Screen {
                 dict = DictionaryCache.getById(data.getContainerId());
                 refVoList[i] = new IdNameVO(data.getId(), dict.getEntry());
             }
+            HistoryScreen.showHistory(consts.get("orderContainerHistory"),
+                                      ReferenceTable.ORDER_CONTAINER, refVoList);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
-            return;
         }
-
-        HistoryScreen.showHistory(consts.get("orderContainerHistory"),
-                                  ReferenceTable.ORDER_CONTAINER, refVoList);
-
     }
 
     protected boolean fetchById(Integer id) {
@@ -1404,29 +1414,29 @@ public class SendoutOrderScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             try {
                 switch (tab) {
-                    case ITEM:
-                        manager = OrderManager.fetchWithItems(id);
-                        break;
-                    case FILL:
-                        manager = OrderManager.fetchWithFills(id);
-                        break;
-                    case SHIP_NOTE:
-                    case CUSTOMER_NOTE:
-                        manager = OrderManager.fetchWithNotes(id);
-                        break;
                     case REPORT_TO:
+                        manager = OrderManager.fetchById(id);
+                        break;
+                    case AUX_DATA:
                         manager = OrderManager.fetchById(id);
                         break;
                     case CONTAINER:
                         manager = OrderManager.fetchWithTestsAndContainers(id);
                         break;
-                    case AUX_DATA:
-                        manager = OrderManager.fetchById(id);
+                    case ITEM:
+                        manager = OrderManager.fetchWithItems(id);
+                        break;
+                    case SHIP_NOTE:
+                    case CUSTOMER_NOTE:                        
+                    case INTERNAL_NOTE:
+                        manager = OrderManager.fetchWithNotes(id);
                         break;
                     case RECURRENCE:
-                        manager = OrderManager.fetchById(id);                        
-                        break;    
-
+                        manager = OrderManager.fetchWithRecurrence(id);                        
+                        break;
+                    case FILL:
+                        manager = OrderManager.fetchWithFills(id);
+                        break;
                 }
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
@@ -1499,6 +1509,9 @@ public class SendoutOrderScreen extends Screen {
             case CUSTOMER_NOTE:
                 custNoteTab.draw();
                 break;
+            case INTERNAL_NOTE:
+                internalNoteTab.draw();
+                break;
             case RECURRENCE:
                 recurrenceTab.draw();
                 break;    
@@ -1509,81 +1522,66 @@ public class SendoutOrderScreen extends Screen {
     }
 
     private void clearKeys() {
+        int i;
         OrderItemManager iman;
-        NoteManager snman, cnman;
+        NoteManager nman;
         OrderTestManager otman;
         OrderContainerManager ocman;
         AuxDataManager adman;
         OrderItemViewDO item;
-        NoteViewDO snote, cnote;
+        NoteViewDO note;
         OrderTestViewDO test;
         OrderContainerDO container;
         AuxDataViewDO aux;
-        int i, count;
 
         manager.getOrder().setId(null);
+        manager.getOrder().setParentOrderId(null);
 
         try {
             iman = manager.getItems();
-            count = iman.count();
-
-            for (i = 0; i < count; i++ ) {
+            for (i = 0; i < iman.count(); i++ ) {
                 item = iman.getItemAt(i);
                 item.setId(null);
                 item.setOrderId(null);
             }
 
-            snman = manager.getShippingNotes();
-            count = snman.count();
-
-            for (i = 0; i < count; i++ ) {
-                snote = snman.getNoteAt(i);
-                snote.setId(null);
-                snote.setReferenceId(null);
-                snote.setReferenceTableId(null);
+            nman = manager.getShippingNotes();
+            for (i = 0; i < nman.count(); i++ ) {
+                note = nman.getNoteAt(i);
+                note.setId(null);
+                note.setReferenceId(null);
+                note.setReferenceTableId(null);
             }
 
-            cnman = manager.getCustomerNotes();
-            count = cnman.count();
-
-            for (i = 0; i < count; i++ ) {
-                cnote = cnman.getNoteAt(i);
-                cnote.setId(null);
-                cnote.setReferenceId(null);
-                cnote.setReferenceTableId(null);
-            }
+            nman = manager.getCustomerNotes();
+            for (i = 0; i < nman.count(); i++ ) {
+                note = nman.getNoteAt(i);
+                note.setId(null);
+                note.setReferenceId(null);
+                note.setReferenceTableId(null);
+            }                        
 
             otman = manager.getTests();
-            count = otman.count();
-
-            for (i = 0; i < count; i++ ) {
+            for (i = 0; i < otman.count(); i++ ) {
                 test = otman.getTestAt(i);
                 test.setId(null);
                 test.setOrderId(null);
             }
 
             ocman = manager.getContainers();
-            count = ocman.count();
-
-            for (i = 0; i < count; i++ ) {
+            for (i = 0; i < ocman.count(); i++ ) {
                 container = ocman.getContainerAt(i);
                 container.setId(null);
                 container.setOrderId(null);
             }
 
             adman = manager.getAuxData();
-            count = adman.count();
-
-            for (i = 0; i < count; i++ ) {
+            for (i = 0; i < adman.count(); i++ ) {
                 aux = adman.getAuxDataAt(i);
                 aux.setId(null);
                 aux.setReferenceId(null);
                 aux.setReferenceTableId(null);
             }
-            
-            manager.getRecurrence().setId(null);
-            manager.getRecurrence().setOrderId(null);
-
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
@@ -1620,6 +1618,7 @@ public class SendoutOrderScreen extends Screen {
                             dataDO = new AuxDataViewDO();
                             dataDO.setAuxFieldId(fieldDO.getId());
                             dataDO.setIsReportable(fieldDO.getIsReportable());
+                            dataDO.setGroupId(fieldDO.getAuxFieldGroupId());
                             
                             validator = getValidatorForValues(values);
                             if (defaultDO != null) {

@@ -367,6 +367,7 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         analyteTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int i,r, c, numCol, dindex,rows[];
+                String name;
                 TableDataRow row, val;
                 TestAnalyteViewDO data;
                 Integer key;
@@ -453,11 +454,14 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                 if(data == null)
                                     continue;
                                 data.setResultGroup(key);
-                                analyteTable.setCell(rows[i], c, new TableDataRow(key, key.toString()));
+                                if (key == null)
+                                    name = "";
+                                else 
+                                    name = key.toString();
+                                analyteTable.setCell(rows[i], c, new TableDataRow(key, name));
                             }
                         }
                     }
-
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -1788,27 +1792,23 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
 
         key = null;
         name = "";
-        try {
-            for (int i = finCol; i > anaSelCol; i-- ) {
-                lrow = (TableDataRow)trow.cells.get(i - 1).getValue();
-                if (lrow != null) {
-                    key = (Integer)lrow.key;
-                    name = (String)lrow.cells.get(0).getValue();
-                }
-                trow.cells.get(i).setValue(new TableDataRow(key, name));
-                trow.cells.get(i - 1).setValue(new TableDataRow(null, ""));
+        for (int i = finCol; i > anaSelCol; i-- ) {
+            lrow = (TableDataRow)trow.cells.get(i - 1).getValue();
+            if (lrow != null) {
+                key = (Integer)lrow.key;
+                name = (String)lrow.cells.get(0).getValue();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            trow.cells.get(i).setValue(new TableDataRow(key, name));
+            trow.cells.get(i - 1).setValue(new TableDataRow(null, ""));
         }
-
     }
 
     private void removeColumnFromRow(int r) {
         int finalIndex;
-        TableDataRow row, rrow, blankrow;
         String name;
         Integer key;
+        TableDataRow row, rrow, blankrow;
+        TableDataCell cell, ncell;
 
         if (anaSelCol < 2 || r < 0)
             return;
@@ -1821,26 +1821,34 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             return;
 
         if (anaSelCol == 9) {
-            row.cells.get(anaSelCol).setValue(blankrow);
+            cell = row.cells.get(anaSelCol);
+            cell.setValue(blankrow);
+            cell.clearExceptions();
         } else {
             for (int i = anaSelCol; i < finalIndex; i++ ) {
+                cell = row.cells.get(i);    
+                cell.clearExceptions();
                 if (i == finalIndex - 1) {
-                    row.cells.get(i).setValue(blankrow);
+                    cell.setValue(blankrow);                    
                 } else {
-                    rrow = (TableDataRow)row.cells.get(i + 1).getValue();
+                    ncell = row.cells.get(i + 1);
+                    if (ncell.getExceptions() != null) {
+                        for (LocalizedException ex : ncell.getExceptions())
+                            cell.addException(ex);
+                    }                    
+                    rrow = (TableDataRow)ncell.getValue();
                     if (rrow == null) {
-                        row.cells.get(i).setValue(blankrow);
+                        cell.setValue(blankrow);
                         continue;
                     }
-
                     key = (Integer)rrow.key;
                     name = (String)rrow.cells.get(0).getValue();
-
+                    
                     if (key != null)
-                        row.cells.get(i).setValue(new TableDataRow(key, name));
+                        cell.setValue(new TableDataRow(key, name));
                     else
-                        row.cells.get(i).setValue(blankrow);
-                }
+                        cell.setValue(blankrow);                    
+                }                
             }
         }
     }
@@ -1864,36 +1872,31 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         TestResultViewDO data;
         TestResultManager man;
         
-        man = null;
         model = new ArrayList<TableDataRow>();
-
         if (manager == null)
             return model;
         
         try {
             man = manager.getTestResults();
+            size = man.getResultGroupSize(group + 1);
+            for (int i = 0; i < size; i++ ) {
+                data = man.getResultAt(group + 1, i);
+                row = new TableDataRow(6);
+                row.cells.get(0).setValue(data.getUnitOfMeasureId());
+                row.cells.get(1).setValue(data.getTypeId());
+                if (data.getDictionary() == null) 
+                    row.cells.get(2).setValue(data.getValue());
+                else 
+                    row.cells.get(2).setValue(data.getDictionary());                            
+                row.cells.get(3).setValue(data.getFlagsId());
+                row.cells.get(4).setValue(data.getSignificantDigits());
+                row.cells.get(5).setValue(data.getRoundingMethodId());
+                model.add(row);
+            }
          } catch (Exception e) {
              Window.alert(e.getMessage());
              e.printStackTrace();
          }
-
-        size = man.getResultGroupSize(group + 1);
-        for (int i = 0; i < size; i++ ) {
-            data = man.getResultAt(group + 1, i);
-            row = new TableDataRow(6);
-            row.cells.get(0).setValue(data.getUnitOfMeasureId());
-            row.cells.get(1).setValue(data.getTypeId());
-            if (data.getDictionary() == null) {
-                row.cells.get(2).setValue(data.getValue());
-            } else {
-                row.cells.get(2).setValue(data.getDictionary());                
-            }
-
-            row.cells.get(3).setValue(data.getFlagsId());
-            row.cells.get(4).setValue(data.getSignificantDigits());
-            row.cells.get(5).setValue(data.getRoundingMethodId());
-            model.add(row);
-        }
 
         return model;
     }
@@ -2016,12 +2019,11 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                     
             }
         }
-
     }
 
     private void addColumn() {
         int r, index;
-        TestAnalyteManager testAnalyteManager;
+        TestAnalyteManager man;
 
         if ( !canAddRemoveColumn) {
             Window.alert(consts.get("cantAddColumn"));
@@ -2029,27 +2031,23 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
         }
 
         r = analyteTable.getSelectedRow();
+        try {           
+            if (anaSelCol != -1 && r != -1) {
+                man = manager.getTestAnalytes();
+                index = displayManager.getDataRowIndex(r);
+                man.addColumnAt(index, anaSelCol - 1, null);
+                displayManager.setDataGrid(man.getAnalytes());
 
-        testAnalyteManager = null;
-        
-        try {
-            testAnalyteManager = manager.getTestAnalytes();
+                addColumnToRow(r);
+                addColumnToRowsBelow(r);
+
+                analyteTable.refresh();
+                anaSelCol = -1;
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
-        }
-        
-        if (anaSelCol != -1 && r != -1) {
-            index = displayManager.getDataRowIndex(r);
-            testAnalyteManager.addColumnAt(index, anaSelCol - 1, null);
-            displayManager.setDataGrid(testAnalyteManager.getAnalytes());
-
-            addColumnToRow(r);
-            addColumnToRowsBelow(r);
-
-            analyteTable.refresh();
-            anaSelCol = -1;
-        }
+        }                
     }
 
     private void removeColumn() {
@@ -2061,27 +2059,25 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
             return;
         }
 
-        man = null;
-        try {
-            man = manager.getTestAnalytes();
+        r = analyteTable.getSelectedRow();
+        try {            
+            if (anaSelCol != -1 && r != -1) {
+                man = manager.getTestAnalytes();
+                removeColumnFromRow(r);
+                removeColumnFromRowsBelow(r);
+
+                analyteTable.refresh();
+
+                index = displayManager.getDataRowIndex(r);
+                man.removeColumnAt(index, anaSelCol - 1);
+                displayManager.setDataGrid(man.getAnalytes());
+
+                anaSelCol = -1;
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
-        }
-        
-        r = analyteTable.getSelectedRow();
-        if (anaSelCol != -1 && r != -1) {
-            removeColumnFromRow(r);
-            removeColumnFromRowsBelow(r);
-
-            analyteTable.refresh();
-
-            index = displayManager.getDataRowIndex(r);
-            man.removeColumnAt(index, anaSelCol - 1);
-            displayManager.setDataGrid(man.getAnalytes());
-
-            anaSelCol = -1;
-        }
+        }                      
     }
 
     private void addHeader() {

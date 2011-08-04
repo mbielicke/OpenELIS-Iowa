@@ -180,9 +180,9 @@ UIRF Software License are applicable instead of those above.
               </row>
             </TablePanel>
             <VerticalPanel height = "5"/>
-            <table key="sectionParamTable" width="560" maxRows="5" showScroll="ALWAYS" tab="{meta:getName()},{meta:getParentSectionName()}" style="ScreenTableWithSides" title="">
+            <table key="sectionParamTable" width="auto" maxRows="5" showScroll="ALWAYS" tab="{meta:getName()},{meta:getParentSectionName()}" style="ScreenTableWithSides" title="">
               <col key="{meta:getParameterTypeId()}" width="100" align="left" header="{resource:getString($constants,'type')}">
-                <dropdown width="110" field="Integer" required="true" /> 
+                <dropdown width="100" field="Integer" required="true" /> 
               </col>
               <col key="{meta:getParameterValue()}" width="450" align="left" header="{resource:getString($constants,'value')}">
                 <textbox max="80" field="String" required="true" />

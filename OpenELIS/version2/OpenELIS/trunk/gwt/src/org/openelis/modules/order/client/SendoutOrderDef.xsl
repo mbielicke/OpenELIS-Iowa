@@ -394,7 +394,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:with-param name="showTwoInfoRows">true</xsl:with-param>
                 </xsl:call-template>
               </tab>
-              <tab key="containerTab" tab="orderTestTable, orderContainerTable" text="{resource:getString($constants,'container')}">
+              <tab key="containerTab" tab="orderTestTable, orderContainerTable" text="{resource:getString($constants,'test')}">
                 <VerticalPanel>
                   <VerticalPanel padding="0" spacing="0">
                     <widget valign="top">
@@ -517,7 +517,7 @@ UIRF Software License are applicable instead of those above.
                   </HorizontalPanel>
                 </VerticalPanel>
               </tab>
-              <tab key="noteTab" tab="notesPanel, notesPanel" text="{resource:getString($constants,'orderShippingNotes')}">
+              <tab key="noteTab" tab="notesPanel, notesPanel" text="{resource:getString($constants,'shipping')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes height="257" key="notesPanel" width="604" />
                   <appButton key="standardNoteButton" style="Button">
@@ -530,7 +530,7 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </VerticalPanel>
               </tab>
-              <tab key="customerNote" tab="customerNotesPanel, customerNotesPanel" text="{resource:getString($constants,'customerNotes')}">
+              <tab key="customerNote" tab="customerNotesPanel, customerNotesPanel" text="{resource:getString($constants,'customer')}">
                 <VerticalPanel padding="0" spacing="0">
                   <notes height="257" key="customerNotesPanel" width="604" />
                   <appButton key="editNoteButton" style="Button">
@@ -543,7 +543,21 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </VerticalPanel>
               </tab>
-              <tab key="recurringTab" text="{resource:getString($constants,'recurrence')}">
+              <tab key="internalNote" tab="internalNotesPanel, internalNotesPanel" text="{resource:getString($constants,'internal')}">
+               <VerticalPanel padding="0" spacing="0">
+                  <notes height="257" key="internalNotesPanel" width="604" />
+                  <appButton key="addNoteButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="StandardNoteButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addNote')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </VerticalPanel>
+              </tab>
+<!-- TAB 9 (recur) -->
+              <tab key="recurringTab" text="{resource:getString($constants,'recur')}">
                 <HorizontalPanel>
                   <VerticalPanel>
                     <TablePanel style="Form">
@@ -616,7 +630,7 @@ UIRF Software License are applicable instead of those above.
                   </VerticalPanel>
                 </HorizontalPanel>
               </tab>
-<!-- TAB 2 (receipts) -->
+<!-- TAB 10 (filled) -->
               <tab key="fillTab" tab="fillTable, fillTable" text="{resource:getString($constants,'filled')}">
                 <VerticalPanel padding="0" spacing="0">
                   <table key="fillTable" maxRows="11" showScroll="ALWAYS" width="auto">
@@ -638,9 +652,6 @@ UIRF Software License are applicable instead of those above.
                   </table>
                 </VerticalPanel>
               </tab>
-<!-- TAB 4 (order notes) -->
-<!-- TAB 3 (customer notes)-->
-<!-- TAB 5 (report to/bill to)-->
             </TabPanel>
           </VerticalPanel>
         </VerticalPanel>
