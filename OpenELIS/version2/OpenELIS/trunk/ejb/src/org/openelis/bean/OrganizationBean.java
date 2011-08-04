@@ -201,10 +201,6 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
             list.add(new FieldErrorException("fieldRequiredException",
                                              OrganizationMeta.getAddressCity()));
 
-        if (DataBaseUtil.isEmpty(data.getAddress().getZipCode()))
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             OrganizationMeta.getAddressZipCode()));
-
         if (list.size() > 0)
             throw list;
     }
