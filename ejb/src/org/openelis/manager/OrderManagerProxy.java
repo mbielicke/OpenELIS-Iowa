@@ -70,6 +70,7 @@ public class OrderManagerProxy {
         m = fetchById(id);
         m.getShippingNotes();
         m.getCustomerNotes();
+        m.getInternalNotes();
 
         return m;
     }
@@ -83,8 +84,7 @@ public class OrderManagerProxy {
 
         return m;
     }
-    
-    
+        
     public OrderManager fetchWithRecurring(Integer id) throws Exception {
         return fetchById(id);
     }
@@ -121,6 +121,12 @@ public class OrderManagerProxy {
             man.getCustomerNotes().setReferenceId(id);
             man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER_CUSTOMER_NOTE);
             man.getCustomerNotes().add();
+        }
+        
+        if (man.internalNotes != null) {
+            man.getInternalNotes().setReferenceId(id);
+            man.getInternalNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getInternalNotes().add();
         }
         
         if (man.auxData != null) {
@@ -176,6 +182,12 @@ public class OrderManagerProxy {
             man.getCustomerNotes().setReferenceId(id);
             man.getCustomerNotes().setReferenceTableId(ReferenceTable.ORDER_CUSTOMER_NOTE);
             man.getCustomerNotes().update();
+        }
+        
+        if (man.internalNotes != null) {
+            man.getInternalNotes().setReferenceId(id);
+            man.getInternalNotes().setReferenceTableId(ReferenceTable.ORDER);
+            man.getInternalNotes().update();
         }
         
         if (man.auxData != null) {
@@ -257,7 +269,7 @@ public class OrderManagerProxy {
         if(man.auxData != null)
             man.getAuxData().validate(list);
         
-        if (man.recurrence != null && man.recurrence.isChanged()) {
+        if (man.recurrence != null && !man.recurrence.isChanged()) {
             try {
                 EJBFactory.getOrderRecurrence().validate(man.recurrence);
             } catch (Exception e) {
