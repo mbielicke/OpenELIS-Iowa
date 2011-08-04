@@ -178,7 +178,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select="resource:getString($constants,'country')" />:
                 </text>
                 <widget colspan="3">
-                  <dropdown key="{meta:getAddressCountry()}" width="175" popWidth="175" tab="{meta:getParentOrganizationName()},{meta:getAddressZipCode()}" field="String" required="true" />
+                  <dropdown key="{meta:getAddressCountry()}" width="175" popWidth="175" tab="{meta:getParentOrganizationName()},{meta:getAddressZipCode()}" field="String" />
                 </widget>
               </row>
               <row>
