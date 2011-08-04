@@ -81,10 +81,12 @@ public class RecurrenceTab extends Screen {
         addScreenHandler(recurrenceIsActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 recurrenceIsActive.setValue(recurrence.getIsActive());
+                showDateButton.enable("Y".equals(recurrence.getIsActive()));
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 recurrence.setIsActive(event.getValue());
+                showDateButton.enable("Y".equals(recurrence.getIsActive()));
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -189,7 +191,7 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                showDateButton.enable(true);
+                showDateButton.enable(false); 
             }
         });
     }
@@ -318,11 +320,18 @@ public class RecurrenceTab extends Screen {
             nmons = bmon + (dfyr - 1) * 11 + emon;
         else
             nmons = emon - bmon;
+        //
+        // if today is the begin date then show it 
+        //
         if (now.equals(bdt)) {
             next = Datetime.getInstance(Datetime.YEAR, Datetime.DAY, bdt.getDate());
             model.add(new TableDataRow(null, next));                       
         }
-        iter = 0;   
+        iter = 0;  
+        /*
+         * show all the dates after begin date (including today) that can be
+         * produced with the frequency
+         */
         while (iter < nmons) {
             iter += freq;
             nmon += freq;
@@ -362,6 +371,10 @@ public class RecurrenceTab extends Screen {
         
         nyr = byr+freq;
         nd = new Date(nyr, bmon, bday); 
+        /*
+         * show all the dates after begin date (including today) that can be
+         * produced with the frequency
+         */
         while (!edt.before(nd)) {        
             if (!nd.before(now.getDate())) {
                 next = Datetime.getInstance(Datetime.YEAR, Datetime.DAY, nd);

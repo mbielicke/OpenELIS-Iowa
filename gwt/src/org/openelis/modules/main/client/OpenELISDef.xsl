@@ -226,7 +226,7 @@ UIRF Software License are applicable instead of those above.
                     <menuItem key="turnaround" description="" icon="" enable="true" label="{resource:getString($constants,'turnaround')}" />
                     <menuItem key="sdwisUnloadReport" description="" icon="" enable="true" label="{resource:getString($constants,'sdwisUnloadReport')}" />
                     <menuItem key="finalReport" description="" icon="" enable="true" label="{resource:getString($constants,'finalReport')}" />
-                    <code>if(UserCache.getPermission().hasModule("r_final-select","SELECT")){</code>
+                    <code>if(UserCache.getPermission().hasModule("r_final","SELECT")){</code>
                     <menuItem key="orderRecurrence" description="" icon="" enable="true" label="{resource:getString($constants,'orderRecurrence')}" />
                     <code>}</code>
                   </menuPanel>

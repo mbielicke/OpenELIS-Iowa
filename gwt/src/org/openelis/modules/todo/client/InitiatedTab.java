@@ -64,8 +64,6 @@ import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;
 public class InitiatedTab extends Screen {
         
     private boolean                    loadedFromCache, reattachChart;
-    private Long                       day, twodays, fivedays, tendays, twntydays,
-                                       thrtydays, hour;
     private String                     loadBySection;
     private ArrayList<String>          ranges;      
     private ArrayList<AnalysisCacheVO> fullList;
@@ -118,18 +116,10 @@ public class InitiatedTab extends Screen {
         ranges.add(consts.get("elevnToTwntyDays"));
         ranges.add(consts.get("twntyOneToThrtyDays"));
         ranges.add(consts.get("moreThanThrtyDays"));
-        
-        hour = 3600000L;
-        day = 24 * hour;
-        twodays = 2 * day;
-        fivedays = 3 * day; 
-        tendays = 10 * day;
-        twntydays = 20 * day;
-        thrtydays = 30 * day;
     }
     
     private ArrayList<TableDataRow> getTableModel() {
-        Long diff;
+        Long day, hour, diff;
         Double percent, units, ceil;
         boolean sectOnly;
         Integer priority;
@@ -141,7 +131,9 @@ public class InitiatedTab extends Screen {
         SystemUserPermission perm;
         
         model = new ArrayList<TableDataRow>();
-
+        hour = 3600000L;
+        day = 24 * hour;
+        
         try {            
             perm = UserCache.getPermission();             
             if (!loadedFromCache) {
@@ -287,6 +279,7 @@ public class InitiatedTab extends Screen {
     
     private void refreshChart() {
         long stdur, mdur;
+        Long day, twodays, fivedays, tendays, twntydays, thrtydays, hour;
         Integer val;
         ArrayList<TableDataRow> model;
         Datetime now, std;
@@ -297,6 +290,14 @@ public class InitiatedTab extends Screen {
         now = Datetime.getInstance();
         map = new HashMap<String, Integer>();        
         model = table.getData();
+        
+        hour = 3600000L;
+        day = 24 * hour;
+        twodays = 2 * day;
+        fivedays = 3 * day; 
+        tendays = 10 * day;
+        twntydays = 20 * day;
+        thrtydays = 30 * day;
         
         midNight = new Date();
         midNight.setHours(0);

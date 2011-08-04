@@ -64,7 +64,6 @@ import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;
 public class CompletedTab extends Screen {
         
     private boolean                    loadedFromCache, reattachChart;
-    private long                       day, twodays, threedays, hour;
     private String                     loadBySection;
     private ArrayList<String>          ranges;          
     private ArrayList<AnalysisCacheVO> fullList;
@@ -115,11 +114,6 @@ public class CompletedTab extends Screen {
         ranges.add(consts.get("twoDays"));
         ranges.add(consts.get("threeDays"));
         ranges.add(consts.get("moreThanThreeDays"));
-        
-        hour = 3600000;
-        day = 24 * hour;
-        twodays = 2 * day;
-        threedays = 3 * day; 
     }
     
     private ArrayList<TableDataRow> getTableModel() {
@@ -220,8 +214,8 @@ public class CompletedTab extends Screen {
         loadedFromCache = true;
     }
     
-    private void refreshChart() {
-        long cmpdur, mdur;
+    private void refreshChart() {                              
+        long day, twodays, threedays, hour, cmpdur, mdur;
         Integer val;
         ArrayList<TableDataRow> model;
         Datetime now, cmpd;
@@ -231,7 +225,11 @@ public class CompletedTab extends Screen {
         
         now = Datetime.getInstance();
         map = new HashMap<String, Integer>();        
-        model = table.getData();        
+        model = table.getData();   
+        hour = 3600000;
+        day = 24 * hour;
+        twodays = 2 * day;
+        threedays = 3 * day; 
         
         midNight = new Date();
         midNight.setHours(0);
