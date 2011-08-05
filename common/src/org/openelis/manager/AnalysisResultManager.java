@@ -471,6 +471,7 @@ public class AnalysisResultManager implements RPC {
         currDO.setResultGroup(taDO.getResultGroup());
         currDO.setRowGroup(taDO.getRowGroup());
         currDO.setTestAnalyteId(taDO.getId());
+        currDO.setTestAnalyteTypeId(taDO.getTypeId());
         currDO.setTypeId(taDO.getTypeId());
 
         return currDO;
