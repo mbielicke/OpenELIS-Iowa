@@ -184,6 +184,7 @@ public class ResultBean implements ResultLocal {
                 // create a new resultDO
                 ResultViewDO resultDO = new ResultViewDO();
                 resultDO.setTestAnalyteId(data.getId());
+                resultDO.setTestAnalyteTypeId(data.getTypeId());
                 resultDO.setIsColumn(data.getIsColumn());
                 resultDO.setIsReportable(data.getIsReportable());
                 resultDO.setAnalyteId(data.getAnalyteId());
