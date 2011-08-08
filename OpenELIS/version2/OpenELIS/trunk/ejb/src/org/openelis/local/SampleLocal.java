@@ -7,6 +7,7 @@ import javax.ejb.Local;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleStatusWebReportVO;
 
 @Local
 public interface SampleLocal {
@@ -32,5 +33,13 @@ public interface SampleLocal {
         
     public ArrayList<IdNameVO> fetchProjectsForOrganizations(ArrayList<Integer> organizationId) throws Exception;
     
-    public ArrayList<IdNameVO> fetchProjectsForPvtOrganizations(ArrayList<Integer> organizationId) throws Exception;    
+    public ArrayList<IdNameVO> fetchProjectsForPrivateOrganizations(ArrayList<Integer> organizationId) throws Exception;
+    
+    public ArrayList<IdNameVO> fetchProjectsForSampleStatusReport(ArrayList<Integer> organizationId) throws Exception;
+    
+    public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportEnvironmental(ArrayList<Integer> sampleIdList) throws Exception;
+    
+    public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportPrivateWell(ArrayList<Integer> sampleIdList) throws Exception;
+    
+    public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportSDWIS(ArrayList<Integer> sampleIdList) throws Exception;
 }
