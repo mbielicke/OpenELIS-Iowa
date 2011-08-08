@@ -100,6 +100,29 @@ public class ReportUtil {
         }
         return null;
     }
+    
+    /**
+     * Return the query part of QueryData as an array of integers
+     */
+    public static int[] getArrayParameter(HashMap<String, QueryData> parameter, String key) {
+        int list[];
+        QueryData q;
+        String str[];
+
+        q = parameter.get(key);
+        if (q == null || q.query == null)
+            return null;
+        str = q.query.split(",");
+        list = new int[str.length];
+        for (int i = 0; i < str.length; i++ ) {
+            try {
+                list[i] = Integer.parseInt(str[i]);
+            } catch (Exception ex) {
+                return null;
+            }
+        }
+        return list;
+    }
 
     /**
      * Returns the Datetime object with specified start and end range. The string date needs
@@ -303,5 +326,71 @@ public class ReportUtil {
             p.getErrorStream().read(err);
             throw new Exception(err.toString());
         }
+    }
+    
+    /**
+     * Parses the clause in userPermission and returns the values in a format
+     * which can be understood by the Query Builder.
+     */
+    public static HashMap<String, String> parseClauseAsString(String clause) {
+        HashMap<String, String> map;
+        String[] str, str1;
+        String key, value;
+
+        map = new HashMap<String, String>();
+        if(DataBaseUtil.isEmpty(clause))
+            return map;
+        str = clause.split(";");
+        for (int i = 0; i < str.length; i++ ) {
+            str1 = str[i].split(":");
+            if(str1.length != 2)
+                continue;
+            key = str1[0];
+            value = str1[1];
+            if(DataBaseUtil.isEmpty(key)|| DataBaseUtil.isEmpty(value))
+                continue;
+            if (value.contains(","))
+                value = " in (" + value +")";
+            else
+                value = " = " +value;
+            map.put(key, value);
+        }
+        return map;
+    }
+    
+    /**
+     * Parses the clause in userPermission and returns the values as a HashMap where 
+     * the key is the name of a field from the clause and the value is an ArrayList of Integers
+     */
+    public static HashMap<String, ArrayList<Integer>> parseClauseAsArrayList(String clause) {
+        HashMap<String, ArrayList<Integer>> map;
+        ArrayList<Integer> list;
+        String[] str, str1, str2;
+        String key, value;
+
+        map = new HashMap<String, ArrayList<Integer>>();
+        if(DataBaseUtil.isEmpty(clause))
+            return map;
+        str = clause.split(";");
+        for (int i = 0; i < str.length; i++ ) {
+            list = new ArrayList<Integer>();
+            str1 = str[i].split(":");
+            if(str1.length != 2)
+                continue;
+            key = str1[0];
+            value = str1[1];
+            if(DataBaseUtil.isEmpty(key)|| DataBaseUtil.isEmpty(value))
+                continue;
+            str2 = value.split(",");
+            for(int j = 0; j < str2.length; j++) {
+                try {
+                    list.add(Integer.parseInt(str2[j]));
+                } catch (Exception ex) {
+                   continue;
+                }
+            } 
+            map.put(key, list);         
+        }
+        return map;
     }
 }
