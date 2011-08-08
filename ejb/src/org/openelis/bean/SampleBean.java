@@ -42,6 +42,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.entity.Sample;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -267,14 +268,68 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<IdNameVO> fetchProjectsForPvtOrganizations(ArrayList<Integer> organizationIdList) throws Exception {
+    public ArrayList<IdNameVO> fetchProjectsForPrivateOrganizations(ArrayList<Integer> organizationIdList) throws Exception {
         Query query;
                
-        query = manager.createNamedQuery("Sample.FetchProjectsForPvtOrganizations");
+        query = manager.createNamedQuery("Sample.FetchProjectsForPrivateOrganizations");
         query.setParameter("organizationIds", organizationIdList);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
+    public ArrayList<IdNameVO> fetchProjectsForSampleStatusReport(ArrayList<Integer> organizationIdList) throws Exception {
+        Query query;
+        ArrayList<Object[]> list; 
+        ArrayList<IdNameVO> returnList;
+        IdNameVO obj;
+        Object[] result;
+        Integer id;
+        String description;
+        
+        returnList = new ArrayList<IdNameVO>();
+        query = manager.createNamedQuery("Sample.FetchProjectsForSampleStatusReport");
+        query.setParameter("organizationIds", organizationIdList);
+       
+        try {
+            list = DataBaseUtil.toArrayList(query.getResultList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        
+        for (int i = 0; i < list.size(); i++ ) {
+            result = list.get(i);
+            id = (Integer)result[0];
+            description = (String)result[1];
+            obj = new IdNameVO(id, description);
+            returnList.add(obj);
+        }
+       return returnList;     
+    }
+    
+    public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportEnvironmental(ArrayList<Integer> sampleIdList) throws Exception {
+        Query query;
+               
+        query = manager.createNamedQuery("Sample.FetchSampleAnalysisInfoForSampleStatusReportEnvironmental");
+        query.setParameter("sampleIds", sampleIdList);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
+    public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportPrivateWell(ArrayList<Integer> sampleIdList) throws Exception {
+        Query query;
+               
+        query = manager.createNamedQuery("Sample.FetchSampleAnalysisInfoForSampleStatusReportPrivateWell");
+        query.setParameter("sampleIds", sampleIdList);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportSDWIS(ArrayList<Integer> sampleIdList) throws Exception {
+        Query query;
+               
+        query = manager.createNamedQuery("Sample.FetchSampleAnalysisInfoForSampleStatusReportSDWIS");
+        query.setParameter("sampleIds", sampleIdList);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public SampleDO add(SampleDO data) {
         Sample entity;
 
