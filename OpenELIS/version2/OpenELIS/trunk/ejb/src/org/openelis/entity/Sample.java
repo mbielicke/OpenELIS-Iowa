@@ -72,25 +72,43 @@ import org.openelis.utils.Auditable;
                         "clientReference, releasedDate)"
                       + " from Sample where accessionNumber = :accession"),                     
     @NamedQuery( name = "Sample.FetchProjectsForOrganizations",
-                query = "select new org.openelis.domain.IdNameVO(p.id, p.description)" 
-                     + " from Sample s, SampleOrganization so, SampleProject sp, Project p, Organization o"
-                     + " where s.id = so.sampleId and o.id in (:organizationIds) and so.typeId in(select id from Dictionary where systemName in ('org_report_to')) and" +
-                       " so.organizationId = o.id and sp.sampleId = s.id and sp.projectId = p.id"),
-   @NamedQuery( name = "Sample.FetchProjectsForPvtOrganizations",
-               query = "select new org.openelis.domain.IdNameVO(p.id, p.description)" 
-                     + " from Sample s, SamplePrivateWell so, SampleProject sp, Project p, Organization o"
-                     + " where s.id = so.sampleId and o.id in (:organizationIds) and so.organizationId = o.id and sp.sampleId = s.id and sp.projectId = p.id"),
-   @NamedQuery( name = "Sample.FetchSDWISByReleasedAndLocation",
-               query = "select distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain," +
-                       "s.accessionNumber, s.revision, s.orderId, s.enteredDate, s.receivedDate," +
-                       "s.receivedById, s.collectionDate, s.collectionTime, s.statusId, s.packageId," +
-                       "s.clientReference, s.releasedDate)"
-                     + " from Sample s, SampleItem si, Analysis a, Section se" +
-                       " where s.id = si.sampleId and si.id = a.sampleItemId and a.sectionId = se.id and s.domain = 'S' and s.releasedDate between :startDate and :endDate and se.name like :location"),
-   @NamedQuery( name = "Sample.FetchForCachingByStatusId",
-               query = "select distinct new org.openelis.domain.SampleCacheVO(s.id, s.statusId, s.domain, s.accessionNumber," +
-                       "s.receivedDate, s.collectionDate, s.collectionTime, '', '')"
-                     + " from Sample s where s.statusId = :statusId order by s.accessionNumber ")})
+                query = "select new org.openelis.domain.IdNameVO(p.id, p.name)" 
+                      + " from SampleOrganization so, SampleProject sp, Project p, Organization o" 
+                      + " where so.sampleId = sp.sampleId and o.id in (:organizationIds) and so.typeId in(select id from Dictionary where systemName in ('org_report_to')) and" 
+                      + " so.organizationId = o.id and sp.projectId = p.id and sp.isPermanent = 'Y'"),
+    @NamedQuery( name = "Sample.FetchProjectsForPrivateOrganizations",
+                query = "select new org.openelis.domain.IdNameVO(p.id, p.name)" 
+                      + " from SamplePrivateWell so, SampleProject sp, Project p, Organization o"
+                      + " where so.sampleId = sp.sampleId and o.id in (:organizationIds) and so.organizationId = o.id and sp.projectId = p.id and sp.isPermanent = 'Y'"),
+    @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportEnvironmental",
+                query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
+                        "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription)"
+                      + " from Sample s, SampleItem si, Test t, Method m, SampleEnvironmental se, Analysis a"
+                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and se.sampleId = s.id and"
+                      + " si.sampleId = s.id order by s.accessionNumber, t.name, m.name "),
+    @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportPrivateWell",
+                query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
+                        "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription)"
+                      + " from Sample s, SampleItem si, Test t, Method m, SamplePrivateWell se, Analysis a" 
+                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and se.sampleId = s.id and"
+                      + " si.sampleId = s.id order by s.accessionNumber, t.name, m.name "),
+    @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportSDWIS",
+                query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
+                        "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription)" 
+                      + " from Sample s, SampleItem si, Test t, Method m, SampleSDWIS se, Analysis a"
+                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and se.sampleId = s.id and"
+                      + " si.sampleId = s.id order by s.accessionNumber, t.name, m.name "),
+    @NamedQuery( name = "Sample.FetchSDWISByReleasedAndLocation",
+                query = "select distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain," +
+                        "s.accessionNumber, s.revision, s.orderId, s.enteredDate, s.receivedDate," +
+                        "s.receivedById, s.collectionDate, s.collectionTime, s.statusId, s.packageId," +
+                        "s.clientReference, s.releasedDate)"
+                      + " from Sample s, SampleItem si, Analysis a, Section se" +
+                        " where s.id = si.sampleId and si.id = a.sampleItemId and a.sectionId = se.id and s.domain = 'S' and s.releasedDate between :startDate and :endDate and se.name like :location"),
+    @NamedQuery( name = "Sample.FetchForCachingByStatusId",
+                query = "select distinct new org.openelis.domain.SampleCacheVO(s.id, s.statusId, s.domain, s.accessionNumber," +
+                        "s.receivedDate, s.collectionDate, s.collectionTime, '', '')"
+                      + " from Sample s where s.statusId = :statusId order by s.accessionNumber ")})  
                       
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportBatch",     
@@ -239,7 +257,18 @@ import org.openelis.utils.Auditable;
                       +" s.id = so.sample_id and so.organization_id = o.id and o.address_id = ad.id and o.id =  op.organization_id and op.type_id = d1.id and d1.system_name = 'released_reportto_email' and"
                       +" a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_released = 'Y' )"    
                       +" order by s_anum",
-                resultSetMapping="Sample.FetchForClientEmailReleasedReportMapping")})  
+                resultSetMapping="Sample.FetchForClientEmailReleasedReportMapping"),
+    @NamedNativeQuery(name = "Sample.FetchProjectsForSampleStatusReport",     
+               query = "select p.id p_id, p.description p_description"
+                   + " from sample_organization so, sample_project sp, project p, organization o"
+                   + " where so.sample_id = sp.sample_id and o.id in (:organizationIds) and so.type_id in(select id from Dictionary where system_name in ('org_report_to')) and" 
+                   + " so.organization_id = o.id and sp.project_id = p.id"
+                   + " union "
+                   +"select p.id p_id, p.description p_description" 
+                   + " from sample_private_well so, sample_project sp, project p, organization o"
+                   + " where so.sample_id = sp.sample_id and o.id in (:organizationIds) and so.organization_id = o.id and sp.project_id = p.id"
+                   + " order by p_id",
+                resultSetMapping="Sample.FetchProjectsForSampleStatusReport")})  
 @SqlResultSetMappings({
     @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportBatchMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),  @ColumnResult(name="a_id")}),
@@ -250,7 +279,9 @@ import org.openelis.utils.Auditable;
     @SqlResultSetMapping(name="Sample.FetchForClientEmailReceivedReportMapping",
                          columns={@ColumnResult(name="o_id"),  @ColumnResult(name="o_name"),  @ColumnResult(name="s_anum"), @ColumnResult(name="s_col_date"), @ColumnResult(name="s_col_time"), @ColumnResult(name="s_rec"), @ColumnResult(name="email"),  @ColumnResult(name="qaevent_id"), @ColumnResult(name="domain"), @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"), @ColumnResult(name="ref_field3")}),
     @SqlResultSetMapping(name="Sample.FetchForClientEmailReleasedReportMapping",
-                         columns={@ColumnResult(name="o_id"),  @ColumnResult(name="s_anum"), @ColumnResult(name="s_col_date"), @ColumnResult(name="s_col_time"), @ColumnResult(name="s_rec"), @ColumnResult(name="email"),  @ColumnResult(name="domain"), @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"), @ColumnResult(name="ref_field3")})})
+                         columns={@ColumnResult(name="o_id"),  @ColumnResult(name="s_anum"), @ColumnResult(name="s_col_date"), @ColumnResult(name="s_col_time"), @ColumnResult(name="s_rec"), @ColumnResult(name="email"),  @ColumnResult(name="domain"), @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"), @ColumnResult(name="ref_field3")}),
+    @SqlResultSetMapping(name="Sample.FetchProjectsForSampleStatusReport",
+                         columns={@ColumnResult(name="p_id"),  @ColumnResult(name="p_description")})})                     
 @Entity
 @Table(name = "sample")
 @EntityListeners( {AuditUtil.class})
