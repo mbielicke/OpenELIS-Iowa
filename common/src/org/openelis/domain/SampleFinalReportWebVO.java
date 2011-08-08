@@ -31,20 +31,25 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
 
+/**
+ * The class is the base class used to carry fields for the web based Final Report for different domain. The fields are considered read/display
+ * and do not get committed to the database.
+ */
+
 public class SampleFinalReportWebVO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, accessionNumber, organizationId, statusId;
     protected Datetime        collectionDate, collectionTime;
-    protected String          location, collector, locationAddressCity, pvtWellOwner, pwsId, facilityId;
+    protected String          location, collector;
 
     public SampleFinalReportWebVO() {
     }
 
     public SampleFinalReportWebVO(Integer id, Integer accessionNumber, Integer organizationId,
                                     Date collectionDate, Date collectionTime, String location,
-                                    String collector, Integer statusId, String locationAddressCity) {
+                                    String collector, Integer statusId) {
         setId(id);
         setAccessionNumber(accessionNumber);
         setOrganizationId(organizationId);
@@ -53,41 +58,21 @@ public class SampleFinalReportWebVO implements RPC {
         setLocation(location);
         setCollector(collector);
         setStatus(statusId);
-        setLocationAddressCity(locationAddressCity);
-    }
-
-    public SampleFinalReportWebVO(Integer id, Integer accessionNumber, Integer organizationId,
-                                    Date collectionDate, Date collectionTime, String location,
-                                    String collector, Integer statusId, String locationAddressCity,
-                                    String pvtWellOwner) {
-        setId(id);
-        setAccessionNumber(accessionNumber);
-        setOrganizationId(organizationId);
-        setCollectionDate(DataBaseUtil.toYD(collectionDate));
-        setCollectionTime(DataBaseUtil.toHM(collectionTime));
-        setLocation(location);
-        setCollector(collector);
-        setStatus(statusId);
-        setLocationAddressCity(locationAddressCity);
-        setPvtWellOwner(pvtWellOwner);
     }
     
-    public SampleFinalReportWebVO(Integer id, Integer accessionNumber, Integer organizationId, Integer statusId, 
-                                  Date collectionDate, Date collectionTime, String location,
-                                  String collector, String pwsId, 
-                                  String facilityId) {
+    public SampleFinalReportWebVO(Integer id, Integer accessionNumber, 
+                                  Date collectionDate, Date collectionTime, Integer statusId, 
+                                  String collector, String location, Integer organizationId) {
       setId(id);
       setAccessionNumber(accessionNumber);
-      setOrganizationId(organizationId);
       setCollectionDate(DataBaseUtil.toYD(collectionDate));
       setCollectionTime(DataBaseUtil.toHM(collectionTime));
+      setStatus(statusId);
       setLocation(location);
       setCollector(collector);
-      setStatus(statusId);
-      setPwsId(pwsId);
-      setFacilityId(facilityId);
+      setOrganizationId(organizationId);
   }
-
+    
     public Integer getId() {
         return id;
     }
@@ -117,7 +102,7 @@ public class SampleFinalReportWebVO implements RPC {
     }
 
     public void setCollectionDate(Datetime collectionDate) {
-        this.collectionDate = collectionDate;
+        this.collectionDate = DataBaseUtil.toYD(collectionDate);
     }
 
     public Datetime getCollectionTime() {
@@ -125,7 +110,7 @@ public class SampleFinalReportWebVO implements RPC {
     }
 
     public void setCollectionTime(Datetime collectionTime) {
-        this.collectionTime = collectionTime;
+        this.collectionTime = DataBaseUtil.toHM(collectionTime);
     }
 
     public String getLocation() {
@@ -133,7 +118,7 @@ public class SampleFinalReportWebVO implements RPC {
     }
 
     public void setLocation(String location) {
-        this.location = location;
+        this.location = DataBaseUtil.trim(location);
     }
 
     public String getCollector() {
@@ -141,7 +126,7 @@ public class SampleFinalReportWebVO implements RPC {
     }
 
     public void setCollector(String collector) {
-        this.collector = collector;
+        this.collector = DataBaseUtil.trim(collector);
     }
 
     public Integer getStatus() {
@@ -150,38 +135,5 @@ public class SampleFinalReportWebVO implements RPC {
 
     public void setStatus(Integer statusId) {
         this.statusId = statusId;
-    }
-    
-    public String getPwsId() {
-        return pwsId;
-    }
-
-    public void setPwsId(String pwsId) {
-        this.pwsId = pwsId;
-    }
-
-    public String getFacilityId() {
-        return facilityId;
-    }
-
-    public void setFacilityId(String facilityId) {
-        this.facilityId = facilityId;
-    }
-
-    public String getLocationAddressCity() {
-        return locationAddressCity;
-    }
-
-    public void setLocationAddressCity(String locationAddressCity) {
-        this.locationAddressCity = locationAddressCity;
-    }
-
-    public String getPvtWellOwner() {
-        return pvtWellOwner;
-    }
-
-    public void setPvtWellOwner(String pvtWellOwner) {
-        this.pvtWellOwner = pvtWellOwner;
-    }
-
+    }    
 }
