@@ -421,7 +421,6 @@ public class SampleStatusScreen extends Screen {
                                               data.getMethodReportingDescription());
                     row.cells.get(2).setValue(data.getStatusId());
                     model.add(row);
-
                 } else {
                     row = new TableDataRow(6);
                     row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
@@ -435,7 +434,6 @@ public class SampleStatusScreen extends Screen {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-        Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
         return model;
     }
 
@@ -477,7 +475,7 @@ public class SampleStatusScreen extends Screen {
     private class FinalReportEnvironmentalVO {
 
         private Datetime collectedFrom, collectedTo;
-        private String   clientReference, noSampleSelected, numSampleSelected;
+        private String   clientReference;
         private Integer  projectCode;
 
         public Datetime getCollectedFrom() {
@@ -502,22 +500,6 @@ public class SampleStatusScreen extends Screen {
 
         public void setClientReference(String clientReference) {
             this.clientReference = clientReference;
-        }
-
-        public String getNoSampleSelected() {
-            return noSampleSelected;
-        }
-
-        public void setNoSampleSelected(String noSampleSelected) {
-            this.noSampleSelected = noSampleSelected;
-        }
-
-        public String getNumSampleSelected() {
-            return numSampleSelected;
-        }
-
-        public void setNumSampleSelected(String numSampleSelected) {
-            this.numSampleSelected = numSampleSelected;
         }
 
         public Integer getProjectCode() {
