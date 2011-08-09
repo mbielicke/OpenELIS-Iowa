@@ -39,6 +39,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.web.modules.home.Home"/>    
     <inherits name="org.openelis.Cache"/>
     <inherits name="org.openelis.web.modules.notificationPreference.NotificationPreference"/>
+    <inherits name="org.openelis.web.modules.sampleStatusReport.SampleStatusReport"/>
     <inherits name="org.openelis.web.modules.finalReport.FinalReport"/>
     <inherits name="org.openelis.ELISCommon"/>   
     <source path = "util"/>
