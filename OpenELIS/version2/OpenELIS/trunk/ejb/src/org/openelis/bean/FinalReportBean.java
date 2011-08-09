@@ -99,7 +99,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
     private static int                 UNFOLDABLE_PAGE_COUNT = 6;
 
-    private static Integer             organizationReportToId, sampleInErrorId, analysisReleasedId;
+    private static Integer             organizationReportToId, sampleInErrorId, sampleNotVerifiedId, analysisReleasedId;
 
     private static final SampleWebMeta meta = new SampleWebMeta();
 
@@ -108,6 +108,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         try {
             organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
             sampleInErrorId = dictionary.fetchBySystemName("sample_error").getId();
+            sampleNotVerifiedId = dictionary.fetchBySystemName("sample_not_verified").getId();
             analysisReleasedId = dictionary.fetchBySystemName("analysis_released").getId();
         } catch (Throwable e) {
             e.printStackTrace();
@@ -759,6 +760,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
                           SampleWebMeta.getId() + ", " + SampleWebMeta.getAccessionNumber() + ") ");
+        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleNotVerifiedId);
         builder.constructWhere(fields);
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
 
@@ -786,6 +788,13 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         returnList.addAll(sample.fetchSampleAnalysisInfoForSampleStatusReportPrivateWell(idList));
         returnList.addAll(sample.fetchSampleAnalysisInfoForSampleStatusReportSDWIS(idList));
 
+        /*
+         * Sort the list by accession # of samples. We do the sorting in the back end instead of doing it in the front, 
+         * since the comparator for rows in the table cannot sort correctly if the value in column based on which
+         * the comparison is made is null. In this case, since the analysis rows don't show accession number on the screen, 
+         * the value in the first column of these rows is null and that is the column used for sorting.
+         */
+        Collections.sort(returnList, new SampleComparator());
         return returnList;
     }
 
@@ -981,6 +990,12 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     class MyComparator implements Comparator<OrganizationPrint> {
         public int compare(OrganizationPrint o1, OrganizationPrint o2) {
             return o1.getJprint().getPages().size() - o2.getJprint().getPages().size();
+        }
+    }    
+    
+    class SampleComparator implements Comparator<SampleStatusWebReportVO> {
+        public int compare(SampleStatusWebReportVO s1, SampleStatusWebReportVO s2) {
+            return s1.getAccessionNumber() - s2.getAccessionNumber();
         }
     }
 }
