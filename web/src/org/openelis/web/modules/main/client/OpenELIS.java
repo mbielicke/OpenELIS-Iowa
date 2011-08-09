@@ -37,11 +37,12 @@ import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.web.LinkButton;
 import org.openelis.gwt.widget.web.WebWindow;
-import org.openelis.web.modules.finalReport.client.FinalReportEnvScreen;
-import org.openelis.web.modules.finalReport.client.FinalReportPvtScreen;
+import org.openelis.web.modules.finalReport.client.FinalReportEnvironmentalScreen;
+import org.openelis.web.modules.finalReport.client.FinalReportPrivateWellScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportSDWISScreen;
 import org.openelis.web.modules.home.client.HomeScreen;
 import org.openelis.web.modules.notificationPreference.client.NotificationPreferenceScreen;
+import org.openelis.web.modules.sampleStatusReport.client.SampleStatusScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -168,8 +169,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         addLinkHandler("finalReportIcon", "Environmental Final Report", "w_final_environmental", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
-                    Screen screen = new FinalReportEnvScreen();
-                    setScreen(screen, "Final Report", "finalReport");
+                    Screen screen = new FinalReportEnvironmentalScreen();
+                    setScreen(screen, "Environmental Final Report", "finalReportEnvironmental");
                     window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -181,8 +182,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         addLinkHandler("finalReportIcon", "Private Well Final Report", "w_final_privatewell", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
-                    Screen screen = new FinalReportPvtScreen();
-                    setScreen(screen, "Private Well Final Report", "finalReportPvt");
+                    Screen screen = new FinalReportPrivateWellScreen();
+                    setScreen(screen, "Private Well Final Report", "finalReportPrivateWell");
                     window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -204,7 +205,41 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addLinkHandler("requestFormIcon", "Request Forms", "w_requestform", new ClickHandler() {
+        addLinkHandler("statusReportIcon", "Sample Inhouse Status Report", "w_samplestat", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                try {
+                    Screen screen = new SampleStatusScreen();
+                    setScreen(screen, "Sample Inhouse Status Report", "sampleStatus");
+                    window.setCrumbLink(null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+
+        //TODO: add modules for the samples by test 
+        addLinkHandler("dataDumpEnvironmentalIcon", "Environmental Samples by Test", "", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        addLinkHandler("dataDumpPrivateWellIcon", "Private Well Samples by Test", "", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        
+        addLinkHandler("dataDumpSDWISIcon", "SDWIS Samples by Test", "", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                 } catch (Exception e) {
@@ -214,55 +249,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addLinkHandler("statusReportIcon", "Sample Status Report", "w_samplestat", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
 
-        addLinkHandler("turnaroundIcon", "Turnaround Report", "w_turnaround", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-
-        addLinkHandler("dataMineIcon", "Data Mine Report", "w_datamine", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-
-        addLinkHandler("reportableIcon", "Reportable Disease", "w_rptdisease", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-
-        addLinkHandler("onholdReportIcon", "Onhold Report", "w_onhold", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
         
         addLinkHandler("notificationPrefIcon", "Notification Preference", "w_notify", new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -276,6 +263,17 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 }
             }
         });
+        
+        addLinkHandler("changePasswordIcon", "Change Password", "", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                try {
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+
     }
 
     /**
