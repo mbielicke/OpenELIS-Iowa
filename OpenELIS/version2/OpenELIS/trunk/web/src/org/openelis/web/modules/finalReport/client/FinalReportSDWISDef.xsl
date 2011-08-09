@@ -34,7 +34,8 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
+  xmlns:meta="xalan://org.openelis.meta.SampleWebMeta">
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
@@ -69,13 +70,13 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'dateReleased')" />:
               </text>
               <widget>
-                <calendar begin="0" end="2" key="RELEASED_FROM" pattern="{resource:getString($constants,'datePattern')}"  width="90" />
+                <calendar begin="0" end="2" key="{meta:getReleasedDateFrom()}" pattern="{resource:getString($constants,'datePattern')}"  width="90" />
               </widget>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'to')" />:
               </text>
               <widget>
-                <calendar begin="0" end="2" key="RELEASED_TO" pattern="{resource:getString($constants,'datePattern')}" width="90" />
+                <calendar begin="0" end="2" key="{meta:getReleasedDateTo()}" pattern="{resource:getString($constants,'datePattern')}" width="90" />
               </widget>
             </row>            
             <row>
@@ -83,13 +84,13 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'dateCollected')" />:
               </text>
               <widget>
-                <calendar begin="0" end="2" key="COLLECTED_FROM" pattern="{resource:getString($constants,'datePattern')}" width="90" />
+                <calendar begin="0" end="2" key="{meta:getCollectionDateFrom()}" pattern="{resource:getString($constants,'datePattern')}" width="90" />
               </widget>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'to')" />:
               </text>
               <widget>
-                <calendar begin="0" end="2" key="COLLECTED_TO" pattern="{resource:getString($constants,'datePattern')}"  width="90" />
+                <calendar begin="0" end="2" key="{meta:getCollectionDateTo()}" pattern="{resource:getString($constants,'datePattern')}"  width="90" />
               </widget>
             </row>
             <row>
@@ -97,13 +98,13 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select="resource:getString($constants,'accessionNumber')" />:
               </text>
              <widget>
-                <textbox  field="Integer" key="ACCESSION_FROM" max="60" width="86" />
+                <textbox  field="Integer" key="{meta:getAccessionNumberFrom()}" max="60" width="86" />
               </widget> 
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'to')" />:
               </text>
                <widget>
-                <textbox field="Integer" key="ACCESSION_TO" max="60" width="86" />
+                <textbox field="Integer" key="{meta:getAccessionNumberTo()}" max="60" width="86" />
               </widget>
             </row>
             <row>
@@ -111,7 +112,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"collectorName")' />:
               </text>
               <widget colspan="4">
-                <textbox case="MIXED" field="String" key="COLLECTOR_NAME_SDWIS" max="60" width="202" />
+                <textbox case="MIXED" field="String" key="{meta:getSDWISCollector()}" max="60" width="202" />
               </widget>
             </row>
             <row>
@@ -119,7 +120,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"clientReference")' />:
               </text>
               <widget colspan="4">
-                <textbox case="MIXED" field="String" key="CLIENT_REFERENCE" max="60" width="202" />
+                <textbox case="MIXED" field="String" key="{meta:getClientReference()}" max="60" width="202" />
               </widget>
             </row>
             <row>
@@ -127,7 +128,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"collectionSite")' />:
               </text>
               <widget colspan="4">
-                <textbox case="MIXED" field="String" key="COLLECTION_SITE_SDWIS" max="60" width="202" />
+                <textbox case="MIXED" field="String" key="{meta:getSDWISLocation()}" max="60" width="202" />
               </widget>
             </row>
             <row>
@@ -135,7 +136,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"pwsId")' />:
               </text>
               <widget colspan="4">
-                <textbox field="String" key="PWS_Number0" max="60" width="202" />
+                <textbox field="String" key="{meta:getPwsNumber0()}" max="60" width="202" />
               </widget>
             </row>
             <row>
@@ -143,7 +144,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"facilityId")' />:
               </text>
               <widget colspan="4">
-                <textbox field="String" key="FACILITY_ID" max="60" width="202" />
+                <textbox field="String" key="{meta:getSDWISFacilityId()}" max="60" width="202" />
               </widget>
             </row>            
           </TablePanel>
@@ -213,6 +214,9 @@ UIRF Software License are applicable instead of those above.
                   <col key="pwsId" width="120" header="{resource:getString($constants,'pwsId')}">
                     <textbox field="String" />
                   </col>  
+                  <col key="pwsName" width="120" header="{resource:getString($constants,'pwsName')}">
+                    <textbox field="String" />
+                  </col> 
                   <col key="facilityId" width="120" header="{resource:getString($constants,'facilityId')}">
                     <textbox field="Integer" />
                   </col>                       

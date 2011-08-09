@@ -30,6 +30,6 @@ import org.openelis.gwt.screen.ScreenDefInt;
 /**
  * Marker interface used by the UI Generator to create the Home Screen definition *
  */
-public interface FinalReportPvtDef extends ScreenDefInt {
+public interface FinalReportPrivateWellDef extends ScreenDefInt {
 
 }
