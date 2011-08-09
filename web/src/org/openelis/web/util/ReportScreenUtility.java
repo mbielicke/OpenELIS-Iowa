@@ -26,47 +26,21 @@
 package org.openelis.web.util;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import org.openelis.domain.OptionListItem;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.Util;
-import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
-import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
-import org.openelis.gwt.widget.CheckBox;
-import org.openelis.gwt.widget.CheckField;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.gwt.widget.DoubleField;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Field;
 import org.openelis.gwt.widget.IntegerField;
-import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.StringField;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.TextBox.Case;
-import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.report.Prompt;
-
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.i18n.client.DateTimeFormat;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.FlexTable;
-import com.google.gwt.user.client.ui.HasAlignment;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 
 public class ReportScreenUtility {
     protected ArrayList<Prompt> reportParameters;
@@ -177,28 +151,4 @@ public class ReportScreenUtility {
 
         return qd;
     }
-
-    /**
-     * Parses the clause in userPermission and returns the values in a format
-     * which can be understood by the Query Builder.
-     */
-    public HashMap<String, String> parseClause(String clause) {
-        HashMap<String, String> map;
-        String[] str, str1;
-        String key, value;
-
-        map = new HashMap<String, String>();
-        str = clause.split(";");
-        for (int i = 0; i < str.length; i++ ) {
-            str1 = str[i].split(":");
-            key = str1[0];
-            value = str1[1];
-            if (value.contains(","))
-                value = value.replace(",", "|");
-            map.put(key, value);
-        }
-
-        return map;
-    }
-
 }
