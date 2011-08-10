@@ -61,16 +61,17 @@ import org.openelis.local.OrderTestLocal;
 import org.openelis.local.OrganizationContactLocal;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.local.OrganizationParameterLocal;
-import org.openelis.local.PanelItemLocal;
-import org.openelis.local.PanelLocal;
-import org.openelis.local.ProjectLocal;
-import org.openelis.local.ProjectParameterLocal;
-import org.openelis.local.ProviderLocal;
-import org.openelis.local.ProviderLocationLocal;
 import org.openelis.local.PWSAddressLocal;
 import org.openelis.local.PWSFacilityLocal;
 import org.openelis.local.PWSLocal;
 import org.openelis.local.PWSMonitorLocal;
+import org.openelis.local.PanelItemLocal;
+import org.openelis.local.PanelLocal;
+import org.openelis.local.PreferencesLocal;
+import org.openelis.local.ProjectLocal;
+import org.openelis.local.ProjectParameterLocal;
+import org.openelis.local.ProviderLocal;
+import org.openelis.local.ProviderLocationLocal;
 import org.openelis.local.QaeventLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.local.QcLocal;
@@ -449,6 +450,10 @@ public class EJBFactory {
     
     public static UserCacheLocal getUserCache() {
         return (UserCacheLocal)lookup("openelis/UserCacheBean/local");
+    }
+
+    public static PreferencesLocal getPreferences() {
+        return (PreferencesLocal)lookup("openelis/PreferencesBean/local");
     }
 
     /*
