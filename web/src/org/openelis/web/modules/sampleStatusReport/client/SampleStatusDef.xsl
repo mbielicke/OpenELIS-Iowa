@@ -148,7 +148,7 @@ UIRF Software License are applicable instead of those above.
                     <textbox field="String" />
                   </col>
                   <col key="analysisStatus" width="120" header="{resource:getString($constants,'analysisStatus')}">
-                    <dropdown width="120" field="Integer"  />
+                    <label field="String"  />
                   </col>
                   <col key="collectedDate" width="120" header="{resource:getString($constants,'dateCollected')}">
                     <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}"/>
