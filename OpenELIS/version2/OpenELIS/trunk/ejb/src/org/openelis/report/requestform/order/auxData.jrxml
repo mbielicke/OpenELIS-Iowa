@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleAuxData" pageWidth="490" pageHeight="500" columnWidth="490" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
-	<property name="ireport.zoom" value="2.0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleAuxData" columnCount="2" printOrder="Horizontal" pageWidth="490" pageHeight="500" columnWidth="245" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="5.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="ORDER_ID" class="java.lang.Integer"/>
@@ -67,20 +67,20 @@ ORDER BY aux_data.sort_order]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{analyte_name}.trim()+":"]]></textFieldExpression>
 			</textField>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement x="116" y="0" width="374" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement x="114" y="0" width="131" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement markup="styled">
 					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{aux_data_value}]]></textFieldExpression>
 			</textField>
 			<line>
-				<reportElement key="" mode="Transparent" x="116" y="10" width="374" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
+				<reportElement key="" mode="Transparent" x="116" y="10" width="129" height="1" isRemoveLineWhenBlank="true" forecolor="#999999"/>
 				<graphicElement>
 					<pen lineWidth="0.5" lineStyle="Solid"/>
 				</graphicElement>
 			</line>
 			<textField pattern="" isBlankWhenNull="true">
-				<reportElement x="116" y="12" width="374" height="9" forecolor="#999999"/>
+				<reportElement x="114" y="12" width="131" height="9" forecolor="#999999"/>
 				<textElement markup="styled">
 					<font fontName="Arial" size="7" pdfFontName="Helvetica"/>
 				</textElement>
