@@ -26,13 +26,11 @@
 package org.openelis.web.modules.sampleStatusReport.client;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 
-import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -53,12 +51,10 @@ import org.openelis.gwt.widget.DeckPanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 import org.openelis.gwt.widget.web.WebWindow;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.web.util.ReportScreenUtility;
@@ -88,6 +84,7 @@ public class SampleStatusScreen extends Screen {
     private Label<String>                      queryDeckLabel, noSampleSelected;
     private AppButton                          getSamplesButton, resetButton, backButton;
     private ArrayList<SampleStatusWebReportVO> results;
+    private Integer                            statusReleased;
 
     private enum Decks {
         QUERY, LIST
@@ -293,10 +290,12 @@ public class SampleStatusScreen extends Screen {
 
         projectCode.setModel(model);
 
-        model = new ArrayList<TableDataRow>();
-        for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
-            model.add(new TableDataRow(d.getId(), d.getEntry()));
-        ((Dropdown<Integer>)sampleEntTable.getColumns().get(2).getColumnWidget()).setModel(model);
+       try {
+            statusReleased = DictionaryCache.getIdBySystemName("analysis_released");           
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
     }
 
     protected void getSamples() {
@@ -379,14 +378,16 @@ public class SampleStatusScreen extends Screen {
     }
 
     private ArrayList<TableDataRow> getTableModel() {
+        Integer accNumPrev, accNum;
+        String tempStatus;
+        Date temp;
+        Datetime temp1;
         ArrayList<TableDataRow> model;
         SampleStatusWebReportVO data;
         TableDataRow row;
-        Date temp;
-        Datetime temp1;
-        Integer accNumPrev, accNum;
 
         accNumPrev = null;
+        tempStatus = "";
         model = new ArrayList<TableDataRow>();
         if (results == null || results.size() == 0)
             return model;
@@ -394,6 +395,14 @@ public class SampleStatusScreen extends Screen {
             for (int i = 0; i < results.size(); i++ ) {
                 data = results.get(i);
                 accNum = data.getAccessionNumber();
+                /*
+                 * If analysis status is Released, screen displays "Completed status", for all other statuses
+                 * screen displays "In Progress".
+                 */
+                if(statusReleased.equals(data.getStatusId()))
+                    tempStatus = consts.get("completed");
+                else
+                    tempStatus = consts.get("inProgress");
                 if ( !accNum.equals(accNumPrev)) {
                     if (data.getCollectionDate() != null) {
                         temp = data.getCollectionDate().getDate();
@@ -408,6 +417,7 @@ public class SampleStatusScreen extends Screen {
                     } else {
                         temp1 = null;
                     }
+
                     row = new TableDataRow(6);
                     row.cells.get(0).setValue(data.getAccessionNumber());
                     row.cells.get(1).setValue(data.getCollector());
@@ -419,13 +429,13 @@ public class SampleStatusScreen extends Screen {
                     row = new TableDataRow(6);
                     row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
                                               data.getMethodReportingDescription());
-                    row.cells.get(2).setValue(data.getStatusId());
+                    row.cells.get(2).setValue(tempStatus);
                     model.add(row);
                 } else {
                     row = new TableDataRow(6);
                     row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
                                               data.getMethodReportingDescription());
-                    row.cells.get(2).setValue(data.getStatusId());
+                    row.cells.get(2).setValue(tempStatus);
                     model.add(row);
                 }
                 accNumPrev = accNum;
