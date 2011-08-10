@@ -31,6 +31,7 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenSessionTimer;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.WindowBrowser;
@@ -68,13 +69,13 @@ import org.openelis.modules.report.client.ClientNotificationReportScreen;
 import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
+import org.openelis.modules.report.client.RequestformReportScreen;
+import org.openelis.modules.report.client.SDWISUnloadReportScreen;
 import org.openelis.modules.report.client.SampleInhouseReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelAdditionalReportScreen;
 import org.openelis.modules.report.client.SampleLoginLabelReportScreen;
-import org.openelis.modules.report.client.SDWISUnloadReportScreen;
 import org.openelis.modules.report.client.TestReportScreen;
 import org.openelis.modules.report.client.TurnaroundReportScreen;
-import org.openelis.modules.report.client.RequestformReportScreen;
 import org.openelis.modules.report.client.VerificationReportScreen;
 import org.openelis.modules.report.client.VolumeReportScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
@@ -117,9 +118,10 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     private static Timer           timeoutTimer, forceTimer;
     private static int             SESSION_TIMEOUT = 1000 * 60 * 30, FORCE_TIMEOUT = 1000 * 60;
     private HandlerRegistration    closeHandler;
-    
+
     public OpenELIS() throws Exception {
         OpenELISRPC rpc;
+        VerticalPanel vp;
 
         service = new ScreenService("controller?service=org.openelis.modules.main.server.OpenELISScreenService");
         rpc = service.call("initialData");
@@ -130,6 +132,21 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         browser = (WindowBrowser)def.getWidget("browser");
         browser.setBrowserHeight();
 
+        // load the favorite's panel
+        vp = (VerticalPanel)def.getWidget("favoritesPanel");
+        try {
+            vp.add(new FavoritesScreen(def));
+        } catch (Throwable t) {
+            Window.alert("Can't initalize the favorite panel; "+t.getMessage());
+        }
+        
+        // load the google chart api
+        VisualizationUtils.loadVisualizationApi(new Runnable() {
+            public void run() {
+            }
+        }, PieChart.PACKAGE, PieChart.PACKAGE);
+       
+        browser.setBrowserHeight();        
         initializeWindowClose();
         initializeTimeout();
         initialize();
@@ -144,26 +161,11 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 
         addClickHandler("FavoritesMenu", new ClickHandler() {
             public void onClick(ClickEvent event) {
-                VerticalPanel fmp = (VerticalPanel)def.getWidget("favoritesPanel");
-                if (fmp.getWidgetCount() == 1) {
-                    try {
-                        fv = new FavoritesScreen(def);
-                        fmp.add(fv);
-                    } catch (Throwable e) {
-                        e.printStackTrace();
-                        Window.alert(e.getMessage());
-                    }
-                }
-                fmp.setVisible( !fmp.isVisible());
-                browser.setBrowserHeight();
-            }
-        });
-        ((AppButton)def.getWidget("EditFavorites")).addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                if (fv.editing)
-                    fv.stopEditing();
+                CollapsePanel cp = (CollapsePanel)def.getWidget("favoritesCollapse");
+                if (cp.isOpen)
+                    cp.close();
                 else
-                    fv.edit();
+                    cp.open();
             }
         });
         addClickHandler("Logout", new ClickHandler() {
@@ -583,7 +585,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("analyteParameter", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -602,7 +604,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                     }
                 });
             }
-        });                
+        });
 
         addClickHandler("internalOrder", new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -1137,7 +1139,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("sampleLoginLabelReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1197,7 +1199,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("verificationReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1217,7 +1219,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("orderRequestForm", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1237,7 +1239,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("sampleInhouseReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1257,7 +1259,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("volumeReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1277,7 +1279,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("turnaround", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1297,7 +1299,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("QAByOrganization", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1317,7 +1319,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("sdwisUnloadReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1337,7 +1339,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("organizationRef", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1357,7 +1359,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+
         addClickHandler("organizationRelRef", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1397,21 +1399,15 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
-        Runnable onLoadCallback = new Runnable() {
-            public void run() {
-            }
-       };
-      VisualizationUtils.loadVisualizationApi(onLoadCallback,PieChart.PACKAGE);
     }
 
     /**
-     * Returns the browser associated with this application. 
+     * Returns the browser associated with this application.
      */
     public static WindowBrowser getBrowser() {
         return browser;
     }
-    
+
     /**
      * resets the timeout timer to allow
      */
@@ -1423,22 +1419,26 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         /*
          * add session timeout dialog box and timers
          */
-        timeoutPopup = new Confirm(Confirm.Type.WARN, consts.get("timeoutHeader"), consts.get("timeoutWarning"),
-                                     consts.get("timeoutExtendTime"), consts.get("timeoutLogout"));
+        timeoutPopup = new Confirm(Confirm.Type.WARN,
+                                   consts.get("timeoutHeader"),
+                                   consts.get("timeoutWarning"),
+                                   consts.get("timeoutExtendTime"),
+                                   consts.get("timeoutLogout"));
         timeoutPopup.addSelectionHandler(new SelectionHandler<Integer>() {
             public void onSelection(SelectionEvent<Integer> event) {
                 if (event.getSelectedItem() == 0) {
                     forceTimer.cancel();
-                    restServerTimeout();                    
+                    restServerTimeout();
                 } else {
                     logout();
                 }
-                    
+
             }
         });
-        
+
         /*
-         * if they don't answer the dialog box, we are going to log them out automatically
+         * if they don't answer the dialog box, we are going to log them out
+         * automatically
          */
         forceTimer = new Timer() {
             public void run() {
@@ -1458,7 +1458,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
          */
         ScreenService.setScreenSessionTimer(this);
     }
-    
+
     /**
      * ping the server so we session does not expire
      */
@@ -1466,14 +1466,16 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         service.call("keepAlive", new AsyncCallback<RPC>() {
             public void onSuccess(RPC result) {
             }
+
             public void onFailure(Throwable caught) {
                 Window.alert("Couldn't call the application server; please call your sysadmin");
             }
         });
     }
-    
+
     /**
-     * Sets up the notification for browser close button or navigating away from the application
+     * Sets up the notification for browser close button or navigating away from
+     * the application
      */
 
     private void initializeWindowClose() {
@@ -1496,6 +1498,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         service.call("logout", new SyncCallback<RPC>() {
             public void onSuccess(RPC result) {
             }
+
             public void onFailure(Throwable caught) {
             }
         });
