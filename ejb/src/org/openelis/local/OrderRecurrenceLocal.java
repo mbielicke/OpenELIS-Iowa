@@ -42,4 +42,6 @@ public interface OrderRecurrenceLocal {
     public OrderRecurrenceDO update(OrderRecurrenceDO data) throws Exception;
     
     public void validate(OrderRecurrenceDO data) throws Exception;
+    
+    public boolean isEmpty(OrderRecurrenceDO data);
 }

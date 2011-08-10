@@ -68,7 +68,7 @@ UIRF Software License are applicable instead of those above.
         </row>
         <row>
           <text style="Prompt">
-            <xsl:value-of select="resource:getString($constants,'qty')" />:
+            <xsl:value-of select="resource:getString($constants,'sampleQty')" />:
           </text>
           <textbox key="{meta:getItemQuantity()}" tab="{meta:getItemUnitOfMeasureId()},{meta:getItemContainerReference()}" width="150" field="Double" />
           <text style="Prompt">

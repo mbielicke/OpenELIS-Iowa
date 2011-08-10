@@ -1188,6 +1188,7 @@ public class SendoutOrderScreen extends Screen {
     }
 
     protected void commit() {
+        Integer prevStatusId;
         Query query;
         OrderViewDO data;
         OrderRecurrenceDO orec;
@@ -1200,6 +1201,8 @@ public class SendoutOrderScreen extends Screen {
             return;
         }
 
+        data = null;
+        prevStatusId = null;
         if (state == State.QUERY) {
             queryFields = getQueryFields();
             query = new Query();
@@ -1211,18 +1214,25 @@ public class SendoutOrderScreen extends Screen {
             try {
                 data = manager.getOrder();
                 orec = manager.getRecurrence();
-                if (orec.isChanged())  {
+                prevStatusId = data.getStatusId();
+                if ("Y".equals(orec.getIsActive()) && !status_recurring.equals(prevStatusId))  
                     data.setStatusId(status_recurring);
-                    if (orec.getIsActive() == null)
-                        orec.setIsActive("N");
-                }
+                
                 manager = manager.add();
-
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("addingComplete"));
             } catch (ValidationErrorsList e) {
                 showErrors(e);
+                /*
+                 * if the status of the order was set to recurring in this method
+                 * and the data couldn't get committed because of errors is validation,
+                 * the status gets set back to what it was before committing,
+                 * so that if the user commits with an inactive interval later,
+                 * the status doesn't remain recurring, as the status is set to
+                 * recurring only if the interval is active
+                 */
+                data.setStatusId(prevStatusId);
             } catch (Exception e) {
                 Window.alert("commitAdd(): " + e.getMessage());
                 window.clearStatus();
@@ -1232,19 +1242,25 @@ public class SendoutOrderScreen extends Screen {
             try {
                 data = manager.getOrder();
                 orec = manager.getRecurrence();
-                if (orec.isChanged())  {
+                prevStatusId = data.getStatusId();
+                if ("Y".equals(orec.getIsActive()) && !status_recurring.equals(prevStatusId))  
                     data.setStatusId(status_recurring);
-                    if (orec.getIsActive() == null)
-                        orec.setIsActive("N");
-                }
                 
                 manager = manager.update();
-
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("updatingComplete"));
             } catch (ValidationErrorsList e) {
                 showErrors(e);
+                /*
+                 * if the status of the order was set to recurring in this method
+                 * and the data couldn't get committed because of errors is validation,
+                 * the status gets set back to what it was before committing,
+                 * so that if the user commits with an inactive interval later,
+                 * the status doesn't remain recurring, as the status is set to
+                 * recurring only if the interval is active
+                 */
+                data.setStatusId(prevStatusId);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
                 window.clearStatus();

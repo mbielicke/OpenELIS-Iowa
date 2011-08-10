@@ -30,6 +30,7 @@ import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.OrderRecurrenceLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrderManagerProxy {
@@ -96,6 +97,8 @@ public class OrderManagerProxy {
     public OrderManager add(OrderManager man) throws Exception {
         Integer id;
         OrderViewDO data;
+        OrderRecurrenceDO ord;
+        OrderRecurrenceLocal orl;
                 
         data = man.getOrder();
         EJBFactory.getOrder().add(data);
@@ -145,9 +148,13 @@ public class OrderManagerProxy {
             man.getTests().add();
         }
 
-        if (man.recurrence != null && man.recurrence.isChanged()) {
-            man.recurrence.setOrderId(id);            
-            EJBFactory.getOrderRecurrence().add(man.recurrence);
+        ord = man.recurrence;
+        if (ord != null && ord.isChanged()) {
+            orl = EJBFactory.getOrderRecurrence();
+            if (!orl.isEmpty(ord)) {
+                ord.setOrderId(id);            
+                orl.add(ord);
+            }
         }
         
         return man;
@@ -156,6 +163,7 @@ public class OrderManagerProxy {
     public OrderManager update(OrderManager man) throws Exception {
         Integer id;
         OrderViewDO data;
+        OrderRecurrenceDO ord;
 
         data = man.getOrder();        
         id = data.getId();                 
@@ -206,12 +214,13 @@ public class OrderManagerProxy {
             man.getTests().update();
         }   
         
-        if (man.recurrence != null && man.recurrence.isChanged()) {
-            if (man.recurrence.getOrderId() == null) {
+        ord = man.recurrence;
+        if (ord != null && ord.isChanged()) {
+            if (ord.getOrderId() == null) {
                 man.recurrence.setOrderId(id);            
-                EJBFactory.getOrderRecurrence().add(man.recurrence);
+                EJBFactory.getOrderRecurrence().add(ord);
             } else {
-                EJBFactory.getOrderRecurrence().update(man.recurrence);
+                EJBFactory.getOrderRecurrence().update(ord);
             }
         }
 
@@ -230,6 +239,7 @@ public class OrderManagerProxy {
 
     public void validate(OrderManager man) throws Exception {
         ValidationErrorsList list;
+        OrderRecurrenceDO data;
         
         list = new ValidationErrorsList();
         try {
@@ -269,9 +279,10 @@ public class OrderManagerProxy {
         if(man.auxData != null)
             man.getAuxData().validate(list);
         
-        if (man.recurrence != null && !man.recurrence.isChanged()) {
+        data = man.recurrence;
+        if (data != null && "Y".equals(data.getIsActive()) && data.isChanged()) {
             try {
-                EJBFactory.getOrderRecurrence().validate(man.recurrence);
+                EJBFactory.getOrderRecurrence().validate(data);
             } catch (Exception e) {
                 DataBaseUtil.mergeException(list, e);
             }
