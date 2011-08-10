@@ -85,19 +85,19 @@ import org.openelis.utils.Auditable;
                         "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription)"
                       + " from Sample s, SampleItem si, Test t, Method m, SampleEnvironmental se, Analysis a"
                       + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and se.sampleId = s.id and"
-                      + " si.sampleId = s.id order by s.accessionNumber, t.name, m.name "),
+                      + " si.sampleId = s.id and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
     @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportPrivateWell",
                 query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
                         "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription)"
                       + " from Sample s, SampleItem si, Test t, Method m, SamplePrivateWell se, Analysis a" 
                       + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and se.sampleId = s.id and"
-                      + " si.sampleId = s.id order by s.accessionNumber, t.name, m.name "),
+                      + " si.sampleId = s.id and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
     @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportSDWIS",
                 query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
                         "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription)" 
                       + " from Sample s, SampleItem si, Test t, Method m, SampleSDWIS se, Analysis a"
                       + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and se.sampleId = s.id and"
-                      + " si.sampleId = s.id order by s.accessionNumber, t.name, m.name "),
+                      + " si.sampleId = s.id  and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
     @NamedQuery( name = "Sample.FetchSDWISByReleasedAndLocation",
                 query = "select distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain," +
                         "s.accessionNumber, s.revision, s.orderId, s.enteredDate, s.receivedDate," +
