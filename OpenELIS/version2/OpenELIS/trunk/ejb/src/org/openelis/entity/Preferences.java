@@ -25,59 +25,26 @@
  */
 package org.openelis.entity;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.openelis.gwt.common.DataBaseUtil;
+
 /**
  * Preferences Entity POJO for database
  */
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
-import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utils.Audit;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
-
-@NamedQueries( {
-    @NamedQuery( name = "getPreference", 
-                query = "select new org.openelis.domain.PreferencesDO(id,systemUserId,key,text) from Preferences where systemUserId = :systemUser and key = :key")})
 @Entity
 @Table(name = "preferences")
-@EntityListeners( {AuditUtil.class})
-public class Preferences implements Auditable, Cloneable {
+public class Preferences {
 
     @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Integer     id;
-
     @Column(name = "system_user_id")
     private Integer     systemUserId;
 
-    @Column(name = "key")
-    private String      key;
-
     @Column(name = "text")
     private String      text;
-
-    @Transient
-    private Preferences original;
-
-    public Integer getId() {
-        return id;
-    }
-
-    protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id, this.id))
-            this.id = id;
-    }
 
     public Integer getSystemUserId() {
         return systemUserId;
@@ -88,44 +55,12 @@ public class Preferences implements Auditable, Cloneable {
             this.systemUserId = systemUserId;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        if (DataBaseUtil.isDifferent(key, this.key))
-            this.key = key;
-    }
-
     public String getText() {
         return text;
     }
 
     public void setText(String text) {
-        if (DataBaseUtil.isDifferent(text ,this.text))
+        if (DataBaseUtil.isDifferent(text, this.text))
             this.text = text;
-    }
-
-    public void setClone() {
-        try {
-            original = (Preferences)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit() {
-        Audit audit;
-
-        audit = new Audit();
-        audit.setReferenceTableId(ReferenceTable.PREFERENCES);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("system_user_id", systemUserId, original.systemUserId)
-                 .setField("key", key, original.key)
-                 .setField("text", text, original.text);
-
-        return audit;
     }
 }
