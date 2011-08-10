@@ -29,7 +29,6 @@ UIRF Software License are applicable instead of those above.
   extension-element-prefixes="resource"
   version="1.0"
   xmlns:locale="xalan://java.util.Locale"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

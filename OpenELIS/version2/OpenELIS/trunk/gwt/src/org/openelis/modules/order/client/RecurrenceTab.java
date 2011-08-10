@@ -320,12 +320,15 @@ public class RecurrenceTab extends Screen {
             nmons = bmon + (dfyr - 1) * 11 + emon;
         else
             nmons = emon - bmon;
-        //
-        // if today is the begin date then show it 
-        //
+        /*
+         * if today is the begin date then show it, also if begin date is after 
+         * today, show it as the first date 
+         */
         if (now.equals(bdt)) {
             next = Datetime.getInstance(Datetime.YEAR, Datetime.DAY, bdt.getDate());
             model.add(new TableDataRow(null, next));                       
+        } else if (bdt.after(now)) {
+            model.add(new TableDataRow(null, bdt));
         }
         iter = 0;  
         /*
@@ -368,6 +371,16 @@ public class RecurrenceTab extends Screen {
         bday = bdt.getDate().getDate();
         bmon = bdt.getDate().getMonth();
         byr = bdt.getDate().getYear();                                   
+        /*
+         * if today is the begin date then show it, also if begin date is after 
+         * today, show it as the first date 
+         */
+        if (now.equals(bdt)) {
+            next = Datetime.getInstance(Datetime.YEAR, Datetime.DAY, bdt.getDate());
+            model.add(new TableDataRow(null, next));                       
+        } else if (bdt.after(now)) {
+            model.add(new TableDataRow(null, bdt));
+        }
         
         nyr = byr+freq;
         nd = new Date(nyr, bmon, bday); 

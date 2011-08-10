@@ -185,6 +185,19 @@ public class OrderRecurrenceBean implements OrderRecurrenceLocal {
             throw list;
     }
     
+    public boolean isEmpty(OrderRecurrenceDO data) {
+        if (data == null)
+            return true;
+        
+        if (DataBaseUtil.isEmpty(data.getId()) && DataBaseUtil.isEmpty(data.getOrderId())
+           && DataBaseUtil.isEmpty(data.getIsActive()) && DataBaseUtil.isEmpty(data.getActiveBegin())
+           && DataBaseUtil.isEmpty(data.getActiveEnd()) && DataBaseUtil.isEmpty(data.getFrequency())
+           && DataBaseUtil.isEmpty(data.getUnitId()))
+           return true;
+        
+       return false; 
+    }                                                                                                                                                                                              
+                        
     private boolean frequencyValid(OrderRecurrenceDO data) {
         int bday, bmon, byr, nday, nmon, nyr, emon, eyr, nmons, dfyr, iter;
         Integer freq, unit;
