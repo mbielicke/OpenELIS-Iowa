@@ -166,11 +166,11 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addLinkHandler("finalReportIcon", "Environmental Final Report", "w_final_environmental", new ClickHandler() {
+        addLinkHandler("finalReportEnvironmentalIcon", consts.get("environmentalFinalReport"), "w_final_environmental", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     Screen screen = new FinalReportEnvironmentalScreen();
-                    setScreen(screen, "Environmental Final Report", "finalReportEnvironmental");
+                    setScreen(screen, consts.get("environmentalFinalReport"), "finalReportEnvironmental");
                     window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -179,11 +179,11 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addLinkHandler("finalReportIcon", "Private Well Final Report", "w_final_privatewell", new ClickHandler() {
+        addLinkHandler("finalReportPrivateWellIcon", consts.get("privateWellFinalReport"), "w_final_privatewell", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     Screen screen = new FinalReportPrivateWellScreen();
-                    setScreen(screen, "Private Well Final Report", "finalReportPrivateWell");
+                    setScreen(screen, consts.get("privateWellFinalReport"), "finalReportPrivateWell");
                     window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -192,11 +192,11 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
         
-        addLinkHandler("finalReportIcon", "SDWIS Final Report", "w_final_sdwis", new ClickHandler() {
+        addLinkHandler("finalReportSDWISIcon", consts.get("sdwisFinalReport"), "w_final_sdwis", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     Screen screen = new FinalReportSDWISScreen();
-                    setScreen(screen, "SDWIS Final Report", "finalReportSDWIS");
+                    setScreen(screen, consts.get("sdwisFinalReport"), "finalReportSDWIS");
                     window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -205,11 +205,11 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addLinkHandler("statusReportIcon", "Sample Inhouse Status Report", "w_samplestat", new ClickHandler() {
+        addLinkHandler("statusReportIcon", consts.get("sampleInhouseStatusReport"), "w_samplestat", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     Screen screen = new SampleStatusScreen();
-                    setScreen(screen, "Sample Inhouse Status Report", "sampleStatus");
+                    setScreen(screen, consts.get("sampleInhouseStatusReport"), "sampleStatus");
                     window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -219,7 +219,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         });
 
         //TODO: add modules for the samples by test 
-        addLinkHandler("dataDumpEnvironmentalIcon", "Environmental Samples by Test", "", new ClickHandler() {
+        addLinkHandler("dataDumpEnvironmentalIcon", consts.get("environmentalSamplesByTest"), "", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                 } catch (Exception e) {
@@ -229,7 +229,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
         
-        addLinkHandler("dataDumpPrivateWellIcon", "Private Well Samples by Test", "", new ClickHandler() {
+        addLinkHandler("dataDumpPrivateWellIcon", consts.get("privateWellSamplesByTest"), "", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                 } catch (Exception e) {
@@ -239,7 +239,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
         
-        addLinkHandler("dataDumpSDWISIcon", "SDWIS Samples by Test", "", new ClickHandler() {
+        addLinkHandler("dataDumpSDWISIcon", consts.get("sdwisSamplesByTest"), "", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                 } catch (Exception e) {
@@ -251,11 +251,11 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 
 
         
-        addLinkHandler("notificationPrefIcon", "Notification Preference", "w_notify", new ClickHandler() {
+        addLinkHandler("notificationPrefIcon", consts.get("notificationPreference"), "w_notify", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     Screen screen = new NotificationPreferenceScreen();
-                    setScreen(screen, "Notification Preference", "notificationPref");
+                    setScreen(screen, consts.get("notificationPreference"), "notificationPref");
                     window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -264,7 +264,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
         
-        addLinkHandler("changePasswordIcon", "Change Password", "", new ClickHandler() {
+        addLinkHandler("changePasswordIcon", consts.get("changePassword"), "", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                 } catch (Exception e) {
