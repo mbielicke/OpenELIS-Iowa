@@ -35,6 +35,7 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.WindowBrowser;
+import org.openelis.manager.Application;
 import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
 import org.openelis.modules.analyte.client.AnalyteScreen;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
@@ -97,9 +98,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.Window.ClosingEvent;
@@ -112,7 +117,7 @@ import com.google.gwt.visualization.client.visualizations.corechart.PieChart;
 public class OpenELIS extends Screen implements ScreenSessionTimer {
 
     protected static WindowBrowser browser;
-
+    protected CollapsePanel        favoritesCollapse;
     private FavoritesScreen        fv;
     private Confirm                timeoutPopup;
     private static Timer           timeoutTimer, forceTimer;
@@ -125,13 +130,38 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 
         service = new ScreenService("controller?service=org.openelis.modules.main.server.OpenELISScreenService");
         rpc = service.call("initialData");
-
+       
         consts = rpc.appConstants;
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
         browser = (WindowBrowser)def.getWidget("browser");
-        browser.setBrowserHeight();
+        favoritesCollapse = (CollapsePanel)def.getWidget("favoritesCollapse");
+        
+        
+        favoritesCollapse.addResizeHandler(new ResizeHandler() {
+        	public void onResize(ResizeEvent event) {
+        		browser.setBrowserHeight();
+			}
+		});
+        
+        DeferredCommand.addCommand(new Command() {
+			public void execute() {
+				 favoritesCollapse.setHeight(Window.getClientHeight()+"px");	
+				 browser.setBrowserHeight();
+			}
+		});
+        	        
+        Window.addResizeHandler(new ResizeHandler() {
+			
+			@Override
+			public void onResize(ResizeEvent event) {
+				favoritesCollapse.setHeight(Window.getClientHeight()+"px");
+				
+			}
+		});
+        
 
+       
         // load the favorite's panel
         vp = (VerticalPanel)def.getWidget("favoritesPanel");
         try {
