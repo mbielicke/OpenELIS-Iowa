@@ -144,7 +144,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"facilityId")' />:
               </text>
               <widget colspan="4">
-                <textbox field="String" key="{meta:getSDWISFacilityId()}" max="60" width="202" />
+                <textbox field="String" key="{meta:getSDWISFacilityId()}" max="60" width="202" tab = "{meta:getReleasedDateFrom()},{meta:getPwsNumber0()}"/>
               </widget>
             </row>            
           </TablePanel>
