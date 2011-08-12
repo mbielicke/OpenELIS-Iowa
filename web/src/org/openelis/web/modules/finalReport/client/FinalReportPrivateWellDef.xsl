@@ -154,7 +154,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"projectCode")' />:
               </text>
               <widget colspan="4">
-                <dropdown field="Integer" key="{meta:getProjectId()}" width="202" />
+                <dropdown field="Integer" key="{meta:getProjectId()}" width="202" tab = "{meta:getReleasedDateFrom()},{meta:getWellOwner()}"/>
               </widget>
             </row>
           </TablePanel>
