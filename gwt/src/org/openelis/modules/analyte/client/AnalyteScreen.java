@@ -253,16 +253,12 @@ public class AnalyteScreen extends Screen {
 
         parent.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 AnalyteDO data;
                 ArrayList<AnalyteDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = service.callList("fetchByName", parser.getParameter().get(0));
+                    list = service.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {

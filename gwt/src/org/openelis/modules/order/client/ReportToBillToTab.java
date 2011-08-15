@@ -103,9 +103,12 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                OrganizationDO data;                             
-                if(reportToName.getSelection() != null) {
-                    data = (OrganizationDO) reportToName.getSelection().data;
+                OrganizationDO data;                      
+                TableDataRow row;
+                
+                row = reportToName.getSelection();
+                if(row != null && row.data != null) {
+                    data = (OrganizationDO)row.data;
                     
                     manager.getOrder().setReportToId(data.getId());
                     manager.getOrder().setReportTo(data);
@@ -135,18 +138,14 @@ public class ReportToBillToTab extends Screen {
         
         reportToName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
+                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -313,9 +312,12 @@ public class ReportToBillToTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {                                
-                OrganizationDO data;                             
-                if(billToName.getSelection() != null) {
-                    data = (OrganizationDO) billToName.getSelection().data;                    
+                OrganizationDO data;     
+                TableDataRow row;
+                
+                row = billToName.getSelection();
+                if(row != null && row.data != null) {
+                    data = (OrganizationDO)row.data;                    
                     manager.getOrder().setBillToId(data.getId());
                     manager.getOrder().setBillTo(data);
                     
@@ -344,18 +346,14 @@ public class ReportToBillToTab extends Screen {
         
         billToName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
+                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

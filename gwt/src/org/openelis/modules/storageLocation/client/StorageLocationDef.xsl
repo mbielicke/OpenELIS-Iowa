@@ -165,7 +165,7 @@ UIRF Software License are applicable instead of those above.
               <widget>
                 <table key="childStorageLocsTable" width="auto" maxRows="11" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getIsAvailable()}" title="">
                   <col key="{meta:getChildStorageUnitDescription()}" width="225" header="{resource:getString($constants,'storageSubUnit')}">
-                    <autoComplete width="auto" field="Integer" required="true">
+                    <autoComplete width="255" field="Integer" required="true">
                       <col width="180" header="{resource:getString($constants,'description')}" />
                       <col width="70" header="{resource:getString($constants,'category')}" />
                     </autoComplete>

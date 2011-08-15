@@ -121,10 +121,19 @@ public class ComponentTab extends Screen {
                 switch (c) {
                     case 0:
                         row = (TableDataRow)val;
-                        data.setComponentId((Integer)row.key);
-                        data.setComponentName((String)row.getCells().get(0));
-                        data.setComponentDescription((String)row.getCells().get(1));
-                        table.setCell(r, 1, data.getComponentDescription());
+                        if (row != null) {
+                            data.setComponentId((Integer)row.key);
+                            data.setComponentName((String)row.getCells().get(0));
+                            data.setComponentDescription((String)row.getCells().get(1));
+                            table.setCell(r, 1, data.getComponentDescription());
+                        } else {
+                            data.setComponentId(null);
+                            data.setComponentName(null);
+                            data.setComponentDescription(null);
+                            data.setQuantity(null);
+                            table.setCell(r, 1, null);
+                            table.setCell(r, 2, null);
+                        }
                         break;
                     case 2:
                         data.setQuantity((Integer)val);
@@ -157,7 +166,6 @@ public class ComponentTab extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 Query query;
                 QueryData field;
-                QueryFieldUtil parser;
                 InventoryItemDO data;
                 ArrayList<InventoryItemDO> list;
                 ArrayList<TableDataRow> model;
@@ -169,13 +177,11 @@ public class ComponentTab extends Screen {
                 window.clearStatus();
 
                 query = new Query();
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
 
                 field = new QueryData();
                 field.key = InventoryItemMeta.getName();
                 field.type = QueryData.Type.STRING;
-                field.query = parser.getParameter().get(0);
+                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
                 query.setFields(field);
 
                 field = new QueryData();

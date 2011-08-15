@@ -47,7 +47,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -251,15 +250,11 @@ public class WorksheetLayoutTab extends Screen implements ActionHandler<AnalyteA
         qcname = (AutoComplete<String>)worksheetTable.getColumnWidget(TestMeta.getWorksheetItemQcName());
         qcname.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 ArrayList<QcDO> list;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = qcService.callList("fetchByName", parser.getParameter().get(0));
+                    list = qcService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (QcDO data : list) 
                         model.add(new TableDataRow(data.getName(), data.getName()));                    

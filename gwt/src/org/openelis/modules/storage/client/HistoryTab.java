@@ -168,7 +168,7 @@ public class HistoryTab extends Screen {
             data = sm.getStorageAt(i);
             
             row = new TableDataRow(5);            
-            location = data.getStorageLocation();
+            location = data.getStorageLocationName();
             if(location != null)
                 location = location.replaceAll(",", "");
             row.cells.get(0).setValue(location);

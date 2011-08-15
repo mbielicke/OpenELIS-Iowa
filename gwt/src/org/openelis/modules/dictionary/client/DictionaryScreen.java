@@ -502,15 +502,11 @@ public class DictionaryScreen extends Screen {
 
         relatedEntry.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 ArrayList<DictionaryViewDO> list;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = service.callList("fetchByEntry", parser.getParameter().get(0));
+                    list = service.callList("fetchByEntry", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (DictionaryViewDO data : list)
                         model.add(new TableDataRow(data.getId(), data.getEntry(), data.getCategoryName()));

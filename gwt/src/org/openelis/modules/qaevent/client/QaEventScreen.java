@@ -330,17 +330,13 @@ public class QaEventScreen extends Screen {
         
         testName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TestMethodVO data;
                 ArrayList<TestMethodVO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = testService.callList("fetchByName", parser.getParameter().get(0));
+                    list = testService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);

@@ -303,17 +303,12 @@ public class StorageLocationScreen extends Screen {
 
         storageUnit.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 IdNameVO data;
                 ArrayList<IdNameVO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = storageUnitService.callList("fetchByDescription", parser.getParameter()
-                                                                                   .get(0));
+                    list = storageUnitService.callList("fetchByDescription", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -431,17 +426,12 @@ public class StorageLocationScreen extends Screen {
 
         childStorageUnit.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 IdNameVO data;
                 ArrayList<IdNameVO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = storageUnitService.callList("fetchByDescription", parser.getParameter()
-                                                                                   .get(0));
+                    list = storageUnitService.callList("fetchByDescription", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {

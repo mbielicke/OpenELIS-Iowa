@@ -40,10 +40,10 @@ import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -60,6 +60,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -68,7 +69,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -457,7 +457,6 @@ public class InventoryAdjustmentScreen extends Screen {
                 } catch (NumberFormatException e) {
                     model.add(new TableDataRow(null, ""));
                     inventoryLocationId.showAutoMatches(model);
-                    e.printStackTrace();
                     return;
                 }
                 
@@ -507,7 +506,6 @@ public class InventoryAdjustmentScreen extends Screen {
                 DictionaryDO store;
                 Query query;
                 QueryData field;
-                QueryFieldUtil parser;
 
                 storeId = inventoryItemStoreId.getValue();
                 
@@ -517,13 +515,11 @@ public class InventoryAdjustmentScreen extends Screen {
                 }
                 
                 query = new Query();
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
 
                 field = new QueryData();
                 field.key = InventoryItemMeta.getName();
                 field.type = QueryData.Type.STRING;
-                field.query = parser.getParameter().get(0);
+                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
                 query.setFields(field);
                 
                 field = new QueryData();

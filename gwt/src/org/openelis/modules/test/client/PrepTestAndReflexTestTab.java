@@ -54,7 +54,6 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
@@ -191,17 +190,13 @@ public class PrepTestAndReflexTestTab extends Screen implements
         prepTestAuto = (AutoComplete<Integer>)testPrepTable.getColumnWidget(TestMeta.getPrepPrepTestName());
         prepTestAuto.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TestMethodVO data;
                 ArrayList<TestMethodVO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByName", parser.getParameter().get(0));
+                    list = service.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);
@@ -393,17 +388,13 @@ public class PrepTestAndReflexTestTab extends Screen implements
         reflexTestAuto = (AutoComplete<Integer>)testReflexTable.getColumnWidget(TestMeta.getReflexAddTestName());
         reflexTestAuto.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TestMethodVO data;
                 ArrayList<TestMethodVO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByName", parser.getParameter().get(0));
+                    list = service.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);

@@ -1298,21 +1298,17 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
     }
 
     public void onGetMatches(GetMatchesEvent event) {
-        QueryFieldUtil parser;
         ArrayList<TableDataRow> model;
         int rg;
         String match;
         ArrayList<AnalyteDO> list;
         AutoComplete auto;
 
-        parser = new QueryFieldUtil();
-        parser.parse(event.getMatch());
-
         try {
             auto = ((AutoComplete)event.getSource());
             
             if (isAnalyteQuery()) {
-                list = analyteService.callList("fetchByName", parser.getParameter().get(0));
+                list = analyteService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                 model = new ArrayList<TableDataRow>();
                 for (AnalyteDO data : list)
                     model.add(new TableDataRow(data.getId(), data.getName()));

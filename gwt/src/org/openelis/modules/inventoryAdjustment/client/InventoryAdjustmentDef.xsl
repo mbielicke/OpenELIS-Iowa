@@ -176,7 +176,7 @@ UIRF Software License are applicable instead of those above.
             <widget valign="top">
               <table key="adjustmentTable" width="auto" maxRows="14" showScroll="ALWAYS" style="ScreenTableWithSides">
                 <col key="{meta:getInventoryLocationId()}" width="55" header="{resource:getString($constants,'locationNum')}">
-                  <autoComplete width="auto" case="LOWER" field="Integer" required  = "true" >
+                  <autoComplete width="55" case="LOWER" field="Integer" required  = "true" >
                      <col width="55" header="{resource:getString($constants,'locationNum')}" />
                      <col width="130" header="{resource:getString($constants,'name')}" />
                      <col width="110" header="{resource:getString($constants,'store')}" />
@@ -187,7 +187,7 @@ UIRF Software License are applicable instead of those above.
                   </autoComplete>
                 </col>
                 <col key="{meta:getInventoryLocationInventoryItemName()}" width="205" header="{resource:getString($constants,'inventoryItem')}">
-                  <autoComplete width="auto" case="LOWER" field="Integer" required  = "true" >
+                  <autoComplete width="205" case="LOWER" field="Integer" required  = "true" >
                     <col width="130" header="{resource:getString($constants,'name')}" />
                     <col width="110" header="{resource:getString($constants,'store')}" />
                     <col width="160" header="{resource:getString($constants,'location')}" />

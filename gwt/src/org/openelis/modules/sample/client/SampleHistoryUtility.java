@@ -276,7 +276,7 @@ public abstract class SampleHistoryUtility {
                 
                 for(j=0; j<storageCount; j++){
                     data = storageMan.getStorageAt(j);
-                    refVoArrayList.add(new IdNameVO(data.getId(), data.getStorageLocation()));
+                    refVoArrayList.add(new IdNameVO(data.getId(), data.getStorageLocationName()));
                 }
                 
                 for(j=0; j < anCount; j++){
@@ -285,7 +285,7 @@ public abstract class SampleHistoryUtility {
                     
                     for(k=0; k<storageCount; k++){
                         data = storageMan.getStorageAt(k);
-                        refVoArrayList.add(new IdNameVO(data.getId(), data.getStorageLocation()));
+                        refVoArrayList.add(new IdNameVO(data.getId(), data.getStorageLocationName()));
                     }
                 }
             }

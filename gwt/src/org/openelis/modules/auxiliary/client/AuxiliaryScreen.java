@@ -70,6 +70,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -81,7 +82,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -479,18 +479,29 @@ public class AuxiliaryScreen extends Screen {
                       data = manager.getFields().getAuxFieldAt(r);
                   } catch (Exception e) {
                       Window.alert(e.getMessage());
+                      return;
                   }
                   
                   switch(c) {
                       case 0:
                           row = (TableDataRow)val;
-                          data.setAnalyteId((Integer)row.key);
-                          data.setAnalyteName(analyte.getTextBoxDisplay());
+                          if (row != null) {
+                              data.setAnalyteId((Integer)row.key);
+                              data.setAnalyteName(analyte.getTextBoxDisplay());
+                          } else {
+                              data.setAnalyteId(null);
+                              data.setAnalyteName(null);
+                          }                         
                           break;
                       case 1:
                           row = (TableDataRow)val;
-                          data.setMethodId((Integer)row.key);
-                          data.setMethodName(method.getTextBoxDisplay());
+                          if (row != null) {
+                              data.setMethodId((Integer)row.key);
+                              data.setMethodName(method.getTextBoxDisplay());
+                          } else {
+                              data.setMethodId(null);
+                              data.setMethodName(null);
+                          }
                           break;
                       case 2:
                           data.setUnitOfMeasureId((Integer)val);
@@ -509,8 +520,13 @@ public class AuxiliaryScreen extends Screen {
                           break;
                       case 7:
                           row = (TableDataRow)val;
-                          data.setScriptletId((Integer)row.key);
-                          data.setScriptletName(method.getTextBoxDisplay());
+                          if (row != null) {
+                              data.setScriptletId((Integer)row.key);
+                              data.setScriptletName(scriptlet.getTextBoxDisplay());
+                          } else {
+                              data.setScriptletId(null);
+                              data.setScriptletName(null);
+                          }
                           break;
                   }
               } 
@@ -547,16 +563,12 @@ public class AuxiliaryScreen extends Screen {
         // the calling interface
         analyte.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 AnalyteDO data;
                 ArrayList<AnalyteDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = analyteService.callList("fetchByName", parser.getParameter().get(0));
+                    list = analyteService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
@@ -572,15 +584,11 @@ public class AuxiliaryScreen extends Screen {
         
         method.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<MethodDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-                                
                 try {
-                    list = methodService.callList("fetchByName", parser.getParameter().get(0));
+                    list = methodService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     
                     for (MethodDO data : list)
@@ -595,15 +603,11 @@ public class AuxiliaryScreen extends Screen {
         
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 ArrayList<IdNameVO> list;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-                
                 try {
-                    list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
+                    list = scriptletService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list) {                       
                         model.add(new TableDataRow(data.getId(),data.getName()));

@@ -331,7 +331,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 }
                 
                 location = data.getInventoryLocations().get(0);
-                if (row != null) {
+                if (row != null && row.data != null) {
                     location = (InventoryLocationViewDO)row.data;
                     data.getInventoryLocations().set(0, location);                    
                 } else {
@@ -368,7 +368,6 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                 StorageLocationViewDO storLoc;
                 TableDataRow row;                
                 ArrayList<TableDataRow> model;
-                QueryFieldUtil parser;
                 ArrayList<QueryData> fields;
                 Query query;
                 QueryData field;
@@ -377,9 +376,7 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                     return;
                                
                 data = manager.getReceiptAt(index);
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());  
-                param = parser.getParameter().get(0); 
+                param = QueryFieldUtil.parseAutocomplete(event.getMatch()); 
                                 
                 window.setBusy();
                 model = new ArrayList<TableDataRow>();

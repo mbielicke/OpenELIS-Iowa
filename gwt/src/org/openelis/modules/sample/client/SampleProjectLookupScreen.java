@@ -159,18 +159,14 @@ public class SampleProjectLookupScreen extends Screen implements HasActionHandle
 
         project.addGetMatchesHandler(new GetMatchesHandler(){
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 ProjectDO data;
                 ArrayList<ProjectDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = service.callList("fetchActiveByName", parser.getParameter().get(0));
+                    list = service.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

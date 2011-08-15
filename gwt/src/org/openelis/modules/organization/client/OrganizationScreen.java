@@ -435,18 +435,15 @@ public class OrganizationScreen extends Screen {
         });
         parentName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
 
                 window.setBusy();
                 try {
-                    list = service.callList("fetchByIdOrName", parser.getParameter().get(0));
+                    list = service.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

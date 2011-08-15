@@ -313,15 +313,11 @@ public class LabelScreen extends Screen {
         
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 ArrayList<IdNameVO> list;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-                
                 try {
-                    list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
+                    list = scriptletService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list) {                       
                         model.add(new TableDataRow(data.getId(),data.getName()));

@@ -237,7 +237,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getExpireDate()}">
                 <col key="{meta:getQcAnalyteAnalyteName()}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
-                  <autoComplete width="auto" popWidth="auto" field="Integer" required="true">
+                  <autoComplete width="270" popWidth="310" field="Integer" required="true">
                     <col width="300" />
                   </autoComplete>
                 </col>

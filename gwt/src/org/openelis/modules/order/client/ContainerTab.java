@@ -299,17 +299,14 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
                 ArrayList<TestMethodVO> autoList;
                 Query                   query;
                 QueryData               field;
-                QueryFieldUtil          parser;
                 TableDataRow            row;
                 TestMethodVO            data;
 
                 fields = new ArrayList<QueryData>();
                 query = new Query();
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
 
                 field = new QueryData();
-                field.query = parser.getParameter().get(0);
+                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
                 fields.add(field);
                 
                 query.setFields(fields);

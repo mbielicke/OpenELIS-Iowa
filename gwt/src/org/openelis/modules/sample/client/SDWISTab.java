@@ -530,18 +530,14 @@ public class SDWISTab extends Screen {
     }
 
     private void getOrganizationMatches(String match, AutoComplete widget) {
-        QueryFieldUtil parser;
         TableDataRow row;
         OrganizationDO data;
         ArrayList<OrganizationDO> list;
         ArrayList<TableDataRow> model;
 
-        parser = new QueryFieldUtil();
-        parser.parse(match);
-
         window.setBusy();
         try {
-            list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
+            list = orgService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<TableDataRow>();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new TableDataRow(4);

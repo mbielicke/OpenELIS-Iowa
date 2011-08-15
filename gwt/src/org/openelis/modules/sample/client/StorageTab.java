@@ -112,54 +112,55 @@ public class StorageTab extends Screen {
         storageTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int row, col;
+                Object val;
+                StorageViewDO data;
+                StorageLocationViewDO sloc;
+                Datetime checkin, checkout;
+                TableDataRow selection, tableRow;
+                
                 row = event.getRow();
                 col = event.getCol();
-                StorageViewDO storageDO;
-                TableDataRow tableRow = storageTable.getRow(row);
+                tableRow = storageTable.getRow(row);
                 try {
-                    storageDO = manager.getStorageAt(row);
+                    data = manager.getStorageAt(row);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     return;
                 }
 
-                Object val = tableRow.cells.get(col).value;
-                Datetime checkin, checkout;
-
+                val = tableRow.cells.get(col).value;
+                
                 switch (col) {
                     case 0:
-                        storageDO.setSystemUserId((Integer)val);
+                        data.setSystemUserId((Integer)val);
                         break;
                     case 1:
-                        TableDataRow selection = location.getSelection();
-                        storageDO.setStorageLocationId((Integer) ((TableDataRow)val).key);
-                        storageDO.setStorageLocation((String)selection.getCells().get(0));
+                        selection = location.getSelection();
+                        sloc = (StorageLocationViewDO)selection.data;
+                        data.setStorageLocationId(sloc.getId());
+                        data.setStorageLocationName(sloc.getName());
+                        data.setStorageLocationLocation(sloc.getLocation());
+                        data.setStorageUnitDescription(sloc.getStorageUnitDescription());
                         break;
                     case 2:
-                        storageDO.setCheckin((Datetime)val);
+                        data.setCheckin((Datetime)val);
 
                         checkin = (Datetime)tableRow.cells.get(2).value;
                         checkout = (Datetime)tableRow.cells.get(3).value;
 
                         if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                            storageTable.setCellException(
-                                                          row,
-                                                          col,
-                                                          new LocalizedException(
-                                                                                 "checkinDateAfterCheckoutDateException"));
+                            storageTable.setCellException(row, col,
+                                                          new LocalizedException("checkinDateAfterCheckoutDateException"));
                         break;
                     case 3:
-                        storageDO.setCheckout((Datetime)val);
+                        data.setCheckout((Datetime)val);
 
                         checkin = (Datetime)tableRow.cells.get(2).value;
                         checkout = (Datetime)tableRow.cells.get(3).value;
 
                         if (checkin != null && checkout != null && checkout.compareTo(checkin) <= 0)
-                            storageTable.setCellException(
-                                                          row,
-                                                          col,
-                                                          new LocalizedException(
-                                                                                 "checkinDateAfterCheckoutDateException"));
+                            storageTable.setCellException(row, col,
+                                                          new LocalizedException("checkinDateAfterCheckoutDateException"));
                         break;
                 }
             }
@@ -209,19 +210,15 @@ public class StorageTab extends Screen {
         location.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 String locationName;
-                QueryFieldUtil parser;
                 TableDataRow row;
                 StorageLocationViewDO data;
                 ArrayList<StorageLocationViewDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
 
                 try {
-                    list = service.callList("fetchAvailableByName", parser.getParameter().get(0));
+                    list = service.callList("fetchAvailableByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(3);
@@ -234,7 +231,7 @@ public class StorageTab extends Screen {
                         row.cells.get(1).value = data.getStorageUnitDescription();
                         row.cells.get(2).value = data.getLocation();
                         row.display = locationName;
-                        
+                        row.data = data;
                         model.add(row);
                     }
                     location.showAutoMatches(model);
@@ -289,23 +286,30 @@ public class StorageTab extends Screen {
     }
 
     private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
+        String locationName;
+        StorageViewDO data;
+        TableDataRow row;
+        ArrayList<TableDataRow> model;
 
+        model = new ArrayList<TableDataRow>();
         if (manager == null)
             return model;
 
         try {
             for (int iter = 0; iter < manager.count(); iter++ ) {
-                StorageViewDO storageDO = manager.getStorageAt(iter);
+                data = manager.getStorageAt(iter);
 
-                TableDataRow row = new TableDataRow(4);
-                row.key = storageDO.getId();
+                row = new TableDataRow(4);
+                row.key = data.getId();
 
-                row.cells.get(0).value = storageDO.getUserName();
-                row.cells.get(1).value = new TableDataRow(storageDO.getStorageLocationId(),
-                                                          storageDO.getStorageLocation());
-                row.cells.get(2).value = storageDO.getCheckin();
-                row.cells.get(3).value = storageDO.getCheckout();
+                row.cells.get(0).value = data.getUserName();
+                locationName = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(), 
+                                                                            data.getStorageUnitDescription(),
+                                                                            data.getStorageLocationLocation());
+                row.cells.get(1).value = new TableDataRow(data.getStorageLocationId(),
+                                                          locationName);
+                row.cells.get(2).value = data.getCheckin();
+                row.cells.get(3).value = data.getCheckout();
 
                 model.add(row);
             }

@@ -366,9 +366,11 @@ public class VendorOrderScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO data;
-
-                if (organizationName.getSelection() != null) {
-                    data = (OrganizationDO)organizationName.getSelection().data;
+                TableDataRow row;
+                
+                row = organizationName.getSelection();
+                if (row != null && row.data != null) {
+                    data = (OrganizationDO)row.data;
 
                     manager.getOrder().setOrganizationId(data.getId());
                     manager.getOrder().setOrganization(data);
@@ -399,19 +401,14 @@ public class VendorOrderScreen extends Screen {
 
         organizationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter()
-                                                                                 .get(0));
+                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

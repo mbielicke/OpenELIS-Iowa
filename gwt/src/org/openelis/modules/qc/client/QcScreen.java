@@ -342,15 +342,11 @@ public class QcScreen extends Screen {
         inventoryItem.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 DictionaryDO   dict;
-                QueryFieldUtil parser;
                 ArrayList<InventoryItemDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = inventoryService.callList("fetchActiveByName", parser.getParameter().get(0));
+                    list = inventoryService.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (InventoryItemDO data : list) {
@@ -487,15 +483,11 @@ public class QcScreen extends Screen {
 
         preparedBy.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<SystemUserVO> users;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    users = UserCache.getSystemUsers(parser.getParameter().get(0));
+                    users = UserCache.getSystemUsers(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
@@ -629,16 +621,12 @@ public class QcScreen extends Screen {
 
         analyte.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 AnalyteDO data;
                 ArrayList<AnalyteDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = analyteService.callList("fetchByName", parser.getParameter().get(0));
+                    list = analyteService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (int i = 0; i < list.size(); i++ ) {
