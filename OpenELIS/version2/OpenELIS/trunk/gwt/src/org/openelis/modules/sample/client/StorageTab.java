@@ -136,11 +136,18 @@ public class StorageTab extends Screen {
                         break;
                     case 1:
                         selection = location.getSelection();
-                        sloc = (StorageLocationViewDO)selection.data;
-                        data.setStorageLocationId(sloc.getId());
-                        data.setStorageLocationName(sloc.getName());
-                        data.setStorageLocationLocation(sloc.getLocation());
-                        data.setStorageUnitDescription(sloc.getStorageUnitDescription());
+                        if (selection != null) {
+                            sloc = (StorageLocationViewDO)selection.data;
+                            data.setStorageLocationId(sloc.getId());
+                            data.setStorageLocationName(sloc.getName());
+                            data.setStorageLocationLocation(sloc.getLocation());
+                            data.setStorageUnitDescription(sloc.getStorageUnitDescription());
+                        } else {
+                            data.setStorageLocationId(null);
+                            data.setStorageLocationName(null);
+                            data.setStorageLocationLocation(null);
+                            data.setStorageUnitDescription(null);
+                        }                       
                         break;
                     case 2:
                         data.setCheckin((Datetime)val);
