@@ -638,10 +638,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     }
 
     public ArrayList<SamplePrivateWellFinalReportWebVO> getSamplePrivateWellList(ArrayList<QueryData> fields) throws Exception {
+        String clause, orgIds;
         Query query;
         QueryBuilderV2 builder;
-        ArrayList<SamplePrivateWellFinalReportWebVO> returnList;
-        String clause, orgIds;
+        ArrayList<SamplePrivateWellFinalReportWebVO> returnList;        
         /*
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
@@ -696,10 +696,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     }
 
     public ArrayList<SampleSDWISFinalReportWebVO> getSampleSDWISList(ArrayList<QueryData> fields) throws Exception {
+        String clause, orgIds;
         Query query;
         QueryBuilderV2 builder;
         ArrayList<SampleSDWISFinalReportWebVO> returnList;
-        String clause, orgIds;
         /*
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
@@ -799,8 +799,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     }
 
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {
-        ArrayList<Integer> list;
         String clause;
+        ArrayList<Integer> list;
 
         clause = EJBFactory.getUserCache()
                            .getPermission()
@@ -819,9 +819,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     }
 
     public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {
-        ArrayList<Integer> list;
         String clause;
-
+        ArrayList<Integer> list;
+        
         clause = EJBFactory.getUserCache()
                            .getPermission()
                            .getModule("w_final_privatewell")
@@ -839,9 +839,11 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     }
 
     public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
-        ArrayList<Integer> list;
         String clause;
-
+        ArrayList<Integer> list;
+        ArrayList<IdNameVO> projectList;
+        
+        projectList = new ArrayList<IdNameVO>();
         clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
         list = ReportUtil.parseClauseAsArrayList(clause)
                          .get(SampleMeta.getSampleOrgOrganizationId());
@@ -851,8 +853,15 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          */
         if (list == null)
             return new ArrayList<IdNameVO>();
-
-        return sample.fetchProjectsForSampleStatusReport(list);
+        /*
+         * Adding projects from environment and private domain into projectList.
+         * Since Project name is of type char, so we can't use NamedNativeQuery
+         */
+        projectList.addAll(sample.fetchProjectsForOrganizations(list));
+        projectList.addAll(sample.fetchProjectsForPrivateOrganizations(list));
+        
+        Collections.sort(projectList, new ProjectComparator());
+        return projectList;
     }
 
     private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
@@ -996,6 +1005,12 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     class SampleComparator implements Comparator<SampleStatusWebReportVO> {
         public int compare(SampleStatusWebReportVO s1, SampleStatusWebReportVO s2) {
             return s1.getAccessionNumber() - s2.getAccessionNumber();
+        }
+    }
+    
+    class ProjectComparator implements Comparator<IdNameVO> {
+        public int compare(IdNameVO p1, IdNameVO p2) {
+            return p1.getId() - p2.getId();
         }
     }
 }
