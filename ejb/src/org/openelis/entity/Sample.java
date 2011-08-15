@@ -257,18 +257,7 @@ import org.openelis.utils.Auditable;
                       +" s.id = so.sample_id and so.organization_id = o.id and o.address_id = ad.id and o.id =  op.organization_id and op.type_id = d1.id and d1.system_name = 'released_reportto_email' and"
                       +" a.id not in (select a.id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_released = 'Y' )"    
                       +" order by s_anum",
-                resultSetMapping="Sample.FetchForClientEmailReleasedReportMapping"),
-    @NamedNativeQuery(name = "Sample.FetchProjectsForSampleStatusReport",     
-               query = "select p.id p_id, p.description p_description"
-                   + " from sample_organization so, sample_project sp, project p, organization o"
-                   + " where so.sample_id = sp.sample_id and o.id in (:organizationIds) and so.type_id in(select id from Dictionary where system_name in ('org_report_to')) and" 
-                   + " so.organization_id = o.id and sp.project_id = p.id"
-                   + " union "
-                   +"select p.id p_id, p.description p_description" 
-                   + " from sample_private_well so, sample_project sp, project p, organization o"
-                   + " where so.sample_id = sp.sample_id and o.id in (:organizationIds) and so.organization_id = o.id and sp.project_id = p.id"
-                   + " order by p_id",
-                resultSetMapping="Sample.FetchProjectsForSampleStatusReport")})  
+                resultSetMapping="Sample.FetchForClientEmailReleasedReportMapping")})  
 @SqlResultSetMappings({
     @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportBatchMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),  @ColumnResult(name="a_id")}),
@@ -279,9 +268,8 @@ import org.openelis.utils.Auditable;
     @SqlResultSetMapping(name="Sample.FetchForClientEmailReceivedReportMapping",
                          columns={@ColumnResult(name="o_id"),  @ColumnResult(name="o_name"),  @ColumnResult(name="s_anum"), @ColumnResult(name="s_col_date"), @ColumnResult(name="s_col_time"), @ColumnResult(name="s_rec"), @ColumnResult(name="email"),  @ColumnResult(name="qaevent_id"), @ColumnResult(name="domain"), @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"), @ColumnResult(name="ref_field3")}),
     @SqlResultSetMapping(name="Sample.FetchForClientEmailReleasedReportMapping",
-                         columns={@ColumnResult(name="o_id"),  @ColumnResult(name="s_anum"), @ColumnResult(name="s_col_date"), @ColumnResult(name="s_col_time"), @ColumnResult(name="s_rec"), @ColumnResult(name="email"),  @ColumnResult(name="domain"), @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"), @ColumnResult(name="ref_field3")}),
-    @SqlResultSetMapping(name="Sample.FetchProjectsForSampleStatusReport",
-                         columns={@ColumnResult(name="p_id"),  @ColumnResult(name="p_description")})})                     
+                         columns={@ColumnResult(name="o_id"),  @ColumnResult(name="s_anum"), @ColumnResult(name="s_col_date"), @ColumnResult(name="s_col_time"), @ColumnResult(name="s_rec"), @ColumnResult(name="email"),  @ColumnResult(name="domain"), @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"), @ColumnResult(name="ref_field3")})}) 
+               
 @Entity
 @Table(name = "sample")
 @EntityListeners( {AuditUtil.class})
