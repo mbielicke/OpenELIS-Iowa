@@ -29,12 +29,13 @@ import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 
 /** 
  * This class's objects store the data for the individual records that populate
  * the caches used for the various todo lists  
  */
-public class WorksheetCacheVO extends DataObject {
+public class WorksheetCacheVO implements RPC {
 
     private static final long serialVersionUID = 1L;
     

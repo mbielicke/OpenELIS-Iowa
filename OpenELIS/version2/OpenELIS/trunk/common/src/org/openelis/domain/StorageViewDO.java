@@ -6,8 +6,10 @@ import org.openelis.gwt.common.DataBaseUtil;
 
 public class StorageViewDO extends StorageDO {
     private static final long serialVersionUID = 1L;
-    
-    protected String storageLocation, userName, itemDescription;
+
+    protected String          storageLocationName, storageLocationLocation,
+                              storageLocationParentStorageLocationName, storageUnitDescription,
+                              userName, itemDescription;
 
     public StorageViewDO(){
         
@@ -15,19 +17,46 @@ public class StorageViewDO extends StorageDO {
     
     public StorageViewDO(Integer id, Integer referenceId, Integer referenceTableId,
                          Integer storageLocationId, Date checkin, Date checkout, Integer systemUserId,
-                         String storageLocName, String StorageLocLocation, String parentLocName, String unitDesc){
+                         String storageLocationName, String storageLocationLocation, 
+                         String storageLocationParentStorageLocationName, String storageUnitDescription){
       
         super(id, referenceId, referenceTableId, storageLocationId, checkin, checkout, systemUserId);
-      
-//        setStorageLocation(DataBaseUtil.formatStorageLocation(storageLocName, StorageLocLocation, unitDesc, parentLocName));        
+        setStorageLocationName(storageLocationName);
+        setStorageLocationLocation(storageLocationLocation);
+        setStorageLocationParentStorageLocationName(storageLocationParentStorageLocationName);
+        setStorageUnitDescription(storageUnitDescription);
     }
     
-    public String getStorageLocation() {
-        return storageLocation;
+    public String getStorageLocationName() {
+        return storageLocationName;
     }
 
-    public void setStorageLocation(String storageLocation) {
-        this.storageLocation = storageLocation;
+    public void setStorageLocationName(String storageLocationName) {
+        this.storageLocationName = DataBaseUtil.trim(storageLocationName);
+    }
+    
+    public String getStorageLocationLocation() {
+        return storageLocationLocation;
+    }
+
+    public void setStorageLocationLocation(String storageLocationLocation) {
+        this.storageLocationLocation = DataBaseUtil.trim(storageLocationLocation);
+    }
+    
+    public String getStorageUnitDescription() {
+        return storageUnitDescription;
+    }
+
+    public void setStorageUnitDescription(String storageUnitDescription) {
+        this.storageUnitDescription = DataBaseUtil.trim(storageUnitDescription);
+    }
+
+    public String getStorageLocationParentStorageLocationName() {
+        return storageLocationParentStorageLocationName;
+    }
+
+    public void setStorageLocationParentStorageLocationName(String storageLocationParentStorageLocationName) {
+        this.storageLocationParentStorageLocationName = DataBaseUtil.trim(storageLocationParentStorageLocationName);
     }
 
     public String getUserName() {
