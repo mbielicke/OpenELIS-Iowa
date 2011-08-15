@@ -460,7 +460,6 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             public void onGetMatches(GetMatchesEvent event) {
                 TableDataRow row;
                 ArrayList<TableDataRow> model;                
-                QueryFieldUtil parser;
                 IdNameVO data;
                 ArrayList<IdNameVO> list;  
                 String match;
@@ -477,9 +476,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
                     model.add(row);
                     
                     if(upcQuery == null || (!(match.indexOf(upcQuery) == 0))) {
-                        parser = new QueryFieldUtil();
-                        parser.parse(match);
-                        list = service.callList("fetchByUpc", parser.getParameter().get(0));
+                        list = service.callList("fetchByUpc", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                         for (int i = 0; i < list.size(); i++ ) {
                             data = list.get(i);
                             row = new TableDataRow(data.getId(), data.getName(), data.getDescription());                  
@@ -532,18 +529,14 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         organization = (AutoComplete<Integer>)receiptTable.getColumnWidget(InventoryReceiptMeta.getOrganizationName());
         organization.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter().get(0));
+                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);

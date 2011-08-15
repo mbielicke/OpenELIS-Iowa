@@ -260,7 +260,6 @@ public class InventoryTransferScreen extends Screen {
                 DictionaryDO store, units;
                 Query query;
                 QueryData field;
-                QueryFieldUtil parser;
 
                 window.clearStatus();
 
@@ -269,13 +268,11 @@ public class InventoryTransferScreen extends Screen {
                 
                 id = fromData.getId();                
                 query = new Query();
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
 
                 field = new QueryData();
                 field.key = InventoryItemMeta.getName();
                 field.type = QueryData.Type.STRING;
-                field.query = parser.getParameter().get(0);
+                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
                 query.setFields(field);
                 
                 field = new QueryData();
@@ -315,16 +312,13 @@ public class InventoryTransferScreen extends Screen {
                 StorageLocationViewDO storLoc;
                 TableDataRow row;                
                 ArrayList<TableDataRow> model;
-                QueryFieldUtil parser;
                 ArrayList<QueryData> fields;
                 Query query;
                 QueryData field;
                 
                 r = receiptTable.getSelectedRow();                          
                                               
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());  
-                param = parser.getParameter().get(0); 
+                param = QueryFieldUtil.parseAutocomplete(event.getMatch()); 
                                 
                 window.setBusy();
                 model = new ArrayList<TableDataRow>();

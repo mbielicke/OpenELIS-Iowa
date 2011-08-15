@@ -292,7 +292,7 @@ public class AnalyteParameterScreen extends Screen {
                 manager.setReferenceTableId(rtid);
                 manager.setReferenceName(referenceName.getTextBoxDisplay());                
 
-                if (rtid != null) {                    
+                if (rid != null && rtid != null) {                    
                     window.setBusy(consts.get("fetching"));
                     try {
                         switch (rtid) {
@@ -334,12 +334,9 @@ public class AnalyteParameterScreen extends Screen {
         
         referenceName.addGetMatchesHandler(new GetMatchesHandler() {           
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 String search;
                                
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-                search = parser.getParameter().get(0);
+                search = QueryFieldUtil.parseAutocomplete(event.getMatch());
                 switch (referenceTableId.getValue()) {
                     case ReferenceTable.TEST:  
                         referenceName.showAutoMatches(getTestModel(search));
@@ -487,7 +484,6 @@ public class AnalyteParameterScreen extends Screen {
                         }                                           
                         if (!beginDateValid(item)) {
                             parameterTree.setCellException(r, c, new LocalizedException(consts.get("beginDateInvalidException")));
-                            //data.setActiveBegin(null);
                             return;
                         }
                         if (!endDateValid(data)) {
@@ -527,7 +523,6 @@ public class AnalyteParameterScreen extends Screen {
                         }
                         if (!endDateValid(data)) {
                             parameterTree.setCellException(r, c, new LocalizedException(consts.get("endDateInvalidException")));
-                            //data.setActiveEnd(null);
                             return;
                         }
                         if (changeActive(data)) {
@@ -911,7 +906,7 @@ public class AnalyteParameterScreen extends Screen {
         try {
             list  = qcService.callList("fetchActiveByName", query);
             for (QcDO data: list) 
-                model.add(new TableDataRow(data.getId(), data.getName()+" , "+ data.getLotNumber()));            
+                model.add(new TableDataRow(data.getId(), data.getName()+", "+ data.getLotNumber()));            
         } catch (NotFoundException e) {
             // do nothing
         } catch (Exception e) {

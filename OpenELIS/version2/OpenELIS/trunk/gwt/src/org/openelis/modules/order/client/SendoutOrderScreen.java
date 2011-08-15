@@ -452,9 +452,11 @@ public class SendoutOrderScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 OrganizationDO data;
-
-                if (organizationName.getSelection() != null) {
-                    data = (OrganizationDO)organizationName.getSelection().data;
+                TableDataRow row;
+               
+                row = organizationName.getSelection();
+                if (row != null && row.data != null) {
+                    data = (OrganizationDO)row.data;
 
                     manager.getOrder().setOrganizationId(data.getId());
                     manager.getOrder().setOrganization(data);
@@ -485,19 +487,14 @@ public class SendoutOrderScreen extends Screen {
 
         organizationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 OrganizationDO data;
                 ArrayList<OrganizationDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = organizationService.callList("fetchByIdOrName", parser.getParameter()
-                                                                                 .get(0));
+                    list = organizationService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -519,9 +516,7 @@ public class SendoutOrderScreen extends Screen {
                     Window.alert(e.getMessage());
                 }
                 window.clearStatus();
-
             }
-
         });
 
         statusId = (Dropdown)def.getWidget(OrderMeta.getStatusId());
@@ -734,27 +729,21 @@ public class SendoutOrderScreen extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 TableDataRow row;
                 ArrayList<TableDataRow> model;
-                QueryFieldUtil parser;
                 IdNameVO data;
                 ArrayList<IdNameVO> dataList;
                 ArrayList<String> matchList;
                 String match, name;
 
-                dataList = null;
                 match = event.getMatch();
                 window.setBusy();
 
                 try {
                     model = new ArrayList<TableDataRow>();
-
                     row = new TableDataRow(match, match);
                     model.add(row);
 
                     if (descQuery == null || ( ! (match.indexOf(descQuery) == 0))) {
-                        parser = new QueryFieldUtil();
-                        parser.parse(match);
-                        dataList = service.callList("fetchByDescription", parser.getParameter()
-                                                                                .get(0));
+                        dataList = service.callList("fetchByDescription", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                         matchList = new ArrayList<String>();
                         for (int i = 0; i < dataList.size(); i++ ) {
                             data = dataList.get(i);

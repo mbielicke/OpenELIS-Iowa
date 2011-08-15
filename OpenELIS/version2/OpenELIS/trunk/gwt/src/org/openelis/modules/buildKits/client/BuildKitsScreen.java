@@ -41,6 +41,7 @@ import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.StorageLocationViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
@@ -197,18 +198,20 @@ public class BuildKitsScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                String num;
                 Integer val;  
                 
-                val = null;            
                 manager.setInventoryItemId(event.getValue());                                                                                                    
                 DataChangeEvent.fire(screen);
                 try {
-                    val = Integer.valueOf(numRequested.getValue());                    
+                    num = numRequested.getValue();
+                    if (!DataBaseUtil.isEmpty(num)) {
+                        val = Integer.valueOf(num);  
+                        setTotalInComponents(val);
+                    }
                 } catch ( NumberFormatException e) {
                     e.printStackTrace();
-                }
-                
-                setTotalInComponents(val);
+                }                                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -364,7 +367,7 @@ public class BuildKitsScreen extends Screen {
                 }
                 
                 location = data.getInventoryLocations().get(0);
-                if (row != null) {
+                if (row != null && row.data != null) {
                     location = (InventoryLocationViewDO)row.data;
                     data.getInventoryLocations().set(0, location);                    
                 } else {
@@ -395,7 +398,6 @@ public class BuildKitsScreen extends Screen {
                 StorageLocationViewDO storLoc;
                 TableDataRow row;                
                 ArrayList<TableDataRow> model;
-                QueryFieldUtil parser;
                 ArrayList<QueryData> fields;
                 Query query;
                 QueryData field;
@@ -403,10 +405,7 @@ public class BuildKitsScreen extends Screen {
                 if(manager == null)
                     return;
                                               
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());  
-                param = parser.getParameter().get(0); 
-                                
+                param = QueryFieldUtil.parseAutocomplete(event.getMatch());                                
                 window.setBusy();
                 model = new ArrayList<TableDataRow>();
                 try {
@@ -582,7 +581,6 @@ public class BuildKitsScreen extends Screen {
                 InventoryLocationViewDO invLoc;
                 TableDataRow tableRow, autoRow;                
                 ArrayList<TableDataRow> model;
-                QueryFieldUtil parser;
                 ArrayList<QueryData> fields;
                 Query query;
                 QueryData field;
@@ -590,10 +588,7 @@ public class BuildKitsScreen extends Screen {
                               
                 tableRow = componentTable.getSelection();                     
                 component = (InventoryComponentViewDO)tableRow.data;
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());  
-                param = parser.getParameter().get(0); 
-                                
+                param = QueryFieldUtil.parseAutocomplete(event.getMatch());                                
                 window.setBusy();
                 model = new ArrayList<TableDataRow>();
                 try {

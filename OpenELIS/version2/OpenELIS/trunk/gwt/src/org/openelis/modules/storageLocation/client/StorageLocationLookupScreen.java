@@ -77,19 +77,15 @@ public class StorageLocationLookupScreen extends Screen implements HasActionHand
         
         location.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 StorageLocationViewDO data;
                 ArrayList<StorageLocationViewDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
 
                 try {
-                    list = service.callList("fetchAvailableByName", parser.getParameter().get(0));
+                    list = service.callList("fetchAvailableByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         data = list.get(i);                        

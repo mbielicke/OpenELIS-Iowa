@@ -485,15 +485,11 @@ public class TestScreen extends Screen {
         // the calling interface
         method.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<MethodDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-                                
                 try {
-                    list = methodService.callList("fetchByName", parser.getParameter().get(0));
+                    list = methodService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     
                     for (MethodDO data : list)
@@ -701,15 +697,11 @@ public class TestScreen extends Screen {
         // the calling interface
         label.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 ArrayList<LabelDO> list;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = labelService.callList("fetchByName", parser.getParameter().get(0));
+                    list = labelService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     
                     for (LabelDO data: list)                         
@@ -979,15 +971,11 @@ public class TestScreen extends Screen {
         // the calling interface
         testTrailer.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 ArrayList<IdNameVO> list;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    list = trailerService.callList("fetchByName", parser.getParameter().get(0));
+                    list = trailerService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list)
                         model.add(new TableDataRow(data.getId(), data.getName()));
@@ -1041,15 +1029,11 @@ public class TestScreen extends Screen {
         // the calling interface
         scriptlet.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<TableDataRow> model;
                 ArrayList<IdNameVO> list;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-                
                 try {
-                    list = scriptletService.callList("fetchByName", parser.getParameter().get(0));
+                    list = scriptletService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO data : list) {                       
                         model.add(new TableDataRow(data.getId(),data.getName()));

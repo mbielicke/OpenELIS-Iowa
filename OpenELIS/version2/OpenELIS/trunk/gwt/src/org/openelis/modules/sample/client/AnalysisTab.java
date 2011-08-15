@@ -285,7 +285,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 ArrayList<TestMethodVO> autoList;
                 Query                   query;
                 QueryData               field;
-                QueryFieldUtil          parser;
                 TableDataRow            row;
                 TestMethodVO            autoDO;
                 
@@ -297,11 +296,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
                 fields = new ArrayList<QueryData>();
                 query = new Query();
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
 
                 field = new QueryData();
-                field.query = parser.getParameter().get(0);
+                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
                 fields.add(field);
 
                 field = new QueryData();
@@ -803,15 +800,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
         userName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<SystemUserVO> users;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    users = UserCache.getSystemUsers(parser.getParameter().get(0));
+                    users = UserCache.getSystemUsers(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));

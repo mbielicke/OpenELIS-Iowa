@@ -285,19 +285,14 @@ public class EnvironmentalTab extends Screen {
 
         project.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 ProjectDO data;
                 ArrayList<ProjectDO> list;
                 ArrayList<TableDataRow> model;
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 window.setBusy();
                 try {
-                    list = projectService.callList("fetchActiveByName", parser.getParameter()
-                                                                              .get(0));
+                    list = projectService.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
@@ -531,18 +526,14 @@ public class EnvironmentalTab extends Screen {
     }
 
     private void getOrganizationMatches(String match, AutoComplete widget) {
-        QueryFieldUtil parser;
         TableDataRow row;
         OrganizationDO data;
         ArrayList<OrganizationDO> list;
         ArrayList<TableDataRow> model;
 
-        parser = new QueryFieldUtil();
-        parser.parse(match);
-
         window.setBusy();
         try {
-            list = orgService.callList("fetchByIdOrName", parser.getParameter().get(0));
+            list = orgService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(match));
             model = new ArrayList<TableDataRow>();
             for (int i = 0; i < list.size(); i++ ) {
                 row = new TableDataRow(4);

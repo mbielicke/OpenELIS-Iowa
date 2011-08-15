@@ -189,13 +189,13 @@ UIRF Software License are applicable instead of those above.
                       <textbox field="Integer" required="true" />
                     </col>
                     <col key="{meta:getOrderItemInventoryItemName()}" width="275" header="{resource:getString($constants,'inventoryItem')}">
-                      <autoComplete width="auto" case="LOWER" field="Integer" required="true">
+                      <autoComplete width="275" case="LOWER" field="Integer" required="true">
                         <col width="155" header="{resource:getString($constants,'name')}" />
                         <col width="110" header="{resource:getString($constants,'store')}">
-                          <dropdown width="110" popWidth="auto" field="Integer" />
+                          <dropdown width="110" popWidth="110" field="Integer" />
                         </col>
                         <col width="110" header="{resource:getString($constants,'dispensedUnits')}">
-                          <dropdown width="110" popWidth="auto" field="Integer" />
+                          <dropdown width="110" popWidth="110" field="Integer" />
                         </col>
                       </autoComplete>
                     </col>

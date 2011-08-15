@@ -400,7 +400,7 @@ UIRF Software License are applicable instead of those above.
                     <widget valign="top">
                       <table key="orderTestTable" maxRows="4" showScroll="ALWAYS" tab="orderContainerTable, orderContainerTable" title="" width="auto">
                         <col align="left" header="{resource:getString($constants,'test')}" key="{meta:getTestName()}" width="160">
-                          <autoComplete case="LOWER" field="Integer" popWidth="auto" required="true" width="160">
+                          <autoComplete case="LOWER" field="Integer" popWidth="560" required="true" width="160">
                             <col header="{resource:getString($constants,'test')}" width="150" />
                             <col header="{resource:getString($constants,'method')}" width="150" />
                             <col header="{resource:getString($constants,'description')}" width="250" />
@@ -483,13 +483,13 @@ UIRF Software License are applicable instead of those above.
                       <textbox field="Integer" required="true" />
                     </col>
                     <col header="{resource:getString($constants,'inventoryItem')}" key="{meta:getOrderItemInventoryItemName()}" width="275">
-                      <autoComplete case="LOWER" field="Integer" required="true" width="auto">
+                      <autoComplete case="LOWER" field="Integer" required="true" width="275">
                         <col header="{resource:getString($constants,'name')}" width="155" />
                         <col header="{resource:getString($constants,'store')}" width="110">
-                          <dropdown field="Integer" popWidth="auto" width="110" />
+                          <dropdown field="Integer" popWidth="110" width="110" />
                         </col>
                         <col header="{resource:getString($constants,'dispensedUnits')}" width="110">
-                          <dropdown field="Integer" popWidth="auto" width="110" />
+                          <dropdown field="Integer" popWidth="110" width="110" />
                         </col>
                       </autoComplete>
                     </col>

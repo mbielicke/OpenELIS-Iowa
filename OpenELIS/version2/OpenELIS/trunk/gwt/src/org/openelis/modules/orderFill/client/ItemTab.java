@@ -55,7 +55,6 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -430,7 +429,6 @@ public class ItemTab extends Screen {
         storageLocationName = (AutoComplete<Integer>)itemsTree.getColumns().get("orderItem").get(3).getColumnWidget();
         storageLocationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 TableDataRow row;
                 TreeDataItem item;
                 InventoryLocationViewDO data;
@@ -443,11 +441,9 @@ public class ItemTab extends Screen {
                 
                 fields = new ArrayList<QueryData>();
                 query = new Query();
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());               
                                 
                 field = new QueryData();
-                field.query = parser.getParameter().get(0);
+                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
                 fields.add(field);
                 
                 item = itemsTree.getSelection();
