@@ -65,6 +65,7 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
@@ -134,7 +135,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     @TransactionTimeout(600)
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
-        int                      r, i, a, c, o;
+        int                      r, i, a, o;
         String                   statuses[], cellNameIndex, posNum, outFileName;
         File                     outFile;
         FileInputStream          in;
@@ -148,7 +149,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         HSSFSheet                resultSheet, overrideSheet;
         HSSFWorkbook             wb;
         Name                     cellName;
-        Row                      row, hRow, oRow, tRow;
+        Row                      row, oRow, tRow;
         AnalysisManager          aManager;
         AnalysisResultManager    arManager;
         AnalysisViewDO           aVDO;
@@ -201,7 +202,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
         resultSheet = wb.getSheet("Worksheet");
 
-        hRow = resultSheet.getRow(0);
         tRow = resultSheet.getRow(1);
         resultSheet.removeRow(tRow);
         
@@ -509,8 +509,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         resultSheet.autoSizeColumn(4, true);            // Test
         resultSheet.autoSizeColumn(5, true);            // Method
         resultSheet.autoSizeColumn(7, true);            // Analyte
-//        for (c = 9; c < hRow.getLastCellNum(); c++)
-//            resultSheet.autoSizeColumn(c, true);        // Result(s)
         
         overrideSheet.autoSizeColumn(2, true);          // Description
         overrideSheet.autoSizeColumn(3, true);          // Test
@@ -836,6 +834,45 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         return manager;
     }
 
+    @TransactionTimeout(600)
+    public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager manager) throws Exception {
+        int                 i;
+        ArrayList<IdNameVO> headers;
+        DictionaryViewDO    formatVDO;
+        FileInputStream     in;
+        HSSFWorkbook        wb;
+        Row                 hRow;
+
+        headers = new ArrayList<IdNameVO>();
+        
+        try {
+            formatVDO = dictionaryLocal.fetchById(manager.getWorksheet().getFormatId());
+        } catch (NotFoundException nfE) {
+            formatVDO = new DictionaryViewDO();
+            formatVDO.setEntry("DefaultTotal");
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving worksheet format: "+anyE.getMessage());
+        }
+
+        try {
+            in = new FileInputStream(getWorksheetTemplateFileName(formatVDO));
+        } catch (FileNotFoundException fnfE) {
+            throw new Exception("Error loading template file: "+fnfE.getMessage());
+        }
+        
+        try {
+            wb = new HSSFWorkbook(in, true);
+        } catch (IOException ioE) {
+            throw new Exception("Error loading workbook from template file: "+ioE.getMessage());
+        }
+
+        hRow = wb.getSheet("Worksheet").getRow(0);
+        for (i = 0; i < hRow.getLastCellNum() && i < 39; i++)
+            headers.add(new IdNameVO(i, hRow.getCell(i).getStringCellValue()));
+        
+        return headers;
+    }
+    
     private void createStyles(HSSFWorkbook wb) {
         CellStyle headerStyle, rowEditStyle, rowNoEditStyle;
         Font      font;

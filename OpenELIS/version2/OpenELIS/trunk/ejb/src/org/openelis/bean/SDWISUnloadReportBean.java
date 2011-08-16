@@ -554,19 +554,18 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
     private void initMethodCodes() {
         methodCodes = new HashMap<String, String>();
         
-        methodCodes.put("colilert mpn sdwa am", "9223B-10");
-        methodCodes.put("colilert mpn sdwa pm", "9223B-10");
-        methodCodes.put("colilert pa sdwa am",  "9223B-10");
-        methodCodes.put("colilert pa sdwa pm",  "9223B-10");
-        methodCodes.put("epa 353.2 as n drink", "353.2");
+        methodCodes.put("colilert mpn sdwa am", "9223B-QT");
+        methodCodes.put("colilert mpn sdwa pm", "9223B-18QT");
+        methodCodes.put("colilert pa sdwa am",  "9223B-PA");
+        methodCodes.put("colilert pa sdwa pm",  "9223B-18PA");
     }
     
     private void initContaminantIds() {
         contaminantIds = new HashMap<String, String>();
         
-        contaminantIds.put("E.coli",                  "3014");
-        contaminantIds.put("Nitrate Nitrogen as N",   "1040");
-        contaminantIds.put("Nitrite Nitrogen as N",   "1041");
-        contaminantIds.put("Total Coliform Bacteria", "3100");
+        contaminantIds.put("E.coli",                    "3014");
+        contaminantIds.put("Fecal Coliform",            "3013");
+        contaminantIds.put("Heterotrophic Plate Count", "3001");
+        contaminantIds.put("Total Coliform Bacteria",   "3100");
     }
 }
