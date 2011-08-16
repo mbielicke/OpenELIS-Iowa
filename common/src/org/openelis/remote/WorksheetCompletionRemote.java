@@ -25,8 +25,11 @@
  */
 package org.openelis.remote;
 
+import java.util.ArrayList;
+
 import javax.ejb.Remote;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.manager.WorksheetManager;
 
 @Remote
@@ -35,4 +38,6 @@ public interface WorksheetCompletionRemote {
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception;
 
     public WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception;
+
+    public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager manager) throws Exception;
 }
