@@ -53,16 +53,9 @@ UIRF Software License are applicable instead of those above.
   <xsl:template match="doc">
     <screen id="FinalReport" name="{resource:getString($constants,'finalReport')}">  
     <DeckPanel key="deck" height = "100%" width = "100%">
-	  <deck>	  
-	    <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-        <TablePanel style="Form">
-          <row>          
-          <AbsolutePanel style = "step1"></AbsolutePanel>
-            <text style="Prompt">
-              <xsl:value-of select="resource:getString($constants,'commentOne')" />
-            </text>
-          </row>
-        </TablePanel>
+	  <deck>
+	  <HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">	  
+	    <VerticalPanel padding="0" spacing="0">
         <VerticalPanel style="subform">
           <TablePanel style="Form">
             <row>
@@ -144,24 +137,14 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"projectCode")' />:
               </text>
               <widget colspan="4">
-                <dropdown field="Integer" key="{meta:getProjectId()}" width="202" />
+                <dropdown field="Integer" key="{meta:getProjectId()}" width="202" tab = "{meta:getReleasedDateFrom()},{meta:getLocationAddrCity()}"/>
               </widget>
             </row>
           </TablePanel>
         </VerticalPanel>
-        <TablePanel style="Form">
-          <row>
-          <AbsolutePanel style = "step2"></AbsolutePanel>
-            <text style="Prompt">
-              <xsl:value-of select="resource:getString($constants,'commentTwo')" />
-            </text>
-          </row>
-        </TablePanel>
-        <TablePanel style="Form">
-          <row>
-          <AbsolutePanel key="noSampleSelectedPanel" style = "largeWarnIcon" visible = "false"></AbsolutePanel>
-            <label field="String" key="noSampleSelected" style="Prompt">
-            </label>
+        <TablePanel style="HorizontalDivider" width = "100%">
+          <row>          
+			<html>&lt;hr/&gt;</html>
           </row>
         </TablePanel>
         <HorizontalPanel style="TableFooterPanel">
@@ -186,7 +169,22 @@ UIRF Software License are applicable instead of those above.
             </appButton>
           </widget>
         </HorizontalPanel>
-      </VerticalPanel>      
+        <TablePanel style="Form">
+          <row>
+          <AbsolutePanel key="noSampleSelectedPanel" style = "largeWarnIcon" visible = "false"></AbsolutePanel>
+            <label field="String" key="noSampleSelected" style="Prompt">
+            </label>
+          </row>
+        </TablePanel>
+      </VerticalPanel>
+      <VerticalPanel padding="0" spacing="0" style="help" width = "400" height = "280">
+	 <TablePanel width = "100%">
+          <row>          
+			<html>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat Lorem ipsum dolor sit amet, consectetuer  adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat </html>
+          </row>
+        </TablePanel>
+      </VerticalPanel>
+      </HorizontalPanel>      
 	  </deck>
 	  <deck>	 
 	  <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">             
@@ -256,8 +254,7 @@ UIRF Software License are applicable instead of those above.
           </widget>
         </HorizontalPanel>
       </VerticalPanel>	
-	  </deck>
-    
+	  </deck>    
     </DeckPanel>
    </screen>   
   </xsl:template>
