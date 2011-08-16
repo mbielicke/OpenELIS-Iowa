@@ -146,15 +146,11 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
 
         systemUserId.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                QueryFieldUtil parser;
                 ArrayList<SystemUserVO> users;
                 ArrayList<TableDataRow> model;
                 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
-
                 try {
-                    users = UserCache.getSystemUsers(parser.getParameter().get(0));
+                    users = UserCache.getSystemUsers(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));
