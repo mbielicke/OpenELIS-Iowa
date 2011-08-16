@@ -258,15 +258,12 @@ public class WorksheetCreationScreen extends Screen {
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<TableDataRow>     model;
                 ArrayList<InstrumentViewDO> matches;
-                QueryFieldUtil              parser;
                 TableDataRow                row;
                 InstrumentViewDO            iVDO;                
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
                 try {
                     model = new ArrayList<TableDataRow>();
-                    matches = instrumentService.callList("fetchActiveByName", parser.getParameter().get(0));
+                    matches = instrumentService.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (int i = 0; i < matches.size(); i++) {
                         iVDO = (InstrumentViewDO)matches.get(i);
                         

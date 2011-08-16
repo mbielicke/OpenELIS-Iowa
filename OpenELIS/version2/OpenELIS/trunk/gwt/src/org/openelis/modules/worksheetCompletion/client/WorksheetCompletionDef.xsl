@@ -136,159 +136,127 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB PANEL -->
           <TabPanel key="tabPanel" width="850" height="285">
 <!-- TAB 1 -->
-<!--
             <tab key="worksheetItemTab" tab="worksheetItemTable,worksheetItemTable" text="{resource:getString($constants,'worksheet')}">
-              <VerticalPanel padding="0" spacing="0">
-                <table key="worksheetItemTable" width="832" maxRows="10" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
-                  <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
-                    <label field="Integer" />
-                  </col>
-                  <col key="{meta:getWorksheetAnalysisAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
-                    <label field="String" />
-                  </col>
-                  <col key="{meta:getSampleDescription()}" width="110" header="{resource:getString($constants,'description')}" sort="true">
-                    <label field="String" />
-                  </col>
-                  <col key="{meta:getWorksheetAnalysisWorksheetAnalysisId}" width="90" header="{resource:getString($constants,'qcLink')}">
-                    <label field="String" />
-                  </col>
-                  <col key="{meta:getAnalysisTestName()}" width="100" header="{resource:getString($constants,'test')}" sort="true">
-                    <label field="String" />
-                  </col>
-                  <col key="{meta:getAnalysisTestMethodName()}" width="100" header="{resource:getString($constants,'method')}" sort="true">
-                    <label field="String" />
-                  </col>
-                  <col key="{meta:getAnalysisStatusId()}" width="75" header="{resource:getString($constants,'status')}" sort="true">
-                    <dropdown width="55" field="Integer" />
-                  </col>
-                  <col key="analyteName" width="100" header="Analyte">
-                    <label field="String" />
-                  </col>
-                  <col key="reportable" width="100" header="Reportable">
-                    <label field="String" />
-                  </col>
-                  <col key="value1" width="100" header="Value 1">
-                    <label field="String" />
-                  </col>
-                  <col key="value2" width="100" header="Value 2">
-                    <label field="String" />
-                  </col>
-                  <col key="value3" width="100" header="Value 3">
-                    <label field="String" />
-                  </col>
-                  <col key="value4" width="100" header="Value 4">
-                    <label field="String" />
-                  </col>
-                  <col key="value5" width="100" header="Value 5">
-                    <label field="String" />
-                  </col>
-                  <col key="value6" width="100" header="Value 6">
-                    <label field="String" />
-                  </col>
-                  <col key="value7" width="100" header="Value 7">
-                    <label field="String" />
-                  </col>
-                  <col key="value8" width="100" header="Value 8">
-                    <label field="String" />
-                  </col>
-                  <col key="value9" width="100" header="Value 9">
-                    <label field="String" />
-                  </col>
-                  <col key="value10" width="100" header="Value 10">
-                    <label field="String" />
-                  </col>
-                  <col key="value11" width="100" header="Value 11">
-                    <label field="String" />
-                  </col>
-                  <col key="value12" width="100" header="Value 12">
-                    <label field="String" />
-                  </col>
-                  <col key="value13" width="100" header="Value 13">
-                    <label field="String" />
-                  </col>
-                  <col key="value14" width="100" header="Value 14">
-                    <label field="String" />
-                  </col>
-                  <col key="value15" width="100" header="Value 15">
-                    <label field="String" />
-                  </col>
-                  <col key="value16" width="100" header="Value 16">
-                    <label field="String" />
-                  </col>
-                  <col key="value17" width="100" header="Value 17">
-                    <label field="String" />
-                  </col>
-                  <col key="value18" width="100" header="Value 18">
-                    <label field="String" />
-                  </col>
-                  <col key="value19" width="100" header="Value 19">
-                    <label field="String" />
-                  </col>
-                  <col key="value20" width="100" header="Value 20">
-                    <label field="String" />
-                  </col>
-                  <col key="value21" width="100" header="Value 21">
-                    <label field="String" />
-                  </col>
-                  <col key="value22" width="100" header="Value 22">
-                    <label field="String" />
-                  </col>
-                  <col key="value23" width="100" header="Value 23">
-                    <label field="String" />
-                  </col>
-                  <col key="value24" width="100" header="Value 24">
-                    <label field="String" />
-                  </col>
-                  <col key="value25" width="100" header="Value 25">
-                    <label field="String" />
-                  </col>
-                  <col key="value26" width="100" header="Value 26">
-                    <label field="String" />
-                  </col>
-                  <col key="value27" width="100" header="Value 27">
-                    <label field="String" />
-                  </col>
-                  <col key="value28" width="100" header="Value 28">
-                    <label field="String" />
-                  </col>
-                  <col key="value29" width="100" header="Value 29">
-                    <label field="String" />
-                  </col>
-                  <col key="value30" width="100" header="Value 30">
-                    <label field="String" />
-                  </col>
-                </table>
-                <widget style="TableButtonFooter">
-                  <HorizontalPanel>
-                    <appButton key="editWorksheetButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="EditMultipleButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'editWorksheet')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
-                    <appButton key="loadFromEditButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="LoadButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'loadFromEditFile')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
-                    <appButton key="loadFilePopupButton" style="Button">
-                      <HorizontalPanel>
-                        <AbsolutePanel style="LoadButtonImage" />
-                        <text>
-                          <xsl:value-of select="resource:getString($constants,'loadFromInstrumentFile')" />
-                        </text>
-                      </HorizontalPanel>
-                    </appButton>
-                  </HorizontalPanel>
-                </widget>
-              </VerticalPanel>
+              <table key="worksheetItemTable" width="832" maxRows="11" showScroll="ALWAYS" tab="{meta:getId()},{meta:getId()}">
+                <col width="50" header="A">
+                  <label field="String" />
+                </col>
+                <col width="90" header="B">
+                  <label field="String" />
+                </col>
+                <col width="110" header="C">
+                  <label field="String" />
+                </col>
+                <col width="90" header="D">
+                  <label field="String" />
+                </col>
+                <col width="100" header="E">
+                  <label field="String" />
+                </col>
+                <col width="100" header="F">
+                  <label field="String" />
+                </col>
+                <col width="90" header="G">
+                  <label field="String" />
+                </col>
+                <col width="100" header="H">
+                  <label field="String" />
+                </col>
+                <col width="100" header="I">
+                  <label field="String" />
+                </col>
+                <col width="100" header="J">
+                  <label field="String" />
+                </col>
+                <col width="100" header="K">
+                  <label field="String" />
+                </col>
+                <col width="100" header="L">
+                  <label field="String" />
+                </col>
+                <col width="100" header="M">
+                  <label field="String" />
+                </col>
+                <col width="100" header="N">
+                  <label field="String" />
+                </col>
+                <col width="100" header="O">
+                  <label field="String" />
+                </col>
+                <col width="100" header="P">
+                  <label field="String" />
+                </col>
+                <col width="100" header="Q">
+                  <label field="String" />
+                </col>
+                <col width="100" header="R">
+                  <label field="String" />
+                </col>
+                <col width="100" header="S">
+                  <label field="String" />
+                </col>
+                <col width="100" header="T">
+                  <label field="String" />
+                </col>
+                <col width="100" header="U">
+                  <label field="String" />
+                </col>
+                <col width="100" header="V">
+                  <label field="String" />
+                </col>
+                <col width="100" header="W">
+                  <label field="String" />
+                </col>
+                <col width="100" header="X">
+                  <label field="String" />
+                </col>
+                <col width="100" header="Y">
+                  <label field="String" />
+                </col>
+                <col width="100" header="Z">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AA">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AB">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AC">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AD">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AE">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AF">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AG">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AH">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AI">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AJ">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AK">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AL">
+                  <label field="String" />
+                </col>
+                <col width="100" header="AM">
+                  <label field="String" />
+                </col>
+              </table>
             </tab>
--->
 <!-- TAB 2 -->
             <tab key="notesTab" tab="standardNoteButton,standardNoteButton" text="{resource:getString($constants,'note')}">
               <xsl:call-template name="InternalNoteTab">

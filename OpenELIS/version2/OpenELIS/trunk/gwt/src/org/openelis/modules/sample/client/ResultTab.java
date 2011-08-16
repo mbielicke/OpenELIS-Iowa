@@ -178,14 +178,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     row = testResultsTable.getSelectedRow();
                     data = displayManager.getObjectAt(row, 0);
 
-                    /*if (analysis.getUnitOfMeasureId() == null) {
-                        window.setError(consts.get("unitOfMeasureException"));
-                        addResultButton.enable(false);
-                        removeResultButton.enable(false);
-                    } else { */
-                        addResultButton.enable(true);
-                        suggestionsButton.enable(true);
-                    //}
+                    addResultButton.enable(true);
+                    suggestionsButton.enable(true);
 
                     if (testAnalyteRequiredId.equals(data.getTestAnalyteTypeId()))
                         removeResultButton.enable(false);

@@ -166,15 +166,12 @@ public class WorksheetCreationLookupScreen extends Screen
             public void onGetMatches(GetMatchesEvent event) {
                 ArrayList<TableDataRow> model;
                 ArrayList<TestMethodVO> matches;
-                QueryFieldUtil          parser;
                 TableDataRow            row;
                 TestMethodVO            tmVO;                
 
-                parser = new QueryFieldUtil();
-                parser.parse(event.getMatch());
                 try {
                     model = new ArrayList<TableDataRow>();
-                    matches = testService.callList("fetchByName", parser.getParameter().get(0));
+                    matches = testService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     for (int i = 0; i < matches.size(); i++) {
                         tmVO = (TestMethodVO)matches.get(i);
                         
