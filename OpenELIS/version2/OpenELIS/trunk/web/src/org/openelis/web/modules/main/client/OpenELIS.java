@@ -161,7 +161,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 
         addLinkHandler("homeIcon", "Home", null, new ClickHandler() {
             public void onClick(ClickEvent event) {
-                gotoScreen("home");
+            	History.newItem("home", true);
                 window.setCrumbLink(null);
             }
         });

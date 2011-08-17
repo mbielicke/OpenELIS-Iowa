@@ -1,45 +1,125 @@
 .AppBackground {
-    background: url("../Images/desktop.jpg");
+ background:white;
 }
-.WhiteContentPanel{
-    margin:6px;
-    background:url("../Images/gray.png");
+
+.WhiteContentPanel {
+	background:transparent;
+	width : 98%;	
 }
- .BluePopUpPanel {
-	color:gray;
-	background: #DEECFD;
+
+.ContentPanel{
+    /*margin:2px 0 0 2px;*/
+    padding:12px;
+    background:url("../Images/whitecontentpanel.jpg") no-repeat;
+    width:950px;
+    height:668px;
+}
+.HorizontalDivider hr{
+    color:white;
+}
+.gwt-TabPanelBottom{
+    border:0;
+    background:transparent;
 }
 .WelcomeLogout{
-    height:22px;
-    padding:6px;
-    background:url("../Images/title.png") no-repeat 6px 6px;    
+    width:900px;
+    height:56px;
+    background:url("../Images/title.png") no-repeat 27px 2px;   
+}
+.WelcomeLogout .webLabel{
+    color:gray;
+    font-size:14px;
+    padding:20px 8px 16px 8px;
+}
+.WelcomeLogout .clickable{
+width:58px;
+    background:url("../Images/clickable.jpg") no-repeat right 10px;
 }
 .crumbline {
-    margin:0 6px 0 6px;
-    padding:8px;
-    border:1px solid white;
-    background:url("../Images/checkers.png");
+    margin:2px 0 0 2px;
+    background: url("../Images/crumbline.jpg") no-repeat scroll 0 0 transparent;
+    height: 28px;
+    width: 950px;
+}
+.Links {
+    background: url("../Images/links.jpg") no-repeat;
+    width:60px;
+    height:750px;
+    padding:16px 4px 0 0;
+    margin:4px 0 0 2px;
+}
+.Links .ConfirmWindow .top *, .Links .ConfirmWindow .middle .middleLeft, .Links .ConfirmWindow .middle .middleRightInner, .Links .ConfirmWindow .middle .middleCenter, .Links .ConfirmWindow .bottom *{
+    background:none;
+}
+
+.subform{
+    border:0;
+    margin:0;        
+    padding-bottom:12px;
+}
+.ErrorWindow{
+/*    background: url("../Images/errorwindow.png") no-repeat;
+*//*    padding-right:53px;
+    padding-left:10px;*/
+    margin:-20px 0 0 -18px;
+}
+
+.ErrorWindow * , .ErrorWindow .middleRightInner{
+    background:none;
+}
+.ErrorWindow .middleLeft{
+    width:24px;
+    background: url("../Images/errorwindowleft.png") no-repeat;
+}
+.ErrorWindow .middleCenter{
+height:47px;
+    background: url("../Images/errorwindowcenter.png") repeat-x;
+}
+.ErrorWindow .middleRight{
+width:6px;
+    background: url("../Images/errorwindowright.png") no-repeat;
+}
+.screenlable{
+    background:none;
+}
+.FormTitle{
+	-moz-user-select: none;
+    color:#c74a1e;
+    font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+    padding:2px;
+    font-size:18px;
+    background:none;
+    text-align:left;
 }
 .webButton {
     cursor:pointer;
-    background:url("../Images/gray.png");
+  /*  background:url("../Images/gray.png");*/
     height:56px;
 }
 .Prompt{
-    color:white;
+    color:#333;
 }
+.middleCenter{
+background:#deecfd;
+		}
 .ConfirmWindow .middleRight {
     background:none;
 }
 .ConfirmWindow .middleRightInner{
     margin-top:0;
+        width:0;
 }
 .ConfirmWindow .middleCenterInner {
     padding:0;
+    width:54px;
 }
 .ConfirmWindow .middleLeft {
-    height: 30px;
+    width:0;
 }
+.ConfirmWindow .top .topLeft .topLeftInner{
+    width:0;
+}
+
 .ErrorWindow .middleRightInner{
     background: transparent url("../Images/popupright-y.png") top repeat-y;
     height:21px;
@@ -51,26 +131,71 @@
 .ErrorWindow .ScreenLabel{
     padding:4px;
 }
-.LinkPop .popupContent{
-    margin:-44px 0 0 54px;
+.popupContent{
+    margin:-44px 0 0 72px;
 }
 .HomeText{
-    color:white;
+    color:#333;
     font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
 	font-size : 12px;
-	padding-left:4px;
+	padding:16px;
 }
 .webFlowPanel {
 	display :inline;
 }
+.help div{
+    padding:6px;
+    font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+	font-size : 12px;
+    color:gray;
+}
 
-.homeIcon, .finalReportIcon, .changePasswordIcon, .webTestIcon, .requestFormIcon, .statusReportIcon, .turnaroundIcon,
-.onholdReportIcon, .caseManagementIcon, .notificationPrefIcon, .reportableIcon, .dataDumpIcon{
-	height : 40px;
-	width : 40px;
+/* .webTestIcon, .requestFormIcon,  .turnaroundIcon, .finalReportIcon,  
+.onholdReportIcon, .caseManagementIcon,  .reportableIcon, .dataDumpIcon,*/
+
+.homeIcon,
+.finalReportEnvironmentalIcon, .finalReportPrivateWellIcon, .finalReportSDWISIcon,
+.statusReportIcon,
+.dataDumpEnvironmentalIcon, .dataDumpPrivateWellIcon, .dataDumpSDWISIcon,
+.notificationPrefIcon, .changePasswordIcon
+{
+	height : 54px;
+	width : 54px;
 }
 .homeIcon{
-	background:url(../Images/house.png) no-repeat center center;
+	background:url(../Images/home.jpg) no-repeat center center;
+}
+.finalReportEnvironmentalIcon{
+	background:url(../Images/finalReportEnvironmentalIcon.jpg) no-repeat center center;
+}
+.finalReportPrivateWellIcon{
+	background:url(../Images/finalReportPrivateWellIcon.jpg) no-repeat center center;
+}
+.finalReportSDWISIcon{
+	background:url(../Images/finalReportSDWISIcon.jpg) no-repeat center center;
+}
+.statusReportIcon{
+	background:url(../Images/statusReportIcon.jpg) no-repeat center center;
+}
+.dataDumpEnvironmentalIcon{
+	background:url(../Images/dataDumpEnvironmentalIcon.jpg) no-repeat center center;
+}
+.dataDumpPrivateWellIcon{
+	background:url(../Images/dataDumpPrivateWellIcon.jpg) no-repeat center center;
+}
+.dataDumpSDWISIcon{
+	background:url(../Images/dataDumpSDWISIcon.jpg) no-repeat center center;
+}
+.notificationPrefIcon{
+	background:url(../Images/notification.jpg) no-repeat center center;
+}
+.changePasswordIcon{
+    background:url(../Images/changepassword.jpg) no-repeat center center;
+}
+
+/*
+.finalReportIcon{
+	background:url(../Images/finialreport.jpg) no-repeat center center;
 }
 .caseManagementIcon{
 	background:url(../Images/briefcase.png) no-repeat center center;
@@ -87,29 +212,15 @@
 .turnaroundIcon{
 	background:url(../Images/chart_curve.png) no-repeat center center;
 }
-.statusReportIcon{
-	background:url(../Images/chart_line.png) no-repeat center center;
-}
-.notificationPrefIcon{
-	background:url(../Images/bell.png) no-repeat center center;
-}
-.homeIcon {
-	background:url(../Images/house.png) no-repeat center center;
-}
 .requestFormIcon{
 	background:url(../Images/application_form.png) no-repeat center center;	
 }
-.finalReportIcon{
-	background:url(../Images/report.png) no-repeat center center;
-}
-.changePasswordIcon{
-    background:url(../Images/lock_edit.png) no-repeat center center;}
 .webIPodIcon {
 	background:transparent url(../Images/ipod.png) no-repeat scroll center center;
 }
 .reportIcon {
 	background:transparent url(../Images/report.png) no-repeat scroll center center;
-}
+}*/
 
 
 .webLabel {
@@ -141,45 +252,4 @@
 
 .categories {
 	border-right: 1px solid gray;
-}
-
-.step1{
-
-background: url("../Images/step_1.png") no-repeat;
-
-  height: 50px;
-
-  width: 45px;
-
-}
-
-.step2{
-
-background: url("../Images/step_2.png") no-repeat;
-
-  height: 50px;
-
-  width: 45px;
-
-}
-
-.step3{
-
-background: url("../Images/step_3.png") no-repeat;
-
-  height: 50px;
-
-  width: 45px;
-
-}
-
-.gwt-TabPanelBottom{
-    background:none;
-    border:0px;
-}
-
-.subform{
-    border:0px;
-    margin:4px 4px ;
-    margin-left:53px;
 }
