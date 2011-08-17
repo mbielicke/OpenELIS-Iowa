@@ -2163,8 +2163,8 @@ rich text css
 }
 
 .ModalPanel{
-	    background: url(../Images/transgrey.png);
-	    filter:alpha(opacity=50),
+	    background: url(../Images/trans.gif);
+	    /*filter:alpha(opacity=50)*/,
 }.Italic {
     width:20;
     height:20;
