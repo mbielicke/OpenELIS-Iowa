@@ -276,36 +276,6 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<IdNameVO> fetchProjectsForSampleStatusReport(ArrayList<Integer> organizationIdList) throws Exception {
-        Query query;
-        ArrayList<Object[]> list; 
-        ArrayList<IdNameVO> returnList;
-        IdNameVO obj;
-        Object[] result;
-        Integer id;
-        String description;
-        
-        returnList = new ArrayList<IdNameVO>();
-        query = manager.createNamedQuery("Sample.FetchProjectsForSampleStatusReport");
-        query.setParameter("organizationIds", organizationIdList);
-       
-        try {
-            list = DataBaseUtil.toArrayList(query.getResultList());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        
-        for (int i = 0; i < list.size(); i++ ) {
-            result = list.get(i);
-            id = (Integer)result[0];
-            description = (String)result[1];
-            obj = new IdNameVO(id, description);
-            returnList.add(obj);
-        }
-       return returnList;     
-    }
-    
     public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportEnvironmental(ArrayList<Integer> sampleIdList) throws Exception {
         Query query;
                

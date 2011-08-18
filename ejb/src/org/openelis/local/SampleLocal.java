@@ -35,8 +35,6 @@ public interface SampleLocal {
     
     public ArrayList<IdNameVO> fetchProjectsForPrivateOrganizations(ArrayList<Integer> organizationId) throws Exception;
     
-    public ArrayList<IdNameVO> fetchProjectsForSampleStatusReport(ArrayList<Integer> organizationId) throws Exception;
-    
     public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportEnvironmental(ArrayList<Integer> sampleIdList) throws Exception;
     
     public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportPrivateWell(ArrayList<Integer> sampleIdList) throws Exception;
