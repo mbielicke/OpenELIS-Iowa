@@ -8,7 +8,6 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleEnvironmentalFinalReportWebVO;
 import org.openelis.domain.SamplePrivateWellFinalReportWebVO;
 import org.openelis.domain.SampleSDWISFinalReportWebVO;
-import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.report.Prompt;
@@ -34,11 +33,7 @@ public interface FinalReportRemote {
     
     public ArrayList<SampleSDWISFinalReportWebVO> getSampleSDWISList(ArrayList<QueryData> fields) throws Exception; 
     
-    public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception;
-    
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception;
     
-    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception;
-    
-    public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception;
+    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception;    
 }
