@@ -31,7 +31,6 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleEnvironmentalFinalReportWebVO;
 import org.openelis.domain.SamplePrivateWellFinalReportWebVO;
 import org.openelis.domain.SampleSDWISFinalReportWebVO;
-import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
@@ -99,11 +98,7 @@ public class FinalReportService {
     
     public ArrayList<SampleSDWISFinalReportWebVO> getSampleSDWISList(Query query) throws Exception {        
         return remote().getSampleSDWISList(query.getFields());
-    }  
-    
-    public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(Query query) throws Exception {        
-        return remote().getSampleListForSampleStatusReport(query.getFields());
-    }       
+    }     
     
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {        
         return remote().getEnvironmentalProjectList();
@@ -111,10 +106,6 @@ public class FinalReportService {
     
     public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {        
         return remote().getPrivateWellProjectList();
-    }
-    
-    public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
-        return remote().getSampleStatusProjectList();
     }
 
     private FinalReportRemote remote() {
