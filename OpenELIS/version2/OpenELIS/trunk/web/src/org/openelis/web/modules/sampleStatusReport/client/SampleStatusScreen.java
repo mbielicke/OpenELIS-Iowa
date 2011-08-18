@@ -95,8 +95,8 @@ public class SampleStatusScreen extends Screen {
      */
     public SampleStatusScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleStatusDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
-
+        service = new ScreenService("controller?service=org.openelis.modules.report.server.SampleStatusReportService");
+        
         userPermission = UserCache.getPermission().getModule("w_status");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Sample Status Screen");
