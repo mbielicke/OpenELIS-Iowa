@@ -51,7 +51,7 @@ public class TestService {
     }
 
     public ArrayList<TestMethodVO> fetchByName(String name) throws Exception {
-        return remote().fetchByName(name + "%", 10);
+        return remote().fetchByName(name + "%", 1000);
     }
     
     public ArrayList<TestMethodVO> fetchByPanelId(Integer id) throws Exception {
