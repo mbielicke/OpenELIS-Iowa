@@ -29,13 +29,13 @@ UIRF Software License are applicable instead of those above.
   version="1.0"
   xmlns:fn="http://www.w3.org/2005/xpath-functions"
   xmlns:locale="xalan://java.util.Locale"
+  xmlns:meta="xalan://org.openelis.meta.SampleWebMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.SampleWebMeta">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
@@ -51,122 +51,117 @@ UIRF Software License are applicable instead of those above.
   </xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-    <screen id="SampleStatus" name="{resource:getString($constants,'finalReport')}">  
-    <DeckPanel key="deck" height = "100%" width = "100%">
-	  <deck>	  
-	    <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-        <TablePanel style="Form">
-          <row>          
-          <AbsolutePanel style = "step1"></AbsolutePanel>
-            <text style="Prompt">
-              <xsl:value-of select="resource:getString($constants,'commentOne')" />
-            </text>
-          </row>
-        </TablePanel>
-        <VerticalPanel style="subform">
-          <TablePanel style="Form">           
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'dateCollected')" />:
-              </text>
-              <widget>
-                <calendar begin="0" end="2" key="{meta:getCollectionDateFrom()}" pattern="{resource:getString($constants,'datePattern')}" width="90" />
-              </widget>
-              <text style="Prompt">
-                <xsl:value-of select="resource:getString($constants,'to')" />:
-              </text>
-              <widget>
-                <calendar begin="0" end="2" key="{meta:getCollectionDateTo()}" pattern="{resource:getString($constants,'datePattern')}"  width="90" />
-              </widget>
-            </row>            
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"clientReference")' />:
-              </text>
-              <widget colspan="4">
-                <textbox case="MIXED" field="String" key="{meta:getClientReference()}" max="60" width="202" />
-              </widget>
-            </row>            
-            <row>
-              <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"projectCode")' />:
-              </text>
-              <widget colspan="4">
-                <dropdown field="Integer" key="{meta:getProjectId()}" width="202" tab = "{meta:getCollectionDateFrom()},{meta:getClientReference()}"/>
-              </widget>
-            </row>
-          </TablePanel>
-        </VerticalPanel>
-        <TablePanel style="Form">
-          <row>
-          <AbsolutePanel style = "step2"></AbsolutePanel>
-            <text style="Prompt">
-              <xsl:value-of select="resource:getString($constants,'commentTwo')" />
-            </text>
-          </row>
-        </TablePanel>
-        <TablePanel style="Form">
-          <row>
-          <AbsolutePanel key="noSampleSelectedPanel" style = "largeWarnIcon" visible = "false"></AbsolutePanel>
-            <label field="String" key="noSampleSelected" style="Prompt">
-            </label>
-          </row>
-        </TablePanel>
-        <HorizontalPanel style="TableFooterPanel">
-          <widget halign="center">
-            <appButton key="getSampleListButton" style="Button">
-              <HorizontalPanel>
-                <AbsolutePanel />
-                <text>
-                  <xsl:value-of select='resource:getString($constants,"getSampleList")' />
-                </text>
+    <screen id="SampleStatus" name="{resource:getString($constants,'finalReport')}">
+      <DeckPanel height="100%" key="deck" width="100%">
+        <deck>
+          <HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
+            <VerticalPanel padding="0" spacing="0">
+              <VerticalPanel style="subform">
+                <TablePanel style="Form">
+                  <row>
+                    <text style="Prompt">
+                      <xsl:value-of select="resource:getString($constants,'dateCollected')" />:
+                    </text>
+                    <widget>
+                      <calendar begin="0" end="2" key="{meta:getCollectionDateFrom()}" pattern="{resource:getString($constants,'datePattern')}" width="90" />
+                    </widget>
+                    <text style="Prompt">
+                      <xsl:value-of select="resource:getString($constants,'to')" />:
+                    </text>
+                    <widget>
+                      <calendar begin="0" end="2" key="{meta:getCollectionDateTo()}" pattern="{resource:getString($constants,'datePattern')}" width="90" />
+                    </widget>
+                  </row>
+                  <row>
+                    <text style="Prompt">
+                      <xsl:value-of select='resource:getString($constants,"clientReference")' />:
+                    </text>
+                    <widget colspan="4">
+                      <textbox case="MIXED" field="String" key="{meta:getClientReference()}" max="60" width="202" />
+                    </widget>
+                  </row>
+                  <row>
+                    <text style="Prompt">
+                      <xsl:value-of select='resource:getString($constants,"projectCode")' />:
+                    </text>
+                    <widget colspan="4">
+                      <dropdown field="Integer" key="{meta:getProjectId()}" tab="{meta:getCollectionDateFrom()},{meta:getClientReference()}" width="202" />
+                    </widget>
+                  </row>
+                </TablePanel>
+              </VerticalPanel>
+              <TablePanel style="HorizontalDivider" width="100%">
+                <row>
+                  <html>&lt;hr/&gt;</html>
+                </row>
+              </TablePanel>
+              <HorizontalPanel style="TableFooterPanel">
+                <widget halign="center">
+                  <appButton key="getSampleListButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select='resource:getString($constants,"getSampleList")' />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </widget>
+                <widget halign="center">
+                  <appButton key="resetButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select='resource:getString($constants,"reset")' />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </widget>
               </HorizontalPanel>
-            </appButton>
-          </widget>
-          <widget halign="center">
-            <appButton key="resetButton" style="Button">
-              <HorizontalPanel>
-                <AbsolutePanel />
-                <text>
-                  <xsl:value-of select='resource:getString($constants,"reset")' />
-                </text>
-              </HorizontalPanel>
-            </appButton>
-          </widget>
-        </HorizontalPanel>
-      </VerticalPanel>      
-	  </deck>
-	  <deck>	 
-	  <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">             
-          <VerticalPanel>
-          <widget valign="top">
-                <table key="sampleEntTable" width="830" maxRows="12"  style="ScreenTable" showScroll="ALWAYS" title="">
-                  <col key="accessionNumber" width="80" header="{resource:getString($constants,'AccessionNo')}">
+              <TablePanel style="Form">
+                <row>
+                  <AbsolutePanel key="noSampleSelectedPanel" style="largeWarnIcon" visible="false"></AbsolutePanel>
+                  <label field="String" key="noSampleSelected" style="Prompt"></label>
+                </row>
+              </TablePanel>
+            </VerticalPanel>
+            <VerticalPanel height="280" padding="0" spacing="0" style="help" width="400">
+              <TablePanel width="100%">
+                <row>
+                  <html>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat Lorem ipsum dolor sit amet, consectetuer  adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</html>
+                </row>
+              </TablePanel>
+            </VerticalPanel>
+          </HorizontalPanel>
+        </deck>
+        <deck>
+          <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+            <VerticalPanel>
+              <widget valign="top">
+                <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="ScreenTable" title="" width="830">
+                  <col header="{resource:getString($constants,'AccessionNo')}" key="accessionNumber" width="80">
                     <textbox field="Integer" />
                   </col>
-                  <col key="sampleTestDescription" width="250" header="{resource:getString($constants,'sampleTestDescription')}">
+                  <col header="{resource:getString($constants,'sampleTestDescription')}" key="sampleTestDescription" width="250">
                     <textbox field="String" />
                   </col>
-                  <col key="analysisStatus" width="120" header="{resource:getString($constants,'analysisStatus')}">
-                    <label field="String"  />
+                  <col header="{resource:getString($constants,'analysisStatus')}" key="analysisStatus" width="120">
+                    <label field="String" />
                   </col>
-                  <col key="collectedDate" width="120" header="{resource:getString($constants,'dateCollected')}">
-                    <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}"/>
+                  <col header="{resource:getString($constants,'dateCollected')}" key="collectedDate" width="120">
+                    <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}" />
                   </col>
-                   <col key="datereceived" width="120" header="{resource:getString($constants,'datereceived')}">
-                    <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}"/>
-                  </col> 
-                  <col key="clntRef" width="120" header="{resource:getString($constants,'clntRef')}">
+                  <col header="{resource:getString($constants,'datereceived')}" key="datereceived" width="120">
+                    <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}" />
+                  </col>
+                  <col header="{resource:getString($constants,'clntRef')}" key="clntRef" width="120">
                     <textbox field="String" />
-                  </col> 
-                 </table>
+                  </col>
+                </table>
               </widget>
-
-       </VerticalPanel>
-      </VerticalPanel>	
-	  </deck>
-    
-    </DeckPanel>
-   </screen>   
+            </VerticalPanel>
+          </VerticalPanel>
+        </deck>
+      </DeckPanel>
+    </screen>
   </xsl:template>
 </xsl:stylesheet>
