@@ -21,7 +21,7 @@ WHERE $P{REF_TYPE} = "P" and
       t.test_id in (
 	SELECT te.id FROM panel_item pi, test te, method me
 	WHERE pi.panel_id = $P{T_OR_P_ID} and
-      	      pi.test_name = te.name and
+      	      pi.name = te.name and
               pi.method_name = me.name and
       	      te.method_id = me.id and
       	      te.is_active = "Y" ) and
