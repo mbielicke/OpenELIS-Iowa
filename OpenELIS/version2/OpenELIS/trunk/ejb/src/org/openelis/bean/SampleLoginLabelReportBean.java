@@ -118,7 +118,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         /*
          * recover all the params and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
 
         samples = 0;
         containers = 0;
@@ -247,7 +247,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         /*
          * recover all the params and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
 
     	accStr = ReportUtil.getSingleParameter(param, "ACCESSION");
         containers = 0;

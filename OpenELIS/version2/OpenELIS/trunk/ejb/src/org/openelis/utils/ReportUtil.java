@@ -58,7 +58,7 @@ public class ReportUtil {
      * Converts the arraylist of QueryData to a hashmap with querydata.key as
      * the hashmap key.
      */
-    public static HashMap<String, QueryData> parameterMap(ArrayList<QueryData> list) {
+    public static HashMap<String, QueryData> getMapParameter(ArrayList<QueryData> list) {
         HashMap<String, QueryData> p;
 
         p = new HashMap<String, QueryData>();

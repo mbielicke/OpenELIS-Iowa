@@ -194,7 +194,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         /*
          * recover all the params and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
         loginName = userCache.getName();
         
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");

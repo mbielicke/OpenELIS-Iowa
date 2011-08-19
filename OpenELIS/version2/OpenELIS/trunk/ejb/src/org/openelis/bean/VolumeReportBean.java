@@ -142,7 +142,7 @@ public class VolumeReportBean implements VolumeReportRemote{
         /*
          * recover all the params and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
 
         loginName = EJBFactory.getUserCache().getName();
 

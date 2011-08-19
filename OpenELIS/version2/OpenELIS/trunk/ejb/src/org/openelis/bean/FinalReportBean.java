@@ -125,11 +125,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             p.add(new Prompt("ACCESSION_NUMBER", Prompt.Type.INTEGER).setPrompt("Accession Number:")
                                                                      .setWidth(75)
                                                                      .setRequired(true));
-            /*
-             * p.add(new Prompt("ORGANIZATION_ID",
-             * Prompt.Type.INTEGER).setPrompt("Organization Id:")
-             * .setWidth(150));
-             */
             prn = PrinterList.getInstance().getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
@@ -191,7 +186,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         /*
          * Recover all the parameters and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
 
         accession = ReportUtil.getSingleParameter(param, "ACCESSION_NUMBER");
         orgParam = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
@@ -235,7 +230,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 if (orgId == null || DataBaseUtil.isSame(orgId, result[1])) {
                     orgPrint = new OrganizationPrint();
                     orgPrint.setOrganizationId((Integer)result[1]);
-                    orgPrint.setSampleIds("=" + data.getId());
+                    orgPrint.setSampleIds(data.getId());
                     orgPrintList.add(orgPrint);
                 }
             }
@@ -277,7 +272,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         /*
          * Recover all the parameters and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
         accession = ReportUtil.getSingleParameter(param, "ACCESSION_NUMBER");
 
         /*
@@ -308,7 +303,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             result = results.get(0);
             orgPrint = new OrganizationPrint();
             orgPrint.setOrganizationId((Integer)result[1]);
-            orgPrint.setSampleIds("= " + data.getId());
+            orgPrint.setSampleIds(data.getId());
             orgPrintList.add(orgPrint);
         } catch (Exception e) {
             e.printStackTrace();
@@ -337,8 +332,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         String printer;
         Datetime timeStamp;
         ReportStatus status;
-        Object[] result, list;
-        StringBuffer sampleIds;
+        Object[] result;
+        Integer[] list;
         ArrayList<Integer> lockList;
         ArrayList<Object[]> resultList;
         ArrayList<OrganizationPrint> orgPrintList;
@@ -352,7 +347,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         /*
          * Recover the printer
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
         /*
@@ -370,13 +365,13 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
         /*
          * loop through the list and lock all the samples obtained from
-         * resultList that can be locked; the ones that can't be locked and the
-         * organizations associated with them are excluded from the report being
-         * generated
+         * resultList that can be locked; the ones that can't be locked, skip
+         * all the analysis in that sample (skip the sample)
          */
         resultList = sample.fetchSamplesForFinalReportBatch();
-        for (i = 0; i < resultList.size(); i++ ) {
-            result = resultList.get(i);
+        i = 0;
+        while (i < resultList.size()) {
+            result = resultList.get(i++);
             samId = (Integer)result[0];
             orgId = (Integer)result[1];
             anaId = (Integer)result[2];
@@ -389,7 +384,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                     /*
                      * skip all the samples that can't be locked.
                      */
-                    while (samId.equals(resultList.get(i)[0]))
+                    while (i < resultList.size() && samId.equals(resultList.get(i)[0]))
                         i++ ;
                     prevSamId = null;
                     continue;
@@ -420,14 +415,14 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             analysis.updatePrintedDate(key, timeStamp);
 
         /*
-         * start the report
+         * create what we need to print and call print
          */
         orgPrintList = new ArrayList<OrganizationPrint>();
         orgIter = orgMap.keySet().iterator();
         while (orgIter.hasNext()) {
             orgId = orgIter.next();
             samMap = orgMap.get(orgId);
-            list = samMap.values().toArray();
+            list = (Integer[]) samMap.values().toArray();
             /*
              * samples with null organizations (such as private well) are
              * managed as single print rather then a batch for null organization
@@ -436,21 +431,13 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 for (i = 0; i < list.length; i++ ) {
                     orgPrint = new OrganizationPrint();
                     orgPrint.setOrganizationId(orgId);
-                    orgPrint.setSampleIds("=" + list[i]);
+                    orgPrint.setSampleIds(list[i]);
                     orgPrintList.add(orgPrint);
                 }
             } else {
-                sampleIds = new StringBuffer();
-                sampleIds.append("in (");
-                for (i = 0; i < list.length; i++ ) {
-                    if (i != 0)
-                        sampleIds.append(",");
-                    sampleIds.append(list[i]);
-                }
-                sampleIds.append(")");
                 orgPrint = new OrganizationPrint();
                 orgPrint.setOrganizationId(orgId);
-                orgPrint.setSampleIds(sampleIds.toString());
+                orgPrint.setSampleIds(list);
                 orgPrintList.add(orgPrint);
             }
         }
@@ -473,15 +460,15 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         OrganizationPrint orgPrint;
         SampleFinalReportWebVO data;
         HashMap<String, QueryData> param;
-        HashMap<Integer, ArrayList<Integer>> orgMap;
-        ArrayList<Integer> sampleIdList;
+        HashMap<Integer, HashMap<Integer, Integer>> orgMap;
+        HashMap<Integer, Integer> samMap;
         ArrayList<OrganizationPrint> orgPrintList;
         ArrayList<SampleFinalReportWebVO> sampleList;
         Iterator<Integer> orgIter;
 
-        orgMap = new HashMap<Integer, ArrayList<Integer>>();
-        sampleIdList = new ArrayList<Integer>();
+        orgMap = new HashMap<Integer, HashMap<Integer, Integer>>();
         data = new SampleFinalReportWebVO();
+
         /*
          * push status into session so we can query it while the report is
          * running
@@ -489,27 +476,26 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         status = new ReportStatus();
         status.setMessage("Initializing report");
         session.setAttribute("FinalReport", status);
+
         /*
          * Retrieve the indexes of the sample ids selected for the report as an
          * array of integers.
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
         samIdList = ReportUtil.getArrayParameter(param, "SAMPLE_ID");
+        if (samIdList == null)
+            throw new InconsistencyException("No sample(s) were selected for the report");
 
-        sampleList = (ArrayList<SampleFinalReportWebVO>)session.getAttribute("sampleList");
         /*
          * Find the organization id and sample id corresponding to the selected
          * sample indices from the list of samples in session.
          */
-        if (samIdList == null)
-            throw new InconsistencyException("Final report has incorrect status,\nmissing information, or has no analysis ready to be printed");
-
+        sampleList = (ArrayList<SampleFinalReportWebVO>)session.getAttribute("sampleList");
         for (i = 0; i < samIdList.length; i++ ) {
             try {
                 data = sampleList.get(i);
             } catch (Exception e) {
-                throw new InconsistencyException("The index is out of range"
-                                                 + " \n or our system is temporarily out of order");
+                throw new InconsistencyException("The sample search list is nolonger valid.\nPlease search again"); 
             }
             orgId = data.getOrganizationId();
             samId = data.getId();
@@ -517,45 +503,33 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              * creating a HashMap containing organizationId and the list of
              * samples which belongs to it.
              */
-            if (orgMap.get(orgId) == null) {
-                sampleIdList = new ArrayList<Integer>();
-                sampleIdList.add(samId);
-                orgMap.put(orgId, sampleIdList);
-            } else {
-                sampleIdList = orgMap.get(orgId);
-                sampleIdList.add(samId);
-                orgMap.put(orgId, sampleIdList);
+            samMap = orgMap.get(orgId);
+            if (samMap == null) {
+                samMap = new HashMap<Integer, Integer>();
+                orgMap.put(orgId, samMap);
             }
+            samMap.put(samId, samId);
         }
 
+        /*
+         * Create what we need to print
+         */
         orgPrintList = new ArrayList<OrganizationPrint>();
         orgIter = orgMap.keySet().iterator();
         while (orgIter.hasNext()) {
             orgId = orgIter.next();
-            sampleIdList = orgMap.get(orgId);
-            sampleIds = new StringBuffer();
-            if (sampleIdList.size() > 1) {
-                sampleIds.append("in (");
-                for (i = 0; i < sampleIdList.size(); i++ ) {
-                    if (i != 0)
-                        sampleIds.append(",");
-                    sampleIds.append(sampleIdList.get(i));
-                }
-                sampleIds.append(")");
-            } else if (sampleIdList.size() == 1) {
-                sampleIds.append(" = " + sampleIdList.get(0));
-            }
+            samMap = orgMap.get(orgId);
+
             orgPrint = new OrganizationPrint();
             orgPrint.setOrganizationId(orgId);
-            orgPrint.setSampleIds(sampleIds.toString());
+            orgPrint.setSampleIds((Integer[]) samMap.values().toArray());
             orgPrintList.add(orgPrint);
         }
 
         if (orgPrintList.size() == 0)
-            throw new InconsistencyException("Final report"
-                                             + " has incorrect status,\nmissing information, or has no analysis ready to be printed");
+            throw new InconsistencyException("No sample(s) were selected for the report");
 
-        print(orgPrintList, "R", false, status, "");
+        print(orgPrintList, "R", false, status, "-view-");
 
         return status;
     }
@@ -567,6 +541,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         QueryBuilderV2 builder;
         ArrayList<SampleProjectViewDO> sprjList;
         ArrayList<SampleEnvironmentalFinalReportWebVO> returnList;
+
         /*
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
@@ -577,6 +552,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                            .getClause();
         orgIds = ReportUtil.parseClauseAsString(clause)
                            .get(SampleMeta.getSampleOrgOrganizationId());
+
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if orgIds is empty or not.
@@ -793,6 +769,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         JasperReport jreport;
         JRExporter jexport;
         String dir, printstat;
+        StringBuffer sampleIds;
         List<JRPrintPage> pages;
         HashMap<String, Object> jparam;
         JasperPrint masterJprint, blankJprint, statsJprint;
@@ -826,7 +803,19 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                     jparam.put("ORGANIZATION_ID", zero);
                 else
                     jparam.put("ORGANIZATION_ID", o.getOrganizationId());
-                jparam.put("SAMPLE_ID", o.getSampleIds());
+                sampleIds = new StringBuffer();
+                if (o.getSampleIds() != null && o.getSampleIds().length > 1) {
+                    sampleIds.append("in (");
+                    for (i = 0; i < o.getSampleIds().length; i++ ) {
+                        if (i != 0)
+                            sampleIds.append(",");
+                        sampleIds.append(o.getSampleIds()[i]);
+                    }
+                    sampleIds.append(")");
+                } else {
+                    sampleIds.append("=").append(o.getSampleIds()[0]);
+                }
+                jparam.put("SAMPLE_ID", sampleIds);
                 jparam.put("ORGANIZATION_PRINT", o);
                 o.setJprint(JasperFillManager.fillReport(jreport, jparam, con));
             }

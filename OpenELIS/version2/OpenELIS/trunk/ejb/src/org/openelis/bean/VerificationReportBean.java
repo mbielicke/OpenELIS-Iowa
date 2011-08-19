@@ -125,7 +125,7 @@ public class VerificationReportBean implements VerificationReportRemote {
         /*
          * recover all the params and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
         ucl = EJBFactory.getUserCache();
         loginName = ucl.getName();
         

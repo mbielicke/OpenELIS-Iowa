@@ -126,7 +126,7 @@ public class TestReportBean implements TestReportRemote {
         /*
          * recover all the params and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
 
         section = ReportUtil.getListParameter(param, "SECTION");
         test = ReportUtil.getListParameter(param, "TEST");
