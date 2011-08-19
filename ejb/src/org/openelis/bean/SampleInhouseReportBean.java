@@ -184,7 +184,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         /*
          * recover all the params and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
         fromDate = ReportUtil.getSingleParameter(param, "FROM_ENTERED");
         toDate = ReportUtil.getSingleParameter(param, "TO_ENTERED");
         section = ReportUtil.getListParameter(param, "SECTION");

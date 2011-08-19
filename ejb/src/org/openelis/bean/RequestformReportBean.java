@@ -104,7 +104,7 @@ public class RequestformReportBean implements RequestformReportRemote {
         /*
          * recover all the params and build a specific where clause
          */
-        param = ReportUtil.parameterMap(paramList);
+        param = ReportUtil.getMapParameter(paramList);
 
         orderId = ReportUtil.getSingleParameter(param, "ORDERID");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
