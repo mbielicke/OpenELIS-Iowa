@@ -37,8 +37,8 @@ public class NoteManager implements RPC {
 
     protected Integer                           referenceId, referenceTableId;
     protected ArrayList<NoteViewDO>             notes, deletedList;
-    protected String isExternal;
-    
+    protected String                            isExternal;
+
     protected transient static NoteManagerProxy proxy;
 
     protected NoteManager() {
@@ -55,7 +55,7 @@ public class NoteManager implements RPC {
 
         nm = new NoteManager();
         nm.notes = new ArrayList<NoteViewDO>();
-        
+
         return nm;
     }
 
@@ -74,10 +74,10 @@ public class NoteManager implements RPC {
     public NoteViewDO getEditingNote() {
         NoteViewDO note;
 
-        if (count() == 0 || ("N".equals(isExternal) && notes.get(0).getId() != null)){
+        if (count() == 0 || ("N".equals(isExternal) && notes.get(0).getId() != null)) {
             note = new NoteViewDO();
             note.setIsExternal(isExternal);
-            
+
             try {
                 addNote(note);
             } catch (Exception e) {
@@ -89,14 +89,14 @@ public class NoteManager implements RPC {
     }
 
     public boolean hasEditingNote() {
-        return count() > 0 && ("Y".equals(isExternal) || notes.get(0).getId() == null); 
+        return count() > 0 && ("Y".equals(isExternal) || notes.get(0).getId() == null);
     }
 
     public void removeEditingNote() {
-        NoteViewDO note = notes.get(0);
+        NoteViewDO note;
 
+        note = notes.get(0);
         assert ( ("N".equals(note.getIsExternal()) && note.getId() == null) || ("Y".equals(note.getIsExternal()))) : "No note to remove";
-
         removeNoteAt(0);
     }
 
@@ -117,7 +117,7 @@ public class NoteManager implements RPC {
     public int count() {
         if (notes == null)
             return 0;
-    
+
         return notes.size();
     }
 
@@ -126,17 +126,9 @@ public class NoteManager implements RPC {
     }
 
     // service methods
-    public static NoteManager fetchByRefTableRefIdIsExt(Integer tableId,
-                                                        Integer id,
+    public static NoteManager fetchByRefTableRefIdIsExt(Integer tableId, Integer id,
                                                         boolean isExternal) throws Exception {
-        String isExt;
-        
-        if(isExternal)
-            isExt = "Y";
-        else
-            isExt = "N";
-        
-        return proxy().fetchByRefTableRefIdIsExt(tableId, id, isExt);
+        return proxy().fetchByRefTableRefIdIsExt(tableId, id, (isExternal ? "Y" : "N"));
     }
 
     public boolean getIsExternal() {
@@ -144,18 +136,38 @@ public class NoteManager implements RPC {
     }
 
     public void setIsExternal(boolean isExternal) {
-        if(isExternal)
-            this.isExternal = "Y";
-        else
-            this.isExternal = "N";
+        this.isExternal = isExternal ? "Y" : "N";
     }
+
+    public void addNote(NoteViewDO note) throws Exception {
+        NoteViewDO noteDO;
+
+        // we are only going to allow 1 external note. External notes can be
+        // modified so there is no reason to have more than 1.
+        if ("Y".equals(note.getIsExternal()) && count() > 0)
+            throw new MultipleNoteException();
+
+        // you can only add 1 internal note at a time. This checks to see if we
+        // already have an uncommitted internal note.
+        for (int i = 0; i < count(); i++ ) {
+            noteDO = getNoteAt(i);
+            if (noteDO.getId() == null)
+                throw new MultipleNoteException();
+        }
+
+        if (notes == null)
+            notes = new ArrayList<NoteViewDO>();
+
+        notes.add(0, note);
+    }
+
+    // these are friendly methods so only managers and proxies can call this
+    // method
 
     Integer getReferenceId() {
         return referenceId;
     }
 
-    // these are friendly methods so only managers and proxies can call this
-    // method
     void setReferenceId(Integer referenceId) {
         this.referenceId = referenceId;
     }
@@ -167,7 +179,7 @@ public class NoteManager implements RPC {
     void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
     }
-    
+
     ArrayList<NoteViewDO> getNotes() {
         return notes;
     }
@@ -186,31 +198,10 @@ public class NoteManager implements RPC {
         return deletedList.get(i);
     }
 
-    public void addNote(NoteViewDO note) throws Exception {
-        // we are only going to allow 1 external note. External notes can be
-        // modified so there is no reason to have more than 1.
-        if ("Y".equals(note.getIsExternal()) && count() > 0)
-            throw new MultipleNoteException();
-    
-        // you can only add 1 internal note at a time. This checks to see if we
-        // already have an uncommitted internal note.
-        for (int i = 0; i < count(); i++ ) {
-            NoteViewDO noteDO = getNoteAt(i);
-    
-            if (noteDO.getId() == null)
-                throw new MultipleNoteException();
-        }
-    
-        if (notes == null)
-            notes = new ArrayList<NoteViewDO>();
-    
-        notes.add(0, note);
-    }
-
     private static NoteManagerProxy proxy() {
         if (proxy == null)
             proxy = new NoteManagerProxy();
 
         return proxy;
-    }    
+    }
 }
