@@ -132,34 +132,22 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         consts = rpc.appConstants;
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
+
+        // resize browser will move the collapse handle to the middle
         browser = (WindowBrowser)def.getWidget("browser");
         favoritesCollapse = (CollapsePanel)def.getWidget("favoritesCollapse");
-        
-        
+        Window.addResizeHandler(new ResizeHandler() {
+            public void onResize(ResizeEvent event) {
+                favoritesCollapse.setHeight(Window.getClientHeight()+"px");
+            }
+        });
+        // open/close favorites will adjust browser width
         favoritesCollapse.addResizeHandler(new ResizeHandler() {
         	public void onResize(ResizeEvent event) {
         		browser.setBrowserHeight();
 			}
 		});
-        
-        DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				 favoritesCollapse.setHeight(Window.getClientHeight()+"px");	
-				 browser.setBrowserHeight();
-			}
-		});
-        	        
-        Window.addResizeHandler(new ResizeHandler() {
-			
-			@Override
-			public void onResize(ResizeEvent event) {
-				favoritesCollapse.setHeight(Window.getClientHeight()+"px");
-				
-			}
-		});
-        
 
-       
         // load the favorite's panel
         vp = (VerticalPanel)def.getWidget("favoritesPanel");
         try {
@@ -174,7 +162,13 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         }, PieChart.PACKAGE, PieChart.PACKAGE);
        
-        browser.setBrowserHeight();        
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                 favoritesCollapse.setHeight(Window.getClientHeight()+"px");    
+                 browser.setBrowserHeight();
+            }
+        });
+                    
         initializeWindowClose();
         initializeTimeout();
         initialize();

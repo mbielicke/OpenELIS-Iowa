@@ -63,8 +63,8 @@ UIRF Software License are applicable instead of those above.
       <HorizontalPanel style="AppBackground">
         <CollapsePanel key="favoritesCollapse" style="favorite">
           <VerticalPanel key="favoritesPanel" style="favoritesMenuContainer" visible="true" width="230px">
-            <HorizontalPanel height="30px" style="FavHeader" width="100%">
-              <text style="ScreenWindowLabel">Favorites</text>
+            <HorizontalPanel height="30px" style="topMenuBar" width="100%">
+              <text style="topMenuBarItem">Favorites</text>
               <widget halign="right">
                 <appButton key="EditFavorites">
                   <AbsolutePanel style="EditSettings" />
@@ -82,7 +82,6 @@ UIRF Software License are applicable instead of those above.
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
                   <menuItem description="{resource:getString($constants,'preferenceDescription')}" enable="false" icon="preferenceIcon" key="preference" label="{resource:getString($constants,'preference')}" />
-                  <menuItem description="{resource:getString($constants,'favoritesMenuDescription')}" enable="false" icon="favoritesMenuIcon" key="FavoritesMenu" label="{resource:getString($constants,'favoritesMenu')}" />
                   <menuItem description="{resource:getString($constants,'logoutDescription')}" icon="logoutIcon" key="Logout" label="{resource:getString($constants,'logout')}" />
                 </menuPanel>
               </menuItem>

@@ -314,11 +314,11 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
         if (validate()) {
             note.setSubject(subject.getText());
             //
-            // Convert all spaces and carriage returns to single spaces
+            // Convert bunch of repeated chars to reasonable white spaces
             //
             trimText = text.getText();
-            trimText = trimText.replaceAll("\n+"," ");
-            trimText = trimText.replaceAll(" +"," ");
+            trimText = trimText.replaceAll("\n{3, }","\n\n"); // 3 or more to 2
+            trimText = trimText.replaceAll(" {2, }"," ");     // 2 or more to 1
             note.setText(trimText);
             setState(State.DEFAULT);
             ActionEvent.fire(this, Action.OK, null);
