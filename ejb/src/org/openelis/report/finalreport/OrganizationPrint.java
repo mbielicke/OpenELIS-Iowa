@@ -32,8 +32,9 @@ import net.sf.jasperreports.engine.JasperPrint;
  */
 public class OrganizationPrint {
 
-	private Integer organizationId, sampleIds[];
+	private Integer organizationId;
 	private String organizationName, faxNumber, faxNote;
+	private Object sampleIds[];
 	private JasperPrint jprint;
 
 	public Integer getOrganizationId() {
@@ -44,16 +45,16 @@ public class OrganizationPrint {
 		this.organizationId = organizationId;
 	}
 
-	public Integer[] getSampleIds() {
+	public Object[] getSampleIds() {
 		return sampleIds;
 	}
 
     public void setSampleIds(Integer sampleId) {
-        this.sampleIds = new Integer[1];
+        this.sampleIds = new Object[1];
         this.sampleIds[0] = sampleId;
     }
 
-    public void setSampleIds(Integer[] sampleIds) {
+    public void setSampleIds(Object[] sampleIds) {
         this.sampleIds = sampleIds;
     }
 

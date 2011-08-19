@@ -455,7 +455,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     public ReportStatus runReportForWeb(ArrayList<QueryData> paramList) throws Exception {
         int i, samIdList[];
         Integer orgId, samId;
-        StringBuffer sampleIds;
         ReportStatus status;
         OrganizationPrint orgPrint;
         SampleFinalReportWebVO data;
@@ -493,7 +492,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         sampleList = (ArrayList<SampleFinalReportWebVO>)session.getAttribute("sampleList");
         for (i = 0; i < samIdList.length; i++ ) {
             try {
-                data = sampleList.get(i);
+                data = sampleList.get(samIdList[i]);
             } catch (Exception e) {
                 throw new InconsistencyException("The sample search list is nolonger valid.\nPlease search again"); 
             }
@@ -574,11 +573,11 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + orgIds);
         builder.addWhere(SampleWebMeta.getEnvSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
-        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleInErrorId);
-        builder.addWhere(SampleWebMeta.getItemSampleId() + " = " + SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);
+        builder.addWhere(SampleWebMeta.getItemSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" + SampleWebMeta.getItemId());
-        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + " = " + analysisReleasedId);
-        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + " = " + "'Y'");
+        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + analysisReleasedId);
+        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
 
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
 
@@ -596,7 +595,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 sprjList = sampleProject.fetchPermanentBySampleId(id);
                 projName = sprjList.get(0).getProjectName();
             } catch (NotFoundException e) {
-                projName = "";
+                projName ="";
             }
             returnList.get(i).setProjectName(projName);
         }
@@ -647,11 +646,11 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         builder.addWhere(SampleWebMeta.getWellSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getWellOrganizationAddressId() + "=" +
                          SampleWebMeta.getWellOrganizationAddrId());
-        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleInErrorId);
-        builder.addWhere(SampleWebMeta.getItemSampleId() + " = " + SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getStatusId() + " !=" + sampleInErrorId);
+        builder.addWhere(SampleWebMeta.getItemSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" + SampleWebMeta.getItemId());
-        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + " = " + analysisReleasedId);
-        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + " = " + "'Y'");
+        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + analysisReleasedId);
+        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
 
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
 
@@ -697,11 +696,11 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         builder.addWhere(SampleWebMeta.getSDWISSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getSDWISPwsId() + "=" + SampleWebMeta.getPwsId());
         builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
-        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleInErrorId);
-        builder.addWhere(SampleWebMeta.getItemSampleId() + " = " + SampleWebMeta.getId());
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);
+        builder.addWhere(SampleWebMeta.getItemSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getAnalysisSampleItemId() + "=" + SampleWebMeta.getItemId());
-        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + " = " + analysisReleasedId);
-        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + " = " + "'Y'");
+        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + analysisReleasedId);
+        builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "=" + "'Y'");
 
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
 
@@ -860,7 +859,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 statsJprint = JasperFillManager.fillReport((JasperReport)JRLoader.loadObject(url),
                                                            jparam,
                                                            ds);
-
                 pages = statsJprint.getPages();
                 n = pages.size();
                 for (i = 0; i < n; i++ )
