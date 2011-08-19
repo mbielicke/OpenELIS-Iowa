@@ -8,7 +8,6 @@
 }
 
 .ContentPanel{
-    /*margin:2px 0 0 2px;*/
     padding:12px;
     background:url("../Images/whitecontentpanel.jpg") no-repeat;
     width:950px;
@@ -41,6 +40,9 @@ width:58px;
     height: 28px;
     width: 950px;
 }
+.crumbline .webLabel{
+    padding:4px 0 0 6px;
+}
 .Links {
     background: url("../Images/links.jpg") no-repeat;
     width:60px;
@@ -57,29 +59,27 @@ width:58px;
     margin:0;        
     padding-bottom:12px;
 }
-.ErrorWindow{
-/*    background: url("../Images/errorwindow.png") no-repeat;
-*//*    padding-right:53px;
-    padding-left:10px;*/
-    margin:-20px 0 0 -18px;
+
+.LinkPop .ErrorWindow{
+   margin:-80px 0 0 60px;
 }
 
-.ErrorWindow * , .ErrorWindow .middleRightInner{
+.LinkPop .ErrorWindow *, .ErrorWindow .middleRightInner{
     background:none;
 }
-.ErrorWindow .middleLeft{
+.LinkPop .ErrorWindow .middleLeft{
     width:24px;
     background: url("../Images/errorwindowleft.png") no-repeat;
 }
-.ErrorWindow .middleCenter{
+.LinkPop .ErrorWindow .middleCenter{
 height:47px;
     background: url("../Images/errorwindowcenter.png") repeat-x;
 }
-.ErrorWindow .middleRight{
+.LinkPop .ErrorWindow .middleRight{
 width:6px;
     background: url("../Images/errorwindowright.png") no-repeat;
 }
-.screenlable{
+.LinkPop .screenlable{
     background:none;
 }
 .FormTitle{
@@ -93,7 +93,6 @@ width:6px;
 }
 .webButton {
     cursor:pointer;
-  /*  background:url("../Images/gray.png");*/
     height:56px;
 }
 .Prompt{
@@ -102,37 +101,28 @@ width:6px;
 .middleCenter{
 background:#deecfd;
 		}
-.ConfirmWindow .middleRight {
+.Links .ConfirmWindow .middleRight {
     background:none;
 }
-.ConfirmWindow .middleRightInner{
+.Links .ConfirmWindow .middleRightInner{
     margin-top:0;
         width:0;
 }
-.ConfirmWindow .middleCenterInner {
+.Links .ConfirmWindow .middleCenterInner {
     padding:0;
     width:54px;
 }
-.ConfirmWindow .middleLeft {
+.Links .ConfirmWindow .middleLeft {
     width:0;
 }
-.ConfirmWindow .top .topLeft .topLeftInner{
+.Links .ConfirmWindow .top .topLeft .topLeftInner{
     width:0;
-}
-
-.ErrorWindow .middleRightInner{
-    background: transparent url("../Images/popupright-y.png") top repeat-y;
-    height:21px;
-    margin-top:0;
 }
 .ErrorWindow .middleRight {
     background:none;
 }
 .ErrorWindow .ScreenLabel{
     padding:4px;
-}
-.popupContent{
-    margin:-44px 0 0 72px;
 }
 .HomeText{
     color:#333;
@@ -192,36 +182,6 @@ background:#deecfd;
 .changePasswordIcon{
     background:url(../Images/changepassword.jpg) no-repeat center center;
 }
-
-/*
-.finalReportIcon{
-	background:url(../Images/finialreport.jpg) no-repeat center center;
-}
-.caseManagementIcon{
-	background:url(../Images/briefcase.png) no-repeat center center;
-}
-.reportableIcon{
-	background:url(../Images/bug.png) no-repeat center center;
-}
-.onholdReportIcon{
-	background:url(../Images/chart_bar.png) no-repeat center center;
-}
-.dataDumpIcon{
-	background:url(../Images/chart_pie.png) no-repeat center center;
-}
-.turnaroundIcon{
-	background:url(../Images/chart_curve.png) no-repeat center center;
-}
-.requestFormIcon{
-	background:url(../Images/application_form.png) no-repeat center center;	
-}
-.webIPodIcon {
-	background:transparent url(../Images/ipod.png) no-repeat scroll center center;
-}
-.reportIcon {
-	background:transparent url(../Images/report.png) no-repeat scroll center center;
-}*/
-
 
 .webLabel {
 	font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
