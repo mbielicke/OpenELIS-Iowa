@@ -494,7 +494,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             try {
                 data = sampleList.get(samIdList[i]);
             } catch (Exception e) {
-                throw new InconsistencyException("The sample search list is nolonger valid.\nPlease search again"); 
+                throw new InconsistencyException("The sample search list is no longer valid.\nPlease search again"); 
             }
             orgId = data.getOrganizationId();
             samId = data.getId();
@@ -814,7 +814,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 } else {
                     sampleIds.append("=").append(o.getSampleIds()[0]);
                 }
-                jparam.put("SAMPLE_ID", sampleIds);
+                jparam.put("SAMPLE_ID", sampleIds.toString());
                 jparam.put("ORGANIZATION_PRINT", o);
                 o.setJprint(JasperFillManager.fillReport(jreport, jparam, con));
             }
