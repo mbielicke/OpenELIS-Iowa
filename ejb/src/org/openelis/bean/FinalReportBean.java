@@ -453,7 +453,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     }
 
     public ReportStatus runReportForWeb(ArrayList<QueryData> paramList) throws Exception {
-        int i, samIdList[];
+        int i, indexList[];
+        Integer samIdList[];
+        Object values[];
         Integer orgId, samId;
         ReportStatus status;
         OrganizationPrint orgPrint;
@@ -481,8 +483,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * array of integers.
          */
         param = ReportUtil.getMapParameter(paramList);
-        samIdList = ReportUtil.getArrayParameter(param, "SAMPLE_ID");
-        if (samIdList == null)
+        indexList = ReportUtil.getArrayParameter(param, "SAMPLE_ID");
+        if (indexList == null)
             throw new InconsistencyException("No sample(s) were selected for the report");
 
         /*
@@ -490,9 +492,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * sample indices from the list of samples in session.
          */
         sampleList = (ArrayList<SampleFinalReportWebVO>)session.getAttribute("sampleList");
-        for (i = 0; i < samIdList.length; i++ ) {
+        for (i = 0; i < indexList.length; i++ ) {
             try {
-                data = sampleList.get(samIdList[i]);
+                data = sampleList.get(indexList[i]);
             } catch (Exception e) {
                 throw new InconsistencyException("The sample search list is no longer valid.\nPlease search again"); 
             }
@@ -521,7 +523,12 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
             orgPrint = new OrganizationPrint();
             orgPrint.setOrganizationId(orgId);
-            orgPrint.setSampleIds((Integer[]) samMap.values().toArray());
+            values = samMap.values().toArray();
+            samIdList = new Integer[values.length];
+            for (i = 0; i < values.length; i++) 
+                samIdList[i] = (Integer)(values[i]);
+            
+            orgPrint.setSampleIds(samIdList);
             orgPrintList.add(orgPrint);
         }
 
