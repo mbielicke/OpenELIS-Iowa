@@ -1194,7 +1194,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             window.setBusy(consts.get("updating"));
             try {
                 manager.validate();
-                manager.getSample().setStatusId(sampleLoggedInId);
                 manager = manager.update();
                 updateAllRows(manager.getSample().getAccessionNumber());
 
