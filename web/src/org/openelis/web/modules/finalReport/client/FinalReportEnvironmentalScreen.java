@@ -57,7 +57,6 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.web.WebWindow;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.web.util.ReportScreenUtility;
 
@@ -89,7 +88,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
     private Label<String>                                  queryDeckLabel, noSampleSelected,
                                                            numSampleSelected;
     private AppButton                                      getSampleListButton, resetButton,
-                                                           runReportButton, resettButton, backButton, selectAllButton;
+                                                           runReportButton, resettButton, selectAllButton, backButton;
     private ArrayList<SampleEnvironmentalFinalReportWebVO> results;
 
     private enum Decks {
@@ -138,7 +137,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
         util = new ReportScreenUtility(def);
 
         deckpanel = (DeckPanel)def.getWidget("deck");
-
+        
         releasedFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getReleasedDateFrom());
         addScreenHandler(releasedFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
@@ -407,7 +406,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
                 numSampleSelected.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
-
+        
         runReportButton = (AppButton)def.getWidget("runReportButton");
         addScreenHandler(runReportButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -429,8 +428,18 @@ public class FinalReportEnvironmentalScreen extends Screen {
                 resettButton.enable(true);
             }
         });
+        
+        backButton = (AppButton)def.getWidget("backButton");
+        addScreenHandler(backButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+               loadDeck(null);
+            }
 
-        backButton = new AppButton();
+            public void onStateChange(StateChangeEvent<State> event) {
+                backButton.enable(true);
+            }
+        });
+
         queryDeckLabel = new Label("Query");
         queryDeckLabel.setStyleName("ScreenLabel");
         hp = new HorizontalPanel();
@@ -438,16 +447,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
         ap.setStyleName("PreviousButtonImage");
         hp.add(ap);
         hp.add(queryDeckLabel);
-        backButton.setWidget(hp);
-        addScreenHandler(backButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                loadDeck(null);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                backButton.enable(true);
-            }
-        });
+        backButton.setWidget(hp);        
     }
 
     private void initializeDropdowns() {
@@ -547,12 +547,11 @@ public class FinalReportEnvironmentalScreen extends Screen {
                 deck = Decks.LIST;
                 setState(State.ADD);
                 setResults(list);
-                ((WebWindow)window).setCrumbLink(backButton);
+                backButton.setVisible(true);                
                 break;
             case LIST:
                 deckpanel.showWidget(0);
                 deck = Decks.QUERY;
-                ((WebWindow)window).setCrumbLink(null);
                 break;
         }
     }
