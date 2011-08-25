@@ -220,7 +220,14 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel height="20">
               <label field="String" key="numSampleSelected" style="Prompt" />
             </VerticalPanel>
-            <HorizontalPanel style="TableFooterPanel">
+            <HorizontalPanel style="TableFooterPanel">            
+             <widget halign="center">
+                <appButton key="backButton" style="Button" visible="false">
+                  <HorizontalPanel>
+                    <AbsolutePanel />                   
+                  </HorizontalPanel>
+                </appButton>
+              </widget>
               <widget halign="center">
                 <appButton key="selectAllButton" style="Button">
                   <HorizontalPanel>
