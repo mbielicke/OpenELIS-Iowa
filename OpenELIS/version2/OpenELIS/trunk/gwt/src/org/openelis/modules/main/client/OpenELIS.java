@@ -116,7 +116,6 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 
     protected static WindowBrowser browser;
     protected CollapsePanel        favoritesCollapse;
-    private FavoritesScreen        fv;
     private Confirm                timeoutPopup;
     private static Timer           timeoutTimer, forceTimer;
     private static int             SESSION_TIMEOUT = 1000 * 60 * 30, FORCE_TIMEOUT = 1000 * 60;
@@ -144,7 +143,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         // open/close favorites will adjust browser width
         favoritesCollapse.addResizeHandler(new ResizeHandler() {
         	public void onResize(ResizeEvent event) {
-        		browser.setBrowserHeight();
+        		browser.resize();
 			}
 		});
 
@@ -165,7 +164,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         DeferredCommand.addCommand(new Command() {
             public void execute() {
                  favoritesCollapse.setHeight(Window.getClientHeight()+"px");    
-                 browser.setBrowserHeight();
+                 browser.resize();
             }
         });
                     

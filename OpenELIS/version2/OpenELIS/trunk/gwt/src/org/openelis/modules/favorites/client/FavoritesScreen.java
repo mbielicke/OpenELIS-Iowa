@@ -203,6 +203,8 @@ public class FavoritesScreen extends Screen {
         }
         vp.add(layout);
         list = tmpList;
+        
+        resize();
     }
 
     /*
