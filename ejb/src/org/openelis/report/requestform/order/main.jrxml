@@ -4,7 +4,7 @@
 	<property name="com.jasperassistant.designer.DataSource" value="elis"/>
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="288"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -523,27 +523,27 @@ Phone # 319-335-4500 or
 				</graphicElement>
 			</rectangle>
 			<staticText>
-				<reportElement key="" positionType="Float" mode="Opaque" x="255" y="222" width="149" height="24" forecolor="#FFFFFF" backcolor="#6B6B6B"/>
-				<textElement textAlignment="Center">
-					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-				</textElement>
-				<text><![CDATA[SECONDARY
-SAMPLE LABEL]]></text>
-			</staticText>
-			<staticText>
-				<reportElement key="" positionType="Float" mode="Opaque" x="85" y="222" width="149" height="24" forecolor="#FFFFFF" backcolor="#6B6B6B"/>
-				<textElement textAlignment="Center">
-					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-				</textElement>
-				<text><![CDATA[SECONDARY
-SAMPLE LABEL]]></text>
-			</staticText>
-			<staticText>
 				<reportElement key="" positionType="Float" mode="Opaque" x="425" y="222" width="149" height="24" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement textAlignment="Center">
 					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[PRIMARY
+SAMPLE LABEL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="" positionType="Float" mode="Opaque" x="255" y="222" width="149" height="24" forecolor="#FFFFFF" backcolor="#ACACAC"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[SECONDARY
+SAMPLE LABEL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="" positionType="Float" mode="Opaque" x="85" y="222" width="149" height="24" forecolor="#FFFFFF" backcolor="#ACACAC"/>
+				<textElement textAlignment="Center">
+					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[SECONDARY
 SAMPLE LABEL]]></text>
 			</staticText>
 		</band>
