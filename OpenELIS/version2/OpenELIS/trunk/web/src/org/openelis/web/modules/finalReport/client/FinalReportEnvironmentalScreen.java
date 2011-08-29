@@ -83,7 +83,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
     private DeckPanel                                      deckpanel;
     private Decks                                          deck;
     private HorizontalPanel                                hp;
-    private AbsolutePanel                                  ap, noSampleSelectedPanel;
+    private AbsolutePanel                                  ap;
     private TableWidget                                    sampleEntTable;
     private Label<String>                                  queryDeckLabel, noSampleSelected,
                                                            numSampleSelected;
@@ -336,15 +336,6 @@ public class FinalReportEnvironmentalScreen extends Screen {
             }
         });
 
-        noSampleSelectedPanel = (AbsolutePanel)def.getWidget("noSampleSelectedPanel");
-
-        noSampleSelected = (Label<String>)def.getWidget("noSampleSelected");
-        addScreenHandler(noSampleSelected, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                noSampleSelected.setText(null);
-            }
-        });
-
         getSampleListButton = (AppButton)def.getWidget("getSampleListButton");
         addScreenHandler(getSampleListButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -508,15 +499,13 @@ public class FinalReportEnvironmentalScreen extends Screen {
         try {
             list = service.callList("getSampleEnvironmentalList", query);
             if (list.size() > 0) {
-                noSampleSelectedPanel.setVisible(false);
                 loadDeck(list);
-                setResults(list);
+                setResults(list);                
             } else {
-                noSampleSelectedPanel.setVisible(true);
-                noSampleSelected.setValue(consts.get("noSamplesFoundChangeSearch"));
+                window.setError(consts.get("noSamplesFoundChangeSearch"));
             }
         } catch (Exception e) {
-            Window.alert(e.getMessage());
+            Window.alert(e.getMessage());            
         }
         window.clearStatus();
     }
