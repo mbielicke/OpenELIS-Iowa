@@ -137,7 +137,7 @@ UIRF Software License are applicable instead of those above.
           <VerticalPanel padding="0" spacing="0">
             <VerticalPanel>
               <widget valign="top">
-                <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="ScreenTable" title="" width="830">
+                <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="MultiRowTable" title="" width="830">
                   <col header="{resource:getString($constants,'AccessionNo')}" key="accessionNumber" width="80">
                     <textbox field="Integer" />
                   </col>
