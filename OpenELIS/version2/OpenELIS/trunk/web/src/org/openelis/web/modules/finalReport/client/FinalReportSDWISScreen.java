@@ -56,7 +56,6 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.web.WebWindow;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.web.util.ReportScreenUtility;
 
@@ -424,24 +423,25 @@ public class FinalReportSDWISScreen extends Screen {
             }
         });
         
-        backButton = new AppButton();
-        queryDeckLabel = new Label("Query"); 
-        queryDeckLabel.setStyleName("ScreenLabel");
-        hp = new HorizontalPanel();
-        ap = new AbsolutePanel();
-        ap.setStyleName("PreviousButtonImage");
-        hp.add(ap);
-        hp.add(queryDeckLabel);
-        backButton.setWidget(hp);
+        backButton = (AppButton)def.getWidget("backButton");
         addScreenHandler(backButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                loadDeck(null);
+               loadDeck(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 backButton.enable(true);
             }
         });
+        
+        queryDeckLabel = new Label(consts.get("backToSearch")); 
+        queryDeckLabel.setStyleName("ScreenLabel");
+        hp = new HorizontalPanel();
+        ap = new AbsolutePanel();
+        ap.setStyleName("PreviousButtonImage");
+        hp.add(ap);
+        hp.add(queryDeckLabel);
+        backButton.setWidget(hp);  
     }
     
     private void initializeDropdowns() {
@@ -523,12 +523,11 @@ public class FinalReportSDWISScreen extends Screen {
                 deck = Decks.LIST;
                 setState(State.ADD);
                 setResults(list);                
-                ((WebWindow)window).setCrumbLink(backButton);
+                backButton.setVisible(true);
                 break;
             case LIST :
                 deckpanel.showWidget(0);
                 deck = Decks.QUERY;                 
-                ((WebWindow)window).setCrumbLink(null);
                 break;            
         }
         
