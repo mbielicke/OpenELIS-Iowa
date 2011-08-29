@@ -127,7 +127,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel height="280" padding="0" spacing="0" style="help" width="400">
               <TablePanel width="100%">
                 <row>
-                  <html>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat Lorem ipsum dolor sit amet, consectetuer  adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</html>
+                  <html><![CDATA[<span class = \"helpHeader\">Locating samples sent to laboratory: </span><p/> To locate samples submitted to the laboratory, you must know the collection date, or a reference that you sent to the laboratory, or a project code. <p/> <span class = \"helpHeader\">To find the status of samples: </span><ul> <li> If searching by sample collection date, specify the beginning date in the \"Collected Date\" and the ending date in the \"to\" field (you may use the calendar button to select dates). </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference info in the \"Client Reference\" field. You may use part of a reference by adding a \"*\" at the end of your search term, for example, to see a list of samples that share the first 3 letters \"BIG\", enter \"BIG*\" to match \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc.</li></ul>]]></html>
                 </row>
               </TablePanel>
             </VerticalPanel>
