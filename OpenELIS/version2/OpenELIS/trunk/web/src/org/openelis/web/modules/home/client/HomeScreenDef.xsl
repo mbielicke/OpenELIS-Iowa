@@ -49,7 +49,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
     <xsl:template match="doc">
       <screen name="Home">
-        <VerticalPanel style="WhiteContentPanel" key="home">
+        <VerticalPanel style="ContentPanel" key="home">
           <text style="HomeText">Welcome to OpenELIS Web Portal</text>
         </VerticalPanel> 
       </screen>

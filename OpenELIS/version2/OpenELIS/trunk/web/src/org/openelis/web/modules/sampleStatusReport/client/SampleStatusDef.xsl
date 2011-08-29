@@ -54,7 +54,7 @@ UIRF Software License are applicable instead of those above.
     <screen id="SampleStatus" name="{resource:getString($constants,'finalReport')}">
       <DeckPanel height="100%" key="deck" width="100%">
         <deck>
-          <HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
+          <HorizontalPanel padding="0" spacing="0" style="ContentPanel">
             <VerticalPanel padding="0" spacing="0">
               <VerticalPanel style="subform">
                 <TablePanel style="Form">

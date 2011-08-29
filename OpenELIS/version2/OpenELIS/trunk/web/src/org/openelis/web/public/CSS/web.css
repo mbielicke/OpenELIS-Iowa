@@ -2,11 +2,6 @@
  background:white;
 }
 
-.WhiteContentPanel {
-	background:transparent;
-	width : 98%;	
-}
-
 .ContentPanel{
     padding:12px;
     background:url("../Images/whitecontentpanel.jpg") no-repeat;

@@ -51,7 +51,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
     <screen id="NotificationPreference" name="{resource:getString($constants,'notificationPreference')}">
-      <HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
+      <HorizontalPanel padding="0" spacing="0" style="ContentPanel">
         <VerticalPanel>
           <widget valign="top">
             <table key="orgTable" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
