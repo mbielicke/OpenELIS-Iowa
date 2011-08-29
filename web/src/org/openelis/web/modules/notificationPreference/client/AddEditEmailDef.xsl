@@ -52,7 +52,8 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
     <screen id="AddEditEmail" name="AddEditEmail">
-      <VerticalPanel padding="0" spacing="0" style="BluePopUpPanel">
+      <VerticalPanel>
+      <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
         <TablePanel style="Form">
           <row>
             <widget align="right">
@@ -87,6 +88,7 @@ UIRF Software License are applicable instead of those above.
             <textbox field="String" key="email" max="80" tab="organization, forReleased" width="250" />
           </row>
         </TablePanel>
+        </VerticalPanel>
         <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
