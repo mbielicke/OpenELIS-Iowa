@@ -440,7 +440,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
             }
         });
 
-        queryDeckLabel = new Label("Query");
+        queryDeckLabel = new Label(consts.get("backToSearch"));
         queryDeckLabel.setStyleName("ScreenLabel");
         hp = new HorizontalPanel();
         ap = new AbsolutePanel();
