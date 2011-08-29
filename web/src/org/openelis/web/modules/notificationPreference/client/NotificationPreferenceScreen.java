@@ -393,7 +393,7 @@ public class NotificationPreferenceScreen extends Screen {
         l = this.getAbsoluteLeft();
         
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG, false);
-        modal.setContent(addEditEmailScreen, l+60, h+10);
+        modal.setContent(addEditEmailScreen, l+10, h-500);
         addEditEmailScreen.setState(state);
         addEditEmailScreen.clearFields(data);
     }

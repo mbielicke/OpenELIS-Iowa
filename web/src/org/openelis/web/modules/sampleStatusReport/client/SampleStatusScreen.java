@@ -424,6 +424,7 @@ public class SampleStatusScreen extends Screen {
                     row.cells.get(3).setValue(temp1);
                     row.cells.get(4).setValue(data.getReceivedDate());
                     row.cells.get(5).setValue(data.getClientReference());
+                    row.style = "AltTableRow";
                     model.add(row);
 
                     row = new TableDataRow(6);
