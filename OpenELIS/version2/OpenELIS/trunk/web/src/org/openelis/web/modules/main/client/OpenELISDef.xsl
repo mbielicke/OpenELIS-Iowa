@@ -62,8 +62,8 @@ UIRF Software License are applicable instead of those above.
               </widget>
         	</row> 
         	<row>
-        	  <widget width="56px" valign="top">
-        	  <AbsolutePanel style="Links" key="links"  width="56px"/>
+        	  <widget width="56px" valign="top">   	  
+        	    <AbsolutePanel style="Links" key="links"  width="56px"/>
               </widget>
               <widget width="100%" valign="top">
         	    <AbsolutePanel key="content" width="100%" height="100%"/>
