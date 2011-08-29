@@ -49,8 +49,17 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
     <xsl:template match="doc">
       <screen name="Home">
-        <VerticalPanel style="ContentPanel" key="home">
-          <text style="HomeText">Welcome to OpenELIS Web Portal</text>
+        <VerticalPanel  key="home">          
+              <TablePanel style="ContentPanel" height = "100" width="100%">
+               <row> 
+                 <html style="welcome"><![CDATA[Welcome to State Hygienic Laboratory WebPortal. This portal allows you to access your most current laboratory data at any time, and from anywhere you have internet connectivity. To begin, please choose an icon from the left panel to start your search: <ul><li>Locating report of results (Final Report)</li>  <li> Checking the status of your samples (Sample inhouse status report)</li> <li>Advance exporting results by test/analyte (Samples by test)</li><li>Setting email notification alerts (Notification preference)</li><li>Changing your password to this portal (Change password)</li></ul>]]></html>
+               </row>              
+              </TablePanel>
+              <TablePanel style="ContentPanel" height = "100" width="100%">
+               <row> 
+                 <html style="news">NEWS: We recently added the capability to view private water quality results through our web portal. This is especially useful for our realtor and large private testing groups that need quick and convenient access to their results.</html>
+               </row>              
+              </TablePanel>
         </VerticalPanel> 
       </screen>
     </xsl:template>
