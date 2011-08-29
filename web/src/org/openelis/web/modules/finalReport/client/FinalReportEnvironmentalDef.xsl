@@ -239,21 +239,21 @@ UIRF Software License are applicable instead of those above.
                 </appButton>
               </widget>
               <widget halign="center">
-                <appButton key="runReportButton" style="Button">
+                <appButton key="resettButton" style="Button">
                   <HorizontalPanel>
                     <AbsolutePanel />
                     <text>
-                      <xsl:value-of select='resource:getString($constants,"runReport")' />
+                      <xsl:value-of select='resource:getString($constants,"selectNone")' />
                     </text>
                   </HorizontalPanel>
                 </appButton>
               </widget>
               <widget halign="center">
-                <appButton key="resettButton" style="Button">
+                <appButton key="runReportButton" style="Button">
                   <HorizontalPanel>
                     <AbsolutePanel />
                     <text>
-                      <xsl:value-of select='resource:getString($constants,"reset")' />
+                      <xsl:value-of select='resource:getString($constants,"getReport")' />
                     </text>
                   </HorizontalPanel>
                 </appButton>
