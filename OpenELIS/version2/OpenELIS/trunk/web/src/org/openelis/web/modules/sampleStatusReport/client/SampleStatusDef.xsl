@@ -52,9 +52,9 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
     <screen id="SampleStatus" name="{resource:getString($constants,'finalReport')}">
-      <DeckPanel height="100%" key="deck" width="100%">
+      <DeckPanel height="100%" key="deck" width="100%" style="ContentPanel">
         <deck>
-          <HorizontalPanel padding="0" spacing="0" style="ContentPanel">
+          <HorizontalPanel padding="0" spacing="0" >
             <VerticalPanel padding="0" spacing="0">
               <VerticalPanel style="subform">
                 <TablePanel style="Form">
@@ -134,7 +134,7 @@ UIRF Software License are applicable instead of those above.
           </HorizontalPanel>
         </deck>
         <deck>
-          <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel padding="0" spacing="0">
             <VerticalPanel>
               <widget valign="top">
                 <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="ScreenTable" title="" width="830">
