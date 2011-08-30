@@ -176,7 +176,7 @@ UIRF Software License are applicable instead of those above.
                 </row>
               </TablePanel>
             </VerticalPanel>
-            <VerticalPanel height="280" padding="0" spacing="0" style="help" width="400">
+            <VerticalPanel padding="0" spacing="0" style="help">
               <TablePanel width="100%">
                <row> 
                  <html> <![CDATA[<span class = \"helpHeader\"> Locating your result: </span> <p/> To find sample results, you must know your sample accession number, or the date that the sample was collected, or a reference that you sent to the laboratory, or the date the laboratory completed (released) your test. To locate sample(s), fill in one or more search fields. Click the \"Get Samples\" button to view a list of samples that match your search criteria. <p/> <span class = \"helpHeader\"> To find sample results: </span> <ul> <li> If searching by results that have been completed (released), specify the beginning date in the \"Released Date\" and the ending date in the \"to\" field (you may use the calendar button to select dates). </li><li>If you know the laboratory Accession Number (sample number, lab number), use the \"Accession Number\" field to specify the beginning number and the \"to\" for the ending number. When looking for a single sample, just enter the \"Accession Number\" field.</li><li>You may also search by multiple fields. For example, to find all the samples that you collected and sent to the laboratory in June of 2011, type in your name (as it appeared in the collection form) in the \"Collector Name\", 2011-6-1 in \"Collected Date\", and 2011-6-30 in the \"to\" field.</li></ul>]]></html>

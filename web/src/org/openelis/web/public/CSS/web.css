@@ -2,12 +2,38 @@
  background:white;
 }
 
+.help div{
+    padding:6px;
+    padding-left:60px;
+    font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+	font-size : 12px;
+    color:gray;
+}
+.helpHeader{
+	-moz-user-select: none;
+    color:#c74a1e;
+    font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+    padding:2px;
+    font-size:12px;
+    background:none;
+    text-align:left;
+}
+.welcome, .news{
+    padding:6px;
+    font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+	font-size : 12px;
+    color:gray;
+    	background: #EFEFEF url('../Images/row-over.gif') repeat-x scroll left top;
+margin:8px;
+    border:1px solid gray;
+}
 .ContentPanel{
     padding:12px;
     background:url("../Images/whitecontentpanel.jpg") no-repeat;
-    width:950px;
+    width:925px;
     height:668px;
 }
+
 .HorizontalDivider hr{
     color:white;
 }
@@ -209,6 +235,6 @@ background:#deecfd;
 	border-right: 1px solid gray;
 }
 
-.MultiRowTable .AltTableRow tr {
+.MultiRowTable .AltTableRow{
 	background : #EFEFEF;
 }
