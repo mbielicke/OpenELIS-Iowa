@@ -86,8 +86,7 @@ UIRF Software License are applicable instead of those above.
             </widget>
             <textbox field="String" key="email" max="80" tab="organization, forReleased" width="250" />
           </row>
-        </TablePanel>
-        </VerticalPanel>
+        </TablePanel>        
         <AbsolutePanel align="center" spacing="0">
           <HorizontalPanel>
             <xsl:call-template name="okButton">
@@ -102,7 +101,7 @@ UIRF Software License are applicable instead of those above.
             </xsl:call-template>
           </HorizontalPanel>
         </AbsolutePanel>
-      </VerticalPanel>
+       </VerticalPanel> 
     </screen>
   </xsl:template>
 </xsl:stylesheet>
