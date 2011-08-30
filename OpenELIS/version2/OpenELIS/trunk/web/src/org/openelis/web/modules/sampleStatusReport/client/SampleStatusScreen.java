@@ -325,7 +325,6 @@ public class SampleStatusScreen extends Screen {
             if (list.size() > 0) {
                 noSampleSelectedPanel.setVisible(false);
                 loadDeck(list);
-                setResults(list);
             } else {
                 noSampleSelectedPanel.setVisible(true);
                 noSampleSelected.setValue(consts.get("noSamplesFoundChangeSearch"));
@@ -378,72 +377,70 @@ public class SampleStatusScreen extends Screen {
     }
 
     private ArrayList<TableDataRow> getTableModel() {
+        int accRow;
         Integer accNumPrev, accNum;
-        String tempStatus;
+        String completed, inProgress;
         Date temp;
         Datetime temp1;
         ArrayList<TableDataRow> model;
-        SampleStatusWebReportVO data;
         TableDataRow row;
 
-        accNumPrev = null;
-        tempStatus = "";
         model = new ArrayList<TableDataRow>();
         if (results == null || results.size() == 0)
             return model;
-        try {
-            for (int i = 0; i < results.size(); i++ ) {
-                data = results.get(i);
-                accNum = data.getAccessionNumber();
-                /*
-                 * If analysis status is Released, screen displays "Completed status", for all other statuses
-                 * screen displays "In Progress".
-                 */
-                if(statusReleased.equals(data.getStatusId()))
-                    tempStatus = consts.get("completed");
-                else
-                    tempStatus = consts.get("inProgress");
-                if ( !accNum.equals(accNumPrev)) {
-                    if (data.getCollectionDate() != null) {
-                        temp = data.getCollectionDate().getDate();
-                        if (data.getCollectionTime() == null) {
-                            temp.setHours(0);
-                            temp.setMinutes(0);
-                        } else {
-                            temp.setHours(data.getCollectionTime().getDate().getHours());
-                            temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
-                        }
-                        temp1 = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
+        
+        accNumPrev = null;
+        accRow = 0;
+        completed = consts.get("completed");
+        inProgress = consts.get("inProgress");
+        
+        for (SampleStatusWebReportVO data : results) {
+            accNum = data.getAccessionNumber();
+            /*
+             * If analysis status is Released, screen displays
+             * "Completed status", for all other statuses screen displays
+             * "In Progress".
+             */
+            if (!accNum.equals(accNumPrev)) {                           
+                if (data.getCollectionDate() != null) {
+                    temp = data.getCollectionDate().getDate();
+                    if (data.getCollectionTime() == null) {
+                        temp.setHours(0);
+                        temp.setMinutes(0);
                     } else {
-                        temp1 = null;
+                        temp.setHours(data.getCollectionTime().getDate().getHours());
+                        temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
                     }
-
-                    row = new TableDataRow(6);
-                    row.cells.get(0).setValue(data.getAccessionNumber());
-                    row.cells.get(1).setValue(data.getCollector());
-                    row.cells.get(3).setValue(temp1);
-                    row.cells.get(4).setValue(data.getReceivedDate());
-                    row.cells.get(5).setValue(data.getClientReference());
-                    row.style = "AltTableRow";
-                    model.add(row);
-
-                    row = new TableDataRow(6);
-                    row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
-                                              data.getMethodReportingDescription());
-                    row.cells.get(2).setValue(tempStatus);
-                    model.add(row);
+                    temp1 = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
                 } else {
-                    row = new TableDataRow(6);
-                    row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
-                                              data.getMethodReportingDescription());
-                    row.cells.get(2).setValue(tempStatus);
-                    model.add(row);
+                    temp1 = null;
                 }
-                accNumPrev = accNum;
+
+                accRow++;
+                row = new TableDataRow(6);
+                row.cells.get(0).setValue(data.getAccessionNumber());
+                row.cells.get(1).setValue(data.getCollector());
+                row.cells.get(3).setValue(temp1);
+                row.cells.get(4).setValue(data.getReceivedDate());
+                row.cells.get(5).setValue(data.getClientReference());                
+                row.style = (accRow%2 == 0)?"AltTableRow":"";                
+                model.add(row);
+
+                row = new TableDataRow(6);
+                row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
+                                                          data.getMethodReportingDescription());
+                row.cells.get(2).setValue(statusReleased.equals(data.getStatusId())?completed:inProgress);
+                row.style = (accRow%2 == 0)?"AltTableRow":""; 
+                model.add(row);
+            } else {
+                row = new TableDataRow(6);
+                row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
+                                                           data.getMethodReportingDescription());
+                row.cells.get(2).setValue(statusReleased.equals(data.getStatusId())?completed:inProgress);
+                row.style = (accRow%2 == 0)?"AltTableRow":""; 
+                model.add(row);
             }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
+            accNumPrev = accNum;
         }
         return model;
     }

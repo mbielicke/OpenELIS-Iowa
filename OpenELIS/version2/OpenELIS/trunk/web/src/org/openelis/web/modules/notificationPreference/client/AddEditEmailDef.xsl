@@ -85,7 +85,7 @@ UIRF Software License are applicable instead of those above.
                 <xsl:value-of select='resource:getString($constants,"email")' />:
               </text>
             </widget>
-            <textbox field="String" key="email" max="80" tab="organization, forReleased" width="250" />
+            <textbox field="String" key="email" max="80" tab="organization, forReleased" width="250px" />
           </row>
         </TablePanel>
         </VerticalPanel>
