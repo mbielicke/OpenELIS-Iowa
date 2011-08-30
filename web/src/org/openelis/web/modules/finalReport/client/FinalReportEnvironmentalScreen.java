@@ -85,8 +85,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
     private HorizontalPanel                                hp;
     private AbsolutePanel                                  ap;
     private TableWidget                                    sampleEntTable;
-    private Label<String>                                  queryDeckLabel, noSampleSelected,
-                                                           numSampleSelected;
+    private Label<String>                                  queryDeckLabel, numSampleSelected;
     private AppButton                                      getSampleListButton, resetButton,
                                                            runReportButton, resettButton, selectAllButton, backButton;
     private ArrayList<SampleEnvironmentalFinalReportWebVO> results;
@@ -503,6 +502,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
                 setResults(list);                
             } else {
                 window.setError(consts.get("noSamplesFoundChangeSearch"));
+                return;
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());            

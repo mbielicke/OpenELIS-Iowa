@@ -179,24 +179,24 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel padding="0" spacing="0" style="help">
               <TablePanel width="100%">
                 <row>
-                  <html><![CDATA[<span class = \"helpHeader\"> Locating your result: </span> <p/> To find sample results, you must know your sample accession number, or the date that the sample was collected, or a reference that you sent to the laboratory, or the date the laboratory completed (released) your test. To locate sample(s), fill in one or more search fields. Click the \"Get Samples\" button to view a list of samples that match your search criteria. <p/> <span class = \"helpHeader\"> To find sample results: </span> <ul> <li> If searching by results that have been completed (released), specify the beginning date in the \"Released Date\" and the ending date in the \"to\" field (you may use the calendar button to select dates). </li><li>If you know the laboratory Accession Number (sample number, lab number), use the \"Accession Number\" field to specify the beginning number and the \"to\" for the ending number. When looking for a single sample, just enter the \"Accession Number\" field.</li><li>You may also search by multiple fields. For example, to find all the samples that you collected and sent to the laboratory in June of 2011, type in your name (as it appeared in the collection form) in the \"Collector Name\", 2011-6-1 in \"Collected Date\", and 2011-6-30 in the \"to\" field.</li></ul>]]></html>
+                  <html><xsl:value-of select='resource:getString($constants,"finalReport.header1")' /></html>
                 </row>
               </TablePanel>
             </VerticalPanel>
           </HorizontalPanel>
         </deck>
         <deck>
-          <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
+          <VerticalPanel padding="0" spacing="0">
             <VerticalPanel style="help">
               <TablePanel>
                <row> 
-                 <html> <![CDATA[<span class = \"helpHeader\"> To view final reports: </span> The following is a list of sample results that match your search and are available for you to view. To view all the samples, click on the \"Select All\" button, and then \"Get Reports\" button. To selectively view some of the reports, click the check box under \"Select\" column heading, and then \"Get Reports\" button. The PDF report of all the selected samples will appear shortly. You may view, save, or print your PDF reports.]]></html>
+                 <html><xsl:value-of select='resource:getString($constants,"finalReport.header2")' /></html>
                </row>               
               </TablePanel>
             </VerticalPanel>
             <VerticalPanel>
               <widget valign="top">
-                <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
+                <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="820">
                   <col header="{resource:getString($constants,'select')}" key="select" width="60">
                     <check />
                   </col>
@@ -230,15 +230,15 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel height="20">
               <label field="String" key="numSampleSelected" style="Prompt" />
             </VerticalPanel>
-            <HorizontalPanel style="TableFooterPanel">
-              <widget halign="center">
+            <HorizontalPanel width="820">  
+              <widget halign="left">
                 <appButton key="backButton" style="Button" visible="false">
                   <HorizontalPanel>
                     <AbsolutePanel />                   
                   </HorizontalPanel>
                 </appButton>
               </widget>
-              <widget halign="center">
+              <widget halign="right">
                 <appButton key="selectAllButton" style="Button">
                   <HorizontalPanel>
                     <AbsolutePanel />
@@ -248,7 +248,7 @@ UIRF Software License are applicable instead of those above.
                   </HorizontalPanel>
                 </appButton>
               </widget>
-              <widget halign="center">
+              <widget halign="left">
                 <appButton key="resettButton" style="Button">
                   <HorizontalPanel>
                     <AbsolutePanel />
@@ -258,7 +258,7 @@ UIRF Software License are applicable instead of those above.
                   </HorizontalPanel>
                 </appButton>
               </widget>
-              <widget halign="center">
+              <widget halign="right">
                 <appButton key="runReportButton" style="Button">
                   <HorizontalPanel>
                     <AbsolutePanel />
