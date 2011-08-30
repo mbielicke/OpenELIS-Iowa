@@ -82,9 +82,9 @@ public class FinalReportPrivateWellScreen extends Screen {
     private DeckPanel                         deckpanel;
     private Decks                             deck;
     private HorizontalPanel                   hp;
-    private AbsolutePanel                     ap, noSampleSelectedPanel;
+    private AbsolutePanel                     ap;
     private TableWidget                       sampleEntTable;
-    private Label<String>                     queryDeckLabel, noSampleSelected, numSampleSelected;
+    private Label<String>                     queryDeckLabel, numSampleSelected;
     private AppButton                         getSamplesButton, resetButton, runReportButton,
                                               resettButton, backButton, selectAllButton;
     private ArrayList<SamplePrivateWellFinalReportWebVO> results;
@@ -345,15 +345,6 @@ public class FinalReportPrivateWellScreen extends Screen {
             }
         });
 
-        noSampleSelectedPanel = (AbsolutePanel)def.getWidget("noSampleSelectedPanel");
-        
-        noSampleSelected = (Label<String>)def.getWidget("noSampleSelected");
-        addScreenHandler(noSampleSelected, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                noSampleSelected.setText(null);
-            }
-        });
-
         getSamplesButton = (AppButton)def.getWidget("getSampleListButton");
         addScreenHandler(getSamplesButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -519,12 +510,11 @@ public class FinalReportPrivateWellScreen extends Screen {
         try {
             list = service.callList("getSamplePrivateWellList", query);
             if (list.size() > 0) {
-                noSampleSelectedPanel.setVisible(false);
                 loadDeck(list);
                 setResults(list);
             } else {
-                noSampleSelectedPanel.setVisible(true);
-                noSampleSelected.setValue(consts.get("noSamplesFoundChangeSearch"));
+                window.setError(consts.get("noSamplesFoundChangeSearch"));
+                return;
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
