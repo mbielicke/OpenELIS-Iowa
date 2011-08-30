@@ -51,9 +51,11 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
     <screen id="NotificationPreference" name="{resource:getString($constants,'notificationPreference')}">
-      <HorizontalPanel padding="0" spacing="0" style="ContentPanel" width = "800">
+      <DeckPanel height="100%" key="deck" width="100%" style="ContentPanel">
+       <deck>
+        <HorizontalPanel padding="0" spacing="0" >
         <VerticalPanel>
-         <TablePanel style="help">
+         <TablePanel style="help" width = "520">
            <row>
               <html> <![CDATA[<span class = \"helpHeader\"> Setting email notification: </span> <p/> SHL can send an email to specified email addresses whenever a new sample is received or when the result are available. You can choose whether the notification emails are sent for either or both events. <p/>]]></html>
            </row>
@@ -61,15 +63,15 @@ UIRF Software License are applicable instead of those above.
           <widget valign="top">
             <table key="orgTable" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
               <col header="{resource:getString($constants,'organization')}" key="organizationId" width="200">
-                <dropdown field="Integer" width="250" />
+                <dropdown field="Integer" width="200" />
               </col>
               <col header="{resource:getString($constants,'email')}" key="email" width="250">
                 <label field="String" />
               </col>
-              <col header="{resource:getString($constants,'received')}" key="received" width="57">
+              <col header="{resource:getString($constants,'received')}" key="received" width="60">
                 <check/>
               </col>
-              <col header="{resource:getString($constants,'released')}" key="released" width="57">
+              <col header="{resource:getString($constants,'released')}" key="released" width="60">
                 <check />
               </col>
             </table>
@@ -103,14 +105,16 @@ UIRF Software License are applicable instead of those above.
             </appButton>
           </HorizontalPanel>
         </VerticalPanel>
-            <VerticalPanel height="280" padding="0" spacing="0" style="help" width="340">
-              <TablePanel width="100%">
-               <row> 
-                 <html> <![CDATA[<span class = \"helpHeader\">To add your email address: </span> <ul> <li> Click on the \"Add\" button to open the selection popup screen</li><li>From the selection screen, choose the organization associated with samples</li><li>Check \"For Received Samples\" or \"For Released Samples\" or both to receive notification for each type of event</li><li>Enter a valid email address in \"Email\" entry area</li><li>Click \"OK\" to add this notification or \"Cancel\" to abort</li></ul><p/> <span class = \"helpHeader\">To edit an existing email address: </span> <ul> <li>Click on a row in the table to select it</li><li>Click on \"Edit\" button to open the selection popup screen</li><li>Change the email address, notification preferences, or the organization</li><li>Click \"OK\" to save your changes or \"Cancel\" to abort your changes</li></ul><span class = \"helpHeader\">To remove an email notification:</span> <ul> <li>Click on a row in the table to select it</li><li>Click on \"Remove\" button to remove the email address</li></ul>]]></html>
-               </row>               
-              </TablePanel>
-            </VerticalPanel>
-      </HorizontalPanel>
+        <VerticalPanel padding="0" spacing="0" style="help">
+          <TablePanel width="100%">
+            <row> 
+              <html> <![CDATA[<span class = \"helpHeader\">To add your email address: </span> <ul> <li> Click on the \"Add\" button to open the selection popup screen</li><li>From the selection screen, choose the organization associated with samples</li><li>Check \"For Received Samples\" or \"For Released Samples\" or both to receive notification for each type of event</li><li>Enter a valid email address in \"Email\" entry area</li><li>Click \"OK\" to add this notification or \"Cancel\" to abort</li></ul><p/> <span class = \"helpHeader\">To edit an existing email address: </span> <ul> <li>Click on a row in the table to select it</li><li>Click on \"Edit\" button to open the selection popup screen</li><li>Change the email address, notification preferences, or the organization</li><li>Click \"OK\" to save your changes or \"Cancel\" to abort your changes</li></ul><span class = \"helpHeader\">To remove an email notification:</span> <ul> <li>Click on a row in the table to select it</li><li>Click on \"Remove\" button to remove the email address</li></ul>]]></html>
+            </row>               
+         </TablePanel>
+        </VerticalPanel>
+       </HorizontalPanel>
+      </deck>
+     </DeckPanel>
     </screen>
   </xsl:template>
 </xsl:stylesheet>

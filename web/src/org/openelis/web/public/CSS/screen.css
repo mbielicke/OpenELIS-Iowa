@@ -1262,6 +1262,10 @@ font-weight:bold;
     background:white;
 }
 
+.ScreenTable .AltTableRow{
+	background : #EFEFEF;
+}
+
 .ScreenTable .TableCell, .ScreenTable .TableCellRight, .ScreenTable .TableCellMiddle {
 border-color: #FFFFFF #EDEDED white;
 }
