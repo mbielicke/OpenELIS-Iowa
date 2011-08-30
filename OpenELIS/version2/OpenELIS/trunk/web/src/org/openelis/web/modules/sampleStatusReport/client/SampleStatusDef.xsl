@@ -127,7 +127,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel padding="0" spacing="0" style="help">
               <TablePanel width="100%">
                 <row>
-                  <html><![CDATA[<span class = \"helpHeader\">Locating samples sent to laboratory: </span><p/> To locate samples submitted to the laboratory, you must know the collection date, or a reference that you sent to the laboratory, or a project code. <p/> <span class = \"helpHeader\">To find the status of samples: </span><ul> <li> If searching by sample collection date, specify the beginning date in the \"Collected Date\" and the ending date in the \"to\" field (you may use the calendar button to select dates). </li><li>To locate samples by the reference information that you supplied on the collection form, enter the reference info in the \"Client Reference\" field. You may use part of a reference by adding a \"*\" at the end of your search term, for example, to see a list of samples that share the first 3 letters \"BIG\", enter \"BIG*\" to match \"BIG WATER\", \"BIG RIVER\", \"BIGGER THAN SKY\", etc.</li></ul>]]></html>
+                  <html><xsl:value-of select='resource:getString($constants,"statusReport.header")' /></html>
                 </row>
               </TablePanel>
             </VerticalPanel>
@@ -159,6 +159,17 @@ UIRF Software License are applicable instead of those above.
                 </table>
               </widget>
             </VerticalPanel>
+            <VerticalPanel height="20">
+            </VerticalPanel>
+            <HorizontalPanel>
+             <widget halign="center">
+                <appButton key="backButton" style="Button" visible="false">
+                  <HorizontalPanel>
+                    <AbsolutePanel />                   
+                  </HorizontalPanel>
+                </appButton>
+              </widget>
+            </HorizontalPanel>
           </VerticalPanel>
         </deck>
       </DeckPanel>

@@ -249,9 +249,19 @@ public class SampleStatusScreen extends Screen {
                 event.cancel();
             }
         });
+        
+        backButton = (AppButton)def.getWidget("backButton");
+        addScreenHandler(backButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+               loadDeck(null);
+            }
 
-        backButton = new AppButton();
-        queryDeckLabel = new Label("Query");
+            public void onStateChange(StateChangeEvent<State> event) {
+                backButton.enable(true);
+            }
+        });
+
+        queryDeckLabel = new Label(consts.get("backToSearch"));
         queryDeckLabel.setStyleName("ScreenLabel");
         hp = new HorizontalPanel();
         ap = new AbsolutePanel();
@@ -259,15 +269,6 @@ public class SampleStatusScreen extends Screen {
         hp.add(ap);
         hp.add(queryDeckLabel);
         backButton.setWidget(hp);
-        addScreenHandler(backButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                loadDeck(null);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                backButton.enable(true);
-            }
-        });
     }
 
     private void initializeDropdowns() {
@@ -360,12 +361,11 @@ public class SampleStatusScreen extends Screen {
                 deck = Decks.LIST;
                 setState(State.ADD);
                 setResults(list);
-                ((WebWindow)window).setCrumbLink(backButton);
+                backButton.setVisible(true);  
                 break;
             case LIST:
                 deckpanel.showWidget(0);
                 deck = Decks.QUERY;
-                ((WebWindow)window).setCrumbLink(null);
                 break;
         }
     }
