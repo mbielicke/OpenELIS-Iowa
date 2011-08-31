@@ -61,18 +61,23 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
     }
 
     public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
-        // grab order aux data
-        AuxDataDO data;
-        ArrayList<AuxDataViewDO> auxDataList;
         Integer auxGroupId;
+        AuxDataDO auxData;
+        ArrayList<AuxDataViewDO> auxDataList;
+
+        if (orderId == null)
+            return null;
+
+        auxData = new AuxDataDO();
+        auxData.setReferenceId(orderId);
+        auxData.setReferenceTableId(ReferenceTable.ORDER);
 
         orderMan = null;
-        data = new AuxDataDO();
-        data.setReferenceId(orderId);
-        data.setReferenceTableId(ReferenceTable.ORDER);
-        auxDataList = auxDataService.callList("fetchByRefId", data);
+        auxDataList = auxDataService.callList("fetchByRefId", auxData);
 
-        // grab aux group id from sys variable ish
+        // we don't want to use a hard-coded reference to aux group (language).
+        // Use one level indirect by looking up system variable that points to
+        // the aux group
         auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable",
                                                 "sample_well_aux_data")).getId();
 
@@ -87,31 +92,30 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
     }
 
     private ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
-                                            Integer envAuxGroupId,
-                                            SampleManager manager) throws Exception {
+                                            Integer envAuxGroupId, SampleManager manager) throws Exception {
         AuxDataViewDO data;
         ProjectDO proj;
         SampleProjectViewDO sampleProj;
         String analyteId;
         SamplePrivateWellManager wellMan;
-        boolean reportToLoaded, reportToError;
         ValidationErrorsList errorsList;
+        boolean reportToLoaded, reportToError;
 
         errorsList = new ValidationErrorsList();
         wellMan = (SamplePrivateWellManager)manager.getDomainManager();
         reportToLoaded = wellMan.getPrivateWell().getOrganizationId() != null;
         reportToError = false;
 
-        // aux data
         for (int i = 0; i < auxDataList.size(); i++ ) {
             data = auxDataList.get(i);
-
             try {
                 if (data.getGroupId().equals(envAuxGroupId)) {
                     analyteId = data.getAnalyteExternalId();
 
                     if (analyteId.equals("smpl_collected_date")) {
-                        manager.getSample().setCollectionDate(Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY));
+                        manager.getSample()
+                               .setCollectionDate(Calendar.getCurrentDatetime(Datetime.YEAR,
+                                                                              Datetime.DAY));
                     } else if (analyteId.equals("smpl_collected_time")) {
                         DateField df = new DateField();
                         df.setBegin(Datetime.HOUR);
@@ -211,12 +215,13 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                                                                               .getLocationAddress()
                                                                               .setCity(data.getValue());
                     } else if (analyteId.equals("loc_state")) {
-                        if (validateDropdownValue(data.getValue(), "state"))
+                        if (getDropdownByValue(data.getValue(), "state") != null)
                             ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
                                                                                   .getLocationAddress()
                                                                                   .setState(data.getValue());
                         else if (data.getValue() != null)
-                            errorsList.add(new FormErrorException("orderImportError", "state",
+                            errorsList.add(new FormErrorException("orderImportError",
+                                                                  "state",
                                                                   data.getValue()));
                     } else if (analyteId.equals("loc_zip_code")) {
                         ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
@@ -245,7 +250,8 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                             manager.getProjects().addFirstPermanentProject(sampleProj);
 
                         } else
-                            errorsList.add(new FormErrorException("orderImportError", "project",
+                            errorsList.add(new FormErrorException("orderImportError",
+                                                                  "project",
                                                                   data.getValue()));
                     }
 
@@ -266,21 +272,21 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
     }
 
     protected void loadReportToBillTo(Integer orderId, SampleManager man) throws Exception {
-        OrderViewDO              orderDO;
-        OrganizationDO           shipToDO, reportToDO, billToDO;
+        OrderViewDO orderDO;
+        OrganizationDO shipToDO, reportToDO, billToDO;
         SamplePrivateWellManager wellMan;
-        SamplePrivateWellViewDO  privateWell;
+        SamplePrivateWellViewDO privateWell;
         SampleOrganizationViewDO billToSampOrg;
 
         if (orderMan == null)
             orderMan = OrderManager.fetchById(orderId);
 
-        wellMan     = (SamplePrivateWellManager)man.getDomainManager();
+        wellMan = (SamplePrivateWellManager)man.getDomainManager();
         privateWell = wellMan.getPrivateWell();
-        orderDO     = orderMan.getOrder();
-        shipToDO    = orderDO.getOrganization();
-        reportToDO  = orderDO.getReportTo();
-        billToDO    = orderDO.getBillTo();
+        orderDO = orderMan.getOrder();
+        shipToDO = orderDO.getOrganization();
+        reportToDO = orderDO.getReportTo();
+        billToDO = orderDO.getBillTo();
 
         // report to
         if (reportToDO != null) {
@@ -322,23 +328,16 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         }
     }
 
-    private boolean validateDropdownValue(String entry, String dictSystemName) {
+    private DictionaryDO getDropdownByValue(String value, String dictSystemName) {
         ArrayList<DictionaryDO> entries;
-        DictionaryDO data;
-        boolean valid;
 
-        entries = CategoryCache.getBySystemName(dictSystemName);
-        valid = false;
-
-        for (int i = 0; i < entries.size(); i++ ) {
-            data = entries.get(i);
-
-            if (entry.equals(data.getEntry())) {
-                valid = true;
-                break;
+        if (value != null) {
+            entries = CategoryCache.getBySystemName(dictSystemName);
+            for (DictionaryDO data : entries) {
+                if (value.equals(data.getEntry()))
+                    return data;
             }
         }
-
-        return valid;
+        return null;
     }
 }
