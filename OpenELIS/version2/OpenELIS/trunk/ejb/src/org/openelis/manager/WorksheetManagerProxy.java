@@ -110,17 +110,6 @@ public class WorksheetManagerProxy {
         EJBFactory.getWorksheet().add(manager.getWorksheet());
         id = manager.getWorksheet().getId();
 
-        if (manager.getWorksheet().getInstrumentId() != null) {
-            il = EJBFactory.getInstrumentLog();
-            
-            ilDO = new InstrumentLogDO();
-            ilDO.setInstrumentId(manager.getWorksheet().getInstrumentId());
-            ilDO.setTypeId(instrumentLogPendingId);
-            ilDO.setWorksheetId(id);
-            ilDO.setEventBegin(manager.getWorksheet().getCreatedDate());
-            il.add(ilDO);
-        }
-        
         lock = EJBFactory.getLock();
         if (manager.items != null) {
             manager.getItems().setWorksheetId(id);
@@ -173,7 +162,7 @@ public class WorksheetManagerProxy {
             for (i = 0; i < ilManager.count(); i++) {
                 ilDO = ilManager.getLogAt(i);
                 if (id.equals(ilDO.getWorksheetId()) &&
-                    instrumentLogPendingId.equals(manager.getWorksheet().getStatusId())) {
+                    instrumentLogPendingId.equals(ilDO.getTypeId())) {
                     ilDO.setTypeId(instrumentLogCompletedId);
                     ilDO.setEventEnd(now);
                 }

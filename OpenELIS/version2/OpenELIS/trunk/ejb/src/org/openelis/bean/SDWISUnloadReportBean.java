@@ -66,6 +66,7 @@ import org.openelis.local.ResultLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SectionCacheLocal;
+import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.SDWISUnloadReportRemote;
@@ -98,8 +99,10 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
     SampleLocal          sample;
     @EJB
     SampleSDWISLocal     sampleSdwis;
+//    @EJB
+//    SectionCacheLocal    sectionCache;
     @EJB
-    SectionCacheLocal    sectionCache;
+    SectionLocal         section;
     @EJB
     UserCacheLocal       userCache;
 
@@ -236,7 +239,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                 while (aIter.hasNext()) {
                     aVDO = aIter.next();
                     if (releasedStatusId.equals(aVDO.getStatusId())) {
-                        secVDO = sectionCache.getById(aVDO.getSectionId());
+                        secVDO = section.fetchById(aVDO.getSectionId());
                         if (secVDO.getName().endsWith(location))
                             writeResultRows(writer, ssVDO, aVDO);
                     }
@@ -480,7 +483,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                 }
                 resultData.add(rowData);
             } else {
-                if (rVDO.getValue().startsWith("<"))
+                if (rVDO.getValue() != null && rVDO.getValue().startsWith("<"))
                     rowData.put("ltIndicator", "Y");
                 else
                     rowData.put("ltIndicator", "N");
@@ -513,11 +516,21 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             row = new StringBuilder();
             row.append("#RES")                                                      // col 1-4
                .append(getPaddedString(rowData.get("contaminantId"), 4))            // col 5-8
-               .append(getPaddedString(methodCode, 12))                             // col 9-20
-               .append(dateFormat.format(analysis.getStartedDate().getDate()))      // col 21-28
-               .append(timeFormat.format(analysis.getStartedDate().getDate()))      // col 29-32
-               .append(dateFormat.format(analysis.getCompletedDate().getDate()))    // col 33-40
-               .append(getPaddedString(rowData.get("microbe"), 1))                  // col 41
+               .append(getPaddedString(methodCode, 12));                            // col 9-20
+            
+            if (analysis.getStartedDate() != null)
+                row.append(dateFormat.format(analysis.getStartedDate().getDate()))  // col 21-28
+                   .append(timeFormat.format(analysis.getStartedDate().getDate())); // col 29-32
+            else
+                row.append(getPaddedString("", 8))                                  // col 21-28
+                   .append(getPaddedString("", 4));                                 // col 29-32
+
+            if (analysis.getCompletedDate() != null)
+                row.append(dateFormat.format(analysis.getCompletedDate().getDate()));    // col 33-40
+            else
+                row.append(getPaddedString("", 8));                                 // col 33-40
+            
+            row.append(getPaddedString(rowData.get("microbe"), 1))                  // col 41
                .append(getPaddedString(rowData.get("count"), 5))                    // col 42-46
                .append(getPaddedString(rowData.get("countType"), 10))               // col 47-56
                .append(getPaddedString(rowData.get("countUnits"), 9))               // col 57-65
