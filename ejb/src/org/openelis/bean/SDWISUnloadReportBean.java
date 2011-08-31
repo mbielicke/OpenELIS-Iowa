@@ -388,9 +388,9 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
            .append(sampTypeDO.getLocalAbbrev())                                 // col 7-8
            .append(getPaddedString(pbType, 3))                                  // col 9-11
            .append(getPaddedString(ssVDO.getPwsNumber0(), 9))                   // col 12-20
-           .append(ssVDO.getFacilityId())                                       // col 21-32
-           .append(ssVDO.getSamplePointId())                                    // col 33-43
-           .append(ssVDO.getLocation())                                         // col 44-63
+           .append(getPaddedString(ssVDO.getFacilityId(), 12))                  // col 21-32
+           .append(getPaddedString(ssVDO.getSamplePointId(), 11))               // col 33-43
+           .append(getPaddedString(ssVDO.getLocation(), 20))                    // col 44-63
            .append(dateFormat.format(sVDO.getCollectionDate().getDate()))       // col 64-71
            .append(timeFormat.format(sVDO.getCollectionTime().getDate()))       // col 72-75
            .append(getPaddedString(ssVDO.getCollector(), 20))                   // col 76-95
@@ -464,7 +464,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             rVDO = resultRow.get(0);
             rowData = new HashMap<String,String>();
             rowData.put("contaminantId", contaminantIds.get(rVDO.getAnalyte()));
-            if ("BA".equals(sampCatDO.getLocalAbbrev())) {
+            if ("TC".equals(sampCatDO.getLocalAbbrev())) {
                 if (typeDictionaryId.equals(rVDO.getTypeId())) {
                     try {
                         rowData.put("microbe", dictionaryCache.getById(Integer.valueOf(rVDO.getValue())).getEntry());
@@ -473,8 +473,12 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                     }
                 } else {
                     rowData.put("count", rVDO.getValue());
+                    if (rVDO.getValue() != null && !rVDO.getValue().startsWith("<"))
+                        rowData.put("microbe", "P");
+                    else
+                        rowData.put("microbe", "A");
                 }
-                if ("HPC".equals(rVDO.getAnalyte())) {
+                if ("Heterotrophic Plate Count".equals(rVDO.getAnalyte())) {
                     rowData.put("countType", "CFU");
                     rowData.put("countUnits", "mL");
                 } else {
@@ -571,6 +575,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         methodCodes.put("colilert mpn sdwa pm", "9223B-18QT");
         methodCodes.put("colilert pa sdwa am",  "9223B-PA");
         methodCodes.put("colilert pa sdwa pm",  "9223B-18PA");
+        methodCodes.put("blue pour plate",      "9215B");
     }
     
     private void initContaminantIds() {
