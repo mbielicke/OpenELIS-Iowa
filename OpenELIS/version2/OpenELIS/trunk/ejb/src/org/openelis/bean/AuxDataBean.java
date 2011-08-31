@@ -61,23 +61,23 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         AuxDataViewDO dataDO;
         Integer dictionaryTypeId;
         DictionaryDO dictDO;
-        
+
         query = manager.createNamedQuery("AuxData.FetchById");
         query.setParameter("id", referenceId);
         query.setParameter("tableId", referenceTableId);
         try {
             data = DataBaseUtil.toArrayList(query.getResultList());
-            
-            if(data.size() > 0){
+
+            if (data.size() > 0) {
                 query = manager.createNamedQuery("Dictionary.FetchBySystemName");
                 query.setParameter("name", "aux_dictionary");
                 dictDO = (DictionaryDO)query.getResultList().get(0);
                 dictionaryTypeId = dictDO.getId();
-                
-                for(int i=0; i<data.size(); i++){
+
+                for (int i = 0; i < data.size(); i++ ) {
                     dataDO = data.get(i);
-                
-                    if(dictionaryTypeId.equals(dataDO.getTypeId()) && dataDO.getValue() != null){
+
+                    if (dictionaryTypeId.equals(dataDO.getTypeId()) && dataDO.getValue() != null) {
                         query = manager.createNamedQuery("Dictionary.FetchById");
                         query.setParameter("id", new Integer(dataDO.getValue()));
                         dictDO = (DictionaryViewDO)query.getResultList().get(0);
@@ -93,11 +93,30 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         return data;
     }
 
+    public IdVO fetchGroupIdBySystemVariable(String sysVariableKey) throws Exception {
+        SystemVariableDO sysVariable;
+        AuxFieldGroupDO groupDO;
+        IdVO idVO;
+        Query query;
+    
+        query = manager.createNamedQuery("SystemVariable.FetchByName");
+        query.setParameter("name", sysVariableKey);
+        sysVariable = (SystemVariableDO)query.getSingleResult();
+    
+        query = manager.createNamedQuery("AuxFieldGroup.FetchActiveByName");
+        query.setParameter("name", sysVariable.getValue());
+        groupDO = (AuxFieldGroupDO)query.getSingleResult();
+    
+        idVO = new IdVO(groupDO.getId());
+    
+        return idVO;
+    }
+
     public AuxDataViewDO add(AuxDataViewDO data) throws Exception {
         AuxData entity;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
-        
+
         entity = new AuxData();
         entity.setSortOrder(data.getSortOrder());
         entity.setAuxFieldId(data.getAuxFieldId());
@@ -106,22 +125,22 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         entity.setIsReportable(data.getIsReportable());
         entity.setTypeId(data.getTypeId());
         entity.setValue(data.getValue());
-        
+
         manager.persist(entity);
         data.setId(entity.getId());
-        
+
         return data;
     }
 
     public AuxDataViewDO update(AuxDataViewDO data) throws Exception {
         AuxData entity;
-        
-        if (!data.isChanged())
+
+        if ( !data.isChanged())
             return data;
-        
+
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(AuxData.class, data.getId());
-        
+
         entity.setAuxFieldId(data.getAuxFieldId());
         entity.setSortOrder(data.getSortOrder());
         entity.setAuxFieldId(data.getAuxFieldId());
@@ -130,7 +149,7 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         entity.setIsReportable(data.getIsReportable());
         entity.setTypeId(data.getTypeId());
         entity.setValue(data.getValue());
-        
+
         return data;
     }
 
@@ -142,24 +161,5 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         entity = manager.find(AuxData.class, data.getId());
         if (entity != null)
             manager.remove(entity);
-    }
-
-    public IdVO fetchGroupIdBySystemVariable(String sysVariableKey) throws Exception {
-        SystemVariableDO sysVariable;
-        AuxFieldGroupDO groupDO;
-        IdVO idVO;
-        Query query;
-        
-        query = manager.createNamedQuery("SystemVariable.FetchByName");
-        query.setParameter("name", sysVariableKey);
-        sysVariable = (SystemVariableDO)query.getSingleResult();
-        
-        query = manager.createNamedQuery("AuxFieldGroup.FetchActiveByName");
-        query.setParameter("name", sysVariable.getValue());
-        groupDO = (AuxFieldGroupDO)query.getSingleResult();
-        
-        idVO = new IdVO(groupDO.getId());
-        
-        return idVO;
     }
 }
