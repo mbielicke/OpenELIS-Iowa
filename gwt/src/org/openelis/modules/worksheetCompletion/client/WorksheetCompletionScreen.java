@@ -1072,7 +1072,7 @@ public class WorksheetCompletionScreen extends Screen {
 
         // Set the QC Link column for each row to the Accession Number for the
         // row to which it is linked
-        for (i = 0; i < model.size(); i++) {
+        for (i = 1; i < model.size(); i++) {
             row = model.get(i);
             if (row.cells.get(3).value != null)
                 row.cells.get(3).value = qcLinkMap.get(row.cells.get(3).value);

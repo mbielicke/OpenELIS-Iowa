@@ -110,7 +110,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
                     } else if (analyteId.equals("pws_id")) {
                         if (auxData.getValue() != null) {
                             try {
-                                pwsDo = pwsService.call("fetchByNumber0", auxData.getValue());
+                                pwsDo = pwsService.call("fetchPwsByNumber0", auxData.getValue());
                                 ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setPwsId(pwsDo.getId());
                                 ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setPwsName(pwsDo.getName());
                                 ((SampleSDWISManager)manager.getDomainManager()).getSDWIS().setPwsNumber0(pwsDo.getNumber0());

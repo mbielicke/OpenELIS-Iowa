@@ -40,7 +40,6 @@ import org.openelis.domain.TestSectionViewDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
-import org.openelis.gwt.common.TableFieldErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -140,7 +139,6 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id, TestSectionViewDO tsVDO) throws Exception {
         ArrayList<IdVO> testIds, auxIds;
 
-//        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
 
         auxIds = null;
@@ -172,7 +170,6 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
      * @throws Exception
      */
     public void lookup(ArrayList<SampleDataBundle> analysisBundles) throws Exception {
-//        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
         
         bundles = new ArrayList<SampleDataBundle>();
@@ -195,7 +192,6 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         ArrayList<IdVO> testIds;
         OrderTestViewDO testDO;
 
-//        assert manager != null : "manager is null";
         assert screen != null : "screen is null";
 
         bundles = new ArrayList<SampleDataBundle>();

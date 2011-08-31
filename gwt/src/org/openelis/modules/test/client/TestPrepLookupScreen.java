@@ -297,12 +297,9 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
             errorsList = new ValidationErrorsList();
             for (i = 0; i < prepTestTree.numRows(); i++) {
                 item = prepTestTree.getRow(i);
-                if (item.leafType == "analysis") {
-                    if (!addPrepTestToSelection(item, (SampleDataBundle)((ArrayList<Object>)item.data).get(0),
-                                                selectedBundles, errorsList, i))
-                        errorsList.add(new FormErrorException("prepTestRequiredForTestException",
-                                                              (String)item.cells.get(0).getValue()));
-                }
+                if (item.leafType == "analysis")
+                    addPrepTestToSelection(item, (SampleDataBundle)((ArrayList<Object>)item.data).get(0),
+                                           selectedBundles, errorsList, i);
             }
             
             if (errorsList.size() > 0) {
@@ -451,9 +448,9 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
     }
     
     @SuppressWarnings("unchecked")
-    private boolean addPrepTestToSelection(TreeDataItem parentItem, Object parentBundle,
-                                           ArrayList<ArrayList<Object>> selectedBundles,
-                                           ValidationErrorsList errorsList, int index) {
+    private void addPrepTestToSelection(TreeDataItem parentItem, Object parentBundle,
+                                        ArrayList<ArrayList<Object>> selectedBundles,
+                                        ValidationErrorsList errorsList, int index) {
         int               depth;
         ArrayList<Object> selectedRow;
         TreeDataItem      item;
@@ -462,7 +459,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
         for (index++; index < prepTestTree.numRows(); index++) {
             item = prepTestTree.getRow(index);
             if (item.depth < depth) {
-                return false;
+                break;
             } else if (item.depth == depth && "Y".equals(item.cells.get(2).getValue())) {
                 if (item.cells.get(1).value == null) {
                     errorsList.add(new FormErrorException("prepTestNeedsSection",
@@ -475,14 +472,12 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                     selectedRow.add(item.cells.get(1).getValue());
                     selectedBundles.add(selectedRow);
                     if (item.hasChildren())
-                        return addPrepTestToSelection(item, selectedRow, selectedBundles,
-                                                      errorsList, index);
-                    else
-                        return true;
+                        addPrepTestToSelection(item, selectedRow, selectedBundles,
+                                               errorsList, index);
                 }
             }
         }
-        return false;
+        return;
     }
 
     public void setBundles(ArrayList<ArrayList<Object>> bundles) {

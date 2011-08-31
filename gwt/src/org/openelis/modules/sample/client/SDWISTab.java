@@ -122,7 +122,7 @@ public class SDWISTab extends Screen {
                 clearValue = false;
                 if (!DataBaseUtil.isEmpty(event.getValue())) { 
                     try {
-                        data = pwsService.call("fetchByPwsNumber0", event.getValue());
+                        data = pwsService.call("fetchPwsByNumber0", event.getValue());
                         getSDWISManager().getSDWIS().setPwsId(data.getId());
                         getSDWISManager().getSDWIS().setPwsName(data.getName());
                         getSDWISManager().getSDWIS().setPwsNumber0(data.getNumber0());
