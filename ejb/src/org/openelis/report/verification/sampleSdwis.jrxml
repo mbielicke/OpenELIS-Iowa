@@ -11,7 +11,8 @@
 	<queryString>
 		<![CDATA[SELECT
      p.number0, p.name pws_name, ss.state_lab_id, ss.facility_id, d1.entry sample_type,
-     d2.entry sample_category, ss.sample_point_id, ss.location, ss.collector, so.organization_id
+     d2.entry sample_category, ss.sample_point_id, ss.location, ss.collector,
+     so.organization_id, so.organization_attention
 FROM
      sample_sdwis ss, pws p, outer dictionary d1, outer dictionary d2, outer sample_organization so
 WHERE
@@ -32,6 +33,7 @@ WHERE
 	<field name="location" class="java.lang.String"/>
 	<field name="collector" class="java.lang.String"/>
 	<field name="organization_id" class="java.lang.Integer"/>
+	<field name="organization_attention" class="java.lang.String"/>
 	<detail>
 		<band height="60" splitType="Stretch">
 			<staticText>
@@ -162,6 +164,24 @@ WHERE
 			</textField>
 		</band>
 		<band height="24">
+			<staticText>
+				<reportElement key="reportToAttention.label" x="0" y="0" width="100" height="12" forecolor="#404040">
+					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Attention:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement key="reportToAttention" x="105" y="0" width="250" height="12">
+					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="10" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_attention}]]></textFieldExpression>
+			</textField>
 			<subreport>
 				<reportElement key="reportToOrganization" x="0" y="12" width="355" height="12">
 					<printWhenExpression><![CDATA[$F{organization_id} != null]]></printWhenExpression>
