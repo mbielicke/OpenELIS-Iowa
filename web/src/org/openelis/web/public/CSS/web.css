@@ -154,12 +154,6 @@ background:#deecfd;
 .webFlowPanel {
 	display :inline;
 }
-.help div{
-    padding:6px;
-    font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
-	font-size : 12px;
-    color:gray;
-}
 
 /* .webTestIcon, .requestFormIcon,  .turnaroundIcon, .finalReportIcon,  
 .onholdReportIcon, .caseManagementIcon,  .reportableIcon, .dataDumpIcon,*/
