@@ -87,7 +87,7 @@ public class ReportScreenUtility {
         Field f;
 
         sel = dd.getSelections();
-        if (sel.size() == 0)
+        if (sel.size() == 0 || (sel.size() == 1 && sel.get(0).key == null))
             return null;
         f = dd.getField();
 
