@@ -74,6 +74,20 @@ UIRF Software License are applicable instead of those above.
                   </row>
                   <row>
                     <text style="Prompt">
+                      <xsl:value-of select="resource:getString($constants,'accessionNumber')" />:
+                    </text>
+                    <widget>
+                      <textbox field="Integer" key="{meta:getAccessionNumberFrom()}" max="60" width="86" />
+                    </widget>
+                    <text style="Prompt">
+                      <xsl:value-of select="resource:getString($constants,'to')" />:
+                    </text>
+                    <widget>
+                      <textbox field="Integer" key="{meta:getAccessionNumberTo()}" max="60" width="86" />
+                    </widget>
+                  </row>
+                  <row>
+                    <text style="Prompt">
                       <xsl:value-of select='resource:getString($constants,"clientReference")' />:
                     </text>
                     <widget colspan="4">
@@ -117,12 +131,6 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </widget>
               </HorizontalPanel>
-              <TablePanel style="Form">
-                <row>
-                  <AbsolutePanel key="noSampleSelectedPanel" style="largeWarnIcon" visible="false"></AbsolutePanel>
-                  <label field="String" key="noSampleSelected" style="Prompt"></label>
-                </row>
-              </TablePanel>
             </VerticalPanel>
             <VerticalPanel padding="0" spacing="0" style="help">
               <TablePanel width="100%">
@@ -137,7 +145,7 @@ UIRF Software License are applicable instead of those above.
           <VerticalPanel padding="0" spacing="0">
             <VerticalPanel>
               <widget valign="top">
-                <table key="sampleEntTable" maxRows="24" style = "ScreenTable" showScroll="ALWAYS" title="" width="auto">
+                <table key="sampleEntTable" maxRows="23" style = "ScreenTable" showScroll="ALWAYS" title="" width="auto">
                   <col header="{resource:getString($constants,'AccessionNo')}" key="accessionNumber" width="80">
                     <textbox field="Integer" />
                   </col>
@@ -159,7 +167,7 @@ UIRF Software License are applicable instead of those above.
                 </table>
               </widget>
             </VerticalPanel>
-            <VerticalPanel height="20">
+            <VerticalPanel height="10">
             </VerticalPanel>
             <HorizontalPanel>
              <widget halign="center">
