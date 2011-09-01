@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -54,18 +54,17 @@ import org.openelis.utils.ReportUtil;
 @Stateless
 @SecurityDomain("openelis")
 public class SampleStatusReportBean implements SampleStatusReportRemote {
-    
+
     @EJB
     private SampleLocal                sample;
 
-   @EJB
+    @EJB
     private DictionaryLocal            dictionary;
-
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
 
-    private static Integer             sampleNotVerifiedId;
+    private static Integer             sampleNotVerifiedId, organizationReportToId;
 
     private static final SampleWebMeta meta = new SampleWebMeta();
 
@@ -73,33 +72,48 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
     public void init() {
         try {
             sampleNotVerifiedId = dictionary.fetchBySystemName("sample_not_verified").getId();
+            organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
-    
+
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception {
         int id;
-        Query query;
-        QueryBuilderV2 builder;
+        String clause, orgIds;
         ArrayList<SampleStatusWebReportVO> returnList;
         ArrayList<IdAccessionVO> tempList;
         ArrayList<Integer> idList;
 
+        /*
+         * Retrieving the organization Ids to which the user belongs to from the
+         * security clause in the userPermission.
+         */
+        clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
+        orgIds = ReportUtil.parseClauseAsString(clause)
+                           .get(SampleMeta.getSampleOrgOrganizationId());
+        /*
+         * if clause is null, then the previous method returns an empty HashMap,
+         * so we need to check if orgIds is empty or not.
+         */
+        if (orgIds == null)
+            return new ArrayList<SampleStatusWebReportVO>();
+
+        tempList = new ArrayList<IdAccessionVO>();
+
         returnList = new ArrayList<SampleStatusWebReportVO>();
 
-        builder = new QueryBuilderV2();
-
-        builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
-                          SampleWebMeta.getId() + ", " + SampleWebMeta.getAccessionNumber() + ") ");
-        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleNotVerifiedId);
-        builder.constructWhere(fields);
-        builder.setOrderBy(SampleWebMeta.getAccessionNumber());
-
-        query = manager.createQuery(builder.getEJBQL());
-        builder.setQueryParams(query, fields);
-        tempList = DataBaseUtil.toArrayList(query.getResultList());
+        /*
+         * We run 2 queries to get the list of sample id's matching the search
+         * criteria. The first query returns the list of sample id's from
+         * Environmental and SDWIS domain. The second from private domain. The
+         * reason we have to do this is because we don't know the domain
+         * information at this stage, and also since these are query fields so
+         * we can't use named native query.
+         */
+        tempList.addAll(getSampleIdsList(fields, orgIds, false));
+        tempList.addAll(getSampleIdsList(fields, orgIds, true));
+        Collections.sort(tempList, new AccessionIdComparator());
 
         if (tempList == null || tempList.size() == 0)
             return returnList;
@@ -122,20 +136,23 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         returnList.addAll(sample.fetchSampleAnalysisInfoForSampleStatusReportSDWIS(idList));
 
         /*
-         * Sort the list by accession # of samples. We do the sorting in the back end instead of doing it in the front, 
-         * since the comparator for rows in the table cannot sort correctly if the value in column based on which
-         * the comparison is made is null. In this case, since the analysis rows don't show accession number on the screen, 
-         * the value in the first column of these rows is null and that is the column used for sorting.
+         * Sort the list by accession # of samples. We do the sorting in the
+         * back end instead of doing it in the front, since the comparator for
+         * rows in the table cannot sort correctly if the value in column based
+         * on which the comparison is made is null. In this case, since the
+         * analysis rows don't show accession number on the screen, the value in
+         * the first column of these rows is null and that is the column used
+         * for sorting.
          */
         Collections.sort(returnList, new SampleComparator());
         return returnList;
     }
-    
+
     public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
         String clause;
         ArrayList<Integer> list;
         ArrayList<IdNameVO> projectList;
-        
+
         projectList = new ArrayList<IdNameVO>();
         clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
         list = ReportUtil.parseClauseAsArrayList(clause)
@@ -152,17 +169,49 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          */
         projectList.addAll(sample.fetchProjectsForOrganizations(list));
         projectList.addAll(sample.fetchProjectsForPrivateOrganizations(list));
-        
+
         Collections.sort(projectList, new ProjectComparator());
         return projectList;
     }
     
+    private ArrayList<IdAccessionVO> getSampleIdsList(ArrayList<QueryData> fields, String orgIds,
+                                                      boolean fromPrivates) throws Exception {
+        QueryBuilderV2 builder;
+        Query query;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
+                          SampleWebMeta.getId() + ", " + SampleWebMeta.getAccessionNumber() + ") ");
+        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleNotVerifiedId);
+        builder.constructWhere(fields);
+
+        if (fromPrivates) {
+            builder.addWhere(SampleWebMeta.getWellOrganizationId() + orgIds);
+        } else {
+            builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + orgIds);
+            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
+        }
+
+        builder.setOrderBy(SampleWebMeta.getAccessionNumber());
+
+        query = manager.createQuery(builder.getEJBQL());
+        builder.setQueryParams(query, fields);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    class AccessionIdComparator implements Comparator<IdAccessionVO> {
+        public int compare(IdAccessionVO a1, IdAccessionVO a2) {
+            return a1.getAccessionNumber() - a2.getAccessionNumber();
+        }
+    }
+
     class SampleComparator implements Comparator<SampleStatusWebReportVO> {
         public int compare(SampleStatusWebReportVO s1, SampleStatusWebReportVO s2) {
             return s1.getAccessionNumber() - s2.getAccessionNumber();
         }
     }
-    
+
     class ProjectComparator implements Comparator<IdNameVO> {
         public int compare(IdNameVO p1, IdNameVO p2) {
             return p1.getId() - p2.getId();
