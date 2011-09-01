@@ -55,8 +55,8 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.web.WebWindow;
 import org.openelis.meta.SampleWebMeta;
+import org.openelis.web.modules.finalReport.client.FinalReportVO;
 import org.openelis.web.util.ReportScreenUtility;
 
 import com.google.gwt.core.client.GWT;
@@ -70,18 +70,18 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class SampleStatusScreen extends Screen {
 
-    private FinalReportEnvironmentalVO         data;
+    private FinalReportVO         data;
     private ModulePermission                   userPermission;
     private CalendarLookUp                     collectedFrom, collectedTo;
-    private TextBox                            clientReference;
+    private TextBox                            accessionFrom, accessionTo, clientReference;
     private Dropdown<Integer>                  projectCode;
     private ReportScreenUtility                util;
     private DeckPanel                          deckpanel;
     private Decks                              deck;
     private HorizontalPanel                    hp;
-    private AbsolutePanel                      ap, noSampleSelectedPanel;
+    private AbsolutePanel                      ap;
     private TableWidget                        sampleEntTable;
-    private Label<String>                      queryDeckLabel, noSampleSelected;
+    private Label<String>                      queryDeckLabel;
     private AppButton                          getSamplesButton, resetButton, backButton;
     private ArrayList<SampleStatusWebReportVO> results;
     private Integer                            statusReleased;
@@ -115,7 +115,7 @@ public class SampleStatusScreen extends Screen {
      */
     private void postConstructor() {
         deck = Decks.QUERY;
-        data = new FinalReportEnvironmentalVO();
+        data = new FinalReportVO();
 
         initialize();
         setState(State.ADD);
@@ -171,6 +171,48 @@ public class SampleStatusScreen extends Screen {
                 }
             }
         });
+        
+        accessionFrom = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberFrom());
+        addScreenHandler(accessionFrom, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                accessionFrom.setValue(data.getAccessionFrom());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                data.setAccessionFrom(event.getValue());
+                if ( !DataBaseUtil.isEmpty(accessionFrom.getValue()) &&
+                    DataBaseUtil.isEmpty(accessionTo.getValue())) {
+                    accessionTo.setFieldValue(accessionFrom.getValue());
+                    accessionTo.setFocus(true);
+                    accessionTo.selectAll();
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                accessionFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
+            }
+        });
+        
+        accessionTo = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberTo());
+        addScreenHandler(accessionTo, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                accessionTo.setValue(data.getAccessionTo());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                data.setAccessionTo(event.getValue());
+                if ( !DataBaseUtil.isEmpty(accessionTo.getValue()) &&
+                    DataBaseUtil.isEmpty(accessionFrom.getValue())) {
+                    accessionFrom.setFieldValue(accessionTo.getValue());
+                    accessionFrom.setFocus(true);
+                    accessionFrom.selectAll();
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                accessionTo.enable(EnumSet.of(State.ADD).contains(event.getState()));
+            }
+        });
 
         clientReference = (TextBox)def.getWidget(SampleWebMeta.getClientReference());
         addScreenHandler(clientReference, new ScreenEventHandler<String>() {
@@ -199,15 +241,6 @@ public class SampleStatusScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 data.setProjectCode(event.getValue());
-            }
-        });
-
-        noSampleSelectedPanel = (AbsolutePanel)def.getWidget("noSampleSelectedPanel");
-
-        noSampleSelected = (Label<String>)def.getWidget("noSampleSelected");
-        addScreenHandler(noSampleSelected, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                noSampleSelected.setText(null);
             }
         });
 
@@ -288,9 +321,8 @@ public class SampleStatusScreen extends Screen {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         projectCode.setModel(model);
-
+        
        try {
             statusReleased = DictionaryCache.getIdBySystemName("analysis_released");           
         } catch (Exception e) {
@@ -317,6 +349,7 @@ public class SampleStatusScreen extends Screen {
             window.setError(consts.get("nofieldSelectedError"));
             return;
         }
+
         query.setFields(queryList);
 
         window.setBusy(consts.get("retrSamples"));
@@ -324,11 +357,10 @@ public class SampleStatusScreen extends Screen {
         try {
             list = service.callList("getSampleListForSampleStatusReport", query);
             if (list.size() > 0) {
-                noSampleSelectedPanel.setVisible(false);
                 loadDeck(list);
             } else {
-                noSampleSelectedPanel.setVisible(true);
-                noSampleSelected.setValue(consts.get("noSamplesFoundChangeSearch"));
+                window.setError(consts.get("noSamplesFoundChangeSearch"));
+                return;
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -340,7 +372,7 @@ public class SampleStatusScreen extends Screen {
      * Resets all the fields to their original report specified values
      */
     protected void reset() {
-        data = new FinalReportEnvironmentalVO();
+        data = new FinalReportVO();
         DataChangeEvent.fire(this);
         clearErrors();
     }
@@ -447,11 +479,11 @@ public class SampleStatusScreen extends Screen {
 
     private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) {
         int i;
-        QueryData field, fCol;
+        QueryData field, fCol, fAcc;
         ArrayList<QueryData> list;
 
         list = new ArrayList<QueryData>();
-        fCol = null;
+        fCol = fAcc = null;
 
         for (i = 0; i < fields.size(); i++ ) {
             field = fields.get(i);
@@ -471,51 +503,26 @@ public class SampleStatusScreen extends Screen {
                     fCol.query = fCol.query + ".." + field.query;
                     list.add(fCol);
                 }
-            } else if ( (SampleWebMeta.getClientReference()).equals(field.key)) {
-                list.add(field);
-            } else if ( (SampleWebMeta.getProjectId()).equals(field.key)) {
+            } else if ( (SampleWebMeta.getAccessionNumberFrom()).equals(field.key)) {
+                if (fAcc == null) {
+                    fAcc = field;
+                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                } else {
+                    fAcc.query = field.query + ".." + fAcc.query;
+                    list.add(fAcc);
+                }
+            } else if ( (SampleWebMeta.getAccessionNumberTo()).equals(field.key)) {
+                if (fAcc == null) {
+                    fAcc = field;
+                    fAcc.key = SampleWebMeta.getAccessionNumber();
+                } else {
+                    fAcc.query = fAcc.query + ".." + field.query;
+                    list.add(fAcc);
+                }
+            }else {
                 list.add(field);
             }
         }
         return list;
-    }
-
-    private class FinalReportEnvironmentalVO {
-
-        private Datetime collectedFrom, collectedTo;
-        private String   clientReference;
-        private Integer  projectCode;
-
-        public Datetime getCollectedFrom() {
-            return collectedFrom;
-        }
-
-        public void setCollectedFrom(Datetime collectedFrom) {
-            this.collectedFrom = DataBaseUtil.toYD(collectedFrom);
-        }
-
-        public Datetime getCollectedTo() {
-            return collectedTo;
-        }
-
-        public void setCollectedTo(Datetime collectedTo) {
-            this.collectedTo = DataBaseUtil.toYD(collectedTo);
-        }
-
-        public String getClientReference() {
-            return clientReference;
-        }
-
-        public void setClientReference(String clientReference) {
-            this.clientReference = clientReference;
-        }
-
-        public Integer getProjectCode() {
-            return projectCode;
-        }
-
-        public void setProjectCode(Integer projectCode) {
-            this.projectCode = projectCode;
-        }
-    }
+    }    
 }
