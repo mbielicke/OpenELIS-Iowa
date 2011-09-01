@@ -169,12 +169,6 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </widget>
               </HorizontalPanel>
-              <TablePanel style="Form">
-                <row>
-                  <AbsolutePanel key="noSampleSelectedPanel" style="largeWarnIcon" visible="false"></AbsolutePanel>
-                  <label field="String" key="noSampleSelected" style="Prompt"></label>
-                </row>
-              </TablePanel>
             </VerticalPanel>
             <VerticalPanel padding="0" spacing="0" style="help">
               <TablePanel width="100%">
