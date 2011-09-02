@@ -18,12 +18,12 @@ public class AuxDataManager implements RPC {
     protected transient static AuxDataManagerProxy proxy;
 
     public static AuxDataManager getInstance() {
-        AuxDataManager adm;
+        AuxDataManager man;
 
-        adm = new AuxDataManager();
-        adm.items = new ArrayList<AuxDataListItem>();
+        man = new AuxDataManager();
+        man.items = new ArrayList<AuxDataListItem>();
 
-        return adm;
+        return man;
     }
 
     public static AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
