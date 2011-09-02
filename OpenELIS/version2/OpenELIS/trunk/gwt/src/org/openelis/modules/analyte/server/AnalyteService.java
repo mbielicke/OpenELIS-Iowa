@@ -66,7 +66,7 @@ public class AnalyteService {
     }
 
     public ArrayList<AnalyteDO> fetchByName(String search) throws Exception {
-        return remote().fetchByName(search + "%", 10);
+        return remote().fetchByName(search + "%", 100);
     }
 
     private AnalyteRemote remote() {

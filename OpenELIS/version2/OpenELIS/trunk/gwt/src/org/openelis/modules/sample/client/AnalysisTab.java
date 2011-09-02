@@ -1025,9 +1025,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 else {
                     ActionEvent.fire(this, Action.ANALYSIS_ADDED, id);
                 }
-            } else
+            } else {
                 ActionEvent.fire(this, Action.ANALYSIS_ADDED, null);
-
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
