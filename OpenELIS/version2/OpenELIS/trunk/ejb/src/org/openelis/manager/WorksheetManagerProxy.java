@@ -137,38 +137,13 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager update(WorksheetManager manager) throws Exception {
-        int                     i;
-        Datetime                now;
-        Integer                 id, instrumentId;
+        Integer                 id;
         Iterator<SampleManager> iter;
-        InstrumentLogDO         ilDO;
-        InstrumentLogManager    ilManager;
         LockLocal               lock;
         SampleManager           sManager;
 
         EJBFactory.getWorksheet().update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
-        
-        instrumentId = manager.getWorksheet().getInstrumentId();
-        if (instrumentId != null && statusCompleteId.equals(manager.getWorksheet().getStatusId())) {
-            now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
-            
-            try {
-                ilManager = InstrumentLogManager.fetchByInstrumentId(instrumentId);
-            } catch (NotFoundException nfE) {
-                ilManager = InstrumentLogManager.getInstance();
-            }
-            
-            for (i = 0; i < ilManager.count(); i++) {
-                ilDO = ilManager.getLogAt(i);
-                if (id.equals(ilDO.getWorksheetId()) &&
-                    instrumentLogPendingId.equals(ilDO.getTypeId())) {
-                    ilDO.setTypeId(instrumentLogCompletedId);
-                    ilDO.setEventEnd(now);
-                }
-            }
-            ilManager.update();
-        }
         
         lock = EJBFactory.getLock();
         if (manager.items != null) {

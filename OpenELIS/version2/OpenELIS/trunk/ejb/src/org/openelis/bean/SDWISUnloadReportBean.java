@@ -395,7 +395,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
            .append(timeFormat.format(sVDO.getCollectionTime().getDate()))       // col 72-75
            .append(getPaddedString(ssVDO.getCollector(), 20))                   // col 76-95
            .append(dateFormat.format(sVDO.getReceivedDate().getDate()))         // col 96-103
-           .append(getPaddedString(sVDO.getAccessionNumber().toString(), 20))   // col 104-123
+           .append(getPaddedString("OE"+sVDO.getAccessionNumber().toString(), 20))   // col 104-123
            .append(getPaddedString(origSampleNumber, 20))                       // col 124-143
            .append(getPaddedString(repeatCode, 2))                              // col 144-145
            .append(getPaddedString(freeChlorine, 5))                            // col 146-150
@@ -429,7 +429,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         HashMap<String,String> rowData;
         Iterator<ArrayList<ResultViewDO>> rowIter;
         Iterator<ResultViewDO> colIter;
-        ResultViewDO rVDO;
+        ResultViewDO rVDO, crVDO;
         SimpleDateFormat dateFormat, timeFormat;
         String           methodCode;
         StringBuilder    row;
@@ -472,11 +472,30 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                         throw new Exception("Error looking up dictionary result; "+anyE.getMessage());
                     }
                 } else {
-                    rowData.put("count", rVDO.getValue());
-                    if (rVDO.getValue() != null && !rVDO.getValue().startsWith("<"))
-                        rowData.put("microbe", "P");
-                    else
-                        rowData.put("microbe", "A");
+                    if (rVDO.getValue() != null) {
+                        if (rVDO.getValue().startsWith("<"))
+                            rowData.put("microbe", "A");
+                        else
+                            rowData.put("microbe", "P");
+
+                        if (analysis.getMethodName().indexOf("mpn") != -1) {
+                            colIter = resultRow.iterator();
+                            while (colIter.hasNext()) {
+                                crVDO = colIter.next();
+                                if ("Well Count".equals(crVDO.getAnalyte())) {
+                                    if (crVDO.getValue().indexOf(".") != -1)
+                                        crVDO.setValue(crVDO.getValue().substring(0, crVDO.getValue().indexOf(".")));
+                                    rowData.put("count", crVDO.getValue());
+                                    break;
+                                }
+                            }
+                        } else {
+                            if (rVDO.getValue().startsWith(">"))
+                                rVDO.setValue(rVDO.getValue().substring(1));
+                            if (rVDO.getValue().indexOf(".") != -1)
+                                rVDO.setValue(rVDO.getValue().substring(0, rVDO.getValue().indexOf(".")));
+                        }
+                    }
                 }
                 if ("Heterotrophic Plate Count".equals(rVDO.getAnalyte())) {
                     rowData.put("countType", "CFU");
@@ -496,17 +515,17 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                 
                 colIter = resultRow.iterator();
                 while (colIter.hasNext()) {
-                    rVDO = colIter.next();
+                    crVDO = colIter.next();
                     try {
-                        alVDO = analyte.fetchById(rVDO.getAnalyteId());
+                        alVDO = analyte.fetchById(crVDO.getAnalyteId());
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up result column analyte; "+anyE.getMessage());
                     }
                     if ("mcl".equals(alVDO.getExternalId())) {
-                        rowData.put("detection", rVDO.getValue());
+                        rowData.put("detection", crVDO.getValue());
                         rowData.put("detectionUnit", unitDO.getEntry());
                     } else if ("rad_measure_error".equals(alVDO.getExternalId())) {
-                        rowData.put("radMeasureError", rVDO.getValue());
+                        rowData.put("radMeasureError", crVDO.getValue());
                     }
                 }
                 
@@ -535,14 +554,14 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                 row.append(getPaddedString("", 8));                                 // col 33-40
             
             row.append(getPaddedString(rowData.get("microbe"), 1))                  // col 41
-               .append(getPaddedString(rowData.get("count"), 5))                    // col 42-46
+               .append(getPaddedNumber(rowData.get("count"), 5))                    // col 42-46
                .append(getPaddedString(rowData.get("countType"), 10))               // col 47-56
                .append(getPaddedString(rowData.get("countUnits"), 9))               // col 57-65
                .append(getPaddedString(rowData.get("ltIndicator"), 1))              // col 66
                .append("MRL")                                                       // col 67-69
-               .append(getPaddedString(rowData.get("concentration"), 14))           // col 70-83
+               .append(getPaddedNumber(rowData.get("concentration"), 14))           // col 70-83
                .append(getPaddedString(rowData.get("concentrationUnit"), 9))        // col 84-92
-               .append(getPaddedString(rowData.get("detection"), 16))               // col 93-108
+               .append(getPaddedNumber(rowData.get("detection"), 16))               // col 93-108
                .append(getPaddedString(rowData.get("detectionUnit"), 9))            // col 109-117
                .append(getPaddedString(rowData.get("radMeasureError"), 9));         // col 118-126
             
@@ -568,6 +587,20 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         return value;
     }
     
+    protected String getPaddedNumber(String value, int width) {
+        if (value == null)
+            return getPaddedString(value, width);
+        
+        if (value.length() > width) {
+            value = value.substring(0, width);
+        } else {
+            while (value.length() < width)
+                value = "0"+value;
+        }
+
+        return value;
+    }
+
     private void initMethodCodes() {
         methodCodes = new HashMap<String, String>();
         
