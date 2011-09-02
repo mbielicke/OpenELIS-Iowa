@@ -49,9 +49,9 @@ public class AnalysisService {
     public ArrayList<TestMethodVO> getTestMethodMatches(Query query) throws Exception {
         ArrayList<TestMethodVO> resultList;
         if(query.getFields().size() > 1)
-            resultList = panelRemote().fetchByNameSampleTypeWithTests(query.getFields().get(0).query+"%", new Integer(query.getFields().get(1).query), 10);
+            resultList = panelRemote().fetchByNameSampleTypeWithTests(query.getFields().get(0).query+"%", new Integer(query.getFields().get(1).query), 100);
         else
-            resultList = panelRemote().fetchByNameWithTests(query.getFields().get(0).query+"%", 10);
+            resultList = panelRemote().fetchByNameWithTests(query.getFields().get(0).query+"%", 100);
         return resultList;
     }
 

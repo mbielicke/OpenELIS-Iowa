@@ -35,7 +35,7 @@ import org.openelis.remote.WorksheetCreationRemote;
 public class WorksheetCreationService {
 
     public ArrayList<WorksheetCreationVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), 0, 500);
+        return remote().query(query.getFields(), 0, 100);
     }
 
     private WorksheetCreationRemote remote() {
