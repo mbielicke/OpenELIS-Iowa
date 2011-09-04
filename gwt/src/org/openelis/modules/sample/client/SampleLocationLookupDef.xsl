@@ -51,7 +51,7 @@
                 <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getLocationAddrMultipleUnit()}" width="214" case="LOWER" max="30" tab="{meta:getLocationAddrStreetAddress()},{meta:getEnvLocation()}" field="String" />
+                <textbox key="{meta:getLocationAddrMultipleUnit()}" width="214" case="UPPER" max="30" tab="{meta:getLocationAddrStreetAddress()},{meta:getEnvLocation()}" field="String" />
               </widget>
             </row>
             <row>
@@ -59,7 +59,7 @@
                 <xsl:value-of select='resource:getString($constants,"address")' />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getLocationAddrStreetAddress()}" width="214" case="LOWER" max="30" tab="{meta:getLocationAddrCity()},{meta:getLocationAddrMultipleUnit()}" field="String" />
+                <textbox key="{meta:getLocationAddrStreetAddress()}" width="214" case="UPPER" max="30" tab="{meta:getLocationAddrCity()},{meta:getLocationAddrMultipleUnit()}" field="String" />
               </widget>
             </row>
             <row>
@@ -67,7 +67,7 @@
                 <xsl:value-of select='resource:getString($constants,"city")' />:
               </text>
               <widget colspan="3">
-                <textbox key="{meta:getLocationAddrCity()}" width="214" case="LOWER" max="30" tab="{meta:getLocationAddrState()},{meta:getLocationAddrStreetAddress()}" field="String" />
+                <textbox key="{meta:getLocationAddrCity()}" width="214" case="UPPER" max="30" tab="{meta:getLocationAddrState()},{meta:getLocationAddrStreetAddress()}" field="String" />
               </widget>
             </row>
             <row>
@@ -81,7 +81,7 @@
                 <xsl:value-of select='resource:getString($constants,"zipcode")' />:
               </text>
               <widget>
-                <textbox key="{meta:getLocationAddrZipCode()}" width="91" case="UPPER" max="10" tab="{meta:getLocationAddrCountry()},{meta:getLocationAddrState()}" field="String" />
+                <textbox key="{meta:getLocationAddrZipCode()}" width="91" mask="99999-9999" max="10" tab="{meta:getLocationAddrCountry()},{meta:getLocationAddrState()}" field="String" />
               </widget>
             </row>
             <row>
@@ -89,7 +89,7 @@
                 <xsl:value-of select="resource:getString($constants,'country')" />:
               </text>
               <widget colspan="3">
-                <dropdown key="{meta:getLocationAddrCountry()}" width="214" tab="{meta:getEnvLocation()},{meta:getLocationAddrZipCode()}" field="String" />
+                <dropdown key="{meta:getLocationAddrCountry()}" width="214" case="UPPER" tab="{meta:getEnvLocation()},{meta:getLocationAddrZipCode()}" field="String" />
               </widget>
             </row>
           </TablePanel>
