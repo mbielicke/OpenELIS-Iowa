@@ -186,22 +186,22 @@ UIRF Software License are applicable instead of those above.
                         <textbox max="10" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
-                        <textbox max="30" field="String" />
+                        <textbox case="UPPER" max="30" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressStreetAddress()}" width="130" header="{resource:getString($constants,'address')}">
-                        <textbox max="30" field="String" />
+                        <textbox case="UPPER" max="30" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressCity()}" width="130" header="{resource:getString($constants,'city')}">
-                        <textbox max="30" field="String" />
+                        <textbox case="UPPER" max="30" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressState()}" width="60" header="{resource:getString($constants,'state')}">
                         <dropdown width="60" case="UPPER" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressZipCode()}" width="100" header="{resource:getString($constants,'zipcode')}">
-                        <textbox max="10" field="String" />
+                        <textbox mask="99999-9999" max="10" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressCountry()}" width="130" header="{resource:getString($constants,'country')}">
-                        <dropdown width="130" field="String" />
+                        <dropdown case="MIXED" width="130" field="String" />
                       </col>
                       <col key="{meta:getProviderLocationAddressWorkPhone()}" width="90" header="{resource:getString($constants,'workNumber')}">
                         <textbox max="21" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" field="String" />

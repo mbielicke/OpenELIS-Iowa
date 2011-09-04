@@ -227,7 +227,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                   </text>
-                  <textbox key="{meta:getWellReportToAddressZipCode()}" width="73" case="UPPER" max="10" tab="{meta:getWellReportToAddressWorkPhone()},{meta:getWellReportToAddressState()}" field="String" />
+                  <textbox key="{meta:getWellReportToAddressZipCode()}" width="73" mask="99999-9999" max="10" tab="{meta:getWellReportToAddressWorkPhone()},{meta:getWellReportToAddressState()}" field="String" />
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'faxNumber')" />:
                   </text>
@@ -249,7 +249,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getWellLocationAddrMultipleUnit()}" width="180" case="LOWER" max="30" tab="{meta:getWellLocationAddrStreetAddress()},{meta:getWellLocation()}" field="String" />
+                    <textbox key="{meta:getWellLocationAddrMultipleUnit()}" width="180" case="UPPER" max="30" tab="{meta:getWellLocationAddrStreetAddress()},{meta:getWellLocation()}" field="String" />
                   </widget>
                 </row>
                 <row>
@@ -257,7 +257,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"address")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getWellLocationAddrStreetAddress()}" width="180" case="LOWER" max="30" tab="{meta:getWellLocationAddrCity()},{meta:getWellLocationAddrMultipleUnit()}" field="String" />
+                    <textbox key="{meta:getWellLocationAddrStreetAddress()}" width="180" case="UPPER" max="30" tab="{meta:getWellLocationAddrCity()},{meta:getWellLocationAddrMultipleUnit()}" field="String" />
                   </widget>
                 </row>
                 <row>
@@ -265,7 +265,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"city")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox key="{meta:getWellLocationAddrCity()}" width="180" case="LOWER" max="30" tab="{meta:getWellLocationAddrState()},{meta:getWellLocationAddrStreetAddress()}" field="String" />
+                    <textbox key="{meta:getWellLocationAddrCity()}" width="180" case="UPPER" max="30" tab="{meta:getWellLocationAddrState()},{meta:getWellLocationAddrStreetAddress()}" field="String" />
                   </widget>
                 </row>
                 <row>
@@ -276,7 +276,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                   </text>
-                  <textbox key="{meta:getWellLocationAddrZipCode()}" width="73" case="UPPER" max="10" tab="{meta:getWellOwner()},{meta:getWellLocationAddrState()}" field="String" />
+                  <textbox key="{meta:getWellLocationAddrZipCode()}" width="73" mask="99999-9999" max="10" tab="{meta:getWellOwner()},{meta:getWellLocationAddrState()}" field="String" />
                 </row>
               </TablePanel>
             </HorizontalPanel>
