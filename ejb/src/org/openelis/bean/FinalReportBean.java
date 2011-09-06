@@ -332,8 +332,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         String printer;
         Datetime timeStamp;
         ReportStatus status;
-        Object[] result;
-        Integer[] list;
+        Object[] result, list;
         ArrayList<Integer> lockList;
         ArrayList<Object[]> resultList;
         ArrayList<OrganizationPrint> orgPrintList;
@@ -422,7 +421,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         while (orgIter.hasNext()) {
             orgId = orgIter.next();
             samMap = orgMap.get(orgId);
-            list = (Integer[]) samMap.values().toArray();
+            list = samMap.values().toArray();
             /*
              * samples with null organizations (such as private well) are
              * managed as single print rather then a batch for null organization
@@ -431,7 +430,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 for (i = 0; i < list.length; i++ ) {
                     orgPrint = new OrganizationPrint();
                     orgPrint.setOrganizationId(orgId);
-                    orgPrint.setSampleIds(list[i]);
+                    orgPrint.setSampleIds((Integer)list[i]);
                     orgPrintList.add(orgPrint);
                 }
             } else {
