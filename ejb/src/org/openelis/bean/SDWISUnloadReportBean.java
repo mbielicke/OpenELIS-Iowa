@@ -494,6 +494,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                                 rVDO.setValue(rVDO.getValue().substring(1));
                             if (rVDO.getValue().indexOf(".") != -1)
                                 rVDO.setValue(rVDO.getValue().substring(0, rVDO.getValue().indexOf(".")));
+                            if (!rVDO.getValue().startsWith("<"))
+                                rowData.put("count", rVDO.getValue());
                         }
                     }
                 }
