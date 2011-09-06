@@ -288,23 +288,24 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Worksheet.class, data.getId());
         
-        if (!DataBaseUtil.isDifferent(entity.getInstrumentId(), data.getInstrumentId()) &&
-            data.getInstrumentId() != null) {
-            try {
-                ilDO = instrumentLog.fetchByInstrumentIdWorksheetId(entity.getInstrumentId(),
-                                                                    entity.getId());
-                ilEntity = manager.find(InstrumentLog.class, ilDO.getId());
-                ilEntity.setInstrumentId(data.getInstrumentId());
-            } catch (NotFoundException nfE) {
-                ilEntity = new InstrumentLog();
-                ilEntity.setInstrumentId(data.getInstrumentId());
-                ilEntity.setTypeId(logPending);
-                ilEntity.setWorksheetId(data.getId());
-                ilEntity.setEventBegin(data.getCreatedDate());
-            }
-            if (data.getStatusId().equals(statusComplete) && ilEntity.getTypeId().equals(logPending)) {
-                ilEntity.setTypeId(logCompleted);
-                ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+        if (!DataBaseUtil.isDifferent(entity.getInstrumentId(), data.getInstrumentId())) {
+            if (data.getInstrumentId() != null) {
+                try {
+                    ilDO = instrumentLog.fetchByInstrumentIdWorksheetId(entity.getInstrumentId(),
+                                                                        entity.getId());
+                    ilEntity = manager.find(InstrumentLog.class, ilDO.getId());
+                } catch (NotFoundException nfE) {
+                    ilEntity = new InstrumentLog();
+                    ilEntity.setInstrumentId(data.getInstrumentId());
+                    ilEntity.setTypeId(logPending);
+                    ilEntity.setWorksheetId(data.getId());
+                    ilEntity.setEventBegin(data.getCreatedDate());
+                    manager.persist(ilEntity);
+                }
+                if (data.getStatusId().equals(statusComplete) && ilEntity.getTypeId().equals(logPending)) {
+                    ilEntity.setTypeId(logCompleted);
+                    ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                }
             }
         } else {
             if (entity.getInstrumentId() == null) {
