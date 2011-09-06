@@ -239,6 +239,9 @@ UIRF Software License are applicable instead of those above.
 					  <code>if(UserCache.getPermission().hasModule("r_final","SELECT")){</code>
                       <menuItem key="orderRecurrence" description="" icon="" enable="true" label="{resource:getString($constants,'orderRecurrence')}" />
                       <code>}</code>
+					  <code>if(UserCache.getPermission().hasModule("r_finalbatch","SELECT")){</code>
+                      <menuItem key="finalReportBatch" description="" icon="" enable="true" label="{resource:getString($constants,'finalReportBatch')}" />
+                      <code>}</code>
                     </menuPanel>
                   </menuItem>
                 </menuPanel>
