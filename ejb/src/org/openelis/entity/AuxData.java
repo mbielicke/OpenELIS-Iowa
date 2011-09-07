@@ -32,10 +32,13 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -93,10 +96,14 @@ public class AuxData implements Auditable, Cloneable {
   @Transient
   private AuxData original;
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "aux_field_id", insertable = false, updatable = false)
+  private AuxField auxField;
   
   public Integer getId() {
     return id;
   }
+  
   protected void setId(Integer id) {
     if(DataBaseUtil.isDifferent(id, this.id))
       this.id = id;
@@ -105,6 +112,7 @@ public class AuxData implements Auditable, Cloneable {
   public Integer getSortOrder() {
     return sortOrder;
   }
+  
   public void setSortOrder(Integer sortOrder) {
     if(DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
       this.sortOrder = sortOrder;
@@ -113,6 +121,7 @@ public class AuxData implements Auditable, Cloneable {
   public Integer getAuxFieldId() {
     return auxFieldId;
   }
+  
   public void setAuxFieldId(Integer auxFieldId) {
     if(DataBaseUtil.isDifferent(auxFieldId, this.auxFieldId))
       this.auxFieldId = auxFieldId;
@@ -121,6 +130,7 @@ public class AuxData implements Auditable, Cloneable {
   public Integer getReferenceId() {
     return referenceId;
   }
+  
   public void setReferenceId(Integer referenceId) {
     if(DataBaseUtil.isDifferent(referenceId, this.referenceId))
       this.referenceId = referenceId;
@@ -129,6 +139,7 @@ public class AuxData implements Auditable, Cloneable {
   public Integer getReferenceTableId() {
     return referenceTableId;
   }
+  
   public void setReferenceTableId(Integer referenceTableId) {
     if(DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
       this.referenceTableId = referenceTableId;
@@ -137,6 +148,7 @@ public class AuxData implements Auditable, Cloneable {
   public String getIsReportable() {
     return isReportable;
   }
+  
   public void setIsReportable(String isReportable) {
     if(DataBaseUtil.isDifferent(isReportable, this.isReportable))
       this.isReportable = isReportable;
@@ -145,6 +157,7 @@ public class AuxData implements Auditable, Cloneable {
   public Integer getTypeId() {
     return typeId;
   }
+  
   public void setTypeId(Integer typeId) {
     if(DataBaseUtil.isDifferent(typeId, this.typeId))
       this.typeId = typeId;
@@ -153,9 +166,18 @@ public class AuxData implements Auditable, Cloneable {
   public String getValue() {
     return value;
   }
+  
   public void setValue(String value) {
     if(DataBaseUtil.isDifferent(value, this.value))
       this.value = value;
+  }
+  
+  public AuxField getAuxField() {
+      return auxField;
+  }
+
+  public void setAuxField(AuxField auxField) {
+      this.auxField = auxField;
   }
   
   public void setClone() {
