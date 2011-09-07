@@ -26,15 +26,12 @@
 package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-import org.openelis.cache.CategoryCache;
-import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.PWSDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -45,134 +42,97 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleSDWISManager;
 
 public class SampleSDWISImportOrder extends ImportOrder {
-    protected static final String AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
     protected static final String PWS_SERVICE_URL      = "org.openelis.modules.pws.server.PWSService";
-
-    protected ScreenService       auxDataService, pwsService;
-
+    
+    protected ScreenService       pwsService;
+    
     public SampleSDWISImportOrder() {
-        auxDataService = new ScreenService("controller?service=" + AUX_DATA_SERVICE_URL);
         pwsService = new ScreenService("controller?service=" + PWS_SERVICE_URL);
     }
 
     public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
-        Integer auxGroupId;
-        AuxDataDO auxData;
-        ArrayList<AuxDataViewDO> auxDataList;
-
-        if (orderId == null)
-            return null;
-
-        auxData = new AuxDataDO();
-        auxData.setReferenceId(orderId);
-        auxData.setReferenceTableId(ReferenceTable.ORDER);
-
-        orderMan = null;
-        auxDataList = auxDataService.callList("fetchByRefId", auxData);
-
-        // we don't want to use a hard-coded reference to aux group (language).
-        // Use one level indirect by looking up system variable that points to
-        // the aux group
-        auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable",
-                                                "sample_sdwis_aux_data")).getId();
-
-        // grab order for report to/bill to
-        loadReportToBillTo(orderId, manager);
-
-        // grab order tests including number of bottles
-        loadSampleItems(orderId, manager);
-
-        // inject the data into the manager
-        return importData(auxDataList, auxGroupId, manager);
+        return super.importOrderInfo(orderId, manager, "sample_sdwis_aux_data");
     }
-
-    private ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
+    
+    protected ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
                                             Integer envAuxGroupId, SampleManager manager) throws Exception {
-        int i;
-        AuxDataViewDO auxData;
+        AuxDataViewDO data;
         String analyteId;
-        DictionaryDO dictDO;
+        DictionaryDO dict;
         Integer value;
-        PWSDO pwsDo;
+        SampleDO sample;
+        PWSDO pws;
+        SampleSDWISViewDO sdwis;
+        DateField df;
         ValidationErrorsList errorsList;
 
         errorsList = new ValidationErrorsList();
-        for (i = 0; i < auxDataList.size(); i++ ) {
-            auxData = auxDataList.get(i);
+        sample = manager.getSample();
+        sdwis = ((SampleSDWISManager)manager.getDomainManager()).getSDWIS();
+        
+        for (int i = 0; i < auxDataList.size(); i++ ) {
+            data = auxDataList.get(i);
             try {
-                if (auxData.getGroupId().equals(envAuxGroupId)) {
-                    analyteId = auxData.getAnalyteExternalId();
-
-                    if (analyteId.equals("smpl_collected_date")) {
-                        manager.getSample()
-                               .setCollectionDate(Datetime.getInstance(Datetime.YEAR,
-                                                                       Datetime.DAY,
-                                                                       new Date(auxData.getValue())));
-                    } else if (analyteId.equals("smpl_collected_time")) {
-                        DateField df = new DateField();
-                        df.setBegin(Datetime.HOUR);
-                        df.setEnd(Datetime.MINUTE);
-                        df.setStringValue(auxData.getValue());
-                        manager.getSample().setCollectionTime(df.getValue());
-                    } else if (analyteId.equals("smpl_client_ref")) {
-                        manager.getSample().setClientReference(auxData.getValue());
-                    } else if (analyteId.equals("pws_id")) {
-                        if (auxData.getValue() != null) {
-                            try {
-                                pwsDo = pwsService.call("fetchPwsByNumber0", auxData.getValue());
-                                ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                                .setPwsId(pwsDo.getId());
-                                ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                                .setPwsName(pwsDo.getName());
-                                ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                                .setPwsNumber0(pwsDo.getNumber0());
-                            } catch (NotFoundException e) {
-                                errorsList.add(new FormErrorException("orderImportError",
-                                                                      "pws id",
-                                                                      auxData.getValue()));
-                            }
+                if ( !data.getGroupId().equals(envAuxGroupId)) {
+                    saveAuxData(data, errorsList, manager);
+                    continue;
+                }
+                analyteId = data.getAnalyteExternalId();
+                if ("smpl_collected_date".equals(analyteId)) {
+                    df = new DateField();
+                    df.setBegin(Datetime.YEAR);
+                    df.setEnd(Datetime.DAY);
+                    df.setStringValue(data.getValue());
+                    sample.setCollectionDate(df.getValue());
+                } else if ("smpl_collected_time".equals(analyteId)) {
+                    df = new DateField();
+                    df.setBegin(Datetime.HOUR);
+                    df.setEnd(Datetime.MINUTE);
+                    df.setStringValue(data.getValue());
+                    sample.setCollectionTime(df.getValue());
+                } else if ("smpl_client_ref".equals(analyteId)) {
+                    sample.setClientReference(data.getValue());
+                } else if ("pws_id".equals(analyteId)) {
+                    if (data.getValue() != null) {
+                        try {
+                            pws = pwsService.call("fetchPwsByNumber0", data.getValue());
+                            sdwis.setPwsId(pws.getId());
+                            sdwis.setPwsName(pws.getName());
+                            sdwis.setPwsNumber0(pws.getNumber0());
+                        } catch (NotFoundException e) {
+                            errorsList.add(new FormErrorException("orderImportError", "pws id",
+                                                                  data.getValue()));
                         }
-                    } else if (analyteId.equals("state_lab_num")) {
-                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                        .setStateLabId(new Integer(auxData.getValue()));
-                    } else if (analyteId.equals("facility_id")) {
-                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                        .setFacilityId(auxData.getValue());
-                    } else if (analyteId.equals("sample_type")) {
-                        value = null;
-                        dictDO = getDropdownByKey(auxData.getValue(), "sdwis_sample_type");
-                        if (dictDO != null)
-                            value = dictDO.getId();
-                        else if (auxData.getValue() != null)
-                            errorsList.add(new FormErrorException("orderImportError",
-                                                                  "sample type",
-                                                                  auxData.getValue()));
-                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                        .setSampleTypeId(value);
-                    } else if (analyteId.equals("sample_cat")) {
-                        value = null;
-                        dictDO = getDropdownByKey(auxData.getValue(), "sdwis_sample_category");
-                        if (dictDO != null)
-                            value = dictDO.getId();
-                        else if (auxData.getValue() != null)
-                            errorsList.add(new FormErrorException("orderImportError",
-                                                                  "sample category",
-                                                                  auxData.getValue()));
-
-                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                        .setSampleCategoryId(value);
-                    } else if (analyteId.equals("sample_pt_id")) {
-                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                        .setSamplePointId(auxData.getValue());
-                    } else if (analyteId.equals("location")) {
-                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                        .setLocation(auxData.getValue());
-                    } else if (analyteId.equals("collector")) {
-                        ((SampleSDWISManager)manager.getDomainManager()).getSDWIS()
-                                                                        .setCollector(auxData.getValue());
                     }
-                } else {
-                    manager.getAuxData().addAuxData(auxData);
+                } else if ("state_lab_num".equals(analyteId)) {
+                    sdwis.setStateLabId(new Integer(data.getValue()));
+                } else if ("facility_id".equals(analyteId)) {
+                    sdwis.setFacilityId(data.getValue());
+                } else if ("sample_type".equals(analyteId)) {
+                    value = null;
+                    dict = getDropdownByKey(data.getValue(), "sdwis_sample_type");
+                    if (dict != null)
+                        value = dict.getId();
+                    else if (data.getValue() != null)
+                        errorsList.add(new FormErrorException("orderImportError", "sample type",
+                                                              data.getValue()));
+                    sdwis.setSampleTypeId(value);
+                } else if ("sample_cat".equals(analyteId)) {
+                    value = null;
+                    dict = getDropdownByKey(data.getValue(), "sdwis_sample_category");
+                    if (dict != null)
+                        value = dict.getId();
+                    else if (data.getValue() != null)
+                        errorsList.add(new FormErrorException("orderImportError",
+                                                              "sample category", data.getValue()));
+
+                    sdwis.setSampleCategoryId(value);
+                } else if ("sample_pt_id".equals(analyteId)) {
+                    sdwis.setSamplePointId(data.getValue());
+                } else if ("location".equals(analyteId)) {
+                    sdwis.setLocation(data.getValue());
+                } else if ("collector".equals(analyteId)) {
+                    sdwis.setCollector(data.getValue());
                 }
             } catch (Exception e) {
                 // problem with aux input, ignore
@@ -182,24 +142,6 @@ public class SampleSDWISImportOrder extends ImportOrder {
         if (errorsList.size() > 0)
             return errorsList;
 
-        return null;
-    }
-
-    private DictionaryDO getDropdownByKey(String key, String dictSystemName) {
-        Integer id;
-        ArrayList<DictionaryDO> entries;
-
-        if (key != null) {
-            try {
-                id = new Integer(key);
-                entries = CategoryCache.getBySystemName(dictSystemName);
-                for (DictionaryDO data : entries) {
-                    if (id.equals(data.getId()))
-                        return data;
-                }
-            } catch (Exception e) {
-            }
-        }
         return null;
     }
 }

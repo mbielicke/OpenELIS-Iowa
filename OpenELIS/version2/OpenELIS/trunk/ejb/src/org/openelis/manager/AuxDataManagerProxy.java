@@ -33,6 +33,7 @@ import javax.xml.crypto.Data;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxDataLocal;
 import org.openelis.utils.EJBFactory;
@@ -52,10 +53,19 @@ public class AuxDataManagerProxy {
         data = EJBFactory.getAuxData().fetchById(referenceId, referenceTableId);
         for (i = 0; i < data.size(); i++) {
             dataDO = data.get(i);
-            fieldDO = EJBFactory.getAuxField().fetchById(dataDO.getAuxFieldId());
-            values = EJBFactory.getAuxFieldValue().fetchByFieldId(fieldDO.getId());
-            
-            man.addAuxDataFieldAndValues(dataDO, fieldDO, values);
+            try {
+                /*
+                 * it can happen that after an aux data for an aux field has been
+                 * created for a parent like sample or order, the aux field gets
+                 * removed from the aux field group, we still want to show 
+                 * aux data linked to existing aux fields     
+                 */
+                fieldDO = EJBFactory.getAuxField().fetchById(dataDO.getAuxFieldId());
+                values = EJBFactory.getAuxFieldValue().fetchByFieldId(fieldDO.getId());
+                man.addAuxDataFieldAndValues(dataDO, fieldDO, values);
+            } catch (NotFoundException ignE) {
+                // ignore
+            }
         }
         
         return man;

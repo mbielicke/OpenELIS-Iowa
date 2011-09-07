@@ -115,13 +115,12 @@ public class AuxFieldManagerProxy {
     }
 
     public AuxFieldManager fetchByGroupIdWithValues(Integer groupId) throws Exception {
+        int fieldId;
         AuxFieldLocal l;
         AuxFieldValueLocal vl;
-
         AuxFieldViewDO data;
         ArrayList<AuxFieldViewDO> fields;
         ArrayList<AuxFieldValueViewDO> values, tmpValue;
-        int fieldId;
         HashMap<Integer, ArrayList<AuxFieldValueViewDO>> valueHash;
         AuxFieldManager m;
 
