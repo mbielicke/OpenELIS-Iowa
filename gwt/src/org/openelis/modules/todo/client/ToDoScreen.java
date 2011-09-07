@@ -81,6 +81,7 @@ public class ToDoScreen extends Screen {
         tab = Tabs.LOGGED_IN;
     
         initialize();
+        mySection.setValue("Y");
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }

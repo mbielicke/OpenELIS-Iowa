@@ -356,7 +356,13 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     releasedCache.remove(id);
                 
                 getOther();
-                otherCache.put(new Element(id, data));
+                //
+                // cancelled analyses are not cached
+                //
+                if (!"analysis_cancelled".equals(sname))                  
+                    otherCache.put(new Element(id, data));
+                else if (otherCache.get(id) != null)
+                    otherCache.remove(id);                
             }
         } catch (Exception e) {
             e.printStackTrace();
