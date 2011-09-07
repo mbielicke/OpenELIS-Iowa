@@ -32,13 +32,10 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -52,8 +49,15 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "AuxData.FetchById",
                 query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
                         "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, " +
-                        "a.value, '',afg.id, an.externalId) "
-                      + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg where a.referenceId = :id and a.referenceTableId = :tableId order by a.sortOrder ")})
+                        "a.value, '',afg.id, an.id, an.name, an.externalId) "
+                      + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
+                      +	" where a.referenceId = :id and a.referenceTableId = :tableId order by a.sortOrder "),
+    @NamedQuery( name = "AuxData.FetchForDataDump",
+                query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
+                        "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, " +
+                        "a.value, '',afg.id, an.id, an.name, an.externalId) "
+                      + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
+                      +	" where a.referenceId in (:ids) and a.referenceTableId = :tableId and a.isReportable = 'Y' and a.value != null order by an.name")})
                     
 @Entity
 @Table(name="aux_data")
@@ -85,11 +89,7 @@ public class AuxData implements Auditable, Cloneable {
 
   @Column(name="value")
   private String value; 
-  
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "aux_field_id",insertable = false, updatable = false)
-  private AuxField auxField;
-
+ 
   @Transient
   private AuxData original;
 
