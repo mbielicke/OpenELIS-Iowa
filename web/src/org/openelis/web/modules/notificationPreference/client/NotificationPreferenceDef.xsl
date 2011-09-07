@@ -55,7 +55,7 @@ UIRF Software License are applicable instead of those above.
        <deck>
         <HorizontalPanel padding="0" spacing="0" >
         <VerticalPanel>
-         <TablePanel style="help" width = "520">
+         <TablePanel style="helpLeftAlign" width = "520">
            <row>
               <html><xsl:value-of select='resource:getString($constants,"notificationPreference.header1")' /></html>
            </row>

@@ -27,16 +27,13 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AuxDataDO;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
@@ -51,222 +48,101 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SamplePrivateWellManager;
 
 public class SamplePrivateWellImportOrder extends ImportOrder {
-    protected static final String AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
     protected static final String PROJECT_SERVICE_URL  = "org.openelis.modules.project.server.ProjectService";
-    protected ScreenService       auxDataService, projectService;
+    
+    protected ScreenService       projectService;
 
     public SamplePrivateWellImportOrder() {
-        auxDataService = new ScreenService("controller?service=" + AUX_DATA_SERVICE_URL);
         projectService = new ScreenService("controller?service=" + PROJECT_SERVICE_URL);
     }
-
+    
     public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
-        Integer auxGroupId;
-        AuxDataDO auxData;
-        ArrayList<AuxDataViewDO> auxDataList;
-
-        if (orderId == null)
-            return null;
-
-        auxData = new AuxDataDO();
-        auxData.setReferenceId(orderId);
-        auxData.setReferenceTableId(ReferenceTable.ORDER);
-
-        orderMan = null;
-        auxDataList = auxDataService.callList("fetchByRefId", auxData);
-
-        // we don't want to use a hard-coded reference to aux group (language).
-        // Use one level indirect by looking up system variable that points to
-        // the aux group
-        auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable",
-                                                "sample_well_aux_data")).getId();
-
-        // load order report to/bill to
-        loadReportToBillTo(orderId, manager);
-
-        // grab order tests including number of bottles
-        loadSampleItems(orderId, manager);
-
-        // inject the data into the manager
-        return importData(auxDataList, auxGroupId, manager);
+        return super.importOrderInfo(orderId, manager, "sample_well_aux_data");
     }
 
-    private ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
+    protected ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
                                             Integer envAuxGroupId, SampleManager manager) throws Exception {
         AuxDataViewDO data;
         ProjectDO proj;
         SampleProjectViewDO sampleProj;
         String analyteId;
+        SampleDO sample;
         SamplePrivateWellManager wellMan;
+        SamplePrivateWellViewDO well;
+        AddressDO locAddr;
         ValidationErrorsList errorsList;
-        boolean reportToLoaded, reportToError;
+        DateField df;
 
         errorsList = new ValidationErrorsList();
+        sample = manager.getSample();
         wellMan = (SamplePrivateWellManager)manager.getDomainManager();
-        reportToLoaded = wellMan.getPrivateWell().getOrganizationId() != null;
-        reportToError = false;
+        well = wellMan.getPrivateWell();
+        locAddr = well.getLocationAddress();
 
         for (int i = 0; i < auxDataList.size(); i++ ) {
             data = auxDataList.get(i);
             try {
-                if (data.getGroupId().equals(envAuxGroupId)) {
-                    analyteId = data.getAnalyteExternalId();
+                if ( !data.getGroupId().equals(envAuxGroupId)) {
+                    saveAuxData(data, errorsList, manager);
+                    continue;
+                }
+                analyteId = data.getAnalyteExternalId();
+                if ("smpl_collected_date".equals(analyteId)) {
+                    sample.setCollectionDate(Calendar.getCurrentDatetime(Datetime.YEAR,
+                                                                         Datetime.DAY));
+                } else if ("smpl_collected_time".equals(analyteId)) {
+                    df = new DateField();
+                    df.setBegin(Datetime.HOUR);
+                    df.setEnd(Datetime.MINUTE);
+                    df.setStringValue(data.getValue());
+                    sample.setCollectionTime(df.getValue());
+                } else if ("smpl_client_ref".equals(analyteId)) {
+                    sample.setClientReference(data.getValue());
+                } else if ("location".equals(analyteId)) {
+                    well.setLocation(data.getValue());
+                } else if ("loc_mult_unit".equals(analyteId)) {
+                    locAddr.setMultipleUnit(data.getValue());
+                } else if ("loc_street_address".equals(analyteId)) {
+                    locAddr.setStreetAddress(data.getValue());
+                } else if ("loc_city".equals(analyteId)) {
+                    locAddr.setCity(data.getValue());
+                } else if ("loc_state".equals(analyteId)) {
+                    if (getDropdownByValue(data.getValue(), "state") != null)
+                        locAddr.setState(data.getValue());
+                    else if (data.getValue() != null)
+                        errorsList.add(new FormErrorException("orderImportError", "state",
+                                                              data.getValue()));
+                } else if ("loc_zip_code".equals(analyteId)) {
+                    locAddr.setZipCode(data.getValue());
+                } else if ("owner".equals(analyteId)) {
+                    well.setOwner(data.getValue());
+                } else if ("collector".equals(analyteId)) {
+                    well.setCollector(data.getValue());
+                } else if ("well_number".equals(analyteId)) {
+                    well.setWellNumber(new Integer(data.getValue()));
+                } else if ("project_name".equals(analyteId) && data.getValue() != null) {
+                    proj = projectService.call("fetchSingleByName", data.getValue());
+                    if (proj != null) {
+                        sampleProj = new SampleProjectViewDO();
+                        sampleProj.setIsPermanent("Y");
+                        sampleProj.setProjectId(proj.getId());
+                        sampleProj.setProjectName(proj.getName());
+                        sampleProj.setProjectDescription(proj.getDescription());
 
-                    if (analyteId.equals("smpl_collected_date")) {
-                        manager.getSample()
-                               .setCollectionDate(Calendar.getCurrentDatetime(Datetime.YEAR,
-                                                                              Datetime.DAY));
-                    } else if (analyteId.equals("smpl_collected_time")) {
-                        DateField df = new DateField();
-                        df.setBegin(Datetime.HOUR);
-                        df.setEnd(Datetime.MINUTE);
-                        df.setStringValue(data.getValue());
-                        manager.getSample().setCollectionTime(df.getValue());
-                    } else if (analyteId.equals("smpl_client_ref")) {
-                        manager.getSample().setClientReference(data.getValue());
-                    } else if (analyteId.equals("report_to")) {
-                        if (reportToLoaded) {
-                            if (data.getValue() != null)
-                                reportToError = true;
-                        } else
-                            wellMan.getPrivateWell().setReportToName(data.getValue());
+                        manager.getProjects().addFirstPermanentProject(sampleProj);
 
-                    } else if (analyteId.equals("report_to_attention")) {
-                        wellMan.getPrivateWell().setReportToAttention(data.getValue());
-                    } else if (analyteId.equals("report_to_mult_unit")) {
-                        if (reportToLoaded) {
-                            if (data.getValue() != null)
-                                reportToError = true;
-                        } else {
-                            wellMan.getPrivateWell()
-                                   .getReportToAddress()
-                                   .setMultipleUnit(data.getValue());
-                        }
-
-                    } else if (analyteId.equals("report_to_street_add")) {
-                        if (reportToLoaded) {
-                            if (data.getValue() != null)
-                                reportToError = true;
-                        } else {
-                            wellMan.getPrivateWell()
-                                   .getReportToAddress()
-                                   .setStreetAddress(data.getValue());
-                        }
-
-                    } else if (analyteId.equals("report_to_city")) {
-                        if (reportToLoaded) {
-                            if (data.getValue() != null)
-                                reportToError = true;
-                        } else {
-                            wellMan.getPrivateWell().getReportToAddress().setCity(data.getValue());
-                        }
-
-                    } else if (analyteId.equals("report_to_state")) {
-                        if (reportToLoaded) {
-                            if (data.getValue() != null)
-                                reportToError = true;
-                        } else {
-                            wellMan.getPrivateWell().getReportToAddress().setState(data.getValue());
-                        }
-
-                    } else if (analyteId.equals("report_to_zip_code")) {
-                        if (reportToLoaded) {
-                            if (data.getValue() != null)
-                                reportToError = true;
-                        } else {
-                            wellMan.getPrivateWell()
-                                   .getReportToAddress()
-                                   .setZipCode(data.getValue());
-                        }
-
-                    } else if (analyteId.equals("report_to_phone_num")) {
-                        if (reportToLoaded) {
-                            if (data.getValue() != null)
-                                reportToError = true;
-                        } else {
-                            wellMan.getPrivateWell()
-                                   .getReportToAddress()
-                                   .setWorkPhone(data.getValue());
-                        }
-
-                    } else if (analyteId.equals("report_to_fax_num")) {
-                        if (reportToLoaded) {
-                            if (data.getValue() != null)
-                                reportToError = true;
-                        } else {
-                            wellMan.getPrivateWell()
-                                   .getReportToAddress()
-                                   .setFaxPhone(data.getValue());
-                        }
-
-                    } else if (analyteId.equals("location")) {
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
-                                                                              .setLocation(data.getValue());
-                    } else if (analyteId.equals("loc_mult_unit")) {
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
-                                                                              .getLocationAddress()
-                                                                              .setMultipleUnit(data.getValue());
-                    } else if (analyteId.equals("loc_street_address")) {
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
-                                                                              .getLocationAddress()
-                                                                              .setStreetAddress(data.getValue());
-                    } else if (analyteId.equals("loc_city")) {
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
-                                                                              .getLocationAddress()
-                                                                              .setCity(data.getValue());
-                    } else if (analyteId.equals("loc_state")) {
-                        if (getDropdownByValue(data.getValue(), "state") != null)
-                            ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
-                                                                                  .getLocationAddress()
-                                                                                  .setState(data.getValue());
-                        else if (data.getValue() != null)
-                            errorsList.add(new FormErrorException("orderImportError",
-                                                                  "state",
-                                                                  data.getValue()));
-                    } else if (analyteId.equals("loc_zip_code")) {
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
-                                                                              .getLocationAddress()
-                                                                              .setZipCode(data.getValue());
-                    } else if (analyteId.equals("owner")) {
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
-                                                                              .setOwner(data.getValue());
-                    } else if (analyteId.equals("collector")) {
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
-                                                                              .setCollector(data.getValue());
-                    } else if (analyteId.equals("well_number")) {
-                        ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell()
-                                                                              .setWellNumber(new Integer(data.getValue()));
-                    } else if (analyteId.equals("project_name") && data.getValue() != null) {
-
-                        proj = projectService.call("fetchSingleByName", data.getValue());
-
-                        if (proj != null) {
-                            sampleProj = new SampleProjectViewDO();
-                            sampleProj.setIsPermanent("Y");
-                            sampleProj.setProjectId(proj.getId());
-                            sampleProj.setProjectName(proj.getName());
-                            sampleProj.setProjectDescription(proj.getDescription());
-
-                            manager.getProjects().addFirstPermanentProject(sampleProj);
-
-                        } else
-                            errorsList.add(new FormErrorException("orderImportError",
-                                                                  "project",
-                                                                  data.getValue()));
+                    } else {
+                        errorsList.add(new FormErrorException("orderImportError", "project",
+                                                              data.getValue()));
                     }
-
-                } else {
-                    manager.getAuxData().addAuxData(data);
                 }
             } catch (Exception e) {
                 // problem with aux input, ignore
             }
         }
-
-        if (reportToError) {
-            errorsList.add(new FormErrorException("importOrderReportToException"));
+        
+        if (errorsList.size() > 0)
             return errorsList;
-        }
 
         return null;
     }
@@ -326,18 +202,5 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
             billToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
             man.getOrganizations().addOrganization(billToSampOrg);
         }
-    }
-
-    private DictionaryDO getDropdownByValue(String value, String dictSystemName) {
-        ArrayList<DictionaryDO> entries;
-
-        if (value != null) {
-            entries = CategoryCache.getBySystemName(dictSystemName);
-            for (DictionaryDO data : entries) {
-                if (value.equals(data.getEntry()))
-                    return data;
-            }
-        }
-        return null;
     }
 }

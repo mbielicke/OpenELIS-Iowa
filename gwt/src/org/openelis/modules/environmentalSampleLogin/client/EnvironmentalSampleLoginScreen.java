@@ -530,10 +530,17 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 ValidationErrorsList errors;
                 OrderManager man;
 
-                manager.getSample().setOrderId(event.getValue());
-
-                if (DataBaseUtil.isEmpty(event.getValue()))
+                if (DataBaseUtil.isEmpty(event.getValue())) {
+                    manager.getSample().setOrderId(event.getValue());
                     return;
+                }
+                
+                if (manager.getSample().getId() != null) {
+                    Window.alert(consts.get("existSampleCantFillFromOrder"));
+                    return;
+                } 
+                
+                manager.getSample().setOrderId(event.getValue());
                 
                 try {
                     man = OrderManager.fetchById(event.getValue());

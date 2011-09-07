@@ -26,16 +26,13 @@
 package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.AuxDataDO;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.ProjectDO;
-import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
@@ -46,155 +43,108 @@ import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 
 public class SampleEnvironmentalImportOrder extends ImportOrder {
-    protected static final String AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
-    protected static final String PROJECT_SERVICE_URL  = "org.openelis.modules.project.server.ProjectService";
-
-    protected ScreenService       auxDataService, projectService;
+    protected static final String  PROJECT_SERVICE_URL  = "org.openelis.modules.project.server.ProjectService";
+    protected ScreenService        projectService;
 
     public SampleEnvironmentalImportOrder() {
-        auxDataService = new ScreenService("controller?service=" + AUX_DATA_SERVICE_URL);
         projectService = new ScreenService("controller?service=" + PROJECT_SERVICE_URL);
     }
-
+    
     public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
-        Integer auxGroupId;
-        AuxDataDO auxData;
-        ArrayList<AuxDataViewDO> auxDataList;
-
-        if (orderId == null)
-            return null;
-
-        auxData = new AuxDataDO();
-        auxData.setReferenceId(orderId);
-        auxData.setReferenceTableId(ReferenceTable.ORDER);
-
-        orderMan = null;
-        auxDataList = auxDataService.callList("fetchByRefId", auxData);
-
-        // we don't want to use a hard-coded reference to aux group (language).
-        // Use one level indirect by looking up system variable that points to
-        // the aux group
-        auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable",
-                                                "sample_env_aux_data")).getId();
-
-        // grab order for report to/bill to
-        loadReportToBillTo(orderId, manager);
-
-        // grab order tests including number of bottles
-        loadSampleItems(orderId, manager);
-
-        // inject the data into the manager
-        return importData(auxDataList, auxGroupId, manager);
+        return super.importOrderInfo(orderId, manager, "sample_env_aux_data");
     }
 
-    private ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
+    protected ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
                                             Integer envAuxGroupId, SampleManager manager) throws Exception {
-        AuxDataViewDO auxData;
-        String analyteId;
+        AuxDataViewDO data;
+        String analyteId;        
+        SampleDO sample;
+        ProjectDO proj;
+        SampleProjectViewDO smplProj;
+        SampleEnvironmentalDO env;
+        AddressDO locAddr;
+        DateField df;
         ValidationErrorsList errorsList;
 
         errorsList = new ValidationErrorsList();
-        // aux data
+        sample = manager.getSample();
+        env = ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental();
+        locAddr = env.getLocationAddress();
+        
         for (int i = 0; i < auxDataList.size(); i++ ) {
-            auxData = auxDataList.get(i);
+            data = auxDataList.get(i);
             try {
-                if (auxData.getGroupId().equals(envAuxGroupId)) {
-                    analyteId = auxData.getAnalyteExternalId();
-
-                    if (analyteId.equals("smpl_collected_date"))
-                        manager.getSample()
-                               .setCollectionDate(Datetime.getInstance(Datetime.YEAR,
-                                                                       Datetime.DAY,
-                                                                       new Date(auxData.getValue())));
-                    else if (analyteId.equals("smpl_collected_time")) {
-                        DateField df = new DateField();
-                        df.setBegin(Datetime.HOUR);
-                        df.setEnd(Datetime.MINUTE);
-                        df.setStringValue(auxData.getValue());
-                        manager.getSample().setCollectionTime(df.getValue());
-                    } else if (analyteId.equals("smpl_client_ref"))
-                        manager.getSample().setClientReference(auxData.getValue());
-                    else if (analyteId.equals("is_hazardous")) {
-                        if (auxData.getValue() != null &&
-                            "yes".equals(DictionaryCache.getSystemNameById(new Integer(auxData.getValue()))))
-                            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                    .setIsHazardous("Y");
-                        else
-                            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                    .setIsHazardous("N");
-                    } else if (analyteId.equals("collector"))
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                .setCollector(auxData.getValue());
-                    else if (analyteId.equals("location"))
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                .setLocation(auxData.getValue());
-                    else if (analyteId.equals("loc_mult_unit"))
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                .getLocationAddress()
-                                                                                .setMultipleUnit(auxData.getValue());
-                    else if (analyteId.equals("loc_street_address"))
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                .getLocationAddress()
-                                                                                .setStreetAddress(auxData.getValue());
-                    else if (analyteId.equals("loc_city"))
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                .getLocationAddress()
-                                                                                .setCity(auxData.getValue());
-                    else if (analyteId.equals("loc_state")) {
-                        if (getDropdownByValue(auxData.getValue(), "state") != null)
-                            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                    .getLocationAddress()
-                                                                                    .setState(auxData.getValue());
-                        else if (auxData.getValue() != null)
-                            errorsList.add(new FormErrorException("orderImportError",
-                                                                  "state",
-                                                                  auxData.getValue()));
-
-                    } else if (analyteId.equals("loc_zip_code"))
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                .getLocationAddress()
-                                                                                .setZipCode(auxData.getValue());
-                    else if (analyteId.equals("loc_country")) {
-                        if (getDropdownByValue(auxData.getValue(), "country") != null)
-                            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                    .getLocationAddress()
-                                                                                    .setCountry(auxData.getValue());
-                        else if (auxData.getValue() != null)
-                            errorsList.add(new FormErrorException("orderImportError",
-                                                                  "country",
-                                                                  auxData.getValue()));
-                    } else if (analyteId.equals("priority"))
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                .setPriority(new Integer(auxData.getValue()));
-                    else if (analyteId.equals("collector_phone"))
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                .setCollectorPhone(auxData.getValue());
-                    else if (analyteId.equals("description"))
-                        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                                .setDescription(auxData.getValue());
-                    else if (analyteId.equals("project_name") && auxData.getValue() != null) {
-                        ProjectDO proj;
-                        SampleProjectViewDO projectDO;
-
-                        proj = projectService.call("fetchSingleByName", auxData.getValue());
-
-                        if (proj != null) {
-                            projectDO = new SampleProjectViewDO();
-                            projectDO.setIsPermanent("Y");
-                            projectDO.setProjectId(proj.getId());
-                            projectDO.setProjectName(proj.getName());
-                            projectDO.setProjectDescription(proj.getDescription());
-
-                            manager.getProjects().addFirstPermanentProject(projectDO);
-
-                        } else
-                            errorsList.add(new FormErrorException("orderImportError",
-                                                                  "project",
-                                                                  auxData.getValue()));
-                    }
-                } else {
-                    manager.getAuxData().addAuxData(auxData);
+                if ( !data.getGroupId().equals(envAuxGroupId)) {
+                    saveAuxData(data, errorsList, manager);
+                    continue;
                 }
+                analyteId = data.getAnalyteExternalId();
+                if ("smpl_collected_date".equals(analyteId)) {
+                    df = new DateField();
+                    df.setBegin(Datetime.YEAR);
+                    df.setEnd(Datetime.DAY);
+                    df.setStringValue(data.getValue());
+                    sample.setCollectionDate(df.getValue());
+                } else if ("smpl_collected_time".equals(analyteId)) {
+                    df = new DateField();
+                    df.setBegin(Datetime.HOUR);
+                    df.setEnd(Datetime.MINUTE);
+                    df.setStringValue(data.getValue());
+                    sample.setCollectionTime(df.getValue());
+                } else if ("smpl_client_ref".equals(analyteId)) {
+                    sample.setClientReference(data.getValue());
+                } else if ("is_hazardous".equals(analyteId)) {
+                    if (data.getValue() != null &&
+                        "yes".equals(DictionaryCache.getSystemNameById(new Integer(data.getValue()))))
+                        env.setIsHazardous("Y");
+                    else
+                        env.setIsHazardous("N");
+                } else if ("collector".equals(analyteId)) {
+                    env.setCollector(data.getValue());
+                } else if ("location".equals(analyteId)) {
+                    env.setLocation(data.getValue());
+                } else if ("loc_mult_unit".equals(analyteId)) {
+                    locAddr.setMultipleUnit(data.getValue());
+                } else if ("loc_street_address".equals(analyteId)) {
+                    locAddr.setStreetAddress(data.getValue());
+                } else if ("loc_city".equals(analyteId)) {
+                    locAddr.setCity(data.getValue());
+                } else if ("loc_state".equals(analyteId)) {
+                    if (getDropdownByValue(data.getValue(), "state") != null)
+                        locAddr.setState(data.getValue());
+                    else if (data.getValue() != null)
+                        errorsList.add(new FormErrorException("orderImportError", "state",
+                                                              data.getValue()));
+                } else if (analyteId.equals("loc_zip_code")) {
+                    locAddr.setZipCode(data.getValue());
+                } else if ("loc_country".equals(analyteId)) {
+                    if (getDropdownByValue(data.getValue(), "country") != null)
+                        locAddr.setCountry(data.getValue());
+                    else if (data.getValue() != null)
+                        errorsList.add(new FormErrorException("orderImportError", "country",
+                                                              data.getValue()));
+                } else if ("priority".equals(analyteId)) {
+                    env.setPriority(new Integer(data.getValue()));
+                } else if ("collector_phone".equals(analyteId)) {
+                    env.setCollectorPhone(data.getValue());
+                } else if ("description".equals(analyteId)) {
+                    env.setDescription(data.getValue());
+                } else if ("project_name".equals(analyteId) && data.getValue() != null) {
+                    proj = projectService.call("fetchSingleByName", data.getValue());
+                    if (proj != null) {
+                        smplProj = new SampleProjectViewDO();
+                        smplProj.setIsPermanent("Y");
+                        smplProj.setProjectId(proj.getId());
+                        smplProj.setProjectName(proj.getName());
+                        smplProj.setProjectDescription(proj.getDescription());
+
+                        manager.getProjects().addFirstPermanentProject(smplProj);
+
+                    } else
+                        errorsList.add(new FormErrorException("orderImportError", "project",
+                                                              data.getValue()));
+                }
+
             } catch (Exception e) {
                 // problem with aux input, ignore
             }
@@ -203,19 +153,6 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
         if (errorsList.size() > 0)
             return errorsList;
 
-        return null;
-    }
-
-    private DictionaryDO getDropdownByValue(String value, String dictSystemName) {
-        ArrayList<DictionaryDO> entries;
-
-        if (value != null) {
-            entries = CategoryCache.getBySystemName(dictSystemName);
-            for (DictionaryDO data : entries) {
-                if (value.equals(data.getEntry()))
-                    return data;
-            }
-        }
         return null;
     }
 }

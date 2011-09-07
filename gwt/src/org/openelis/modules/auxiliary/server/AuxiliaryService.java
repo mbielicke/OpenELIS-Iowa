@@ -87,9 +87,9 @@ public class AuxiliaryService {
     public AuxFieldManager fetchFieldByGroupIdWithValues(Integer groupId) throws Exception {
         return remoteManager().fetchFieldByGroupIdWithValues(groupId);
     }
-
-    public AuxFieldValueManager fetchFieldValueByFieldId(Integer auxFieldId) throws Exception {
-        return remoteManager().fetchFieldValueByFieldId(auxFieldId);
+    
+    public AuxFieldValueManager fetchFieldValueByFieldId(Integer fieldId) throws Exception {
+        return remoteManager().fetchFieldValueByFieldId(fieldId);
     }
 
     private AuxFieldGroupRemote remote() {

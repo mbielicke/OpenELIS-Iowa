@@ -27,21 +27,92 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AuxDataDO;
+import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.manager.AuxFieldGroupManager;
+import org.openelis.manager.AuxFieldManager;
+import org.openelis.manager.AuxFieldValueManager;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 
-public class ImportOrder {
-    protected OrderManager orderMan;
+public abstract class ImportOrder {
+    protected OrderManager         orderMan;
+    
+    protected AuxFieldGroupManager auxFieldGroupMan;
+    
+    protected int                  lastAuxFieldIndex;  
+    
+    protected static final String  AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService";
+    
+    protected ScreenService        auxDataService;
+    
+    protected ImportOrder() {
+        auxDataService = new ScreenService("controller?service=" + AUX_DATA_SERVICE_URL);
+    }
+    
+    protected ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager,
+                                                   String sysVariableKey) throws Exception {
+        Integer auxGroupId;
+        AuxDataDO auxData;
+        ArrayList<AuxDataViewDO> auxDataList;
+
+        if (orderId == null)
+            return null;
+
+        auxData = new AuxDataDO();
+        auxData.setReferenceId(orderId);
+        auxData.setReferenceTableId(ReferenceTable.ORDER);
+
+        orderMan = null;
+        auxDataList = auxDataService.callList("fetchByRefId", auxData);
+
+        // we don't want to use a hard-coded reference to aux group (language).
+        // Use one level indirect by looking up system variable that points to
+        // the aux group
+        auxGroupId = ((IdVO)auxDataService.call("getAuxGroupIdFromSystemVariable",
+                                                sysVariableKey)).getId();
+
+        // grab order for report to/bill to
+        loadReportToBillTo(orderId, manager);
+
+        // grab order tests including number of bottles
+        loadSampleItems(orderId, manager);
+
+        // inject the data into the manager
+        return importData(auxDataList, auxGroupId, manager);
+    }
+    
+    public ArrayList<OrderTestViewDO> getTestsFromOrder(Integer orderId) throws Exception {
+        OrderTestManager testManager;
+        
+        if(orderMan == null )
+            orderMan = OrderManager.fetchById(orderId);
+        
+        testManager = orderMan.getTests();
+        
+        return testManager.getTests();
+    }   
+    
+    protected abstract ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
+                                            Integer envAuxGroupId, SampleManager manager) throws Exception;    
     
     protected void loadReportToBillTo(Integer orderId, SampleManager man) throws Exception {
         OrderViewDO              orderDO;
@@ -141,14 +212,84 @@ public class ImportOrder {
             itemMan.addSampleItem();
     }
     
-    public ArrayList<OrderTestViewDO> getTestsFromOrder(Integer orderId) throws Exception {
-        OrderTestManager testManager;
+    protected DictionaryDO getDropdownByKey(String key, String dictSystemName) {
+        Integer id;
+        ArrayList<DictionaryDO> entries;
+
+        if (key != null) {
+            try {
+                id = new Integer(key);
+                entries = CategoryCache.getBySystemName(dictSystemName);
+                for (DictionaryDO data : entries) {
+                    if (id.equals(data.getId()))
+                        return data;
+                }
+            } catch (Exception e) {
+            }
+        }
+        return null;    
+    }
+    
+    protected DictionaryDO getDropdownByValue(String value, String dictSystemName) {
+        ArrayList<DictionaryDO> entries;
+
+        if (value != null) {
+            entries = CategoryCache.getBySystemName(dictSystemName);
+            for (DictionaryDO data : entries) {
+                if (value.equals(data.getEntry()))
+                    return data;
+            }
+        }
+        return null;
+    } 
+    
+    protected void saveAuxData(AuxDataViewDO auxData, ValidationErrorsList errorsList, SampleManager manager) throws Exception {
+        int j;
+        AuxFieldManager afman;
+        AuxFieldValueManager afvman;
+        AuxFieldViewDO auxfData;
         
-        if(orderMan == null )
-            orderMan = OrderManager.fetchById(orderId);
+        // get a new manager if this aux group's id is encountered for the first time
+        if (auxFieldGroupMan == null || !auxData.getGroupId().equals(auxFieldGroupMan.getGroup().getId())) {
+            auxFieldGroupMan = AuxFieldGroupManager.fetchById(auxData.getGroupId());
+            lastAuxFieldIndex = 0;
+        }
+        afman = auxFieldGroupMan.getFields();        
         
-        testManager = orderMan.getTests();
+        if (afman.count() < lastAuxFieldIndex) {
+            errorsList.add(new FormErrorException("orderAuxDataNotFoundError",                                                  
+                                                  auxData.getAnalyteName()));
+            return;
+        }
         
-        return testManager.getTests();
+        auxfData = auxFieldGroupMan.getFields().getAuxFieldAt(lastAuxFieldIndex);
+        /* 
+         * find out if the aux field in the aux group at this index is the same
+         * as the one that this aux data is linked to in the order
+         */  
+        if (auxData.getAuxFieldId().equals(auxfData.getId())) {
+            // if it matches then add the aux data to the sample  
+            afvman = auxFieldGroupMan.getFields().getValuesAt(lastAuxFieldIndex);
+            manager.getAuxData().addAuxDataFieldAndValues(auxData, auxfData, afvman.getValues());
+            lastAuxFieldIndex++;
+            return;
+        } else {
+            j = 0;
+            /*
+             * if it doesn't match then find where the aux field is and add the
+             * aux data to the sample  
+             */
+            while (j < afman.count()) {
+                auxfData = afman.getAuxFieldAt(j);
+                if (auxData.getAuxFieldId().equals(auxfData.getId())) {
+                    afvman = auxFieldGroupMan.getFields().getValuesAt(j);
+                    manager.getAuxData().addAuxDataFieldAndValues(auxData,
+                                                                  auxfData, afvman.getValues());
+                    return;
+                }
+            }
+        }
+        
+        errorsList.add(new FormErrorException("orderAuxDataNotFoundError", auxData.getAnalyteName()));
     }
 }

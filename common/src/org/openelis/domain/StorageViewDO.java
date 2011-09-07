@@ -72,6 +72,6 @@ public class StorageViewDO extends StorageDO {
     }
 
     public void setItemDescription(String itemDescription) {
-        this.itemDescription = itemDescription;
+        this.itemDescription = DataBaseUtil.trim(itemDescription);
     }
 }
