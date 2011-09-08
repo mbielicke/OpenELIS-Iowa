@@ -192,7 +192,7 @@ WHERE
 	<detail>
 		<band height="12" splitType="Stretch">
 			<subreport isUsingCache="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" mode="Transparent" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" mode="Transparent" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -205,7 +205,7 @@ WHERE
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -218,7 +218,7 @@ WHERE
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -238,7 +238,7 @@ WHERE
 				<text><![CDATA[Results of Analyses]]></text>
 			</staticText>
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="18" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="18" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
@@ -257,7 +257,7 @@ WHERE
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["W".equals($F{s_domain}) == false]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SAMPLE_ID">
@@ -272,7 +272,7 @@ WHERE
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
+				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_DOMAIN">
 					<subreportParameterExpression><![CDATA[$F{s_domain}]]></subreportParameterExpression>
 				</subreportParameter>

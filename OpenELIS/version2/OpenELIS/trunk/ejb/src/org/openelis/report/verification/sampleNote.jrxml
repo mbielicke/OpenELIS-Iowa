@@ -24,7 +24,7 @@ ORDER BY q.reporting_sequence, sq.id]]>
 	<field name="description" class="java.lang.String"/>
 	<detail>
 		<band height="12">
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement key="typeAndDescription" x="0" y="0" width="702" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font isBold="true" pdfFontName="Times-Bold"/>
