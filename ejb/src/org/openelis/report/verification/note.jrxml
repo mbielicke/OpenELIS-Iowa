@@ -18,7 +18,7 @@ WHERE
 	<field name="text" class="java.lang.String"/>
 	<detail>
 		<band height="12">
-			<textField isBlankWhenNull="true">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
 				<reportElement key="text" x="0" y="0" width="702" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
