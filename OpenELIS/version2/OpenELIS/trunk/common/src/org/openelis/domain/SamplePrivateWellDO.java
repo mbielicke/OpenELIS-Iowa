@@ -132,6 +132,7 @@ public class SamplePrivateWellDO extends DataObject {
 
     public void setReportToAttention(String reportToAttention) {
         this.reportToAttention = DataBaseUtil.trim(reportToAttention);
+        _changed = true;
     }
 
     public String getLocation() {
