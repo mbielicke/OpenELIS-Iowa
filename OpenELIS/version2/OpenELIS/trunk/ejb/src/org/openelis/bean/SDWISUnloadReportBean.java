@@ -53,9 +53,11 @@ import org.openelis.domain.OptionListItem;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
@@ -64,6 +66,7 @@ import org.openelis.local.AuxDataLocal;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.local.SampleLocal;
+import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SectionCacheLocal;
 import org.openelis.local.SectionLocal;
@@ -97,6 +100,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
     ResultLocal          result;
     @EJB
     SampleLocal          sample;
+    @EJB
+    SampleQAEventLocal   sampleQA;
     @EJB
     SampleSDWISLocal     sampleSdwis;
 //    @EJB
@@ -322,15 +327,17 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
     }
 
     protected void writeSampleRow(PrintWriter writer, SampleDO sVDO, SampleSDWISViewDO ssVDO) throws Exception {
-        ArrayList<AuxDataViewDO> adList;
-        AuxDataViewDO            adVDO;
-        DictionaryDO             sampCatDO, sampTypeDO;
-        Iterator<AuxDataViewDO>  adIter;
-        SimpleDateFormat         dateFormat, dateSlashFormat, timeFormat;
-        String                   compDateString, compIndicator, compLabNumber, compQuarter,
-                                 freeChlorine, pbType, repeatCode, totalChlorine,
-                                 origSampleNumber;
-        StringBuilder            row;
+        ArrayList<AuxDataViewDO>   adList;
+        ArrayList<Integer>         sampleIds;
+        ArrayList<SampleQaEventDO> sampleQaList;
+        AuxDataViewDO              adVDO;
+        DictionaryDO               sampCatDO, sampTypeDO;
+        Iterator<AuxDataViewDO>    adIter;
+        SimpleDateFormat           dateFormat, dateSlashFormat, timeFormat;
+        String                     compDateString, compIndicator, compLabNumber,
+                                   compQuarter, freeChlorine, pbType, repeatCode,
+                                   totalChlorine, origSampleNumber, sampleOverride;
+        StringBuilder              row;
         
         dateFormat = new SimpleDateFormat("yyyyMMdd");
         dateSlashFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -345,12 +352,24 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         compDateString = "";
         compQuarter = "";
         origSampleNumber = "";
+        sampleOverride = "";
         
         try {
             sampCatDO = dictionaryCache.getById(ssVDO.getSampleCategoryId());
             sampTypeDO = dictionaryCache.getById(ssVDO.getSampleTypeId());
         } catch (Exception anyE) {
             throw new Exception("Error looking up dictionary entry for Sample Category or Sample Type; "+anyE.getMessage());
+        }
+        
+        try {
+            sampleIds = new ArrayList<Integer>();
+            sampleIds.add(sVDO.getId());
+            sampleQaList = sampleQA.fetchResultOverrideBySampleIdList(sampleIds);
+            sampleOverride = "S";
+        } catch (NotFoundException nfE) {
+            // no qa events found means sample is not overridden
+        } catch (Exception anyE) {
+            throw new Exception("Error looking up result override Sample QAEvents; "+anyE.getMessage());
         }
         
         try {
@@ -362,15 +381,27 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         while (adIter.hasNext()) {
             adVDO = adIter.next();
             if ("pb_type".equals(adVDO.getAnalyteExternalId())) {
-                pbType = adVDO.getDictionary();
+                try {
+                    pbType = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
+                } catch (Exception anyE) {
+                    throw new Exception("Error looking up dictionary entry for Pb Sample Type; "+anyE.getMessage());
+                }
             } else if ("repeat_code".equals(adVDO.getAnalyteExternalId())) {
-                repeatCode = adVDO.getDictionary();
+                try {
+                    repeatCode = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
+                } catch (Exception anyE) {
+                    throw new Exception("Error looking up dictionary entry for Repeat Code; "+anyE.getMessage());
+                }
             } else if ("free_chlorine".equals(adVDO.getAnalyteExternalId())) {
                 freeChlorine = adVDO.getValue();
             } else if ("total_chlorine".equals(adVDO.getAnalyteExternalId())) {
                 totalChlorine = adVDO.getValue();
             } else if ("composite_indicator".equals(adVDO.getAnalyteExternalId())) {
-                compIndicator = adVDO.getDictionary();
+                try {
+                    compIndicator = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
+                } catch (Exception anyE) {
+                    throw new Exception("Error looking up dictionary entry for Composite Indicator; "+anyE.getMessage());
+                }
             } else if ("composite_lab_no".equals(adVDO.getAnalyteExternalId())) {
                 compLabNumber = adVDO.getValue();
             } else if ("composite_date".equals(adVDO.getAnalyteExternalId())) {
@@ -415,6 +446,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         }
         
         row.append(getPaddedString(compQuarter, 1));                            // col 185
+        row.append(getPaddedString(sampleOverride, 1));                         // col 186
         
         writer.println(row.toString());
     }
