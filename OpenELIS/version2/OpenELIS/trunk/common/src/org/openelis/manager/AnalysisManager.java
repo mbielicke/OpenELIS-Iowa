@@ -711,8 +711,8 @@ public class AnalysisManager implements RPC {
         return item.analysisResult;
     }
 
-    public boolean hasAnalysisResultsAt(int index) {
-        return getItemAt(index).analysisResult != null;
+    public boolean hasAnalysisResultsAt(int index) throws Exception {
+        return getAnalysisResultAt(index).rowCount() > 0;
     }
 
     public void setAnalysisResultAt(AnalysisResultManager analysisResult, int i) {
