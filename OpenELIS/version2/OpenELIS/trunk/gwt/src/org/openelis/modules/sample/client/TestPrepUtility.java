@@ -422,8 +422,11 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             anMan = anaBundle.getSampleManager().getSampleItems()
                              .getAnalysisAt(anaBundle.getSampleItemIndex());
             tpId = (Integer)prepBundle.get(1);
-            sectionId = (Integer)prepBundle.get(2);
-
+            if (prepBundle.get(2) instanceof ArrayList)
+                sectionId = (Integer)((ArrayList<Object>)prepBundle.get(2)).get(0);
+            else
+                sectionId = (Integer)prepBundle.get(2);
+            
             prepDO = checkForPrepTest(anMan, tpId);
     
             if (prepDO != null) { // prep already exists

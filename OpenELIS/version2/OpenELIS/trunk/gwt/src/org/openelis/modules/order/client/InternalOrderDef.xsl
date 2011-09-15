@@ -191,6 +191,7 @@ UIRF Software License are applicable instead of those above.
                     <col key="{meta:getOrderItemInventoryItemName()}" width="275" header="{resource:getString($constants,'inventoryItem')}">
                       <autoComplete width="275" case="LOWER" field="Integer" required="true">
                         <col width="155" header="{resource:getString($constants,'name')}" />
+                        <col width="200" header="{resource:getString($constants,'description')}" />
                         <col width="110" header="{resource:getString($constants,'store')}">
                           <dropdown width="110" popWidth="110" field="Integer" />
                         </col>

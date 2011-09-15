@@ -39,15 +39,11 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.manager.TestAnalyteManager;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 
 public class TestWorksheetAnalyteLookupScreen extends Screen
                                                             implements
@@ -87,37 +83,6 @@ public class TestWorksheetAnalyteLookupScreen extends Screen
             public void onStateChange(StateChangeEvent<State> event) {
                 testAnalyteTable.enable(true);
             }
-        });
-
-        testAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int r, c;
-                TableDataRow row;
-                String val;
-                TestAnalyteViewDO data;
-                Integer group;
-
-                r = event.getRow();
-                c = event.getCol();
-
-                if (c != 1)
-                    return;
-
-                row = testAnalyteTable.getRow(r);
-                val = (String)row.cells.get(c).getValue();
-                group = manager.getAnalyteAt(r, 0).getRowGroup();
-
-                for (int i = 0; i < manager.rowCount(); i++ ) {
-                    data = manager.getAnalyteAt(i, 0);
-                    if (group.equals(data.getRowGroup()))
-                        testAnalyteTable.setCell(i, c, val);
-                }
-
-                if ("Y".equals(val))
-                    window.setDone(consts.get("additionalAnalytesAdded"));
-
-            }
-
         });
 
         okButton = (AppButton)def.getWidget("ok");
