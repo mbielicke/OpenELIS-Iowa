@@ -381,26 +381,32 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         while (adIter.hasNext()) {
             adVDO = adIter.next();
             if ("pb_type".equals(adVDO.getAnalyteExternalId())) {
-                try {
-                    pbType = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
-                } catch (Exception anyE) {
-                    throw new Exception("Error looking up dictionary entry for Pb Sample Type; "+anyE.getMessage());
+                if (adVDO.getValue() != null && adVDO.getValue().length() > 0) {
+                    try {
+                        pbType = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
+                    } catch (Exception anyE) {
+                        throw new Exception("Error looking up dictionary entry for Pb Sample Type; "+anyE.getMessage());
+                    }
                 }
             } else if ("repeat_code".equals(adVDO.getAnalyteExternalId())) {
-                try {
-                    repeatCode = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
-                } catch (Exception anyE) {
-                    throw new Exception("Error looking up dictionary entry for Repeat Code; "+anyE.getMessage());
+                if (adVDO.getValue() != null && adVDO.getValue().length() > 0) {
+                    try {
+                        repeatCode = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
+                    } catch (Exception anyE) {
+                        throw new Exception("Error looking up dictionary entry for Repeat Code; "+anyE.getMessage());
+                    }
                 }
             } else if ("free_chlorine".equals(adVDO.getAnalyteExternalId())) {
                 freeChlorine = adVDO.getValue();
             } else if ("total_chlorine".equals(adVDO.getAnalyteExternalId())) {
                 totalChlorine = adVDO.getValue();
             } else if ("composite_indicator".equals(adVDO.getAnalyteExternalId())) {
-                try {
-                    compIndicator = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
-                } catch (Exception anyE) {
-                    throw new Exception("Error looking up dictionary entry for Composite Indicator; "+anyE.getMessage());
+                if (adVDO.getValue() != null && adVDO.getValue().length() > 0) {
+                    try {
+                        compIndicator = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
+                    } catch (Exception anyE) {
+                        throw new Exception("Error looking up dictionary entry for Composite Indicator; "+anyE.getMessage());
+                    }
                 }
             } else if ("composite_lab_no".equals(adVDO.getAnalyteExternalId())) {
                 compLabNumber = adVDO.getValue();
