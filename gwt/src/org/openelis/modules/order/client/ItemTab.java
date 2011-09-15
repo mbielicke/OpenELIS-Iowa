@@ -171,8 +171,8 @@ public class ItemTab extends Screen {
 
                     for (int i = 0; i < list.size(); i++ ) {
                         data = (InventoryItemDO)list.get(i);
-                        row = new TableDataRow(data.getId(), data.getName(), data.getStoreId(),
-                                               data.getDispensedUnitsId());
+                        row = new TableDataRow(data.getId(), data.getName(), data.getDescription(),
+                                               data.getStoreId(), data.getDispensedUnitsId());
                         row.data = data;
                         model.add(row);
                     }
@@ -230,8 +230,8 @@ public class ItemTab extends Screen {
         ArrayList<DictionaryDO> list;
         TableDataRow row;
 
-        store = (Dropdown)inventory.getColumns().get(1).getColumnWidget();
-        units = (Dropdown)inventory.getColumns().get(2).getColumnWidget();
+        store = (Dropdown)inventory.getColumns().get(2).getColumnWidget();
+        units = (Dropdown)inventory.getColumns().get(3).getColumnWidget();
         storeId = (Dropdown)table.getColumnWidget(OrderMeta.getOrderItemInventoryItemStoreId());
 
         model = new ArrayList<TableDataRow>();

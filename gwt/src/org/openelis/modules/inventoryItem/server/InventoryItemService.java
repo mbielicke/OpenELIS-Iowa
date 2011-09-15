@@ -48,7 +48,7 @@ public class InventoryItemService {
     }
 
     public ArrayList<InventoryItemDO> fetchActiveByName(String search) throws Exception {
-        return remote().fetchActiveByName(search+"%", 10);
+        return remote().fetchActiveByName(search+"%", 100);
     }
 
     public ArrayList<InventoryItemDO> fetchActiveByNameAndStore(Query query) throws Exception {

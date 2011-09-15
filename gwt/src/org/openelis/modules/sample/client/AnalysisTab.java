@@ -168,9 +168,19 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
+                boolean hasResults;
+                
                 changedTestId = event.getValue();
 
-                if (manager.hasAnalysisResultsAt(analysisIndex)) {
+                try {
+                    hasResults = manager.hasAnalysisResultsAt(analysisIndex);
+                } catch (Exception anyE) {
+                    Window.alert(anyE.getMessage());
+                    test.setSelection(analysis.getTestId(), analysis.getTestName());
+                    return;
+                }
+                    
+                if (hasResults) {
                     if (changeTestConfirm == null) {
                         changeTestConfirm = new Confirm(Confirm.Type.WARN,
                                                         consts.get("loseResultsCaption"),
