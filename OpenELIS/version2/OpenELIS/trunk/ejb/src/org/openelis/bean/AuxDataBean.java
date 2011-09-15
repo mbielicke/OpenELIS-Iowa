@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -91,6 +92,21 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    public ArrayList<AuxDataViewDO> fetchForDataDump(ArrayList<Integer> refIdList, Integer refTableId) throws Exception {
+        Query query;
+        List<AuxDataViewDO> list;
+        
+        query = manager.createNamedQuery("AuxData.FetchForDataDump");
+        query.setParameter("ids", refIdList);
+        query.setParameter("tableId", refTableId);
+        list = (List<AuxDataViewDO>)query.getResultList();
+
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
     }
 
     public IdVO fetchGroupIdBySystemVariable(String sysVariableKey) throws Exception {

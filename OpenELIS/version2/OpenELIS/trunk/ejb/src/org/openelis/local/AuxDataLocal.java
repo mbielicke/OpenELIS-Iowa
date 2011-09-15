@@ -34,6 +34,7 @@ import org.openelis.domain.AuxDataViewDO;
 @Local
 public interface AuxDataLocal {
     public ArrayList<AuxDataViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception;
+    public ArrayList<AuxDataViewDO> fetchForDataDump(ArrayList<Integer> referenceId, Integer referenceTableId) throws Exception;
     public AuxDataViewDO add(AuxDataViewDO data) throws Exception;
     public AuxDataViewDO update(AuxDataViewDO data) throws Exception;
     public void delete(AuxDataViewDO data) throws Exception;

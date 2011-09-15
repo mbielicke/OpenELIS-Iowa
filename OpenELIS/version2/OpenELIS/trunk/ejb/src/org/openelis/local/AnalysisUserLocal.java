@@ -35,7 +35,7 @@ import org.openelis.domain.AnalysisUserViewDO;
 public interface AnalysisUserLocal {
     public AnalysisUserViewDO fetchById(Integer id) throws Exception;    
     public ArrayList<AnalysisUserViewDO> fetchByAnalysisId(Integer analysisId) throws Exception;
-    
+    public ArrayList<AnalysisUserViewDO> fetchByActionAndAnalysisId(Integer analysisId, Integer actionId) throws Exception;
     public AnalysisUserViewDO add(AnalysisUserViewDO data);
     public AnalysisUserViewDO update(AnalysisUserViewDO data);
     public void delete(AnalysisUserViewDO data);

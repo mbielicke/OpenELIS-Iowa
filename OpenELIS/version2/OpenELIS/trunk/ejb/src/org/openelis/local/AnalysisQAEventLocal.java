@@ -38,8 +38,10 @@ public interface AnalysisQAEventLocal {
     public ArrayList<AnalysisQaEventViewDO> fetchByAnalysisId(Integer analysisId) throws Exception;
     public ArrayList<AnalysisQaEventViewDO> fetchInternalByAnalysisId(Integer analysisId) throws Exception;
     public ArrayList<AnalysisQaEventViewDO> fetchExternalByAnalysisId(Integer analysisId) throws Exception;
+    public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisId(Integer analysisId) throws Exception;
     public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisIdList(ArrayList<Integer> ids) throws Exception;
     public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleIdList(ArrayList<Integer> ids) throws Exception;
+    public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleId(Integer id) throws Exception;
     public AnalysisQaEventViewDO add(AnalysisQaEventViewDO data) throws Exception;
     public AnalysisQaEventViewDO update(AnalysisQaEventViewDO data) throws Exception;
     public void delete(AnalysisQaEventViewDO data) throws Exception;        

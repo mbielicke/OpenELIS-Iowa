@@ -23,23 +23,22 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.remote;
 
 import java.util.ArrayList;
 
-import javax.ejb.Local;
+import javax.ejb.Remote;
 
-import org.openelis.domain.SampleQaEventDO;
-import org.openelis.domain.SampleQaEventViewDO;
+import org.openelis.domain.DataDumpVO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.QueryData;
 
-@Local
-public interface SampleQAEventLocal {
-    public ArrayList<SampleQaEventViewDO> fetchBySampleId(Integer sampleId) throws Exception;
-    public ArrayList<SampleQaEventViewDO> fetchInternalBySampleId(Integer sampleId) throws Exception;
-    public ArrayList<SampleQaEventViewDO> fetchExternalBySampleId(Integer sampleId) throws Exception;
-    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIdList(ArrayList<Integer> ids) throws Exception;
-    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleId(Integer id) throws Exception;
-    public void add(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void update(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void delete(SampleQaEventViewDO sampleQAEventDO) throws Exception;
+@Remote
+public interface DataDumpRemote {
+    public ArrayList<IdNameVO> fetchPermanentProjectList() throws Exception;
+    
+    public DataDumpVO fetchAnalyteResultAndAuxData(ArrayList<QueryData> fields) throws Exception;
+    
+    public ReportStatus runReport(DataDumpVO data) throws Exception;
 }

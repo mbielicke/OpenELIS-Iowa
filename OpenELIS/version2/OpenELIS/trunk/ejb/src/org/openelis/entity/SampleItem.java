@@ -110,7 +110,7 @@ public class SampleItem implements Auditable, Cloneable {
     private Sample               parentSampleItem;
 
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sample_item_id")
+    @JoinColumn(name = "sample_item_id", insertable = false, updatable = false)
     private Collection<Analysis> analysis;
 
     @OneToOne(fetch = FetchType.LAZY)

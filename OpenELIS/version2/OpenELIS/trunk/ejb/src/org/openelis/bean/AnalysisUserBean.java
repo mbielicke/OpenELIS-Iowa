@@ -52,21 +52,21 @@ public class AnalysisUserBean implements AnalysisUserLocal {
     
     public AnalysisUserViewDO fetchById(Integer id) throws Exception {
         Query query;
-        AnalysisUserViewDO anUserDO;
+        AnalysisUserViewDO data;
         SystemUserVO user;
         
         query = manager.createNamedQuery("AnalysisUser.FetchById");
         query.setParameter("id", id);
         
         try {
-            anUserDO = (AnalysisUserViewDO)query.getSingleResult();
+            data = (AnalysisUserViewDO)query.getSingleResult();
             
-            if (anUserDO.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(anUserDO.getSystemUserId());
+            if (data.getSystemUserId() != null) {
+                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
                 if (user != null)
-                    anUserDO.setSystemUser(user.getLoginName());
+                    data.setSystemUser(user.getLoginName());
             }
-            return anUserDO;
+            return data;
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -77,7 +77,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
     public ArrayList<AnalysisUserViewDO> fetchByAnalysisId(Integer analysisId) throws Exception {
         Query query;
         ArrayList<AnalysisUserViewDO> returnList;
-        AnalysisUserViewDO anUserDO;
+        AnalysisUserViewDO data;
         SystemUserVO user;
         
         query = manager.createNamedQuery("AnalysisUser.FetchByAnalysisId");
@@ -85,12 +85,12 @@ public class AnalysisUserBean implements AnalysisUserLocal {
         
         returnList = DataBaseUtil.toArrayList(query.getResultList());
         for (int i = 0; i < returnList.size(); i++ ) {
-            anUserDO = returnList.get(i);
+            data = returnList.get(i);
 
-            if (anUserDO.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(anUserDO.getSystemUserId());
+            if (data.getSystemUserId() != null) {
+                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
                 if (user != null)
-                    anUserDO.setSystemUser(user.getLoginName());
+                    data.setSystemUser(user.getLoginName());
             }
         }
         
@@ -99,6 +99,34 @@ public class AnalysisUserBean implements AnalysisUserLocal {
 
         return returnList;
     }
+    
+    public ArrayList<AnalysisUserViewDO> fetchByActionAndAnalysisId(Integer analysisId,
+                                                                    Integer actionId) throws Exception {
+        Query query;
+        ArrayList<AnalysisUserViewDO> returnList;
+        AnalysisUserViewDO data;
+        SystemUserVO user;
+        
+        query = manager.createNamedQuery("AnalysisUser.FetchByActionAndAnalysisId");
+        query.setParameter("analysisId", analysisId);
+        query.setParameter("actionId", actionId);
+        
+        returnList = DataBaseUtil.toArrayList(query.getResultList());
+        for (int i = 0; i < returnList.size(); i++ ) {
+            data = returnList.get(i);
+
+            if (data.getSystemUserId() != null) {
+                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
+                if (user != null)
+                    data.setSystemUser(user.getLoginName());
+            }
+        }
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+
+        return returnList;
+    }  
 
     public AnalysisUserViewDO add(AnalysisUserViewDO data) {
         AnalysisUser entity;
