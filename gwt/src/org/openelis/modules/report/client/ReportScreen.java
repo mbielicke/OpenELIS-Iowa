@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import org.openelis.domain.OptionListItem;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.Util;
 import org.openelis.gwt.common.data.Query;
@@ -291,32 +292,38 @@ public class ReportScreen extends Screen {
 
 		query = new Query();
 		query.setFields(getQueryFields());
-		window.setBusy(consts.get("genReportMessage"));
-
-		service.call(runReportInterface, query,
-				new AsyncCallback<ReportStatus>() {
-					public void onSuccess(ReportStatus status) {
-						String url;
-
-						if (status.getStatus() == ReportStatus.Status.SAVED) {
-							url = "report?file=" + status.getMessage();
-							if (attachmentName != null)
-								url += "&attachment=" + attachmentName;
-
-							Window.open(URL.encode(url), name, null);
-							window.setDone("Generated file "
-									+ status.getMessage());
-						} else {
-							window.setDone(status.getMessage());
-						}
-					}
-
-					public void onFailure(Throwable caught) {
-						window.setError("Failed");
-						Window.alert(caught.getMessage());
-					}
-				});
+		runReport(query);		
 	}
+	
+	/**
+     * Provides a more generic interface to run reports so that screens not 
+     * implementing ReportScreen can utilize this functionality too
+     */
+    public void runReport(RPC rpc) {
+        window.setBusy(consts.get("genReportMessage"));
+
+        service.call(runReportInterface, rpc, new AsyncCallback<ReportStatus>() {
+            public void onSuccess(ReportStatus status) {
+                String url;
+
+                if (status.getStatus() == ReportStatus.Status.SAVED) {
+                    url = "report?file=" + status.getMessage();
+                    if (attachmentName != null)
+                        url += "&attachment=" + attachmentName;
+
+                    Window.open(URL.encode(url), name, null);
+                    window.setDone("Generated file " + status.getMessage());
+                } else {
+                    window.setDone(status.getMessage());
+                }
+            }
+
+            public void onFailure(Throwable caught) {
+                window.setError("Failed");
+                Window.alert(caught.getMessage());
+            }
+        });
+    }
 
 	/**
 	 * Resets all the fields to their original report specified values
