@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.entity.SampleProject;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -74,6 +75,14 @@ public class SampleProjectBean implements SampleProjectLocal {
             throw new NotFoundException();
         
         return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public ArrayList<IdNameVO> fetchPermanentProjectList() throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("SampleProject.FetchPermanentProjectList");
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public SampleProjectViewDO add(SampleProjectViewDO data) {

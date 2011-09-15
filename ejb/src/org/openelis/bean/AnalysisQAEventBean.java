@@ -92,6 +92,20 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
+    public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisId(Integer analysisId) throws Exception {
+        Query query;
+        List returnList;
+        
+        query = manager.createNamedQuery("AnalysisQaevent.FetchResultOverrideByAnalysisId");
+        query.setParameter("id", analysisId);
+        returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
+    
     public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisIdList(ArrayList<Integer> ids) throws Exception {
         Query query;
         List returnList;
@@ -113,6 +127,21 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         
         query = manager.createNamedQuery("AnalysisQaevent.FetchResultOverrideBySampleIdList");
         query.setParameter("ids", ids);
+        
+        returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleId(Integer id) throws Exception {
+        Query query;
+        List returnList;
+        
+        query = manager.createNamedQuery("AnalysisQaevent.FetchResultOverrideBySampleId");
+        query.setParameter("id", id);
         
         returnList = query.getResultList();
         

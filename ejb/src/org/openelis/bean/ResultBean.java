@@ -422,6 +422,21 @@ public class ResultBean implements ResultLocal {
         
         return results;
     }
+    
+    public ArrayList<ResultViewDO> fetchForDataDump(ArrayList<Integer> sampleIdList) throws Exception {
+        List<ResultViewDO> list;        
+        Query query;
+        
+        query = manager.createNamedQuery("Result.FetchForDataDump");
+        query.setParameter("ids", sampleIdList);
+   
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
+    }
+    
 
     public ResultViewDO add(ResultViewDO data) {
         Result entity;

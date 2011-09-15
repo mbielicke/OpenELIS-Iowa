@@ -38,13 +38,19 @@ import org.openelis.utils.Auditable;
                        "aq.typeId, aq.isBillable, q.name, q.reportingText)"
                      + " from AnalysisQaevent aq left join aq.qaEvent q left join aq.dictionary d"
                      + " where aq.analysisId = :id and d.systemName != 'qaevent_internal' order by aq.id"),
+   @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideByAnalysisId",
+               query = "select new org.openelis.domain.AnalysisQaEventDO(aq.id, aq.analysisId, aq.qaeventId, aq.typeId, aq.isBillable) "
+                     + " from AnalysisQaevent aq where aq.analysisId = :id and aq.dictionary.systemName = 'qaevent_override'"),               
    @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideByAnalysisIdList",
                query = "select new org.openelis.domain.AnalysisQaEventDO(aq.id, aq.analysisId, aq.qaeventId, " +
                        "aq.typeId, aq.isBillable) "
                      + " from AnalysisQaevent aq where aq.analysisId in ( :ids ) and aq.dictionary.systemName = 'qaevent_override'"),
    @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideBySampleIdList",
                query = "select aq from AnalysisQaevent as aq left join aq.analysis a left join a.sampleItem si left join si.sample s"
-                     + " where s.id in (:ids) and aq.dictionary.systemName = 'qaevent_override'")})
+                     + " where s.id in (:ids) and aq.dictionary.systemName = 'qaevent_override'"),
+   @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideBySampleId",
+               query = "select aq from AnalysisQaevent as aq left join aq.analysis a left join a.sampleItem si left join si.sample s"
+                     + " where s.id = :id and aq.dictionary.systemName = 'qaevent_override'")})
 @Entity
 @Table(name = "analysis_qaevent")
 @EntityListeners( {AuditUtil.class})

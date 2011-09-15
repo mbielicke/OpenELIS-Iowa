@@ -51,7 +51,10 @@ import org.openelis.utils.Auditable;
                       + " from AnalysisUser a where a.id = :id"),
     @NamedQuery( name = "AnalysisUser.FetchByAnalysisId",
                 query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId,a.actionId, '')"
-                      + " from AnalysisUser a where a.analysisId = :id ")})
+                      + " from AnalysisUser a where a.analysisId = :id "),
+    @NamedQuery( name = "AnalysisUser.FetchByActionAndAnalysisId",
+                query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId,a.actionId, '')"
+                      + " from AnalysisUser a where a.analysisId = :analysisId and a.actionId = :actionId")})
 
 @Entity
 @Table(name = "analysis_user")

@@ -81,7 +81,7 @@ import org.openelis.utils.Auditable;
                         "s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name)"
                       + " from Analysis a, SampleItem si, Sample s, Test t, Dictionary d"
                       + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = d.id and d.systemName not in ('analysis_logged_in', 'analysis_initiated',"
-                      + " 'analysis_completed', 'analysis_released')) order by s.accessionNumber"),
+                      + " 'analysis_completed', 'analysis_released', 'analysis_cancelled')) order by s.accessionNumber"),
     @NamedQuery( name = "Analysis.FetchReleasedForCaching",
                 query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, a.releasedDate, s.id, s.domain, s.accessionNumber," +
                         "s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name)"
@@ -162,6 +162,10 @@ public class Analysis implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
     private Collection<AnalysisQaevent> analysisQAEvent;
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
+    private Collection<Result>          result;
 
     @Transient
     private Analysis                    original;
@@ -324,6 +328,14 @@ public class Analysis implements Auditable, Cloneable {
 
     public void setAnalysisQAEvent(Collection<AnalysisQaevent> analysisQAEvent) {
         this.analysisQAEvent = analysisQAEvent;
+    }
+
+    public Collection<Result> getResult() {
+        return result;
+    }
+
+    public void setResult(Collection<Result> result) {
+        this.result = result;
     }
 
     public SampleItem getSampleItem() {
