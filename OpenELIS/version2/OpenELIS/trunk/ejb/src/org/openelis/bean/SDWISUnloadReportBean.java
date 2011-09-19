@@ -32,6 +32,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -131,8 +132,24 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
         ArrayList<OptionListItem> loc;
-        ArrayList<Prompt> p;
+        ArrayList<Prompt>         p;
+        Calendar                  fromDate, toDate;
+        SimpleDateFormat          format;
 
+        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        fromDate = Calendar.getInstance();
+        fromDate.set(Calendar.HOUR_OF_DAY, 12);
+        fromDate.set(Calendar.MINUTE, 00);
+        if (fromDate.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY)
+            fromDate.add(Calendar.DAY_OF_MONTH, -3);
+        else
+            fromDate.add(Calendar.DAY_OF_MONTH, -1);
+        
+        toDate = Calendar.getInstance();
+        toDate.set(Calendar.HOUR_OF_DAY, 11);
+        toDate.set(Calendar.MINUTE, 59);
+        
         try {
             p = new ArrayList<Prompt>();
 
@@ -141,7 +158,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                     .setWidth(130)
                     .setDatetimeStartCode(Prompt.Datetime.YEAR)
                     .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                    .setDefaultValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE).toString())
+                    .setDefaultValue(format.format(fromDate.getTime()))
                     .setRequired(true));
 
             p.add(new Prompt("END_RELEASED", Prompt.Type.DATETIME)
@@ -149,7 +166,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                     .setWidth(130)
                     .setDatetimeStartCode(Prompt.Datetime.YEAR)
                     .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                    .setDefaultValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE).toString())
+                    .setDefaultValue(format.format(toDate.getTime()))
                     .setRequired(true));
 
             loc = new ArrayList<OptionListItem>();
@@ -190,7 +207,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         SampleSDWISViewDO ssVDO;
         SectionViewDO secVDO;
         SimpleDateFormat format;
-        String loginName, location;
+        String location;
 
         /*
          * push status into session so we can query it while the report is
@@ -203,7 +220,6 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        loginName = userCache.getName();
         
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         beginReleased = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_RELEASED"));
@@ -226,7 +242,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         try {
             status.setMessage("Initializing report");
 
-            status.setMessage("Outputing report").setPercentComplete(20);
+            status.setMessage("Outputing report").setPercentComplete(10);
 
             writeHeaderRow(writer, location);
 
@@ -251,6 +267,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                 }
                 
                 sampleCount++;
+                status.setPercentComplete((sampleCount / samples.size()) * 80 + 10);
             }
             
             writeTrailerRow(writer, sampleCount);
@@ -298,11 +315,11 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
            .append(" ");                                // col 31
         
         if ("-an".equals(location))                     // col 32-36
-            row.append("397  ");            // Ankemy DNR ID
+            row.append("397  ");                        // Ankemy DNR ID
         else if ("-ic".equals(location))
-            row.append("027  ");            // Iowa City DNR ID
+            row.append("027  ");                        // Iowa City DNR ID
         else if ("-lk".equals(location))
-            row.append("393  ");            // Lakeside DNR ID
+            row.append("393  ");                        // Lakeside DNR ID
         else
             row.append("     ");
            
@@ -420,27 +437,36 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         }
         
         row = new StringBuilder();
-        row.append("#SAM")                                                      // col 1-3
-           .append(sampCatDO.getLocalAbbrev())                                  // col 5-6
-           .append(sampTypeDO.getLocalAbbrev())                                 // col 7-8
-           .append(getPaddedString(pbType, 3))                                  // col 9-11
-           .append(getPaddedString(ssVDO.getPwsNumber0(), 9))                   // col 12-20
-           .append(getPaddedString(ssVDO.getFacilityId(), 12))                  // col 21-32
-           .append(getPaddedString(ssVDO.getSamplePointId(), 11))               // col 33-43
-           .append(getPaddedString(ssVDO.getLocation(), 20))                    // col 44-63
-           .append(dateFormat.format(sVDO.getCollectionDate().getDate()))       // col 64-71
-           .append(timeFormat.format(sVDO.getCollectionTime().getDate()))       // col 72-75
-           .append(getPaddedString(ssVDO.getCollector(), 20))                   // col 76-95
-           .append(dateFormat.format(sVDO.getReceivedDate().getDate()))         // col 96-103
-           .append(getPaddedString("OE"+sVDO.getAccessionNumber().toString(), 20))   // col 104-123
-           .append(getPaddedString(origSampleNumber, 20))                       // col 124-143
-           .append(getPaddedString(repeatCode, 2))                              // col 144-145
-           .append(getPaddedString(freeChlorine, 5))                            // col 146-150
-           .append(getPaddedString(totalChlorine, 5))                           // col 151-155
-           .append(getPaddedString(compIndicator, 1))                           // col 156
-           .append(getPaddedString(compLabNumber, 20));                         // col 157-176
+        row.append("#SAM")                                                          // col 1-3
+           .append(sampCatDO.getLocalAbbrev())                                      // col 5-6
+           .append(sampTypeDO.getLocalAbbrev())                                     // col 7-8
+           .append(getPaddedString(pbType, 3))                                      // col 9-11
+           .append(getPaddedString(ssVDO.getPwsNumber0(), 9))                       // col 12-20
+           .append(getPaddedString(ssVDO.getFacilityId(), 12))                      // col 21-32
+           .append(getPaddedString(ssVDO.getSamplePointId(), 11))                   // col 33-43
+           .append(getPaddedString(ssVDO.getLocation(), 20));                       // col 44-63
         
-        if (compDateString != null && compDateString.length() > 0) {            // col 177-184
+        if (sVDO.getCollectionDate() != null)                                       // col 64-71
+            row.append(dateFormat.format(sVDO.getCollectionDate().getDate()));
+        else
+            row.append(getPaddedString("", 8));
+            
+        if (sVDO.getCollectionTime() != null)                                       // col 72-75
+            row.append(timeFormat.format(sVDO.getCollectionTime().getDate()));
+        else
+            row.append(getPaddedString("", 4));
+        
+        row.append(getPaddedString(ssVDO.getCollector(), 20))                       // col 76-95
+           .append(dateFormat.format(sVDO.getReceivedDate().getDate()))             // col 96-103
+           .append(getPaddedString("OE"+sVDO.getAccessionNumber().toString(), 20))  // col 104-123
+           .append(getPaddedString(origSampleNumber, 20))                           // col 124-143
+           .append(getPaddedString(repeatCode, 2))                                  // col 144-145
+           .append(getPaddedString(freeChlorine, 5))                                // col 146-150
+           .append(getPaddedString(totalChlorine, 5))                               // col 151-155
+           .append(getPaddedString(compIndicator, 1))                               // col 156
+           .append(getPaddedString(compLabNumber, 20));                             // col 157-176
+        
+        if (compDateString != null && compDateString.length() > 0) {                // col 177-184
             try {
                 compDateString = dateFormat.format(dateSlashFormat.parse(compDateString));
                 row.append(compDateString);
@@ -451,8 +477,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             row.append(getPaddedString(compDateString, 8));
         }
         
-        row.append(getPaddedString(compQuarter, 1));                            // col 185
-        row.append(getPaddedString(sampleOverride, 1));                         // col 186
+        row.append(getPaddedString(compQuarter, 1));                                // col 185
+        row.append(getPaddedString(sampleOverride, 1));                             // col 186
         
         writer.println(row.toString());
     }
@@ -588,10 +614,10 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                 row.append(getPaddedString("", 8))                                  // col 21-28
                    .append(getPaddedString("", 4));                                 // col 29-32
 
-            if (analysis.getCompletedDate() != null)
-                row.append(dateFormat.format(analysis.getCompletedDate().getDate()));    // col 33-40
+            if (analysis.getCompletedDate() != null)                                // col 33-40
+                row.append(dateFormat.format(analysis.getCompletedDate().getDate()));
             else
-                row.append(getPaddedString("", 8));                                 // col 33-40
+                row.append(getPaddedString("", 8));
             
             row.append(getPaddedString(rowData.get("microbe"), 1))                  // col 41
                .append(getPaddedNumber(rowData.get("count"), 5))                    // col 42-46
