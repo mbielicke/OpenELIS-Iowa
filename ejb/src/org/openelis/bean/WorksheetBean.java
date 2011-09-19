@@ -85,7 +85,8 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
     @EJB
     private InstrumentLogLocal instrumentLog;
     
-    private static int logPending, logCompleted, statusComplete;
+    private static int logPending, logCompleted, statusComplete, statusFailed,
+                       statusVoid;
 
     private static final WorksheetCompletionMeta meta = new WorksheetCompletionMeta();
     
@@ -120,6 +121,26 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
             } catch (Throwable e) {
                 e.printStackTrace();
                 statusComplete = 0;
+            }
+        }
+
+        if (statusFailed == 0) {
+            try {
+                data = dictionary.fetchBySystemName("worksheet_failed");
+                statusFailed = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                statusFailed = 0;
+            }
+        }
+
+        if (statusVoid == 0) {
+            try {
+                data = dictionary.fetchBySystemName("worksheet_void");
+                statusVoid = data.getId();
+            } catch (Throwable e) {
+                e.printStackTrace();
+                statusVoid = 0;
             }
         }
     }
@@ -302,24 +323,30 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                     ilEntity.setEventBegin(data.getCreatedDate());
                     manager.persist(ilEntity);
                 }
-                if (data.getStatusId().equals(statusComplete) && ilEntity.getTypeId().equals(logPending)) {
-                    ilEntity.setTypeId(logCompleted);
-                    ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                if (ilEntity.getTypeId().equals(logPending)) {
+                    if (data.getStatusId().equals(statusComplete) || data.getStatusId().equals(statusFailed)) {
+                        ilEntity.setTypeId(logCompleted);
+                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                    } else if (data.getStatusId().equals(statusVoid)) {
+                        manager.remove(ilEntity);
+                    }
                 }
             }
         } else {
             if (entity.getInstrumentId() == null) {
-                ilEntity = new InstrumentLog();
-                ilEntity.setInstrumentId(data.getInstrumentId());
-                ilEntity.setWorksheetId(data.getId());
-                ilEntity.setEventBegin(data.getCreatedDate());
-                if (data.getStatusId().equals(statusComplete)) {
-                    ilEntity.setTypeId(logCompleted);
-                    ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-                } else {
-                    ilEntity.setTypeId(logPending);
+                if (!data.getStatusId().equals(statusVoid)) {
+                    ilEntity = new InstrumentLog();
+                    ilEntity.setInstrumentId(data.getInstrumentId());
+                    ilEntity.setWorksheetId(data.getId());
+                    ilEntity.setEventBegin(data.getCreatedDate());
+                    if (data.getStatusId().equals(statusComplete) || data.getStatusId().equals(statusFailed)) {
+                        ilEntity.setTypeId(logCompleted);
+                        ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                    } else {
+                        ilEntity.setTypeId(logPending);
+                    }
+                    manager.persist(ilEntity);
                 }
-                manager.persist(ilEntity);
             } else {
                 try {
                     ilDO = instrumentLog.fetchByInstrumentIdWorksheetId(entity.getInstrumentId(),
@@ -327,21 +354,24 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                     ilEntity = manager.find(InstrumentLog.class, ilDO.getId());
                     if (data.getInstrumentId() != null) {
                         ilEntity.setInstrumentId(data.getInstrumentId());
-                        if (data.getStatusId().equals(statusComplete) &&
-                            ilEntity.getTypeId().equals(logPending)) {
-                            ilEntity.setTypeId(logCompleted);
-                            ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                        if (ilEntity.getTypeId().equals(logPending)) {
+                            if (data.getStatusId().equals(statusComplete) || data.getStatusId().equals(statusFailed)) {
+                                ilEntity.setTypeId(logCompleted);
+                                ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
+                            } else if (data.getStatusId().equals(statusVoid)) {
+                                manager.remove(ilEntity);
+                            }
                         }
                     } else {
                         manager.remove(ilEntity);
                     }
                 } catch (NotFoundException nfE) {
-                    if (data.getInstrumentId() != null) {
+                    if (data.getInstrumentId() != null && !data.getStatusId().equals(statusVoid)) {
                         ilEntity = new InstrumentLog();
                         ilEntity.setInstrumentId(data.getInstrumentId());
                         ilEntity.setWorksheetId(data.getId());
                         ilEntity.setEventBegin(data.getCreatedDate());
-                        if (data.getStatusId().equals(statusComplete)) {
+                        if (data.getStatusId().equals(statusComplete) || data.getStatusId().equals(statusFailed)) {
                             ilEntity.setTypeId(logCompleted);
                             ilEntity.setEventEnd(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
                         } else {
