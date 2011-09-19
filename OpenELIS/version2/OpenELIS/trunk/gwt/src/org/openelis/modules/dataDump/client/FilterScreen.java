@@ -33,8 +33,6 @@ import org.openelis.domain.AuxFieldDataDumpVO;
 import org.openelis.domain.DataDumpVO;
 import org.openelis.domain.ResultDataDumpVO;
 import org.openelis.domain.TestAnalyteDataDumpVO;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -56,7 +54,6 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 public class FilterScreen extends Screen {

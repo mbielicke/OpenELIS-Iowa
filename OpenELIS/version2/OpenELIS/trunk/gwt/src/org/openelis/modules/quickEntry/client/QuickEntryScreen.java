@@ -431,6 +431,7 @@ public class QuickEntryScreen extends Screen {
             try {
                 item = itr.next();
                 manager = item.sampleManager;
+                manager.getSample().setReceivedById(UserCache.getPermission().getSystemUserId());
                 manager.getSample().setStatusId(sampleNotVerifiedId);
                 
                 if (manager.getSample().getId() == null)

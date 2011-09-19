@@ -33,6 +33,7 @@ import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.DataDumpRemote;
+import org.openelis.util.SessionManager;
 
 public class DataDumpService {
   
@@ -45,7 +46,13 @@ public class DataDumpService {
     }
     
     public ReportStatus runReport(DataDumpVO data) throws Exception {
-        return remote().runReport(data);
+        ReportStatus st;
+
+        st = remote().runReport(data);
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            SessionManager.getSession().setAttribute(st.getMessage(), st);
+
+        return st;
     }
     
     private DataDumpRemote remote() {
