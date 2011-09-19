@@ -476,15 +476,18 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                             manager = quickEntryMan;
                             manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
                             manager.createEmptyDomainManager();
-                            //
-                            // since when a sample is entered through quick entry we
-                            // don't know what domain the sample belongs to, it isn't
-                            // possible for the flag "isHazardous" to be set at that
-                            // point because it isn't specified for all samples but
-                            // only for environmental ones   
-                            //
-                            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                            .setIsHazardous("N");
+                            
+                            /*
+                             * When a sample is entered through quick entry we don't
+                             * know what domain the sample belongs to, thus it isn't
+                             * possible for the flag "isHazardous" to be set at 
+                             * that point because it isn't specified for all samples
+                             * but only for environmental ones. Also, we add
+                             * the standard note, if any, defined through a system
+                             * variable for this domain, because it isn't present 
+                             * in the manager fetched from the back-end. 
+                             */
+                            setDefaults();
                             DeferredCommand.addCommand(new Command() {
                             	public void execute() {
                             		 setFocus(null);
@@ -978,8 +981,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
 
     protected void add() {
-        NoteViewDO exn;
-        
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
@@ -987,13 +988,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         try {
             manager.setDefaults();
             manager.getSample().setReceivedById(UserCache.getPermission().getSystemUserId());
-            ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
-                                                                    .setIsHazardous("N");      
-            if (autoNote != null) {
-                exn = manager.getExternalNote().getEditingNote();
-                exn.setIsExternal("Y");
-                exn.setText(autoNote.getText());
-            }
+            setDefaults();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             return;
@@ -1330,5 +1325,18 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
+    }
+    
+    private void setDefaults() throws Exception {
+        NoteViewDO exn;
+        
+        ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental()
+        .setIsHazardous("N");             
+        
+        if (autoNote != null) {
+            exn = manager.getExternalNote().getEditingNote();
+            exn.setIsExternal("Y");
+            exn.setText(autoNote.getText());
+        }
     }
 }

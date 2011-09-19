@@ -431,6 +431,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             public void onValueChange(final ValueChangeEvent<Integer> event) {
                 Integer       oldNumber;
                 SampleManager quickEntryMan;
+                NoteViewDO    exn;
 
                 oldNumber = manager.getSample().getAccessionNumber();
                 if (oldNumber != null) {
@@ -458,6 +459,16 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                             manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
                             manager.createEmptyDomainManager();
     
+                            /*
+                             * We add the standard note, if any, defined through
+                             * a system variable for this domain, because it isn't 
+                             * present in the manager fetched from the back-end. 
+                             */
+                            if (autoNote != null) { 
+                                exn = manager.getExternalNote().getEditingNote();
+                                exn.setIsExternal("Y");
+                                exn.setText(autoNote.getText());
+                            }
                             DeferredCommand.addCommand(new Command() {
                                 public void execute() {
                                     setFocus(null);
