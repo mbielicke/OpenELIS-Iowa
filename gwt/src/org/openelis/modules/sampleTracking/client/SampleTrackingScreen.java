@@ -1416,7 +1416,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     protected void update(boolean withUnrelease) {
-        int topLevelIndex;
         TreeDataItem sampleRow;
         
         if (trackingTree.getSelectedRow() == -1) {
@@ -1437,13 +1436,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             manager = manager.fetchForUpdate();
             treeUtil.setManager(manager);
             
-            topLevelIndex = getTopLevelIndex(trackingTree.getSelection());
-            sampleRow = trackingTree.getData().get(topLevelIndex);
+            sampleRow = getTopLevelNode(trackingTree.getSelection());
             sampleRow.data = manager.getBundle();
             trackingTree.unselect(trackingTree.getSelectedRowIndex());
             checkNode(sampleRow);
             setState(State.DISPLAY);
-            trackingTree.select(topLevelIndex);
+            trackingTree.select(sampleRow);
             window.clearStatus();
             setState(State.UPDATE);
             
@@ -1536,7 +1534,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     protected void abort() {
-        int topLevelIndex;
         TreeDataItem sampleRow;
         String domain;
         
@@ -1556,13 +1553,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.UPDATE) {
             try {
-                manager = manager.abortUpdate();
-                topLevelIndex = getTopLevelIndex(trackingTree.getSelection());
-                sampleRow = trackingTree.getData().get(topLevelIndex);
+                manager = manager.abortUpdate(); 
+                sampleRow = getTopLevelNode(trackingTree.getSelection());
                 trackingTree.unselect(trackingTree.getSelectedRowIndex());
                 checkNode(sampleRow);
                 setState(State.DISPLAY);
-                trackingTree.select(topLevelIndex);
+                trackingTree.select(sampleRow);
                 window.clearStatus();
             } catch (Exception e) {
                 Window.alert(e.getMessage());
@@ -2057,12 +2053,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         }
     }
-
-    private int getTopLevelIndex(TreeDataItem node) {
+    
+    private TreeDataItem getTopLevelNode(TreeDataItem node) {
         if (node.parent != null)
-            return getTopLevelIndex(node.parent);
+            return getTopLevelNode(node.parent);
 
-        return trackingTree.getData().indexOf(node);
+        return node;
     }
     
     private void unrelease(){
