@@ -70,7 +70,6 @@ import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SectionCacheLocal;
-import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.SDWISUnloadReportRemote;
@@ -105,10 +104,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
     SampleQAEventLocal   sampleQA;
     @EJB
     SampleSDWISLocal     sampleSdwis;
-//    @EJB
-//    SectionCacheLocal    sectionCache;
     @EJB
-    SectionLocal         section;
+    SectionCacheLocal    sectionCache;
     @EJB
     UserCacheLocal       userCache;
 
@@ -139,7 +136,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         fromDate = Calendar.getInstance();
-        fromDate.set(Calendar.HOUR_OF_DAY, 12);
+        fromDate.set(Calendar.HOUR_OF_DAY, 13);
         fromDate.set(Calendar.MINUTE, 00);
         if (fromDate.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY)
             fromDate.add(Calendar.DAY_OF_MONTH, -3);
@@ -147,7 +144,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             fromDate.add(Calendar.DAY_OF_MONTH, -1);
         
         toDate = Calendar.getInstance();
-        toDate.set(Calendar.HOUR_OF_DAY, 11);
+        toDate.set(Calendar.HOUR_OF_DAY, 12);
         toDate.set(Calendar.MINUTE, 59);
         
         try {
@@ -260,8 +257,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                 while (aIter.hasNext()) {
                     aVDO = aIter.next();
                     if (releasedStatusId.equals(aVDO.getStatusId())) {
-                        secVDO = section.fetchById(aVDO.getSectionId());
-                        if (secVDO.getName().endsWith(location))
+                        secVDO = sectionCache.getById(aVDO.getSectionId());
+                        if (secVDO != null && secVDO.getName().endsWith(location))
                             writeResultRows(writer, ssVDO, aVDO);
                     }
                 }
