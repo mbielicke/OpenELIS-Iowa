@@ -71,14 +71,14 @@ public class DataDumpVO implements RPC {
                                            sampleSDWISStateLabId, sampleSDWISFacilityId,
                                            sampleSDWISSampleTypeId, sampleSDWISSampleCategoryId,
                                            sampleSDWISSamplePointId, sampleSDWISLocation,
-                                           sampleSDWISCollector;
+                                           sampleSDWISCollector, collectorHeader, locationHeader;
     protected Integer                      analysisStatusId, accessionNumberFrom,
                                            accessionNumberTo, projectId;
     protected Datetime                     analysisCompletedDateFrom, analysisCompletedDateTo,
                                            analysisReleasedDateFrom, analysisReleasedDateTo, 
                                            collectionDateFrom, collectionDateTo, 
                                            receivedDateFrom, receivedDateTo, enteredDateFrom,
-                                           enteredDateTo;
+                                           enteredDateTo, releasedDateFrom, releasedDateTo;
     
     protected Query                            query;
     protected ArrayList<TestAnalyteDataDumpVO> testAnalytes;
@@ -572,6 +572,22 @@ public class DataDumpVO implements RPC {
         this.sampleSDWISCollector = DataBaseUtil.trim(sampleSDWISCollector);
     }
 
+    public String getCollectorHeader() {
+        return collectorHeader;
+    }
+
+    public void setCollectorHeader(String collectorHeader) {
+        this.collectorHeader = DataBaseUtil.trim(collectorHeader);
+    }
+    
+    public String getLocationHeader() {
+        return locationHeader;
+    }
+
+    public void setLocationHeader(String locationHeader) {
+        this.locationHeader = DataBaseUtil.trim(locationHeader);
+    }
+
     public Integer getAnalysisStatusId() {
         return analysisStatusId;
     }
@@ -617,7 +633,7 @@ public class DataDumpVO implements RPC {
     }
 
     public void setAnalysisCompletedDateTo(Datetime analysisCompletedDateTo) {
-        this.analysisCompletedDateTo = DataBaseUtil.toYM(analysisCompletedDateTo);
+        this.analysisCompletedDateTo = DataBaseUtil.toYD(analysisCompletedDateTo);
     }
 
     public Datetime getAnalysisReleasedDateFrom() {
@@ -625,7 +641,7 @@ public class DataDumpVO implements RPC {
     }
 
     public void setAnalysisReleasedDateFrom(Datetime analysisReleasedDateFrom) {
-        this.analysisReleasedDateFrom = DataBaseUtil.toYM(analysisReleasedDateFrom);
+        this.analysisReleasedDateFrom = DataBaseUtil.toYD(analysisReleasedDateFrom);
     }
 
     public Datetime getAnalysisReleasedDateTo() {
@@ -633,7 +649,7 @@ public class DataDumpVO implements RPC {
     }
 
     public void setAnalysisReleasedDateTo(Datetime analysisReleasedDateTo) {
-        this.analysisReleasedDateTo = DataBaseUtil.toYM(analysisReleasedDateTo);
+        this.analysisReleasedDateTo = DataBaseUtil.toYD(analysisReleasedDateTo);
     }
 
     public Datetime getCollectionDateFrom() {
@@ -657,7 +673,7 @@ public class DataDumpVO implements RPC {
     }
 
     public void setReceivedDateFrom(Datetime receivedDateFrom) {
-        this.receivedDateFrom = DataBaseUtil.toYM(receivedDateFrom);
+        this.receivedDateFrom = DataBaseUtil.toYD(receivedDateFrom);
     }
 
     public Datetime getReceivedDateTo() {
@@ -665,7 +681,7 @@ public class DataDumpVO implements RPC {
     }
 
     public void setReceivedDateTo(Datetime receivedDateTo) {
-        this.receivedDateTo = DataBaseUtil.toYM(receivedDateTo);
+        this.receivedDateTo = DataBaseUtil.toYD(receivedDateTo);
     }
 
     public Datetime getEnteredDateFrom() {
@@ -673,7 +689,7 @@ public class DataDumpVO implements RPC {
     }
 
     public void setEnteredDateFrom(Datetime enteredDateFrom) {
-        this.enteredDateFrom = DataBaseUtil.toYM(enteredDateFrom);
+        this.enteredDateFrom = DataBaseUtil.toYD(enteredDateFrom);
     }
 
     public Datetime getEnteredDateTo() {
@@ -681,7 +697,23 @@ public class DataDumpVO implements RPC {
     }
 
     public void setEnteredDateTo(Datetime enteredDateTo) {
-        this.enteredDateTo = DataBaseUtil.toYM(enteredDateTo);
+        this.enteredDateTo = DataBaseUtil.toYD(enteredDateTo);
+    }    
+       
+    public Datetime getReleasedDateFrom() {
+        return releasedDateFrom;
+    }
+
+    public void setReleasedDateFrom(Datetime releasedDateFrom) {
+        this.releasedDateFrom = DataBaseUtil.toYD(releasedDateFrom);
+    }
+    
+    public Datetime getReleasedDateTo() {
+        return releasedDateTo;
+    }
+
+    public void setReleasedDateTo(Datetime releasedDateTo) {
+        this.releasedDateTo = DataBaseUtil.toYD(releasedDateTo);
     }
     
     public Query getQuery() {
