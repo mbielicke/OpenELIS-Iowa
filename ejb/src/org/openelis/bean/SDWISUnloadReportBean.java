@@ -188,6 +188,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
      * Execute the report and send its output to specified location
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
+        boolean reject;
         int sampleCount;
         AnalysisViewDO aVDO;
         ArrayList<SampleDO> samples;
@@ -250,16 +251,18 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             while (sIter.hasNext()) {
                 sDO = sIter.next();
                 ssVDO = sampleSdwis.fetchBySampleId(sDO.getId());
-                writeSampleRow(writer, sDO, ssVDO);
+                reject = writeSampleRow(writer, sDO, ssVDO);
                 
-                analyses = analysis.fetchBySampleId(sDO.getId());
-                aIter = analyses.iterator();
-                while (aIter.hasNext()) {
-                    aVDO = aIter.next();
-                    if (releasedStatusId.equals(aVDO.getStatusId())) {
-                        secVDO = sectionCache.getById(aVDO.getSectionId());
-                        if (secVDO != null && secVDO.getName().endsWith(location))
-                            writeResultRows(writer, ssVDO, aVDO);
+                if (!reject) {
+                    analyses = analysis.fetchBySampleId(sDO.getId());
+                    aIter = analyses.iterator();
+                    while (aIter.hasNext()) {
+                        aVDO = aIter.next();
+                        if (releasedStatusId.equals(aVDO.getStatusId())) {
+                            secVDO = sectionCache.getById(aVDO.getSectionId());
+                            if (secVDO != null && secVDO.getName().endsWith(location))
+                                writeResultRows(writer, ssVDO, aVDO);
+                        }
                     }
                 }
                 
@@ -340,7 +343,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         writer.println(row.toString());
     }
 
-    protected void writeSampleRow(PrintWriter writer, SampleDO sVDO, SampleSDWISViewDO ssVDO) throws Exception {
+    protected boolean writeSampleRow(PrintWriter writer, SampleDO sVDO, SampleSDWISViewDO ssVDO) throws Exception {
         ArrayList<AuxDataViewDO>   adList;
         ArrayList<Integer>         sampleIds;
         ArrayList<SampleQaEventDO> sampleQaList;
@@ -379,7 +382,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             sampleIds = new ArrayList<Integer>();
             sampleIds.add(sVDO.getId());
             sampleQaList = sampleQA.fetchResultOverrideBySampleIdList(sampleIds);
-            sampleOverride = "S";
+            if (sampleQaList.size() > 0)
+                sampleOverride = "S";
         } catch (NotFoundException nfE) {
             // no qa events found means sample is not overridden
         } catch (Exception anyE) {
@@ -478,6 +482,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         row.append(getPaddedString(sampleOverride, 1));                             // col 186
         
         writer.println(row.toString());
+        
+        return sampleOverride.length() > 0;
     }
 
     protected void writeResultRows(PrintWriter writer, SampleSDWISViewDO sampleSDWIS, AnalysisViewDO analysis) throws Exception {
