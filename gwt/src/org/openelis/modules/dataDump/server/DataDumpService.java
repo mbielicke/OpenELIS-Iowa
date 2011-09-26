@@ -55,6 +55,16 @@ public class DataDumpService {
         return st;
     }
     
+    public ReportStatus runReportForWebEnvironmental(DataDumpVO data) throws Exception {
+        ReportStatus st;
+
+        st = remote().runReportForWebEnvironmental(data);
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            SessionManager.getSession().setAttribute(st.getMessage(), st);
+
+        return st;
+    }
+    
     private DataDumpRemote remote() {
         return (DataDumpRemote)EJBFactory.lookup("openelis/DataDumpBean/remote");
     }       
