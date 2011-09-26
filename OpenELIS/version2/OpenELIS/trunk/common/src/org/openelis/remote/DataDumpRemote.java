@@ -41,4 +41,6 @@ public interface DataDumpRemote {
     public DataDumpVO fetchAnalyteResultAndAuxData(ArrayList<QueryData> fields) throws Exception;
     
     public ReportStatus runReport(DataDumpVO data) throws Exception;
+    
+    public ReportStatus runReportForWebEnvironmental(DataDumpVO data) throws Exception;
 }
