@@ -265,8 +265,14 @@ public class WorksheetAnalysisManagerProxy {
                             }
                         }
                         wrManager = manager.getWorksheetResultAt(i);
-                        aManager.initiateAnalysisAt(k);
-                        initializeWorksheetResults(aVDO, arManager, wrManager);
+                        //
+                        // We are only initializing the analyses that were not added
+                        // from another worksheet
+                        //
+                        if (wrManager.count() <= 0) {
+                            aManager.initiateAnalysisAt(k);
+                            initializeWorksheetResults(aVDO, arManager, wrManager);
+                        }
                         doBreak = true;
                         break;
                     }
