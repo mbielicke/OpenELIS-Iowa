@@ -38,7 +38,7 @@ public class AnalysisQAEventManagerProxy {
     }
     
     public AnalysisQaEventManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        return service.call("fetchByAnalysisId", analysisId);
+        return service.call("fetchQaByAnalysisId", analysisId);
     }
     
     public AnalysisQaEventManager add(AnalysisQaEventManager man) throws Exception {
