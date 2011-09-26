@@ -40,8 +40,9 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Result.FetchForDataDump",
                 query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
                         "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId,ta.resultGroup)"
-                      + " from Result r left join r.analysis an left join an.test t left join r.analyte a left join r.testAnalyte ta "
-                      + " where r.analysisId in (:ids) and r.isReportable = 'Y'and r.isColumn = 'N' and r.value != null order by a.name"),                    
+                      + " from Result r, Analysis an, Test t, Analyte a, TestAnalyte ta "
+                      + " where r.analysisId in (:ids) and r.isReportable = 'Y'and r.isColumn = 'N' and r.value != null"
+                      + " and an.id = r.analysisId and t.id = an.testId and ta.id = r.testAnalyteId and a.id = r.analyteId order by a.name"),                    
     @NamedQuery( name = "Result.FetchAnalyteByAnalysisId",
                 query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "
                       + " from Result r left join r.analyte a where r.analysisId = :id order by r.sortOrder")})

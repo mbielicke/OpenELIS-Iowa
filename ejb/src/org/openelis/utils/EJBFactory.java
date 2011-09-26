@@ -36,6 +36,7 @@ import org.openelis.local.AuxDataLocal;
 import org.openelis.local.AuxFieldGroupLocal;
 import org.openelis.local.AuxFieldLocal;
 import org.openelis.local.AuxFieldValueLocal;
+import org.openelis.local.CategoryCacheLocal;
 import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.DictionaryLocal;
@@ -434,6 +435,10 @@ public class EJBFactory {
     
     public static DictionaryCacheLocal getDictionaryCache() {
         return (DictionaryCacheLocal) lookup("openelis/DictionaryCacheBean/local");
+    }
+    
+    public static CategoryCacheLocal getCategoryCache() {
+        return (CategoryCacheLocal) lookup("openelis/CategoryCacheBean/local");
     }
     
     public static InventoryItemCacheLocal getInventoryItemCache() {

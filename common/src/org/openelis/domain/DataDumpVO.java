@@ -31,6 +31,7 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 
 /**
  * 
@@ -49,7 +50,7 @@ public class DataDumpVO implements RPC {
                                            organizationId, organizationName, organizationAttention, 
                                            organizationAddressMultipleUnit, organizationAddressAddress,
                                            organizationAddressCity, organizationAddressState,
-                                           organizationAddressZipCode, organizationAddressCountry,
+                                           organizationAddressZipCode,
                                            sampleItemTypeofSampleId, sampleItemSourceOfSampleId, 
                                            sampleItemSourceOther, sampleItemContainerId,
                                            analysisTestNameHeader, analysisTestMethodNameHeader,
@@ -80,9 +81,9 @@ public class DataDumpVO implements RPC {
                                            receivedDateFrom, receivedDateTo, enteredDateFrom,
                                            enteredDateTo, releasedDateFrom, releasedDateTo;
     
-    protected Query                            query;
+    protected ArrayList<QueryData>             queryFields;
     protected ArrayList<TestAnalyteDataDumpVO> testAnalytes;
-    protected ArrayList<AuxFieldDataDumpVO>    auxFields; 
+    protected ArrayList<AuxFieldDataDumpVO>    auxFields;
     
     public String getAnalysisTestName() {
         return analysisTestName;
@@ -250,14 +251,6 @@ public class DataDumpVO implements RPC {
 
     public void setOrganizationAddressZipCode(String organizationAddressZipCode) {
         this.organizationAddressZipCode = DataBaseUtil.trim(organizationAddressZipCode);
-    }
-
-    public String getOrganizationAddressCountry() {
-        return organizationAddressCountry;
-    }
-
-    public void setOrganizationAddressCountry(String organizationAddressCountry) {
-        this.organizationAddressCountry = DataBaseUtil.trim(organizationAddressCountry);
     }
 
     public String getSampleItemTypeofSampleId() {
@@ -625,7 +618,7 @@ public class DataDumpVO implements RPC {
     }
 
     public void setAnalysisCompletedDateFrom(Datetime analysisCompletedDateFrom) {
-        this.analysisCompletedDateFrom = DataBaseUtil.toYM(analysisCompletedDateFrom);
+        this.analysisCompletedDateFrom = DataBaseUtil.toYD(analysisCompletedDateFrom);
     }
 
     public Datetime getAnalysisCompletedDateTo() {
@@ -716,14 +709,14 @@ public class DataDumpVO implements RPC {
         this.releasedDateTo = DataBaseUtil.toYD(releasedDateTo);
     }
     
-    public Query getQuery() {
-        return query;
+    public ArrayList<QueryData> getQueryFields() {
+        return queryFields;
     }
 
-    public void setQuery(Query query) {
-        this.query = query;
+    public void setQueryFields(ArrayList<QueryData> queryFields) {
+        this.queryFields = queryFields;
     }
-    
+
     public ArrayList<TestAnalyteDataDumpVO> getTestAnalytes() {
         return testAnalytes;
     }

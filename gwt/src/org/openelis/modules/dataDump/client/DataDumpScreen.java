@@ -446,6 +446,7 @@ public class DataDumpScreen extends Screen {
     
     private void initializeDropdowns() {
         Integer id;
+        String query;
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
         ArrayList<IdNameVO> projects;
@@ -453,15 +454,34 @@ public class DataDumpScreen extends Screen {
         HashMap<Integer, Integer> map;
 
         model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("analysis_status");
+        query = null;
         for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
+            if ("analysis_completed".equals(d.getSystemName()) ||
+                            "analysis_released".equals(d.getSystemName())) {
+                row = new TableDataRow(d.getId(), d.getEntry());
+                if (query == null) 
+                    query = d.getId()+ "|"; 
+                else
+                    query += d.getId(); 
+                model.add(row);
+            }
+        }
+        if (query != null) {
+            /*
+             * The first option here is used to indicate that the analyses with
+             * status completed or released are to be queried for. So we need
+             * to make sure that the ids for both statuses get be included in the 
+             * query sent to the back end.   
+             */
+            row = new TableDataRow(null, consts.get("completedOrReleased"));
+            row.data = query;
             model.add(row);
         }
         analysisStatusId.setModel(model);
-
+        if (model.size() > 0) 
+            data.setAnalysisStatusId(((Integer)model.get(0).key));              
+            
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         try {
@@ -658,7 +678,7 @@ public class DataDumpScreen extends Screen {
         field.type = QueryData.Type.STRING;
         queryList.add(field);
         
-        data.setQuery(query);
+        data.setQueryFields(query.getFields());
         window.setBusy(consts.get("querying"));
         try {
             ldata = service.call("fetchAnalyteResultAndAuxData", query);
@@ -676,7 +696,12 @@ public class DataDumpScreen extends Screen {
     }
     
     protected void abort() {
-        data = createData();
+        ArrayList<TableDataRow> model;
+        
+        data = createData();        
+        model = analysisStatusId.getData();
+        if (model != null && model.size() > 0)
+            data.setAnalysisStatusId((Integer)model.get(0).key);
         clearErrors();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);        
@@ -834,7 +859,6 @@ public class DataDumpScreen extends Screen {
         data.setOrganizationAddressCity("N"); 
         data.setOrganizationAddressState("N");
         data.setOrganizationAddressZipCode("N");
-        data.setOrganizationAddressCountry("N");
         data.setSampleItemTypeofSampleId("N");
         data.setSampleItemSourceOfSampleId("N"); 
         data.setSampleItemSourceOther("N"); 
@@ -895,17 +919,35 @@ public class DataDumpScreen extends Screen {
     }
     
     protected QueryData getQuery(Dropdown<Integer> dd, String key) {
+        String query;
         TableDataRow sel;
         QueryData qd;
 
         sel = dd.getSelection();
-        if (sel == null || sel.key == null)
+        if (sel == null)
             return null;
 
+        if (sel.key == null) {
+            if (!SampleWebMeta.getAnalysisStatusId().equals(key))
+                return null;
+            else 
+                /*
+                 * If the first option in the dropdown for analysis status is selected,
+                 * i.e. key == null, then it means that the analyses with status
+                 * completed or released are being queried for. So we need to make
+                 * sure that the ids for both statuses get included in the query
+                 * sent to the back end. The query string for doing that is
+                 * created in initializeDropdowns() and set as the data of the row.  
+                 */
+                query = (String)sel.data;            
+        } else {
+            query = sel.key.toString();
+        }
+                    
         qd = new QueryData();
         qd.key = key;
         qd.type = QueryData.Type.INTEGER;
-        qd.query = sel.key.toString();
+        qd.query = query;
         
         return qd;
     }

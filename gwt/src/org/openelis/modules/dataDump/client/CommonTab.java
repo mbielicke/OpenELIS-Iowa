@@ -291,21 +291,6 @@ public class CommonTab extends Screen {
             }
         });
 
-        addressCountry = (CheckBox)def.getWidget(SampleWebMeta.getAddressCountry());
-        addScreenHandler(addressCountry, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                addressCountry.setValue(data.getOrganizationAddressCountry());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                data.setOrganizationAddressCountry(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                addressCountry.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
-            }
-        });
-
         itemTypeofSampleId = (CheckBox)def.getWidget(SampleWebMeta.getItemTypeofSampleId());
         addScreenHandler(itemTypeofSampleId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {

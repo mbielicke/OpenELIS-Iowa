@@ -25,8 +25,8 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
 <xsl:stylesheet
-  version="1.0"
   extension-element-prefixes="resource"
+  version="1.0"
   xmlns:locale="xalan://java.util.Locale"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
@@ -46,182 +46,182 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Panel" name="{resource:getString($constants,'testAnalyteAuxDataFilter')}">
-<!--left table goes here -->       
-          <VerticalPanel width="500" height="630" padding="0" spacing="0" style="WhiteContentPanel">
-            <text style="heading">
-               <xsl:value-of select='resource:getString($constants,"testAnalyteHeading")' />
-            </text>
+    <screen id="Panel" name="{resource:getString($constants,'testAnalyteAuxDataFilter')}" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<!--left table goes here -->
+      <VerticalPanel height="630" padding="0" spacing="0" style="WhiteContentPanel" width="500">
+        <text style="heading">
+          <xsl:value-of select='resource:getString($constants,"testAnalyteHeading")' />
+        </text>
+        <HorizontalPanel>
+          <VerticalPanel style="Form">
+            <widget valign="top">
+              <table key="analyteTable" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
+                <col key="select" width="20">
+                  <check />
+                </col>
+                <col align="left" header="{resource:getString($constants,'name')}" key="analyte" width="220">
+                  <label field="String" />
+                </col>
+              </table>
+            </widget>
             <HorizontalPanel>
-              <VerticalPanel style="Form">
-                <widget valign="top">
-                  <table key="analyteTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-                    <col key="select" width="20">
-                      <check/>
-                    </col>
-                    <col key="analyte" width="220" align="left" header="{resource:getString($constants,'name')}">
-                      <label field="String" />
-                    </col>
-                  </table>
-                </widget>
+              <HorizontalPanel width="5" />
+              <widget style="TableButtonFooter">
                 <HorizontalPanel>
-                  <HorizontalPanel width="5" />
-                  <widget style="TableButtonFooter">
+                  <appButton key="selectAllAnalyteButton" style="Button">
                     <HorizontalPanel>
-                      <appButton key="selectAllAnalyteButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'selectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="unselectAllAnalyteButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel/>
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'unselectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'selectAll')" />
+                      </text>
                     </HorizontalPanel>
-                  </widget>
-                </HorizontalPanel>
-              </VerticalPanel>
-              <HorizontalPanel width="30" />
-              <VerticalPanel style="Form">
-                <widget valign="top">
-                  <table key="resultTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-                    <col key="select" width="20">
-                      <check/>
-                    </col>
-                    <col key="result" width="225" align="left" header="{resource:getString($constants,'result')}">
-                      <label field="String" />
-                    </col>
-                  </table>
-                </widget>
-                <HorizontalPanel>
-                  <HorizontalPanel width="5" />
-                  <widget style="TableButtonFooter">
+                  </appButton>
+                  <appButton key="unselectAllAnalyteButton" style="Button">
                     <HorizontalPanel>
-                      <appButton key="selectAllResultButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'selectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="unselectAllResultButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel/>
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'unselectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'unselectAll')" />
+                      </text>
                     </HorizontalPanel>
-                  </widget>
+                  </appButton>
                 </HorizontalPanel>
-              </VerticalPanel>
+              </widget>
             </HorizontalPanel>
-            <VerticalPanel height = "2"/>
-            <text style="heading">
-               <xsl:value-of select='resource:getString($constants,"auxData")' />
-            </text>
+          </VerticalPanel>
+          <HorizontalPanel width="30" />
+          <VerticalPanel style="Form">
+            <widget valign="top">
+              <table key="resultTable" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
+                <col key="select" width="20">
+                  <check />
+                </col>
+                <col align="left" header="{resource:getString($constants,'result')}" key="result" width="225">
+                  <label field="String" />
+                </col>
+              </table>
+            </widget>
             <HorizontalPanel>
-              <VerticalPanel style="Form">
-                <widget valign="top">
-                  <table key="auxDataTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-                    <col key="select" width="20">
-                      <check/>
-                    </col>
-                    <col key="auxData" width="225" align="left" header="{resource:getString($constants,'name')}">
-                      <label field="String" />
-                    </col>
-                  </table>
-                </widget>
+              <HorizontalPanel width="5" />
+              <widget style="TableButtonFooter">
                 <HorizontalPanel>
-                  <HorizontalPanel width="5" />
-                  <widget style="TableButtonFooter">
+                  <appButton key="selectAllResultButton" style="Button">
                     <HorizontalPanel>
-                      <appButton key="selectAllAuxButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'selectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="unselectAllAuxButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel/>
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'unselectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'selectAll')" />
+                      </text>
                     </HorizontalPanel>
-                  </widget>
+                  </appButton>
+                  <appButton key="unselectAllResultButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'unselectAll')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
                 </HorizontalPanel>
-              </VerticalPanel>
-              <HorizontalPanel width="30" />
-              <VerticalPanel style="Form">
-                <widget valign="top">
-                  <table key="valueTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-                    <col key="select" width="20">
-                      <check/>
-                    </col>
-                    <col key="result" width="220" align="left" header="{resource:getString($constants,'value')}">
-                      <label field="String" />
-                    </col>
-                  </table>
-                </widget>
+              </widget>
+            </HorizontalPanel>
+          </VerticalPanel>
+        </HorizontalPanel>
+        <VerticalPanel height="2" />
+        <text style="heading">
+          <xsl:value-of select='resource:getString($constants,"auxData")' />
+        </text>
+        <HorizontalPanel>
+          <VerticalPanel style="Form">
+            <widget valign="top">
+              <table key="auxDataTable" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
+                <col key="select" width="20">
+                  <check />
+                </col>
+                <col align="left" header="{resource:getString($constants,'name')}" key="auxData" width="225">
+                  <label field="String" />
+                </col>
+              </table>
+            </widget>
+            <HorizontalPanel>
+              <HorizontalPanel width="5" />
+              <widget style="TableButtonFooter">
                 <HorizontalPanel>
-                  <HorizontalPanel width="5" />
-                  <widget style="TableButtonFooter">
+                  <appButton key="selectAllAuxButton" style="Button">
                     <HorizontalPanel>
-                      <appButton key="selectAllValueButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'selectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="unselectAllValueButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel/>
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'unselectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'selectAll')" />
+                      </text>
                     </HorizontalPanel>
-                  </widget>
+                  </appButton>
+                  <appButton key="unselectAllAuxButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'unselectAll')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
                 </HorizontalPanel>
-              </VerticalPanel>
-            </HorizontalPanel>                
-                    <HorizontalPanel>  
-                      <HorizontalPanel width="230" />                    
-                      <appButton key="runReportButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel />
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'runReport')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="cancelButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel/>
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'cancel')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
+              </widget>
+            </HorizontalPanel>
+          </VerticalPanel>
+          <HorizontalPanel width="30" />
+          <VerticalPanel style="Form">
+            <widget valign="top">
+              <table key="valueTable" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
+                <col key="select" width="20">
+                  <check />
+                </col>
+                <col align="left" header="{resource:getString($constants,'value')}" key="result" width="220">
+                  <label field="String" />
+                </col>
+              </table>
+            </widget>
+            <HorizontalPanel>
+              <HorizontalPanel width="5" />
+              <widget style="TableButtonFooter">
+                <HorizontalPanel>
+                  <appButton key="selectAllValueButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'selectAll')" />
+                      </text>
                     </HorizontalPanel>
-          </VerticalPanel>          
+                  </appButton>
+                  <appButton key="unselectAllValueButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'unselectAll')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </HorizontalPanel>
+              </widget>
+            </HorizontalPanel>
+          </VerticalPanel>
+        </HorizontalPanel>
+        <HorizontalPanel>
+          <HorizontalPanel width="230" />
+          <appButton key="runReportButton" style="Button">
+            <HorizontalPanel>
+              <AbsolutePanel />
+              <text>
+                <xsl:value-of select="resource:getString($constants,'runReport')" />
+              </text>
+            </HorizontalPanel>
+          </appButton>
+          <appButton key="cancelButton" style="Button">
+            <HorizontalPanel>
+              <AbsolutePanel />
+              <text>
+                <xsl:value-of select="resource:getString($constants,'cancel')" />
+              </text>
+            </HorizontalPanel>
+          </appButton>
+        </HorizontalPanel>
+      </VerticalPanel>
     </screen>
   </xsl:template>
 </xsl:stylesheet>
