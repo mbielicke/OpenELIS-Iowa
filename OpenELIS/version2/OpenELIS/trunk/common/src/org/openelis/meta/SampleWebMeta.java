@@ -44,7 +44,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     ENTERED_DATE_TO = "_sample.enteredDateTo",
                     RECEIVED_DATE = "_sample.receivedDate",
                     RECEIVED_DATE_FROM = "_sample.receivedDateFrom",
-                    RECEIVED_DATE_TO = "_sample.receivedDateFrom",
+                    RECEIVED_DATE_TO = "_sample.receivedDateTo",
                     COLLECTION_DATE = "_sample.collectionDate",
                     COLLECTION_DATE_FROM = "_display.collectionDateFrom",
                     COLLECTION_DATE_TO = "_display.collectionDateTo",
@@ -187,8 +187,10 @@ public class SampleWebMeta implements Meta, MetaMap {
                     RESULT_ANALYTE_NAME = "_result.analyte.name",
                     RESULT_TEST_ANALYTE_ROW_GROUP = "_result.testAnalyte.rowGroup",
                     RESULT_TEST_ANALYTE_TYPE_ID =  "_result.testAnalyte.typeId",
-                    RESULT_TEST_ANALYTE_RESULT_GROUP = "_result.testAnalyte.resultGroup";
+                    RESULT_TEST_ANALYTE_RESULT_GROUP = "_result.testAnalyte.resultGroup",
                     
+                    AUX_DATA_AUX_FIELD_ANALYTE_ID = "_auxField.analyteId",
+                    AUX_DATA_AUX_FIELD_ANALYTE_NAME = "_auxField.analyte.name";
 
     private static HashSet<String> names;
 
@@ -299,7 +301,9 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RESULT_ANALYTE_NAME, 
                                                   RESULT_TEST_ANALYTE_ROW_GROUP,
                                                   RESULT_TEST_ANALYTE_TYPE_ID,
-                                                  RESULT_TEST_ANALYTE_RESULT_GROUP));
+                                                  RESULT_TEST_ANALYTE_RESULT_GROUP,
+                                                  AUX_DATA_AUX_FIELD_ANALYTE_ID,
+                                                  AUX_DATA_AUX_FIELD_ANALYTE_NAME));
     }
 
     public static String getId() {
@@ -833,6 +837,14 @@ public class SampleWebMeta implements Meta, MetaMap {
         return RESULT_TEST_ANALYTE_RESULT_GROUP;
     }
     
+    public static String getAuxDataAuxFieldAnalyteId() {
+        return AUX_DATA_AUX_FIELD_ANALYTE_ID;
+    }
+    
+    public static String getAuxDataAuxFieldAnalyteName() {
+        return AUX_DATA_AUX_FIELD_ANALYTE_NAME;
+    }
+    
     
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
@@ -927,6 +939,12 @@ public class SampleWebMeta implements Meta, MetaMap {
 
         if (where.indexOf("auxData.") > -1)
             from += ", IN (_sample.auxData) _auxData ";
+        
+        if (where.indexOf("auxField.") > -1) {
+            if (where.indexOf("auxData.") == -1)
+                from += ", IN (_sample.auxData) _auxData ";
+            from += ", IN (_auxData.auxField) _auxField ";
+        }
 
         return from;
     }

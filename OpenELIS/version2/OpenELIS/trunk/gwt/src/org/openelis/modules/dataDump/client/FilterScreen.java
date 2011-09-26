@@ -357,12 +357,17 @@ public class FilterScreen extends Screen {
         addScreenHandler(unselectAllAuxButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 ArrayList<TableDataRow> model;
+                TableDataRow row;
+                AuxFieldDataDumpVO data;
                 Object val;
                 
                 model = auxDataTable.getData();
                 for (int i = 0; i < model.size(); i++) {
                     val = auxDataTable.getCell(i, 0).getValue();
                     if ("Y".equals(val)) {
+                        row = model.get(i);
+                        data = (AuxFieldDataDumpVO)row.data;
+                        data.setIsIncluded("N");
                         auxDataTable.setCell(i, 0, "N");
                         updateValuesForAnalyte(i, "N");                        
                     }
@@ -432,11 +437,11 @@ public class FilterScreen extends Screen {
                //TODO comment
                 for (int i = 0; i < model.size(); i++) {
                     val = valueTable.getCell(i, 0).getValue();
-                    if (!"Y".equals(val)) {
-                        valueTable.setCell(i, 0, "Y");
+                    if ("N".equals(val)) {
                         row = valueTable.getRow(i);
                         data = (AuxDataDumpVO)row.data;
                         data.setIsIncluded("Y");
+                        valueTable.setCell(i, 0, "Y");
                     }
                 }
             }
@@ -459,11 +464,11 @@ public class FilterScreen extends Screen {
                     return;
                 for (int i = 0; i < model.size(); i++) {
                     val = valueTable.getCell(i, 0).getValue();
-                    if (!"N".equals(val)) {
-                        valueTable.setCell(i, 0, "N");
+                    if ("Y".equals(val)) {
                         row = valueTable.getRow(i);
                         data = (AuxDataDumpVO)row.data;
                         data.setIsIncluded("N");
+                        valueTable.setCell(i, 0, "N");
                     }
                 } 
             }
@@ -531,8 +536,7 @@ public class FilterScreen extends Screen {
                 window.setError(consts.get("selectOneAnaOrAux"));
                 return;
             }
-        }
-               
+        }               
         
         try {
             if (reportRunUtil == null) 
@@ -605,7 +609,7 @@ public class FilterScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         for (AuxFieldDataDumpVO aux : auxFields) {
             row = new TableDataRow(2);
-            row.cells.get(0).setValue(aux.getIsIncluded());
+            row.cells.get(0).setValue("N");
             row.cells.get(1).setValue(aux.getAnalyteName());
             row.data = aux;
             model.add(row);

@@ -28,12 +28,14 @@ package org.openelis.bean;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -47,6 +49,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.jfree.chart.axis.QuarterDateFormat;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
@@ -71,8 +74,8 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.TestAnalyteDataDumpVO;
-import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
@@ -96,10 +99,12 @@ import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.manager.SampleManager;
+import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.DataDumpRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.util.UTFResource;
+import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -132,15 +137,6 @@ public class DataDumpBean implements DataDumpRemote {
     private DictionaryLocal                 dictionary;
 
     @EJB
-    private DictionaryCacheLocal            dictionaryCache;
-
-    @EJB
-    private CategoryCacheLocal              categoryCache;
-
-    @EJB
-    private UserCacheLocal                  userCache;
-
-    @EJB
     private SampleLocal                     sample;
     
     @EJB
@@ -167,8 +163,10 @@ public class DataDumpBean implements DataDumpRemote {
     @EJB
     private PWSLocal                        pws;
     
-    private static Integer                  resultDictId, auxFieldValueDictId, 
-                                            completedActId, releasedActId ;   
+    private static Integer                  organizationReportToId, sampleInErrorId, 
+                                            resultDictId, auxFieldValueDictId, 
+                                            completedActionId, releasedActionId, 
+                                            releasedStatusId;   
 
     private static final SampleWebMeta      meta = new SampleWebMeta();
 
@@ -182,33 +180,42 @@ public class DataDumpBean implements DataDumpRemote {
     public void init() {
         ArrayList<DictionaryDO> list;
         CategoryCacheVO cat;
-        String locale;        
+        String locale;      
+        CategoryCacheLocal ccl;
         
         if (resultDictId == null) {
+            ccl = EJBFactory.getCategoryCache();
             try {
                 resultDictId = dictionary.fetchBySystemName("test_res_type_dictionary").getId();
                 auxFieldValueDictId = dictionary.fetchBySystemName("aux_dictionary").getId();
-                completedActId = dictionary.fetchBySystemName("an_user_ac_completed").getId(); 
-                releasedActId = dictionary.fetchBySystemName("an_user_ac_released").getId();
+                completedActionId = dictionary.fetchBySystemName("an_user_ac_completed").getId(); 
+                releasedActionId = dictionary.fetchBySystemName("an_user_ac_released").getId();
+                organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
                 
                 dictEntryMap = new HashMap<Integer, String>();
                 
-                cat = categoryCache.getBySystemName("sample_status");
+                cat = ccl.getBySystemName("sample_status");
                 list = cat.getDictionaryList();
-                for (DictionaryDO data : list) 
+                for (DictionaryDO data : list) {
+                    if ("sample_error".equals(data.getSystemName()))
+                        sampleInErrorId = data.getId();
                     dictEntryMap.put(data.getId(), data.getEntry());
+                }
                 
-                cat = categoryCache.getBySystemName("analysis_status");
+                cat = ccl.getBySystemName("analysis_status");
+                list = cat.getDictionaryList();
+                for (DictionaryDO data : list) {
+                    if ("analysis_status".equals(data.getSystemName()))
+                        releasedStatusId = data.getId();
+                    dictEntryMap.put(data.getId(), data.getEntry());
+                }
+                
+                cat = ccl.getBySystemName("sdwis_sample_type");
                 list = cat.getDictionaryList();
                 for (DictionaryDO data : list) 
                     dictEntryMap.put(data.getId(), data.getEntry()); 
                 
-                cat = categoryCache.getBySystemName("sdwis_sample_type");
-                list = cat.getDictionaryList();
-                for (DictionaryDO data : list) 
-                    dictEntryMap.put(data.getId(), data.getEntry()); 
-                
-                cat = categoryCache.getBySystemName("sdwis_sample_category");
+                cat = ccl.getBySystemName("sdwis_sample_category");
                 list = cat.getDictionaryList();
                 for (DictionaryDO data : list) 
                     dictEntryMap.put(data.getId(), data.getEntry());
@@ -221,7 +228,7 @@ public class DataDumpBean implements DataDumpRemote {
         try {
             if (resource == null) {
                 try {
-                    locale = userCache.getLocale();
+                    locale = EJBFactory.getUserCache().getLocale();
                 } catch (Exception e) {
                     locale = "en";
                 }
@@ -241,7 +248,7 @@ public class DataDumpBean implements DataDumpRemote {
     public DataDumpVO fetchAnalyteResultAndAuxData(ArrayList<QueryData> fields) throws Exception {
         int i;
         Integer samId, prevSamId, analysisId;
-        String exOverride;
+        String excludeOverride;
         Query query;
         QueryBuilderV2 builder;
         List<Object[]> list;
@@ -251,10 +258,10 @@ public class DataDumpBean implements DataDumpRemote {
         Object[] vo;
         DataDumpVO data;
 
-        exOverride = null;
+        excludeOverride = null;
         for (QueryData field : fields) {
             if ("excludeResultOverride".equals(field.key)) {
-                exOverride = field.query;
+                excludeOverride = field.query;
                 fields.remove(field);
                 break;
             }
@@ -276,7 +283,7 @@ public class DataDumpBean implements DataDumpRemote {
         anIdList = new ArrayList<Integer>();
         samIdList = new ArrayList<Integer>();
         prevSamId = null;
-        if ("Y".equals(exOverride)) {
+        if ("Y".equals(excludeOverride)) {
             /*
              * if there are qa event(s) of type result override found for a
              * sample then all the results under it are excluded, i.e. the
@@ -347,11 +354,52 @@ public class DataDumpBean implements DataDumpRemote {
         return data;
     }
     
+    @RolesAllowed("w_datadump_environmental")
+    @TransactionTimeout(600)    
+    public ReportStatus runReportForWebEnvironmental(DataDumpVO data) throws Exception {
+        ArrayList<QueryData> fields;
+        QueryData field;
+        String clause, orgIds;
+        
+        fields = data.getQueryFields();
+        if (fields == null || fields.size() == 0)
+            throw new InconsistencyException("You may not execute an empty query");
+        
+        /*
+         * Retrieving the organization Ids to which the user belongs to from the
+         * security clause in the userPermission.
+         */
+        clause = EJBFactory.getUserCache()
+                           .getPermission()
+                           .getModule("w_datadump_environmental")
+                           .getClause();
+        orgIds = ReportUtil.parseClauseAsString(clause)
+                           .get(SampleMeta.getSampleOrgOrganizationId());
+        field = new QueryData();
+        field.key = SampleWebMeta.getSampleOrgOrganizationId();
+        field.query = orgIds;
+        field.type = QueryData.Type.INTEGER;        
+        fields.add(field);
+        
+        field = new QueryData();
+        field.key = SampleWebMeta.getSampleOrgTypeId();
+        field.query = organizationReportToId.toString();
+        field.type = QueryData.Type.INTEGER;        
+        fields.add(field);              
+        
+        return runReport(data, true);
+    }
+    
+    @TransactionTimeout(600)
     public ReportStatus runReport(DataDumpVO data) throws Exception {
-        String exOverride;
+        return runReport(data, false);
+    }
+       
+    private ReportStatus runReport(DataDumpVO data, boolean runforWeb) throws Exception {
+        boolean excludeOverride;
         FileOutputStream out;
         File tempFile;
-        List<Object[]> results;
+        List<Object[]> resultList, auxDataList;
         ArrayList<TestAnalyteDataDumpVO> anaList;
         ArrayList<AuxFieldDataDumpVO> auxList;
         ReportStatus status;
@@ -403,43 +451,84 @@ public class DataDumpBean implements DataDumpRemote {
             }                        
         }
         
-        fields = data.getQuery().getFields();
+        fields = data.getQueryFields();
+        excludeOverride = false;
         for (QueryData field : fields) {
             if ("excludeResultOverride".equals(field.key)) {
-                exOverride = field.query;
+                excludeOverride = "Y".equals(field.query)?true:false;
                 fields.remove(field);
                 break;
             }
         }
+        
+        resultList = null;
+        auxDataList = null;
+        
         builder = new QueryBuilderV2();
         builder.setMeta(meta);        
-        
-        builder.setSelect("distinct " + SampleWebMeta.getAccessionNumber() +                          
-                          ", " + SampleWebMeta.getResultAnalyteName() +  
-                          ", " + SampleWebMeta.getId() + 
-                          ", " + SampleWebMeta.getDomain() +
-                          ", " + SampleWebMeta.getItemId() +
-                          ", " + SampleWebMeta.getResultAnalysisid() +
-                          ", " + SampleWebMeta.getResultIsColumn() +
-                          ", " + SampleWebMeta.getResultAnalyteId() +
-                          ", " + SampleWebMeta.getResultTypeId() +
-                          ", " + SampleWebMeta.getResultValue());
-        builder.constructWhere(fields);        
+        /*
+         * fetch fields related to results based on the analytes and values selected
+         * by the user from the lists associated with test analytes 
+         */ 
         if (analyteResultMap != null && analyteResultMap.size() > 0) {
-            builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
-            builder.addWhere(SampleWebMeta.getResultIsReportable()+ "=" + "'Y'");
-            builder.addWhere(SampleWebMeta.getResultIsColumn()+ "=" + "'N'");
-            builder.addWhere(SampleWebMeta.getResultValue()+ "!=" + "null");
-            builder.addWhere(SampleWebMeta.getResultAnalyteId()+ getListParam(analyteResultMap.keySet())+")");
-            builder.setOrderBy(SampleWebMeta.getAccessionNumber()+","+SampleWebMeta.getResultAnalyteName());
-        }        
-        //if (auxIds != null && auxIds.size() > 0)
-         //   builder.addWhere(SampleWebMeta.getAuxDataId() + getListParam(auxIds));
-        query = manager.createQuery(builder.getEJBQL());
-        builder.setQueryParams(query, fields);
-        results = query.getResultList(); 
+            builder.setSelect("distinct " + SampleWebMeta.getAccessionNumber() +
+                              ", " + SampleWebMeta.getResultAnalyteName() +
+                              ", " + SampleWebMeta.getId() +
+                              ", " + SampleWebMeta.getDomain() +
+                              ", " + SampleWebMeta.getItemId() +
+                              ", " + SampleWebMeta.getResultAnalysisid() +
+                              ", " + SampleWebMeta.getResultIsColumn() +
+                              ", " + SampleWebMeta.getResultAnalyteId() +
+                              ", " + SampleWebMeta.getResultTypeId() +
+                              ", " + SampleWebMeta.getResultValue());
+            builder.constructWhere(fields);
+            builder.addWhere(SampleWebMeta.getItemId() + "=" +
+                             SampleWebMeta.getAnalysisSampleItemId());
+            if (runforWeb) {
+                builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);
+                builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);                
+            }
+            builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
+            builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
+            builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
+            builder.addWhere(SampleWebMeta.getResultAnalyteId() +
+                             getListParam(analyteResultMap.keySet()) + ")");
+            builder.setOrderBy(SampleWebMeta.getAccessionNumber() + "," +
+                               SampleWebMeta.getResultAnalyteName());
+            query = manager.createQuery(builder.getEJBQL());
+            builder.setQueryParams(query, fields);
+            resultList = query.getResultList(); 
+        }       
+        
+        
+        /*
+         * fetch fields related to aux data based on the analytes and values selected
+         * by the user from the lists associated with aux fields 
+         */
+        builder.clearWhereClause();
+        if (auxFieldValueMap != null && auxFieldValueMap.size() > 0) {
+            builder.setSelect("distinct " + SampleWebMeta.getAccessionNumber() +
+                              ", " + SampleWebMeta.getAuxDataAuxFieldAnalyteName() +
+                              ", " + SampleWebMeta.getId() +
+                              ", " + SampleWebMeta.getDomain() +
+                              ", " + SampleWebMeta.getAuxDataAuxFieldAnalyteId() +
+                              ", " + SampleWebMeta.getAuxDataTypeId() +
+                              ", " + SampleWebMeta.getAuxDataValue());
+            builder.constructWhere(fields);
+            if (runforWeb) 
+                builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);            
+            builder.addWhere(SampleWebMeta.getAuxDataIsReportable() + "=" + "'Y'");
+            builder.addWhere(SampleWebMeta.getAuxDataValue() + "!=" + "null");
+            builder.addWhere(SampleWebMeta.getAuxDataAuxFieldAnalyteId() +
+                             getListParam(auxFieldValueMap.keySet()) + ")");
+            builder.setOrderBy(SampleWebMeta.getAccessionNumber() + "," +
+                               SampleWebMeta.getAuxDataAuxFieldAnalyteName());
+            query = manager.createQuery(builder.getEJBQL());
+            builder.setQueryParams(query, fields);
+            auxDataList = query.getResultList(); 
+        }
                 
-        wb = getWorkbook(results,data, analyteResultMap);        
+        wb = getWorkbook(resultList, auxDataList, analyteResultMap, auxFieldValueMap,excludeOverride, data);        
         if (wb != null) {
             out = null;
             try {
@@ -471,17 +560,24 @@ public class DataDumpBean implements DataDumpRemote {
         return status;
     }
     
-    private HSSFWorkbook getWorkbook(List<Object[]> results, DataDumpVO data,
-                                     HashMap<Integer, HashMap<String, String>> analyteResultMap) throws Exception {
-        int i, j; 
-        boolean showSample, showOrg, showItem, showAnalysis, showEnv, showWell, showSDWIS;
-        Integer samId, prevSamId, dictId, itemId, prevItemId, anaId, prevAnaId;        
-        String value, domain, qaeNames, compByNames, relByNames, userName;
+    private HSSFWorkbook getWorkbook(List<Object[]> resultList,  List<Object[]> auxDataList,                                     
+                                     HashMap<Integer, HashMap<String, String>> analyteResultMap,
+                                     HashMap<Integer, HashMap<String, String>> auxFieldValueMap,
+                                     boolean excludeOverride, DataDumpVO data) throws Exception {
+        boolean sampleOverriden, anaOverriden, addResultRow, addAuxDataRow, addSampleCells,
+                addOrgCells, addItemCells, addAnalysisCells, addEnvCells, addWellCells, addSDWISCells;
+        int rowIndex, resIndex, auxIndex, numResults, numAuxVals, i; 
+        Integer resAccNum, auxAccNum, samId, resSamId, auxSamId, itemId, anaId, prevSamId, prevItemId, prevAnaId;
+        String resultVal, auxDataVal, domain, qaeNames, compByNames, relByNames, userName;
         StringBuffer buf;
+        Object res[], aux[];
         HSSFWorkbook wb;
         HSSFSheet sheet;
-        Row row;
-        Cell cell;
+        Row row, resRow, auxRow;
+        Cell cell;               
+        ArrayList<String> allCols, cols;
+        Datetime collDT, collD, collT;
+        Date dc;  
         SampleDO sam;        
         SampleProjectViewDO proj;
         SampleOrganizationViewDO org;
@@ -490,74 +586,68 @@ public class DataDumpBean implements DataDumpRemote {
         SampleSDWISViewDO sdwis;
         SampleItemViewDO item;
         AnalysisViewDO ana;
-        HashMap<String, String> resValueMap;
         AnalysisQaEventViewDO aqe;
-        ArrayList<String> allCols, cols;
+        HashMap<Integer, PWSDO> pwsMap;
         ArrayList<SampleProjectViewDO> projList;
         ArrayList<SampleOrganizationViewDO> orgList;
         ArrayList<AnalysisQaEventViewDO> aqeList;
         ArrayList<AnalysisUserViewDO> anaCompList, anaRelList; 
-        HashMap<Integer, PWSDO> pwsMap;
+        DictionaryCacheLocal dcl;
                 
-        if (results == null || results.size() == 0)
-            return null;
-                
-        /*
-         * we iterate through the results and for each analyte id in analyteResultMap
-         * check to see if a result's value matches one of the values selected for
-         * that analyte and if it does then we fetch the additional data needed 
-         * for the columns in the sheet like the ones for sample, organization etc. 
-         */
         allCols = new ArrayList<String>();
         allCols.add(resource.getString("analyte"));
         
-        showSample = false;        
+        addSampleCells = false;
+        addOrgCells = false;
+        addItemCells = false;
+        addAnalysisCells = false;        
+        addEnvCells = false;
+        addWellCells = false; 
+        addSDWISCells = false;
+        
+        //
+        // get the labels to be displayed in the headers for the various fields 
+        //
         cols = getSampleHeaders(data);         
         if (cols.size() > 0) {            
             allCols.addAll(cols);
-            showSample = true;
+            addSampleCells = true;
         }        
         
         cols = getOrganizationHeaders(data);    
-        showOrg = false;
         if (cols.size() > 0) {            
             allCols.addAll(cols);
-            showOrg = true;
+            addOrgCells = true;
         }
         
         cols = getSampleItemHeaders(data);
-        showItem = false;
         if (cols.size() > 0) {            
             allCols.addAll(cols);
-            showItem = true;
+            addItemCells = true;
         }
         
         cols = getAnalysisHeaders(data);    
-        showAnalysis = false;
         if (cols.size() > 0) {            
             allCols.addAll(cols);
-            showAnalysis = true;
+            addAnalysisCells = true;
         }
         
         cols = getEnvironmentalHeaders(data);
-        showEnv = false;
         if (cols.size() > 0) {            
             allCols.addAll(cols);
-            showEnv = true;
+            addEnvCells = true;
         }
                 
         cols = getPrivateWellHeaders(data);    
-        showWell = false;
         if (cols.size() > 0) {            
             allCols.addAll(cols);
-            showWell = true;
+            addWellCells = true;
         }
         
         cols = getSDWISHeaders(data);    
-        showSDWIS = false;
         if (cols.size() > 0) {            
             allCols.addAll(cols);
-            showSDWIS = true;
+            addSDWISCells = true;
         }
                 
         allCols.add(resource.getString("value"));        
@@ -568,86 +658,277 @@ public class DataDumpBean implements DataDumpRemote {
         //
         // add all the columns to the header 
         //
-        for (i = 0; i < allCols.size(); i++) {
-            cell = row.createCell(i);
-            cell.setCellValue(allCols.get(i));   
+        for (rowIndex = 0; rowIndex < allCols.size(); rowIndex++) {
+            cell = row.createCell(rowIndex);
+            cell.setCellValue(allCols.get(rowIndex));   
         }
                 
-        i = 2;
-        prevItemId = null;
+        rowIndex = 2;
+        resIndex = 0;
+        auxIndex = 0;
+        samId = null;
+        itemId = null;
+        anaId = null;
+        domain =  null;
+        qaeNames = null; 
+        compByNames = null;
+        relByNames = null;
+        resultVal = null;
+        auxDataVal = null;
         prevSamId = null;
-        prevAnaId = null;
+        prevItemId = null;
+        prevAnaId = null; 
+        collDT = null;
         sam = null;
         proj = null;
         org = null;
-        env = null;
         well = null;
+        env = null;
         sdwis = null;
         item = null;
+        pwsMap = null;
+        addResultRow = false;
+        addAuxDataRow = false;
+        res = null;
+        aux = null;
         ana = null;
         aqeList = null;
         anaCompList = null;
-        anaRelList = null;
-        relByNames = null;
-        buf = null;
-        qaeNames = null;
-        compByNames = null;  
-        pwsMap = null;
+        anaRelList = null;  
+        dcl = EJBFactory.getDictionaryCache();
+        sampleOverriden = false;
+        anaOverriden = false;
         
-        for (Object res[] : results) {
-            resValueMap = analyteResultMap.get(res[7]);
-            value = (String)res[9];
-            if (resultDictId.equals(res[8])) {
-                dictId = Integer.parseInt(value);
-                value = dictionaryCache.getById(dictId).getEntry();                
+        if (resultList == null)
+            numResults = 0;
+        else 
+            numResults = resultList.size(); 
+        
+        if (auxDataList == null)
+            numAuxVals = 0;
+        else 
+            numAuxVals = auxDataList.size();
+        
+         /*
+          * the list of results and that of aux data are iterated through until
+          * there are no more elements left in each of them to read from 
+          */
+        while (resIndex < numResults || auxIndex < numAuxVals) {
+            if (resIndex < numResults && auxIndex < numAuxVals) {
+                res = resultList.get(resIndex);
+                aux = auxDataList.get(auxIndex);
+                resAccNum = (Integer)res[0];
+                auxAccNum = (Integer)aux[0];                
+                resSamId = (Integer)res[2];
+                auxSamId = (Integer)aux[2];                                 
+                
+                /*
+                 * Find out if this result's accession number is less than this 
+                 * aux data's and if it is then add a row for this result, otherwise
+                 * add a row for the aux data if its sample id is smaller. If both
+                 * ids are equal then add a row for the result first and then for the
+                 * aux data. Every time a row for a result is added the index keeping 
+                 * track of the next item in that list is incremented and the same
+                 * is done for the corresponding index for aux data. We compare
+                 * accession numbers instead of sample ids because the former is
+                 * the field shown in the sheet and not the latter.
+                 */                
+                if (resAccNum < auxAccNum) {                    
+                    addResultRow = true;
+                    addAuxDataRow = false;
+                    resIndex++;
+                    samId = resSamId;
+                    domain = (String)res[3];
+                    itemId = (Integer)res[4];
+                    anaId = (Integer)res[5];                    
+                } else if (resAccNum > auxAccNum)  {
+                    addAuxDataRow = true;
+                    addResultRow = false;
+                    auxIndex++;
+                    samId = auxSamId;
+                    domain = (String)aux[3];
+                } else {
+                    addResultRow = true;
+                    addAuxDataRow = true;
+                    resIndex++;
+                    auxIndex++;
+                    samId = resSamId;
+                    domain = (String)res[3];
+                    itemId = (Integer)res[4];
+                    anaId = (Integer)res[5];                    
+                }
+            } else if (resIndex < numResults) {
+                addResultRow = true;
+                addAuxDataRow = false;
+                //
+                // no more aux data left to add to the sheet
+                //
+                res = resultList.get(resIndex);
+
+                resIndex++;
+                samId = (Integer)res[2];
+                domain = (String)res[3];
+                itemId = (Integer)res[4];
+                anaId = (Integer)res[5];
+            } else if (auxIndex < numAuxVals) {
+                addAuxDataRow = true;
+                addResultRow = false;
+                //
+                // no more results left to add to the sheet
+                //
+                aux = auxDataList.get(auxIndex);                
+                auxIndex++;
+                samId = (Integer)aux[2];
+                domain = (String)aux[3];
             }
-            if (resValueMap.get(value) == null)
-                continue;
-                        
-            row  = sheet.createRow(i++);      
-            cell = row.createCell(0);
-            cell.setCellValue(((String)res[1]).trim());
             
-            samId = (Integer)res[2];
-            domain = (String)res[3];
-            itemId = (Integer)res[4];
-            anaId = (Integer)res[5]; 
+            /*
+             * skip showing any data for this sample if ths user asked to exclude
+             * samples/analyses with results overriden and this sample has such 
+             * a qa event  
+             */
             if (!samId.equals(prevSamId)) {
+                if (excludeOverride) {
+                    try {
+                        sampleQaEvent.fetchResultOverrideBySampleId(samId);
+                        sampleOverriden = true;
+                        prevSamId = samId;
+                        continue;
+                    } catch (NotFoundException e) {
+                        sampleOverriden = false;
+                    }
+                }
                 sam = null;
                 proj = null;        
                 org = null;
                 env = null;
                 well = null;
                 sdwis = null;
+                collDT = null;
+            } else if (sampleOverriden) {
+                prevSamId = samId;
+                continue;
             }
-            if (showSample) {
-                if (sam == null)
-                    sam = sample.fetchById(samId);
-                if ("Y".equals(data.getProjectName())) {
-                    if (proj == null) {
-                        try {
-                            /*
-                             * we fetch the sample project here and not in the
-                             * method that adds the cells for the sample because
-                             * the data for the project needs to be fetched only
-                             * once for a sample and that method is called for
-                             * each analyte under a sample
-                             */
-                            projList = sampleProject.fetchPermanentBySampleId(samId);
-                            proj = projList.get(0);
-                        } catch (NotFoundException e) {
-                            // ignore
-                        }
+            
+            resRow = null;
+            auxRow = null; 
+            if (addResultRow) {
+                /*
+                 * skip showing any data for this analysis if ths user asked to 
+                 * exclude samples/analyses with results overriden and this analysis
+                 * has such a qa event  
+                 */
+                if (!anaId.equals(prevAnaId)) {
+                    try {
+                        analysisQaEvent.fetchResultOverrideByAnalysisId(anaId);    
+                        anaOverriden = true;
+                        prevAnaId = anaId;
+                        addResultRow = false;
+                    } catch (NotFoundException e) {
+                        anaOverriden = false;
+                    }
+                } else if (anaOverriden) {
+                    prevAnaId = anaId;
+                    addResultRow = false;
+                }
+                if (addResultRow) {
+                    /*
+                     * check to see if the value of this result was selected by
+                     * the user to be shown in the sheet and if it was add a row 
+                     * for it to the sheet otherwise don't
+                     */
+                    resultVal = getResultValue(analyteResultMap, res, dcl);
+                    if (resultVal != null) {
+                        resRow = sheet.createRow(rowIndex++);
+                        cell = resRow.createCell(0);
+                        cell.setCellValue( ((String)res[1]).trim());
+                    } else {
+                        addResultRow = false;
                     }
                 }
-                setSampleCells(row, row.getPhysicalNumberOfCells(), data, sam, proj);
-            }            
-                                 
-            if (showOrg) {
+            }
+            
+            if (addAuxDataRow) {
+                /*
+                 * check to see if the value of this aux data was selected by the
+                 * user to be shown in the sheet and if it was add a row for it
+                 * to the sheet otherwise don't
+                 */
+                auxDataVal = getAuxDataValue(auxFieldValueMap, aux, dcl);
+                if (auxDataVal != null) {
+                    auxRow = sheet.createRow(rowIndex++);
+                    cell = auxRow.createCell(0);
+                    cell.setCellValue(((String)aux[1]).trim());
+                } else {
+                    addAuxDataRow = false;
+                }                
+            }
+            
+            if (!addResultRow && !addAuxDataRow)
+                continue;
+            
+            /*
+             * The following code adds the cells to be shown under the headers
+             * added previously to the sheet based on the fields selected by the
+             * user. Cells are added even if there's no data to be shown for given
+             * fields e.g. "Project Name" because all rows need to contain the same
+             * number of cells. Also depending upon whether a row was added for 
+             * a result and/or an aux data, we set the values of some cells to empty
+             * in a row because some fields don't make sense for that row, e.g. 
+             * the fields from sample item and analysis for aux data. 
+             */            
+            if (addSampleCells) {
+                if (sam == null)
+                    sam = sample.fetchById(samId);
+                if ("Y".equals(data.getProjectName()) && proj == null) {
+                    try {
+                        /*
+                         * we fetch the sample project here and not in the
+                         * method that adds the cells for the sample because the
+                         * data for the project needs to be fetched only once
+                         * for a sample and that method is called for each
+                         * analyte under a sample
+                         */
+                        projList = sampleProject.fetchPermanentBySampleId(samId);
+                        proj = projList.get(0);
+                    } catch (NotFoundException e) {
+                        // ignore
+                    }
+                }
+                /*
+                 * since collection date and time are two separate fields in the
+                 * database, we have to put them together using an instance of 
+                 * Datetime, thus we do it only once per sample to avoid creating
+                 * unnecessary objects for each row for that sample  
+                 */
+                if ("Y".equals(data.getCollectionDate()) && collDT == null) {
+                    collD = sam.getCollectionDate();
+                    collT = sam.getCollectionTime();
+                    if (collD != null) {
+                        dc = collD.getDate();
+                        if (dc == null) {
+                            dc.setHours(0);
+                            dc.setMinutes(0);
+                        } else {
+                            dc.setHours(collT.getDate().getHours());
+                            dc.setMinutes(collT.getDate().getMinutes());
+                        }
+
+                        collDT = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, dc);
+                    }
+                }
+                if (addResultRow)
+                    addSampleCells(resRow, resRow.getPhysicalNumberOfCells(), data, sam, collDT, proj);
+                if (addAuxDataRow)
+                    addSampleCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, sam, collDT, proj);
+
+            }
+            
+            if (addOrgCells) {
                 if (SampleManager.WELL_DOMAIN_FLAG.equals(domain)) {
                     if (well == null) 
                         well = samplePrivateWell.fetchBySampleId(samId);                    
-                    setPrivateWellOrganizationCells(row, row.getPhysicalNumberOfCells(), data, well);
+                    addPrivateWellOrganizationCells(row, row.getPhysicalNumberOfCells(), data, well);
                 } else {
                     if (org == null) {
                         try {
@@ -657,76 +938,93 @@ public class DataDumpBean implements DataDumpRemote {
                             // ignore
                         }
                     }
-                    setOrganizationCells(row, row.getPhysicalNumberOfCells(), data, org);
+                    if (addResultRow) 
+                        addOrganizationCells(resRow, resRow.getPhysicalNumberOfCells(), data, org);
+                    if (addAuxDataRow)
+                        addOrganizationCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, org);
                 }
             }
             
-            if (showItem) {
-                if (!itemId.equals(prevItemId)) 
-                    item = sampleItem.fetchById(itemId);
-                setSampleItemCells(row, row.getPhysicalNumberOfCells(), data, item);
+            if (addItemCells) {
+                if (addResultRow) {
+                    if (!itemId.equals(prevItemId)) {
+                        item = sampleItem.fetchById(itemId);
+                        prevItemId = itemId;
+                    }
+                    addSampleItemCells(resRow, resRow.getPhysicalNumberOfCells(), data, item, dcl);
+                } 
+                if (addAuxDataRow)
+                    addSampleItemCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, null, dcl);                                 
             }
             
-            if (showAnalysis) {
-                if (!anaId.equals(prevAnaId)) {
-                    ana = analysis.fetchById(anaId);
-                    aqeList = null;
-                    anaCompList = null;
-                    anaRelList = null;
-                    qaeNames = null;
-                    compByNames = null;
-                    relByNames = null;
-                    
-                    if ("Y".equals(data.getAnalysisQaName()) && aqeList == null) {
-                        try {
-                            aqeList = analysisQaEvent.fetchByAnalysisId(anaId);                            
-                            buf = new StringBuffer();                            
-                            for (j = 0; j < aqeList.size(); j++) {
-                                aqe = aqeList.get(j);
-                                buf.append(aqe.getQaEventName());
-                                if (j < aqeList.size() - 1)
-                                    buf.append(", ");
-                                
-                            }
-                            qaeNames = buf.toString();
-                        } catch (NotFoundException ignE) {
-                            // ignore
-                        }
-                    }                    
-                    if ("Y".equals(data.getAnalysisCompletedBy()) && anaCompList == null) {
-                        try {
-                            anaCompList = analysisUser.fetchByActionAndAnalysisId(anaId, completedActId);  
-                            buf = new StringBuffer();                            
-                            for (j = 0; j < anaCompList.size(); j++) {
-                                userName = anaCompList.get(j).getSystemUser();
+            if (addAnalysisCells) {
+                if (addResultRow) {                    
+                    if (!anaId.equals(prevAnaId)) {
+                        ana = analysis.fetchById(anaId);
+                        aqeList = null;
+                        anaCompList = null;
+                        anaRelList = null;
+                        qaeNames = null;
+                        compByNames = null;
+                        relByNames = null;
+                        
+                        if ("Y".equals(data.getAnalysisQaName()) && aqeList == null) {
+                            try {
                                 /*
-                                 * the user's login name could be null in this DO
-                                 * if there was a problem with fetching the data
-                                 * from security
+                                 * if this analysis has any qa events linked to it, fetch them
+                                 * and create a string by concatinating their names together  
                                  */
-                                if (userName != null)
-                                    buf.append(userName);
-                                if (j < anaCompList.size() - 1)
-                                    buf.append(", ");
-                                
+                                aqeList = analysisQaEvent.fetchByAnalysisId(anaId);                            
+                                buf = new StringBuffer();                            
+                                for (i = 0; i < aqeList.size(); i++) {
+                                    aqe = aqeList.get(i);
+                                    buf.append(aqe.getQaEventName());
+                                    if (i < aqeList.size() - 1)
+                                        buf.append(", ");
+                                    
+                                }
+                                qaeNames = buf.toString();
+                            } catch (NotFoundException ignE) {
+                                // ignore
                             }
-                            compByNames = buf.toString();
-                        } catch (NotFoundException ignE) {
-                            // ignore
-                        }
-                    }                    
-                    if ("Y".equals(data.getAnalysisReleasedBy()) && anaRelList == null) {
-                        try {
-                            anaRelList = analysisUser.fetchByActionAndAnalysisId(anaId, releasedActId);
-                            relByNames = anaRelList.get(0).getSystemUser();
-                        } catch (NotFoundException ignE) {
-                            // ignore
-                        }
-                    }                    
-                }
-                
-                setAnalysisCells(row, row.getPhysicalNumberOfCells(), data, ana, qaeNames, compByNames, relByNames);            
-            }         
+                        }                    
+                        if ("Y".equals(data.getAnalysisCompletedBy()) && anaCompList == null) {
+                            try {
+                                anaCompList = analysisUser.fetchByActionAndAnalysisId(anaId, completedActionId);  
+                                buf = new StringBuffer();                            
+                                for (i = 0; i < anaCompList.size(); i++) {
+                                    userName = anaCompList.get(i).getSystemUser();
+                                    /*
+                                     * the user's login name could be null in this DO
+                                     * if there was a problem with fetching the data
+                                     * from security
+                                     */
+                                    if (userName != null)
+                                        buf.append(userName);
+                                    if (i < anaCompList.size() - 1)
+                                        buf.append(", ");
+                                    
+                                }
+                                compByNames = buf.toString();
+                            } catch (NotFoundException ignE) {
+                                // ignore
+                            }
+                        }                    
+                        if ("Y".equals(data.getAnalysisReleasedBy()) && anaRelList == null) {
+                            try {
+                                anaRelList = analysisUser.fetchByActionAndAnalysisId(anaId, releasedActionId);
+                                relByNames = anaRelList.get(0).getSystemUser();
+                            } catch (NotFoundException ignE) {
+                                // ignore
+                            }
+                        }    
+                        prevAnaId = anaId;
+                    }
+                    addAnalysisCells(resRow, resRow.getPhysicalNumberOfCells(), data, ana, qaeNames, compByNames, relByNames);
+                } 
+                if (addAuxDataRow) 
+                    addAnalysisCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, null, null, null, null);                
+            }
             
             /*
              * we need to make sure that a given sample is of a given domain
@@ -734,37 +1032,56 @@ public class DataDumpBean implements DataDumpRemote {
              * cells (filled or not) for the fields from that domain in the file
              * for a given row regardless, if the user selected them to be shown 
              */
-            if (showEnv) {
+            if (addEnvCells) {
                 if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain) && env == null) 
-                        env = sampleEnvironmental.fetchBySampleId(samId);                
-                setEnvironmentalCells(row, row.getPhysicalNumberOfCells(), data, env);
+                        env = sampleEnvironmental.fetchBySampleId(samId);        
+                if (addResultRow) 
+                    addEnvironmentalCells(resRow, resRow.getPhysicalNumberOfCells(), data, env);
+                if (addAuxDataRow) 
+                    addEnvironmentalCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, env);
             } 
             
-            if (showWell) {
+            if (addWellCells) {
                 if (SampleManager.WELL_DOMAIN_FLAG.equals(domain) && well == null) 
-                        well = samplePrivateWell.fetchBySampleId(samId);                
-                setPrivateWellCells(row, row.getPhysicalNumberOfCells(), data, well);
+                        well = samplePrivateWell.fetchBySampleId(samId);  
+                if (addResultRow) 
+                    addPrivateWellCells(resRow, resRow.getPhysicalNumberOfCells(), data, well);
+                if (addAuxDataRow) 
+                    addPrivateWellCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, well);
             } 
             
-            if (showSDWIS) {
+            if (addSDWISCells) {
                 if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain) && sdwis == null) { 
                     sdwis = sampleSDWIS.fetchBySampleId(samId);                
                     if ("Y".equals(data.getSampleSDWISPwsId()) && pwsMap == null) 
                         pwsMap = new HashMap<Integer, PWSDO>();                                            
                 }
-                setSDWISCells(row, row.getPhysicalNumberOfCells(), data, sdwis, pwsMap);
+                if (addResultRow) 
+                    addSDWISCells(resRow, resRow.getPhysicalNumberOfCells(), data, sdwis, pwsMap);
+                if (addAuxDataRow) 
+                    addSDWISCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, sdwis, pwsMap);
             }
             
-            cell = row.createCell(row.getPhysicalNumberOfCells());
-            cell.setCellValue(value.trim());
-            
-            anaId = prevAnaId;
-            prevItemId = itemId;
-            prevSamId = samId;            
+            if (addResultRow) { 
+                //
+                // set the value in the last cell of a row showing the result                
+                //
+                cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
+                cell.setCellValue(resultVal);
+            }
+            if (addAuxDataRow) { 
+                 //
+                 // set the value in the last cell of a row showing an aux data                
+                 //
+                cell = auxRow.createCell(auxRow.getPhysicalNumberOfCells());
+                cell.setCellValue(auxDataVal);
+            }
+                
+            prevSamId = samId;
         }
         
-        for (i = 0; i < allCols.size(); i++) 
-            sheet.autoSizeColumn(i);        
+        for (rowIndex = 0; rowIndex < allCols.size(); rowIndex++) 
+            sheet.autoSizeColumn(rowIndex);        
         
         return wb;
     }  
@@ -778,6 +1095,7 @@ public class DataDumpBean implements DataDumpRemote {
         ArrayList<ResultDataDumpVO> resddList;
         HashMap<Integer, TestAnalyteDataDumpVO> anaMap;     
         HashMap<String, String> resMap; 
+        DictionaryCacheLocal dcl;
         
         if (resList == null)
             return null;
@@ -787,6 +1105,7 @@ public class DataDumpBean implements DataDumpRemote {
         anaddList = new ArrayList<TestAnalyteDataDumpVO>();
         anaMap = new HashMap<Integer, TestAnalyteDataDumpVO>();
         resMap = null;
+        dcl = EJBFactory.getDictionaryCache();
         // TODO comments
         for (ResultViewDO res : resList) {
             taId = res.getAnalyteId();
@@ -809,7 +1128,7 @@ public class DataDumpBean implements DataDumpRemote {
             value = res.getValue();
             if (resultDictId.equals(res.getTypeId())) {
                 dictId = Integer.parseInt(value);
-                value = dictionaryCache.getById(dictId).getEntry();
+                value = dcl.getById(dictId).getEntry();
             }
             
             /*
@@ -837,6 +1156,7 @@ public class DataDumpBean implements DataDumpRemote {
         ArrayList<AuxDataDumpVO> resddList;
         HashMap<Integer, AuxFieldDataDumpVO> anaMap;  
         HashMap<String, String> resMap; 
+        DictionaryCacheLocal dcl;
         
         if (valList == null)
             return null;
@@ -846,6 +1166,7 @@ public class DataDumpBean implements DataDumpRemote {
         anaddList = new ArrayList<AuxFieldDataDumpVO>();
         anaMap = new HashMap<Integer, AuxFieldDataDumpVO>();
         resMap = null;
+        dcl = EJBFactory.getDictionaryCache();
         // TODO comments
         for (AuxDataViewDO res : valList) {
             taId = res.getAnalyteId();
@@ -869,7 +1190,7 @@ public class DataDumpBean implements DataDumpRemote {
             
             if (auxFieldValueDictId.equals(res.getTypeId())) {
                 dictId = Integer.parseInt(value);
-                value = dictionaryCache.getById(dictId).getEntry();
+                value = dcl.getById(dictId).getEntry();
             }
             
             /*
@@ -950,8 +1271,6 @@ public class DataDumpBean implements DataDumpRemote {
             headers.add(resource.getString("state"));
         if ("Y".equals(data.getOrganizationAddressZipCode())) 
             headers.add(resource.getString("zipcode"));        
-        if ("Y".equals(data.getOrganizationAddressCountry()))
-            headers.add(resource.getString("country"));
         
         return headers;            
     }
@@ -1074,11 +1393,12 @@ public class DataDumpBean implements DataDumpRemote {
         return headers;            
     }
     
-    private void setSampleCells(Row row, int startCol, DataDumpVO data, 
-                                SampleDO sample, SampleProjectViewDO project) {  
+    private void addSampleCells(Row row, int startCol, DataDumpVO data,
+                                SampleDO sample, Datetime colDateTime,
+                                SampleProjectViewDO project) {  
         Cell cell;
         Datetime dt;
-                
+
         if ("Y".equals(data.getAccessionNumber())) {
             cell = row.createCell(startCol++);
             cell.setCellValue(sample.getAccessionNumber());
@@ -1088,10 +1408,9 @@ public class DataDumpBean implements DataDumpRemote {
             cell.setCellValue(sample.getRevision());
         }        
         if ("Y".equals(data.getCollectionDate())) {
-            cell = row.createCell(startCol++);
-            dt = sample.getCollectionDate();
-            if (dt != null) 
-                cell.setCellValue(dt.toString());            
+            cell = row.createCell(startCol++);            
+            if (colDateTime != null)
+                cell.setCellValue(colDateTime.toString());
         }        
         if ("Y".equals(data.getReceivedDate())) {
             cell = row.createCell(startCol++);
@@ -1126,7 +1445,7 @@ public class DataDumpBean implements DataDumpRemote {
         }        
     }
     
-    private void setOrganizationCells(Row row, int startCol, DataDumpVO data, 
+    private void addOrganizationCells(Row row, int startCol, DataDumpVO data, 
                                       SampleOrganizationViewDO org) {  
         Cell cell;
                 
@@ -1169,14 +1488,10 @@ public class DataDumpBean implements DataDumpRemote {
             cell = row.createCell(startCol++);
             if (org != null)
                 cell.setCellValue(org.getOrganizationZipCode());
-        } 
-        if ("Y".equals(data.getOrganizationAddressCountry())) {
-            cell = row.createCell(startCol++);
-            //cell.setCellValue(org.getOrganization());
         }         
     }
     
-    private void setPrivateWellOrganizationCells(Row row, int startCol, DataDumpVO data, 
+    private void addPrivateWellOrganizationCells(Row row, int startCol, DataDumpVO data, 
                                                  SamplePrivateWellViewDO spw) {  
         Cell cell;
         OrganizationDO org;
@@ -1226,60 +1541,63 @@ public class DataDumpBean implements DataDumpRemote {
             if (addr != null)
                 cell.setCellValue(addr.getZipCode());
         }         
-        if ("Y".equals(data.getOrganizationAddressCountry())) {
-            cell = row.createCell(startCol++);
-            //cell.setCellValue(org.getOrganization());
-        }         
     }
     
-    private void setSampleItemCells(Row row, int startCol, DataDumpVO data, SampleItemViewDO item) {
+    private void addSampleItemCells(Row row, int startCol, DataDumpVO data, SampleItemViewDO item, DictionaryCacheLocal dcl) {
         Integer id;
         Cell cell;
         DictionaryDO dict;
 
         if ("Y".equals(data.getSampleItemTypeofSampleId())) {
             cell = row.createCell(startCol++);
-            id = item.getTypeOfSampleId();
-            if (id != null) {
-                try {
-                    dict = dictionaryCache.getById(id);
-                    cell.setCellValue(dict.getEntry());
-                } catch (Exception e) {
-                    log.error("Failed to lookup constants for dictionary entry: " + id, e);
+            if (item != null) {
+                id = item.getTypeOfSampleId();
+                if (id != null) {
+                    try {
+                        dict = dcl.getById(id);
+                        cell.setCellValue(dict.getEntry());
+                    } catch (Exception e) {
+                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                    }
                 }
             }
         }
         if ("Y".equals(data.getSampleItemSourceOfSampleId())) {
             cell = row.createCell(startCol++);
-            id = item.getSourceOfSampleId();
-            if (id != null) {
-                try {
-                    dict = dictionaryCache.getById(id);
-                    cell.setCellValue(dict.getEntry());
-                } catch (Exception e) {
-                    log.error("Failed to lookup constants for dictionary entry: " + id, e);
+            if (item != null) {
+                id = item.getSourceOfSampleId();
+                if (id != null) {
+                    try {
+                        dict = dcl.getById(id);
+                        cell.setCellValue(dict.getEntry());
+                    } catch (Exception e) {
+                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                    }
                 }
             }
         }
         if ("Y".equals(data.getSampleItemSourceOther())) {
             cell = row.createCell(startCol++ );
-            cell.setCellValue(item.getSourceOther());
+            if (item != null) 
+                cell.setCellValue(item.getSourceOther());
         }
         if ("Y".equals(data.getSampleItemContainerId())) {
             cell = row.createCell(startCol++ );
-            id = item.getContainerId();
-            if (id != null) {
-                try {
-                    dict = dictionaryCache.getById(id);
-                    cell.setCellValue(dict.getEntry());
-                } catch (Exception e) {
-                    log.error("Failed to lookup constants for dictionary entry: " + id, e);
+            if (item != null) {
+                id = item.getContainerId();
+                if (id != null) {
+                    try {
+                        dict = dcl.getById(id);
+                        cell.setCellValue(dict.getEntry());
+                    } catch (Exception e) {
+                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                    }
                 }
             }
         }
     }
     
-    private void setAnalysisCells(Row row, int startCol, DataDumpVO data,
+    private void addAnalysisCells(Row row, int startCol, DataDumpVO data,
                                   AnalysisViewDO analysis, String qaeNames,
                                   String compByNames, String relByNames) {
         Cell cell;
@@ -1288,35 +1606,43 @@ public class DataDumpBean implements DataDumpRemote {
         
         if ("Y".equals(data.getAnalysisTestNameHeader())) {
             cell = row.createCell(startCol++ );
-            cell.setCellValue(analysis.getTestName());
+            if (analysis != null)
+                cell.setCellValue(analysis.getTestName());
         }
         if ("Y".equals(data.getAnalysisTestMethodNameHeader())) {
             cell = row.createCell(startCol++ );
-            cell.setCellValue(analysis.getMethodName());
+            if (analysis != null)
+                cell.setCellValue(analysis.getMethodName());
         }
         if ("Y".equals(data.getAnalysisStatusIdHeader())) {
             cell = row.createCell(startCol++);
-            cell.setCellValue(dictEntryMap.get(analysis.getStatusId()));
+            if (analysis != null)
+                cell.setCellValue(dictEntryMap.get(analysis.getStatusId()));
         }
         if ("Y".equals(data.getAnalysisRevision())) {
             cell = row.createCell(startCol++);
-            cell.setCellValue(analysis.getRevision());
+            if (analysis != null)
+                cell.setCellValue(analysis.getRevision());
         }
         if ("Y".equals(data.getAnalysisIsReportable())) {
             cell = row.createCell(startCol++);
-            isRep = "Y".equals(analysis.getIsReportable());
-            cell.setCellValue(isRep ? resource.getString("yes") : resource.getString("no"));
+            if (analysis != null) {
+                isRep = "Y".equals(analysis.getIsReportable());
+                cell.setCellValue(isRep ? resource.getString("yes") : resource.getString("no"));
+            }
         }
         if ("Y".equals(data.getAnalysisQaName())) {
-            cell = row.createCell(startCol++);
+            cell = row.createCell(startCol++); 
             if (qaeNames != null)           
-                cell.setCellValue(qaeNames);                            
+                cell.setCellValue(qaeNames);            
         }
         if ("Y".equals(data.getAnalysisCompletedDate())) {
             cell = row.createCell(startCol++);
-            dt = analysis.getCompletedDate();
-            if (dt != null) 
-                cell.setCellValue(dt.toString());                            
+            if (analysis != null) {
+                dt = analysis.getCompletedDate();
+                if (dt != null) 
+                    cell.setCellValue(dt.toString());
+            }
         }
         if ("Y".equals(data.getAnalysisCompletedBy())) {
             cell = row.createCell(startCol++ );
@@ -1325,9 +1651,11 @@ public class DataDumpBean implements DataDumpRemote {
         }
         if ("Y".equals(data.getAnalysisReleasedDate())) {
             cell = row.createCell(startCol++);
-            dt = analysis.getCompletedDate();
-            if (dt != null) 
-                cell.setCellValue(dt.toString()); 
+            if (analysis != null) {
+                dt = analysis.getCompletedDate();
+                if (dt != null) 
+                    cell.setCellValue(dt.toString());
+            }
         }
         if ("Y".equals(data.getAnalysisReleasedBy())) {
             cell = row.createCell(startCol++ );
@@ -1336,19 +1664,23 @@ public class DataDumpBean implements DataDumpRemote {
         }
         if ("Y".equals(data.getAnalysisStartedDate())) {
             cell = row.createCell(startCol++);
-            dt = analysis.getStartedDate();
-            if (dt != null) 
-                cell.setCellValue(dt.toString());                            
+            if (analysis != null) {
+                dt = analysis.getStartedDate();
+                if (dt != null) 
+                    cell.setCellValue(dt.toString());
+            }
         }
         if ("Y".equals(data.getAnalysisPrintedDate())) {
             cell = row.createCell(startCol++);
-            dt = analysis.getPrintedDate();
-            if (dt != null) 
-                cell.setCellValue(dt.toString());                            
+            if (analysis != null) {
+                dt = analysis.getPrintedDate();
+                if (dt != null) 
+                    cell.setCellValue(dt.toString());
+            }
         }
     }
     
-    private void setEnvironmentalCells(Row row, int startCol, DataDumpVO data, 
+    private void addEnvironmentalCells(Row row, int startCol, DataDumpVO data, 
                                        SampleEnvironmentalDO env) {
         Integer pr;
         Cell cell;        
@@ -1402,7 +1734,7 @@ public class DataDumpBean implements DataDumpRemote {
         }
     }
     
-    private void setPrivateWellCells(Row row, int startCol, DataDumpVO data, 
+    private void addPrivateWellCells(Row row, int startCol, DataDumpVO data, 
                                        SamplePrivateWellViewDO well) {
         Integer wn;
         Cell cell;    
@@ -1459,7 +1791,7 @@ public class DataDumpBean implements DataDumpRemote {
         }
     }
     
-    private void setSDWISCells(Row row, int startCol, DataDumpVO data, SampleSDWISViewDO sdwis, HashMap<Integer, PWSDO> pwsMap) {
+    private void addSDWISCells(Row row, int startCol, DataDumpVO data, SampleSDWISViewDO sdwis, HashMap<Integer, PWSDO> pwsMap) {
         Integer id;
         Cell cell;    
         PWSDO pwsDO;
@@ -1529,5 +1861,40 @@ public class DataDumpBean implements DataDumpRemote {
             if (sdwis != null)
                 cell.setCellValue(sdwis.getCollector());
         }
+    }
+    
+    private String getResultValue(HashMap<Integer, HashMap<String, String>> analyteResultMap,
+                                  Object res[], DictionaryCacheLocal dcl) throws Exception {
+        Integer dictId;
+        String value;
+        HashMap<String, String> valMap;        
+        
+        valMap = analyteResultMap.get(res[7]);
+        value = (String)res[9];
+        if (resultDictId.equals(res[8])) {
+            dictId = Integer.parseInt(value);
+            value = dcl.getById(dictId).getEntry();                
+        }
+        if (valMap == null || valMap.get(value) == null)
+            return null;
+                
+        return value;
+    }
+    
+    private String getAuxDataValue(HashMap<Integer, HashMap<String, String>> auxFieldValueMap, Object aux[], DictionaryCacheLocal dcl) throws Exception {
+        HashMap<String, String> valMap;
+        String value;
+        Integer dictId;
+        
+        valMap = auxFieldValueMap.get(aux[4]);
+        value = (String)aux[6];
+        if (auxFieldValueDictId.equals(aux[5])) {
+            dictId = Integer.parseInt(value);
+            value = dcl.getById(dictId).getEntry();
+        }
+        if (valMap == null || valMap.get(value) == null)
+            return null;                
+                
+        return value;
     }
 }

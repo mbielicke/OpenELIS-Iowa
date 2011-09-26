@@ -59,8 +59,10 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.AuxDataViewDO(a.id, a.sortOrder, " + 
                         "a.auxFieldId, a.referenceId, a.referenceTableId, a.isReportable, a.typeId, " +
                         "a.value, '',afg.id, an.id, an.name, an.externalId) "
-                      + " from AuxData a LEFT JOIN a.auxField af LEFT JOIN af.analyte an LEFT JOIN af.auxFieldGroup afg"
-                      +	" where a.referenceId in (:ids) and a.referenceTableId = :tableId and a.isReportable = 'Y' and a.value != null order by an.name")})
+                      + " from AuxData a, AuxField af, Analyte an, AuxFieldGroup afg"
+                      +	" where a.auxFieldId = af.id and af.analyteId = an.id and af.auxFieldGroupId = afg.id"
+                      + " and a.referenceId in (:ids) and a.referenceTableId = :tableId and a.isReportable = 'Y'"
+                      +	" and a.value != null order by an.name")})
                     
 @Entity
 @Table(name="aux_data")
