@@ -41,6 +41,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcDO;
@@ -51,6 +52,7 @@ import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
+import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
@@ -88,60 +90,63 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
+import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
+import org.openelis.manager.WorksheetResultManager;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.qc.client.QcLookupScreen;
-import org.openelis.modules.worksheet.client.WorksheetQcAnalysisSelectionScreen;
+import org.openelis.modules.worksheet.client.WorksheetAnalysisSelectionScreen;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCreationScreen extends Screen {
 
-    private boolean                               isTemplateLoaded, isSaved, wasExitCalled;
-    private int                                   tempId, qcStartIndex;
-    private Integer                               formatId, formatTotal,
-                                                  statusWorking, typeDup, typeFixed,
-                                                  typeFixedAlways, typeLastBoth,
-                                                  typeLastRun, typeLastSubset, typeRand;
-    private String                                typeLastBothString, typeLastRunString,
-                                                  typeLastSubsetString, typeRandString;
-    private ScreenService                         instrumentService, qcService,
-                                                  worksheetService;
-    private ModulePermission                      userPermission;
-    private WorksheetManager                      manager;
+    private boolean                            isTemplateLoaded, isSaved, wasExitCalled;
+    private int                                tempId, qcStartIndex;
+    private Integer                            formatId, formatTotal,
+                                               statusWorking, typeDup, typeFixed,
+                                               typeFixedAlways, typeLastBoth,
+                                               typeLastRun, typeLastSubset, typeRand;
+    private String                             typeLastBothString, typeLastRunString,
+                                               typeLastSubsetString, typeRandString;
+    private ScreenService                      analysisService, instrumentService,
+                                               qcService, worksheetService;
+    private ModulePermission                   userPermission;
+    private WorksheetManager                   manager;
 
-    private AppButton                             lookupWorksheetButton, saveButton,
-                                                  exitButton, insertQCWorksheetButton,
-                                                  insertQCLookupButton, removeRowButton;
+    private AppButton                          lookupWorksheetButton, saveButton,
+                                               exitButton, insertAnalysisWorksheetButton,
+                                               insertQCLookupButton, removeRowButton;
 
-    protected ArrayList<Integer>                  testIds;
-    protected ArrayList<TableDataRow>             analysisItems, qcLastRunList,
-                                                  qcLastBothList, qcLinkModel,
-                                                  testWorksheetItems;
-    protected AutoComplete<Integer>               instrumentId;
-    protected Confirm                             worksheetRemoveDuplicateQCConfirm,
-                                                  worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
-                                                  worksheetSaveConfirm, worksheetExitConfirm;
-    protected HashMap<Integer,Exception>          qcErrors;
-    protected QcLookupScreen                      qcLookupScreen;
-    protected TableDataRow                        qcItems[];
-    protected TableWidget                         worksheetItemTable;
-    protected TextBox<Integer>                    worksheetId, relatedWorksheetId;
-    protected TestWorksheetDO                     testWorksheetDO;
-    protected TestWorksheetManager                twManager;
-    protected WorksheetQcAnalysisSelectionScreen  waSelectionScreen;
-    protected WorksheetCreationLookupScreen       wcLookupScreen;
-    protected WorksheetLookupScreen               wLookupScreen, wQCLookupScreen;
+    protected ArrayList<Integer>               testIds;
+    protected ArrayList<TableDataRow>          analysisItems, qcLastRunList,
+                                               qcLastBothList, qcLinkModel,
+                                               testWorksheetItems;
+    protected AutoComplete<Integer>            instrumentId;
+    protected Confirm                          worksheetRemoveDuplicateQCConfirm,
+                                               worksheetRemoveQCConfirm, worksheetRemoveLastOfQCConfirm,
+                                               worksheetSaveConfirm, worksheetExitConfirm;
+    protected HashMap<Integer,Exception>       qcErrors;
+    protected QcLookupScreen                   qcLookupScreen;
+    protected TableDataRow                     qcItems[];
+    protected TableWidget                      worksheetItemTable;
+    protected TextBox<Integer>                 worksheetId, relatedWorksheetId;
+    protected TestWorksheetDO                  testWorksheetDO;
+    protected TestWorksheetManager             twManager;
+    protected WorksheetAnalysisSelectionScreen waSelectionScreen;
+    protected WorksheetCreationLookupScreen    wcLookupScreen;
+    protected WorksheetLookupScreen            wLookupScreen, wAnaLookupScreen;
     
     public WorksheetCreationScreen() throws Exception {
         super((ScreenDefInt)GWT.create(WorksheetCreationDef.class));
 
         service           = new ScreenService("controller?service=org.openelis.modules.worksheetCreation.server.WorksheetCreationService");
+        analysisService   = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
         instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
         qcService         = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
         worksheetService  = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
@@ -370,14 +375,14 @@ public class WorksheetCreationScreen extends Screen {
             }
         });
         
-        insertQCWorksheetButton = (AppButton)def.getWidget("insertQCWorksheetButton");
-        addScreenHandler(insertQCWorksheetButton, new ScreenEventHandler<Object>() {
+        insertAnalysisWorksheetButton = (AppButton)def.getWidget("insertAnalysisWorksheetButton");
+        addScreenHandler(insertAnalysisWorksheetButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                openWorksheetQCLookup();
+                openWorksheetAnalysisLookup();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                insertQCWorksheetButton.enable(true);
+                insertAnalysisWorksheetButton.enable(true);
             }
         });
 
@@ -640,6 +645,8 @@ public class WorksheetCreationScreen extends Screen {
         WorksheetItemManager     wiManager = null;
         WorksheetQcResultManager wqrManager, newWqrManager;
         WorksheetQcResultViewDO  wqrVDO, newWqrVDO;
+        WorksheetResultManager   wrManager, newWrManager;
+        WorksheetResultViewDO    wrVDO, newWrVDO;
         WorksheetViewDO          wVDO;
         
         setFocus(null);
@@ -680,7 +687,10 @@ public class WorksheetCreationScreen extends Screen {
             waDO.setId((Integer)row.key);
             waDO.setAccessionNumber((String)row.cells.get(1).value);
             if (row.data instanceof ArrayList) {
-                waDO.setQcId(((QcDO)((ArrayList<Object>)row.data).get(1)).getId());
+                if (((ArrayList<Object>)row.data).size() == 3 && ((ArrayList<Object>)row.data).get(2) instanceof WorksheetResultManager)
+                    waDO.setAnalysisId(((AnalysisViewDO)((ArrayList<Object>)row.data).get(1)).getId());
+                else
+                    waDO.setQcId(((QcDO)((ArrayList<Object>)row.data).get(1)).getId());
             } else {
                 waDO.setAnalysisId(((WorksheetCreationVO)row.data).getAnalysisId());
             }
@@ -694,51 +704,99 @@ public class WorksheetCreationScreen extends Screen {
                 waManager = wiManager.getWorksheetAnalysisAt(i);
                 waManager.addWorksheetAnalysis(waDO);
                 //
-                // If this analysis is a QC from another worksheet, copy the result
+                // If this analysis is from another worksheet, copy the result
                 // records from the manager in the 3rd slot of the ArrayList
                 //
                 if (row.data instanceof ArrayList && ((ArrayList<Object>)row.data).size() == 3) {
-                    wqrManager = (WorksheetQcResultManager) ((ArrayList<Object>)row.data).get(2);
-                    newWqrManager = waManager.getWorksheetQcResultAt(waManager.count() - 1);
-                    for (j = 0; j < wqrManager.count(); j++) {
-                        wqrVDO = wqrManager.getWorksheetQcResultAt(j);
-                        newWqrVDO = new WorksheetQcResultViewDO();
-                        newWqrVDO.setSortOrder(wqrVDO.getSortOrder());
-                        newWqrVDO.setQcAnalyteId(wqrVDO.getQcAnalyteId());
-                        newWqrVDO.setTypeId(wqrVDO.getTypeId());
-                        newWqrVDO.setValueAt(0, wqrVDO.getValueAt(0));
-                        newWqrVDO.setValueAt(1, wqrVDO.getValueAt(1));
-                        newWqrVDO.setValueAt(2, wqrVDO.getValueAt(2));
-                        newWqrVDO.setValueAt(3, wqrVDO.getValueAt(3));
-                        newWqrVDO.setValueAt(4, wqrVDO.getValueAt(4));
-                        newWqrVDO.setValueAt(5, wqrVDO.getValueAt(5));
-                        newWqrVDO.setValueAt(6, wqrVDO.getValueAt(6));
-                        newWqrVDO.setValueAt(7, wqrVDO.getValueAt(7));
-                        newWqrVDO.setValueAt(8, wqrVDO.getValueAt(8));
-                        newWqrVDO.setValueAt(9, wqrVDO.getValueAt(9));
-                        newWqrVDO.setValueAt(10, wqrVDO.getValueAt(10));
-                        newWqrVDO.setValueAt(11, wqrVDO.getValueAt(11));
-                        newWqrVDO.setValueAt(12, wqrVDO.getValueAt(12));
-                        newWqrVDO.setValueAt(13, wqrVDO.getValueAt(13));
-                        newWqrVDO.setValueAt(14, wqrVDO.getValueAt(14));
-                        newWqrVDO.setValueAt(15, wqrVDO.getValueAt(15));
-                        newWqrVDO.setValueAt(16, wqrVDO.getValueAt(16));
-                        newWqrVDO.setValueAt(17, wqrVDO.getValueAt(17));
-                        newWqrVDO.setValueAt(18, wqrVDO.getValueAt(18));
-                        newWqrVDO.setValueAt(19, wqrVDO.getValueAt(19));
-                        newWqrVDO.setValueAt(20, wqrVDO.getValueAt(20));
-                        newWqrVDO.setValueAt(21, wqrVDO.getValueAt(21));
-                        newWqrVDO.setValueAt(22, wqrVDO.getValueAt(22));
-                        newWqrVDO.setValueAt(23, wqrVDO.getValueAt(23));
-                        newWqrVDO.setValueAt(24, wqrVDO.getValueAt(24));
-                        newWqrVDO.setValueAt(25, wqrVDO.getValueAt(25));
-                        newWqrVDO.setValueAt(26, wqrVDO.getValueAt(26));
-                        newWqrVDO.setValueAt(27, wqrVDO.getValueAt(27));
-                        newWqrVDO.setValueAt(28, wqrVDO.getValueAt(28));
-                        newWqrVDO.setValueAt(29, wqrVDO.getValueAt(29));
-                        newWqrVDO.setAnalyteId(wqrVDO.getAnalyteId());
-                        newWqrVDO.setAnalyteName(wqrVDO.getAnalyteName());
-                        newWqrManager.addWorksheetQcResult(newWqrVDO);
+                    if (((ArrayList<Object>)row.data).get(2) instanceof WorksheetResultManager) {
+                        wrManager = (WorksheetResultManager) ((ArrayList<Object>)row.data).get(2);
+                        newWrManager = waManager.getWorksheetResultAt(waManager.count() - 1);
+                        for (j = 0; j < wrManager.count(); j++) {
+                            wrVDO = wrManager.getWorksheetResultAt(j);
+                            newWrVDO = new WorksheetResultViewDO();
+                            newWrVDO.setTestAnalyteId(wrVDO.getTestAnalyteId());
+                            newWrVDO.setTestResultId(wrVDO.getTestResultId());
+                            newWrVDO.setResultRow(wrVDO.getResultRow());
+                            newWrVDO.setAnalyteId(wrVDO.getAnalyteId());
+                            newWrVDO.setTypeId(wrVDO.getTypeId());
+                            newWrVDO.setValueAt(0, wrVDO.getValueAt(0));
+                            newWrVDO.setValueAt(1, wrVDO.getValueAt(1));
+                            newWrVDO.setValueAt(2, wrVDO.getValueAt(2));
+                            newWrVDO.setValueAt(3, wrVDO.getValueAt(3));
+                            newWrVDO.setValueAt(4, wrVDO.getValueAt(4));
+                            newWrVDO.setValueAt(5, wrVDO.getValueAt(5));
+                            newWrVDO.setValueAt(6, wrVDO.getValueAt(6));
+                            newWrVDO.setValueAt(7, wrVDO.getValueAt(7));
+                            newWrVDO.setValueAt(8, wrVDO.getValueAt(8));
+                            newWrVDO.setValueAt(9, wrVDO.getValueAt(9));
+                            newWrVDO.setValueAt(10, wrVDO.getValueAt(10));
+                            newWrVDO.setValueAt(11, wrVDO.getValueAt(11));
+                            newWrVDO.setValueAt(12, wrVDO.getValueAt(12));
+                            newWrVDO.setValueAt(13, wrVDO.getValueAt(13));
+                            newWrVDO.setValueAt(14, wrVDO.getValueAt(14));
+                            newWrVDO.setValueAt(15, wrVDO.getValueAt(15));
+                            newWrVDO.setValueAt(16, wrVDO.getValueAt(16));
+                            newWrVDO.setValueAt(17, wrVDO.getValueAt(17));
+                            newWrVDO.setValueAt(18, wrVDO.getValueAt(18));
+                            newWrVDO.setValueAt(19, wrVDO.getValueAt(19));
+                            newWrVDO.setValueAt(20, wrVDO.getValueAt(20));
+                            newWrVDO.setValueAt(21, wrVDO.getValueAt(21));
+                            newWrVDO.setValueAt(22, wrVDO.getValueAt(22));
+                            newWrVDO.setValueAt(23, wrVDO.getValueAt(23));
+                            newWrVDO.setValueAt(24, wrVDO.getValueAt(24));
+                            newWrVDO.setValueAt(25, wrVDO.getValueAt(25));
+                            newWrVDO.setValueAt(26, wrVDO.getValueAt(26));
+                            newWrVDO.setValueAt(27, wrVDO.getValueAt(27));
+                            newWrVDO.setValueAt(28, wrVDO.getValueAt(28));
+                            newWrVDO.setValueAt(29, wrVDO.getValueAt(29));
+                            newWrVDO.setAnalyteName(wrVDO.getAnalyteName());
+                            newWrVDO.setAnalyteExternalId(wrVDO.getAnalyteExternalId());
+                            newWrVDO.setResultGroup(wrVDO.getResultGroup());
+                            newWrManager.addWorksheetResult(newWrVDO);
+                        }
+                    } else {
+                        wqrManager = (WorksheetQcResultManager) ((ArrayList<Object>)row.data).get(2);
+                        newWqrManager = waManager.getWorksheetQcResultAt(waManager.count() - 1);
+                        for (j = 0; j < wqrManager.count(); j++) {
+                            wqrVDO = wqrManager.getWorksheetQcResultAt(j);
+                            newWqrVDO = new WorksheetQcResultViewDO();
+                            newWqrVDO.setSortOrder(wqrVDO.getSortOrder());
+                            newWqrVDO.setQcAnalyteId(wqrVDO.getQcAnalyteId());
+                            newWqrVDO.setTypeId(wqrVDO.getTypeId());
+                            newWqrVDO.setValueAt(0, wqrVDO.getValueAt(0));
+                            newWqrVDO.setValueAt(1, wqrVDO.getValueAt(1));
+                            newWqrVDO.setValueAt(2, wqrVDO.getValueAt(2));
+                            newWqrVDO.setValueAt(3, wqrVDO.getValueAt(3));
+                            newWqrVDO.setValueAt(4, wqrVDO.getValueAt(4));
+                            newWqrVDO.setValueAt(5, wqrVDO.getValueAt(5));
+                            newWqrVDO.setValueAt(6, wqrVDO.getValueAt(6));
+                            newWqrVDO.setValueAt(7, wqrVDO.getValueAt(7));
+                            newWqrVDO.setValueAt(8, wqrVDO.getValueAt(8));
+                            newWqrVDO.setValueAt(9, wqrVDO.getValueAt(9));
+                            newWqrVDO.setValueAt(10, wqrVDO.getValueAt(10));
+                            newWqrVDO.setValueAt(11, wqrVDO.getValueAt(11));
+                            newWqrVDO.setValueAt(12, wqrVDO.getValueAt(12));
+                            newWqrVDO.setValueAt(13, wqrVDO.getValueAt(13));
+                            newWqrVDO.setValueAt(14, wqrVDO.getValueAt(14));
+                            newWqrVDO.setValueAt(15, wqrVDO.getValueAt(15));
+                            newWqrVDO.setValueAt(16, wqrVDO.getValueAt(16));
+                            newWqrVDO.setValueAt(17, wqrVDO.getValueAt(17));
+                            newWqrVDO.setValueAt(18, wqrVDO.getValueAt(18));
+                            newWqrVDO.setValueAt(19, wqrVDO.getValueAt(19));
+                            newWqrVDO.setValueAt(20, wqrVDO.getValueAt(20));
+                            newWqrVDO.setValueAt(21, wqrVDO.getValueAt(21));
+                            newWqrVDO.setValueAt(22, wqrVDO.getValueAt(22));
+                            newWqrVDO.setValueAt(23, wqrVDO.getValueAt(23));
+                            newWqrVDO.setValueAt(24, wqrVDO.getValueAt(24));
+                            newWqrVDO.setValueAt(25, wqrVDO.getValueAt(25));
+                            newWqrVDO.setValueAt(26, wqrVDO.getValueAt(26));
+                            newWqrVDO.setValueAt(27, wqrVDO.getValueAt(27));
+                            newWqrVDO.setValueAt(28, wqrVDO.getValueAt(28));
+                            newWqrVDO.setValueAt(29, wqrVDO.getValueAt(29));
+                            newWqrVDO.setAnalyteId(wqrVDO.getAnalyteId());
+                            newWqrVDO.setAnalyteName(wqrVDO.getAnalyteName());
+                            newWqrManager.addWorksheetQcResult(newWqrVDO);
+                        }
                     }
                 }
             } catch (Exception anyE) {
@@ -756,7 +814,7 @@ public class WorksheetCreationScreen extends Screen {
             
             isSaved = true;
             saveButton.enable(false);
-            insertQCWorksheetButton.enable(false);
+            insertAnalysisWorksheetButton.enable(false);
             insertQCLookupButton.enable(false);
             instrumentId.enable(false);
             lookupWorksheetButton.enable(false);
@@ -1152,13 +1210,13 @@ public class WorksheetCreationScreen extends Screen {
         }
     }
 
-    private void openWorksheetQCLookup() {
+    private void openWorksheetAnalysisLookup() {
         ScreenWindow modal;
         
         try {
-            if (wQCLookupScreen == null) {
-                wQCLookupScreen = new WorksheetLookupScreen();
-                wQCLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
+            if (wAnaLookupScreen == null) {
+                wAnaLookupScreen = new WorksheetLookupScreen();
+                wAnaLookupScreen.addActionHandler(new ActionHandler<WorksheetLookupScreen.Action>() {
                     @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<WorksheetLookupScreen.Action> event) {
                         ArrayList<TableDataRow> list;
@@ -1171,19 +1229,21 @@ public class WorksheetCreationScreen extends Screen {
                                 wVDO = (WorksheetViewDO)list.get(0).data;
                                 try {
                                     if (waSelectionScreen == null) {
-                                        waSelectionScreen = new WorksheetQcAnalysisSelectionScreen();
-                                        waSelectionScreen.addActionHandler(new ActionHandler<WorksheetQcAnalysisSelectionScreen.Action>() {
-                                            public void onAction(ActionEvent<WorksheetQcAnalysisSelectionScreen.Action> event) {
+                                        waSelectionScreen = new WorksheetAnalysisSelectionScreen();
+                                        waSelectionScreen.addActionHandler(new ActionHandler<WorksheetAnalysisSelectionScreen.Action>() {
+                                            public void onAction(ActionEvent<WorksheetAnalysisSelectionScreen.Action> event) {
                                                 int                      i, r;
                                                 ArrayList<TableDataRow>  list;
                                                 ArrayList<Object>        dataList;
+                                                AnalysisViewDO           aVDO;
                                                 QcManager                qcManager;
-                                                TableDataRow             qcRow;
+                                                TableDataRow             newRow;
                                                 TestWorksheetItemDO      twiDO;
                                                 WorksheetAnalysisDO      waDO;
+                                                WorksheetResultManager   wrManager;      
                                                 WorksheetQcResultManager wqrManager;      
     
-                                                if (event.getAction() == WorksheetQcAnalysisSelectionScreen.Action.OK) {
+                                                if (event.getAction() == WorksheetAnalysisSelectionScreen.Action.OK) {
                                                     list = (ArrayList<TableDataRow>)event.getData();
                                                     if (list != null) {
                                                         r = worksheetItemTable.getSelectedRow();
@@ -1194,30 +1254,59 @@ public class WorksheetCreationScreen extends Screen {
                                                         
                                                         for (i = 0; i < list.size(); i++) {
                                                             waDO = (WorksheetAnalysisDO)list.get(i).data;
-                                                            try {
-                                                                qcManager = qcService.call("fetchById", waDO.getQcId());
-                                                                wqrManager = worksheetService.call("fetchWorksheeetQcResultByWorksheetAnalysisId", waDO.getId());
-                                                                
-                                                                twiDO = new TestWorksheetItemDO();
-                                                                twiDO.setPosition(r+1);
-                                                                twiDO.setTypeId(typeFixed);
-                                                                twiDO.setQcName(qcManager.getQc().getName());
-                                                                
-                                                                qcRow = new TableDataRow(11);
-                                                                qcRow.cells.get(1).value = waDO.getAccessionNumber();
-                                                                qcRow.cells.get(2).value = qcManager.getQc().getName();
-                                                                
-                                                                dataList = new ArrayList<Object>();
-                                                                dataList.add(twiDO);
-                                                                dataList.add((QcDO)qcManager.getQc());
-                                                                dataList.add(wqrManager);
-                                                                qcRow.data = dataList;
-                                                                
-                                                                testWorksheetItems.add(qcRow);
-                                                                r++;
-                                                            } catch (Exception anyE) {
-                                                                anyE.printStackTrace();
-                                                                Window.alert("error: " + anyE.getMessage());
+                                                            if (waDO.getAnalysisId() != null) {
+                                                                try {
+                                                                    aVDO = analysisService.call("fetchById", waDO.getAnalysisId());
+                                                                    wrManager = worksheetService.call("fetchWorksheeetResultByWorksheetAnalysisId", waDO.getId());
+                                                                    
+                                                                    twiDO = new TestWorksheetItemDO();
+                                                                    twiDO.setPosition(r+1);
+                                                                    twiDO.setTypeId(typeFixed);
+//                                                                    twiDO.setQcName(qcManager.getQc().getName());
+                                                                    
+                                                                    newRow = new TableDataRow(11);
+                                                                    newRow.cells.get(1).value = waDO.getAccessionNumber();
+                                                                    newRow.cells.get(4).value = aVDO.getTestName();
+                                                                    newRow.cells.get(5).value = aVDO.getMethodName();
+                                                                    
+                                                                    dataList = new ArrayList<Object>();
+                                                                    dataList.add(twiDO);
+                                                                    dataList.add(aVDO);
+                                                                    dataList.add(wrManager);
+                                                                    newRow.data = dataList;
+                                                                    
+                                                                    testWorksheetItems.add(newRow);
+                                                                    r++;
+                                                                } catch (Exception anyE) {
+                                                                    anyE.printStackTrace();
+                                                                    Window.alert("error: " + anyE.getMessage());
+                                                                }
+                                                            } else if (waDO.getQcId() != null) {
+                                                                try {
+                                                                    qcManager = qcService.call("fetchById", waDO.getQcId());
+                                                                    wqrManager = worksheetService.call("fetchWorksheeetQcResultByWorksheetAnalysisId", waDO.getId());
+                                                                    
+                                                                    twiDO = new TestWorksheetItemDO();
+                                                                    twiDO.setPosition(r+1);
+                                                                    twiDO.setTypeId(typeFixed);
+                                                                    twiDO.setQcName(qcManager.getQc().getName());
+                                                                    
+                                                                    newRow = new TableDataRow(11);
+                                                                    newRow.cells.get(1).value = waDO.getAccessionNumber();
+                                                                    newRow.cells.get(2).value = qcManager.getQc().getName();
+                                                                    
+                                                                    dataList = new ArrayList<Object>();
+                                                                    dataList.add(twiDO);
+                                                                    dataList.add((QcDO)qcManager.getQc());
+                                                                    dataList.add(wqrManager);
+                                                                    newRow.data = dataList;
+                                                                    
+                                                                    testWorksheetItems.add(newRow);
+                                                                    r++;
+                                                                } catch (Exception anyE) {
+                                                                    anyE.printStackTrace();
+                                                                    Window.alert("error: " + anyE.getMessage());
+                                                                }
                                                             }
                                                         }
                                                         
@@ -1251,7 +1340,7 @@ public class WorksheetCreationScreen extends Screen {
             
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("worksheetLookup"));
-            modal.setContent(wQCLookupScreen);
+            modal.setContent(wAnaLookupScreen);
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert("error: " + e.getMessage());

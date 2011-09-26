@@ -42,9 +42,9 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="WorksheetQcAnalysisSelection" name="{resource:getString($constants,'worksheetQcAnalysisSelection')}">
+    <screen id="WorksheetAnalysisSelection" name="{resource:getString($constants,'worksheetAnalysisSelection')}">
       <VerticalPanel padding="0" spacing="0">
-        <table key="worksheetQcAnalysisTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" tab="okButton,searchButton" title="">
+        <table key="worksheetAnalysisTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS" tab="okButton,searchButton" title="">
           <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
             <label field="Integer" />
           </col>
@@ -52,6 +52,12 @@ UIRF Software License are applicable instead of those above.
             <label field="String" />
           </col>
           <col key="{meta:getSampleDescription()}" width="110" sort="true" header="{resource:getString($constants,'description')}">
+            <label field="String" />
+          </col>
+          <col key="{meta:getAnalysisTestName()}" width="110" sort="true" header="{resource:getString($constants,'test')}">
+            <label field="String" />
+          </col>
+          <col key="{meta:getAnalysisTestMethodName()}" width="110" sort="true" header="{resource:getString($constants,'method')}">
             <label field="String" />
           </col>
         </table>

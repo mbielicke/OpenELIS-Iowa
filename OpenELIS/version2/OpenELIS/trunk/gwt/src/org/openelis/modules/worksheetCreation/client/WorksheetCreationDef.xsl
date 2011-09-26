@@ -94,7 +94,7 @@ UIRF Software License are applicable instead of those above.
               </widget>
             </row>
           </TablePanel>
-          <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="insertQCWorksheetButton,instrumentId" title="">
+          <table key="worksheetItemTable" width="800" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides" tab="insertAnalysisWorksheetButton,instrumentId" title="">
             <col key="{meta:getWorksheetItemPosition()}" width="50" header="{resource:getString($constants,'position')}">
               <label field="Integer" />
             </col>
@@ -131,15 +131,15 @@ UIRF Software License are applicable instead of those above.
           </table>
           <widget style="TableFooterPanel">
             <HorizontalPanel>
-              <appButton key="insertQCWorksheetButton" style="Button" tab="insertQCLookupButton,worksheetItemTable" action="insertQCWorksheet">
+              <appButton key="insertAnalysisWorksheetButton" style="Button" tab="insertQCLookupButton,worksheetItemTable" action="insertAnalysisWorksheet">
                 <HorizontalPanel>
                   <AbsolutePanel style="AddRowButtonImage" />
                   <text>
-                    <xsl:value-of select="resource:getString($constants,'insertQCWorksheet')" />
+                    <xsl:value-of select="resource:getString($constants,'insertAnalysisWorksheet')" />
                   </text>
                 </HorizontalPanel>
               </appButton>
-              <appButton key="insertQCLookupButton" style="Button" tab="removeRowButton,insertQCWorksheetButton" action="insertQCLookup">
+              <appButton key="insertQCLookupButton" style="Button" tab="removeRowButton,insertAnalysisWorksheetButton" action="insertQCLookup">
                 <HorizontalPanel>
                   <AbsolutePanel style="AddRowButtonImage" />
                   <text>

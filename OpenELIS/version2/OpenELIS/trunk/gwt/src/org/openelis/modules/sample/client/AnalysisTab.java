@@ -173,7 +173,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 changedTestId = event.getValue();
 
                 try {
-                    hasResults = manager.hasAnalysisResultsAt(analysisIndex);
+                    hasResults = false;
+                    if (analysis.getTestId() != null)
+                        hasResults = manager.hasAnalysisResultsAt(analysisIndex);
                 } catch (Exception anyE) {
                     Window.alert(anyE.getMessage());
                     test.setSelection(analysis.getTestId(), analysis.getTestName());

@@ -27,6 +27,7 @@ package org.openelis.modules.worksheet.client;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -56,11 +57,11 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasActionHandlers<WorksheetQcAnalysisSelectionScreen.Action> {
+public class WorksheetAnalysisSelectionScreen extends Screen implements HasActionHandlers<WorksheetAnalysisSelectionScreen.Action> {
 
     private AppButton          okButton, cancelButton;
-    private ScreenService      qcService;
-    private TableWidget        worksheetQcAnalysisTable;
+    private ScreenService      analysisService, qcService;
+    private TableWidget        worksheetAnalysisTable;
     
     protected Integer          worksheetId;
     protected WorksheetManager manager;
@@ -69,9 +70,10 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
         OK, CANCEL
     };
     
-    public WorksheetQcAnalysisSelectionScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(WorksheetQcAnalysisSelectionDef.class));
+    public WorksheetAnalysisSelectionScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(WorksheetAnalysisSelectionDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
+        analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
         qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
 
         // Setup link between Screen and widget Handlers
@@ -82,24 +84,24 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
     }
 
     private void initialize() {
-        worksheetQcAnalysisTable = (TableWidget)def.getWidget("worksheetQcAnalysisTable");
-        addScreenHandler(worksheetQcAnalysisTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        worksheetAnalysisTable = (TableWidget)def.getWidget("worksheetAnalysisTable");
+        addScreenHandler(worksheetAnalysisTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                worksheetQcAnalysisTable.load(getTableModel());
+                worksheetAnalysisTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                worksheetQcAnalysisTable.enable(true);
+                worksheetAnalysisTable.enable(true);
             }
         });
         
-        worksheetQcAnalysisTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
+        worksheetAnalysisTable.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {
            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {
                //do nothing
            }; 
         });
         
-        worksheetQcAnalysisTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+        worksheetAnalysisTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 // this table cannot be edited
                 event.cancel();
@@ -132,7 +134,7 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
     }
     
     private void ok() {
-        ArrayList<TableDataRow> selections = worksheetQcAnalysisTable.getSelections();
+        ArrayList<TableDataRow> selections = worksheetAnalysisTable.getSelections();
         
         if (selections.size() > 0)
             ActionEvent.fire(this, Action.OK, selections);
@@ -147,6 +149,7 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
     private ArrayList<TableDataRow> getTableModel() {
         int                      i, j;
         ArrayList<TableDataRow>  model;
+        AnalysisViewDO           aVDO;
         QcManager                qcManager;
         TableDataRow             row;
         WorksheetAnalysisDO      waDO;
@@ -168,17 +171,18 @@ public class WorksheetQcAnalysisSelectionScreen extends Screen implements HasAct
                     for (j = 0; j < waManager.count(); j++) {
                         waDO = waManager.getWorksheetAnalysisAt(j);
 
-                        //
-                        // we only want QC records
-                        //
-                        if (waDO.getQcId() == null)
-                            continue;
-                        
-                        qcManager = qcService.call("fetchById", waDO.getQcId());
-                        row = new TableDataRow(waDO.getId(),
-                                               wiDO.getPosition(), 
-                                               waDO.getAccessionNumber(), 
-                                               qcManager.getQc().getName());
+                        row = new TableDataRow(5);
+                        row.key = waDO.getId();
+                        row.cells.get(0).value = wiDO.getPosition();
+                        row.cells.get(1).value = waDO.getAccessionNumber();
+                        if (waDO.getAnalysisId() != null) {
+                            aVDO = analysisService.call("fetchById", waDO.getAnalysisId());
+                            row.cells.get(3).value = aVDO.getTestName();
+                            row.cells.get(4).value = aVDO.getMethodName();
+                        } else if (waDO.getQcId() != null) {
+                            qcManager = qcService.call("fetchById", waDO.getQcId());
+                            row.cells.get(2).value = qcManager.getQc().getName();
+                        }
                         row.data = waDO;
                         
                         model.add(row);
