@@ -67,6 +67,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.QcViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SectionViewDO;
@@ -89,6 +90,7 @@ import org.openelis.local.AnalyteLocal;
 import org.openelis.local.AnalyteParameterLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
+import org.openelis.local.QcLocal;
 import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SystemVariableLocal;
@@ -96,7 +98,6 @@ import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.AnalysisUserManager;
-import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleDomainInt;
 import org.openelis.manager.SampleItemManager;
@@ -120,6 +121,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     AnalyteParameterLocal analyteParameterLocal;
     @EJB
     DictionaryLocal dictionaryLocal;
+    @EJB
+    QcLocal qcLocal;
     @EJB
     QcAnalyteLocal qcAnalyteLocal;
     @EJB
@@ -154,7 +157,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         AnalysisResultManager    arManager;
         AnalysisViewDO           aVDO;
         DictionaryViewDO         formatVDO;
-        QcManager                qcManager;
+        QcViewDO                 qcVDO;
         SampleDataBundle         bundle;
         SampleDomainInt          sDomain;
         SampleItemManager        siManager;
@@ -296,7 +299,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         r++;
                     } else {
                         r = createResultCellsForFormat(resultSheet, row, tRow, cellNameIndex,
-                                                       tCellNames, arManager, wrManager);
+                                                       tCellNames, aVDO.getTestId(), arManager, wrManager);
                     }
 
                     //
@@ -358,12 +361,12 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                                 "$"+(oRow.getRowNum()+1));
                     o++;
                 } else if (waDO.getQcId() != null) {
-                    qcManager = QcManager.fetchById(waDO.getQcId());
+                    qcVDO = qcLocal.fetchById(waDO.getQcId());
 
                     // description
                     cell = row.createCell(2);
                     cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue(qcManager.getQc().getName());
+                    cell.setCellValue(qcVDO.getName());
     
                     // qc link
                     cell = row.createCell(3);
@@ -407,7 +410,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         cellNameIndex = i+"."+a;
                         r = createQcResultCellsForFormat(resultSheet, row, tRow,
                                                          cellNameIndex, tCellNames,
-                                                         qcManager, wqrManager);
+                                                         waDO.getQcId(), wqrManager);
                     }
 
                     //
@@ -429,7 +432,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     // description (override)
                     cell = oRow.createCell(2);
                     cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue(qcManager.getQc().getName());
+                    cell.setCellValue(qcVDO.getName());
     
                     // test name (overrride)
                     cell = oRow.createCell(3);
@@ -513,7 +516,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         overrideSheet.autoSizeColumn(2, true);          // Description
         overrideSheet.autoSizeColumn(3, true);          // Test
         overrideSheet.autoSizeColumn(4, true);          // Method
-        overrideSheet.autoSizeColumn(5, true);          // User(s)
         
         try {
             out = new FileOutputStream(outFileName);
@@ -906,8 +908,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     }
 
     private int createResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow, String nameIndexPrefix,
-                                           HashMap<String,String> cellNames, AnalysisResultManager arManager,
-                                           WorksheetResultManager wrManager) {
+                                           HashMap<String,String> cellNames, Integer testId,
+                                           AnalysisResultManager arManager, WorksheetResultManager wrManager) {
         int                    c, i, r;
         Integer                resultTypeDictionary;
         String                 cellNameIndex, name;
@@ -982,7 +984,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         if (apVDO == null) {
                             try {
                                 apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wrVDO.getAnalyteId(),
-                                                                                                                arManager.getTestManager().getTest().getId(),
+                                                                                                                testId,
                                                                                                                 ReferenceTable.TEST);
                             } catch (Exception anyE) {
                                 // TODO: Code proper exception handling
@@ -1034,7 +1036,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     private int createQcResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow,
                                              String nameIndexPrefix, HashMap<String,String> cellNames,
-                                             QcManager qcManager, WorksheetQcResultManager wqrManager) {
+                                             Integer qcId, WorksheetQcResultManager wqrManager) {
         int                     c, i, r;
         Object                  value;
         String                  cellNameIndex, name;
@@ -1094,7 +1096,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         if (apVDO == null) {
                             try {
                                 apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wqrVDO.getAnalyteId(),
-                                                                                                                qcManager.getQc().getId(),
+                                                                                                                qcId,
                                                                                                                 ReferenceTable.QC);
                             } catch (Exception anyE) {
                                 // TODO: Code proper exception handling
