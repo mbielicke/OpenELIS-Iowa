@@ -252,7 +252,7 @@ public class DataDumpBean implements DataDumpRemote {
         Query query;
         QueryBuilderV2 builder;
         List<Object[]> list;
-        ArrayList<Integer> anIdList, samIdList;
+        ArrayList<Integer> analysisIds, sampleIds;
         ArrayList<ResultViewDO> resList;
         ArrayList<AuxDataViewDO> auxList;
         Object[] vo;
@@ -280,8 +280,8 @@ public class DataDumpBean implements DataDumpRemote {
         if (list.isEmpty())
             throw new NotFoundException();
 
-        anIdList = new ArrayList<Integer>();
-        samIdList = new ArrayList<Integer>();
+        analysisIds = new ArrayList<Integer>();
+        sampleIds = new ArrayList<Integer>();
         prevSamId = null;
         if ("Y".equals(excludeOverride)) {
             /*
@@ -305,24 +305,32 @@ public class DataDumpBean implements DataDumpRemote {
                         prevSamId = null;
                         continue;
                     } catch (NotFoundException e) {
-                        samIdList.add(samId);
+                        /*
+                         * add the id to the list of samples that will be used
+                         * to query for aux data
+                         */
+                        sampleIds.add(samId);
                     }
                 }
                 try {
                     // we found result override qa event(s) for an analysis
                     analysisQaEvent.fetchResultOverrideByAnalysisId(analysisId);                    
                 } catch (NotFoundException e1) {
-                    anIdList.add(analysisId);
+                    analysisIds.add(analysisId);
                 }
                 prevSamId = samId;
             }
         } else {
             for (i = 0; i < list.size(); i++ ) {
                 vo = list.get(i);
-                anIdList.add((Integer)vo[0]);
+                analysisIds.add((Integer)vo[0]);
                 samId = (Integer)vo[1];
+                /*
+                 * add the id to the list of samples that will be used
+                 * to query for aux data
+                 */
                 if ( !samId.equals(prevSamId))
-                    samIdList.add(samId);
+                    sampleIds.add(samId);
                 prevSamId = samId;
             }
         }
@@ -330,8 +338,13 @@ public class DataDumpBean implements DataDumpRemote {
         data = new DataDumpVO();
         resList = null;
         try {
-            if (anIdList.size() > 0) {
-                resList = result.fetchForDataDump(anIdList);
+            if (analysisIds.size() > 0) {
+                /*
+                 * fetch the results belonging to the analyses that weren't left 
+                 * out, if any, in the code above because of their results being
+                 * overridden  
+                 */ 
+                resList = result.fetchForDataDump(analysisIds);
                 data.setAnalytes(getTestAnalytes(resList));
             }
         } catch (NotFoundException e) {
@@ -340,8 +353,14 @@ public class DataDumpBean implements DataDumpRemote {
 
         auxList = null;
         try {
-            if (samIdList.size() > 0) {
-                auxList = auxData.fetchForDataDump(samIdList, ReferenceTable.SAMPLE);
+            /* 
+             * fetch all the aux data belonging to the samples that we fetched the
+             * results for in the previous query, i.e. if a sample was excluded 
+             * because of its results being overriden then it won't be included
+             * in this list  
+             */  
+            if (sampleIds.size() > 0) {
+                auxList = auxData.fetchForDataDump(sampleIds, ReferenceTable.SAMPLE);
                 data.setAuxFields(getAuxFields(auxList));
             }
         } catch (NotFoundException e) {
@@ -576,7 +595,7 @@ public class DataDumpBean implements DataDumpRemote {
         Row row, resRow, auxRow;
         Cell cell;               
         ArrayList<String> allCols, cols;
-        Datetime collDT, collD, collT;
+        Datetime collDateTime, collDate, collTime;
         Date dc;  
         SampleDO sam;        
         SampleProjectViewDO proj;
@@ -678,7 +697,7 @@ public class DataDumpBean implements DataDumpRemote {
         prevSamId = null;
         prevItemId = null;
         prevAnaId = null; 
-        collDT = null;
+        collDateTime = null;
         sam = null;
         proj = null;
         org = null;
@@ -804,7 +823,7 @@ public class DataDumpBean implements DataDumpRemote {
                 env = null;
                 well = null;
                 sdwis = null;
-                collDT = null;
+                collDateTime = null;
             } else if (sampleOverriden) {
                 prevSamId = samId;
                 continue;
@@ -901,26 +920,26 @@ public class DataDumpBean implements DataDumpRemote {
                  * Datetime, thus we do it only once per sample to avoid creating
                  * unnecessary objects for each row for that sample  
                  */
-                if ("Y".equals(data.getCollectionDate()) && collDT == null) {
-                    collD = sam.getCollectionDate();
-                    collT = sam.getCollectionTime();
-                    if (collD != null) {
-                        dc = collD.getDate();
-                        if (dc == null) {
+                if ("Y".equals(data.getCollectionDate()) && collDateTime == null) {
+                    collDate = sam.getCollectionDate();
+                    collTime = sam.getCollectionTime();
+                    if (collDate != null) {
+                        dc = collDate.getDate();
+                        if (collTime == null) {
                             dc.setHours(0);
                             dc.setMinutes(0);
                         } else {
-                            dc.setHours(collT.getDate().getHours());
-                            dc.setMinutes(collT.getDate().getMinutes());
+                            dc.setHours(collTime.getDate().getHours());
+                            dc.setMinutes(collTime.getDate().getMinutes());
                         }
 
-                        collDT = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, dc);
+                        collDateTime = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, dc);
                     }
                 }
                 if (addResultRow)
-                    addSampleCells(resRow, resRow.getPhysicalNumberOfCells(), data, sam, collDT, proj);
+                    addSampleCells(resRow, resRow.getPhysicalNumberOfCells(), data, sam, collDateTime, proj);
                 if (addAuxDataRow)
-                    addSampleCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, sam, collDT, proj);
+                    addSampleCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, sam, collDateTime, proj);
 
             }
             
