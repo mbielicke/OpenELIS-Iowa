@@ -360,6 +360,8 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
                     for (j = 0; j < testList.size(); j++) {
                         aVDO = testList.get(j);
                         if (j != 0) {
+                            row = new TableDataRow(6);
+                            row.key = worksheetRow.getId();
                             row.cells.get(0).value = null;
                             row.cells.get(1).value = null;
                             row.cells.get(2).value = null;

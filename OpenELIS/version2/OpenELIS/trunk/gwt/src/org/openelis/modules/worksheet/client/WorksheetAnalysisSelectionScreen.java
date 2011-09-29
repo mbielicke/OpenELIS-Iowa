@@ -134,11 +134,17 @@ public class WorksheetAnalysisSelectionScreen extends Screen implements HasActio
     }
     
     private void ok() {
-        ArrayList<TableDataRow> selections = worksheetAnalysisTable.getSelections();
+        ArrayList<Object>       data;
+        ArrayList<TableDataRow> selections;
         
-        if (selections.size() > 0)
-            ActionEvent.fire(this, Action.OK, selections);
-        
+        selections = worksheetAnalysisTable.getSelections();
+        if (selections.size() > 0) {
+            data = new ArrayList<Object>();
+            data.add(selections);
+            data.add(manager.getWorksheet().getFormatId());
+            
+            ActionEvent.fire(this, Action.OK, data);
+        }
         window.close();
     }
     

@@ -72,6 +72,8 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.gwt.widget.table.event.UnselectionEvent;
+import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
@@ -359,7 +361,15 @@ public class QuickEntryScreen extends Screen {
         
         quickEntryTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
-                removeRowButton.enable(true);
+                if (quickEntryTable.getSelectedRow() != -1)
+                    removeRowButton.enable(true);
+            }
+        });
+
+        quickEntryTable.addUnselectionHandler(new UnselectionHandler<TableDataRow>() {
+            public void onUnselection(UnselectionEvent<TableDataRow> event) {
+                if (quickEntryTable.getSelectedRow() == -1)
+                    removeRowButton.enable(false);
             }
         });
 
@@ -385,7 +395,6 @@ public class QuickEntryScreen extends Screen {
                 if (selected != -1)
                     quickEntryTable.deleteRow(selected);
                 
-                removeRowButton.enable(false);
                 setFocus(entry);
             }
 
@@ -658,6 +667,7 @@ public class QuickEntryScreen extends Screen {
                 setState(State.ADD);
             quickEntryTable.selectRow(quickEntryTable.numRows() - 1);
             quickEntryTable.scrollToVisisble();
+            removeRowButton.enable(true);
         }
 
         window.clearStatus();
