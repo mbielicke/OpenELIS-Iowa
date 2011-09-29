@@ -25,22 +25,38 @@
  */
 package org.openelis.bean;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.poi.hssf.usermodel.HSSFName;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.AreaReference;
+import org.apache.poi.ss.util.CellReference;
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.DictionaryLocal;
+import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.meta.WorksheetCreationMeta;
@@ -51,6 +67,11 @@ import org.openelis.util.QueryBuilderV2;
 @SecurityDomain("openelis")
 @RolesAllowed("organization-select")
 public class WorksheetCreationBean implements WorksheetCreationRemote {
+
+    @EJB
+    DictionaryLocal dictionaryLocal;
+    @EJB
+    SystemVariableLocal systemVariableLocal;
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
@@ -195,5 +216,67 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
         }
 
         return expireDate;
+    }
+
+    @TransactionTimeout(600)
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
+        int                 i;
+        AreaReference       aref;
+        ArrayList<IdNameVO> columnNames;
+        CellReference       cref[];
+        DictionaryViewDO    formatVDO;
+        FileInputStream     in;
+        HSSFName            name;
+        HSSFWorkbook        wb;
+
+        columnNames = new ArrayList<IdNameVO>();
+        
+        try {
+            formatVDO = dictionaryLocal.fetchById(formatId);
+        } catch (NotFoundException nfE) {
+            formatVDO = new DictionaryViewDO();
+            formatVDO.setEntry("DefaultTotal");
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving worksheet format: "+anyE.getMessage());
+        }
+
+        try {
+            in = new FileInputStream(getWorksheetTemplateFileName(formatVDO));
+        } catch (FileNotFoundException fnfE) {
+            throw new Exception("Error loading template file: "+fnfE.getMessage());
+        }
+        
+        try {
+            wb = new HSSFWorkbook(in, true);
+        } catch (IOException ioE) {
+            throw new Exception("Error loading workbook from template file: "+ioE.getMessage());
+        }
+
+        for (i = 0; i < wb.getNumberOfNames(); i++) {
+            name = wb.getNameAt(i);
+            if (name.getRefersToFormula() != null) {
+                aref = new AreaReference(name.getRefersToFormula());
+                cref = aref.getAllReferencedCells();
+                columnNames.add(new IdNameVO(new Integer(Short.valueOf(cref[0].getCol()).intValue()), name.getNameName()));
+            }
+        }
+        
+        return columnNames;
+    }
+    
+    private String getWorksheetTemplateFileName(DictionaryViewDO formatVDO) throws Exception {
+        ArrayList<SystemVariableDO> sysVars;
+        String                      dirName;
+        
+        dirName = "";
+        try {
+            sysVars = systemVariableLocal.fetchByName("worksheet_template_directory", 1);
+            if (sysVars.size() > 0)
+                dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
+        } catch (Exception anyE) {
+            throw new Exception("Error retrieving temp directory variable: "+anyE.getMessage());
+        }
+
+        return dirName+"OEWorksheet"+formatVDO.getEntry()+".xls";
     }
 }
