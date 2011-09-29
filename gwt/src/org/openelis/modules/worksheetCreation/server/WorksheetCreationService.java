@@ -27,6 +27,7 @@ package org.openelis.modules.worksheetCreation.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
@@ -36,6 +37,10 @@ public class WorksheetCreationService {
 
     public ArrayList<WorksheetCreationVO> query(Query query) throws Exception {
         return remote().query(query.getFields(), 0, 100);
+    }
+    
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
+        return remote().getColumnNames(formatId);
     }
 
     private WorksheetCreationRemote remote() {

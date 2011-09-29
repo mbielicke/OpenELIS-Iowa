@@ -43,6 +43,7 @@ import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcDO;
 import org.openelis.domain.SectionViewDO;
@@ -637,7 +638,14 @@ public class WorksheetCreationScreen extends Screen {
     
     @SuppressWarnings("unchecked")
     protected void save() {
-        int                      i, j;
+        int                      i, j, k;
+        ArrayList<IdNameVO>      columnNameVOs;
+        HashMap<String,Integer>  toColumnNames;
+        HashMap<Integer,String>  fromColumnNames;
+        HashMap<Integer,HashMap<Integer,String>> formatColumnNames;
+        IdNameVO                 columnNameVO;
+        Integer                  fromFormatId, toIndex;
+        String                   fromName;
         TableDataRow             row;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager = null;
@@ -657,6 +665,21 @@ public class WorksheetCreationScreen extends Screen {
         }
         
         window.setBusy(consts.get("saving"));
+        
+        formatColumnNames = new HashMap<Integer,HashMap<Integer,String>>();
+
+        try {
+            columnNameVOs = service.callList("getColumnNames", formatId);
+            toColumnNames = new HashMap<String,Integer>();
+            for (i = 0; i < columnNameVOs.size(); i++) {
+                columnNameVO = columnNameVOs.get(i);
+                toColumnNames.put(columnNameVO.getName(), columnNameVO.getId());
+            }
+        } catch (Exception anyE) {
+            Window.alert(consts.get("worksheetToColumnMappingLoadError"));
+            anyE.printStackTrace();
+            toColumnNames = null;
+        }
 
         wVDO = manager.getWorksheet();
         wVDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
@@ -687,7 +710,7 @@ public class WorksheetCreationScreen extends Screen {
             waDO.setId((Integer)row.key);
             waDO.setAccessionNumber((String)row.cells.get(1).value);
             if (row.data instanceof ArrayList) {
-                if (((ArrayList<Object>)row.data).size() == 3 && ((ArrayList<Object>)row.data).get(2) instanceof WorksheetResultManager)
+                if (((ArrayList<Object>)row.data).size() == 4 && ((ArrayList<Object>)row.data).get(2) instanceof WorksheetResultManager)
                     waDO.setAnalysisId(((AnalysisViewDO)((ArrayList<Object>)row.data).get(1)).getId());
                 else
                     waDO.setQcId(((QcDO)((ArrayList<Object>)row.data).get(1)).getId());
@@ -707,7 +730,29 @@ public class WorksheetCreationScreen extends Screen {
                 // If this analysis is from another worksheet, copy the result
                 // records from the manager in the 3rd slot of the ArrayList
                 //
-                if (row.data instanceof ArrayList && ((ArrayList<Object>)row.data).size() == 3) {
+                if (row.data instanceof ArrayList && ((ArrayList<Object>)row.data).size() == 4) {
+                    fromFormatId = (Integer) ((ArrayList<Object>)row.data).get(3);
+                    if (!formatId.equals(fromFormatId)) {
+                        fromColumnNames = formatColumnNames.get(fromFormatId);
+                        if (fromColumnNames == null) {
+                            try {
+                                columnNameVOs = service.callList("getColumnNames", fromFormatId);
+                                fromColumnNames = new HashMap<Integer,String>();
+                                for (j = 0; j < columnNameVOs.size(); j++) {
+                                    columnNameVO = columnNameVOs.get(j);
+                                    fromColumnNames.put(columnNameVO.getId(), columnNameVO.getName());
+                                }
+                                formatColumnNames.put(fromFormatId, fromColumnNames);
+                            } catch (Exception anyE1) {
+                                Window.alert(consts.get("worksheetFromColumnMappingLoadError"));
+                                anyE1.printStackTrace();
+                                fromColumnNames = null;
+                            }
+                        }
+                    } else {
+                        fromColumnNames = null;
+                    }
+                    
                     if (((ArrayList<Object>)row.data).get(2) instanceof WorksheetResultManager) {
                         wrManager = (WorksheetResultManager) ((ArrayList<Object>)row.data).get(2);
                         newWrManager = waManager.getWorksheetResultAt(waManager.count() - 1);
@@ -719,36 +764,19 @@ public class WorksheetCreationScreen extends Screen {
                             newWrVDO.setResultRow(wrVDO.getResultRow());
                             newWrVDO.setAnalyteId(wrVDO.getAnalyteId());
                             newWrVDO.setTypeId(wrVDO.getTypeId());
-                            newWrVDO.setValueAt(0, wrVDO.getValueAt(0));
-                            newWrVDO.setValueAt(1, wrVDO.getValueAt(1));
-                            newWrVDO.setValueAt(2, wrVDO.getValueAt(2));
-                            newWrVDO.setValueAt(3, wrVDO.getValueAt(3));
-                            newWrVDO.setValueAt(4, wrVDO.getValueAt(4));
-                            newWrVDO.setValueAt(5, wrVDO.getValueAt(5));
-                            newWrVDO.setValueAt(6, wrVDO.getValueAt(6));
-                            newWrVDO.setValueAt(7, wrVDO.getValueAt(7));
-                            newWrVDO.setValueAt(8, wrVDO.getValueAt(8));
-                            newWrVDO.setValueAt(9, wrVDO.getValueAt(9));
-                            newWrVDO.setValueAt(10, wrVDO.getValueAt(10));
-                            newWrVDO.setValueAt(11, wrVDO.getValueAt(11));
-                            newWrVDO.setValueAt(12, wrVDO.getValueAt(12));
-                            newWrVDO.setValueAt(13, wrVDO.getValueAt(13));
-                            newWrVDO.setValueAt(14, wrVDO.getValueAt(14));
-                            newWrVDO.setValueAt(15, wrVDO.getValueAt(15));
-                            newWrVDO.setValueAt(16, wrVDO.getValueAt(16));
-                            newWrVDO.setValueAt(17, wrVDO.getValueAt(17));
-                            newWrVDO.setValueAt(18, wrVDO.getValueAt(18));
-                            newWrVDO.setValueAt(19, wrVDO.getValueAt(19));
-                            newWrVDO.setValueAt(20, wrVDO.getValueAt(20));
-                            newWrVDO.setValueAt(21, wrVDO.getValueAt(21));
-                            newWrVDO.setValueAt(22, wrVDO.getValueAt(22));
-                            newWrVDO.setValueAt(23, wrVDO.getValueAt(23));
-                            newWrVDO.setValueAt(24, wrVDO.getValueAt(24));
-                            newWrVDO.setValueAt(25, wrVDO.getValueAt(25));
-                            newWrVDO.setValueAt(26, wrVDO.getValueAt(26));
-                            newWrVDO.setValueAt(27, wrVDO.getValueAt(27));
-                            newWrVDO.setValueAt(28, wrVDO.getValueAt(28));
-                            newWrVDO.setValueAt(29, wrVDO.getValueAt(29));
+                            if (fromColumnNames != null && toColumnNames != null) {
+                                for (k = 0; k < 30; k++) {
+                                    fromName = fromColumnNames.get(k+9);
+                                    if (fromName != null) {
+                                        toIndex = toColumnNames.get(fromName);
+                                        if (toIndex != null)
+                                            newWrVDO.setValueAt(toIndex.intValue() - 9, wrVDO.getValueAt(k));
+                                    }
+                                }
+                            } else {
+                                for (k = 0; k < 30; k++)
+                                    newWrVDO.setValueAt(k, wrVDO.getValueAt(k));
+                            }
                             newWrVDO.setAnalyteName(wrVDO.getAnalyteName());
                             newWrVDO.setAnalyteExternalId(wrVDO.getAnalyteExternalId());
                             newWrVDO.setResultGroup(wrVDO.getResultGroup());
@@ -763,36 +791,19 @@ public class WorksheetCreationScreen extends Screen {
                             newWqrVDO.setSortOrder(wqrVDO.getSortOrder());
                             newWqrVDO.setQcAnalyteId(wqrVDO.getQcAnalyteId());
                             newWqrVDO.setTypeId(wqrVDO.getTypeId());
-                            newWqrVDO.setValueAt(0, wqrVDO.getValueAt(0));
-                            newWqrVDO.setValueAt(1, wqrVDO.getValueAt(1));
-                            newWqrVDO.setValueAt(2, wqrVDO.getValueAt(2));
-                            newWqrVDO.setValueAt(3, wqrVDO.getValueAt(3));
-                            newWqrVDO.setValueAt(4, wqrVDO.getValueAt(4));
-                            newWqrVDO.setValueAt(5, wqrVDO.getValueAt(5));
-                            newWqrVDO.setValueAt(6, wqrVDO.getValueAt(6));
-                            newWqrVDO.setValueAt(7, wqrVDO.getValueAt(7));
-                            newWqrVDO.setValueAt(8, wqrVDO.getValueAt(8));
-                            newWqrVDO.setValueAt(9, wqrVDO.getValueAt(9));
-                            newWqrVDO.setValueAt(10, wqrVDO.getValueAt(10));
-                            newWqrVDO.setValueAt(11, wqrVDO.getValueAt(11));
-                            newWqrVDO.setValueAt(12, wqrVDO.getValueAt(12));
-                            newWqrVDO.setValueAt(13, wqrVDO.getValueAt(13));
-                            newWqrVDO.setValueAt(14, wqrVDO.getValueAt(14));
-                            newWqrVDO.setValueAt(15, wqrVDO.getValueAt(15));
-                            newWqrVDO.setValueAt(16, wqrVDO.getValueAt(16));
-                            newWqrVDO.setValueAt(17, wqrVDO.getValueAt(17));
-                            newWqrVDO.setValueAt(18, wqrVDO.getValueAt(18));
-                            newWqrVDO.setValueAt(19, wqrVDO.getValueAt(19));
-                            newWqrVDO.setValueAt(20, wqrVDO.getValueAt(20));
-                            newWqrVDO.setValueAt(21, wqrVDO.getValueAt(21));
-                            newWqrVDO.setValueAt(22, wqrVDO.getValueAt(22));
-                            newWqrVDO.setValueAt(23, wqrVDO.getValueAt(23));
-                            newWqrVDO.setValueAt(24, wqrVDO.getValueAt(24));
-                            newWqrVDO.setValueAt(25, wqrVDO.getValueAt(25));
-                            newWqrVDO.setValueAt(26, wqrVDO.getValueAt(26));
-                            newWqrVDO.setValueAt(27, wqrVDO.getValueAt(27));
-                            newWqrVDO.setValueAt(28, wqrVDO.getValueAt(28));
-                            newWqrVDO.setValueAt(29, wqrVDO.getValueAt(29));
+                            if (fromColumnNames != null && toColumnNames != null) {
+                                for (k = 0; k < 30; k++) {
+                                    fromName = fromColumnNames.get(k+9);
+                                    if (fromName != null) {
+                                        toIndex = toColumnNames.get(fromName);
+                                        if (toIndex != null)
+                                            newWqrVDO.setValueAt(toIndex.intValue() - 9, wqrVDO.getValueAt(k));
+                                    }
+                                }
+                            } else {
+                                for (k = 0; k < 30; k++)
+                                    newWqrVDO.setValueAt(k, wqrVDO.getValueAt(k));
+                            }
                             newWqrVDO.setAnalyteId(wqrVDO.getAnalyteId());
                             newWqrVDO.setAnalyteName(wqrVDO.getAnalyteName());
                             newWqrManager.addWorksheetQcResult(newWqrVDO);
@@ -1234,8 +1245,9 @@ public class WorksheetCreationScreen extends Screen {
                                             public void onAction(ActionEvent<WorksheetAnalysisSelectionScreen.Action> event) {
                                                 int                      i, r;
                                                 ArrayList<TableDataRow>  list;
-                                                ArrayList<Object>        dataList;
+                                                ArrayList<Object>        data, dataList;
                                                 AnalysisViewDO           aVDO;
+                                                Integer                  fromFormatId;
                                                 QcManager                qcManager;
                                                 TableDataRow             newRow;
                                                 TestWorksheetItemDO      twiDO;
@@ -1244,7 +1256,10 @@ public class WorksheetCreationScreen extends Screen {
                                                 WorksheetQcResultManager wqrManager;      
     
                                                 if (event.getAction() == WorksheetAnalysisSelectionScreen.Action.OK) {
-                                                    list = (ArrayList<TableDataRow>)event.getData();
+                                                    data = (ArrayList<Object>)event.getData();
+                                                    
+                                                    list = (ArrayList<TableDataRow>)data.get(0);
+                                                    fromFormatId = (Integer)data.get(1);
                                                     if (list != null) {
                                                         r = worksheetItemTable.getSelectedRow();
                                                         if (r == -1)
@@ -1273,6 +1288,7 @@ public class WorksheetCreationScreen extends Screen {
                                                                     dataList.add(twiDO);
                                                                     dataList.add(aVDO);
                                                                     dataList.add(wrManager);
+                                                                    dataList.add(fromFormatId);
                                                                     newRow.data = dataList;
                                                                     
                                                                     testWorksheetItems.add(newRow);
@@ -1299,6 +1315,7 @@ public class WorksheetCreationScreen extends Screen {
                                                                     dataList.add(twiDO);
                                                                     dataList.add((QcDO)qcManager.getQc());
                                                                     dataList.add(wqrManager);
+                                                                    dataList.add(fromFormatId);
                                                                     newRow.data = dataList;
                                                                     
                                                                     testWorksheetItems.add(newRow);
