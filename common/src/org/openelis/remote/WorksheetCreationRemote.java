@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.data.QueryData;
 
@@ -36,4 +37,6 @@ import org.openelis.gwt.common.data.QueryData;
 public interface WorksheetCreationRemote {
 
     public ArrayList<WorksheetCreationVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+    
+    public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception;
 }
