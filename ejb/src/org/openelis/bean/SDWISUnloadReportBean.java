@@ -459,9 +459,14 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         
         row.append(getPaddedString(ssVDO.getCollector(), 20))                       // col 76-95
            .append(dateFormat.format(sVDO.getReceivedDate().getDate()))             // col 96-103
-           .append(getPaddedString("OE"+sVDO.getAccessionNumber().toString(), 20))  // col 104-123
-           .append(getPaddedString("OE"+origSampleNumber, 20))                      // col 124-143
-           .append(getPaddedString(repeatCode, 2))                                  // col 144-145
+           .append(getPaddedString("OE"+sVDO.getAccessionNumber().toString(), 20)); // col 104-123
+        
+        if (origSampleNumber != null && origSampleNumber.length() > 0)              // col 124-143
+            row.append(getPaddedString("OE"+origSampleNumber, 20));
+        else
+            row.append(getPaddedString("", 20));
+        
+        row.append(getPaddedString(repeatCode, 2))                                  // col 144-145
            .append(getPaddedString(freeChlorine, 5))                                // col 146-150
            .append(getPaddedString(totalChlorine, 5))                               // col 151-155
            .append(getPaddedString(compIndicator, 1))                               // col 156
