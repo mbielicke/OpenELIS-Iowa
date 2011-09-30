@@ -39,27 +39,4 @@ public interface ShippingRemote {
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int i, int rowPP) throws Exception;
 
     public ShippingViewDO fetchByOrderId(Integer id) throws Exception;
-
-    /*//method to return shipping record
-    public ShippingDO getShipment(Integer shippingId);
-    
-    //method to unlock entity and return shipping record
-    public ShippingDO getShipmentAndUnlock(Integer shippingId);
-    
-    //method to lock entity and return shipping record
-    public ShippingDO getShipmentAndLock(Integer shippingId) throws Exception;
-    
-    public List getTrackingNumbers(Integer shippingId);
-    
-    public List getShippingItems(Integer shippingId);
-    
-    //commit a change to shipping record, or insert a new shipping record
-    public Integer updateShipment(ShippingDO shippingDO, List<ShippingItemDO> shippingItems, List<ShippingTrackingDO> trackingNumbers, NoteViewDO shippingNotes) throws Exception;
-    
-    //method to query for shipments
-   // public List query(ArrayList<AbstractField> fields, int first, int max) throws Exception;
-     
-    public ShippingAddAutoFillDO getAddAutoFillValues() throws Exception;
-    
-    public NoteViewDO getShippingNote(Integer shippingId);*/
 }
