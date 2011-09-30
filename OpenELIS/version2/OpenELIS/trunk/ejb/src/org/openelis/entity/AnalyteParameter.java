@@ -58,18 +58,12 @@ import org.openelis.utils.Auditable;
                         "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
                       + " from AnalyteParameter ap where ap.analyteId = :analyteId and ap.referenceId = :referenceId and"
                       +	" ap.referenceTableId = :referenceTableId and ap.isActive = 'Y'"),
-    @NamedQuery( name = "AnalyteParameter.FetchActiveByTestId",
+    @NamedQuery( name = "AnalyteParameter.FetchActiveByRefIdRefTableId",
                 query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
                         "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
                         "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
-                      + " from AnalyteParameter ap, TestAnalyte ta where ta.testId = :referenceId and ap.analyteId = ta.analyteId"
-                      +	" and ap.isActive = 'Y' order by ap.analyte.name, ap.activeBegin desc"),
-    @NamedQuery( name = "AnalyteParameter.FetchActiveByQcId",
-                query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
-                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
-                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
-                      + " from AnalyteParameter ap, QcAnalyte qca where qca.qcId = :referenceId and ap.analyteId = qca.analyteId"
-                      + " and ap.isActive = 'Y' order by ap.analyte.name, ap.activeBegin desc")                  ,
+                      + " from AnalyteParameter ap where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId"
+                      + " and ap.isActive = 'Y' order by ap.analyte.name, ap.activeBegin desc"),
     @NamedQuery( name = "AnalyteParameter.FetchByAnaIdRefIdRefTableId",
                 query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
                         "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +

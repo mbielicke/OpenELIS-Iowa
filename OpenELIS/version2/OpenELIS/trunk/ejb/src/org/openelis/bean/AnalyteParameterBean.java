@@ -73,10 +73,10 @@ public class AnalyteParameterBean implements AnalyteParameterRemote, AnalytePara
     private LockLocal                         lock;   
     
     @EJB
-    private TestAnalyteLocal                  testAnalyteBean; 
+    private TestAnalyteLocal                  testAnalyte; 
     
     @EJB
-    private QcAnalyteLocal                    qcAnalyteBean;  
+    private QcAnalyteLocal                    qcAnalyte;  
     
     private static final AnalyteParameterMeta meta = new AnalyteParameterMeta();
     
@@ -368,7 +368,7 @@ public class AnalyteParameterBean implements AnalyteParameterRemote, AnalytePara
         HashMap<Integer, TestAnalyteViewDO> taMap;    
         
         try {
-            grid = testAnalyteBean.fetchByTestId(testId);
+            grid = testAnalyte.fetchByTestId(testId);
         } catch (NotFoundException ex) {            
             return new ArrayList<AnalyteParameterViewDO>();
         }
@@ -389,15 +389,16 @@ public class AnalyteParameterBean implements AnalyteParameterRemote, AnalytePara
             }
         }        
         
-        query = manager.createNamedQuery("AnalyteParameter.FetchActiveByTestId");                            
-        query.setParameter("referenceId", testId);    
+        query = manager.createNamedQuery("AnalyteParameter.FetchActiveByRefIdRefTableId");                            
+        query.setParameter("referenceId", testId);   
+        query.setParameter("referenceTableId", ReferenceTable.TEST);    
         list = query.getResultList();
         
         /*
          * if an analyte was found in the results returned by the previous query
          * then we remove the entry pertaining to it from the HashMap so that
-         * after the loop below ends, only those analytes that were not found are
-         * in the HashMap  
+         * after the loop below ends, only those analytes that are not active but
+         * are present in test_analyte are in the HashMap  
          */
         for (AnalyteParameterViewDO temp : list) {
             if (taMap.get(temp.getAnalyteId()) != null) 
@@ -431,19 +432,32 @@ public class AnalyteParameterBean implements AnalyteParameterRemote, AnalytePara
         HashMap<Integer, QcAnalyteViewDO> qcaMap;
                 
         try {
-            anaList = qcAnalyteBean.fetchByQcId(qcId);
+            anaList = qcAnalyte.fetchByQcId(qcId);
         } catch (NotFoundException ex) {            
             return new ArrayList<AnalyteParameterViewDO>();
         }
         
         qcaMap = new HashMap<Integer, QcAnalyteViewDO>();
+        /*
+         * the HashMap created below is used to make sure that all the test analytes
+         * for this test get added in the form of a AnalyeParameterViewDO to the
+         * list returned by this method even if they are not present in the table
+         * analyte_parameter for this qc         
+         */
         for (QcAnalyteViewDO qca : anaList) 
             qcaMap.put(qca.getAnalyteId(), qca);
         
-        query = manager.createNamedQuery("AnalyteParameter.FetchActiveByQcId");                            
+        query = manager.createNamedQuery("AnalyteParameter.FetchActiveByRefIdRefTableId");                            
         query.setParameter("referenceId", qcId);    
+        query.setParameter("referenceTableId", ReferenceTable.QC);    
         list = query.getResultList();
-        
+
+        /*
+         * if an analyte was found in the results returned by the previous query
+         * then we remove the entry pertaining to it from the HashMap so that
+         * after the loop below ends, only those analytes that are not active but
+         * are present in qc_analyte are in the HashMap  
+         */
         for (AnalyteParameterViewDO temp : list) {
             if (qcaMap.get(temp.getAnalyteId()) != null) 
                 qcaMap.remove(temp.getAnalyteId());                

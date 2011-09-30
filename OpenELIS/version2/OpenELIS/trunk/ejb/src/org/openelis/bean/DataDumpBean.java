@@ -49,7 +49,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
-import org.jfree.chart.axis.QuarterDateFormat;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
@@ -97,8 +96,6 @@ import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.DataDumpRemote;
@@ -385,7 +382,7 @@ public class DataDumpBean implements DataDumpRemote {
             throw new InconsistencyException("You may not execute an empty query");
         
         /*
-         * Retrieving the organization Ids to which the user belongs to from the
+         * Retrieving the organization Ids which the user belongs to from the
          * security clause in the userPermission.
          */
         clause = EJBFactory.getUserCache()
@@ -431,15 +428,15 @@ public class DataDumpBean implements DataDumpRemote {
         
         status = new ReportStatus();
         status.setMessage("Initializing report");
-        session.setAttribute("DataDump", status);
-        //TODO comment getting ids of all the chosen results
+        session.setAttribute("DataDump", status);        
         anaList = data.getTestAnalytes();
         analyteResultMap = null;
         if (anaList != null) {
             /*
              * the analytes and results selected by the user are stored in this 
-             * hash map so that they can be used later on to select or rejects
-             * samples, tests etc.
+             * hashmap so that they can be used later on to select or reject
+             * adding a row for a result based on whether or not it belongs in 
+             * the hashmap
              */
             analyteResultMap = new HashMap<Integer, HashMap<String,String>>();
             for (TestAnalyteDataDumpVO ana : anaList) {
@@ -457,6 +454,12 @@ public class DataDumpBean implements DataDumpRemote {
         auxList = data.getAuxFields();
         auxFieldValueMap = null;
         if (auxList != null) {
+            /*
+             * the analytes and values selected by the user are stored in this 
+             * hashmap so that they can be used later on to select or reject
+             * adding a row for an aux data based on whether or not it belongs in 
+             * the hashmap
+             */
             auxFieldValueMap = new HashMap<Integer, HashMap<String,String>>();            
             for (AuxFieldDataDumpVO af : auxList) {
                 if ("N".equals(af.getIsIncluded()))
@@ -675,7 +678,7 @@ public class DataDumpBean implements DataDumpRemote {
         sheet = wb.createSheet();
         row  = sheet.createRow(1);
         //
-        // add all the columns to the header 
+        // add cells for the header in the first row 
         //
         for (rowIndex = 0; rowIndex < allCols.size(); rowIndex++) {
             cell = row.createCell(rowIndex);
@@ -897,6 +900,9 @@ public class DataDumpBean implements DataDumpRemote {
              * the fields from sample item and analysis for aux data. 
              */            
             if (addSampleCells) {
+                //
+                // add cells for the selected fields belonging to samples   
+                //
                 if (sam == null)
                     sam = sample.fetchById(samId);
                 if ("Y".equals(data.getProjectName()) && proj == null) {
@@ -940,11 +946,14 @@ public class DataDumpBean implements DataDumpRemote {
                     addSampleCells(resRow, resRow.getPhysicalNumberOfCells(), data, sam, collDateTime, proj);
                 if (addAuxDataRow)
                     addSampleCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, sam, collDateTime, proj);
-
             }
-            
+                        
             if (addOrgCells) {
-                if (SampleManager.WELL_DOMAIN_FLAG.equals(domain)) {
+                /*
+                 * Add cells for the selected fields belonging to sample organization
+                 * or the organization directly linked to a private well sample
+                 */
+                if ("W".equals(domain)) {
                     if (well == null) 
                         well = samplePrivateWell.fetchBySampleId(samId);                    
                     addPrivateWellOrganizationCells(row, row.getPhysicalNumberOfCells(), data, well);
@@ -965,6 +974,9 @@ public class DataDumpBean implements DataDumpRemote {
             }
             
             if (addItemCells) {
+                //
+                // Add cells for the selected fields belonging to sample item
+                //
                 if (addResultRow) {
                     if (!itemId.equals(prevItemId)) {
                         item = sampleItem.fetchById(itemId);
@@ -977,6 +989,10 @@ public class DataDumpBean implements DataDumpRemote {
             }
             
             if (addAnalysisCells) {
+                /*
+                 * Add cells for the selected fields belonging to sample organization
+                 * or the organization directly linked to a private well sample
+                 */
                 if (addResultRow) {                    
                     if (!anaId.equals(prevAnaId)) {
                         ana = analysis.fetchById(anaId);
@@ -990,8 +1006,9 @@ public class DataDumpBean implements DataDumpRemote {
                         if ("Y".equals(data.getAnalysisQaName()) && aqeList == null) {
                             try {
                                 /*
-                                 * if this analysis has any qa events linked to it, fetch them
-                                 * and create a string by concatinating their names together  
+                                 * if this analysis has any qa events linked to it,
+                                 * fetch them and create a string by concatinating
+                                 * their names together  
                                  */
                                 aqeList = analysisQaEvent.fetchByAnalysisId(anaId);                            
                                 buf = new StringBuffer();                            
@@ -1052,7 +1069,7 @@ public class DataDumpBean implements DataDumpRemote {
              * for a given row regardless, if the user selected them to be shown 
              */
             if (addEnvCells) {
-                if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain) && env == null) 
+                if ("E".equals(domain) && env == null) 
                         env = sampleEnvironmental.fetchBySampleId(samId);        
                 if (addResultRow) 
                     addEnvironmentalCells(resRow, resRow.getPhysicalNumberOfCells(), data, env);
@@ -1061,7 +1078,7 @@ public class DataDumpBean implements DataDumpRemote {
             } 
             
             if (addWellCells) {
-                if (SampleManager.WELL_DOMAIN_FLAG.equals(domain) && well == null) 
+                if ("W".equals(domain) && well == null) 
                         well = samplePrivateWell.fetchBySampleId(samId);  
                 if (addResultRow) 
                     addPrivateWellCells(resRow, resRow.getPhysicalNumberOfCells(), data, well);
@@ -1070,7 +1087,7 @@ public class DataDumpBean implements DataDumpRemote {
             } 
             
             if (addSDWISCells) {
-                if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain) && sdwis == null) { 
+                if ("S".equals(domain) && sdwis == null) { 
                     sdwis = sampleSDWIS.fetchBySampleId(samId);                
                     if ("Y".equals(data.getSampleSDWISPwsId()) && pwsMap == null) 
                         pwsMap = new HashMap<Integer, PWSDO>();                                            
