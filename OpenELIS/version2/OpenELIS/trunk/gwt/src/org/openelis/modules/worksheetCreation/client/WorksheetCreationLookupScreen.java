@@ -417,6 +417,7 @@ public class WorksheetCreationLookupScreen extends Screen
         if (query.getFields().size() > 0) {
             window.setBusy(consts.get("querying"));
     
+            query.setRowsPerPage(500);
             service.callList("query", query, new AsyncCallback<ArrayList<WorksheetCreationVO>>() {
                 public void onSuccess(ArrayList<WorksheetCreationVO> list) {
                     setQueryResult(list);

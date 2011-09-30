@@ -337,6 +337,7 @@ public class LabelScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
+                query.setRowsPerPage(10);
                 service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);

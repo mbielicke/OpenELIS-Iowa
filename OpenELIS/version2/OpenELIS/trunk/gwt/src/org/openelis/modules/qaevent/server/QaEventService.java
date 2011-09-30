@@ -36,8 +36,6 @@ import org.openelis.remote.QaEventRemote;
 
 public class QaEventService {
 
-    private static final int rowPP = 14;
-
     public QaEventViewDO fetchById(Integer id) throws Exception {
         return remote().fetchById(id);
     }
@@ -51,7 +49,7 @@ public class QaEventService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public QaEventViewDO add(QaEventViewDO data) throws Exception {

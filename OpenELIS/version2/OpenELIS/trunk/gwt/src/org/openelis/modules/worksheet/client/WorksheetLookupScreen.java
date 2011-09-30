@@ -307,6 +307,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
         if (query.getFields().size() > 0) {
             window.setBusy(consts.get("querying"));
     
+            query.setRowsPerPage(50);
             service.callList("query", query, new AsyncCallback<ArrayList<WorksheetViewDO>>() {
                 public void onSuccess(ArrayList<WorksheetViewDO> list) {
                     setQueryResult(list);

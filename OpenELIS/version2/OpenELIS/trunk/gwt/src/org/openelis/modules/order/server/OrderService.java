@@ -45,8 +45,6 @@ import org.openelis.remote.OrderRemote;
 import org.openelis.report.Prompt;
 
 public class OrderService {
-    private static final int rowPP = 20;
-
     public OrderManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
@@ -80,7 +78,7 @@ public class OrderService {
     }  
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
     
     public ArrayList<OrderViewDO> queryOrderFill(Query query) throws Exception {

@@ -35,8 +35,6 @@ import org.openelis.remote.MethodRemote;
 
 public class MethodService {
 
-    private static final int rowPP = 9;
-
     public ArrayList<MethodDO> fetchByName(String search) throws Exception {
         return remote().fetchActiveByName(search + "%", 10);
     }
@@ -46,7 +44,7 @@ public class MethodService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public MethodDO add(MethodDO data) throws Exception {

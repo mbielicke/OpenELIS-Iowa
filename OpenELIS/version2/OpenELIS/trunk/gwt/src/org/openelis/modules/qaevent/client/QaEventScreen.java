@@ -421,6 +421,7 @@ public class QaEventScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
+                query.setRowsPerPage(14);
                 service.callList("query", query, new AsyncCallback<ArrayList<QaEventVO>>() {
                     public void onSuccess(ArrayList<QaEventVO> result) {
                         setQueryResult(result);

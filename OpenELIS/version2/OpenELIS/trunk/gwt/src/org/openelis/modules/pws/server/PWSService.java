@@ -41,8 +41,6 @@ import org.openelis.remote.PWSRemote;
 
 public class PWSService {
     
-    private static final int rowPP = 20;
-    
     public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {
         try {
             return remoteManager().fetchByTinwsysIsNumber(tinwsysIsNumber);
@@ -77,7 +75,7 @@ public class PWSService {
     
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         try {
-            return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+            return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

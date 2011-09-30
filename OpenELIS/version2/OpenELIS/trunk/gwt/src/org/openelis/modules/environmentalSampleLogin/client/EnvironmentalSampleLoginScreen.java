@@ -903,6 +903,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
+                query.setRowsPerPage(5);
                 service.callList("query", query, new AsyncCallback<ArrayList<IdAccessionVO>>() {
                     public void onSuccess(ArrayList<IdAccessionVO> result) {
                         setQueryResult(result);

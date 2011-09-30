@@ -36,8 +36,6 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.StandardNoteRemote;
 
 public class StandardNoteService {
-    private static final int rowPP = 13;
-
     public StandardNoteDO fetchById(Integer id) throws Exception {
         return remote().fetchById(id);
     }
@@ -67,7 +65,7 @@ public class StandardNoteService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public StandardNoteDO add(StandardNoteDO data) throws Exception {

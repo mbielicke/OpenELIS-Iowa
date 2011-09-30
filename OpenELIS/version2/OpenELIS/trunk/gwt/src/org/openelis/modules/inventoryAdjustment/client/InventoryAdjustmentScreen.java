@@ -597,6 +597,7 @@ public class InventoryAdjustmentScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
+                query.setRowsPerPage(19);
                 service.callList("query", query, new AsyncCallback<ArrayList<InventoryAdjustmentDO>>() {
                     public void onSuccess(ArrayList<InventoryAdjustmentDO> result) {
                         setQueryResult(result);

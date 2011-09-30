@@ -35,8 +35,6 @@ import org.openelis.remote.StorageUnitRemote;
 
 public class StorageUnitService {
 
-    private static final int rowPP = 9;
-
     public StorageUnitDO fetchById(Integer id) throws Exception {
         return remote().fetchById(id);
     }
@@ -46,7 +44,7 @@ public class StorageUnitService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public StorageUnitDO add(StorageUnitDO data) throws Exception {

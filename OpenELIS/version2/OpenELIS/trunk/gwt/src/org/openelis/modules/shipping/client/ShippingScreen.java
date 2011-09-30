@@ -710,6 +710,9 @@ public class ShippingScreen extends Screen {
         //
         nav = new ScreenNavigator(def) {
             public void executeQuery(Query query) {
+                window.setBusy(consts.get("querying"));
+
+                query.setRowsPerPage(12);
                 service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);

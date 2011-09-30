@@ -35,8 +35,6 @@ import org.openelis.remote.TestTrailerRemote;
 
 public class TestTrailerService {
 
-    private static final int rowPP = 9;
-
     public TestTrailerDO fetchById(Integer id) throws Exception {
         return remote().fetchById(id);
     }
@@ -46,7 +44,7 @@ public class TestTrailerService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public TestTrailerDO add(TestTrailerDO data) throws Exception {

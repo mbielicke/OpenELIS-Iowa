@@ -779,6 +779,7 @@ public class InventoryItemScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
+                query.setRowsPerPage(23);
                 service.callList("query", query, new AsyncCallback<ArrayList<IdNameStoreVO>>() {
                     public void onSuccess(ArrayList<IdNameStoreVO> result) {
                         setQueryResult(result);

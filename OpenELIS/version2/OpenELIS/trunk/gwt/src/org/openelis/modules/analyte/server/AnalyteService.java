@@ -35,14 +35,12 @@ import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
 
 public class AnalyteService {
-    private static final int rowPP = 9;
-
     public AnalyteViewDO fetchById(Integer id) throws Exception {
         return remote().fetchById(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public AnalyteViewDO add(AnalyteViewDO data) throws Exception {

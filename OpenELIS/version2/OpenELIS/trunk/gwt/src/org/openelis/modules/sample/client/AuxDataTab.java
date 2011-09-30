@@ -278,9 +278,10 @@ public class AuxDataTab extends Screen {
                 if (auxValsTable.getSelectedRow() == -1)
                     return;
 
-                if (Window.confirm(consts.get("removeAuxMessage")))
+                if (Window.confirm(consts.get("removeAuxMessage"))) { 
                     manager.removeAuxDataGroupAt(auxValsTable.getSelectedRow());
-
+                    auxValsTable.selectRow(-1);
+                }
                 removeAuxButton.enable(false);
 
                 // reload the tab

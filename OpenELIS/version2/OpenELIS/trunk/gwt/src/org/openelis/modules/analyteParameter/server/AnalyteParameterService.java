@@ -38,8 +38,6 @@ import org.openelis.remote.AnalyteParameterRemote;
 
 public class AnalyteParameterService {
     
-    private static final int rowPP = 18;
-
     public AnalyteParameterManager fetchActiveByReferenceIdReferenceTableId(Query query) throws Exception {
         ArrayList<QueryData> fields;
         QueryData field;
@@ -88,7 +86,7 @@ public class AnalyteParameterService {
     }
     
     public ArrayList<ReferenceIdTableIdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
     
     public AnalyteParameterManager add(AnalyteParameterManager man) throws Exception {

@@ -12,10 +12,8 @@ import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
 
 public class CompleteReleaseService {
-	private static final int rowPP = 500;
-
 	public ArrayList<SampleDataBundle> query(Query query) throws Exception {
-		 return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+		 return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
 	}
 	
     private CompleteReleaseRemote remote() {

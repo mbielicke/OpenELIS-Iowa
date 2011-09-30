@@ -1756,6 +1756,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private void executeQuery(final Query query) {
         window.setBusy(consts.get("querying"));
 
+        query.setRowsPerPage(14);
         service.callList("query", query, new AsyncCallback<ArrayList<SampleManager>>() {
             public void onSuccess(ArrayList<SampleManager> result) {
                 manager = null;

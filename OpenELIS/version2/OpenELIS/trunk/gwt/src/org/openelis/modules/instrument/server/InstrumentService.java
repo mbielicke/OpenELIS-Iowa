@@ -38,8 +38,6 @@ import org.openelis.remote.InstrumentRemote;
 
 public class InstrumentService {
 
-    private static final int rowPP = 20;
-
     public InstrumentManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
@@ -57,7 +55,7 @@ public class InstrumentService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public InstrumentManager add(InstrumentManager man) throws Exception {

@@ -39,9 +39,6 @@ import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.DictionaryRemote;
 
 public class DictionaryService {
-
-    private static final int rowPP = 20;
-
     public CategoryManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
@@ -63,7 +60,7 @@ public class DictionaryService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public CategoryManager add(CategoryManager man) throws Exception {
