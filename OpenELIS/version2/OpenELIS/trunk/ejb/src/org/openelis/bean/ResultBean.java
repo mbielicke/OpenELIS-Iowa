@@ -363,7 +363,6 @@ public class ResultBean implements ResultLocal {
                 results.add(ar);
                 continue;
             }
-
             ar.add(rdo);
         }
     }

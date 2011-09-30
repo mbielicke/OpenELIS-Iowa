@@ -35,15 +35,15 @@ import org.openelis.remote.ResultManagerRemote;
 @SecurityDomain("openelis")
 public class ResultManagerBean implements ResultManagerRemote {
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
+        return AnalysisResultManager.fetchByAnalysisIdForDisplay(analysisId);
+    }
+
+    public AnalysisResultManager fetchForUpdateWithAnalysisId(Integer analysisId) throws Exception {
         return AnalysisResultManager.fetchByAnalysisId(analysisId);
     }
 
-    public AnalysisResultManager fetchForUpdateWithAnalysisId(Integer analysisId, Integer testId) throws Exception {
-        return AnalysisResultManager.fetchForUpdateWithAnalysisId(analysisId, testId);
-    }
-
     public AnalysisResultManager fetchForUpdateWithTestId(Integer testId, Integer UnitId) throws Exception {
-        return AnalysisResultManager.fetchForUpdateWithTestId(testId, UnitId);
+        return AnalysisResultManager.fetchByTestId(testId, UnitId);
     }
     
     public AnalysisResultManager merge(AnalysisResultManager man) throws Exception {

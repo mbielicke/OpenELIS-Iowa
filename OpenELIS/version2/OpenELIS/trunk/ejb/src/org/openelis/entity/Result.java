@@ -27,8 +27,8 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Result.FetchByAnalysisId",
                 query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
                         "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId,ta.resultGroup)"
-                      + " from Result r left join r.analysis an left join an.test t left join r.analyte a left join r.testAnalyte ta "
-                      + " where r.analysisId = :id order by r.sortOrder"),
+                      + " from Result r, Analysis an, Analyte a, TestAnalyte ta "
+                      + " where  r.analysisId = an.id and r.analyteId = a.id and r.testAnalyteId = ta.id and an.id = :id order by r.sortOrder"),
     @NamedQuery( name = "Result.FetchReportableByAnalysisId",
                 query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
                         "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId, ta.resultGroup)"

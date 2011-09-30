@@ -256,7 +256,7 @@ public class WorksheetAnalysisManagerProxy {
                         arManager = aManager.getAnalysisResultAt(k);
                         if (arManager.rowCount() <= 0) {
                             try {
-                                arManager = AnalysisResultManager.fetchForUpdateWithTestId(aVDO.getTestId(), aVDO.getUnitOfMeasureId());
+                                arManager = AnalysisResultManager.fetchByTestId(aVDO.getTestId(), aVDO.getUnitOfMeasureId());
                                 aManager.setAnalysisResultAt(arManager, k);
                             } catch (NotFoundException nfE) {
                                 // ignore result not found error and leave the
