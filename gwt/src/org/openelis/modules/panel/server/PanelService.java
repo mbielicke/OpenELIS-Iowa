@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
+import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
@@ -46,6 +47,16 @@ public class PanelService {
 
     public PanelManager fetchWithItems(Integer id) throws Exception {
         return remoteManager().fetchWithItems(id);
+    }
+
+    public ArrayList<TestMethodVO> fetchByNameWithTests(String name) throws Exception {
+        return remote().fetchByNameWithTests(name, 100);
+    }
+    
+    public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(Query query) throws Exception {
+        if (query.getFields().size() == 2)
+            return remote().fetchByNameSampleTypeWithTests(query.getFields().get(0).query, new Integer(query.getFields().get(1).query), 100);
+        return null;
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {

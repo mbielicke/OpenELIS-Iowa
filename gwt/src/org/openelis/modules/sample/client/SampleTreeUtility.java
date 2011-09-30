@@ -11,7 +11,6 @@ import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.widget.Confirm;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
@@ -28,7 +27,7 @@ import com.google.gwt.user.client.Window;
 public abstract class SampleTreeUtility extends Screen implements HasActionHandlers {
 
     protected TestPrepUtility testLookup;
-    private Screen parentScreen;
+    private Screen            parentScreen;
     private SampleManager     manager;
     private ScreenWindowInt   window;
     private TreeWidget        itemsTree;
@@ -63,7 +62,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             if (itemsTree.numRows() == 0)
                 onAddItemButtonClick();
             else
-                itemsTree.select(0); 
+                itemsTree.select(0);
         }
 
         selectedIndex = itemsTree.getSelectedRow();
@@ -80,16 +79,16 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         TreeDataItem selectedTreeRow;
 
         selectedTreeRow = itemsTree.getSelection();
-            
-        if(!"analysis".equals(selectedTreeRow.leafType))
+
+        if ( !"analysis".equals(selectedTreeRow.leafType))
             selectedTreeRow = selectedTreeRow.parent;
-            
+
         assert "analysis".equals(selectedTreeRow.leafType) : "can't find analysis tree row";
-        
+
         itemsTree.select(selectedTreeRow);
         onRemoveRowButtonClick();
     }
-    
+
     public void onRemoveRowButtonClick() {
         final TreeDataItem selectedTreeRow;
 
@@ -101,7 +100,8 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
                         cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION,
                                                             parentScreen.consts.get("cancelAnalysisCaption"),
                                                             parentScreen.consts.get("cancelAnalysisMessage"),
-                                                            "No", "Yes");
+                                                            "No",
+                                                            "Yes");
                         cancelAnalysisConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
                             public void onSelection(SelectionEvent<Integer> event) {
                                 switch (event.getSelectedItem().intValue()) {
@@ -132,38 +132,33 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         TreeDataItem itemRow, newRow;
 
         itemRow = itemsTree.getSelection().parent;
-        
-        //try once to get an item row
-        if(!"sampleItem".equals(itemRow.leafType))
+
+        // try once to get an item row
+        if ( !"sampleItem".equals(itemRow.leafType))
             itemRow = itemRow.parent;
-        
+
         assert "sampleItem".equals(itemRow.leafType) : "can't find item tree row";
-        
+
         newRow = null;
         itemsTree.fireEvents(false);
         for (int i = 0; i < bundles.size(); i++ ) {
             if (i == 0) {
                 newRow = itemsTree.getSelection();
-                
-                if(!"analysis".equals(newRow.leafType))
+                if ( !"analysis".equals(newRow.leafType))
                     newRow = newRow.parent;
-                
                 assert "analysis".equals(newRow.leafType) : "can't find analysis tree row";
-                
                 newRow.data = bundles.get(i);
-            } else 
+            } else
                 newRow = addNewTreeRowFromBundle(itemRow, bundles.get(i));
-               
             updateAnalysisRow(newRow);
             itemsTree.refreshRow(newRow);
         }
-
         itemsTree.fireEvents(true);
         if (newRow != null)
             selectNewRowFromBundle(newRow);
-        else if(bundles.size() == 0)
+        else if (bundles.size() == 0)
             ActionEvent.fire(this, Action.REFRESH_TABS, itemsTree.getSelection().data);
-        
+
         window.clearStatus();
     }
 
@@ -174,60 +169,64 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         AnalysisViewDO anDO;
         Integer analysisId;
         int itemIndex, i;
-        
+
         try {
             // grab the current analysis id
             bundle = (SampleDataBundle)selectedRow.data;
-            analysisId = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex()).getAnalysisAt(bundle.getAnalysisIndex()).getId();
-            
+            analysisId = manager.getSampleItems()
+                                .getAnalysisAt(bundle.getSampleItemIndex())
+                                .getAnalysisAt(bundle.getAnalysisIndex())
+                                .getId();
+
             if ("analysis".equals(selectedRow.leafType))
                 selectedRow = selectedRow.parent;
-            
+
             itemIndex = 0;
-            //get the first sample item row
-            if(selectedRow.parent == null)
+            // get the first sample item row
+            if (selectedRow.parent == null)
                 selectedRow = itemsTree.getData().get(itemIndex);
-            else{
-                while(selectedRow.getPreviousSibling() != null)
+            else {
+                while (selectedRow.getPreviousSibling() != null)
                     selectedRow = selectedRow.getPreviousSibling();
             }
-            
+
             anMan = null;
             bundle = null;
-            while(selectedRow != null && "sampleItem".equals(selectedRow.leafType)){
+            while (selectedRow != null && "sampleItem".equals(selectedRow.leafType)) {
                 // iterate through all the children
                 for (i = 0; i < selectedRow.getItems().size(); i++ ) {
                     treeItem = selectedRow.getItem(i);
                     bundle = (SampleDataBundle)treeItem.data;
-    
-                    if(SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())){
+
+                    if (SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())) {
                         if (i == 0)
-                            anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
-        
+                            anMan = manager.getSampleItems()
+                                           .getAnalysisAt(bundle.getSampleItemIndex());
+
                         anDO = anMan.getAnalysisAt(bundle.getAnalysisIndex());
-        
+
                         // this test points to the prep, we need to clean it up
-                        if (analysisId.equals(anDO.getPreAnalysisId())){
+                        if (analysisId.equals(anDO.getPreAnalysisId())) {
                             anMan.unlinkPrepTest(bundle.getAnalysisIndex());
                             updateAnalysisRow(treeItem);
                             itemsTree.refreshRow(treeItem);
                         }
                     }
                 }
-                if(selectedRow.parent == null){
-                    itemIndex++;
-                    if(itemIndex < itemsTree.getData().size())
+                if (selectedRow.parent == null) {
+                    itemIndex++ ;
+                    if (itemIndex < itemsTree.getData().size())
                         selectedRow = itemsTree.getData().get(itemIndex);
                     else
                         selectedRow = null;
-                }else
+                } else
                     selectedRow = selectedRow.getNextSibling();
             }
         } catch (Exception e) {
             Window.alert("cleanupTestsWithPrep: " + e.getMessage());
         }
     }
-    
+
     public void analysisTestChanged(Integer id, boolean panel) {
         SampleDataBundle analysisBundle;
         TreeDataItem selectedRow;
@@ -236,7 +235,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         if (testLookup == null) {
             testLookup = new TestPrepUtility();
             testLookup.setScreen(parentScreen);
-            
+
             testLookup.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
                 public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
                     testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
@@ -251,16 +250,13 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
 
         try {
             selectedRow = itemsTree.getSelection();
-            
-            if(!"analysis".equals(selectedRow.leafType)){
+
+            if ( !"analysis".equals(selectedRow.leafType)) {
                 selectedRow = selectedRow.parent;
-                
                 assert "analysis".equals(selectedRow.leafType) : "can't find analysis tree row";
             }
-            
             analysisBundle = (SampleDataBundle)selectedRow.data;
             testLookup.lookup(analysisBundle, type, id);
-
         } catch (Exception e) {
             Window.alert("analysisTestChanged: " + e.getMessage());
         }
@@ -270,30 +266,30 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         if (testLookup == null) {
             testLookup = new TestPrepUtility();
             testLookup.setScreen(parentScreen);
-            
+
             testLookup.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
                 public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
                     testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
                 }
             });
         }
-        
+
         try {
             testLookup.lookup(analysisBundleList);
 
         } catch (Exception e) {
             Window.alert("importReflexTestList: " + e.getMessage());
         }
-        
+
     }
-    
+
     public void importOrderTestList(ArrayList<OrderTestViewDO> list) {
         SampleDataBundle analysisBundle;
 
         if (testLookup == null) {
             testLookup = new TestPrepUtility();
             testLookup.setScreen(parentScreen);
-            
+
             testLookup.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
                 public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
                     testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
@@ -310,7 +306,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             Window.alert("importOrderTestList: " + e.getMessage());
         }
     }
-    
+
     public void cancelAnalysisRow(int selectedIndex) {
         TreeDataItem treeRow;
         SampleDataBundle bundle;
@@ -330,14 +326,14 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             cleanupTestsWithPrep(treeRow);
 
             ActionEvent.fire(this, Action.REFRESH_TABS, bundle);
-            
-        }catch(ValidationErrorsList e){
+
+        } catch (ValidationErrorsList e) {
             parentScreen.showErrors(e);
         } catch (Exception e) {
             Window.alert("cancelAnalysisRow: " + e.getMessage());
         }
     }
-    
+
     public void updateSampleItemRow(TreeDataItem treeRow) {
         SampleDataBundle bundle;
         SampleItemViewDO siDO;
@@ -346,15 +342,14 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             bundle = (SampleDataBundle)treeRow.data;
             siDO = manager.getSampleItems().getSampleItemAt(bundle.getSampleItemIndex());
 
-            treeRow.cells.get(0).setValue(
-                                          siDO.getItemSequence() + " - " +
-                                                          formatTreeString(siDO.getContainer()));
+            treeRow.cells.get(0).setValue(siDO.getItemSequence() + " - " +
+                                          formatTreeString(siDO.getContainer()));
             treeRow.cells.get(1).setValue(formatTreeString(siDO.getTypeOfSample()));
         } catch (Exception e) {
             Window.alert("updateSampleItemRow: " + e.getMessage());
         }
     }
-    
+
     public void updateAnalysisRow(TreeDataItem treeRow) {
         SampleDataBundle bundle;
         AnalysisViewDO anDO;
@@ -365,9 +360,8 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
                           .getAnalysisAt(bundle.getSampleItemIndex())
                           .getAnalysisAt(bundle.getAnalysisIndex());
 
-            treeRow.cells.get(0).setValue(
-                                          formatTreeString(anDO.getTestName()) + " : " +
-                                                          formatTreeString(anDO.getMethodName()));
+            treeRow.cells.get(0).setValue(formatTreeString(anDO.getTestName()) + " : " +
+                                          formatTreeString(anDO.getMethodName()));
             treeRow.cells.get(1).setValue(anDO.getStatusId());
         } catch (Exception e) {
             Window.alert("updateAnalysisRow: " + e.getMessage());
@@ -387,16 +381,17 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
 
     /**
      * This method is called when the test prep util is done and the screen
-     * needs to rebuild the tree. This method is called to add a new row
-     * to the tree that the test prep util created.
+     * needs to rebuild the tree. This method is called to add a new row to the
+     * tree that the test prep util created.
      */
-    public abstract TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow, SampleDataBundle bundle);
-    
+    public abstract TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow,
+                                                         SampleDataBundle bundle);
+
     /**
      * This method is called when the test prep util is done and the screen
-     * needs to rebuild the tree. This method is called to select the new 
-     * analysis row.  It is necessary because the tree structure is different between
-     * the login screens and the tracking screen
+     * needs to rebuild the tree. This method is called to select the new
+     * analysis row. It is necessary because the tree structure is different
+     * between the login screens and the tracking screen
      */
     public abstract void selectNewRowFromBundle(TreeDataItem row);
 

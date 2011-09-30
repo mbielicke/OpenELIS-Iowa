@@ -36,8 +36,6 @@ import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeGetMatchesEvent;
@@ -294,36 +292,22 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
 
         test.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<QueryData>    fields;
                 ArrayList<TableDataRow> model;
                 ArrayList<TestMethodVO> autoList;
-                Query                   query;
-                QueryData               field;
                 TableDataRow            row;
                 TestMethodVO            data;
 
-                fields = new ArrayList<QueryData>();
-                query = new Query();
-
-                field = new QueryData();
-                field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
-                fields.add(field);
-                
-                query.setFields(fields);
-
                 try {
-                    autoList = analysisService.callList("getTestMethodMatches", query);
+                    autoList = panelService.callList("fetchByNameWithTests", 
+                                                     QueryFieldUtil.parseAutocomplete(event.getMatch())+"%");
                     model = new ArrayList<TableDataRow>();
-
                     for (int i = 0; i < autoList.size(); i++ ) {
                         data = autoList.get(i);
-
                         row = new TableDataRow(data.getTestId(),
                                                             data.getTestName(),
                                                             data.getMethodName(),
                                                             data.getTestDescription());
                         row.data = data;
-
                         model.add(row);
                     }
                     test.showAutoMatches(model);

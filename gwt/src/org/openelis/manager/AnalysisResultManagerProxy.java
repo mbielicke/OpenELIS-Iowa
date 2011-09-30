@@ -54,15 +54,8 @@ public class AnalysisResultManagerProxy {
         return service.call("fetchByAnalysisIdForDisplay", analysisId);
     }
 
-    public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId)
-                                                                                      throws Exception {
-        AnalysisDO data;
-
-        data = new AnalysisDO();
-        data.setTestId(testId);
-        data.setId(analysisId);
-
-        return service.call("fetchByAnalysisId", data);
+    public AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
+        return service.call("fetchByAnalysisId", analysisId);
     }
 
     public AnalysisResultManager fetchByTestId(Integer testId, Integer unitId) throws Exception {
