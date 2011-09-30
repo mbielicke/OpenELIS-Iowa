@@ -56,8 +56,7 @@ public class AnalysisResultManagerProxy {
         return man;
     }
 
-    public AnalysisResultManager fetchByAnalysisId(Integer analysisId, Integer testId)
-                                                                                      throws Exception {
+    public AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results;
         HashMap<Integer, TestResultDO> testResultList;
         HashMap<Integer, AnalyteDO> analyteList;
@@ -79,7 +78,6 @@ public class AnalysisResultManagerProxy {
         man.setAnalyteList(analyteList);
         man.setTestAnalyteList(testAnalyteList);
         man.setResultValidators(resultValidators);
-        man.setTestManager(TestManager.fetchWithAnalytesAndResults(testId));
 
         return man;
     }
@@ -106,7 +104,6 @@ public class AnalysisResultManagerProxy {
         man.setAnalyteList(analyteList);
         man.setTestAnalyteList(testAnalyteList);
         man.setResultValidators(resultValidators);
-        man.setTestManager(TestManager.fetchWithAnalytesAndResults(testId));
 
         return man;
     }
@@ -144,17 +141,19 @@ public class AnalysisResultManagerProxy {
         ResultLocal l;
 
         grid = man.getResults();
-        so = 0;
         l = EJBFactory.getResult();
         for (i = 0; i < man.deleteCount(); i++ ) {
             l.delete(man.getDeletedAt(i));
         }
 
+        so = 0;
         for (i = 0; i < man.rowCount(); i++ ) {
             list = grid.get(i);
             for (j = 0; j < list.size(); j++ ) {
+                so++;
                 data = list.get(j);
-                data.setSortOrder( ++so);
+                if (data.getSortOrder() == null || data.getSortOrder() != so)
+                    data.setSortOrder(so);
                 if (data.getId() == null) {
                     data.setAnalysisId(man.getAnalysisId());
                     l.add(data);
@@ -174,9 +173,17 @@ public class AnalysisResultManagerProxy {
         newMan.setAnalysisId(oldMan.getAnalysisId());
         mergeResultGrid(oldMan.getResults(), newMan.getResults());
 
-        // delete the old results and set the list in the new manager
-        for (int i = 0; i < oldMan.rowCount(); i++ )
-            oldMan.removeRowAt(i);
+        /*
+         * Delete the old results and set the list in the new manager. The method
+         * removeRow(int) doesn't just add all the results in a given row
+         * to the list of deleted results, it also removes the row itself from 
+         * the grid. This is done in order to maintain a consistent view of the 
+         * data visually as well as behind the scenes. Thus every time removeRow
+         * is called the number of rows goes down by 1 and so here we remove only
+         * the first row in each iteration to make sure that we use a valid index.    
+         */        
+        while (oldMan.rowCount() > 0) 
+            oldMan.removeRowAt(0);        
 
         newMan.setDeleted(oldMan.getDeleted());
 
@@ -283,32 +290,42 @@ public class AnalysisResultManagerProxy {
 
     private void mergeResultGrid(ArrayList<ArrayList<ResultViewDO>> oldGrid,
                                  ArrayList<ArrayList<ResultViewDO>> newGrid) {
-        int k;
-        boolean found;
+        int i,j, k,l;        
         ResultViewDO r1, r2;
+        ArrayList<ResultViewDO> newList, oldList;
 
-        k = 0;
-        for (int i = 0; i < newGrid.size(); i++ ) {
-            // try and find an analyte that matches
-            for (int j = 0; j < oldGrid.size(); j++ ) {
-                k = 0;
-                found = false;
+        
+        /*
+         * we go through each row in the new test's grid of analytes and find the 
+         * first matching row analyte from the old test's grid  
+         */
+        for (i = 0; i < newGrid.size(); i++ ) {            
+            for (j = 0; j < oldGrid.size(); j++ ) {
+                newList = newGrid.get(i);
+                oldList = oldGrid.get(j);
+                
+                r1 = newList.get(0);                
+                r2 = oldList.get(0);
 
-                while (k < oldGrid.get(j).size() && k < newGrid.get(i).size()) {
-                    r1 = newGrid.get(i).get(k);
-                    r2 = oldGrid.get(j).get(k);
+                if (r1.getAnalyteId().equals(r2.getAnalyteId())) {               
+                    /*
+                     * we go through each column in the new grid's row and find the 
+                     * first matching column analyte from the old grid's row and copy its
+                     * result value to the new column  
+                     */
+                    for (k = 0; k < newList.size(); k++) {                        
+                        for (l = 0; l < oldList.size(); l++) {
+                            r1 = newList.get(k);
+                            r2 = oldList.get(l);
 
-                    if (r1.getAnalyteId().equals(r2.getAnalyteId())) {
-                        r1.setValue(r2.getValue());
-                        found = true;
-                    } else if (k == 0)
-                        break;
-
-                    k++ ;
-                }
-
-                if (found)
+                            if (r1.getAnalyteId().equals(r2.getAnalyteId()))
+                                r1.setValue(r2.getValue());                                                          
+                        }                                               
+                    } 
                     break;
+                } 
+                
+                
             }
         }
     }

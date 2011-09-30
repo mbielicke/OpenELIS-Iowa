@@ -223,7 +223,7 @@ public class SampleManagerProxy {
                     testMan = TestManager.fetchWithPrepTestsSampleTypes(analysis.getTestId());
                     testCache.put(analysis.getTestId(), testMan);
                 }
-                anaMan.setTestAt(testMan, addedIndex);
+                anaMan.setTestManagerWithResultAt(testMan, analysis.getId(), addedIndex);
             }
         } catch (NotFoundException e) {
             // ignore

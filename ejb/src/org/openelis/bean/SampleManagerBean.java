@@ -235,7 +235,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                             if (arMan.rowCount() <= 0) {
                                 anDO = anMan.getAnalysisAt(j);
                                 try {
-                                    arMan = AnalysisResultManager.fetchForUpdateWithTestId(anDO.getTestId(), anDO.getUnitOfMeasureId());
+                                    arMan = AnalysisResultManager.fetchByTestId(anDO.getTestId(), anDO.getUnitOfMeasureId());
                                     anMan.setAnalysisResultAt(arMan, j);
                                 } catch (NotFoundException e) {
                                     // ignore result not found error and leave the
