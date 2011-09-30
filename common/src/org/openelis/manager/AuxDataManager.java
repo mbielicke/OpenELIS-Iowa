@@ -113,13 +113,19 @@ public class AuxDataManager implements RPC {
         if (deletedList == null)
             deletedList = new ArrayList<AuxDataListItem>();
 
-        for (j = count() - 1; j > -1; j--) {
-            if (groupId.equals(items.get(j).field.getAuxFieldGroupId())) {
-                tmp = items.remove(j);
-                if (tmp.data.getId() != null)
-                    deletedList.add(tmp);
-            }
-        }
+        // find the first row of the group
+        j = i;
+        do {
+            j--;
+        } while (j >= 0 && groupId.equals(items.get(j).field.getAuxFieldGroupId()));
+        j++;
+        
+        // delete until next group
+        do {
+            tmp = items.remove(j);
+            if (tmp.data.getId() != null)
+                deletedList.add(tmp);
+        } while (j < items.size() && groupId.equals(items.get(j).field.getAuxFieldGroupId()));
     }
 
     //
