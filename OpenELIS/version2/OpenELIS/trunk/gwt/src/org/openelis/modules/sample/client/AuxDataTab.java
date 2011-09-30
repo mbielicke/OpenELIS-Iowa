@@ -275,16 +275,16 @@ public class AuxDataTab extends Screen {
         removeAuxButton = (AppButton)def.getWidget("removeAuxButton");
         addScreenHandler(removeAuxButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                if (auxValsTable.getSelectedRow() == -1)
+                int r;
+                
+                r = auxValsTable.getSelectedRow();
+                if (r == -1)
                     return;
-
-                if (Window.confirm(consts.get("removeAuxMessage"))) { 
-                    manager.removeAuxDataGroupAt(auxValsTable.getSelectedRow());
-                    auxValsTable.selectRow(-1);
+                if (Window.confirm(consts.get("removeAuxMessage"))) {
+                    auxValsTable.unselect(r);
+                    manager.removeAuxDataGroupAt(r);
                 }
                 removeAuxButton.enable(false);
-
-                // reload the tab
                 DataChangeEvent.fire(tab);
             }
 
