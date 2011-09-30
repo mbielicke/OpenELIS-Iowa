@@ -36,14 +36,12 @@ import org.openelis.remote.InventoryAdjustmentManagerRemote;
 import org.openelis.remote.InventoryAdjustmentRemote;
 
 public class InventoryAdjustmentService {
-    private static final int rowPP = 19;
-    
     public InventoryAdjustmentManager fetchWithAdjustments (Integer id) throws Exception {
         return remoteManager().fetchWithAdjustments(id);
     }
     
     public ArrayList<InventoryAdjustmentDO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
     
     public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception {

@@ -39,8 +39,6 @@ import org.openelis.remote.ShippingRemote;
 
 public class ShippingService {
     
-    private static final int rowPP = 12;
-    
     public ShippingManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }    
@@ -58,7 +56,7 @@ public class ShippingService {
     }
     
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
     
     public ShippingManager add(ShippingManager man) throws Exception {

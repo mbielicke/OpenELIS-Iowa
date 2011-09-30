@@ -38,8 +38,6 @@ import org.openelis.remote.SectionRemote;
 
 public class SectionService {
 
-    private static final int rowPP = 13;
-
     public SectionManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
@@ -53,7 +51,7 @@ public class SectionService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public SectionManager add(SectionManager man) throws Exception {

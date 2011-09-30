@@ -46,8 +46,6 @@ import org.openelis.remote.OrganizationRemote;
  */
 public class OrganizationService {
 
-    private static final int rowPP = 20;
-
     public OrganizationManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
@@ -97,7 +95,7 @@ public class OrganizationService {
     }
     
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public OrganizationManager add(OrganizationManager man) throws Exception {

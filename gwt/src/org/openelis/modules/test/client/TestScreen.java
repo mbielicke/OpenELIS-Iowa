@@ -1131,6 +1131,7 @@ public class TestScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
+                query.setRowsPerPage(26);
                 service.callList("query", query, new AsyncCallback<ArrayList<TestMethodVO>>() {
                     public void onSuccess(ArrayList<TestMethodVO> result) {
                         setQueryResult(result);

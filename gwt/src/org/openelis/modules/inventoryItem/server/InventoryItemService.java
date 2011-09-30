@@ -40,9 +40,6 @@ import org.openelis.remote.InventoryItemManagerRemote;
 import org.openelis.remote.InventoryItemRemote;
 
 public class InventoryItemService {
-
-    private static final int rowPP = 23;
-
     public InventoryItemManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
@@ -116,7 +113,7 @@ public class InventoryItemService {
     }
 
     public ArrayList<IdNameStoreVO> query(Query query) throws Exception {        
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public InventoryItemManager add(InventoryItemManager man) throws Exception {        

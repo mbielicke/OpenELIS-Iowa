@@ -45,8 +45,6 @@ import org.openelis.remote.SampleRemote;
 import org.openelis.remote.SystemVariableRemote;
 
 public class SampleService {
-    private static final int rowPP = 12;
-
     public SampleManager fetchById(Integer sampleId) throws Exception {
         return managerRemote().fetchById(sampleId);
     }
@@ -65,7 +63,7 @@ public class SampleService {
 
     // sample methods
     public ArrayList<IdAccessionVO> query(Query query) throws Exception {          
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
         
     }
 

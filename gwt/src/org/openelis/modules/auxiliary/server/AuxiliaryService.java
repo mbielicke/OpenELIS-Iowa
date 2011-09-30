@@ -40,8 +40,6 @@ import org.openelis.remote.AuxFieldGroupRemote;
 
 public class AuxiliaryService {
 
-    private static final int rowPP = 26;
-
     public ArrayList<AuxFieldGroupDO> fetchActive() throws Exception {
         return remote().fetchActive();
     }
@@ -56,7 +54,7 @@ public class AuxiliaryService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public AuxFieldGroupManager add(AuxFieldGroupManager man) throws Exception {

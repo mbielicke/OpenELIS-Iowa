@@ -386,6 +386,7 @@ public class ProviderScreen extends Screen {
             public void executeQuery(final Query query) {
                 window.setBusy(consts.get("querying"));
 
+                query.setRowsPerPage(18);
                 service.callList("query", query, new AsyncCallback<ArrayList<IdFirstLastNameVO>>() {
                      public void onSuccess(ArrayList<IdFirstLastNameVO> result) {
                          setQueryResult(result);

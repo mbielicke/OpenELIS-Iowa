@@ -38,8 +38,6 @@ import org.openelis.remote.StorageLocationRemote;
 
 public class StorageLocationService {
 
-    private static final int rowPP = 18;
-
     public StorageLocationManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
@@ -49,7 +47,7 @@ public class StorageLocationService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public StorageLocationManager add(StorageLocationManager man) throws Exception {

@@ -41,10 +41,8 @@ import org.openelis.remote.ProjectRemote;
 
 public class ProjectService {
 
-    private static final int rowPP = 18;
-
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public ProjectManager fetchById(Integer id) throws Exception {

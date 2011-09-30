@@ -36,8 +36,6 @@ import org.openelis.remote.LabelRemote;
 
 public class LabelService {
 
-    private static final int rowPP = 10;
-
     public LabelViewDO fetchById(Integer id) throws Exception {
         return remote().fetchById(id);
     }
@@ -47,7 +45,7 @@ public class LabelService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public LabelViewDO add(LabelViewDO data) throws Exception {

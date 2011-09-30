@@ -1305,6 +1305,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     private void executeQuery(final Query query) {
         window.setBusy(consts.get("querying"));
 
+        query.setRowsPerPage(500);
         service.callList("query", query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
             public void onSuccess(ArrayList<SampleDataBundle> result) {
                 manager = null;

@@ -37,8 +37,6 @@ import org.openelis.remote.ProviderRemote;
 
 public class ProviderService {
 
-    private static final int rowPP = 18;
-
     public ProviderManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }
@@ -52,7 +50,7 @@ public class ProviderService {
     }
 
     public ArrayList<IdFirstLastNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public ProviderManager add(ProviderManager man) throws Exception {

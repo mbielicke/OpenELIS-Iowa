@@ -39,8 +39,6 @@ import org.openelis.remote.PanelRemote;
 
 public class PanelService {
 
-    private static final int rowPP = 14;
-
     public PanelManager fetchById(Integer id) throws Exception {
         return remoteManager().fetchById(id);
     }   
@@ -60,7 +58,7 @@ public class PanelService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public PanelManager add(PanelManager man) throws Exception {

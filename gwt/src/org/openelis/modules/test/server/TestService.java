@@ -44,8 +44,6 @@ import org.openelis.remote.TestRemote;
 
 public class TestService {
 
-    private static final int rowPP = 26;
-
     public TestManager fetchById(Integer testId) throws Exception {
         return remoteManager().fetchById(testId);
     }
@@ -111,7 +109,7 @@ public class TestService {
     }
 
     public ArrayList<TestMethodVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public TestManager add(TestManager man) throws Exception {

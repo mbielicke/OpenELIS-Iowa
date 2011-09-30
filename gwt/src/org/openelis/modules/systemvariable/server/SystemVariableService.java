@@ -36,8 +36,6 @@ import org.openelis.remote.SystemVariableRemote;
 
 public class SystemVariableService {
 
-    private static final int rowPP = 9;
-
     public SystemVariableDO fetchById(Integer id) throws Exception {
         return remote().fetchById(id);
     }
@@ -47,7 +45,7 @@ public class SystemVariableService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * rowPP, rowPP);
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public SystemVariableDO add(SystemVariableDO data) throws Exception {
