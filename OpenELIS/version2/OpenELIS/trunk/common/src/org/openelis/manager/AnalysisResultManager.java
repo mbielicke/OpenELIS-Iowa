@@ -27,12 +27,10 @@ public class AnalysisResultManager implements RPC {
     protected boolean                                     defaultsLoaded;
     protected AnalysisManager                             analysisManager;
 
-    protected transient TestManager                       testManager;
     protected transient static AnalysisResultManagerProxy proxy;
 
     private AnalysisResultManager() {
         analysisManager = null;
-        testManager = null;
     }
 
     public static AnalysisResultManager getInstance() {
@@ -82,8 +80,10 @@ public class AnalysisResultManager implements RPC {
     public void addRowAt(int index, Integer rowGroup, Integer firstColTestAnalyteId,
                          Integer firstColAnalyteId, String firstColAnalyteName) {
         ArrayList<ResultViewDO> currlist;
-        
-        currlist = createNewDataListAt(rowGroup, firstColTestAnalyteId, firstColAnalyteId,
+
+        currlist = createNewDataListAt(rowGroup,
+                                       firstColTestAnalyteId,
+                                       firstColAnalyteId,
                                        firstColAnalyteName);
 
         addRowAt(index, currlist);
@@ -112,7 +112,7 @@ public class AnalysisResultManager implements RPC {
         results.remove(row);
     }
 
-    public static AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
+    public static AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
         return proxy().fetchByAnalysisIdForDisplay(analysisId);
     }
 
@@ -124,14 +124,11 @@ public class AnalysisResultManager implements RPC {
      * Creates a new instance of this object with the specified analysis id. Use
      * this function to load an instance of this object from database.
      */
-    public static AnalysisResultManager fetchForUpdateWithAnalysisId(Integer analysisId,
-                                                                     Integer testId)
-                                                                                    throws Exception {
-        return proxy().fetchByAnalysisId(analysisId, testId);
+    public static AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
+        return proxy().fetchByAnalysisId(analysisId);
     }
 
-    public static AnalysisResultManager fetchForUpdateWithTestId(Integer testId, Integer unitId)
-                                                                                                throws Exception {
+    public static AnalysisResultManager fetchByTestId(Integer testId, Integer unitId) throws Exception {
         return proxy().fetchByTestId(testId, unitId);
     }
 
@@ -166,13 +163,6 @@ public class AnalysisResultManager implements RPC {
     }
 
     // getters/setters
-    public TestManager getTestManager() {
-        return testManager;
-    }
-
-    public void setTestManager(TestManager testManager) {
-        this.testManager = testManager;
-    }
 
     public HashMap<Integer, AnalyteDO> getAnalyteList() {
         return analyteList;
@@ -234,16 +224,16 @@ public class AnalysisResultManager implements RPC {
         resultValidators.add(resultValidator);
     }
 
-    public Integer validateResultValue(Integer resultGroup, Integer unitId, String value)
-                                                                                         throws Exception {
+    public Integer validateResultValue(Integer resultGroup, Integer unitId, String value) throws Exception {
         if (resultGroup == null)
             throw new ParseException("testAnalyteDefinitionChanged");
         return resultValidators.get(resultGroup.intValue() - 1).validate(unitId, value);
     }
 
-    public String formatResultValue(Integer resultGroup, Integer unitId,
-                                    Integer testResultId, String value) throws Exception {
-        return resultValidators.get(resultGroup.intValue() - 1).getValue(unitId, testResultId,
+    public String formatResultValue(Integer resultGroup, Integer unitId, Integer testResultId,
+                                    String value) throws Exception {
+        return resultValidators.get(resultGroup.intValue() - 1).getValue(unitId,
+                                                                         testResultId,
                                                                          value);
     }
 
@@ -272,7 +262,7 @@ public class AnalysisResultManager implements RPC {
         origAnalyteList = li.testAnalytes;
         aliasList = li.aliasList;
         loaded = aliasList != null;
-        
+
         noColList = new ArrayList<TestAnalyteViewDO>();
         // clean the list of column anaytes
         for (int i = 0; i < origAnalyteList.size(); i++ ) {
@@ -410,10 +400,8 @@ public class AnalysisResultManager implements RPC {
         this.deletedResults = deletedResults;
     }
 
-    private ArrayList<ResultViewDO> createNewDataListAt(Integer rowGroup,
-                                                        Integer testAnalyteId,
-                                                        Integer analyteId,
-                                                        String analyteName) {
+    private ArrayList<ResultViewDO> createNewDataListAt(Integer rowGroup, Integer testAnalyteId,
+                                                        Integer analyteId, String analyteName) {
         ArrayList<ResultViewDO> currlist;
         ArrayList<TestAnalyteViewDO> analyteList;
         TestAnalyteViewDO taDO;

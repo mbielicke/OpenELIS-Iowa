@@ -44,8 +44,6 @@ import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.ValidationErrorsList;
 
-import com.google.gwt.user.client.Window;
-
 public class AnalysisManager implements RPC {
     private static final long                       serialVersionUID = 1L;
 
@@ -198,7 +196,8 @@ public class AnalysisManager implements RPC {
             !perm.getSection(section.getName()).hasCancelPermission()) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("insufficientPrivilegesCancelAnalysis",
-                                                  data.getTestName(), data.getMethodName()));
+                                                  data.getTestName(),
+                                                  data.getMethodName()));
             throw errorsList;
         }
 
@@ -220,10 +219,10 @@ public class AnalysisManager implements RPC {
         SampleDataBundle bundle;
         ValidationErrorsList errorsList;
 
-        data  = items.get(index).analysis;
+        data = items.get(index).analysis;
         assert data.getSectionId() != null : "section id is null";
 
-        //make sure the status is not released, cancelled, or in prep
+        // make sure the status is not released, cancelled, or in prep
         if (proxy().anErrorInPrepId.equals(data.getStatusId()) ||
             proxy().anInPrepId.equals(data.getStatusId()) ||
             proxy().anReleasedId.equals(data.getStatusId()) ||
@@ -233,28 +232,33 @@ public class AnalysisManager implements RPC {
             throw errorsList;
         }
 
-        //make sure the user has complete permission for the section
+        // make sure the user has complete permission for the section
         section = proxy().getSectionFromId(data.getSectionId());
         perm = proxy().getSystemUserPermission();
         if (perm.getSection(section.getName()) == null ||
             !perm.getSection(section.getName()).hasCompletePermission()) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("insufficientPrivilegesInitiateAnalysis",
-                                                  data.getTestName(), data.getMethodName()));
+                                                  data.getTestName(),
+                                                  data.getMethodName()));
             throw errorsList;
         }
 
-        //validate the sample type
+        // validate the sample type
         testMan = getTestAt(index);
         bundle = getBundleAt(index);
-        if (!testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
-                                              .getTypeOfSampleId())) {
+        if ( !testMan.getSampleTypes()
+                     .hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
+                                               .getTypeOfSampleId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("sampleTypeInvalid", data.getTestName(), data.getMethodName()));
+            errorsList.add(new FormErrorException("sampleTypeInvalid",
+                                                  data.getTestName(),
+                                                  data.getMethodName()));
             throw errorsList;
         }
 
-        if (proxy().anLoggedInId.equals(data.getStatusId()) || proxy().anRequeueId.equals(data.getStatusId()))
+        if (proxy().anLoggedInId.equals(data.getStatusId()) ||
+            proxy().anRequeueId.equals(data.getStatusId()))
             data.setStatusId(proxy().anInitiatedId);
         else if (proxy().anErrorLoggedInId.equals(data.getStatusId()))
             data.setStatusId(proxy().anErrorInitiatedId);
@@ -277,10 +281,10 @@ public class AnalysisManager implements RPC {
         //
         // make sure the status is completed, initiated, on hold or logged-in
         //
-        if (!proxy().anCompletedId.equals(data.getStatusId()) &&
+        if ( !proxy().anCompletedId.equals(data.getStatusId()) &&
             !proxy().anOnHoldId.equals(data.getStatusId()) &&
-            !proxy().anInitiatedId.equals(data.getStatusId()) &&            
-            !proxy().anLoggedInId.equals(data.getStatusId())) { 
+            !proxy().anInitiatedId.equals(data.getStatusId()) &&
+            !proxy().anLoggedInId.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("wrongStatusNoComplete"));
             throw errorsList;
@@ -294,17 +298,20 @@ public class AnalysisManager implements RPC {
             !perm.getSection(section.getName()).hasCompletePermission()) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("insufficientPrivilegesCompleteAnalysis",
-                                                  data.getTestName(), data.getMethodName()));
+                                                  data.getTestName(),
+                                                  data.getMethodName()));
             throw errorsList;
         }
 
         // validate the sample type
         testMan = getTestAt(index);
         bundle = getBundleAt(index);
-        if ( !testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
+        if ( !testMan.getSampleTypes()
+                     .hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
                                                .getTypeOfSampleId())) {
             errorsList = new ValidationErrorsList();
-            errorsList.add(new FormErrorException("sampleTypeInvalid", data.getTestName(),
+            errorsList.add(new FormErrorException("sampleTypeInvalid",
+                                                  data.getTestName(),
                                                   data.getMethodName()));
             throw errorsList;
         }
@@ -352,17 +359,19 @@ public class AnalysisManager implements RPC {
         } else if ( !proxy().anCompletedId.equals(data.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("completeStatusRequiredToRelease",
-                                                  data.getTestName(), data.getMethodName()));
+                                                  data.getTestName(),
+                                                  data.getMethodName()));
             throw errorsList;
         }
-        
+
         // sample must not be in 'Not Verified' status
         sample = items.get(index).bundle.getSampleManager().getSample();
         if (proxy().sampleNotVerifiedId.equals(sample.getStatusId())) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("sampleNotVerifiedForAnalysisRelease",
                                                   sample.getAccessionNumber().toString(),
-                                                  data.getTestName(), data.getMethodName()));
+                                                  data.getTestName(),
+                                                  data.getMethodName()));
             throw errorsList;
         }
 
@@ -373,12 +382,14 @@ public class AnalysisManager implements RPC {
             !perm.getSection(section.getName()).hasReleasePermission()) {
             errorsList = new ValidationErrorsList();
             errorsList.add(new FormErrorException("insufficientPrivilegesReleaseAnalysis",
-                                                  data.getTestName(), data.getMethodName()));
+                                                  data.getTestName(),
+                                                  data.getMethodName()));
             throw errorsList;
         }
 
         data.setStatusId(proxy().anReleasedId);
-        //data.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+        // data.setReleasedDate(proxy().getCurrentDatetime(Datetime.YEAR,
+        // Datetime.MINUTE));
 
         // add an analysis user record
         getAnalysisUserAt(index).addReleaseRecord();
@@ -390,41 +401,43 @@ public class AnalysisManager implements RPC {
         ValidationErrorsList errorsList;
         SampleManager man;
         SystemUserPermission perm;
-        NoteManager intenotes, samNotes; 
+        NoteManager intenotes, samNotes;
         AnalysisListItem item;
-        
+
         item = getItemAt(index);
 
-        data = item.analysis;        
+        data = item.analysis;
         intenotes = getInternalNotesAt(index);
         errorsList = new ValidationErrorsList();
-        
-        if ( !proxy().anReleasedId.equals(data.getStatusId()))             
-            errorsList.add(new FormErrorException("wrongStatusUnrelease"));                   
-        
+
+        if ( !proxy().anReleasedId.equals(data.getStatusId()))
+            errorsList.add(new FormErrorException("wrongStatusUnrelease"));
+
         // make sure the user has release permission for the section
         perm = proxy().getSystemUserPermission();
         section = proxy().getSectionFromId(data.getSectionId());
         if (perm.getSection(section.getName()) == null ||
-            !perm.getSection(section.getName()).hasReleasePermission()) 
+            !perm.getSection(section.getName()).hasReleasePermission())
             errorsList.add(new FormErrorException("insufficientPrivilegesUnreleaseAnalysis",
-                                                  data.getTestName(), data.getMethodName()));        
+                                                  data.getTestName(),
+                                                  data.getMethodName()));
 
-        if (intenotes == null || !intenotes.hasEditingNote()) 
+        if (intenotes == null || !intenotes.hasEditingNote())
             errorsList.add(new FormErrorException("unreleaseNoNoteException"));
-        
+
         if (errorsList.size() > 0)
             throw errorsList;
-            
+
         data.setStatusId(proxy().anCompletedId);
         data.setReleasedDate(null);
         data.setPrintedDate(null);
         data.setRevision(data.getRevision() + 1);
-        
-        // every unreleased sample needs an internal comment describing the reason
+
+        // every unreleased sample needs an internal comment describing the
+        // reason
         man = sampleItemBundle.getSampleManager();
         if (proxy().sampleReleasedId.equals(man.getSample().getStatusId()))
-            man.unrelease(false);                                          
+            man.unrelease(false);
     }
 
     public int count() {
@@ -440,7 +453,9 @@ public class AnalysisManager implements RPC {
         bundle = getItemAt(index).bundle;
         if (bundle == null) {
             bundle = new SampleDataBundle(SampleDataBundle.Type.ANALYSIS,
-                                          sampleItemManager.sampleManager, sampleItemBundle, index);
+                                          sampleItemManager.sampleManager,
+                                          sampleItemBundle,
+                                          index);
             getItemAt(index).bundle = bundle;
         }
 
@@ -473,9 +488,7 @@ public class AnalysisManager implements RPC {
             throw errorsList;
     }
 
-    public void validate(String sampleItemSequence,
-                         Integer sampleTypeId,
-                         String sampleDomain,
+    public void validate(String sampleItemSequence, Integer sampleTypeId, String sampleDomain,
                          ValidationErrorsList errorsList) throws Exception {
         proxy().validate(this, sampleItemSequence, sampleTypeId, sampleDomain, errorsList);
     }
@@ -497,12 +510,13 @@ public class AnalysisManager implements RPC {
     public AnalysisListItem getItemAt(int i) {
         return items.get(i);
     }
-    
+
     void addItem(AnalysisListItem item) {
         items.add(item);
         item.bundle = new SampleDataBundle(SampleDataBundle.Type.ANALYSIS,
                                            sampleItemManager.sampleManager,
-                                           sampleItemBundle, items.size() - 1);
+                                           sampleItemBundle,
+                                           items.size() - 1);
     }
 
     //
@@ -511,7 +525,7 @@ public class AnalysisManager implements RPC {
     // qaevents
     public AnalysisQaEventManager getQAEventAt(int i) throws Exception {
         AnalysisListItem item;
-        
+
         item = getItemAt(i);
         if (item.qaEvents == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
@@ -539,7 +553,7 @@ public class AnalysisManager implements RPC {
     // internal notes
     public NoteManager getInternalNotesAt(int i) throws Exception {
         AnalysisListItem item;
-        
+
         item = getItemAt(i);
         if (item.analysisInternalNotes == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
@@ -570,7 +584,7 @@ public class AnalysisManager implements RPC {
     // external note
     public NoteManager getExternalNoteAt(int i) throws Exception {
         AnalysisListItem item;
-        
+
         item = getItemAt(i);
         if (item.analysisExternalNote == null) {
             if (item.analysis != null && item.analysis.getId() != null) {
@@ -661,8 +675,7 @@ public class AnalysisManager implements RPC {
             if (item.analysis != null) {
                 if (item.analysis.getId() != null && item.analysis.getId() > 0) {
                     try {
-                        item.analysisResult = AnalysisResultManager.fetchForUpdateWithAnalysisId(item.analysis.getId(),
-                                                                                                 item.analysis.getTestId());
+                        item.analysisResult = AnalysisResultManager.fetchByAnalysisId(item.analysis.getId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -670,8 +683,8 @@ public class AnalysisManager implements RPC {
                     }
                 } else if (item.analysis.getTestId() != null) {
                     try {
-                        item.analysisResult = AnalysisResultManager.fetchForUpdateWithTestId(item.analysis.getTestId(),
-                                                                                             item.analysis.getUnitOfMeasureId());
+                        item.analysisResult = AnalysisResultManager.fetchByTestId(item.analysis.getTestId(),
+                                                                                  item.analysis.getUnitOfMeasureId());
                     } catch (NotFoundException e) {
                         // ignore
                     } catch (Exception e) {
@@ -720,7 +733,7 @@ public class AnalysisManager implements RPC {
     }
 
     // test
-    public void setTestAt(TestManager testMan, int index) {
+    public void setTestAt(TestManager testMan, int index) throws Exception {
         TestViewDO test;
         AnalysisViewDO data, prevData;
         ArrayList<TestTypeOfSampleDO> units;
@@ -735,58 +748,46 @@ public class AnalysisManager implements RPC {
 
         oldTestName = data.getTestName();
         oldMethodName = data.getMethodName();
-        
+
         data.setTestId(test.getId());
         data.setTestName(test.getName());
         data.setMethodId(test.getMethodId());
         data.setMethodName(test.getMethodName());
+        data.setUnitOfMeasureId(null);
+        data.setSectionId(null);
         if (data.getIsReportable() == null)
             data.setIsReportable(test.getIsReportable());
 
         // if there is only 1 unit then set it
-        units = null;
-        try {
-            typeOfSampleId = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex())
-                                            .getTypeOfSampleId();
-            units = testMan.getSampleTypes().getTypesBySampleType(typeOfSampleId);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            return;
-        }
-
+        typeOfSampleId = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex())
+                                          .getTypeOfSampleId();
+        units = testMan.getSampleTypes().getTypesBySampleType(typeOfSampleId);
         if (units.size() == 1)
             data.setUnitOfMeasureId(units.get(0).getUnitOfMeasureId());
 
         // if there is a default section then set it
-        defaultSect = null;
-        try {
-            defaultSect = testMan.getTestSections().getDefaultSection();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            return;
-        }
-
+        defaultSect = testMan.getTestSections().getDefaultSection();
         if (defaultSect != null)
             data.setSectionId(defaultSect.getSectionId());
 
         // set preanalyses data
         preAnalysisList = getPreAnalysisList(data.getId());
-
         for (int i = 0; i < preAnalysisList.size(); i++ ) {
             prevData = preAnalysisList.get(i);
             prevData.setPreAnalysisTest(test.getName());
             prevData.setPreAnalysisMethod(test.getMethodName());
         }
 
-        // merge results if needed
-        if (getItemAt(index).analysisResult != null && data.getTestName().equals(oldTestName) &&
-            !data.getMethodName().equals(oldMethodName)) {
-            try {
-                mergeAt(index, data.getTestId());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        /*
+         * merge the analysis if same test but different method; wipe & reload
+         * the results if not saved analysis test and method both changed
+         */
+        if ( !DataBaseUtil.isSame(data.getTestName(), oldTestName) ||
+            getItemAt(index).analysisResult == null)
+            getItemAt(index).analysisResult = AnalysisResultManager.fetchByTestId(data.getTestId(),
+                                                                                  data.getUnitOfMeasureId());
+        else if ( !DataBaseUtil.isSame(data.getMethodName(), oldMethodName))
+            mergeAt(index, data.getTestId());
     }
 
     public void removeTestAt(int index) {
@@ -852,9 +853,9 @@ public class AnalysisManager implements RPC {
         Integer currentStatusId;
         SampleDataBundle bundle;
         SampleItemManager siMan;
-        AnalysisManager anaMan;        
-        
-        data = getItemAt(anaIndex).analysis;                
+        AnalysisManager anaMan;
+
+        data = getItemAt(anaIndex).analysis;
 
         // if the analysis is cancelled stop now
         if (proxy().anCancelledId.equals(data.getStatusId()))
@@ -862,30 +863,30 @@ public class AnalysisManager implements RPC {
 
         testMan = getTestAt(anaIndex);
         currentStatusId = data.getStatusId();
-         
+
         //
-        // if this analysis' status is "In Prep" then we have to check to see 
+        // if this analysis' status is "In Prep" then we have to check to see
         // whether its prep analysis' status has been changed to "Completed"
         // and if that is the case then this analysis's status should be set to
         // "Logged In"
         //
-        
+
         if (currentStatusId.equals(proxy().anCompletedId)) {
             bundle = getItemAt(anaIndex).bundle;
             siMan = bundle.sampleManager.getSampleItems();
-            for (i = 0; i < siMan.count(); i++) {
+            for (i = 0; i < siMan.count(); i++ ) {
                 anaMan = bundle.sampleManager.getSampleItems().getAnalysisAt(i);
                 for (AnalysisViewDO temp : anaMan.getAnalysisList()) {
-                    if (DataBaseUtil.isSame(temp.getPreAnalysisId(), data.getId())
-                                    && temp.getStatusId().equals(proxy().anInPrepId)) {    
+                    if (DataBaseUtil.isSame(temp.getPreAnalysisId(), data.getId()) &&
+                        temp.getStatusId().equals(proxy().anInPrepId)) {
                         temp.setStatusId(proxy().anLoggedInId);
                     }
                 }
             }
         }
-        
+
         error = false;
-        
+
         // sample item needs to match
         if ( !testMan.getSampleTypes().hasType(sampleTypeId))
             error = true;
@@ -953,6 +954,15 @@ public class AnalysisManager implements RPC {
 
     void setSampleItemBundle(SampleDataBundle sampleItemBundle) {
         this.sampleItemBundle = sampleItemBundle;
+    }
+
+    void setTestManagerWithResultAt(TestManager man, Integer analysisId, int index) throws Exception {
+        getItemAt(index).tests = man;
+        try {
+            getItemAt(index).analysisResult = AnalysisResultManager.fetchByAnalysisId(analysisId);
+        } catch (NotFoundException ignE) {
+            // not possible unless they really wanted no result
+        }
     }
 
     int deleteCount() {
