@@ -52,9 +52,7 @@ UIRF Software License are applicable instead of those above.
             <xsl:value-of select="resource:getString($constants,'method')" />:
           </text>
           <widget colspan="3">
-          <autoComplete key="{meta:getAnalysisMethodName()}" width="151" case="LOWER" popWidth="auto" field="Integer">
-            <col width="150" header="{resource:getString($constants,'method')}" />
-          </autoComplete>
+          	<textbox key="{meta:getAnalysisMethodName()}" width="151" case="LOWER" field="String" />
           </widget>
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'started')" />:

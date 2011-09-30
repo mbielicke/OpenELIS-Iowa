@@ -79,13 +79,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class SampleItemAnalysisTreeTab extends Screen
-                                                     implements
-                                                     HasActionHandlers<SampleItemAnalysisTreeTab.Action> {
-    public enum Action {
-        REFRESH_TABS
-    };
-
+public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandlers<SampleItemAnalysisTreeTab.Action> {
     private Integer                       analysisCancelledId, analysisReleasedId,
                                           sampleReleasedId;
     protected TreeWidget                  itemsTree;
@@ -96,6 +90,10 @@ public class SampleItemAnalysisTreeTab extends Screen
     protected SampleItemAnalysisTreeTab   treeTab;
     protected SampleItemsPopoutTreeLookup treePopoutScreen;
     protected boolean                     loaded = false;
+
+    public enum Action {
+        REFRESH_TABS
+    };
 
     public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindowInt window,
                                      HasActionHandlers parentScreen) {
@@ -326,6 +324,7 @@ public class SampleItemAnalysisTreeTab extends Screen
             public void onAction(ActionEvent event) {
                 TreeDataItem selected;
                 SampleDataBundle data;
+                
                 if (event.getAction() == SampleItemTab.Action.CHANGED) {
                     selected = itemsTree.getSelection();
                     data = (SampleDataBundle)selected.data;
@@ -342,7 +341,6 @@ public class SampleItemAnalysisTreeTab extends Screen
                     //This only needs to happen if they have the analysis row selected
                     if ("analysis".equals(itemsTree.getSelection().leafType))
                         ActionEvent.fire(treeTab, Action.REFRESH_TABS, data);
-                    
                 } else if (event.getAction() == AnalysisTab.Action.ANALYSIS_ADDED) {
                     treeUtil.analysisTestChanged((Integer)event.getData(), false);
                 } else if (event.getAction() == AnalysisTab.Action.PANEL_ADDED) {

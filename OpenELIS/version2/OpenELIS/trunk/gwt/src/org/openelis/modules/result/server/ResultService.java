@@ -46,9 +46,9 @@ public class ResultService {
         }
     }
 
-    public AnalysisResultManager fetchByAnalysisId(AnalysisDO anDO) throws Exception {
+    public AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
         try{
-            return remote().fetchForUpdateWithAnalysisId(anDO.getId(), anDO.getTestId());
+            return remote().fetchForUpdateWithAnalysisId(analysisId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }

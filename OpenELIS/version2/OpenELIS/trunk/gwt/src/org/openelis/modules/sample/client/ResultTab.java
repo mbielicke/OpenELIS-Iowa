@@ -582,10 +582,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     else
                         manager = analysisMan.getDisplayAnalysisResultAt(bundle.getAnalysisIndex());
                 }
-
                 displayManager = new TestAnalyteDisplayManager<ResultViewDO>();
                 displayManager.setDataGrid(manager.getResults());
-
                 DataChangeEvent.fire(this);
                 loaded = true;
             } catch (Exception e) {
@@ -684,7 +682,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     
                     if ( !validateResults)
                         continue;
-                    rg = data.getResultGroup();
+                    
                     entry = null;
                     if ( !DataBaseUtil.isEmpty(val)) {
                         testResult = displayManager.validateResultValue(manager,

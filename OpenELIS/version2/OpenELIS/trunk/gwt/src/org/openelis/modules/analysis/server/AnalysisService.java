@@ -25,18 +25,13 @@
  */
 package org.openelis.modules.analysis.server;
 
-import java.util.ArrayList;
-
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.TestMethodVO;
-import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.AnalysisManagerRemote;
 import org.openelis.remote.AnalysisQAEventManagerRemote;
 import org.openelis.remote.AnalysisRemote;
-import org.openelis.remote.PanelRemote;
 
 public class AnalysisService {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
@@ -52,15 +47,6 @@ public class AnalysisService {
         return qaRemote().fetchByAnalysisId(analysisId);
     }
 
-    public ArrayList<TestMethodVO> getTestMethodMatches(Query query) throws Exception {
-        ArrayList<TestMethodVO> resultList;
-        if(query.getFields().size() > 1)
-            resultList = panelRemote().fetchByNameSampleTypeWithTests(query.getFields().get(0).query+"%", new Integer(query.getFields().get(1).query), 100);
-        else
-            resultList = panelRemote().fetchByNameWithTests(query.getFields().get(0).query+"%", 100);
-        return resultList;
-    }
-
     private AnalysisRemote remote() {
         return (AnalysisRemote)EJBFactory.lookup("openelis/AnalysisBean/remote");
     }
@@ -71,9 +57,5 @@ public class AnalysisService {
 
     private AnalysisQAEventManagerRemote qaRemote() {
         return (AnalysisQAEventManagerRemote)EJBFactory.lookup("openelis/AnalysisQAEventManagerBean/remote");
-    }
-
-    private PanelRemote panelRemote() {
-        return (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
     }
 }

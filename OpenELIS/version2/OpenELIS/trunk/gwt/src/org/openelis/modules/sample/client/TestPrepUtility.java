@@ -69,10 +69,10 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         DONE
     };
 
-    protected Integer anInPrepId, auxAlphaLowerId, auxAlphaMixedId, auxAlphaUpperId,
-                      auxDateId, auxDateTimeId, auxDefaultId, auxDictionaryId, auxNumericId,
-                      auxTimeId;
-    protected Screen  screen;
+    protected Integer                              anInPrepId, auxAlphaLowerId, auxAlphaMixedId,
+                    auxAlphaUpperId, auxDateId, auxDateTimeId, auxDefaultId, auxDictionaryId,
+                    auxNumericId, auxTimeId;
+    protected Screen                               screen;
 
     private ArrayList<SampleDataBundle>            bundles, analysisDataBundles;
     private HashMap<Integer, ResultValidator.Type> types;
@@ -116,8 +116,9 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     }
 
     /**
-     * This method is used under normal circumstances.  It is used when the test/panel has changed
-     * and the screen needs to add the records to the tree and check for preps.
+     * This method is used when the test/panel has changed and the screen needs
+     * to add the records to the tree and check for preps.
+     * 
      * @param analysisDataBundle
      * @param type
      * @param id
@@ -126,17 +127,19 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id) throws Exception {
         lookup(analysisDataBundle, type, id, null);
     }
-    
+
     /**
-     * This method is used under normal circumstances.  It is used when a test/panel
-     * has been added via the quick entry screen and needs to add the records and check for preps.
+     * This method is used when a test/panel has been added via the quick entry
+     * screen and needs to add the records and check for preps.
+     * 
      * @param analysisDataBundle
      * @param type
      * @param id
      * @param sectionId
      * @throws Exception
      */
-    public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id, TestSectionViewDO tsVDO) throws Exception {
+    public void lookup(SampleDataBundle analysisDataBundle, Type type, Integer id,
+                       TestSectionViewDO tsVDO) throws Exception {
         ArrayList<IdVO> testIds, auxIds;
 
         assert screen != null : "screen is null";
@@ -151,7 +154,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         // we need to expand a panel to test ids
         if (type == Type.PANEL) {
             testIds = panelService.callList("fetchTestIdsByPanelId", id);
-            auxIds  = panelService.callList("fetchAuxIdsByPanelId", id);
+            auxIds = panelService.callList("fetchAuxIdsByPanelId", id);
         } else {
             testIds = new ArrayList<IdVO>(1);
             testIds.add(new IdVO(id));
@@ -161,17 +164,18 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         if (auxIds != null && auxIds.size() > 0)
             addAuxGroups(auxIds);
     }
-    
+
     /**
-     * This method is used when the screen has added reflex test.  All that is required is the
-     * analysis data bundles for the reflex tests to be added.  The tree also needs to be selecting
-     * the first row to be added.
+     * This method is used when the screen has added reflex test. All that is
+     * required is the analysis data bundles for the reflex tests to be added.
+     * The tree also needs to be selecting the first row to be added.
+     * 
      * @param analysisBundles
      * @throws Exception
      */
     public void lookup(ArrayList<SampleDataBundle> analysisBundles) throws Exception {
         assert screen != null : "screen is null";
-        
+
         bundles = new ArrayList<SampleDataBundle>();
         errorsList = new ValidationErrorsList();
 
@@ -179,16 +183,18 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
 
         checkPrepTests(analysisBundles);
     }
-    
+
     /**
-     * This method is used to import analyses from an order.  This will add an analysis and check for preps.  The order
-     * screen is not responsible for checking for preps.
+     * This method is used to import analyses from an order. This will add an
+     * analysis and check for preps. The order screen is not responsible for
+     * checking for preps.
+     * 
      * @param analysisDataBundle
      * @param orderTestList
      * @throws Exception
      */
     public void lookup(SampleDataBundle analysisDataBundle, ArrayList<OrderTestViewDO> orderTestList) throws Exception {
-        int             i;
+        int i;
         ArrayList<IdVO> testIds;
         OrderTestViewDO testDO;
 
@@ -201,7 +207,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         analysisDataBundles.add(analysisDataBundle);
 
         testIds = new ArrayList<IdVO>(orderTestList.size());
-        for (i = 0; i < orderTestList.size(); i++){
+        for (i = 0; i < orderTestList.size(); i++ ) {
             testDO = orderTestList.get(i);
             testIds.add(new IdVO(testDO.getTestId()));
         }
@@ -214,15 +220,15 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     }
 
     private void processTestListAndCheckPrepTests(ArrayList<IdVO> testIds, TestSectionViewDO tsVDO) throws Exception {
-        int                          addedIndex;
-        IdVO                         idVO;
-        ArrayList<Object>            prepBundle;
+        int addedIndex;
+        IdVO idVO;
+        ArrayList<Object> prepBundle;
         ArrayList<ArrayList<Object>> prepBundles;
-        AnalysisManager              anMan;
-        SampleDataBundle             anBundle, analysisDataBundle;
-        SampleManager                manager;
-        TestManager                  testMan;
-        TestPrepManager              prepMan;
+        AnalysisManager anMan;
+        SampleDataBundle anBundle, analysisDataBundle;
+        SampleManager manager;
+        TestManager testMan;
+        TestPrepManager prepMan;
 
         analysisDataBundle = analysisDataBundles.get(0);
         manager = analysisDataBundle.getSampleManager();
@@ -273,12 +279,12 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                                                               testMan.getTest().getMethodName()));
                     }
                 }
-            } else{
+            } else {
                 anMan.removeTestAt(analysisDataBundle.getAnalysisIndex());
                 bundles.add(analysisDataBundle);
             }
         }
-        
+
         if (prepBundles.size() > 0)
             drawTestPrepScreen(prepBundles);
         else
@@ -286,40 +292,40 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     }
 
     private void addAuxGroups(ArrayList<IdVO> auxIds) throws Exception {
-        int                            i, j, k;
+        int i, j, k;
         ArrayList<AuxFieldValueViewDO> values;
-        AuxDataManager                 adMan;
-        AuxDataViewDO                  dataDO;
-        AuxFieldManager                afMan;
-        AuxFieldViewDO                 fieldDO;
-        AuxFieldValueViewDO            defaultDO, valueDO;
-        Integer                        validId;
-        ResultValidator                validator;
-        SampleDataBundle               bundle;
-        SampleManager                  sMan;
+        AuxDataManager adMan;
+        AuxDataViewDO dataDO;
+        AuxFieldManager afMan;
+        AuxFieldViewDO fieldDO;
+        AuxFieldValueViewDO defaultDO, valueDO;
+        Integer validId;
+        ResultValidator validator;
+        SampleDataBundle bundle;
+        SampleManager sMan;
 
         bundle = analysisDataBundles.get(0);
-        sMan   = bundle.getSampleManager();
-        adMan  = sMan.getAuxData();
+        sMan = bundle.getSampleManager();
+        adMan = sMan.getAuxData();
 
-        for (i = 0; i < auxIds.size(); i++) {
+        for (i = 0; i < auxIds.size(); i++ ) {
             try {
                 afMan = AuxFieldManager.fetchByGroupIdWithValues(auxIds.get(i).getId());
-                for (j = 0; j < afMan.count(); j++) {
+                for (j = 0; j < afMan.count(); j++ ) {
                     fieldDO = afMan.getAuxFieldAt(j);
                     if ("Y".equals(fieldDO.getIsActive())) {
                         values = afMan.getValuesAt(j).getValues();
                         defaultDO = afMan.getValuesAt(j).getDefaultValue();
-    
+
                         dataDO = new AuxDataViewDO();
                         dataDO.setAuxFieldId(fieldDO.getId());
                         dataDO.setIsReportable(fieldDO.getIsReportable());
-                        
+
                         validator = getValidatorForValues(values);
                         if (defaultDO != null) {
                             try {
                                 validId = validator.validate(null, defaultDO.getValue());
-                                for (k = 0; k < values.size(); k++) {
+                                for (k = 0; k < values.size(); k++ ) {
                                     valueDO = values.get(k);
                                     if (valueDO.getId().equals(validId)) {
                                         if (auxDictionaryId.equals(valueDO.getTypeId())) {
@@ -341,7 +347,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                         } else {
                             dataDO.setTypeId(auxAlphaMixedId);
                         }
-    
+
                         adMan.addAuxDataFieldAndValues(dataDO, fieldDO, values);
                     }
                 }
@@ -350,29 +356,29 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             }
         }
     }
-    
+
     private void drawTestPrepScreen(ArrayList<ArrayList<Object>> prepBundles) {
-        ScreenWindow         modal;
+        ScreenWindow modal;
         TestPrepLookupScreen prepPickerScreen;
-        
+
         try {
             prepPickerScreen = new TestPrepLookupScreen();
             prepPickerScreen.addActionHandler(new ActionHandler<TestPrepLookupScreen.Action>() {
                 @SuppressWarnings("unchecked")
                 public void onAction(ActionEvent<TestPrepLookupScreen.Action> event) {
-                    int                                i;
-                    ArrayList<Object>                  prepBundle;
-                    ArrayList<ArrayList<Object>>       prepBundles;
-                    HashMap<ArrayList<Object>,Integer> indexLinks;
+                    int i;
+                    ArrayList<Object> prepBundle;
+                    ArrayList<ArrayList<Object>> prepBundles;
+                    HashMap<ArrayList<Object>, Integer> indexLinks;
 
                     if (event.getAction() == TestPrepLookupScreen.Action.SELECTED_PREP_ROW) {
-                        indexLinks = new HashMap<ArrayList<Object>,Integer>();
+                        indexLinks = new HashMap<ArrayList<Object>, Integer>();
                         prepBundles = (ArrayList<ArrayList<Object>>)event.getData();
-                        for (i = 0; i < prepBundles.size(); i++) {
+                        for (i = 0; i < prepBundles.size(); i++ ) {
                             prepBundle = prepBundles.get(i);
                             selectedPrepTest(prepBundle, indexLinks);
                         }
-                        
+
                         fireFinished();
                     } else if (event.getAction() == TestPrepLookupScreen.Action.CANCEL) {
                         fireCancelled();
@@ -396,42 +402,44 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     // manager at this point.
     //
     @SuppressWarnings("unchecked")
-    private void selectedPrepTest(ArrayList<Object> prepBundle, HashMap<ArrayList<Object>,Integer> indexLinks) {
-        int               addedIndex;
-        Object            tempBundle;
-        Integer           parentIndex, sectionId, tpId;
-        AnalysisManager   anMan;
-        AnalysisViewDO    anDO, prepDO;
-        SampleDataBundle  anaBundle;
-        TestManager       testMan;
+    private void selectedPrepTest(ArrayList<Object> prepBundle,
+                                  HashMap<ArrayList<Object>, Integer> indexLinks) {
+        int addedIndex;
+        Object tempBundle;
+        Integer parentIndex, sectionId, tpId;
+        AnalysisManager anMan;
+        AnalysisViewDO anDO, prepDO;
+        SampleDataBundle anaBundle;
+        TestManager testMan;
         TestSectionViewDO tsVDO;
 
         if (prepBundle.get(0) instanceof SampleDataBundle) {
-            anaBundle = (SampleDataBundle) prepBundle.get(0);
+            anaBundle = (SampleDataBundle)prepBundle.get(0);
             parentIndex = anaBundle.getAnalysisIndex();
         } else {
-            tempBundle = (ArrayList<Object>) prepBundle.get(0);
+            tempBundle = (ArrayList<Object>)prepBundle.get(0);
             parentIndex = indexLinks.get(tempBundle);
             do {
                 tempBundle = ((ArrayList<Object>)tempBundle).get(0);
-            } while (!(tempBundle instanceof SampleDataBundle)) ;
-            anaBundle = (SampleDataBundle) tempBundle;
+            } while ( ! (tempBundle instanceof SampleDataBundle));
+            anaBundle = (SampleDataBundle)tempBundle;
         }
-        
+
         try {
-            anMan = anaBundle.getSampleManager().getSampleItems()
+            anMan = anaBundle.getSampleManager()
+                             .getSampleItems()
                              .getAnalysisAt(anaBundle.getSampleItemIndex());
             tpId = (Integer)prepBundle.get(1);
             if (prepBundle.get(2) instanceof ArrayList)
-                sectionId = (Integer)((ArrayList<Object>)prepBundle.get(2)).get(0);
+                sectionId = (Integer) ((ArrayList<Object>)prepBundle.get(2)).get(0);
             else
                 sectionId = (Integer)prepBundle.get(2);
-            
+
             prepDO = checkForPrepTest(anMan, tpId);
-    
+
             if (prepDO != null) { // prep already exists
                 anDO = anMan.getAnalysisAt(parentIndex);
-    
+
                 anDO.setPreAnalysisId(prepDO.getId());
                 anDO.setStatusId(anInPrepId);
                 anDO.setAvailableDate(null);
@@ -458,7 +466,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-                
+
             }
         } catch (Exception anyE) {
             errorsList.add(new FormErrorException());
@@ -482,17 +490,17 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     }
 
     private void checkPrepTests(ArrayList<SampleDataBundle> analysisBundles) throws Exception {
-        int                          i;
-        ArrayList<Object>            prepBundle;
+        int i;
+        ArrayList<Object> prepBundle;
         ArrayList<ArrayList<Object>> prepBundles;
-        AnalysisManager              anMan;
-        SampleDataBundle             bundle;
-        SampleManager                manager;
-        TestPrepManager              prepMan;
-        TestManager                  testMan;
-        
+        AnalysisManager anMan;
+        SampleDataBundle bundle;
+        SampleManager manager;
+        TestPrepManager prepMan;
+        TestManager testMan;
+
         prepBundles = new ArrayList<ArrayList<Object>>();
-        for (i = 0; i < analysisBundles.size(); i++) {
+        for (i = 0; i < analysisBundles.size(); i++ ) {
             bundle = analysisBundles.get(i);
             manager = bundle.getSampleManager();
             anMan = manager.getSampleItems().getAnalysisAt(bundle.getSampleItemIndex());
@@ -521,48 +529,48 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
     }
 
     private ResultValidator getValidatorForValues(ArrayList<AuxFieldValueViewDO> values) {
-        AuxFieldValueViewDO  af;
-        DictionaryDO         dict;
-        ResultValidator      rv;
+        AuxFieldValueViewDO af;
+        DictionaryDO dict;
+        ResultValidator rv;
         ResultValidator.Type type;
-        String               dictEntry;
-        
+        String dictEntry;
+
         rv = new ResultValidator();
         try {
             for (int i = 0; i < values.size(); i++ ) {
                 af = values.get(i);
                 dictEntry = null;
                 rv = new ResultValidator();
-                
+
                 type = types.get(af.getTypeId());
                 if (type == ResultValidator.Type.DICTIONARY) {
                     dict = DictionaryCache.getById(new Integer(af.getValue()));
                     dictEntry = dict.getEntry();
                 }
-                rv.addResult(af.getId(), null, type, null, null, af.getValue(), dictEntry);                    
+                rv.addResult(af.getId(), null, type, null, null, af.getValue(), dictEntry);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-                
+
         return rv;
     }
 
     private void fireFinished() {
         ActionEvent.fire(this, Action.DONE, bundles);
-        
+
         if (errorsList.size() > 0)
             screen.showErrors(errorsList);
     }
 
     private void fireCancelled() {
-        int              i;
+        int i;
         SampleDataBundle anBundle;
-        AnalysisManager  anMan;
-        SampleManager    manager;
-        
+        AnalysisManager anMan;
+        SampleManager manager;
+
         try {
-            for (i = 0; i < analysisDataBundles.size(); i++) {
+            for (i = 0; i < analysisDataBundles.size(); i++ ) {
                 anBundle = analysisDataBundles.get(i);
                 manager = anBundle.getSampleManager();
                 anMan = manager.getSampleItems().getAnalysisAt(anBundle.getSampleItemIndex());
