@@ -72,7 +72,7 @@ public class DataDumpVO implements RPC {
                                            sampleSDWISStateLabId, sampleSDWISFacilityId,
                                            sampleSDWISSampleTypeId, sampleSDWISSampleCategoryId,
                                            sampleSDWISSamplePointId, sampleSDWISLocation,
-                                           sampleSDWISCollector, collectorHeader, locationHeader;
+                                           sampleSDWISCollector, sampleEnvironmentalCollectorHeader, sampleEnvironmentalLocationHeader;
     protected Integer                      analysisStatusId, accessionNumberFrom,
                                            accessionNumberTo, projectId;
     protected Datetime                     analysisCompletedDateFrom, analysisCompletedDateTo,
@@ -565,20 +565,20 @@ public class DataDumpVO implements RPC {
         this.sampleSDWISCollector = DataBaseUtil.trim(sampleSDWISCollector);
     }
 
-    public String getCollectorHeader() {
-        return collectorHeader;
+    public String getSampleEnvironmentalCollectorHeader() {
+        return sampleEnvironmentalCollectorHeader;
     }
 
-    public void setCollectorHeader(String collectorHeader) {
-        this.collectorHeader = DataBaseUtil.trim(collectorHeader);
+    public void setSampleEnvironmentalCollectorHeader(String collectorHeader) {
+        this.sampleEnvironmentalCollectorHeader = DataBaseUtil.trim(collectorHeader);
     }
     
-    public String getLocationHeader() {
-        return locationHeader;
+    public String getSampleEnvironmentalLocationHeader() {
+        return sampleEnvironmentalLocationHeader;
     }
 
-    public void setLocationHeader(String locationHeader) {
-        this.locationHeader = DataBaseUtil.trim(locationHeader);
+    public void setSampleEnvironmentalLocationHeader(String locationHeader) {
+        this.sampleEnvironmentalLocationHeader = DataBaseUtil.trim(locationHeader);
     }
 
     public Integer getAnalysisStatusId() {

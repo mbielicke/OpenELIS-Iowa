@@ -40,26 +40,16 @@ public class SampleStatusWebReportVO implements RPC {
     
     private static final long serialVersionUID = 1L;
 
-    protected Integer         accessionNumber, statusId;
+    protected Integer         accessionNumber, statusId, sampleId, analysisId;
     protected Datetime        collectionDate, collectionTime, receivedDate;
     protected String          collector, clientReference, testReportingDescription, methodReportingDescription;
+    protected Boolean         hasAnalysisQAEvent, hasSampleQAEvent;
+    protected Boolean         hasAnalysisWarning, hasSampleWarning, hasAnalysisOverride, hasSampleOverride;
 
     public SampleStatusWebReportVO() {
     }
     
-   public SampleStatusWebReportVO(Integer accessionNumber, Integer statusId, Date collectionDate, Date collectionTime, Date receivedDate,  String collector, String clientReference, String testReportingDescription, String methodReportingDescription ) {
-        setAccessionNumber(accessionNumber);
-        setStatusId(statusId);
-        setCollectionDate(DataBaseUtil.toYD(collectionDate));
-        setCollectionTime(DataBaseUtil.toHM(collectionTime));
-        setReceivedDate(DataBaseUtil.toYM(receivedDate));
-        setCollector(collector);
-        setClientReference(clientReference);
-        setTestReportingDescription(testReportingDescription);
-        setMethodReportingDescription(methodReportingDescription);
-    } 
-    
-    public SampleStatusWebReportVO(Integer accessionNumber, Date receivedDate, Date collectionDate, Date collectionTime, Integer statusId, String clientReference, String collector, String testReportingDescription, String methodReportingDescription) {
+    public SampleStatusWebReportVO(Integer accessionNumber, Date receivedDate, Date collectionDate, Date collectionTime, Integer statusId, String clientReference, String collector, String testReportingDescription, String methodReportingDescription, Integer sampleId, Integer analysisId) {
         setAccessionNumber(accessionNumber);
         setReceivedDate(DataBaseUtil.toYM(receivedDate));        
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
@@ -69,6 +59,8 @@ public class SampleStatusWebReportVO implements RPC {
         setCollector(collector);        
         setTestReportingDescription(testReportingDescription);
         setMethodReportingDescription(methodReportingDescription);
+        setSampleId(sampleId);
+        setAnalysisId(analysisId);
     }
     
     public Integer getAccessionNumber() {
@@ -85,6 +77,22 @@ public class SampleStatusWebReportVO implements RPC {
 
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
+    }
+    
+    public Integer getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+    
+    public Integer getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(Integer analysisId) {
+        this.analysisId = analysisId;
     }
 
     public Datetime getCollectionDate() {
@@ -141,5 +149,53 @@ public class SampleStatusWebReportVO implements RPC {
 
     public void setMethodReportingDescription(String methodReportingDescription) {
         this.methodReportingDescription = DataBaseUtil.trim(methodReportingDescription);
+    }
+
+    public Boolean getHasAnalysisQAEvent() {
+        return hasAnalysisQAEvent;
+    }
+
+    public void setHasAnalysisQAEvent(Boolean hasAnalysisQAEvent) {
+        this.hasAnalysisQAEvent = hasAnalysisQAEvent;
+    }
+
+    public Boolean getHasSampleQAEvent() {
+        return hasSampleQAEvent;
+    }
+
+    public void setHasSampleQAEvent(Boolean hasSampleQAEvent) {
+        this.hasSampleQAEvent = hasSampleQAEvent;
+    }
+    
+    public Boolean getHasAnalysisWarning() {
+        return hasAnalysisWarning;
+    }
+
+    public void setHasAnalysisWarning(Boolean hasAnalysisWarning) {
+        this.hasAnalysisWarning = hasAnalysisWarning;
+    }
+
+    public Boolean getHasSampleWarning() {
+        return hasSampleWarning;
+    }
+
+    public void setHasSampleWarning(Boolean hasSampleWarning) {
+        this.hasSampleWarning = hasSampleWarning;
+    }
+
+    public Boolean getHasAnalysisOverride() {
+        return hasAnalysisOverride;
+    }
+
+    public void setHasAnalysisOverride(Boolean hasAnalysisOverride) {
+        this.hasAnalysisOverride = hasAnalysisOverride;
+    }
+
+    public Boolean getHasSampleOverride() {
+        return hasSampleOverride;
+    }
+
+    public void setHasSampleOverride(Boolean hasSampleOverride) {
+        this.hasSampleOverride = hasSampleOverride;
     }
 }
