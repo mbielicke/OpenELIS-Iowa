@@ -51,16 +51,8 @@ public class StorageManagerBean implements StorageManagerRemote {
         return StorageManager.fetchCurrentByLocationId(id);
     }
 
-    public StorageManager fetchHistoryByLocationId(Query query, Integer max) throws Exception { 
-        QueryData field;
-        
-        field = new QueryData();
-        field.key = "max";
-        field.query = Integer.toString(max);
-        field.type = QueryData.Type.INTEGER;
-        
-        query.setFields(field);
-        return StorageManager.fetchHistoryByLocationId(query);
+    public StorageManager fetchHistoryByLocationId(Integer id, int first, int max) throws Exception { 
+        return StorageManager.fetchHistoryByLocationId(id, first, max);
     }
 
     public StorageManager update(StorageManager man) throws Exception {

@@ -89,7 +89,7 @@ public class StorageViewManager implements RPC {
         return svm;
     }
     
-    public static StorageViewManager fetchWithHistory(Integer id, int first) throws Exception {
+    public static StorageViewManager fetchWithHistory(Integer id, int first, int max) throws Exception {
         StorageLocationManager slm;
         StorageManager sm;
         StorageViewManager svm;
@@ -108,7 +108,7 @@ public class StorageViewManager implements RPC {
         
         query.setPage(first);
         
-        sm = StorageManager.fetchHistoryByLocationId(query);
+        sm = StorageManager.fetchHistoryByLocationId(id, first, max);
         svm = StorageViewManager.getInstance();
          
         svm.storageLocation = slm;
@@ -164,10 +164,10 @@ public class StorageViewManager implements RPC {
         return current;
     }
     
-    public StorageManager getHistory(Query query) throws Exception {
+    public StorageManager getHistory(Integer id, int first, int max) throws Exception {
         if (storageLocation != null && storageLocation.getStorageLocation().getId() != null) {
             try {
-                history = StorageManager.fetchHistoryByLocationId(query);
+                history = StorageManager.fetchHistoryByLocationId(id, first, max);
             } catch (NotFoundException e) {
                 // ignore
             } catch (Exception e) {

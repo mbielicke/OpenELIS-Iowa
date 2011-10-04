@@ -62,19 +62,11 @@ public class StorageManagerProxy {
         return sm;
     }
 
-    public StorageManager fetchHistoryByLocationId(Query query) throws Exception {
-        StorageLocal sl;
+    public StorageManager fetchHistoryByLocationId(Integer id, int first, int max) throws Exception {
         ArrayList<StorageViewDO> list;
         StorageManager sm;
-        QueryData field;
-        Integer max;
 
-        sl = EJBFactory.getStorage();
-
-        field = query.getFields().get(1);
-        max = Integer.valueOf(field.query);
-
-        list = sl.fetchHistoryByLocationId(query.getFields(), query.getPage(), max);
+        list = EJBFactory.getStorage().fetchHistoryByLocationId(id, first, max);
         sm = StorageManager.getInstance();
         sm.setStorages(list);
 

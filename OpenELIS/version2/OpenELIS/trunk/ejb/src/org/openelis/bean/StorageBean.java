@@ -151,25 +151,20 @@ public class StorageBean implements StorageLocal {
         return list;
     }
 
-    public ArrayList<StorageViewDO> fetchHistoryByLocationId(ArrayList<QueryData> fields,
-                                                             int first,
-                                                             int max) throws Exception {
+    public ArrayList<StorageViewDO> fetchHistoryByLocationId(Integer id, int first, int max) throws Exception {
         SystemUserVO user;
         StorageViewDO data;
         AnalysisViewDO anaDO;
         SampleItemViewDO itemDO;
         SampleDO sampleDO;
         Query query;
-        Integer refTableId, sampleItemId, analysisId, id;
+        Integer refTableId, sampleItemId, analysisId;
         ArrayList<StorageViewDO> list;
-        QueryData field;
         String description, container;
 
         sampleItemId = ReferenceTable.SAMPLE_ITEM;
         analysisId = ReferenceTable.ANALYSIS;
-
-        field = fields.get(0);
-        id = Integer.valueOf(field.query);
+        
         query = manager.createNamedQuery("Storage.FetchHistoryByLocationId");
         query.setParameter("id", id);
         query.setMaxResults(first + max);
