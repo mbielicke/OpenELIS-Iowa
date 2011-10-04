@@ -37,13 +37,19 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+
+import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleLocal;
+import org.openelis.local.SampleQAEventLocal;
 import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.SampleStatusReportRemote;
@@ -60,11 +66,17 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
 
     @EJB
     private DictionaryLocal            dictionary;
+    
+    @EJB
+    private SampleQAEventLocal         sampleQa;
+    
+    @EJB
+    private AnalysisQAEventLocal       analysisQa;
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
 
-    private static Integer             sampleNotVerifiedId, organizationReportToId;
+    private static Integer             sampleNotVerifiedId, organizationReportToId, qaWarningId, qaOverrideId;
 
     private static final SampleWebMeta meta = new SampleWebMeta();
 
@@ -73,18 +85,22 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         try {
             sampleNotVerifiedId = dictionary.fetchBySystemName("sample_not_verified").getId();
             organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
+            qaWarningId = dictionary.fetchBySystemName("qaevent_warning").getId();
+            qaOverrideId = dictionary.fetchBySystemName("qaevent_override").getId();
         } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception {
-        int id;
+        int id, sampleId, prevSampleId, analysisId;
         String clause, orgIds;
         ArrayList<SampleStatusWebReportVO> returnList;
         ArrayList<IdAccessionVO> tempList;
         ArrayList<Integer> idList;
-
+        ArrayList<SampleQaEventViewDO> sampleQAList;
+        ArrayList<AnalysisQaEventViewDO> analysisQAList;
+        boolean hasOverride, hasWarning;
         /*
          * Retrieving the organization Ids to which the user belongs to from the
          * security clause in the userPermission.
@@ -131,10 +147,67 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * Query all the three domains to get the sample/analysis information
          * for the list of sample ids
          */
+          
         returnList.addAll(sample.fetchSampleAnalysisInfoForSampleStatusReportEnvironmental(idList));
         returnList.addAll(sample.fetchSampleAnalysisInfoForSampleStatusReportPrivateWell(idList));
         returnList.addAll(sample.fetchSampleAnalysisInfoForSampleStatusReportSDWIS(idList));
-
+        
+        prevSampleId = -1;
+        for(SampleStatusWebReportVO vo: returnList) {
+            sampleId = vo.getSampleId();
+            hasOverride = hasWarning = false;
+            if(sampleId != prevSampleId) {
+                try {
+                    sampleQAList = sampleQa.fetchExternalBySampleId(sampleId);
+                    for(SampleQaEventViewDO sq : sampleQAList) {
+                        if(qaOverrideId.equals(sq.getTypeId())) {
+                            hasOverride = true;
+                            break;
+                        }
+                        if(qaWarningId.equals(sq.getTypeId())) {
+                            hasWarning = true;
+                        }
+                    }
+                    vo.setHasSampleQAEvent(true);
+                    if(hasOverride) {
+                        vo.setHasSampleOverride(true);
+                        vo.setHasSampleWarning(false);
+                    }
+                    if(hasWarning && (hasOverride == false)){
+                        vo.setHasSampleWarning(true);
+                        vo.setHasSampleOverride(false);
+                    }
+                } catch(NotFoundException e) {
+                    vo.setHasSampleQAEvent(false);
+                }
+            }
+            hasOverride = hasWarning = false;
+            analysisId = vo.getAnalysisId();            
+            try {
+                analysisQAList = analysisQa.fetchExternalByAnalysisId(analysisId);
+                for(AnalysisQaEventViewDO aq : analysisQAList) {
+                    if(qaOverrideId.equals(aq.getTypeId())) {
+                        hasOverride = true;
+                        break;
+                    }
+                    if(qaWarningId.equals(aq.getTypeId())) {
+                        hasWarning = true;
+                    }
+                }
+                vo.setHasAnalysisQAEvent(true);
+                if(hasOverride) {
+                    vo.setHasAnalysisOverride(true);
+                    vo.setHasAnalysisWarning(false);
+                }
+                if(hasWarning && (hasOverride == false)){
+                    vo.setHasAnalysisWarning(true);
+                    vo.setHasAnalysisOverride(false);
+                }
+            } catch(NotFoundException e) {
+                vo.setHasAnalysisQAEvent(false);
+            } 
+            prevSampleId = sampleId;
+        }        
         /*
          * Sort the list by accession # of samples. We do the sorting in the
          * back end instead of doing it in the front, since the comparator for
