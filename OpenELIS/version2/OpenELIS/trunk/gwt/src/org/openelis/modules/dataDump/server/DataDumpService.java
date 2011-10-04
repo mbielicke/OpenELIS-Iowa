@@ -41,8 +41,12 @@ public class DataDumpService {
         return remote().fetchPermanentProjectList();        
     }
     
-    public DataDumpVO fetchAnalyteResultAndAuxData(Query query) throws Exception {
-        return remote().fetchAnalyteResultAndAuxData(query.getFields());
+    public DataDumpVO fetchAnalyteAndAuxField(Query query) throws Exception {
+        return remote().fetchAnalyteAndAuxField(query.getFields());
+    }
+    
+    public DataDumpVO fetchAnalyteAndAuxFieldForWebEnvironmental(Query query) throws Exception {
+        return remote().fetchAnalyteAndAuxFieldForWebEnvironmental(query.getFields());
     }
     
     public ReportStatus runReport(DataDumpVO data) throws Exception {

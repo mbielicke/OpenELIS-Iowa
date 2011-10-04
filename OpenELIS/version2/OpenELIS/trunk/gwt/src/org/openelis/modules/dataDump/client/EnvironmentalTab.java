@@ -61,14 +61,14 @@ public class EnvironmentalTab extends Screen {
             }
         });
 
-        envCollector = (CheckBox)def.getWidget(SampleWebMeta.getEnvCollector());
+        envCollector = (CheckBox)def.getWidget(SampleWebMeta.getEnvCollectorHeader());
         addScreenHandler(envCollector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                envCollector.setValue(data.getSampleEnvironmentalCollector());
+                envCollector.setValue(data.getSampleEnvironmentalCollectorHeader());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalCollector(event.getValue());
+                data.setSampleEnvironmentalCollectorHeader(event.getValue());
                 changeCount(event.getValue());
             }
 
@@ -93,14 +93,14 @@ public class EnvironmentalTab extends Screen {
             }
         });
 
-        envLocation = (CheckBox)def.getWidget(SampleWebMeta.getEnvLocation());
+        envLocation = (CheckBox)def.getWidget(SampleWebMeta.getEnvLocationHeader());
         addScreenHandler(envLocation, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                envLocation.setValue(data.getSampleEnvironmentalLocation());
+                envLocation.setValue(data.getSampleEnvironmentalLocationHeader());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalLocation(event.getValue());
+                data.setSampleEnvironmentalLocationHeader(event.getValue());
                 changeCount(event.getValue());
             }
 

@@ -465,7 +465,7 @@ UIRF Software License are applicable instead of those above.
                   <widget>
                     <HorizontalPanel width="60" />
                   </widget>
-                  <check key="{meta:getEnvCollector()}" />
+                  <check key="{meta:getEnvCollectorHeader()}" />
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select="resource:getString($constants,'collector')" />
                   </text>
@@ -481,7 +481,7 @@ UIRF Software License are applicable instead of those above.
                   <widget>
                     <HorizontalPanel width="60" />
                   </widget>
-                  <check key="{meta:getEnvLocation()}" />
+                  <check key="{meta:getEnvLocationHeader()}" />
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select='resource:getString($constants,"location")' />
                   </text>
