@@ -58,7 +58,7 @@ public interface ResultLocal {
 	public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer sampleId,
 			Integer analysisId) throws Exception;
 	
-	public ArrayList<ResultViewDO> fetchForDataDump(ArrayList<Integer> ids) throws Exception;
+	public ArrayList<ResultViewDO> fetchForDataDump(ArrayList<Integer> analysisIds) throws Exception;
 
 	public ResultViewDO add(ResultViewDO data);
 
