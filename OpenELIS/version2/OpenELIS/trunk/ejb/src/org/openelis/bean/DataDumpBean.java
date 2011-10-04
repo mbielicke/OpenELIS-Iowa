@@ -202,7 +202,7 @@ public class DataDumpBean implements DataDumpRemote {
                 cat = ccl.getBySystemName("analysis_status");
                 list = cat.getDictionaryList();
                 for (DictionaryDO data : list) {
-                    if ("analysis_status".equals(data.getSystemName()))
+                    if ("analysis_released".equals(data.getSystemName()))
                         releasedStatusId = data.getId();
                     dictEntryMap.put(data.getId(), data.getEntry());
                 }
@@ -240,9 +240,36 @@ public class DataDumpBean implements DataDumpRemote {
     public ArrayList<IdNameVO> fetchPermanentProjectList() throws Exception {
         return sampleProject.fetchPermanentProjectList();
     }
+    
+    @TransactionTimeout(180)
+    public DataDumpVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields) throws Exception {
+        
+        if (fields == null || fields.size() == 0)
+            throw new InconsistencyException("You may not execute an empty query");      
+                
+        return fetchAnalyteAndAuxField(fields, null);
+    }
+    
+    @TransactionTimeout(180)
+    public DataDumpVO fetchAnalyteAndAuxFieldForWebEnvironmental(ArrayList<QueryData> fields) throws Exception {
+        QueryData field;
+       
+        
+        if (fields == null || fields.size() == 0)
+            throw new InconsistencyException("You may not execute an empty query");      
+        field = new QueryData();
+        field.key = SampleWebMeta.getDomain();
+        field.query = "E";
+        field.type = QueryData.Type.STRING;
+        
+        fields.add(field);
+        
+        return fetchAnalyteAndAuxField(fields, "w_datadump_environmental");
+    }
+    
 
     @TransactionTimeout(180)
-    public DataDumpVO fetchAnalyteResultAndAuxData(ArrayList<QueryData> fields) throws Exception {
+    private DataDumpVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields, String moduleName) throws Exception {
         int i;
         Integer samId, prevSamId, analysisId;
         String excludeOverride;
@@ -266,6 +293,15 @@ public class DataDumpBean implements DataDumpRemote {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct " + SampleWebMeta.getAnalysisId() + ", " + SampleWebMeta.getId() + " ");
+        /*
+         * If moduleName is not null, then this query is being executed for the web and we need to report only released analysis.
+         */
+        if (moduleName != null) {
+            builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);
+            builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + getOrganizationIds(moduleName));
+            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
+        }
+        
         builder.constructWhere(fields);
         builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
         builder.setOrderBy(SampleWebMeta.getId());
@@ -338,7 +374,7 @@ public class DataDumpBean implements DataDumpRemote {
             if (analysisIds.size() > 0) {
                 /*
                  * fetch the results belonging to the analyses that weren't left 
-                 * out, if any, in the code above because of their results being
+                 * out, if any, by the code above because of their results being
                  * overridden  
                  */ 
                 resList = result.fetchForDataDump(analysisIds);
@@ -375,43 +411,27 @@ public class DataDumpBean implements DataDumpRemote {
     public ReportStatus runReportForWebEnvironmental(DataDumpVO data) throws Exception {
         ArrayList<QueryData> fields;
         QueryData field;
-        String clause, orgIds;
         
         fields = data.getQueryFields();
         if (fields == null || fields.size() == 0)
             throw new InconsistencyException("You may not execute an empty query");
         
-        /*
-         * Retrieving the organization Ids which the user belongs to from the
-         * security clause in the userPermission.
-         */
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule("w_datadump_environmental")
-                           .getClause();
-        orgIds = ReportUtil.parseClauseAsString(clause)
-                           .get(SampleMeta.getSampleOrgOrganizationId());
         field = new QueryData();
-        field.key = SampleWebMeta.getSampleOrgOrganizationId();
-        field.query = orgIds;
-        field.type = QueryData.Type.INTEGER;        
+        field.key = SampleWebMeta.getDomain();
+        field.query = "E";
+        field.type = QueryData.Type.STRING;
+        
         fields.add(field);
         
-        field = new QueryData();
-        field.key = SampleWebMeta.getSampleOrgTypeId();
-        field.query = organizationReportToId.toString();
-        field.type = QueryData.Type.INTEGER;        
-        fields.add(field);              
-        
-        return runReport(data, true);
+        return runReport(data, "w_datadump_environmental");
     }
     
     @TransactionTimeout(600)
     public ReportStatus runReport(DataDumpVO data) throws Exception {
-        return runReport(data, false);
+        return runReport(data, null);
     }
        
-    private ReportStatus runReport(DataDumpVO data, boolean runforWeb) throws Exception {
+    private ReportStatus runReport(DataDumpVO data, String moduleName) throws Exception {
         boolean excludeOverride;
         FileOutputStream out;
         File tempFile;
@@ -506,10 +526,16 @@ public class DataDumpBean implements DataDumpRemote {
             builder.constructWhere(fields);
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
                              SampleWebMeta.getAnalysisSampleItemId());
-            if (runforWeb) {
+            /*
+             * If moduleName is present, then it means that this report is being run for the samples belonging to
+             *  the list of organizations specified in this user's system_user_module for a specific domain.
+             */
+            if (moduleName != null) {
+                builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + getOrganizationIds(moduleName));
+                builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
                 builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);
-                builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);                
-            }
+                builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);
+            }          
             builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
             builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
             builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
@@ -537,8 +563,15 @@ public class DataDumpBean implements DataDumpRemote {
                               ", " + SampleWebMeta.getAuxDataTypeId() +
                               ", " + SampleWebMeta.getAuxDataValue());
             builder.constructWhere(fields);
-            if (runforWeb) 
-                builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);            
+            /*
+             * If moduleName is present, then it means that this report is being run for the samples belonging to
+             *  the list of organizations specified in this user's system_user_module for a specific domain.
+             */
+            if (moduleName != null) {
+                builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + getOrganizationIds(moduleName));
+                builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
+                builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId); 
+            }
             builder.addWhere(SampleWebMeta.getAuxDataIsReportable() + "=" + "'Y'");
             builder.addWhere(SampleWebMeta.getAuxDataValue() + "!=" + "null");
             builder.addWhere(SampleWebMeta.getAuxDataAuxFieldAnalyteId() +
@@ -1367,11 +1400,11 @@ public class DataDumpBean implements DataDumpRemote {
             headers.add(resource.getString("hazardous"));
         if ("Y".equals(data.getSampleEnvironmentalPriority()))
             headers.add(resource.getString("priority"));
-        if ("Y".equals(data.getSampleEnvironmentalCollector()))
+        if ("Y".equals(data.getSampleEnvironmentalCollectorHeader()))
             headers.add(resource.getString("collector"));
         if ("Y".equals(data.getSampleEnvironmentalCollectorPhone()))
             headers.add(resource.getString("phone"));
-        if ("Y".equals(data.getSampleEnvironmentalLocation()))
+        if ("Y".equals(data.getSampleEnvironmentalLocationHeader()))
             headers.add(resource.getString("location"));        
         if ("Y".equals(data.getSampleEnvironmentalLocationAddressCity()))
             headers.add(resource.getString("locationCity"));
@@ -1688,7 +1721,7 @@ public class DataDumpBean implements DataDumpRemote {
         if ("Y".equals(data.getAnalysisReleasedDate())) {
             cell = row.createCell(startCol++);
             if (analysis != null) {
-                dt = analysis.getCompletedDate();
+                dt = analysis.getReleasedDate();
                 if (dt != null) 
                     cell.setCellValue(dt.toString());
             }
@@ -1743,7 +1776,7 @@ public class DataDumpBean implements DataDumpRemote {
                     cell.setCellValue(pr);
             }
         }
-        if ("Y".equals(data.getSampleEnvironmentalCollector())) {
+        if ("Y".equals(data.getSampleEnvironmentalCollectorHeader())) {
             cell = row.createCell(startCol++ );
             if (env != null)
                 cell.setCellValue(env.getCollector());
@@ -1753,7 +1786,7 @@ public class DataDumpBean implements DataDumpRemote {
             if (env != null)
                 cell.setCellValue(env.getCollectorPhone());
         }
-        if ("Y".equals(data.getSampleEnvironmentalLocation())) {
+        if ("Y".equals(data.getSampleEnvironmentalLocationHeader())) {
             cell = row.createCell(startCol++ );
             if (env != null)
                 cell.setCellValue(env.getLocation());
@@ -1932,5 +1965,21 @@ public class DataDumpBean implements DataDumpRemote {
             return null;                
                 
         return value;
+    }
+    
+    private String getOrganizationIds(String moduleName) throws Exception {
+       String clause, orgIds;
+        /*
+         * Retrieving the organization Ids to which the user belongs to from the
+         * security clause in the userPermission.
+         */
+        clause = EJBFactory.getUserCache()
+                           .getPermission()
+                           .getModule(moduleName)
+                           .getClause();
+        orgIds = ReportUtil.parseClauseAsString(clause)
+                           .get(SampleMeta.getSampleOrgOrganizationId());
+        return orgIds;
+        
     }
 }
