@@ -38,7 +38,9 @@ import org.openelis.gwt.common.data.QueryData;
 public interface DataDumpRemote {
     public ArrayList<IdNameVO> fetchPermanentProjectList() throws Exception;
     
-    public DataDumpVO fetchAnalyteResultAndAuxData(ArrayList<QueryData> fields) throws Exception;
+    public DataDumpVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields) throws Exception ;
+    
+    public DataDumpVO fetchAnalyteAndAuxFieldForWebEnvironmental(ArrayList<QueryData> fields) throws Exception ;
     
     public ReportStatus runReport(DataDumpVO data) throws Exception;
     
