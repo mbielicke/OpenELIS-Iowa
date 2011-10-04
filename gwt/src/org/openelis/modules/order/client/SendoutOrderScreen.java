@@ -927,7 +927,7 @@ public class SendoutOrderScreen extends Screen {
                 field.type = QueryData.Type.STRING;
                 query.setFields(field);
 
-                query.setRowsPerPage(20);
+                query.setRowsPerPage(23);
                 service.callList("query", query, new AsyncCallback<ArrayList<IdNameVO>>() {
                     public void onSuccess(ArrayList<IdNameVO> result) {
                         setQueryResult(result);

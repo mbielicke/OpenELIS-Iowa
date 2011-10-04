@@ -77,8 +77,8 @@ public class StorageManager implements RPC {
         return storageList.size();
     }   
     
-    public static StorageManager fetchHistoryByLocationId(Query query) throws Exception {
-        return proxy().fetchHistoryByLocationId(query);
+    public static StorageManager fetchHistoryByLocationId(Integer id, int first, int max) throws Exception {
+        return proxy().fetchHistoryByLocationId(id, first, max);
     }
     
     public static StorageManager fetchCurrentByLocationId(Integer id) throws Exception {

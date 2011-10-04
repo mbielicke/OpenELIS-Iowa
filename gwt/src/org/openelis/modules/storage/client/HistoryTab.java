@@ -30,15 +30,12 @@ import java.util.EnumSet;
 
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -47,7 +44,6 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.manager.StorageManager;
 import org.openelis.manager.StorageViewManager;
-import org.openelis.meta.StorageMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -123,8 +119,6 @@ public class HistoryTab extends Screen {
         ArrayList<TableDataRow> model;
         StorageManager sm;  
         StorageLocationManager slm;
-        Query query;
-        QueryData field;
         String location;
                 
         model = new ArrayList<TableDataRow>();
@@ -139,19 +133,9 @@ public class HistoryTab extends Screen {
             return;
         
         try {           
-            window.setBusy(consts.get("fetching"));
+            window.setBusy(consts.get("fetching"));                      
             
-            query = new Query();
-            
-            field = new QueryData();
-            field.key = StorageMeta.getStorageLocationId();
-            field.query = slm.getStorageLocation().getId().toString();
-            field.type = QueryData.Type.INTEGER;            
-            query.setFields(field);
-                         
-            query.setPage(pageNum);
-            
-            sm = manager.getHistory(query);       
+            sm = manager.getHistory(slm.getStorageLocation().getId(), pageNum, 100);       
         } catch (LastPageException e) {
             window.setError(consts.get("noMoreRecordInDir"));
             pageNum--;
@@ -170,7 +154,7 @@ public class HistoryTab extends Screen {
             row = new TableDataRow(5);            
             location = data.getStorageLocationName();
             if(location != null)
-                location = location.replaceAll(",", "");
+                location = location.replaceAll("," , "");
             row.cells.get(0).setValue(location);
             row.cells.get(1).setValue(data.getItemDescription());
             row.cells.get(2).setValue(data.getUserName());

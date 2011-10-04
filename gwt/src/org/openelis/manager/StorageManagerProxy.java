@@ -27,10 +27,13 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.meta.StorageMeta;
 
 public class StorageManagerProxy {
     protected static final String STORAGE_SERVICE_URL = "org.openelis.modules.storage.server.StorageService";
@@ -65,7 +68,20 @@ public class StorageManagerProxy {
         return service.call("fetchCurrentByLocationId", id);
     }
     
-    public StorageManager fetchHistoryByLocationId(Query query) throws Exception {
+    public StorageManager fetchHistoryByLocationId(Integer id, int first, int max) throws Exception {
+        Query query;
+        QueryData field;
+        
+        query = new Query();
+        
+        field = new QueryData();
+        field.key = StorageMeta.getStorageLocationId();
+        field.query = id.toString();
+        field.type = QueryData.Type.INTEGER;            
+        query.setFields(field);
+                     
+        query.setRowsPerPage(max);
+        query.setPage(first * max);  
         return service.call("fetchHistoryByLocationId", query);
     }
     

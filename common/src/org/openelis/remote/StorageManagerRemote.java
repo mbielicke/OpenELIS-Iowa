@@ -11,7 +11,7 @@ public interface StorageManagerRemote {
     
     public StorageManager fetchCurrentByLocationId(Integer id) throws Exception;
 
-    public StorageManager fetchHistoryByLocationId(Query query, Integer max) throws Exception;
+    public StorageManager fetchHistoryByLocationId(Integer id, int first, int max) throws Exception;
     
     public StorageManager update(StorageManager man) throws Exception;
 }

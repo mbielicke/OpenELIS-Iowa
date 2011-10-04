@@ -36,8 +36,6 @@ import org.openelis.remote.StorageManagerRemote;
 
 public class StorageService {
 
-    private static final int rowPP = 100;
-
     public StorageManager fetchById(Query query) throws Exception {
         return remoteManager().fetchById(new Integer(query.getFields().get(0).query),
                                          new Integer(query.getFields().get(1).query));
@@ -47,9 +45,9 @@ public class StorageService {
         return remoteManager().fetchCurrentByLocationId(id);
     }
 
-    public StorageManager fetchHistoryByLocationId(Query query) throws Exception {
-        query.setPage(query.getPage() * rowPP);
-        return remoteManager().fetchHistoryByLocationId(query, rowPP);
+    public StorageManager fetchHistoryByLocationId(Query query) throws Exception {        
+        return remoteManager().fetchHistoryByLocationId(new Integer(query.getFields().get(0).query), 
+                                                        query.getPage(),query.getRowsPerPage());
     }
 
     public ArrayList<StorageLocationViewDO> fetchAvailableByName(String search) throws Exception {

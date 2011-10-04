@@ -57,7 +57,7 @@ UIRF Software License are applicable instead of those above.
               </VerticalPanel>
             </buttonGroup>
             <VerticalPanel>
-              <table key="atozTable" width="auto" maxRows="20" style="atozTable">
+              <table key="atozTable" width="auto" maxRows="22" style="atozTable">
                 <col width="75" header="{resource:getString($constants,'orderNum')}">
                   <label field="String" />
                 </col>

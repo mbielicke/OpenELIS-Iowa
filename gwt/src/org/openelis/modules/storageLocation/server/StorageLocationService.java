@@ -47,7 +47,7 @@ public class StorageLocationService {
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getRowsPerPage(), query.getRowsPerPage());
+        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public StorageLocationManager add(StorageLocationManager man) throws Exception {
