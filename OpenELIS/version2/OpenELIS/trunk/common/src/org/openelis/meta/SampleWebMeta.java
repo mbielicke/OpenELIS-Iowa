@@ -63,8 +63,10 @@ public class SampleWebMeta implements Meta, MetaMap {
                     ENV_PRIORITY = "_sampleEnvironmental.priority",
                     ENV_DESCRIPTION = "_sampleEnvironmental.description",
                     ENV_COLLECTOR = "_sampleEnvironmental.collector",
+                    ENV_COLLECTOR_HEADER = "_sampleEnvironmental.collectorHeader",
                     ENV_COLLECTOR_PHONE = "_sampleEnvironmental.collectorPhone",
                     ENV_LOCATION = "_sampleEnvironmental.location",
+                    ENV_LOCATION_HEADER = "_sampleEnvironmental.locationHeader",
                     ENV_LOCATION_ADDRESS_ID = "_sampleEnvironmental.locationAddressId",
 
                     // sample private well
@@ -168,6 +170,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     SAMPLE_PROJECT_IS_PERMANENT = "_sampleProject.isPermanent",
                     
                     PROJECT_ID = "_project.id", 
+                    PROJECT_ID_HEADER = "_project.idHeader",
                     PROJECT_NAME = "_project.name",                    
                     PROJECT_DESCRIPTION = "_project.description",
                     
@@ -210,8 +213,8 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RELEASED_DATE, RELEASED_DATE_FROM,
                                                   RELEASED_DATE_TO, ENV_ID, ENV_SAMPLE_ID,
                                                   ENV_IS_HAZARDOUS, ENV_PRIORITY,
-                                                  ENV_DESCRIPTION, ENV_COLLECTOR,
-                                                  ENV_COLLECTOR_PHONE, ENV_LOCATION,
+                                                  ENV_DESCRIPTION, ENV_COLLECTOR, ENV_COLLECTOR_HEADER,
+                                                  ENV_COLLECTOR_PHONE, ENV_LOCATION, ENV_LOCATION_HEADER,
                                                   ENV_LOCATION_ADDRESS_ID, 
                                                   ENV_LOCATION_ADDRESS_ID,
                                                   LOCATION_ADDR_CITY,
@@ -287,7 +290,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   ADDR_CITY, ADDR_STATE, 
                                                   ADDR_ZIP_CODE, ADDR_COUNTRY,
                                                   SAMPLE_PROJECT_ID, SAMPLE_PROJECT_SAMPLE_ID,
-                                                  SAMPLE_PROJECT_PROJECT_ID,
+                                                  SAMPLE_PROJECT_PROJECT_ID, PROJECT_ID_HEADER,
                                                   SAMPLE_PROJECT_IS_PERMANENT,PROJECT_ID, 
                                                   PROJECT_NAME, PROJECT_DESCRIPTION,
                                                   AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID,
@@ -425,6 +428,10 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getEnvCollector() {
         return ENV_COLLECTOR;
     }
+    
+    public static String getEnvCollectorHeader() {
+        return ENV_COLLECTOR_HEADER;
+    }
 
     public static String getEnvCollectorPhone() {
         return ENV_COLLECTOR_PHONE;
@@ -432,6 +439,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getEnvLocation() {
         return ENV_LOCATION;
+    }
+    
+    public static String getEnvLocationHeader() {
+        return ENV_LOCATION_HEADER;
     }
 
     public static String getEnvLocationAddressId() {
@@ -770,6 +781,10 @@ public class SampleWebMeta implements Meta, MetaMap {
         return PROJECT_ID;
     }
     
+    public static String getProjectIdHeader() {
+        return PROJECT_ID_HEADER;
+    }
+    
     public static String getProjectName() {
         return PROJECT_NAME;
     }
@@ -855,6 +870,11 @@ public class SampleWebMeta implements Meta, MetaMap {
 
         // sample env
         if (where.indexOf("sampleEnvironmental.") > -1) {
+            from += ", IN (_sample.sampleEnvironmental) _sampleEnvironmental ";
+            from += " left join _sampleEnvironmental.locationAddress _locationAddress ";
+        }
+        
+        if (where.indexOf("locationAddress.") > -1 && where.indexOf("sampleEnvironmental.") == -1) {
             from += ", IN (_sample.sampleEnvironmental) _sampleEnvironmental ";
             from += " left join _sampleEnvironmental.locationAddress _locationAddress ";
         }
