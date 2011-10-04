@@ -681,7 +681,7 @@ public class DataDumpScreen extends Screen {
         data.setQueryFields(query.getFields());
         window.setBusy(consts.get("querying"));
         try {
-            ldata = service.call("fetchAnalyteResultAndAuxData", query);
+            ldata = service.call("fetchAnalyteAndAuxField", query);
             data.setAnalytes(ldata.getTestAnalytes());
             data.setAuxFields(ldata.getAuxFields());
             showFilter(data);
