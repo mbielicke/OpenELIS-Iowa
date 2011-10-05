@@ -60,14 +60,14 @@ UIRF Software License are applicable instead of those above.
   </servlet>
 
   <servlet>
-    <servlet-name>PreferencesServlet</servlet-name>
-    <servlet-class>org.openelis.server.PreferencesServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
-  </servlet>
-
-  <servlet>
     <servlet-name>ReportServlet</servlet-name>
     <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+  
+  <servlet>
+    <servlet-name>FileServlet</servlet-name>
+    <servlet-class>org.openelis.gwt.server.FileServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
   
@@ -75,16 +75,17 @@ UIRF Software License are applicable instead of those above.
     <servlet-name>OpenELISServlet</servlet-name>
     <url-pattern>/controller</url-pattern>
   </servlet-mapping>
-      
-  <servlet-mapping>
-    <servlet-name>PreferencesServlet</servlet-name>
-    <url-pattern>/PreferencesServlet</url-pattern>
-  </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>ReportServlet</servlet-name>
     <url-pattern>/report</url-pattern>
   </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>FileServlet</servlet-name>
+    <url-pattern>/upload</url-pattern>
+  </servlet-mapping>
+  
   
   <session-config>
     <session-timeout>300</session-timeout>
