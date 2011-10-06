@@ -1045,7 +1045,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         try {
             selectedRow = test.getSelection();
             if (selectedRow != null) {
-                if (selectedRow.data instanceof PanelDO)
+                if (((TestMethodVO)selectedRow.data).getMethodId() == null)
                     ActionEvent.fire(this, Action.PANEL_ADDED, id);
                 else
                     ActionEvent.fire(this, Action.ANALYSIS_ADDED, id);

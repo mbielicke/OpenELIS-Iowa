@@ -528,10 +528,10 @@ public class WorksheetCreationLookupScreen extends Screen
         if (analysisRow != null) {
             editable = canAddTest(analysisRow) &&
                        Boolean.FALSE.equals(analysisRow.getHasQaOverride()) &&
-                       (!statusErrorInPrep.equals(analysisRow.getStatusId()) ||
-                        !statusInPrep.equals(analysisRow.getStatusId()) ||
-                        !statusReleased.equals(analysisRow.getStatusId()) ||
-                        !statusCancelled.equals(analysisRow.getStatusId()));
+                       !statusErrorInPrep.equals(analysisRow.getStatusId()) &&
+                       !statusInPrep.equals(analysisRow.getStatusId()) &&
+                       !statusReleased.equals(analysisRow.getStatusId()) &&
+                       !statusCancelled.equals(analysisRow.getStatusId());
         }
         return editable;
     }
