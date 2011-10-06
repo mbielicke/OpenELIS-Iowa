@@ -872,7 +872,7 @@ public class AnalysisManager implements RPC {
         //
 
         if (currentStatusId.equals(proxy().anCompletedId)) {
-            bundle = getItemAt(anaIndex).bundle;
+            bundle = getBundleAt(anaIndex);
             siMan = bundle.sampleManager.getSampleItems();
             for (i = 0; i < siMan.count(); i++ ) {
                 anaMan = bundle.sampleManager.getSampleItems().getAnalysisAt(i);
