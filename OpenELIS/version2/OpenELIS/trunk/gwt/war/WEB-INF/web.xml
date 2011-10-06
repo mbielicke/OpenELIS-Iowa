@@ -64,6 +64,12 @@ UIRF Software License are applicable instead of those above.
   </servlet>
 
   <servlet>
+    <servlet-name>FileServlet</servlet-name>
+    <servlet-class>org.openelis.gwt.server.FileServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+  
+  <servlet>
     <servlet-name>ReportServlet</servlet-name>
     <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
@@ -81,8 +87,8 @@ UIRF Software License are applicable instead of those above.
   </servlet-mapping>
   
   <servlet-mapping>
-    <servlet-name>ReportServlet</servlet-name>
-    <url-pattern>/report</url-pattern>
+    <servlet-name>FileServlet</servlet-name>
+    <url-pattern>/openelis/upload</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>
