@@ -217,7 +217,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                test.enable(EnumSet.of(State.QUERY, State.UPDATE).contains(event.getState()));
+                test.enable(event.getState() == State.QUERY ||
+                            (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                 .contains(event.getState())));
                 test.setQueryMode(event.getState() == State.QUERY);
             }
         });
