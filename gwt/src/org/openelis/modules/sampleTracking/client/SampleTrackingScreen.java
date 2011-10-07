@@ -1443,7 +1443,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             setState(State.DISPLAY);
             trackingTree.select(sampleRow);
             window.clearStatus();
-            setState(State.UPDATE);
             
             //
             // re-check the status to make sure it is still correct
@@ -1458,6 +1457,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 }
             } 
 
+            setState(State.UPDATE);
             DataChangeEvent.fire(this);
             setFocus(collectedDate);
             window.clearStatus();
