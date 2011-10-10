@@ -37,6 +37,7 @@ import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.web.LinkButton;
 import org.openelis.gwt.widget.web.WebWindow;
+import org.openelis.web.modules.dataView.client.DataViewEnvironmentalScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportEnvironmentalScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportPrivateWellScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportSDWISScreen;
@@ -218,10 +219,11 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        //TODO: add modules for the samples by test 
-        addLinkHandler("dataDumpEnvironmentalIcon", consts.get("environmentalSamplesByTest"), "", new ClickHandler() {
+        addLinkHandler("dataDumpEnvironmentalIcon", consts.get("environmentalSamplesByTest"), "w_datadump_environmental", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
+                    Screen screen = new DataViewEnvironmentalScreen();
+                    setScreen(screen, consts.get("environmentalSamplesByTest"), "environmentalSampleByTest");
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
