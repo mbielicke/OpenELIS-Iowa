@@ -28,6 +28,7 @@ UIRF Software License are applicable instead of those above.
                 xmlns:xalan="http://xml.apache.org/xalan"
                 xmlns:resource="xalan://org.openelis.util.UTFResource"
                 xmlns:locale="xalan://java.util.Locale"
+                xmlns:random="xalan://java.util.Random"
                 extension-element-prefixes="resource"
                 version="1.0">
 
@@ -38,6 +39,10 @@ UIRF Software License are applicable instead of those above.
   <xalan:component prefix="locale">
     <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
   </xalan:component>
+  
+  <xalan:component>
+    <xalan:script lang="javaclass" src="xalan://java.util.Random"/>
+  </xalan:component>
 
 <xsl:output method="html" encoding="UTF-8" indent="yes"/>
 
@@ -45,6 +50,7 @@ UIRF Software License are applicable instead of those above.
       <xsl:variable name="language"><xsl:value-of select="locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
+    <xsl:variable name="rand" select="random:new()"/>
 <html>
 <head>
     <title>OpenELIS Authentication Service</title>
@@ -73,7 +79,7 @@ UIRF Software License are applicable instead of those above.
         }
         .submit
         {
-            background: url("signIn.gif") no-repeat;
+            background: url("signIn<xsl:value-of select="random:nextInt($rand,5)"/>.gif") no-repeat;
             border-width:0px;
             width: 75px;
             height: 20px;
