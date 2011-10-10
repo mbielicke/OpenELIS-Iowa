@@ -38,6 +38,8 @@ public interface SystemVariableRemote {
 
     public SystemVariableDO fetchById(Integer id) throws Exception;
 
+    public SystemVariableDO fetchByName(String name) throws Exception;
+    
     public ArrayList<SystemVariableDO> fetchByName(String name, int max) throws Exception;
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;

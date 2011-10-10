@@ -34,13 +34,13 @@ import org.openelis.gwt.common.RPC;
  * This class is used for managing the analytes and results that will be part of
  * the spreadsheet delivered as a result of executing a data dump
  */
-public class TestAnalyteDataDumpVO implements RPC {
+public class TestAnalyteDataViewVO implements RPC {
 
     private static final long             serialVersionUID = 1L;
 
     protected Integer                     testAnalyteId, analyteId;
     protected String                      analyteName;   
-    protected ArrayList<ResultDataDumpVO> results;
+    protected ArrayList<ResultDataViewVO> results;
     protected String                      isIncluded;
 
     public Integer getTestAnalyteId() {
@@ -75,11 +75,11 @@ public class TestAnalyteDataDumpVO implements RPC {
         this.isIncluded = DataBaseUtil.trim(isIncluded);
     }
 
-    public ArrayList<ResultDataDumpVO> getResults() {
+    public ArrayList<ResultDataViewVO> getResults() {
         return results;
     }
 
-    public void setResults(ArrayList<ResultDataDumpVO> results) {
+    public void setResults(ArrayList<ResultDataViewVO> results) {
         this.results = results;
     }
 }

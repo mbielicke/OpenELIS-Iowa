@@ -1,8 +1,8 @@
-package org.openelis.modules.dataDump.client;
+package org.openelis.modules.dataView.client;
 
 import java.util.EnumSet;
 
-import org.openelis.domain.DataDumpVO;
+import org.openelis.domain.DataViewVO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -16,7 +16,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
 public class SDWISTab extends Screen {
     
-    private DataDumpVO data;
+    private DataViewVO data;
     private CheckBox   sdwisPwsId, pwsName, sdwisStateLabId, sdwisFacilityId, 
                        sdwisSampleTypeId, sdwisSampleCategoryId, sdwisSamplePointId,
                        sdwisLocation, sdwisCollector;
@@ -36,6 +36,7 @@ public class SDWISTab extends Screen {
         addScreenHandler(sdwisPwsId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisPwsId.setValue(data.getSampleSDWISPwsId());
+                changeCount(data.getSampleSDWISPwsId());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -52,6 +53,7 @@ public class SDWISTab extends Screen {
         addScreenHandler(pwsName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 pwsName.setValue(data.getSampleSDWISPwsName());
+                changeCount(data.getSampleSDWISPwsName());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -68,6 +70,7 @@ public class SDWISTab extends Screen {
         addScreenHandler(sdwisStateLabId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisStateLabId.setValue(data.getSampleSDWISStateLabId());
+                changeCount(data.getSampleSDWISStateLabId());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -84,6 +87,7 @@ public class SDWISTab extends Screen {
         addScreenHandler(sdwisFacilityId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisFacilityId.setValue(data.getSampleSDWISFacilityId());
+                changeCount(data.getSampleSDWISFacilityId());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -100,6 +104,7 @@ public class SDWISTab extends Screen {
         addScreenHandler(sdwisSampleTypeId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisSampleTypeId.setValue(data.getSampleSDWISSampleTypeId());
+                changeCount(data.getSampleSDWISSampleTypeId());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -116,6 +121,7 @@ public class SDWISTab extends Screen {
         addScreenHandler(sdwisSampleCategoryId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisSampleCategoryId.setValue(data.getSampleSDWISSampleCategoryId());
+                changeCount(data.getSampleSDWISSampleCategoryId());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -132,6 +138,7 @@ public class SDWISTab extends Screen {
         addScreenHandler(sdwisSamplePointId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisSamplePointId.setValue(data.getSampleSDWISSamplePointId());
+                changeCount(data.getSampleSDWISSamplePointId());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -148,6 +155,7 @@ public class SDWISTab extends Screen {
         addScreenHandler(sdwisLocation, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisLocation.setValue(data.getSampleSDWISLocation());
+                changeCount(data.getSampleSDWISLocation());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -164,6 +172,7 @@ public class SDWISTab extends Screen {
         addScreenHandler(sdwisCollector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 sdwisCollector.setValue(data.getSampleSDWISCollector());
+                changeCount(data.getSampleSDWISCollector());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -177,7 +186,7 @@ public class SDWISTab extends Screen {
         });
     } 
     
-    public void setData(DataDumpVO data) {
+    public void setData(DataViewVO data) {
         this.data = data;
         loaded = false;
         checkCount = 0;
@@ -199,7 +208,7 @@ public class SDWISTab extends Screen {
     private void changeCount(String val) {
         if ("Y".equals(val))
             checkCount++;
-        else
+        else if (checkCount > 0)
             checkCount--;
     }
 }

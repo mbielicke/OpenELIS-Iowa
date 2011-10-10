@@ -25,7 +25,10 @@
 */
 package org.openelis.bean;
 
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,17 +56,17 @@ import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.AuxDataDumpVO;
+import org.openelis.domain.AuxDataDataViewVO;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.AuxFieldDataDumpVO;
+import org.openelis.domain.AuxFieldDataViewVO;
 import org.openelis.domain.CategoryCacheVO;
-import org.openelis.domain.DataDumpVO;
+import org.openelis.domain.DataViewVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.ResultDataDumpVO;
+import org.openelis.domain.ResultDataViewVO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -72,7 +75,7 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.domain.TestAnalyteDataDumpVO;
+import org.openelis.domain.TestAnalyteDataViewVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
@@ -98,16 +101,15 @@ import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.remote.DataDumpRemote;
+import org.openelis.remote.DataViewRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.util.UTFResource;
 import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
-
 @SecurityDomain("openelis")
-public class DataDumpBean implements DataDumpRemote {
+public class DataViewBean implements DataViewRemote {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager                   manager;
@@ -167,7 +169,7 @@ public class DataDumpBean implements DataDumpRemote {
 
     private static final SampleWebMeta      meta = new SampleWebMeta();
 
-    private static final Logger             log  = Logger.getLogger(DataDumpBean.class);
+    private static final Logger             log  = Logger.getLogger(DataViewBean.class);
 
     private static UTFResource              resource;
 
@@ -242,7 +244,7 @@ public class DataDumpBean implements DataDumpRemote {
     }
     
     @TransactionTimeout(180)
-    public DataDumpVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields) throws Exception {
+    public DataViewVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields) throws Exception {
         
         if (fields == null || fields.size() == 0)
             throw new InconsistencyException("You may not execute an empty query");      
@@ -251,7 +253,7 @@ public class DataDumpBean implements DataDumpRemote {
     }
     
     @TransactionTimeout(180)
-    public DataDumpVO fetchAnalyteAndAuxFieldForWebEnvironmental(ArrayList<QueryData> fields) throws Exception {
+    public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(ArrayList<QueryData> fields) throws Exception {
         QueryData field;
        
         
@@ -268,8 +270,7 @@ public class DataDumpBean implements DataDumpRemote {
     }
     
 
-    @TransactionTimeout(180)
-    private DataDumpVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields, String moduleName) throws Exception {
+    private DataViewVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields, String moduleName) throws Exception {
         int i;
         Integer samId, prevSamId, analysisId;
         String excludeOverride;
@@ -280,7 +281,7 @@ public class DataDumpBean implements DataDumpRemote {
         ArrayList<ResultViewDO> resList;
         ArrayList<AuxDataViewDO> auxList;
         Object[] vo;
-        DataDumpVO data;
+        DataViewVO data;
 
         excludeOverride = null;
         for (QueryData field : fields) {
@@ -318,11 +319,11 @@ public class DataDumpBean implements DataDumpRemote {
         prevSamId = null;
         if ("Y".equals(excludeOverride)) {
             /*
-             * if there are qa event(s) of type result override found for a
-             * sample then all the results under it are excluded, i.e. the
-             * analysis's id is not added to the list that's used for the query
-             * executed to fetch the results, whereas if an analysis has such
-             * qa event(s) then only its results are excluded
+             * if qa event(s) of type result override are found for a sample then
+             * all the results under it are excluded, i.e. the sample's id is
+             * not added to the list that's used for the query executed to fetch
+             * the results, whereas if an analysis has such qa event(s) then only
+             * its results are excluded
              */
             i = 0;
             while (i < list.size()) {
@@ -368,7 +369,7 @@ public class DataDumpBean implements DataDumpRemote {
             }
         }
 
-        data = new DataDumpVO();
+        data = new DataViewVO();
         resList = null;
         try {
             if (analysisIds.size() > 0) {
@@ -408,7 +409,7 @@ public class DataDumpBean implements DataDumpRemote {
     
     @RolesAllowed("w_datadump_environmental")
     @TransactionTimeout(600)    
-    public ReportStatus runReportForWebEnvironmental(DataDumpVO data) throws Exception {
+    public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
         ArrayList<QueryData> fields;
         QueryData field;
         
@@ -427,17 +428,69 @@ public class DataDumpBean implements DataDumpRemote {
     }
     
     @TransactionTimeout(600)
-    public ReportStatus runReport(DataDumpVO data) throws Exception {
+    public ReportStatus runReport(DataViewVO data) throws Exception {
         return runReport(data, null);
     }
+    
+    public ReportStatus saveQuery(DataViewVO data) throws Exception {
+        FileOutputStream fos;
+        File tempFile;
+        ReportStatus status;
+        XMLEncoder enc;
+        
+        status = new ReportStatus();
+        status.setMessage("Initializing report");
+        session.setAttribute("DataViewQuery", status);
+        fos = null;
+        enc = null;
+        try {
+            status.setMessage("Saving query").setPercentComplete(20);
+            tempFile = File.createTempFile("query", ".xml", new File("/tmp"));
+            
+            status.setPercentComplete(100);
+
+            fos = new FileOutputStream(tempFile);
+            enc = new XMLEncoder(fos);
+            enc.writeObject(data);
+            /*
+             * the FileOutputStream gets closed by the XMLEncoder, and so we don't
+             * close it explicitly because trying to do so throws an exception  
+             */
+            enc.close();
+            tempFile = ReportUtil.saveForUpload(tempFile);
+            status.setMessage(tempFile.getName())
+                .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                .setStatus(ReportStatus.Status.SAVED);            
+        } catch (Exception e) {            
+            if (fos != null) 
+                fos.close();
+            if (enc != null) 
+                enc.close();
+            e.printStackTrace();
+            throw e;
+        } 
+        
+        return status;
+    }   
+    
+    public DataViewVO loadQuery(String path) throws Exception {
+        DataViewVO data;
+        XMLDecoder dec;
+                
+        dec = new XMLDecoder(new FileInputStream(path));
+        data = (DataViewVO)dec.readObject();        
+        dec.close(); 
+        
+        return data;
+    }
        
-    private ReportStatus runReport(DataDumpVO data, String moduleName) throws Exception {
+    private ReportStatus runReport(DataViewVO data, String moduleName) throws Exception {
         boolean excludeOverride;
         FileOutputStream out;
         File tempFile;
         List<Object[]> resultList, auxDataList;
-        ArrayList<TestAnalyteDataDumpVO> anaList;
-        ArrayList<AuxFieldDataDumpVO> auxList;
+        ArrayList<TestAnalyteDataViewVO> anaList;
+        ArrayList<AuxFieldDataViewVO> auxList;
         ReportStatus status;
         Query query;
         QueryBuilderV2 builder;
@@ -459,11 +512,11 @@ public class DataDumpBean implements DataDumpRemote {
              * the hashmap
              */
             analyteResultMap = new HashMap<Integer, HashMap<String,String>>();
-            for (TestAnalyteDataDumpVO ana : anaList) {
+            for (TestAnalyteDataViewVO ana : anaList) {
                 if ("N".equals(ana.getIsIncluded()))
                     continue;  
                 resultMap = new HashMap<String, String>();
-                for (ResultDataDumpVO res : ana.getResults()) {
+                for (ResultDataViewVO res : ana.getResults()) {
                     if ("Y".equals(res.getIsIncluded()))
                         resultMap.put(res.getValue(), res.getValue());
                 }
@@ -481,11 +534,11 @@ public class DataDumpBean implements DataDumpRemote {
              * the hashmap
              */
             auxFieldValueMap = new HashMap<Integer, HashMap<String,String>>();            
-            for (AuxFieldDataDumpVO af : auxList) {
+            for (AuxFieldDataViewVO af : auxList) {
                 if ("N".equals(af.getIsIncluded()))
                     continue;
                 valueMap = new HashMap<String, String>();
-                for (AuxDataDumpVO val : af.getValues()) {
+                for (AuxDataDataViewVO val : af.getValues()) {
                     if ("Y".equals(val.getIsIncluded()))
                         valueMap.put(val.getValue(), val.getValue());
                 }
@@ -527,8 +580,9 @@ public class DataDumpBean implements DataDumpRemote {
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
                              SampleWebMeta.getAnalysisSampleItemId());
             /*
-             * If moduleName is present, then it means that this report is being run for the samples belonging to
-             *  the list of organizations specified in this user's system_user_module for a specific domain.
+             * If moduleName is present, then it means that this report is being
+             * run for the samples belonging to the list of organizations specified
+             * in this user's system_user_module for a specific domain.
              */
             if (moduleName != null) {
                 builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + getOrganizationIds(moduleName));
@@ -564,8 +618,9 @@ public class DataDumpBean implements DataDumpRemote {
                               ", " + SampleWebMeta.getAuxDataValue());
             builder.constructWhere(fields);
             /*
-             * If moduleName is present, then it means that this report is being run for the samples belonging to
-             *  the list of organizations specified in this user's system_user_module for a specific domain.
+             * If moduleName is present, then it means that this report is being
+             * run for the samples belonging to the list of organizations specified
+             * in this user's system_user_module for a specific domain.
              */
             if (moduleName != null) {
                 builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + getOrganizationIds(moduleName));
@@ -618,7 +673,7 @@ public class DataDumpBean implements DataDumpRemote {
     private HSSFWorkbook getWorkbook(List<Object[]> resultList,  List<Object[]> auxDataList,                                     
                                      HashMap<Integer, HashMap<String, String>> analyteResultMap,
                                      HashMap<Integer, HashMap<String, String>> auxFieldValueMap,
-                                     boolean excludeOverride, DataDumpVO data) throws Exception {
+                                     boolean excludeOverride, DataViewVO data) throws Exception {
         boolean sampleOverriden, anaOverriden, addResultRow, addAuxDataRow, addSampleCells,
                 addOrgCells, addItemCells, addAnalysisCells, addEnvCells, addWellCells, addSDWISCells;
         int rowIndex, resIndex, auxIndex, numResults, numAuxVals, i; 
@@ -708,14 +763,15 @@ public class DataDumpBean implements DataDumpRemote {
         allCols.add(resource.getString("value"));        
         
         wb = new HSSFWorkbook();
-        sheet = wb.createSheet();
+        sheet = wb.createSheet();       
+        
         row  = sheet.createRow(1);
         //
-        // add cells for the header in the first row 
+        // add cells for the header in the second row 
         //
-        for (rowIndex = 0; rowIndex < allCols.size(); rowIndex++) {
-            cell = row.createCell(rowIndex);
-            cell.setCellValue(allCols.get(rowIndex));   
+        for (i = 0; i < allCols.size(); i++) {
+            cell = row.createCell(i);
+            cell.setCellValue(allCols.get(i));   
         }
                 
         rowIndex = 2;
@@ -780,13 +836,14 @@ public class DataDumpBean implements DataDumpRemote {
                 /*
                  * Find out if this result's accession number is less than this 
                  * aux data's and if it is then add a row for this result, otherwise
-                 * add a row for the aux data if its sample id is smaller. If both
-                 * ids are equal then add a row for the result first and then for the
-                 * aux data. Every time a row for a result is added the index keeping 
-                 * track of the next item in that list is incremented and the same
-                 * is done for the corresponding index for aux data. We compare
-                 * accession numbers instead of sample ids because the former is
-                 * the field shown in the sheet and not the latter.
+                 * add a row for the aux data if its accession number is smaller.
+                 * If both accession numbers are equal then add a row for the result
+                 * first and then for the aux data. Every time a row for a result
+                 * is added the index keeping track of the next item in that list
+                 * is incremented and the same is done for the corresponding index
+                 * for aux data if a row for it is added. We compare accession
+                 * numbers instead of sample  ids because the former is the field
+                 * shown in the sheet and not the latter.
                  */                
                 if (resAccNum < auxAccNum) {                    
                     addResultRow = true;
@@ -983,13 +1040,16 @@ public class DataDumpBean implements DataDumpRemote {
                         
             if (addOrgCells) {
                 /*
-                 * Add cells for the selected fields belonging to sample organization
+                 * add cells for the selected fields belonging to sample organization
                  * or the organization directly linked to a private well sample
                  */
                 if ("W".equals(domain)) {
                     if (well == null) 
-                        well = samplePrivateWell.fetchBySampleId(samId);                    
-                    addPrivateWellOrganizationCells(row, row.getPhysicalNumberOfCells(), data, well);
+                        well = samplePrivateWell.fetchBySampleId(samId);   
+                    if (addResultRow) 
+                        addPrivateWellOrganizationCells(resRow, resRow.getPhysicalNumberOfCells(), data, well);
+                    if (addAuxDataRow)
+                        addPrivateWellOrganizationCells(resRow, resRow.getPhysicalNumberOfCells(), data, well);
                 } else {
                     if (org == null) {
                         try {
@@ -1008,7 +1068,7 @@ public class DataDumpBean implements DataDumpRemote {
             
             if (addItemCells) {
                 //
-                // Add cells for the selected fields belonging to sample item
+                // add cells for the selected fields belonging to sample item
                 //
                 if (addResultRow) {
                     if (!itemId.equals(prevItemId)) {
@@ -1023,7 +1083,7 @@ public class DataDumpBean implements DataDumpRemote {
             
             if (addAnalysisCells) {
                 /*
-                 * Add cells for the selected fields belonging to sample organization
+                 * add cells for the selected fields belonging to sample organization
                  * or the organization directly linked to a private well sample
                  */
                 if (addResultRow) {                    
@@ -1149,20 +1209,23 @@ public class DataDumpBean implements DataDumpRemote {
             prevSamId = samId;
         }
         
-        for (rowIndex = 0; rowIndex < allCols.size(); rowIndex++) 
-            sheet.autoSizeColumn(rowIndex);        
+        //
+        // make each column wide enough to show the longest string in it  
+        //
+        for (i = 0; i < allCols.size(); i++) 
+            sheet.autoSizeColumn(i);        
         
         return wb;
     }  
     
-    private ArrayList<TestAnalyteDataDumpVO> getTestAnalytes(ArrayList<ResultViewDO> resList) throws Exception {
+    private ArrayList<TestAnalyteDataViewVO> getTestAnalytes(ArrayList<ResultViewDO> resList) throws Exception {
         Integer taId, dictId;
         String value;
-        TestAnalyteDataDumpVO anadd;
-        ResultDataDumpVO resdd;
-        ArrayList<TestAnalyteDataDumpVO> anaddList;
-        ArrayList<ResultDataDumpVO> resddList;
-        HashMap<Integer, TestAnalyteDataDumpVO> anaMap;     
+        TestAnalyteDataViewVO anadd;
+        ResultDataViewVO resdd;
+        ArrayList<TestAnalyteDataViewVO> anaddList;
+        ArrayList<ResultDataViewVO> resddList;
+        HashMap<Integer, TestAnalyteDataViewVO> anaMap;     
         HashMap<String, String> resMap; 
         DictionaryCacheLocal dcl;
         
@@ -1171,21 +1234,24 @@ public class DataDumpBean implements DataDumpRemote {
         
         taId = null;
         resddList = null;
-        anaddList = new ArrayList<TestAnalyteDataDumpVO>();
-        anaMap = new HashMap<Integer, TestAnalyteDataDumpVO>();
+        anaddList = new ArrayList<TestAnalyteDataViewVO>();
+        anaMap = new HashMap<Integer, TestAnalyteDataViewVO>();
         resMap = null;
         dcl = EJBFactory.getDictionaryCache();
-        // TODO comments
+        /*
+         * a TestAnalyteDataDumpVO is created for an analyte only once, no matter
+         * how many times it appears in the list of ResultViewDOs
+         */
         for (ResultViewDO res : resList) {
             taId = res.getAnalyteId();
             anadd = anaMap.get(taId);
             if (anadd == null) {                
-                anadd = new TestAnalyteDataDumpVO();
+                anadd = new TestAnalyteDataViewVO();
                 anadd.setAnalyteId(res.getAnalyteId());
                 anadd.setAnalyteName(res.getAnalyte());
                 anadd.setTestAnalyteId(res.getTestAnalyteId());
                 anadd.setIsIncluded("N");
-                resddList = new ArrayList<ResultDataDumpVO>();
+                resddList = new ArrayList<ResultDataViewVO>();
                 anadd.setResults(resddList);
                 anaddList.add(anadd);
                 anaMap.put(taId,anadd);
@@ -1208,7 +1274,7 @@ public class DataDumpBean implements DataDumpRemote {
                 continue;
             resMap.put(value, value);
             
-            resdd = new ResultDataDumpVO();
+            resdd = new ResultDataViewVO();
             resdd.setValue(value);
             resdd.setIsIncluded("N");
             resddList.add(resdd);
@@ -1216,14 +1282,14 @@ public class DataDumpBean implements DataDumpRemote {
         return anaddList;
     }
     
-    private ArrayList<AuxFieldDataDumpVO> getAuxFields(ArrayList<AuxDataViewDO> valList) throws Exception {
+    private ArrayList<AuxFieldDataViewVO> getAuxFields(ArrayList<AuxDataViewDO> valList) throws Exception {
         Integer taId, dictId;
         String value;
-        AuxFieldDataDumpVO anadd;
-        AuxDataDumpVO resdd;
-        ArrayList<AuxFieldDataDumpVO> anaddList;
-        ArrayList<AuxDataDumpVO> resddList;
-        HashMap<Integer, AuxFieldDataDumpVO> anaMap;  
+        AuxFieldDataViewVO anadd;
+        AuxDataDataViewVO resdd;
+        ArrayList<AuxFieldDataViewVO> anaddList;
+        ArrayList<AuxDataDataViewVO> resddList;
+        HashMap<Integer, AuxFieldDataViewVO> anaMap;  
         HashMap<String, String> resMap; 
         DictionaryCacheLocal dcl;
         
@@ -1232,21 +1298,24 @@ public class DataDumpBean implements DataDumpRemote {
         
         taId = null;
         resddList = null;
-        anaddList = new ArrayList<AuxFieldDataDumpVO>();
-        anaMap = new HashMap<Integer, AuxFieldDataDumpVO>();
+        anaddList = new ArrayList<AuxFieldDataViewVO>();
+        anaMap = new HashMap<Integer, AuxFieldDataViewVO>();
         resMap = null;
         dcl = EJBFactory.getDictionaryCache();
-        // TODO comments
+        /*
+         * an AuxFieldDataViewVO is created for an analyte only once, no matter
+         * how many times it appears in the list of AuxDataViewDOs
+         */
         for (AuxDataViewDO res : valList) {
             taId = res.getAnalyteId();
             anadd = anaMap.get(taId);
             if (anadd == null) {       
-                anadd = new AuxFieldDataDumpVO();
+                anadd = new AuxFieldDataViewVO();
                 anadd.setAnalyteId(res.getAnalyteId());
                 anadd.setAnalyteName(res.getAnalyteName());
                 anadd.setAuxFieldId(res.getAuxFieldId());    
                 anadd.setIsIncluded("N");
-                resddList = new ArrayList<AuxDataDumpVO>();
+                resddList = new ArrayList<AuxDataDataViewVO>();
                 anadd.setValues(resddList);
                 anaddList.add(anadd);
                 anaMap.put(taId,anadd);
@@ -1269,7 +1338,7 @@ public class DataDumpBean implements DataDumpRemote {
             if (resMap.get(value)!= null)
                 continue;
             
-            resdd = new AuxDataDumpVO();
+            resdd = new AuxDataDataViewVO();
             resdd.setValue(value);
             resdd.setIsIncluded("N");
             resddList.add(resdd);
@@ -1294,7 +1363,7 @@ public class DataDumpBean implements DataDumpRemote {
         return buf.toString();
     }
     
-    private ArrayList<String> getSampleHeaders(DataDumpVO data) {
+    private ArrayList<String> getSampleHeaders(DataViewVO data) {
         ArrayList<String> headers;
         
         headers = new ArrayList<String>();
@@ -1320,7 +1389,7 @@ public class DataDumpBean implements DataDumpRemote {
         return headers;            
     }
     
-    private ArrayList<String> getOrganizationHeaders(DataDumpVO data) {
+    private ArrayList<String> getOrganizationHeaders(DataViewVO data) {
         ArrayList<String> headers;
         
         headers = new ArrayList<String>();
@@ -1344,7 +1413,7 @@ public class DataDumpBean implements DataDumpRemote {
         return headers;            
     }
         
-    private ArrayList<String> getSampleItemHeaders(DataDumpVO data) {
+    private ArrayList<String> getSampleItemHeaders(DataViewVO data) {
         ArrayList<String> headers;
         
         headers = new ArrayList<String>();
@@ -1360,7 +1429,7 @@ public class DataDumpBean implements DataDumpRemote {
         return headers;            
     }
     
-    private ArrayList<String> getAnalysisHeaders(DataDumpVO data) {
+    private ArrayList<String> getAnalysisHeaders(DataViewVO data) {
         ArrayList<String> headers;
         
         headers = new ArrayList<String>();
@@ -1392,7 +1461,7 @@ public class DataDumpBean implements DataDumpRemote {
         return headers;            
     }
     
-    private ArrayList<String> getEnvironmentalHeaders(DataDumpVO data) {
+    private ArrayList<String> getEnvironmentalHeaders(DataViewVO data) {
         ArrayList<String> headers;
         
         headers = new ArrayList<String>();
@@ -1414,7 +1483,7 @@ public class DataDumpBean implements DataDumpRemote {
         return headers;            
     }
     
-    private ArrayList<String> getPrivateWellHeaders(DataDumpVO data) {
+    private ArrayList<String> getPrivateWellHeaders(DataViewVO data) {
         ArrayList<String> headers;
         
         headers = new ArrayList<String>();
@@ -1436,7 +1505,7 @@ public class DataDumpBean implements DataDumpRemote {
         return headers;            
     }
     
-    private ArrayList<String> getSDWISHeaders(DataDumpVO data) {
+    private ArrayList<String> getSDWISHeaders(DataViewVO data) {
         ArrayList<String> headers;
         
         headers = new ArrayList<String>();
@@ -1462,7 +1531,7 @@ public class DataDumpBean implements DataDumpRemote {
         return headers;            
     }
     
-    private void addSampleCells(Row row, int startCol, DataDumpVO data,
+    private void addSampleCells(Row row, int startCol, DataViewVO data,
                                 SampleDO sample, Datetime colDateTime,
                                 SampleProjectViewDO project) {  
         Cell cell;
@@ -1514,7 +1583,7 @@ public class DataDumpBean implements DataDumpRemote {
         }        
     }
     
-    private void addOrganizationCells(Row row, int startCol, DataDumpVO data, 
+    private void addOrganizationCells(Row row, int startCol, DataViewVO data, 
                                       SampleOrganizationViewDO org) {  
         Cell cell;
                 
@@ -1560,7 +1629,7 @@ public class DataDumpBean implements DataDumpRemote {
         }         
     }
     
-    private void addPrivateWellOrganizationCells(Row row, int startCol, DataDumpVO data, 
+    private void addPrivateWellOrganizationCells(Row row, int startCol, DataViewVO data, 
                                                  SamplePrivateWellViewDO spw) {  
         Cell cell;
         OrganizationDO org;
@@ -1612,7 +1681,7 @@ public class DataDumpBean implements DataDumpRemote {
         }         
     }
     
-    private void addSampleItemCells(Row row, int startCol, DataDumpVO data, SampleItemViewDO item, DictionaryCacheLocal dcl) {
+    private void addSampleItemCells(Row row, int startCol, DataViewVO data, SampleItemViewDO item, DictionaryCacheLocal dcl) {
         Integer id;
         Cell cell;
         DictionaryDO dict;
@@ -1666,7 +1735,7 @@ public class DataDumpBean implements DataDumpRemote {
         }
     }
     
-    private void addAnalysisCells(Row row, int startCol, DataDumpVO data,
+    private void addAnalysisCells(Row row, int startCol, DataViewVO data,
                                   AnalysisViewDO analysis, String qaeNames,
                                   String compByNames, String relByNames) {
         Cell cell;
@@ -1749,7 +1818,7 @@ public class DataDumpBean implements DataDumpRemote {
         }
     }
     
-    private void addEnvironmentalCells(Row row, int startCol, DataDumpVO data, 
+    private void addEnvironmentalCells(Row row, int startCol, DataViewVO data, 
                                        SampleEnvironmentalDO env) {
         Integer pr;
         Cell cell;        
@@ -1803,7 +1872,7 @@ public class DataDumpBean implements DataDumpRemote {
         }
     }
     
-    private void addPrivateWellCells(Row row, int startCol, DataDumpVO data, 
+    private void addPrivateWellCells(Row row, int startCol, DataViewVO data, 
                                        SamplePrivateWellViewDO well) {
         Integer wn;
         Cell cell;    
@@ -1860,7 +1929,7 @@ public class DataDumpBean implements DataDumpRemote {
         }
     }
     
-    private void addSDWISCells(Row row, int startCol, DataDumpVO data, SampleSDWISViewDO sdwis, HashMap<Integer, PWSDO> pwsMap) {
+    private void addSDWISCells(Row row, int startCol, DataViewVO data, SampleSDWISViewDO sdwis, HashMap<Integer, PWSDO> pwsMap) {
         Integer id;
         Cell cell;    
         PWSDO pwsDO;
@@ -1970,8 +2039,8 @@ public class DataDumpBean implements DataDumpRemote {
     private String getOrganizationIds(String moduleName) throws Exception {
        String clause, orgIds;
         /*
-         * Retrieving the organization Ids to which the user belongs to from the
-         * security clause in the userPermission.
+         * retrieving the organization Ids to which the user belongs to from the
+         * security clause in the userPermission
          */
         clause = EJBFactory.getUserCache()
                            .getPermission()

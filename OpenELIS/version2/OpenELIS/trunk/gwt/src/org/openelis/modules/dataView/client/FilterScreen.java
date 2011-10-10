@@ -23,16 +23,16 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.dataDump.client;
+package org.openelis.modules.dataView.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
 
-import org.openelis.domain.AuxDataDumpVO;
-import org.openelis.domain.AuxFieldDataDumpVO;
-import org.openelis.domain.DataDumpVO;
-import org.openelis.domain.ResultDataDumpVO;
-import org.openelis.domain.TestAnalyteDataDumpVO;
+import org.openelis.domain.AuxDataDataViewVO;
+import org.openelis.domain.AuxFieldDataViewVO;
+import org.openelis.domain.DataViewVO;
+import org.openelis.domain.ResultDataViewVO;
+import org.openelis.domain.TestAnalyteDataViewVO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -47,7 +47,6 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.modules.report.client.ReportRunUtil;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -57,7 +56,7 @@ import com.google.gwt.user.client.Window;
 
 
 public class FilterScreen extends Screen {
-    private DataDumpVO                data;
+    private DataViewVO                data;
     
     private FilterScreen              screen;   
 
@@ -69,11 +68,11 @@ public class FilterScreen extends Screen {
                                       selectAllAuxButton, unselectAllAuxButton,
                                       selectAllValueButton, unselectAllValueButton,
                                       runReportButton, cancelButton;
-    private ReportRunUtil             reportRunUtil;
+    private DataViewReportScreen      reportRunUtil;
     
     public FilterScreen() throws Exception {
         super((ScreenDefInt)GWT.create(FilterDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.dataDump.server.DataDumpService");        
+        service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");        
         
         initialize();
         
@@ -104,18 +103,18 @@ public class FilterScreen extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 TableDataRow arow;
-                TestAnalyteDataDumpVO data;
+                TestAnalyteDataViewVO data;
                 String val;
                 
                 r = event.getRow();
                 c = event.getCol();
                 arow = analyteTable.getRow(r);
                 val = (String)analyteTable.getObject(r, c);
-                data = (TestAnalyteDataDumpVO)arow.data;
+                data = (TestAnalyteDataViewVO)arow.data;
                 switch (c) {
                     case 0: 
                         /*
-                         * When the checkbox for an analyte is checked or unchecked
+                         * when the checkbox for an analyte is checked or unchecked
                          * the checkboxes for all the results asscoiated with it
                          * need to be checked or unchecked too. Also the analyte
                          * and the result need to be flagged as "included" or not
@@ -133,7 +132,7 @@ public class FilterScreen extends Screen {
             public void onClick(ClickEvent event) {
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                TestAnalyteDataDumpVO data;
+                TestAnalyteDataViewVO data;
                 Object val;
                 
                 model = analyteTable.getData();
@@ -141,7 +140,7 @@ public class FilterScreen extends Screen {
                     val = (String)analyteTable.getCell(i, 0).getValue();
                     if ("N".equals(val)) {
                         row = model.get(i);
-                        data = (TestAnalyteDataDumpVO)row.data;
+                        data = (TestAnalyteDataViewVO)row.data;
                         data.setIsIncluded("Y");
                         analyteTable.setCell(i, 0, "Y");                        
                         updateResultsForAnalyte(i, "Y");
@@ -159,7 +158,7 @@ public class FilterScreen extends Screen {
             public void onClick(ClickEvent event) {
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                TestAnalyteDataDumpVO data;
+                TestAnalyteDataViewVO data;
                 Object val;
                 
                 model = analyteTable.getData();
@@ -167,7 +166,7 @@ public class FilterScreen extends Screen {
                     val = analyteTable.getCell(i, 0).getValue();
                     if ("Y".equals(val)) {
                         row = model.get(i);
-                        data = (TestAnalyteDataDumpVO)row.data;
+                        data = (TestAnalyteDataViewVO)row.data;
                         data.setIsIncluded("N");
                         analyteTable.setCell(i, 0, "N");
                         updateResultsForAnalyte(i, "N");                        
@@ -188,14 +187,13 @@ public class FilterScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {                
-              // resultTable is only enabled if an analyte's checkbox is checked                 
                 resultTable.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
 
         resultTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                TestAnalyteDataDumpVO ana;
+                TestAnalyteDataViewVO ana;
                 
                 ana = data.getTestAnalytes().get(analyteTable.getSelectedRow());                 
                 if ("N".equals(ana.getIsIncluded())) {
@@ -211,13 +209,13 @@ public class FilterScreen extends Screen {
                 int r, c;  
                 String val;        
                 TableDataRow row;
-                ResultDataDumpVO data;
+                ResultDataViewVO data;
 
                 r = event.getRow();
                 c = event.getCol();                
                 row = resultTable.getRow(r);
                 val = (String)resultTable.getObject(r,c);
-                data = (ResultDataDumpVO)row.data;
+                data = (ResultDataViewVO)row.data;
                 /*
                  * If we execute the code for unchecking the checkbox of an analyte
                  * when one of its results' checkbox is unchecked, then we will
@@ -239,7 +237,7 @@ public class FilterScreen extends Screen {
                 ArrayList<TableDataRow> model;
                 Object val;                   
                 TableDataRow row;
-                ResultDataDumpVO data;
+                ResultDataViewVO data;
                 
                 model = resultTable.getData();
                 //TODO comment
@@ -250,7 +248,7 @@ public class FilterScreen extends Screen {
                     if ("N".equals(val)) {                        
                         resultTable.setCell(i, 0, "Y");
                         row = resultTable.getRow(i);
-                        data = (ResultDataDumpVO)row.data;
+                        data = (ResultDataViewVO)row.data;
                         data.setIsIncluded("Y");
                     }
                 }
@@ -267,7 +265,7 @@ public class FilterScreen extends Screen {
                 ArrayList<TableDataRow> model;
                 Object val;                   
                 TableDataRow row;
-                ResultDataDumpVO data;                             
+                ResultDataViewVO data;                             
                 
                 model = resultTable.getData();
                 if (model == null)
@@ -277,7 +275,7 @@ public class FilterScreen extends Screen {
                     if ("Y".equals(val)) {
                         resultTable.setCell(i, 0, "N");
                         row = resultTable.getRow(i);
-                        data = (ResultDataDumpVO)row.data;
+                        data = (ResultDataViewVO)row.data;
                         data.setIsIncluded("N");
                     }
                 }                
@@ -309,14 +307,14 @@ public class FilterScreen extends Screen {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 TableDataRow row;
-                AuxFieldDataDumpVO data;
+                AuxFieldDataViewVO data;
                 String val;
                 
                 r = event.getRow();
                 c = event.getCol();
                 row = auxDataTable.getRow(r);
                 val = (String)auxDataTable.getObject(r, c);
-                data = (AuxFieldDataDumpVO)row.data;
+                data = (AuxFieldDataViewVO)row.data;
                 
                 switch (c) {
                     case 0:
@@ -332,7 +330,7 @@ public class FilterScreen extends Screen {
             public void onClick(ClickEvent event) {
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                AuxFieldDataDumpVO data;
+                AuxFieldDataViewVO data;
                 Object val;
                 
                 model = auxDataTable.getData();
@@ -340,7 +338,7 @@ public class FilterScreen extends Screen {
                     val = auxDataTable.getCell(i, 0).getValue();
                     if ("N".equals(val)) {
                         row = model.get(i);
-                        data = (AuxFieldDataDumpVO)row.data;
+                        data = (AuxFieldDataViewVO)row.data;
                         data.setIsIncluded("Y");
                         auxDataTable.setCell(i, 0, "Y");
                         updateValuesForAnalyte(i, "Y");
@@ -358,7 +356,7 @@ public class FilterScreen extends Screen {
             public void onClick(ClickEvent event) {
                 ArrayList<TableDataRow> model;
                 TableDataRow row;
-                AuxFieldDataDumpVO data;
+                AuxFieldDataViewVO data;
                 Object val;
                 
                 model = auxDataTable.getData();
@@ -366,7 +364,7 @@ public class FilterScreen extends Screen {
                     val = auxDataTable.getCell(i, 0).getValue();
                     if ("Y".equals(val)) {
                         row = model.get(i);
-                        data = (AuxFieldDataDumpVO)row.data;
+                        data = (AuxFieldDataViewVO)row.data;
                         data.setIsIncluded("N");
                         auxDataTable.setCell(i, 0, "N");
                         updateValuesForAnalyte(i, "N");                        
@@ -392,7 +390,7 @@ public class FilterScreen extends Screen {
         
         valueTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                AuxFieldDataDumpVO af;
+                AuxFieldDataViewVO af;
                 
                 af = data.getAuxFields().get(auxDataTable.getSelectedRow());                 
                 if ("N".equals(af.getIsIncluded())) {
@@ -408,13 +406,13 @@ public class FilterScreen extends Screen {
                 int r, c; 
                 String val;        
                 TableDataRow row;
-                AuxDataDumpVO data;
+                AuxDataDataViewVO data;
 
                 r = event.getRow();
                 c = event.getCol();                
                 row = valueTable.getRow(r);
                 val = (String)valueTable.getObject(r,c);
-                data = (AuxDataDumpVO)row.data;
+                data = (AuxDataDataViewVO)row.data;
                 switch(c) {
                     case 0:
                         data.setIsIncluded(val);
@@ -429,7 +427,7 @@ public class FilterScreen extends Screen {
                 ArrayList<TableDataRow> model;
                 Object val;                   
                 TableDataRow row;
-                AuxDataDumpVO data;
+                AuxDataDataViewVO data;
                 
                 model = valueTable.getData();
                 if (model == null)
@@ -439,7 +437,7 @@ public class FilterScreen extends Screen {
                     val = valueTable.getCell(i, 0).getValue();
                     if ("N".equals(val)) {
                         row = valueTable.getRow(i);
-                        data = (AuxDataDumpVO)row.data;
+                        data = (AuxDataDataViewVO)row.data;
                         data.setIsIncluded("Y");
                         valueTable.setCell(i, 0, "Y");
                     }
@@ -457,7 +455,7 @@ public class FilterScreen extends Screen {
                 ArrayList<TableDataRow> model;
                 Object val;                   
                 TableDataRow row;
-                AuxDataDumpVO data;
+                AuxDataDataViewVO data;
                 
                 model = valueTable.getData();
                 if (model == null)
@@ -466,7 +464,7 @@ public class FilterScreen extends Screen {
                     val = valueTable.getCell(i, 0).getValue();
                     if ("Y".equals(val)) {
                         row = valueTable.getRow(i);
-                        data = (AuxDataDumpVO)row.data;
+                        data = (AuxDataDataViewVO)row.data;
                         data.setIsIncluded("N");
                         valueTable.setCell(i, 0, "N");
                     }
@@ -501,7 +499,7 @@ public class FilterScreen extends Screen {
         });        
     }
     
-    public void setData(DataDumpVO data) {
+    public void setData(DataViewVO data) {
         this.data = data;
     }
     
@@ -511,14 +509,14 @@ public class FilterScreen extends Screen {
     
     protected void runReport() {
         int numTA, numAux;
-        ArrayList<TestAnalyteDataDumpVO> taList;
-        ArrayList<AuxFieldDataDumpVO> afList;        
+        ArrayList<TestAnalyteDataViewVO> taList;
+        ArrayList<AuxFieldDataViewVO> afList;        
 
         numTA = 0;
         numAux = 0;
         taList = data.getTestAnalytes();
         if (taList != null) {
-            for (TestAnalyteDataDumpVO ta : taList) {
+            for (TestAnalyteDataViewVO ta : taList) {
                 if ("Y".equals(ta.getIsIncluded()))
                     numTA++;
             }
@@ -527,7 +525,7 @@ public class FilterScreen extends Screen {
         if (numTA == 0) {            
             afList = data.getAuxFields();
             if (afList != null) {
-                for (AuxFieldDataDumpVO af : afList) {
+                for (AuxFieldDataViewVO af : afList) {
                     if ("Y".equals(af.getIsIncluded()))
                         numAux++ ;
                 }
@@ -540,7 +538,8 @@ public class FilterScreen extends Screen {
         
         try {
             if (reportRunUtil == null) 
-                reportRunUtil = new ReportRunUtil("runReport", service, window);                
+                reportRunUtil = new DataViewReportScreen("runReport", window);  
+            
             reportRunUtil.runReport(data);
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -554,14 +553,14 @@ public class FilterScreen extends Screen {
     
     private ArrayList<TableDataRow> getAnalyteTableModel() {
         ArrayList<TableDataRow> model;
-        ArrayList<TestAnalyteDataDumpVO> analytes;        
+        ArrayList<TestAnalyteDataViewVO> analytes;        
         TableDataRow row;              
         
         if (data == null || data.getTestAnalytes() == null)
             return null;
         analytes =  data.getTestAnalytes();
         model = new ArrayList<TableDataRow>();
-        for (TestAnalyteDataDumpVO ana : analytes) {
+        for (TestAnalyteDataViewVO ana : analytes) {
             row = new TableDataRow(2);
             row.cells.get(0).setValue("N");
             row.cells.get(1).setValue(ana.getAnalyteName());
@@ -575,8 +574,8 @@ public class FilterScreen extends Screen {
     private ArrayList<TableDataRow> getResultTableModel() {
         int index;
         ArrayList<TableDataRow> model;
-        ArrayList<ResultDataDumpVO> results;
-        TestAnalyteDataDumpVO data;
+        ArrayList<ResultDataViewVO> results;
+        TestAnalyteDataViewVO data;
         TableDataRow row;
 
         index = analyteTable.getSelectedRow();
@@ -585,9 +584,9 @@ public class FilterScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         row = analyteTable.getRow(index);
-        data = (TestAnalyteDataDumpVO) row.data;
+        data = (TestAnalyteDataViewVO) row.data;
         results = data.getResults();
-        for (ResultDataDumpVO res : results) {
+        for (ResultDataViewVO res : results) {
             row = new TableDataRow(2);
             row.cells.get(0).setValue(res.getIsIncluded());
             row.cells.get(1).setValue(res.getValue());
@@ -599,7 +598,7 @@ public class FilterScreen extends Screen {
     
     private ArrayList<TableDataRow> getAuxDataTableModel() {
         ArrayList<TableDataRow> model;
-        ArrayList<AuxFieldDataDumpVO> auxFields;        
+        ArrayList<AuxFieldDataViewVO> auxFields;        
         TableDataRow row;              
         
         if (data == null || data.getAuxFields() == null)
@@ -607,7 +606,7 @@ public class FilterScreen extends Screen {
         
         auxFields =  data.getAuxFields();
         model = new ArrayList<TableDataRow>();
-        for (AuxFieldDataDumpVO aux : auxFields) {
+        for (AuxFieldDataViewVO aux : auxFields) {
             row = new TableDataRow(2);
             row.cells.get(0).setValue("N");
             row.cells.get(1).setValue(aux.getAnalyteName());
@@ -622,8 +621,8 @@ public class FilterScreen extends Screen {
     private ArrayList<TableDataRow> getValueTableModel() {
         int index;
         ArrayList<TableDataRow> model;
-        ArrayList<AuxDataDumpVO> values;
-        AuxFieldDataDumpVO data;
+        ArrayList<AuxDataDataViewVO> values;
+        AuxFieldDataViewVO data;
         TableDataRow row;
 
         index = auxDataTable.getSelectedRow();
@@ -632,9 +631,9 @@ public class FilterScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         row = auxDataTable.getRow(index);
-        data = (AuxFieldDataDumpVO) row.data;
+        data = (AuxFieldDataViewVO) row.data;
         values = data.getValues();
-        for (AuxDataDumpVO val : values) {
+        for (AuxDataDataViewVO val : values) {
             row = new TableDataRow(2);
             row.cells.get(0).setValue(val.getIsIncluded());
             row.cells.get(1).setValue(val.getValue());
@@ -645,8 +644,8 @@ public class FilterScreen extends Screen {
     }
     
     private void updateResultsForAnalyte(int index, String val) {
-        ResultDataDumpVO res;       
-        ArrayList<ResultDataDumpVO> list;
+        ResultDataViewVO res;       
+        ArrayList<ResultDataViewVO> list;
                           
         list = data.getTestAnalytes().get(index).getResults();
         for (int i = 0; i < list.size(); i++) {
@@ -667,8 +666,8 @@ public class FilterScreen extends Screen {
     }
     
     private void updateValuesForAnalyte(int index, String val) {
-        AuxDataDumpVO ad;         
-        ArrayList<AuxDataDumpVO> list;
+        AuxDataDataViewVO ad;         
+        ArrayList<AuxDataDataViewVO> list;
                 
         list = data.getAuxFields().get(index).getValues();
         for (int i = 0; i < list.size(); i++) {

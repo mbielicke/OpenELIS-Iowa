@@ -23,10 +23,30 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.dataDump.client;
+package org.openelis.remote;
 
-import org.openelis.gwt.screen.ScreenDefInt;
+import java.util.ArrayList;
 
-public interface FilterDef extends ScreenDefInt {
+import javax.ejb.Remote;
 
+import org.openelis.domain.DataViewVO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.QueryData;
+
+@Remote
+public interface DataViewRemote {
+    public ArrayList<IdNameVO> fetchPermanentProjectList() throws Exception;
+    
+    public DataViewVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields) throws Exception;
+    
+    public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(ArrayList<QueryData> fields) throws Exception ;
+    
+    public ReportStatus runReport(DataViewVO data) throws Exception;
+    
+    public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception;
+    
+    public ReportStatus saveQuery(DataViewVO data) throws Exception;
+    
+    public DataViewVO loadQuery(String fileName) throws Exception;
 }

@@ -1,8 +1,8 @@
-package org.openelis.modules.dataDump.client;
+package org.openelis.modules.dataView.client;
 
 import java.util.EnumSet;
 
-import org.openelis.domain.DataDumpVO;
+import org.openelis.domain.DataViewVO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -16,12 +16,12 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
 public class CommonTab extends Screen {
     
-    private DataDumpVO data;
+    private DataViewVO data;
     private CheckBox   accessionNumber, revision, collectionDate, receivedDate, enteredDate,
                        releasedDate, statusId, projectName, clientReferenceHeader, sampleOrgId,
                        sampleOrgOrganizationName, sampleOrgAttention, addressMultipleUnit,
                        addressStreetAddress, addressCity, addressState, addressZipCode,
-                       addressCountry, itemTypeofSampleId, itemSourceOfSampleId, itemSourceOther,
+                       itemTypeofSampleId, itemSourceOfSampleId, itemSourceOther,
                        itemContainerId, analysisTestNameHeader, analysisMethodNameHeader,
                        analysisStatusIdHeader, analysisRevision, analysisIsReportable,
                        analysisSubQaName, analysisCompletedDate, analysisCompletedBy,
@@ -532,7 +532,7 @@ public class CommonTab extends Screen {
         });
     }   
     
-    public void setData(DataDumpVO data) {
+    public void setData(DataViewVO data) {
         this.data = data;
         loaded = false;
     }

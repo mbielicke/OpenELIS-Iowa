@@ -1,8 +1,8 @@
-package org.openelis.modules.dataDump.client;
+package org.openelis.modules.dataView.client;
 
 import java.util.EnumSet;
 
-import org.openelis.domain.DataDumpVO;
+import org.openelis.domain.DataViewVO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -16,9 +16,9 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
 public class PrivateWellTab extends Screen {
 
-    private DataDumpVO data;
+    private DataViewVO data;
     private CheckBox   wellOwner, wellCollector, wellWellNumber, wellReportToAddressWorkPhone,
-                    wellReportToAddressFaxPhone, wellLocation, wellLocationAddrCity;
+                       wellReportToAddressFaxPhone, wellLocation, wellLocationAddrCity;
     private boolean    loaded;
     private int        checkCount;
 
@@ -35,6 +35,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellOwner, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellOwner.setValue(data.getSamplePrivateWellOwner());
+                changeCount(data.getSamplePrivateWellOwner());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -51,6 +52,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellCollector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellCollector.setValue(data.getSamplePrivateWellCollector());
+                changeCount(data.getSamplePrivateWellCollector());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -67,6 +69,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellWellNumber, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellWellNumber.setValue(data.getSamplePrivateWellWellNumber());
+                changeCount(data.getSamplePrivateWellWellNumber());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -83,6 +86,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellReportToAddressWorkPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellReportToAddressWorkPhone.setValue(data.getSamplePrivateWellReportToAddressWorkPhone());
+                changeCount(data.getSamplePrivateWellReportToAddressWorkPhone());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -100,6 +104,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellReportToAddressFaxPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellReportToAddressFaxPhone.setValue(data.getSamplePrivateWellReportToAddressFaxPhone());
+                changeCount(data.getSamplePrivateWellReportToAddressFaxPhone());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -117,6 +122,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellLocation, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellLocation.setValue(data.getSamplePrivateWellLocation());
+                changeCount(data.getSamplePrivateWellLocation());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -133,6 +139,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellLocationAddrCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellLocationAddrCity.setValue(data.getSamplePrivateWellLocationAddressCity());
+                changeCount(data.getSamplePrivateWellLocationAddressCity());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -146,7 +153,7 @@ public class PrivateWellTab extends Screen {
         });
     }
 
-    public void setData(DataDumpVO data) {
+    public void setData(DataViewVO data) {
         this.data = data;
         loaded = false;
         checkCount = 0;
@@ -168,7 +175,7 @@ public class PrivateWellTab extends Screen {
     private void changeCount(String val) {
         if ("Y".equals(val))
             checkCount++;
-        else
+        else if (checkCount > 0)
             checkCount--;
     }
 }

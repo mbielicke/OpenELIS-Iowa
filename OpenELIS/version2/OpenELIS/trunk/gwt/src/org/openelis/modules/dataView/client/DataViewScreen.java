@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.dataDump.client;
+package org.openelis.modules.dataView.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.cache.CategoryCache;
-import org.openelis.domain.DataDumpVO;
+import org.openelis.domain.DataViewVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -52,6 +52,7 @@ import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Field;
+import org.openelis.gwt.widget.FileLoad;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -65,35 +66,41 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class DataDumpScreen extends Screen {
-    private DataDumpVO        data;
-    private TextBox           analysisTestName, analysisMethodName, accessionNumberFrom,
-                              accessionNumberTo, clientReference;
-    private CheckBox          excludeResultOverride;
-    private Dropdown<Integer> analysisStatusId, projectId;
-    private CalendarLookUp    analysisCompletedDateFrom, analysisCompletedDateTo,
-                              analysisReleasedDateFrom, analysisReleasedDateTo, 
-                              collectionDateFrom, collectionDateTo, receivedDateFrom,
-                              receivedDateTo, enteredDateFrom, enteredDateTo;
-    private CommonTab         commonTab;
-    private EnvironmentalTab  environmentalTab;
-    private PrivateWellTab    privateWellTab;
-    private SDWISTab          sdwisTab;
-    private Tabs              tab;    
-    private FilterScreen      filter;
+public class DataViewScreen extends Screen {
+    private DataViewVO           data;
+    private DataViewScreen       screen;
+    private TextBox              analysisTestName, analysisMethodName, accessionNumberFrom,
+                                 accessionNumberTo, clientReference;
+    private CheckBox             excludeResultOverride;
+    private Dropdown<Integer>    analysisStatusId, projectId;
+    private CalendarLookUp       analysisCompletedDateFrom, analysisCompletedDateTo,
+                                 analysisReleasedDateFrom, analysisReleasedDateTo,
+                                 collectionDateFrom, collectionDateTo, receivedDateFrom,
+                                 receivedDateTo, enteredDateFrom, enteredDateTo;
+    private CommonTab            commonTab;
+    private EnvironmentalTab     environmentalTab;
+    private PrivateWellTab       privateWellTab;
+    private SDWISTab             sdwisTab;
+    private Tabs                 tab;
+    private FilterScreen         filter;
+    private FileLoad             fileUpload;
 
-    private AppButton         saveQueryButton, chooseQueryButton, commitButton, abortButton;
-    private TabPanel          tabPanel;
+    private AppButton            saveQueryButton, executeQueryButton;
+    private TabPanel             tabPanel;
+    private DataViewReportScreen reportRunUtil;
+    private int                  pairsFilled;
     
     private enum Tabs {
         QUERY, COMMON, ENVIRONMENTAL, PRIVATE_WELL, SDWIS;
     };
     
-    public DataDumpScreen() throws Exception {
-        super((ScreenDefInt)GWT.create(DataDumpDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.dataDump.server.DataDumpService");
+    public DataViewScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(DataViewDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");
         
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -117,6 +124,9 @@ public class DataDumpScreen extends Screen {
         //
         // button panel buttons
         //
+        
+        screen = this;
+        
         saveQueryButton = (AppButton)def.getWidget("saveQueryButton");
         addScreenHandler(saveQueryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -128,44 +138,36 @@ public class DataDumpScreen extends Screen {
                                           .contains(event.getState()));
             }
         });
-
-        chooseQueryButton = (AppButton)def.getWidget("chooseQueryButton");
-        addScreenHandler(chooseQueryButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                chooseQuery();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                chooseQueryButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
-            }
-        });
-
-        commitButton = (AppButton)def.getWidget("commit");
-        addScreenHandler(commitButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                commit();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                commitButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
-            }
-        });
         
-        abortButton = (AppButton)def.getWidget("abort");
-        addScreenHandler(abortButton, new ScreenEventHandler<Object>() {
+        fileUpload = (FileLoad)def.getWidget("fileUpload");
+        fileUpload.setAction("upload");
+        fileUpload.setService("org.openelis.modules.dataView.server.DataViewService");
+        fileUpload.setMethod("loadQuery");
+        fileUpload.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+            public void onSubmitComplete(SubmitCompleteEvent event) {
+                openQuery();
+            }
+        });
+
+        executeQueryButton = (AppButton)def.getWidget("executeQueryButton");
+        addScreenHandler(executeQueryButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                abort();
+                executeQuery();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                abortButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+                executeQueryButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+                
         analysisTestName = (TextBox)def.getWidget(SampleWebMeta.getAnalysisTestName());
         addScreenHandler(analysisTestName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisTestName.setValue(data.getAnalysisTestName());
+            }
+            
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setAnalysisTestName(event.getValue());
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
@@ -178,6 +180,10 @@ public class DataDumpScreen extends Screen {
             public void onDataChange(DataChangeEvent event) {
                 analysisMethodName.setValue(data.getAnalysisTestMethodName());
             }            
+            
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setAnalysisTestMethodName(event.getValue());
+            }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisMethodName.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
@@ -205,6 +211,10 @@ public class DataDumpScreen extends Screen {
                 analysisStatusId.setSelection(data.getAnalysisStatusId());
             }            
 
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                data.setAnalysisStatusId(event.getValue());
+            }
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisStatusId.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
@@ -212,8 +222,12 @@ public class DataDumpScreen extends Screen {
 
         analysisCompletedDateFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getAnalysisCompletedDateFrom());
         addScreenHandler(analysisCompletedDateFrom, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-                analysisCompletedDateFrom.setValue(data.getAnalysisCompletedDateFrom());
+            public void onDataChange(DataChangeEvent event) {                                 
+                analysisCompletedDateFrom.setValue(DataBaseUtil.toYD(data.getAnalysisCompletedDateFrom()));
+            }
+            
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setAnalysisCompletedDateFrom(event.getValue().getDate());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -224,7 +238,11 @@ public class DataDumpScreen extends Screen {
         analysisCompletedDateTo = (CalendarLookUp)def.getWidget(SampleWebMeta.getAnalysisCompletedDateTo());
         addScreenHandler(analysisCompletedDateTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisCompletedDateTo.setValue(data.getAnalysisCompletedDateTo());
+                analysisCompletedDateTo.setValue(DataBaseUtil.toYD(data.getAnalysisCompletedDateTo()));
+            }
+            
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setAnalysisCompletedDateTo(event.getValue().getDate());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -235,8 +253,12 @@ public class DataDumpScreen extends Screen {
         analysisReleasedDateFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getAnalysisReleasedDateFrom());
         addScreenHandler(analysisReleasedDateFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisReleasedDateFrom.setValue(data.getAnalysisReleasedDateFrom());
-            }            
+                analysisReleasedDateFrom.setValue(DataBaseUtil.toYD(data.getAnalysisReleasedDateFrom()));
+            }
+            
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setAnalysisReleasedDateFrom(event.getValue().getDate());
+            }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisReleasedDateFrom.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
@@ -246,9 +268,13 @@ public class DataDumpScreen extends Screen {
         analysisReleasedDateTo = (CalendarLookUp)def.getWidget(SampleWebMeta.getAnalysisReleasedDateTo());
         addScreenHandler(analysisReleasedDateTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisReleasedDateTo.setValue(data.getAnalysisReleasedDateTo());
+                analysisReleasedDateTo.setValue(DataBaseUtil.toYD(data.getAnalysisReleasedDateTo()));
             }
 
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setAnalysisReleasedDateTo(event.getValue().getDate());
+            }
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisReleasedDateTo.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
@@ -258,6 +284,10 @@ public class DataDumpScreen extends Screen {
         addScreenHandler(accessionNumberFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 accessionNumberFrom.setValue(data.getAccessionNumberFrom());
+            }
+            
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                data.setAccessionNumberFrom(event.getValue());
             }
             
             public void onStateChange(StateChangeEvent<State> event) {
@@ -271,6 +301,10 @@ public class DataDumpScreen extends Screen {
                 accessionNumberTo.setValue(data.getAccessionNumberTo());
             }
 
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                data.setAccessionNumberTo(event.getValue());
+            }
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 accessionNumberTo.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
@@ -279,9 +313,13 @@ public class DataDumpScreen extends Screen {
         collectionDateFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getCollectionDateFrom());
         addScreenHandler(collectionDateFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                collectionDateFrom.setValue(data.getCollectionDateFrom());
+                collectionDateFrom.setValue(DataBaseUtil.toYD(data.getCollectionDateFrom()));
             }            
 
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setCollectionDateFrom(event.getValue().getDate());
+            }
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 collectionDateFrom.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
@@ -290,8 +328,12 @@ public class DataDumpScreen extends Screen {
         collectionDateTo = (CalendarLookUp)def.getWidget(SampleWebMeta.getCollectionDateTo());
         addScreenHandler(collectionDateTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                collectionDateTo.setValue(data.getCollectionDateTo());
-            }            
+                collectionDateTo.setValue(DataBaseUtil.toYD(data.getCollectionDateTo()));
+            }    
+            
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setCollectionDateTo(event.getValue().getDate());
+            }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 collectionDateTo.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
@@ -301,7 +343,11 @@ public class DataDumpScreen extends Screen {
         receivedDateFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getReceivedDateFrom());
         addScreenHandler(receivedDateFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                receivedDateFrom.setValue(data.getReceivedDateFrom());
+                receivedDateFrom.setValue(DataBaseUtil.toYD(data.getReceivedDateFrom()));
+            }
+            
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setReceivedDateFrom(event.getValue().getDate());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -312,8 +358,12 @@ public class DataDumpScreen extends Screen {
         receivedDateTo = (CalendarLookUp)def.getWidget(SampleWebMeta.getReceivedDateTo());
         addScreenHandler(receivedDateTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                receivedDateTo.setValue(data.getReceivedDateTo());
-            }            
+                receivedDateTo.setValue(DataBaseUtil.toYD(data.getReceivedDateTo()));
+            }
+            
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setReceivedDateTo(event.getValue().getDate());
+            }
             
             public void onStateChange(StateChangeEvent<State> event) {
                 receivedDateTo.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
@@ -323,8 +373,12 @@ public class DataDumpScreen extends Screen {
         enteredDateFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getEnteredDateFrom());
         addScreenHandler(enteredDateFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                enteredDateFrom.setValue(data.getEnteredDateFrom());
-            }            
+                enteredDateFrom.setValue(DataBaseUtil.toYD(data.getEnteredDateFrom()));
+            }       
+            
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setEnteredDateFrom(event.getValue().getDate());
+            }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 enteredDateFrom.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
@@ -334,9 +388,13 @@ public class DataDumpScreen extends Screen {
         enteredDateTo = (CalendarLookUp)def.getWidget(SampleWebMeta.getEnteredDateTo());
         addScreenHandler(enteredDateTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                enteredDateTo.setValue(data.getEnteredDateTo());
+                enteredDateTo.setValue(DataBaseUtil.toYD(data.getEnteredDateTo()));
             }
 
+            public void onValueChange(ValueChangeEvent<Datetime> event) {
+                data.setEnteredDateTo(event.getValue().getDate());
+            }
+            
             public void onStateChange(StateChangeEvent<State> event) {
                 enteredDateTo.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
@@ -346,7 +404,7 @@ public class DataDumpScreen extends Screen {
         addScreenHandler(clientReference, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 clientReference.setValue(data.getClientReference());
-            }
+            }                        
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setClientReference(event.getValue());
@@ -503,67 +561,105 @@ public class DataDumpScreen extends Screen {
         }
     }
     
-    public boolean validate() {
+    public boolean validate() {        
         return super.validate() && validateFromToFields(); 
     }
     
     public boolean validateFromToFields() {
-        boolean valid;
-        
+        boolean valid, fromEmpty, toEmpty;
+
         valid = true;
-        if (analysisCompletedDateFrom.getValue() != null && 
-                        analysisCompletedDateTo.getValue() == null) {
-            analysisCompletedDateTo.addException(new LocalizedException("fieldRequiredException"));
-            valid = false;
-        } else if (analysisCompletedDateFrom.getValue() == null &&  analysisCompletedDateTo.getValue() != null) {
+        pairsFilled = 6;
+
+        fromEmpty = analysisCompletedDateFrom.getValue() == null;
+        toEmpty = analysisCompletedDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                analysisCompletedDateTo.addException(new LocalizedException("fieldRequiredException"));
+                valid = false;
+            }
+        } else if ( !toEmpty) {
             analysisCompletedDateFrom.addException(new LocalizedException("fieldRequiredException"));
             valid = false;
+        } else {
+            pairsFilled-- ;
         }
-        
-        if (analysisReleasedDateFrom.getValue() != null && 
-                        analysisReleasedDateTo.getValue() == null) {
-            analysisReleasedDateTo.addException(new LocalizedException("fieldRequiredException"));
-            valid = false;
-        } else if (analysisReleasedDateFrom.getValue() == null && analysisReleasedDateTo.getValue() != null) {
+
+        fromEmpty = analysisReleasedDateFrom.getValue() == null;
+        toEmpty = analysisReleasedDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                analysisReleasedDateTo.addException(new LocalizedException("fieldRequiredException"));
+                valid = false;
+            }
+        } else if ( !toEmpty) {
             analysisReleasedDateFrom.addException(new LocalizedException("fieldRequiredException"));
             valid = false;
+        } else {
+            pairsFilled-- ;
         }
-        
-        if (!DataBaseUtil.isEmpty(accessionNumberFrom.getValue()) && 
-                        DataBaseUtil.isEmpty(accessionNumberTo.getValue())) {
-            accessionNumberTo.addException(new LocalizedException("fieldRequiredException"));
-            valid = false;
-        } else if (DataBaseUtil.isEmpty(accessionNumberFrom.getValue()) && !DataBaseUtil.isEmpty(accessionNumberTo.getValue())) {
+
+        fromEmpty = DataBaseUtil.isEmpty(accessionNumberFrom.getValue());
+        toEmpty = DataBaseUtil.isEmpty(accessionNumberTo.getValue());
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                accessionNumberTo.addException(new LocalizedException("fieldRequiredException"));
+                valid = false;
+            }
+        } else if ( !toEmpty) {
             accessionNumberFrom.addException(new LocalizedException("fieldRequiredException"));
             valid = false;
+        } else {
+            pairsFilled-- ;
         }
-        
-        if (collectionDateFrom.getValue() != null && collectionDateTo.getValue() == null) {
-            collectionDateTo.addException(new LocalizedException("fieldRequiredException"));
-            valid = false;
-        } else if (collectionDateFrom.getValue() == null && collectionDateTo.getValue() != null) {
+
+        fromEmpty = collectionDateFrom.getValue() == null;
+        toEmpty = collectionDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                collectionDateTo.addException(new LocalizedException("fieldRequiredException"));
+                valid = false;
+            }
+        } else if ( !toEmpty) {
             collectionDateFrom.addException(new LocalizedException("fieldRequiredException"));
             valid = false;
+        } else {
+            pairsFilled-- ;
         }
-        
-        if (receivedDateFrom.getValue() != null && receivedDateTo.getValue() == null) {
-            receivedDateTo.addException(new LocalizedException("fieldRequiredException"));
-            valid = false;
-        } else if (receivedDateFrom.getValue() == null &&  receivedDateTo.getValue() != null) {
+
+        fromEmpty = receivedDateFrom.getValue() == null;
+        toEmpty = receivedDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                receivedDateTo.addException(new LocalizedException("fieldRequiredException"));
+                valid = false;
+            }
+        } else if ( !toEmpty) {
             receivedDateFrom.addException(new LocalizedException("fieldRequiredException"));
             valid = false;
+        } else {
+            pairsFilled-- ;
         }
-        
-        if (enteredDateFrom.getValue() != null && enteredDateTo.getValue() == null) {
-            enteredDateTo.addException(new LocalizedException("fieldRequiredException"));
-            valid = false;
-        } else if (enteredDateFrom.getValue() == null && enteredDateTo.getValue() != null) {
+
+        fromEmpty = enteredDateFrom.getValue() == null;
+        toEmpty = enteredDateTo.getValue() == null;
+        if ( !fromEmpty) {
+            if (toEmpty) {
+                enteredDateTo.addException(new LocalizedException("fieldRequiredException"));
+                valid = false;
+            }
+        } else if ( !toEmpty) {
             enteredDateFrom.addException(new LocalizedException("fieldRequiredException"));
             valid = false;
-        }                
-        
+        } else {
+            pairsFilled-- ;
+        }
+
+        if (valid && pairsFilled == 0)
+            valid = false;
+
         return valid;
-    }
+    }  
     
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fields;
@@ -635,19 +731,52 @@ public class DataDumpScreen extends Screen {
     }
 
     protected void saveQuery() {
-        // TODO Auto-generated method stub        
+        try {
+            window.clearStatus();
+            if ( !validate()) {
+                if (pairsFilled == 0) 
+                    window.setError(consts.get("atLeastOnePairFilledException"));
+                else
+                    window.setError(consts.get("correctErrors"));
+                return;
+            }
+            
+            if (reportRunUtil == null) 
+                reportRunUtil = new DataViewReportScreen("saveQuery", window);
+            //
+            // we don't want to serialize the following fields
+            //
+            data.setQueryFields(null);
+            data.setAnalytes(null);
+            data.setAuxFields(null);
+            
+            reportRunUtil.runReport(data);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
     }
     
-    protected void chooseQuery() {
-        // TODO Auto-generated method stub        
+    protected void openQuery() {
+        try {
+            data = (DataViewVO)service.call("openQuery");                    
+        } catch (Exception e) {
+            Window.alert("There was an error with loading the query: "+ e.getMessage());
+            e.printStackTrace();
+            data = createData();
+        }
+        
+        DataChangeEvent.fire(screen); 
     }            
 
-    protected void commit() {
+    protected void executeQuery() {
         int ec, wc, sc; 
         Query query;
         ArrayList<QueryData> queryList;
         QueryData field;
-        DataDumpVO ldata;        
+        DataViewVO ldata;        
+        
+        clearErrors();
         
         ec = environmentalTab.getCheckIndicator();
         wc = privateWellTab.getCheckIndicator();
@@ -660,7 +789,10 @@ public class DataDumpScreen extends Screen {
         
         window.clearStatus();
         if ( !validate()) {
-            window.setError(consts.get("correctErrors"));
+            if (pairsFilled == 0) 
+                window.setError(consts.get("atLeastOnePairFilledException"));
+            else
+                window.setError(consts.get("correctErrors"));
             return;
         }
         
@@ -837,10 +969,10 @@ public class DataDumpScreen extends Screen {
         return list;
     }
     
-    private DataDumpVO createData() {
-        DataDumpVO data;
+    private DataViewVO createData() {
+        DataViewVO data;
         
-        data = new DataDumpVO();
+        data = new DataViewVO();
         data.setExcludeResultOverride("N");
         data.setAccessionNumber("N");
         data.setRevision("N");
@@ -969,7 +1101,7 @@ public class DataDumpScreen extends Screen {
         return qd;
     }
     
-    private void showFilter(DataDumpVO data) {
+    private void showFilter(DataViewVO data) {
         ScreenWindow modal;
                 
         if (filter == null) {
