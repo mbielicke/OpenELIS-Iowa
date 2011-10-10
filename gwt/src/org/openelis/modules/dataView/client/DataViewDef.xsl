@@ -42,38 +42,40 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="DataDump" name="{resource:getString($constants,'dataDump')}">
-      <VerticalPanel padding="0" spacing="0" style="WhiteContentPanel">
-                <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+    <screen id="DataView" name="{resource:getString($constants,'dataView')}">
+      <VerticalPanel padding="0" spacing="0">
+        <AbsolutePanel spacing="0" style="ButtonPanelContainer">
+         <HorizontalPanel>
+          <fileUpload key="fileUpload" service="org.openelis.modules.dataDump.server.DataDumpService">
+          <appButton key="chooseQueryButton" style="ButtonPanelButton">
             <HorizontalPanel>
+             <AbsolutePanel style="OpenButtonImage" />
+              <text>
+                <xsl:value-of select="resource:getString($constants,'openQuery')" />
+              </text>
+            </HorizontalPanel>
+          </appButton>
+          </fileUpload>
           <appButton key="saveQueryButton" style="ButtonPanelButton">
             <HorizontalPanel>
+             <AbsolutePanel style="SaveButtonImage" />
               <text>
                 <xsl:value-of select="resource:getString($constants,'saveQuery')" />
               </text>
             </HorizontalPanel>
-          </appButton>
-          <appButton key="chooseQueryButton" style="ButtonPanelButton">
+          </appButton>          
+          <appButton key="executeQueryButton" style="ButtonPanelButton">
             <HorizontalPanel>
+              <AbsolutePanel style="NextButtonImage" />
               <text>
-                <xsl:value-of select="resource:getString($constants,'chooseQuery')" />
+                <xsl:value-of select="resource:getString($constants,'executeQuery')" />
               </text>
             </HorizontalPanel>
           </appButton>
-              <xsl:call-template name="buttonPanelDivider" />
-              <xsl:call-template name="commitButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
-              <xsl:call-template name="abortButton">
-                <xsl:with-param name="language">
-                  <xsl:value-of select="language" />
-                </xsl:with-param>
-              </xsl:call-template>
             </HorizontalPanel>
           </AbsolutePanel>
-        <VerticalPanel height="5" />
+        <VerticalPanel style="WhiteContentPanel">  
+        <VerticalPanel height="5" />        
         <TabPanel height="350" key="tabPanel" width="610">
           <tab text="{resource:getString($constants,'query')}">
             <VerticalPanel>
@@ -662,6 +664,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </tab>
         </TabPanel>
+        </VerticalPanel>
       </VerticalPanel>
     </screen>
   </xsl:template>

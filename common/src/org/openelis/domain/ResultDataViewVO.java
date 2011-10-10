@@ -32,7 +32,7 @@ import org.openelis.gwt.common.RPC;
  * This class is used for managing the results that will be part of the spreadsheet
  * delivered as a result of executing a data dump
  */
-public class ResultDataDumpVO implements RPC {
+public class ResultDataViewVO implements RPC {
 
     private static final long serialVersionUID = 1L;
 

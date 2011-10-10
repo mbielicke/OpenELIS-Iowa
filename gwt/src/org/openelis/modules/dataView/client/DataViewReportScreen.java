@@ -23,34 +23,30 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.domain;
+package org.openelis.modules.dataView.client;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.ScreenWindowInt;
+import org.openelis.modules.report.client.ReportScreen;
 
 /**
- * This class is used for managing the results that will be part of the spreadsheet
- * delivered as a result of executing a data dump
+ * This class is used to execute reports on behalf of those screens that don't 
+ * implement ReportScreen like Complete and Release or Data Dump
  */
-public class AuxDataDumpVO implements RPC {
+public class DataViewReportScreen extends ReportScreen {
 
-    private static final long serialVersionUID = 1L;
-
-    protected String          value, isIncluded;
-
-    public String getValue() {
-        return value;
+    public DataViewReportScreen(String runReportInterface, ScreenWindowInt window) throws Exception {
+        setRunReportInterface(runReportInterface);
+        this.window = window;
+        this.service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");
+        setAttachmentName("DataView.xml");
     }
-
-    public void setValue(String value) {
-        this.value = DataBaseUtil.trim(value);
-    }
-
-    public String getIsIncluded() {
-        return isIncluded;
-    }
-
-    public void setIsIncluded(String isIncluded) {
-        this.isIncluded = DataBaseUtil.trim(isIncluded);
+    
+    /**
+     * This method is overridden in order to make sure that the super class's 
+     * method with the same name doesn't get called, because the screens using 
+     * this class won't get prompts   
+     */
+    protected void getReportParameters() {       
     }
 }

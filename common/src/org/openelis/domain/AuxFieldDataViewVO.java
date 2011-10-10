@@ -34,13 +34,13 @@ import org.openelis.gwt.common.RPC;
  * This class is used for managing the analytes and results that will be part of
  * the spreadsheet delivered as a result of executing a data dump
  */
-public class AuxFieldDataDumpVO implements RPC {
+public class AuxFieldDataViewVO implements RPC {
 
     private static final long             serialVersionUID = 1L;
 
     protected Integer                     auxFieldId, analyteId;
     protected String                      analyteName;   
-    protected ArrayList<AuxDataDumpVO>    values;
+    protected ArrayList<AuxDataDataViewVO>    values;
     protected String                      isIncluded;
     
 
@@ -76,11 +76,11 @@ public class AuxFieldDataDumpVO implements RPC {
         this.isIncluded = DataBaseUtil.trim(isIncluded);
     }
 
-    public ArrayList<AuxDataDumpVO> getValues() {
+    public ArrayList<AuxDataDataViewVO> getValues() {
         return values;
     }
 
-    public void setValues(ArrayList<AuxDataDumpVO> values) {
+    public void setValues(ArrayList<AuxDataDataViewVO> values) {
         this.values = values;
     }
 }

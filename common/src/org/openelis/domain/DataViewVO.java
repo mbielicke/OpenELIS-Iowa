@@ -26,11 +26,10 @@
 package org.openelis.domain;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 
 /**
@@ -38,7 +37,7 @@ import org.openelis.gwt.common.data.QueryData;
  * This class is used to carry the data entered on Data dump screen to the
  * back-end and also between different screens
  */
-public class DataDumpVO implements RPC {
+public class DataViewVO implements RPC {
 
     private static final long              serialVersionUID = 1L;
 
@@ -75,15 +74,15 @@ public class DataDumpVO implements RPC {
                                            sampleSDWISCollector, sampleEnvironmentalCollectorHeader, sampleEnvironmentalLocationHeader;
     protected Integer                      analysisStatusId, accessionNumberFrom,
                                            accessionNumberTo, projectId;
-    protected Datetime                     analysisCompletedDateFrom, analysisCompletedDateTo,
+    protected Date                         analysisCompletedDateFrom, analysisCompletedDateTo,
                                            analysisReleasedDateFrom, analysisReleasedDateTo, 
                                            collectionDateFrom, collectionDateTo, 
                                            receivedDateFrom, receivedDateTo, enteredDateFrom,
                                            enteredDateTo, releasedDateFrom, releasedDateTo;
     
     protected ArrayList<QueryData>             queryFields;
-    protected ArrayList<TestAnalyteDataDumpVO> testAnalytes;
-    protected ArrayList<AuxFieldDataDumpVO>    auxFields;
+    protected ArrayList<TestAnalyteDataViewVO> testAnalytes;
+    protected ArrayList<AuxFieldDataViewVO>    auxFields;
     
     public String getAnalysisTestName() {
         return analysisTestName;
@@ -613,100 +612,100 @@ public class DataDumpVO implements RPC {
         this.projectId = projectId;
     }
 
-    public Datetime getAnalysisCompletedDateFrom() {
+    public Date getAnalysisCompletedDateFrom() {
         return analysisCompletedDateFrom;
     }
 
-    public void setAnalysisCompletedDateFrom(Datetime analysisCompletedDateFrom) {
-        this.analysisCompletedDateFrom = DataBaseUtil.toYD(analysisCompletedDateFrom);
+    public void setAnalysisCompletedDateFrom(Date analysisCompletedDateFrom) {
+        this.analysisCompletedDateFrom = analysisCompletedDateFrom;
     }
 
-    public Datetime getAnalysisCompletedDateTo() {
+    public Date getAnalysisCompletedDateTo() {
         return analysisCompletedDateTo;
     }
 
-    public void setAnalysisCompletedDateTo(Datetime analysisCompletedDateTo) {
-        this.analysisCompletedDateTo = DataBaseUtil.toYD(analysisCompletedDateTo);
+    public void setAnalysisCompletedDateTo(Date analysisCompletedDateTo) {
+        this.analysisCompletedDateTo = analysisCompletedDateTo;
     }
 
-    public Datetime getAnalysisReleasedDateFrom() {
+    public Date getAnalysisReleasedDateFrom() {
         return analysisReleasedDateFrom;
     }
 
-    public void setAnalysisReleasedDateFrom(Datetime analysisReleasedDateFrom) {
-        this.analysisReleasedDateFrom = DataBaseUtil.toYD(analysisReleasedDateFrom);
+    public void setAnalysisReleasedDateFrom(Date analysisReleasedDateFrom) {
+        this.analysisReleasedDateFrom = analysisReleasedDateFrom;
     }
 
-    public Datetime getAnalysisReleasedDateTo() {
+    public Date getAnalysisReleasedDateTo() {
         return analysisReleasedDateTo;
     }
 
-    public void setAnalysisReleasedDateTo(Datetime analysisReleasedDateTo) {
-        this.analysisReleasedDateTo = DataBaseUtil.toYD(analysisReleasedDateTo);
+    public void setAnalysisReleasedDateTo(Date analysisReleasedDateTo) {
+        this.analysisReleasedDateTo = analysisReleasedDateTo;
     }
 
-    public Datetime getCollectionDateFrom() {
+    public Date getCollectionDateFrom() {
         return collectionDateFrom;
     }
 
-    public void setCollectionDateFrom(Datetime collectionDateFrom) {
+    public void setCollectionDateFrom(Date collectionDateFrom) {
         this.collectionDateFrom = collectionDateFrom;
     }
 
-    public Datetime getCollectionDateTo() {
+    public Date getCollectionDateTo() {
         return collectionDateTo;
     }
 
-    public void setCollectionDateTo(Datetime collectionDateTo) {
-        this.collectionDateTo = DataBaseUtil.toYD(collectionDateTo);
+    public void setCollectionDateTo(Date collectionDateTo) {
+        this.collectionDateTo = collectionDateTo;
     }
 
-    public Datetime getReceivedDateFrom() {
+    public Date getReceivedDateFrom() {
         return receivedDateFrom;
     }
 
-    public void setReceivedDateFrom(Datetime receivedDateFrom) {
-        this.receivedDateFrom = DataBaseUtil.toYD(receivedDateFrom);
+    public void setReceivedDateFrom(Date receivedDateFrom) {
+        this.receivedDateFrom = receivedDateFrom;
     }
 
-    public Datetime getReceivedDateTo() {
+    public Date getReceivedDateTo() {
         return receivedDateTo;
     }
 
-    public void setReceivedDateTo(Datetime receivedDateTo) {
-        this.receivedDateTo = DataBaseUtil.toYD(receivedDateTo);
+    public void setReceivedDateTo(Date receivedDateTo) {
+        this.receivedDateTo = receivedDateTo;
     }
 
-    public Datetime getEnteredDateFrom() {
+    public Date getEnteredDateFrom() {
         return enteredDateFrom;
     }
 
-    public void setEnteredDateFrom(Datetime enteredDateFrom) {
-        this.enteredDateFrom = DataBaseUtil.toYD(enteredDateFrom);
+    public void setEnteredDateFrom(Date enteredDateFrom) {
+        this.enteredDateFrom = enteredDateFrom;
     }
 
-    public Datetime getEnteredDateTo() {
+    public Date getEnteredDateTo() {
         return enteredDateTo;
     }
 
-    public void setEnteredDateTo(Datetime enteredDateTo) {
-        this.enteredDateTo = DataBaseUtil.toYD(enteredDateTo);
+    public void setEnteredDateTo(Date enteredDateTo) {
+        this.enteredDateTo = enteredDateTo;
     }    
        
-    public Datetime getReleasedDateFrom() {
+    public Date getReleasedDateFrom() {
         return releasedDateFrom;
     }
 
-    public void setReleasedDateFrom(Datetime releasedDateFrom) {
-        this.releasedDateFrom = DataBaseUtil.toYD(releasedDateFrom);
+    public void setReleasedDateFrom(Date releasedDateFrom) {
+        this.releasedDateFrom = releasedDateFrom;
     }
     
-    public Datetime getReleasedDateTo() {
+    public Date getReleasedDateTo() {
         return releasedDateTo;
     }
 
-    public void setReleasedDateTo(Datetime releasedDateTo) {
-        this.releasedDateTo = DataBaseUtil.toYD(releasedDateTo);
+    public void setReleasedDateTo(Date releasedDateTo) {
+        this.releasedDateTo = releasedDateTo;
     }
     
     public ArrayList<QueryData> getQueryFields() {
@@ -717,19 +716,19 @@ public class DataDumpVO implements RPC {
         this.queryFields = queryFields;
     }
 
-    public ArrayList<TestAnalyteDataDumpVO> getTestAnalytes() {
+    public ArrayList<TestAnalyteDataViewVO> getTestAnalytes() {
         return testAnalytes;
     }
 
-    public void setAnalytes(ArrayList<TestAnalyteDataDumpVO> testAnalytes) {
+    public void setAnalytes(ArrayList<TestAnalyteDataViewVO> testAnalytes) {
         this.testAnalytes = testAnalytes;
     }
 
-    public ArrayList<AuxFieldDataDumpVO> getAuxFields() {
+    public ArrayList<AuxFieldDataViewVO> getAuxFields() {
         return auxFields;
     }
 
-    public void setAuxFields(ArrayList<AuxFieldDataDumpVO> auxFields) {
+    public void setAuxFields(ArrayList<AuxFieldDataViewVO> auxFields) {
         this.auxFields = auxFields;
     }   
 }

@@ -70,7 +70,7 @@ UIRF Software License are applicable instead of those above.
                 <HorizontalPanel>
                   <appButton key="selectAllAnalyteButton" style="Button">
                     <HorizontalPanel>
-                      <AbsolutePanel />
+                      <AbsolutePanel style = "Checked"/>
                       <text>
                         <xsl:value-of select="resource:getString($constants,'selectAll')" />
                       </text>
@@ -78,7 +78,7 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                   <appButton key="unselectAllAnalyteButton" style="Button">
                     <HorizontalPanel>
-                      <AbsolutePanel />
+                      <AbsolutePanel style = "Unchecked"/>
                       <text>
                         <xsl:value-of select="resource:getString($constants,'unselectAll')" />
                       </text>
@@ -106,7 +106,7 @@ UIRF Software License are applicable instead of those above.
                 <HorizontalPanel>
                   <appButton key="selectAllResultButton" style="Button">
                     <HorizontalPanel>
-                      <AbsolutePanel />
+                      <AbsolutePanel style = "Checked"/>
                       <text>
                         <xsl:value-of select="resource:getString($constants,'selectAll')" />
                       </text>
@@ -114,7 +114,7 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                   <appButton key="unselectAllResultButton" style="Button">
                     <HorizontalPanel>
-                      <AbsolutePanel />
+                      <AbsolutePanel style = "Unchecked"/>
                       <text>
                         <xsl:value-of select="resource:getString($constants,'unselectAll')" />
                       </text>
@@ -147,7 +147,7 @@ UIRF Software License are applicable instead of those above.
                 <HorizontalPanel>
                   <appButton key="selectAllAuxButton" style="Button">
                     <HorizontalPanel>
-                      <AbsolutePanel />
+                      <AbsolutePanel style = "Checked"/>
                       <text>
                         <xsl:value-of select="resource:getString($constants,'selectAll')" />
                       </text>
@@ -155,7 +155,7 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                   <appButton key="unselectAllAuxButton" style="Button">
                     <HorizontalPanel>
-                      <AbsolutePanel />
+                      <AbsolutePanel style = "Unchecked"/>
                       <text>
                         <xsl:value-of select="resource:getString($constants,'unselectAll')" />
                       </text>
@@ -183,7 +183,7 @@ UIRF Software License are applicable instead of those above.
                 <HorizontalPanel>
                   <appButton key="selectAllValueButton" style="Button">
                     <HorizontalPanel>
-                      <AbsolutePanel />
+                      <AbsolutePanel style = "Checked"/>
                       <text>
                         <xsl:value-of select="resource:getString($constants,'selectAll')" />
                       </text>
@@ -191,7 +191,7 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                   <appButton key="unselectAllValueButton" style="Button">
                     <HorizontalPanel>
-                      <AbsolutePanel />
+                      <AbsolutePanel style = "Unchecked"/>
                       <text>
                         <xsl:value-of select="resource:getString($constants,'unselectAll')" />
                       </text>

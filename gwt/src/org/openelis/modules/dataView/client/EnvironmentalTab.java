@@ -1,8 +1,8 @@
-package org.openelis.modules.dataDump.client;
+package org.openelis.modules.dataView.client;
 
 import java.util.EnumSet;
 
-import org.openelis.domain.DataDumpVO;
+import org.openelis.domain.DataViewVO;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -16,7 +16,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
 public class EnvironmentalTab extends Screen {
     
-    private DataDumpVO data;
+    private DataViewVO data;
     private CheckBox   envIsHazardous, envPriority, envCollector, envCollectorPhone,
                        envLocation, locationAddrCity, envDescription;
     private boolean    loaded;
@@ -33,6 +33,7 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envIsHazardous, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envIsHazardous.setValue(data.getSampleEnvironmentalIsHazardous());
+                changeCount(data.getSampleEnvironmentalIsHazardous());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {                
@@ -49,6 +50,7 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envPriority, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envPriority.setValue(data.getSampleEnvironmentalPriority());
+                changeCount(data.getSampleEnvironmentalPriority());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -65,6 +67,7 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envCollector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envCollector.setValue(data.getSampleEnvironmentalCollectorHeader());
+                changeCount(data.getSampleEnvironmentalCollectorHeader());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -81,6 +84,7 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envCollectorPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envCollectorPhone.setValue(data.getSampleEnvironmentalCollectorPhone());
+                changeCount(data.getSampleEnvironmentalCollectorPhone());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -97,6 +101,7 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envLocation, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envLocation.setValue(data.getSampleEnvironmentalLocationHeader());
+                changeCount(data.getSampleEnvironmentalLocationHeader());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -113,6 +118,7 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(locationAddrCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 locationAddrCity.setValue(data.getSampleEnvironmentalLocationAddressCity());
+                changeCount(data.getSampleEnvironmentalLocationAddressCity());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -129,6 +135,7 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envDescription, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envDescription.setValue(data.getSampleEnvironmentalDescription());
+                changeCount(data.getSampleEnvironmentalDescription());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -142,7 +149,7 @@ public class EnvironmentalTab extends Screen {
         });
     }       
     
-    public void setData(DataDumpVO data) {
+    public void setData(DataViewVO data) {
         this.data = data;
         loaded = false;
         checkCount = 0;
@@ -164,7 +171,7 @@ public class EnvironmentalTab extends Screen {
     private void changeCount(String val) {
         if ("Y".equals(val))
             checkCount++;
-        else
+        else if (checkCount > 0)
             checkCount--;
     }
 }

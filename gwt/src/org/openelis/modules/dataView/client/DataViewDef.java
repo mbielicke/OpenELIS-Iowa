@@ -23,28 +23,9 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.report.client;
+package org.openelis.modules.dataView.client;
 
-import org.openelis.gwt.services.ScreenService;
-import org.openelis.gwt.widget.ScreenWindowInt;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-/**
- * This class is used to execute reports on behalf of those screens that don't 
- * implement ReportScreen like Complete and Release or Data Dump
- */
-public class ReportRunUtil extends ReportScreen {
-
-    public ReportRunUtil(String runReportInterface, ScreenService service, ScreenWindowInt window) throws Exception {
-        setRunReportInterface(runReportInterface);
-        this.window = window;
-        this.service = service;
-    }
-    
-    /**
-     * This method is overridden in order to make sure that the super class's 
-     * method with the same name doesn't get called, because the screens using 
-     * this class won't get prompts   
-     */
-    protected void getReportParameters() {       
-    }
+public interface DataViewDef extends ScreenDefInt {
 }

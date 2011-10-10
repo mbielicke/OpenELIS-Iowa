@@ -23,9 +23,34 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.dataDump.client;
+package org.openelis.domain;
 
-import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.RPC;
 
-public interface DataDumpDef extends ScreenDefInt {
+/**
+ * This class is used for managing the results that will be part of the spreadsheet
+ * delivered as a result of executing a data dump
+ */
+public class AuxDataDataViewVO implements RPC {
+
+    private static final long serialVersionUID = 1L;
+
+    protected String          value, isIncluded;
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = DataBaseUtil.trim(value);
+    }
+
+    public String getIsIncluded() {
+        return isIncluded;
+    }
+
+    public void setIsIncluded(String isIncluded) {
+        this.isIncluded = DataBaseUtil.trim(isIncluded);
+    }
 }
