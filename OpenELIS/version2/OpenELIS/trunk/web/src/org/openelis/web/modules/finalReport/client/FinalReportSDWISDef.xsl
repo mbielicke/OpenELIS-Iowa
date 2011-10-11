@@ -235,7 +235,7 @@ UIRF Software License are applicable instead of those above.
               <widget halign="right">
                 <appButton key="selectAllButton" style="Button">
                   <HorizontalPanel>
-                    <AbsolutePanel />
+                    <AbsolutePanel style="Checked" />
                     <text>
                       <xsl:value-of select='resource:getString($constants,"selectAll")' />
                     </text>
@@ -245,9 +245,9 @@ UIRF Software License are applicable instead of those above.
               <widget halign="left">
                 <appButton key="resettButton" style="Button">
                   <HorizontalPanel>
-                    <AbsolutePanel />
+                    <AbsolutePanel style="Unchecked" />
                     <text>
-                      <xsl:value-of select='resource:getString($constants,"selectNone")' />
+                      <xsl:value-of select='resource:getString($constants,"unselectAll")' />
                     </text>
                   </HorizontalPanel>
                 </appButton>

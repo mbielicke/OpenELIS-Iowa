@@ -223,7 +223,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel height="20">
               <label field="String" key="numSampleSelected" style="Prompt" />
             </VerticalPanel>
-            <HorizontalPanel width="820">            
+            <HorizontalPanel width="820px">            
              <widget halign="left">
                 <appButton key="backButton" style="Button" visible="false" >
                   <HorizontalPanel>
@@ -234,7 +234,7 @@ UIRF Software License are applicable instead of those above.
               <widget halign="right">
                 <appButton key="selectAllButton" style="Button">
                   <HorizontalPanel>
-                    <AbsolutePanel />
+                    <AbsolutePanel style="Checked" />
                     <text>
                       <xsl:value-of select='resource:getString($constants,"selectAll")' />
                     </text>
@@ -244,9 +244,9 @@ UIRF Software License are applicable instead of those above.
               <widget halign="left">
                 <appButton key="resettButton" style="Button" >
                   <HorizontalPanel>
-                    <AbsolutePanel />
+                    <AbsolutePanel style="Unchecked" />
                     <text>
-                      <xsl:value-of select='resource:getString($constants,"selectNone")' />
+                      <xsl:value-of select='resource:getString($constants,"unselectAll")' />
                     </text>
                   </HorizontalPanel>
                 </appButton>
