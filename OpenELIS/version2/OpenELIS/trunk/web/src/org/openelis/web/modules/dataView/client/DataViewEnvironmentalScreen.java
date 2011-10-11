@@ -162,6 +162,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                     releasedDateTo.setValue(releasedDateFrom.getValue().add(1));
                     releasedDateTo.setFocus(true);
                     releasedDateTo.selectText();
+                    data.setReleasedDateTo(event.getValue().getDate());
                 }
             }
 
@@ -182,6 +183,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                     releasedDateFrom.setValue(releasedDateTo.getValue().add( -1));
                     releasedDateFrom.setFocus(true);
                     releasedDateFrom.selectText();
+                    data.setReleasedDateFrom(event.getValue().getDate());
                 }
             }
 
@@ -202,6 +204,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                     collectedDateTo.setValue(collectedDateFrom.getValue().add(1));
                     collectedDateTo.setFocus(true);
                     collectedDateTo.selectText();
+                    data.setCollectionDateTo(event.getValue().getDate());
                 }
             }
 
@@ -222,6 +225,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                     collectedDateFrom.setValue(collectedDateTo.getValue().add( -1));
                     collectedDateFrom.setFocus(true);
                     collectedDateFrom.selectText();
+                    data.setCollectionDateFrom(event.getValue().getDate());
                 }
             }
 
@@ -259,6 +263,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                     accessionTo.setFieldValue(accessionFrom.getValue());
                     accessionTo.setFocus(true);
                     accessionTo.selectAll();
+                    data.setAccessionNumberTo(event.getValue());
                 }
             }
 
@@ -280,6 +285,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                     accessionFrom.setFieldValue(accessionTo.getValue());
                     accessionFrom.setFocus(true);
                     accessionFrom.selectAll();
+                    data.setAccessionNumberFrom(event.getValue());
                 }
             }
 
