@@ -147,6 +147,7 @@ public class FinalReportPrivateWellScreen extends Screen {
                     releasedTo.setValue(releasedFrom.getValue().add(1));
                     releasedTo.setFocus(true);
                     releasedTo.selectText();
+                    data.setReleasedTo(event.getValue());
                 }
             }
 
@@ -167,6 +168,7 @@ public class FinalReportPrivateWellScreen extends Screen {
                     releasedFrom.setValue(releasedTo.getValue().add( -1));
                     releasedFrom.setFocus(true);
                     releasedFrom.selectText();
+                    data.setReleasedFrom(event.getValue());
                 }            
             }
 
@@ -187,6 +189,7 @@ public class FinalReportPrivateWellScreen extends Screen {
                     collectedTo.setValue(collectedFrom.getValue().add(1));
                     collectedTo.setFocus(true);
                     collectedTo.selectText();
+                    data.setCollectedTo(event.getValue());
                 }
             }
 
@@ -207,6 +210,7 @@ public class FinalReportPrivateWellScreen extends Screen {
                     collectedFrom.setValue(collectedTo.getValue().add( -1));
                     collectedFrom.setFocus(true);
                     collectedFrom.selectText();
+                    data.setCollectedFrom(event.getValue());
                 }
             }
 
@@ -242,6 +246,7 @@ public class FinalReportPrivateWellScreen extends Screen {
                     accessionTo.setFieldValue(accessionFrom.getValue());
                     accessionTo.setFocus(true);
                     accessionTo.selectAll();
+                    data.setAccessionTo(event.getValue());
                 }
             }
 
@@ -262,6 +267,7 @@ public class FinalReportPrivateWellScreen extends Screen {
                     accessionFrom.setFieldValue(accessionTo.getValue());
                     accessionFrom.setFocus(true);
                     accessionFrom.selectAll();
+                    data.setAccessionFrom(event.getValue());
                 }
             }
 
