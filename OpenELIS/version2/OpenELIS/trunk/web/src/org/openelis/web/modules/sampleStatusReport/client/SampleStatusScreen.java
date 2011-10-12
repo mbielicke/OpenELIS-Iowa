@@ -50,7 +50,9 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.DeckPanel;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Label;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
+import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -69,8 +71,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class SampleStatusScreen extends Screen {
-
-    private FinalReportVO         data;
+    private FinalReportVO                      data;
     private ModulePermission                   userPermission;
     private CalendarLookUp                     collectedFrom, collectedTo;
     private TextBox                            accessionFrom, accessionTo, clientReference;
@@ -85,10 +86,13 @@ public class SampleStatusScreen extends Screen {
     private AppButton                          getSamplesButton, resetButton, backButton;
     private ArrayList<SampleStatusWebReportVO> results;
     private Integer                            statusReleased;
-
+    private SampleStatusQALookupScreen         sampleStatusQALookupscreen;
+    
     private enum Decks {
         QUERY, LIST
     };
+    
+
 
     /**
      * No-Arg constructor
@@ -148,6 +152,7 @@ public class SampleStatusScreen extends Screen {
                     collectedTo.setValue(collectedFrom.getValue().add(1));
                     collectedTo.setFocus(true);
                     collectedTo.selectText();
+                    data.setCollectedTo(event.getValue());
                 }
             }
         });
@@ -168,6 +173,7 @@ public class SampleStatusScreen extends Screen {
                     collectedFrom.setValue(collectedTo.getValue().add( -1));
                     collectedFrom.setFocus(true);
                     collectedFrom.selectText();
+                    data.setCollectedFrom(event.getValue());
                 }
             }
         });
@@ -185,6 +191,7 @@ public class SampleStatusScreen extends Screen {
                     accessionTo.setFieldValue(accessionFrom.getValue());
                     accessionTo.setFocus(true);
                     accessionTo.selectAll();
+                    data.setAccessionTo(event.getValue());
                 }
             }
 
@@ -206,6 +213,7 @@ public class SampleStatusScreen extends Screen {
                     accessionFrom.setFieldValue(accessionTo.getValue());
                     accessionFrom.setFocus(true);
                     accessionFrom.selectAll();
+                    data.setAccessionFrom(event.getValue());
                 }
             }
 
@@ -279,6 +287,37 @@ public class SampleStatusScreen extends Screen {
 
         sampleEntTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                String s, str[];
+                Integer id;
+                
+                ScreenWindow modal;
+                TableDataRow row;
+                TableDataCell cell;
+                
+                cell = sampleEntTable.getCell(event.getRow(), event.getCol());
+                
+                if (event.getCol() == 6 && cell.getValue() != null) {
+                    if(sampleStatusQALookupscreen == null) {
+                        try {
+                            sampleStatusQALookupscreen = new SampleStatusQALookupScreen();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Window.alert("SampleStatusQALookup error: " + e.getMessage());
+                            return;
+                        }
+                    }                  
+                    row = sampleEntTable.getRow(event.getRow());
+                    s = (String)row.data;
+                    str = s.split(":");
+                    id = Integer.parseInt(str[1]);
+                    if("SAMPLE".equals(str[0]))
+                        sampleStatusQALookupscreen.refresh(id, SampleStatusQALookupScreen.Type.SAMPLE);
+                    else
+                        sampleStatusQALookupscreen.refresh(id, SampleStatusQALookupScreen.Type.ANALYSIS);
+                    modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                    modal.setName(consts.get("sampleStatusQALookUp"));
+                    modal.setContent(sampleStatusQALookupscreen);
+                }
                 event.cancel();
             }
         });
@@ -416,7 +455,7 @@ public class SampleStatusScreen extends Screen {
         Datetime temp1;
         ArrayList<TableDataRow> model;
         TableDataRow row;
-
+        
         model = new ArrayList<TableDataRow>();
         if (results == null || results.size() == 0)
             return model;
@@ -449,26 +488,46 @@ public class SampleStatusScreen extends Screen {
                 }
 
                 accRow++;
-                row = new TableDataRow(6);
+                row = new TableDataRow(7);
                 row.cells.get(0).setValue(data.getAccessionNumber());
                 row.cells.get(1).setValue(data.getCollector());
                 row.cells.get(3).setValue(temp1);
                 row.cells.get(4).setValue(data.getReceivedDate());
-                row.cells.get(5).setValue(data.getClientReference());                
-                row.style = (accRow%2 == 0)?"AltTableRow":"";                
+                row.cells.get(5).setValue(data.getClientReference());
+                if (data.getHasSampleQAEvent()) {
+                    row.cells.get(6).setValue("Yes");
+                    if (data.getHasSampleOverride())
+                        row.cells.get(6).style = "ScreenLabelLinkRed";
+                    else if (data.getHasSampleWarning())
+                        row.cells.get(6).style = "ScreenLabelLinkYellow";
+                }
+                row.style = (accRow%2 == 0)?"AltTableRow":""; 
+                row.data = "SAMPLE:"+data.getSampleId();
                 model.add(row);
 
-                row = new TableDataRow(6);
+                row = new TableDataRow(7);
                 row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
                                                           data.getMethodReportingDescription());
                 row.cells.get(2).setValue(statusReleased.equals(data.getStatusId())?completed:inProgress);
-                row.style = (accRow%2 == 0)?"AltTableRow":""; 
+                if(data.getHasAnalysisQAEvent())
+                    row.cells.get(6).setValue("Yes"); 
+
+                row.data = "ANALYSIS:"+data.getAnalysisId();
+                row.style = (accRow%2 == 0)?"AltTableRow":"";                
                 model.add(row);
             } else {
-                row = new TableDataRow(6);
+                row = new TableDataRow(7);
                 row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
                                                            data.getMethodReportingDescription());
                 row.cells.get(2).setValue(statusReleased.equals(data.getStatusId())?completed:inProgress);
+                if(data.getHasAnalysisQAEvent()) {
+                    row.cells.get(6).setValue("Yes"); 
+                    if (data.getHasAnalysisOverride())
+                        row.cells.get(6).style = "ScreenLabelLinkRed";
+                    else if (data.getHasAnalysisWarning())
+                        row.cells.get(6).style = "ScreenLabelLinkYellow";
+                }
+                row.data = "ANALYSIS:"+data.getAnalysisId();
                 row.style = (accRow%2 == 0)?"AltTableRow":""; 
                 model.add(row);
             }
