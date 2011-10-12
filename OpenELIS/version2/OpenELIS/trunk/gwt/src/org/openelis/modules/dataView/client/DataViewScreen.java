@@ -209,6 +209,8 @@ public class DataViewScreen extends Screen {
         addScreenHandler(analysisStatusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisStatusId.setSelection(data.getAnalysisStatusId());
+            	if(data.getAnalysisStatusId() == null)
+            		analysisStatusId.selectRow(analysisStatusId.getData().size()-1);
             }            
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
