@@ -146,23 +146,26 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel>
               <widget valign="top">
                 <table key="sampleEntTable" maxRows="23" style = "ScreenTable" showScroll="ALWAYS" title="" width="auto">
-                  <col header="{resource:getString($constants,'AccessionNo')}" key="accessionNumber" width="80">
-                    <textbox field="Integer" />
+                  <col header="{resource:getString($constants,'AccessionNo')}" key="accessionNumber" width="73">
+                    <label field="Integer" />
                   </col>
                   <col header="{resource:getString($constants,'sampleTestDescription')}" key="sampleTestDescription" width="325">
-                    <textbox field="String" />
-                  </col>
-                  <col header="{resource:getString($constants,'analysisStatus')}" key="analysisStatus" width="120">
                     <label field="String" />
                   </col>
-                  <col header="{resource:getString($constants,'dateCollected')}" key="collectedDate" width="120">
+                  <col header="{resource:getString($constants,'analysisStatus')}" key="analysisStatus" width="72">
+                    <label field="String" />
+                  </col>
+                  <col header="{resource:getString($constants,'dateCollected')}" key="collectedDate" width="105">
                     <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}" />
                   </col>
-                  <col header="{resource:getString($constants,'datereceived')}" key="datereceived" width="120">
+                  <col header="{resource:getString($constants,'datereceived')}" key="datereceived" width="105">
                     <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}" />
                   </col>
-                  <col header="{resource:getString($constants,'clntRef')}" key="clntRef" width="120">
-                    <textbox field="String" />
+                  <col header="{resource:getString($constants,'clntRef')}" key="clntRef" width="105">
+                    <label field="String" />
+                  </col>
+                  <col header="{resource:getString($constants,'QAEvent')}" key="qaEvent" width="60">
+                    <label field="String" style = "ScreenLabelLink"/>
                   </col>
                 </table>
               </widget>
