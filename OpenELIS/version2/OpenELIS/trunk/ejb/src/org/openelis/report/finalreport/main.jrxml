@@ -42,7 +42,7 @@ WHERE
 		<variableExpression><![CDATA[$V{UNIT_LIST}]]></variableExpression>
 		<initialValueExpression><![CDATA[new org.openelis.report.finalreport.AnalysisUnitList()]]></initialValueExpression>
 	</variable>
-	<variable name="NOTE_DATASOURCE" class="org.openelis.report.finalreport.NoteDataSource" calculation="System">
+	<variable name="NOTE_DATASOURCE" class="org.openelis.report.finalreport.NoteDataSource" resetType="Group" resetGroup="Sample_Organization" calculation="System">
 		<variableExpression><![CDATA[$V{NOTE_DATASOURCE}]]></variableExpression>
 		<initialValueExpression><![CDATA[NoteDataSource.getInstance($F{s_id}, null, null)]]></initialValueExpression>
 	</variable>
