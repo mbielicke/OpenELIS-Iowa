@@ -539,6 +539,12 @@ public class FilterScreen extends Screen {
         try {
             if (reportRunUtil == null) 
                 reportRunUtil = new DataViewReportScreen("runReport", window);  
+            else
+            	/*
+            	 * Since a FilterScreen screen can be reused by DataView Screen in showFilter() 
+            	 * and inserted into a new window, we need to reset the window in the runUtil.  
+            	 */
+            	reportRunUtil.setWindow(window);
             
             reportRunUtil.runReport(data);
         } catch (Exception e) {
