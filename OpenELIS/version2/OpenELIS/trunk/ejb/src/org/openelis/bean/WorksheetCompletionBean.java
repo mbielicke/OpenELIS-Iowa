@@ -138,6 +138,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     @TransactionTimeout(600)
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
+        boolean                  isEditable;
         int                      r, i, a, o;
         String                   statuses[], cellNameIndex, posNum, outFileName;
         File                     outFile;
@@ -218,6 +219,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
             for (a = 0; a < waManager.count(); a++) {
                 waDO = waManager.getWorksheetAnalysisAt(a);
+                isEditable = "N".equals(waDO.getIsFromOther());
+                
                 if (waDO.getWorksheetAnalysisId() != null) {
                     waLinkDO = worksheetAnalysisLocal.fetchById(waDO.getWorksheetAnalysisId());
                 } else {
@@ -276,7 +279,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                     // analysis status
                     cell = row.createCell(6);
-                    cell.setCellStyle(styles.get("row_edit"));
+                    if (isEditable)
+                        cell.setCellStyle(styles.get("row_edit"));
+                    else
+                        cell.setCellStyle(styles.get("row_no_edit"));
                     cell.setCellValue(statusMap.get(aVDO.getStatusId()));
                     cellName = wb.createName();
                     cellName.setNameName("analysis_status."+i+"."+a);
@@ -299,7 +305,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         r++;
                     } else {
                         r = createResultCellsForFormat(resultSheet, row, tRow, cellNameIndex,
-                                                       tCellNames, aVDO.getTestId(), arManager, wrManager);
+                                                       tCellNames, aVDO.getTestId(),
+                                                       arManager, wrManager, isEditable);
                     }
 
                     //
@@ -338,7 +345,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                     // users (override)
                     cell = oRow.createCell(5);
-                    cell.setCellStyle(styles.get("row_edit"));
+                    if (isEditable)
+                        cell.setCellStyle(styles.get("row_edit"));
+                    else
+                        cell.setCellStyle(styles.get("row_no_edit"));
                     cellName = wb.createName();
                     cellName.setNameName("analysis_users."+cellNameIndex);
                     cellName.setRefersToFormula("Overrides!$"+CellReference.convertNumToColString(5)+
@@ -346,7 +356,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                     // started (override)
                     cell = oRow.createCell(6);
-                    cell.setCellStyle(styles.get("row_edit"));
+                    if (isEditable)
+                        cell.setCellStyle(styles.get("row_edit"));
+                    else
+                        cell.setCellStyle(styles.get("row_no_edit"));
                     cellName = wb.createName();
                     cellName.setNameName("analysis_started."+cellNameIndex);
                     cellName.setRefersToFormula("Overrides!$"+CellReference.convertNumToColString(6)+
@@ -354,7 +367,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
                     // completed (override)
                     cell = oRow.createCell(7);
-                    cell.setCellStyle(styles.get("row_edit"));
+                    if (isEditable)
+                        cell.setCellStyle(styles.get("row_edit"));
+                    else
+                        cell.setCellStyle(styles.get("row_no_edit"));
                     cellName = wb.createName();
                     cellName.setNameName("analysis_completed."+cellNameIndex);
                     cellName.setRefersToFormula("Overrides!$"+CellReference.convertNumToColString(7)+
@@ -410,7 +426,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         cellNameIndex = i+"."+a;
                         r = createQcResultCellsForFormat(resultSheet, row, tRow,
                                                          cellNameIndex, tCellNames,
-                                                         waDO.getQcId(), wqrManager);
+                                                         waDO.getQcId(), wqrManager,
+                                                         isEditable);
                     }
 
                     //
@@ -446,7 +463,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                     // users (override)
                     cell = oRow.createCell(5);
-                    cell.setCellStyle(styles.get("row_edit"));
+                    if (isEditable)
+                        cell.setCellStyle(styles.get("row_edit"));
+                    else
+                        cell.setCellStyle(styles.get("row_no_edit"));
                     try {
                         userVO = EJBFactory.getUserCache().getSystemUser(waDO.getQcSystemUserId());
                         if (userVO != null)
@@ -461,7 +481,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                     // started (override)
                     cell = oRow.createCell(6);
-                    cell.setCellStyle(styles.get("row_edit"));
+                    if (isEditable)
+                        cell.setCellStyle(styles.get("row_edit"));
+                    else
+                        cell.setCellStyle(styles.get("row_no_edit"));
                     if (waDO.getQcStartedDate() != null)
                         cell.setCellValue(waDO.getQcStartedDate().toString());
                     cellName = wb.createName();
@@ -531,7 +554,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     @TransactionTimeout(600)
     public WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception {
-        boolean                  anaModified, newSampleLock, statusLocked, permLocked;
+        boolean                  anaModified, editLocked, newSampleLock, permLocked,
+                                 statusLocked;
         int                      a, i, c, r, s, rowIndex;
         Object                   value;
         Integer                  anCancelledId, anCompletedId, anInitiatedId, anInPrepId,
@@ -601,6 +625,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     rowIndex++;
 
                 waDO = waManager.getWorksheetAnalysisAt(a);
+                editLocked = "Y".equals(waDO.getIsFromOther());
                 if (waDO.getAnalysisId() != null) {
                     anaModified = false;
                     bundle = waManager.getBundleAt(a);
@@ -634,7 +659,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     else
                         permLocked = false;
                     
-                    if (!statusLocked && !permLocked) {
+                    if (!statusLocked && !permLocked && !editLocked) {
                         value = getValueFromCellByName(wb.getSheet("Worksheet"), "analysis_status."+i+"."+a);
                         if (!statusMap.get(aVDO.getStatusId()).equals(value)) {
                             for (s = 0; s < statusList.size(); s++) {
@@ -706,7 +731,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                     rVDO = arManager.getResultAt(wrVDO.getResultRow(), c);
                                     try {
                                         if (c == 0) {
-                                            value = getValueFromCellByName(wb.getSheet("Worksheet"), "analyte_reportable."+i+"."+a);
+                                            value = getValueFromCellByName(wb.getSheet("Worksheet"), "analyte_reportable."+i+"."+a+"."+r);
                                             if (value != null && !rVDO.getIsReportable().equals(value)) {
                                                 rVDO.setIsReportable((String)value);
                                                 anaModified = true;
@@ -771,45 +796,54 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     }
                 } else if (waDO.getQcId() != null) {
                     wqrManager = waManager.getWorksheetQcResultAt(a);
-                    for (r = 0; r < wqrManager.count(); r++, rowIndex++) {
-                        wqrVDO = wqrManager.getWorksheetQcResultAt(r);
-                        for (c = 0; c < 30; c++) {
-                            value = getValueFromCellByCoords(wb.getSheet("Worksheet"), rowIndex, 9 + c);
-                            if (value != null)
-                                wqrVDO.setValueAt(c, value.toString());
+                    if (!editLocked) {
+                        for (r = 0; r < wqrManager.count(); r++, rowIndex++) {
+                            wqrVDO = wqrManager.getWorksheetQcResultAt(r);
+                            for (c = 0; c < 30; c++) {
+                                value = getValueFromCellByCoords(wb.getSheet("Worksheet"), rowIndex, 9 + c);
+                                if (value != null)
+                                    wqrVDO.setValueAt(c, value.toString());
+                            }
                         }
-                    }
-
-                    if (waDO.getQcSystemUserId() == null) {
-                        value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_users."+i+"."+a);
-                        if (value != null) {
-                            tokenizer = new StringTokenizer((String)value, ",");
-                            if (tokenizer.hasMoreTokens()) {
-                                userToken = tokenizer.nextToken();
-                                try {
-                                    userVO = EJBFactory.getUserCache().getSystemUser(userToken);
-                                    if (userVO != null) {
-                                        waDO.setQcSystemUserId(userVO.getId());
-                                    } else {
+    
+                        if (waDO.getQcSystemUserId() == null) {
+                            value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_users."+i+"."+a);
+                            if (value != null) {
+                                tokenizer = new StringTokenizer((String)value, ",");
+                                if (tokenizer.hasMoreTokens()) {
+                                    userToken = tokenizer.nextToken();
+                                    try {
+                                        userVO = EJBFactory.getUserCache().getSystemUser(userToken);
+                                        if (userVO != null) {
+                                            waDO.setQcSystemUserId(userVO.getId());
+                                        } else {
+                                            errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
+                                        }
+                                    } catch (Exception anyE) {
                                         errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
                                     }
+                                }
+                            } else {
+                                try {
+                                    userVO = EJBFactory.getUserCache().getSystemUser();
+                                    waDO.setQcSystemUserId(userVO.getId());
                                 } catch (Exception anyE) {
-                                    errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
+                                    errorList.add(new FormErrorException("defaultWorksheetQcUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
                                 }
                             }
-                        } else {
-                            try {
-                                userVO = EJBFactory.getUserCache().getSystemUser();
-                                waDO.setQcSystemUserId(userVO.getId());
-                            } catch (Exception anyE) {
-                                errorList.add(new FormErrorException("defaultWorksheetQcUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
-                            }
                         }
+                        
+                        value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
+                        if (value != null && waDO.getQcStartedDate() == null)
+                            waDO.setQcStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
+                    } else {
+                        //
+                        // increment rowIndex and r since we skipped running through
+                        // the result records due to permissions or status
+                        //
+                        r = wqrManager.count();
+                        rowIndex += r;
                     }
-                    
-                    value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
-                    if (value != null && waDO.getQcStartedDate() == null)
-                        waDO.setQcStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
                 }
             }
             //
@@ -909,7 +943,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     private int createResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow, String nameIndexPrefix,
                                            HashMap<String,String> cellNames, Integer testId,
-                                           AnalysisResultManager arManager, WorksheetResultManager wrManager) {
+                                           AnalysisResultManager arManager, WorksheetResultManager wrManager,
+                                           boolean isEditable) {
         int                    c, i, r;
         Integer                resultTypeDictionary;
         String                 cellNameIndex, name;
@@ -951,7 +986,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             
             // reportable
             cell = row.createCell(8);
-            cell.setCellStyle(styles.get("row_edit"));
+            if (isEditable)
+                cell.setCellStyle(styles.get("row_edit"));
+            else
+                cell.setCellStyle(styles.get("row_no_edit"));
             cell.setCellValue(rVDO.getIsReportable());
             cellName = sheet.getWorkbook().createName();
             cellName.setNameName("analyte_reportable."+cellNameIndex);
@@ -963,7 +1001,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 tCell = tRow.getCell(c);
                 
                 cell = row.createCell(c);
-                cell.setCellStyle(tCell.getCellStyle());
+                if (isEditable)
+                    cell.setCellStyle(tCell.getCellStyle());
+                else
+                    cell.setCellStyle(styles.get("row_no_edit"));
                 name = cellNames.get(sheet.getSheetName()+"!$"+
                                      CellReference.convertNumToColString(tCell.getColumnIndex())+
                                      "$"+(tCell.getRowIndex()+1));
@@ -1036,7 +1077,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     private int createQcResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow,
                                              String nameIndexPrefix, HashMap<String,String> cellNames,
-                                             Integer qcId, WorksheetQcResultManager wqrManager) {
+                                             Integer qcId, WorksheetQcResultManager wqrManager,
+                                             boolean isEditable) {
         int                     c, i, r;
         Object                  value;
         String                  cellNameIndex, name;
@@ -1075,7 +1117,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 tCell = tRow.getCell(c);
                 
                 cell = row.createCell(c);
-                cell.setCellStyle(tCell.getCellStyle());
+                if (isEditable)
+                    cell.setCellStyle(tCell.getCellStyle());
+                else
+                    cell.setCellStyle(styles.get("row_no_edit"));
                 name = cellNames.get(sheet.getSheetName()+"!$"+
                                      CellReference.convertNumToColString(tCell.getColumnIndex())+
                                      "$"+(tCell.getRowIndex()+1));
