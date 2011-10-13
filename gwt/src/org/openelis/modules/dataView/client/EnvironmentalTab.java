@@ -33,12 +33,12 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envIsHazardous, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envIsHazardous.setValue(data.getSampleEnvironmentalIsHazardous());
-                changeCount(data.getSampleEnvironmentalIsHazardous());
+                changeCount(data.getSampleEnvironmentalIsHazardous(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {                
                 data.setSampleEnvironmentalIsHazardous(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -50,12 +50,12 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envPriority, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envPriority.setValue(data.getSampleEnvironmentalPriority());
-                changeCount(data.getSampleEnvironmentalPriority());
+                changeCount(data.getSampleEnvironmentalPriority(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSampleEnvironmentalPriority(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -67,12 +67,12 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envCollector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envCollector.setValue(data.getSampleEnvironmentalCollectorHeader());
-                changeCount(data.getSampleEnvironmentalCollectorHeader());
+                changeCount(data.getSampleEnvironmentalCollectorHeader(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSampleEnvironmentalCollectorHeader(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -84,12 +84,12 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envCollectorPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envCollectorPhone.setValue(data.getSampleEnvironmentalCollectorPhone());
-                changeCount(data.getSampleEnvironmentalCollectorPhone());
+                changeCount(data.getSampleEnvironmentalCollectorPhone(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSampleEnvironmentalCollectorPhone(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -101,12 +101,12 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envLocation, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envLocation.setValue(data.getSampleEnvironmentalLocationHeader());
-                changeCount(data.getSampleEnvironmentalLocationHeader());
+                changeCount(data.getSampleEnvironmentalLocationHeader(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSampleEnvironmentalLocationHeader(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -118,12 +118,12 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(locationAddrCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 locationAddrCity.setValue(data.getSampleEnvironmentalLocationAddressCity());
-                changeCount(data.getSampleEnvironmentalLocationAddressCity());
+                changeCount(data.getSampleEnvironmentalLocationAddressCity(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSampleEnvironmentalLocationAddressCity(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -135,12 +135,12 @@ public class EnvironmentalTab extends Screen {
         addScreenHandler(envDescription, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 envDescription.setValue(data.getSampleEnvironmentalDescription());
-                changeCount(data.getSampleEnvironmentalDescription());
+                changeCount(data.getSampleEnvironmentalDescription(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSampleEnvironmentalDescription(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -168,10 +168,17 @@ public class EnvironmentalTab extends Screen {
          return 0;
     }
     
-    private void changeCount(String val) {
-        if ("Y".equals(val))
-            checkCount++;
-        else if (checkCount > 0)
+    private void changeCount(String val, boolean manual) {
+        /*
+         * CheckCount keeps track of the number of checkboxes checked in the tab.
+         * It's decremented only when the value is changed manually i.e. 
+         * when ValueChangeEvent gets fired and only if it doesn't become negative.
+         * This is done to make sure that only the checkboxes unchecked by the user 
+         * affect the value rather than the default values in the VO.     
+         */
+        if ("Y".equals(val))            
+            checkCount++;        
+        else if (checkCount > 0 && manual)
             checkCount--;
     }
 }

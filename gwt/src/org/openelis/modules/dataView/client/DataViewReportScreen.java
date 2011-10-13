@@ -25,6 +25,7 @@
 */
 package org.openelis.modules.dataView.client;
 
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.modules.report.client.ReportScreen;
@@ -35,11 +36,12 @@ import org.openelis.modules.report.client.ReportScreen;
  */
 public class DataViewReportScreen extends ReportScreen {
 
-    public DataViewReportScreen(String runReportInterface, ScreenWindowInt window) throws Exception {
+    public DataViewReportScreen(String runReportInterface, ScreenWindowInt window, String attachment) throws Exception {
         setRunReportInterface(runReportInterface);
         this.window = window;
         this.service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");
-        setAttachmentName("DataView.xml");
+        if (!DataBaseUtil.isEmpty(attachment))
+            setAttachmentName(attachment);
     }
     
     /**

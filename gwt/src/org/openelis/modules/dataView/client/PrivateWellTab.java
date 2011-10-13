@@ -35,12 +35,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellOwner, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellOwner.setValue(data.getSamplePrivateWellOwner());
-                changeCount(data.getSamplePrivateWellOwner());
+                changeCount(data.getSamplePrivateWellOwner(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSamplePrivateWellOwner(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -52,12 +52,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellCollector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellCollector.setValue(data.getSamplePrivateWellCollector());
-                changeCount(data.getSamplePrivateWellCollector());
+                changeCount(data.getSamplePrivateWellCollector(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSamplePrivateWellCollector(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -69,12 +69,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellWellNumber, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellWellNumber.setValue(data.getSamplePrivateWellWellNumber());
-                changeCount(data.getSamplePrivateWellWellNumber());
+                changeCount(data.getSamplePrivateWellWellNumber(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSamplePrivateWellWellNumber(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -86,12 +86,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellReportToAddressWorkPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellReportToAddressWorkPhone.setValue(data.getSamplePrivateWellReportToAddressWorkPhone());
-                changeCount(data.getSamplePrivateWellReportToAddressWorkPhone());
+                changeCount(data.getSamplePrivateWellReportToAddressWorkPhone(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSamplePrivateWellReportToAddressWorkPhone(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -104,12 +104,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellReportToAddressFaxPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellReportToAddressFaxPhone.setValue(data.getSamplePrivateWellReportToAddressFaxPhone());
-                changeCount(data.getSamplePrivateWellReportToAddressFaxPhone());
+                changeCount(data.getSamplePrivateWellReportToAddressFaxPhone(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSamplePrivateWellReportToAddressFaxPhone(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -122,12 +122,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellLocation, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellLocation.setValue(data.getSamplePrivateWellLocation());
-                changeCount(data.getSamplePrivateWellLocation());
+                changeCount(data.getSamplePrivateWellLocation(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSamplePrivateWellLocation(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -139,12 +139,12 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(wellLocationAddrCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 wellLocationAddrCity.setValue(data.getSamplePrivateWellLocationAddressCity());
-                changeCount(data.getSamplePrivateWellLocationAddressCity());
+                changeCount(data.getSamplePrivateWellLocationAddressCity(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSamplePrivateWellLocationAddressCity(event.getValue());
-                changeCount(event.getValue());
+                changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -172,10 +172,17 @@ public class PrivateWellTab extends Screen {
         return 0;
     }
 
-    private void changeCount(String val) {
-        if ("Y".equals(val))
-            checkCount++;
-        else if (checkCount > 0)
+    private void changeCount(String val, boolean manual) {
+        /*
+         * CheckCount keeps track of the number of checkboxes checked in the tab.
+         * It's decremented only when the value is changed manually i.e. 
+         * when ValueChangeEvent gets fired and only if it doesn't become negative.
+         * This is done to make sure that only the checkboxes unchecked by the user 
+         * affect the value rather than the default values in the VO.     
+         */
+        if ("Y".equals(val))            
+            checkCount++;        
+        else if (checkCount > 0 && manual)
             checkCount--;
     }
 }

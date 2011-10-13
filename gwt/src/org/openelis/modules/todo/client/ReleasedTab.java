@@ -131,7 +131,10 @@ public class ReleasedTab extends Screen {
                     row.cells.get(5).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE,temp));
                 }
                 row.cells.get(6).setValue(data.getReleasedDate());                
-                row.cells.get(7).setValue(data.getQaeventResultOverride());
+                if ("Y".equals(data.getAnalysisQaeventResultOverride()) || "Y".equals(data.getSampleQaeventResultOverride()))
+                    row.cells.get(7).setValue("Y");
+                else
+                    row.cells.get(7).setValue("N");
                 
                 domain = data.getSampleDomain();                
                 if ("E".equals(domain)) {

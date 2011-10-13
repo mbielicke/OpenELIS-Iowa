@@ -157,8 +157,11 @@ public class OtherTab extends Screen {
 
                     row.cells.get(6).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE,temp));
                 }
-                row.cells.get(7).setValue(data.getSampleReceivedDate());                
-                row.cells.get(8).setValue(data.getQaeventResultOverride());
+                row.cells.get(7).setValue(data.getSampleReceivedDate());      
+                if ("Y".equals(data.getAnalysisQaeventResultOverride()) || "Y".equals(data.getSampleQaeventResultOverride()))
+                    row.cells.get(8).setValue("Y");
+                else
+                    row.cells.get(8).setValue("N");
                 
                 domain = data.getSampleDomain();                
                 if ("E".equals(domain)) {

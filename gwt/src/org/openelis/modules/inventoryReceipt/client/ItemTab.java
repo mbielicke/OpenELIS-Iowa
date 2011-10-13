@@ -189,13 +189,11 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         data = manager.getReceiptAt(index);
                         if (data.getInventoryItemId() != null) 
                             item = InventoryItemCache.getById(data.getInventoryItemId());
+                        addToExisting.enable("Y".equals(item.getIsBulk())); 
                     } catch(Exception ex) {
                         ex.printStackTrace();
                         Window.alert(ex.getMessage());
-                    }
-                    
-                    if (item != null)  
-                        addToExisting.enable("Y".equals(item.getIsBulk()));                                            
+                    }                                                             
                 } else {
                     addToExisting.enable(false);
                 }
@@ -418,9 +416,10 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);
+                            row.key = storLoc.getId();         
                             location = StorageLocationManager.getLocationForDisplay(storLoc.getName(),
                                                                                     storLoc.getStorageUnitDescription(),
-                                                                                    storLoc.getLocation());
+                                                                                    storLoc.getLocation());                                              
                             row.cells.get(0).setValue(location);
                             invLoc = new InventoryLocationViewDO();
                             invLoc.setStorageLocationId(storLoc.getId());
@@ -606,5 +605,4 @@ public class ItemTab extends Screen implements HasActionHandlers<ItemTab.Action>
     public HandlerRegistration addActionHandler(ActionHandler<ItemTab.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
-
 }
