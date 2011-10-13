@@ -55,6 +55,9 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 ANALYSIS_ANALYSIS_ID           = "_worksheetAnalysis.analysisId",
                                 ANALYSIS_QC_ID                 = "_worksheetAnalysis.qcId",
                                 ANALYSIS_WORKSHEET_ANALYSIS_ID = "_worksheetAnalysis.worksheetAnalysisId",
+                                ANALYSIS_QC_SYSTEM_USER_ID     = "_worksheetAnalysis.qcSystemUserId",
+                                ANALYSIS_QC_STARTED_DATE       = "_worksheetAnalysis.qcStartedDate",
+                                ANALYSIS_IS_FROM_OTHER         = "_worksheetAnalysis.isFromOther",
 
                                 RESULT_ID                    = "_worksheetResult.id",
                                 RESULT_WORKSHEET_ANALYSIS_ID = "_worksheetResult.worksheetAnalysisId",
@@ -116,6 +119,8 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                     INSTRUMENT_ID, ITEM_ID, ITEM_WORKSHEET_ID, ITEM_POSITION,
                                     ANALYSIS_ID, ANALYSIS_WORKSHEET_ITEM_ID, ANALYSIS_ACCESSION_NUMBER,
                                     ANALYSIS_ANALYSIS_ID, ANALYSIS_QC_ID, ANALYSIS_WORKSHEET_ANALYSIS_ID,
+                                    ANALYSIS_QC_SYSTEM_USER_ID, ANALYSIS_QC_STARTED_DATE,
+                                    ANALYSIS_IS_FROM_OTHER,
                                     RESULT_ID, RESULT_WORKSHEET_ANALYSIS_ID, RESULT_TEST_ANALYTE_ID,
                                     RESULT_TEST_RESULT_ID, RESULT_RESULT_ROW, RESULT_ANALYTE_ID,
                                     RESULT_TYPE_ID, RESULT_VALUE_1, RESULT_VALUE_2,
@@ -200,6 +205,18 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
 
     public static String getWorksheetAnalysisWorksheetAnalysisId() {
         return ANALYSIS_WORKSHEET_ANALYSIS_ID;
+    }
+
+    public static String getWorksheetAnalysisQcSystemUserId() {
+        return ANALYSIS_QC_SYSTEM_USER_ID;
+    }
+
+    public static String getWorksheetAnalysisQcStartedDate() {
+        return ANALYSIS_QC_STARTED_DATE;
+    }
+
+    public static String getWorksheetAnalysisIsFromOther() {
+        return ANALYSIS_IS_FROM_OTHER;
     }
 
     public static String getWorksheetResultId() {

@@ -40,7 +40,7 @@ public class WorksheetAnalysisDO extends DataObject {
 
     protected Integer  id, worksheetItemId, worksheetAnalysisId, analysisId, qcId,
                        qcSystemUserId;
-    protected String   accessionNumber;
+    protected String   accessionNumber, isFromOther;
     protected Datetime qcStartedDate;
     
     public WorksheetAnalysisDO() {
@@ -48,7 +48,7 @@ public class WorksheetAnalysisDO extends DataObject {
 
     public WorksheetAnalysisDO(Integer id, Integer worksheetItemId, String accessionNumber,
                                Integer analysisId, Integer qcId, Integer worksheetAnalysisId,
-                               Integer qcSystemUserId, Date qcStartedDate) {
+                               Integer qcSystemUserId, Date qcStartedDate, String isFromOther) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
         setAccessionNumber(accessionNumber);
@@ -57,6 +57,7 @@ public class WorksheetAnalysisDO extends DataObject {
         setWorksheetAnalysisId(worksheetAnalysisId);
         setQcSystemUserId(qcSystemUserId);
         setQcStartedDate(DataBaseUtil.toYM(qcStartedDate));
+        setIsFromOther(isFromOther);
         _changed = false;
     }
 
@@ -129,6 +130,15 @@ public class WorksheetAnalysisDO extends DataObject {
 
     public void setQcStartedDate(Datetime qcStartedDate) {
         this.qcStartedDate = DataBaseUtil.toYM(qcStartedDate);
+        _changed = true;
+    }
+
+    public String getIsFromOther() {
+        return isFromOther;
+    }
+
+    public void setIsFromOther(String isFromOther) {
+        this.isFromOther = DataBaseUtil.trim(isFromOther);
         _changed = true;
     }
 }
