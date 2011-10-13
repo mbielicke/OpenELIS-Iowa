@@ -41,8 +41,8 @@ public class AnalysisCacheVO implements RPC {
     protected Integer         id, statusId, sectionId, sampleId, sampleAccessionNumber,
                               testTimeHolding,testTimeTaAverage, sampleEnvironmentalPriority;                              
     protected String          sampleDomain, sampleReportToName, testName, testMethodName,
-                              sectionName, qaeventResultOverride, sampleProjectName,
-                              samplePrivateWellOwner, sampleSDWISPWSName;
+                              sectionName, analysisQaeventResultOverride, sampleQaeventResultOverride, 
+                              sampleProjectName, samplePrivateWellOwner, sampleSDWISPWSName;
     protected Datetime        availableDate, startedDate, completedDate, releasedDate,
                               sampleReceivedDate, sampleCollectionDate,
                               sampleCollectionTime;
@@ -218,12 +218,20 @@ public class AnalysisCacheVO implements RPC {
         this.sectionName = DataBaseUtil.trim(sectionName);
     }
 
-    public String getQaeventResultOverride() {
-        return qaeventResultOverride;
+    public String getAnalysisQaeventResultOverride() {
+        return analysisQaeventResultOverride;
     }
     
-    public void setQaeventResultOverride(String qaeventResultOverride) {
-        this.qaeventResultOverride = DataBaseUtil.trim(qaeventResultOverride);
+    public void setAnalysisQaeventResultOverride(String analysisQaeventResultOverride) {
+        this.analysisQaeventResultOverride = DataBaseUtil.trim(analysisQaeventResultOverride);
+    }
+    
+    public String getSampleQaeventResultOverride() {
+        return sampleQaeventResultOverride;
+    }
+
+    public void setSampleQaeventResultOverride(String sampleQaeventResultOverride) {
+        this.sampleQaeventResultOverride = DataBaseUtil.trim(sampleQaeventResultOverride);
     }
     
     public String getSampleReportToName() {
