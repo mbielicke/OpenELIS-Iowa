@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.util.ArrayList;
@@ -79,159 +79,159 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
-    private Cache         loggedInCache, initiatedCache, completedCache, 
-                          releasedCache, toBeVerifiedCache, otherCache;
-    
+    private Cache         loggedInCache, initiatedCache, completedCache, releasedCache,
+                    toBeVerifiedCache, otherCache;
+
     public ToDoCacheBean() {
         CacheManager cm;
 
         cm = CacheManager.getInstance();
-        loggedInCache = cm.getCache("loggedIn");       
+        loggedInCache = cm.getCache("loggedIn");
         initiatedCache = cm.getCache("initiated");
         completedCache = cm.getCache("completed");
         releasedCache = cm.getCache("released");
         toBeVerifiedCache = cm.getCache("toBeVerified");
         otherCache = cm.getCache("other");
-    }     
-    
+    }
+
     public ArrayList<AnalysisCacheVO> getLoggedIn() throws Exception {
         int size;
-        ArrayList<AnalysisCacheVO> list;        
+        ArrayList<AnalysisCacheVO> list;
         List entryList;
-        DictionaryDO data;  
-        
+        DictionaryDO data;
+
         entryList = loggedInCache.getKeysWithExpiryCheck();
         size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
-         * less than the total entries, the cache is reloaded from the database 
+         * less than the total entries, the cache is reloaded from the database
          */
         if (size == 0 || loggedInCache.getSize() > size) {
             data = EJBFactory.getDictionaryCache().getBySystemName("analysis_logged_in");
             list = reloadAnalysisCache(loggedInCache, data.getId());
-        } else { 
+        } else {
             list = getAnalysisListFromCache(loggedInCache);
         }
-        
+
         return list;
     }
-    
+
     public ArrayList<AnalysisCacheVO> getInitiated() throws Exception {
         int size;
-        ArrayList<AnalysisCacheVO> list;        
+        ArrayList<AnalysisCacheVO> list;
         List entryList;
-        DictionaryDO data;  
-        
+        DictionaryDO data;
+
         entryList = initiatedCache.getKeysWithExpiryCheck();
         size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
-         * less than the total entries, the cache is reloaded from the database 
+         * less than the total entries, the cache is reloaded from the database
          */
         if (size == 0 || initiatedCache.getSize() > size) {
             data = EJBFactory.getDictionaryCache().getBySystemName("analysis_initiated");
             list = reloadAnalysisCache(initiatedCache, data.getId());
-        } else { 
+        } else {
             list = getAnalysisListFromCache(initiatedCache);
         }
-        
+
         return list;
     }
-    
+
     public ArrayList<AnalysisCacheVO> getCompleted() throws Exception {
         int size;
-        ArrayList<AnalysisCacheVO> list;        
+        ArrayList<AnalysisCacheVO> list;
         List entryList;
-        DictionaryDO data;  
-        
+        DictionaryDO data;
+
         entryList = completedCache.getKeysWithExpiryCheck();
         size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
-         * less than the total entries, the cache is reloaded from the database 
+         * less than the total entries, the cache is reloaded from the database
          */
         if (size == 0 || completedCache.getSize() > size) {
             data = EJBFactory.getDictionaryCache().getBySystemName("analysis_completed");
             list = reloadAnalysisCache(completedCache, data.getId());
-        } else { 
+        } else {
             list = getAnalysisListFromCache(completedCache);
         }
-        
+
         return list;
     }
-    
+
     public ArrayList<AnalysisCacheVO> getReleased() throws Exception {
         int size;
-        ArrayList<AnalysisCacheVO> list;        
+        ArrayList<AnalysisCacheVO> list;
         List entryList;
-        
+
         entryList = releasedCache.getKeysWithExpiryCheck();
         size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
-         * less than the total entries, the cache is reloaded from the database 
+         * less than the total entries, the cache is reloaded from the database
          */
-        if (size == 0 || releasedCache.getSize() > size)             
+        if (size == 0 || releasedCache.getSize() > size)
             list = reloadAnalysisCache(releasedCache, null);
-        else 
-            list = getAnalysisListFromCache(releasedCache);        
-        
+        else
+            list = getAnalysisListFromCache(releasedCache);
+
         return list;
     }
-    
+
     public ArrayList<SampleCacheVO> getToBeVerified() throws Exception {
         int size;
-        ArrayList<SampleCacheVO> list;        
+        ArrayList<SampleCacheVO> list;
         List entryList;
-        DictionaryDO data;  
-        
+        DictionaryDO data;
+
         entryList = toBeVerifiedCache.getKeysWithExpiryCheck();
         size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
-         * less than the total entries, the cache is reloaded from the database 
+         * less than the total entries, the cache is reloaded from the database
          */
         if (size == 0 || toBeVerifiedCache.getSize() > size) {
             data = EJBFactory.getDictionaryCache().getBySystemName("sample_not_verified");
             list = reloadSampleCache(toBeVerifiedCache, data.getId());
-        } else { 
+        } else {
             list = getSampleListFromCache(toBeVerifiedCache);
         }
-        
+
         return list;
     }
-    
+
     public ArrayList<AnalysisCacheVO> getOther() throws Exception {
         int size;
-        ArrayList<AnalysisCacheVO> list;        
+        ArrayList<AnalysisCacheVO> list;
         List entryList;
-        
+
         entryList = otherCache.getKeysWithExpiryCheck();
         size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
-         * less than the total entries, the cache is reloaded from the database 
+         * less than the total entries, the cache is reloaded from the database
          */
         if (size == 0 || otherCache.getSize() > size) {
             list = reloadAnalysisCache(otherCache, null);
-        } else { 
+        } else {
             list = getAnalysisListFromCache(otherCache);
         }
-        
+
         return list;
     }
-    
+
     public ArrayList<WorksheetCacheVO> getWorksheet() throws Exception {
         ArrayList<WorksheetCacheVO> list;
         try {
-        list = EJBFactory.getWorksheetAnalysis().fetchByWorking();
-        return list;
+            list = EJBFactory.getWorksheetAnalysis().fetchByWorking();
+            return list;
         } catch (Exception e) {
             e.printStackTrace();
             throw e;
-        }                
+        }
     }
-        
+
     public void update(SampleCacheVO data) {
         Integer id, statusId;
         String sname;
@@ -242,33 +242,34 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         try {
             sname = EJBFactory.getDictionaryCache().getById(statusId).getSystemName();
             /*
-             * If the status of the sample represented by "data" has changed 
+             * If the status of the sample represented by "data" has changed
              * from what it was when the sample was previously added to one of
              * the caches then the Element for the sample is removed from the
-             * cache that contains it and a new one containing "data" is added 
-             * to the appropriate cache based on the current status of the sample.
-             * A new Element is also created even if the status is the same as the 
-             * previous time because otherwise all the fields in the new and old
-             * entry will have to be compared in order to find out about any other changes.         
+             * cache that contains it and a new one containing "data" is added
+             * to the appropriate cache based on the current status of the
+             * sample. A new Element is also created even if the status is the
+             * same as the previous time because otherwise all the fields in the
+             * new and old entry will have to be compared in order to find out
+             * about any other changes.
              */
             if ("sample_not_verified".equals(sname)) {
                 getToBeVerified();
-                toBeVerifiedCache.put(new Element(id, data));                
+                toBeVerifiedCache.put(new Element(id, data));
             } else {
                 /*
-                 * this is done so that if the sample's status has changed to 
+                 * this is done so that if the sample's status has changed to
                  * something other than what the caches pertain to, the sample
-                 * gets removed from the cache that it was in previously 
+                 * gets removed from the cache that it was in previously
                  */
                 if (toBeVerifiedCache.get(id) != null)
-                    toBeVerifiedCache.remove(id);                
+                    toBeVerifiedCache.remove(id);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    } 
-    
-    public void update(AnalysisCacheVO data) {        
+    }
+
+    public void update(AnalysisCacheVO data) {
         Integer id, statusId;
         String sname;
         Datetime rd;
@@ -280,14 +281,15 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         try {
             sname = EJBFactory.getDictionaryCache().getById(statusId).getSystemName();
             /*
-             * If the status of the analysis represented by "data" has changed 
+             * If the status of the analysis represented by "data" has changed
              * from what it was when the analysis was previously added to one of
              * the caches then the Element for the analysis is removed from the
-             * cache that contains it and a new one containing "data" is added 
-             * to the appropriate cache based on the current status of the analysis.
-             * A new Element is also created even if the status is the same as the 
-             * previous time because otherwise all the fields in the new and old
-             * entry will have to be compared in order to find out about any other changes.         
+             * cache that contains it and a new one containing "data" is added
+             * to the appropriate cache based on the current status of the
+             * analysis. A new Element is also created even if the status is the
+             * same as the previous time because otherwise all the fields in the
+             * new and old entry will have to be compared in order to find out
+             * about any other changes.
              */
             if ("analysis_logged_in".equals(sname)) {
                 getLoggedIn();
@@ -328,7 +330,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                 mn.setHours(0);
                 mn.setMinutes(0);
                 mn.setSeconds(0);
-                if ((rd.getDate().getTime()) >= (mn.getTime() - 4*86400000)) {   
+                if ( (rd.getDate().getTime()) >= (mn.getTime() - 4 * 86400000)) {
                     getReleased();
                     releasedCache.put(new Element(id, data));
                     if (loggedInCache.get(id) != null)
@@ -339,12 +341,12 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                         completedCache.remove(id);
                     else if (otherCache.get(id) != null)
                         otherCache.remove(id);
-                } 
+                }
             } else {
                 /*
-                 * this is done so that if the analysis' status has changed to 
+                 * this is done so that if the analysis' status has changed to
                  * something other than what the caches pertain to, the analysis
-                 * gets removed from the cache that it was in previously 
+                 * gets removed from the cache that it was in previously
                  */
                 if (loggedInCache.get(id) != null)
                     loggedInCache.remove(id);
@@ -354,40 +356,42 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     completedCache.remove(id);
                 else if (releasedCache.get(id) != null)
                     releasedCache.remove(id);
-                
+
                 getOther();
                 //
                 // cancelled analyses are not cached
                 //
-                if (!"analysis_cancelled".equals(sname))                  
+                if ( !"analysis_cancelled".equals(sname))
                     otherCache.put(new Element(id, data));
                 else if (otherCache.get(id) != null)
-                    otherCache.remove(id);                
+                    otherCache.remove(id);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }    
-    
-    private ArrayList<SampleCacheVO> reloadSampleCache(Cache cache, Integer statusId) throws Exception {
+    }
+
+    private ArrayList<SampleCacheVO> reloadSampleCache(Cache cache, Integer statusId)
+                                                                                     throws Exception {
         Query query;
-        ArrayList<SampleCacheVO> list;        
+        ArrayList<SampleCacheVO> list;
         List queryList;
-        
+
         query = manager.createNamedQuery("Sample.FetchForCachingByStatusId");
-        query.setParameter("statusId", statusId);        
+        query.setParameter("statusId", statusId);
         queryList = query.getResultList();
         list = createSampleCacheEntries(cache, queryList);
-        
+
         return list;
     }
-    
-    private ArrayList<AnalysisCacheVO> reloadAnalysisCache(Cache cache, Integer statusId) throws Exception {
+
+    private ArrayList<AnalysisCacheVO> reloadAnalysisCache(Cache cache, Integer statusId)
+                                                                                         throws Exception {
         Query query;
-        ArrayList<AnalysisCacheVO> list;        
-        List queryList;                
-        Date rd,mn;
-        
+        ArrayList<AnalysisCacheVO> list;
+        List queryList;
+        Date rd, mn;
+
         if (statusId != null) {
             query = manager.createNamedQuery("Analysis.FetchForCachingByStatusId");
             query.setParameter("statusId", statusId);
@@ -395,8 +399,8 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
             mn = new Date();
             mn.setHours(0);
             mn.setMinutes(0);
-            mn.setSeconds(0);            
-            // 345600000 = 4 days           
+            mn.setSeconds(0);
+            // 345600000 = 4 days
             rd = new Date(mn.getTime() - 345600000);
             query = manager.createNamedQuery("Analysis.FetchReleasedForCaching");
             query.setParameter("releasedDate", rd);
@@ -405,14 +409,16 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         }
         queryList = query.getResultList();
         list = createAnalysisCacheEntries(cache, queryList);
-        
+
         return list;
     }
-    
-    private ArrayList<SampleCacheVO> createSampleCacheEntries(Cache cache, List<SampleCacheVO> queryList) throws Exception {
+
+    private ArrayList<SampleCacheVO> createSampleCacheEntries(Cache cache,
+                                                              List<SampleCacheVO> queryList)
+                                                                                            throws Exception {
         Integer id;
-        String name, prjName;     
-        Sample sample;       
+        String name, prjName;
+        Sample sample;
         AnalysisQAEventLocal aqel;
         SampleQAEventLocal sqel;
         SampleOrganizationLocal sol;
@@ -440,79 +446,78 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         ssdl = EJBFactory.getSampleSDWIS();
         spl = EJBFactory.getSampleProject();
         sidList = new ArrayList<Integer>();
-        
+
         try {
             for (SampleCacheVO data : queryList) {
                 data.setQaeventResultOverride("N");
                 id = data.getId();
-                //if (name == null) {
-                    if ("E".equals(data.getDomain())) {
-                        //
-                        // there is no "report to" for quick-entry (Q) samples 
-                        //
-                        try {
-                            sorgList = sol.fetchReportToBySampleId(id);
-                            name = sorgList.get(0).getOrganizationName();
-                        } catch (NotFoundException e) {
-                            name = "";
-                        }
-                        data.setReportToName(name);
-                        
-                        senv = sel.fetchBySampleId(id);
-                        data.setSampleEnvironmentalPriority(senv.getPriority());
-                        
-                        try {
-                            sprjList = spl.fetchPermanentBySampleId(id);
-                            prjName = sprjList.get(0).getProjectName();
-                        } catch (NotFoundException e) {
-                            prjName = "";
-                        }
-                        data.setSampleProjectName(prjName);
-                    } else if ("W".equals(data.getDomain())) {
-                        /*
-                         * if the sample's domain is private well(W) then it may not have
-                         * its "report to" linked to sample_organization, but present
-                         * in sample_private_well     
-                         */
-                        spw = spwl.fetchBySampleId(id);
-                        if (spw.getOrganization() != null)
-                            name = spw.getOrganization().getName();
-                        else
-                            name = spw.getReportToName();
-                        data.setReportToName(name);
-                        data.setSamplePrivateWellOwner(spw.getOwner());
-                    } else if ("S".equals(data.getDomain())) {
-                        //
-                        // there is no "report to" for quick-entry (Q) samples 
-                        //
-                        try {
-                            sorgList = sol.fetchReportToBySampleId(id);
-                            name = sorgList.get(0).getOrganizationName();
-                        } catch (NotFoundException e) {
-                            name = "";
-                        }
-                        data.setReportToName(name);
-                        
-                        ssd = ssdl.fetchBySampleId(id);
-                        data.setSampleSDWISPWSName(ssd.getPwsName());
+                if ("E".equals(data.getDomain())) {
+                    //
+                    // there is no "report to" for quick-entry (Q) samples
+                    //
+                    try {
+                        sorgList = sol.fetchReportToBySampleId(id);
+                        name = sorgList.get(0).getOrganizationName();
+                    } catch (NotFoundException e) {
+                        name = "";
                     }
-                    cache.put(new Element(data.getId(), data));
-                    sidList.add(data.getId());
-                }                                
-            //}
+                    data.setReportToName(name);
+
+                    senv = sel.fetchBySampleId(id);
+                    data.setSampleEnvironmentalPriority(senv.getPriority());
+
+                    try {
+                        sprjList = spl.fetchPermanentBySampleId(id);
+                        prjName = sprjList.get(0).getProjectName();
+                    } catch (NotFoundException e) {
+                        prjName = "";
+                    }
+                    data.setSampleProjectName(prjName);
+                } else if ("W".equals(data.getDomain())) {
+                    /*
+                     * if the sample's domain is private well(W) then it may not
+                     * have its "report to" linked to sample_organization, but
+                     * present in sample_private_well
+                     */
+                    spw = spwl.fetchBySampleId(id);
+                    if (spw.getOrganization() != null)
+                        name = spw.getOrganization().getName();
+                    else
+                        name = spw.getReportToName();
+                    data.setReportToName(name);
+                    data.setSamplePrivateWellOwner(spw.getOwner());
+                } else if ("S".equals(data.getDomain())) {
+                    //
+                    // there is no "report to" for quick-entry (Q) samples
+                    //
+                    try {
+                        sorgList = sol.fetchReportToBySampleId(id);
+                        name = sorgList.get(0).getOrganizationName();
+                    } catch (NotFoundException e) {
+                        name = "";
+                    }
+                    data.setReportToName(name);
+
+                    ssd = ssdl.fetchBySampleId(id);
+                    data.setSampleSDWISPWSName(ssd.getPwsName());
+                }
+                cache.put(new Element(data.getId(), data));
+                sidList.add(data.getId());
+            }
         } catch (Exception e) {
             throw e;
         }
-        
+
         /*
-         * We find all the sample_qa_events that are linked to the samples 
-         * in the cache and have the type "Result Override". We then set the flag
-         * corresponding to this field to "Y" in the VO for the sample that a 
-         * given sample_qa_event belongs to. We also remove the ids of such samples
-         * from the list used in this query so that when we query for analysis_qa_events
-         * belonging to the analyses under individual samples we don't unnecessarily
-         * query for those samples again as the flag has already been set to "Y" for them. 
-         */        
+         * We find all the sample_qa_events that are linked to the samples in
+         * the cache and have the type "Result Override". We then set the flag
+         * corresponding to this field to "Y" in the VO for the sample that a
+         * given sample_qa_event belongs to. We also remove the ids of such
+         * samples from the list used in this query so that when we query for
+         * analysis_qa_events belonging to the analyses under individual samples
+         * we don't unnecessarily query for those samples again as the flag has
+         * already been set to "Y" for them.
+         */
         try {
             if (sidList != null && sidList.size() > 0) {
                 sqeList = sqel.fetchResultOverrideBySampleIdList(sidList);
@@ -525,14 +530,15 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
             }
         } catch (NotFoundException e) {
             // ignore
-        } 
-        
+        }
+
         /*
-         * We find all the analysis_qa_events that are linked to the analyses 
+         * We find all the analysis_qa_events that are linked to the analyses
          * under the samples in the cache and have the type "Result Override".
          * We then set the flag corresponding to this field to "Y" in the VO for
-         * the sample that contains the analysis that given analysis_qa_events belong to.          
-         */        
+         * the sample that contains the analysis that given analysis_qa_events
+         * belong to.
+         */
         try {
             if (sidList != null && sidList.size() > 0) {
                 aqeList = aqel.fetchResultOverrideBySampleIdList(sidList);
@@ -546,19 +552,21 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         } catch (NotFoundException e) {
             // ignore
         }
-        voList = getSampleListFromCache(cache);        
+        voList = getSampleListFromCache(cache);
         return voList;
     }
-    
+
     private ArrayList<AnalysisCacheVO> createAnalysisCacheEntries(Cache cache,
                                                                   List<AnalysisCacheVO> queryList)
                                                                                                   throws Exception {
-        Integer secId, sampleId;
-        String domain, orgName, prjName;
+        Integer secId, sampleId, prevSampleId;
+        String domain, orgName, prjName, sampleResOverride;
+        boolean newSample;
         Element elem;
         SectionLocal sl;
         SectionDO sec;
         AnalysisQAEventLocal aqel;
+        SampleQAEventLocal sqel;
         SampleOrganizationLocal sol;
         SampleEnvironmentalLocal sel;
         SamplePrivateWellLocal spwl;
@@ -569,10 +577,6 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         SampleSDWISViewDO ssd;
         AnalysisCacheVO cvo;
         HashMap<Integer, SectionDO> secMap;
-        HashMap<Integer, String> sorgMap, sprjMap;
-        HashMap<Integer, SampleEnvironmentalDO> senvMap;
-        HashMap<Integer, SamplePrivateWellViewDO> spwMap;
-        HashMap<Integer, SampleSDWISViewDO> ssdMap;
         ArrayList<Integer> aidList;
         ArrayList<SampleOrganizationViewDO> sorgList;
         ArrayList<SampleProjectViewDO> sprjList;
@@ -581,6 +585,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
 
         sl = EJBFactory.getSection();
         aqel = EJBFactory.getAnalysisQAEvent();
+        sqel = EJBFactory.getSampleQAEvent();
         sol = EJBFactory.getSampleOrganization();
         sel = EJBFactory.getSampleEnvironmental();
         spwl = EJBFactory.getSamplePrivateWell();
@@ -588,15 +593,17 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         spl = EJBFactory.getSampleProject();
 
         secMap = new HashMap<Integer, SectionDO>();
-        sorgMap = new HashMap<Integer, String>();
-        sprjMap = new HashMap<Integer, String>();
-        senvMap = new HashMap<Integer, SampleEnvironmentalDO>();
-        spwMap = new HashMap<Integer, SamplePrivateWellViewDO>();
-        ssdMap = new HashMap<Integer, SampleSDWISViewDO>();
         voList = new ArrayList<AnalysisCacheVO>();
         aidList = new ArrayList<Integer>();
+        orgName = null;
+        senv = null;
+        prjName = null;
+        spw = null;
+        ssd = null;
+        sampleResOverride = null;
 
         try {
+            prevSampleId = null;
             for (AnalysisCacheVO data : queryList) {
                 secId = data.getSectionId();
                 if (secId != null) {
@@ -608,39 +615,44 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     data.setSectionName(sec.getName());
                 }
 
-                data.setQaeventResultOverride("N");
+                data.setAnalysisQaeventResultOverride("N");
                 sampleId = data.getSampleId();
                 domain = data.getSampleDomain();
 
+                newSample = !sampleId.equals(prevSampleId);
+                if (newSample) {
+                    try {
+                        sqel.fetchResultOverrideBySampleId(sampleId);
+                        sampleResOverride = "Y";
+                    } catch (NotFoundException e) {
+                        sampleResOverride = "N";
+                    }
+                }
+
+                data.setSampleQaeventResultOverride(sampleResOverride);
                 if ("E".equals(domain)) {
-                    orgName = sorgMap.get(sampleId);
-                    if (orgName == null) {
+                    if (newSample) {
                         try {
                             sorgList = sol.fetchReportToBySampleId(sampleId);
                             orgName = sorgList.get(0).getOrganizationName();
-                            sorgMap.put(sampleId, orgName);
                         } catch (NotFoundException e) {
                             orgName = "";
                         }
                     }
                     data.setSampleReportToName(orgName);
 
-                    senv = senvMap.get(sampleId);
-                    if (senv == null) {
+                    if (newSample)
                         senv = sel.fetchBySampleId(sampleId);
-                        senvMap.put(sampleId, senv);
-                    }
+
                     data.setSampleEnvironmentalPriority(senv.getPriority());
 
-                    prjName = sprjMap.get(sampleId);
-                    if (prjName == null) {
+                    if (newSample) {
                         try {
                             sprjList = spl.fetchPermanentBySampleId(sampleId);
                             prjName = sprjList.get(0).getProjectName();
                         } catch (NotFoundException e) {
                             prjName = "";
                         }
-                        sprjMap.put(sampleId, prjName);
                     }
                     data.setSampleProjectName(prjName);
                 } else if ("W".equals(domain)) {
@@ -649,12 +661,9 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                      * have its "report to" linked to sample_organization, but
                      * present in sample_private_well
                      */
-                    spw = spwMap.get(sampleId);
-                    if (spw == null) {
+                    if (newSample)
                         spw = spwl.fetchBySampleId(sampleId);
-                        spwMap.put(sampleId, spw);
-                    }
-                    
+
                     if (spw.getOrganization() != null)
                         orgName = spw.getOrganization().getName();
                     else
@@ -662,27 +671,24 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     data.setSampleReportToName(orgName);
                     data.setSamplePrivateWellOwner(spw.getOwner());
                 } else if ("S".equals(domain)) {
-                    orgName = sorgMap.get(sampleId);
-                    if (orgName == null) {
+                    if (newSample) {
                         try {
                             sorgList = sol.fetchReportToBySampleId(sampleId);
                             orgName = sorgList.get(0).getOrganizationName();
-                            sorgMap.put(sampleId, orgName);
                         } catch (NotFoundException e) {
                             orgName = "";
                         }
                     }
                     data.setSampleReportToName(orgName);
 
-                    ssd = ssdMap.get(sampleId);
-                    if (ssd == null) {
+                    if (newSample)
                         ssd = ssdl.fetchBySampleId(sampleId);
-                        ssdMap.put(sampleId, ssd);
-                    }
+
                     data.setSampleSDWISPWSName(ssd.getPwsName());
                 }
                 cache.put(new Element(data.getId(), data));
                 aidList.add(data.getId());
+                prevSampleId = sampleId;
             }
         } catch (Exception e) {
             throw e;
@@ -700,7 +706,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                 for (AnalysisQaEventDO aqe : aqeList) {
                     elem = cache.get(aqe.getAnalysisId());
                     cvo = (AnalysisCacheVO)elem.getValue();
-                    cvo.setQaeventResultOverride("Y");
+                    cvo.setAnalysisQaeventResultOverride("Y");
                 }
             }
         } catch (NotFoundException e) {
@@ -709,8 +715,8 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
 
         voList = getAnalysisListFromCache(cache);
         return voList;
-    }    
-    
+    }
+
     private ArrayList<SampleCacheVO> getSampleListFromCache(Cache cache) {
         ArrayList<SampleCacheVO> list;
         List<Integer> entryList;
@@ -726,7 +732,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
 
         return list;
     }
-    
+
     private ArrayList<AnalysisCacheVO> getAnalysisListFromCache(Cache cache) {
         ArrayList<AnalysisCacheVO> list;
         List<Integer> entryList;

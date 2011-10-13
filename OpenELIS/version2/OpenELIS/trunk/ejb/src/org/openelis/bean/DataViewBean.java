@@ -49,6 +49,9 @@ import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
@@ -643,7 +646,7 @@ public class DataViewBean implements DataViewRemote {
             out = null;
             try {
                 status.setMessage("Outputing report").setPercentComplete(20);
-                tempFile = File.createTempFile("datadump", ".xls", new File("/tmp"));
+                tempFile = File.createTempFile("dataview", ".xls", new File("/tmp"));
                 
                 status.setPercentComplete(100);
 
@@ -684,7 +687,8 @@ public class DataViewBean implements DataViewRemote {
         HSSFWorkbook wb;
         HSSFSheet sheet;
         Row row, resRow, auxRow;
-        Cell cell;               
+        Cell cell;             
+        CellStyle headerStyle;
         ArrayList<String> allCols, cols;
         Datetime collDateTime, collDate, collTime;
         Date dc;  
@@ -705,7 +709,6 @@ public class DataViewBean implements DataViewRemote {
         DictionaryCacheLocal dcl;
                 
         allCols = new ArrayList<String>();
-        allCols.add(resource.getString("analyte"));
         
         addSampleCells = false;
         addOrgCells = false;
@@ -760,21 +763,24 @@ public class DataViewBean implements DataViewRemote {
             addSDWISCells = true;
         }
                 
+        allCols.add(resource.getString("analyte"));
         allCols.add(resource.getString("value"));        
         
         wb = new HSSFWorkbook();
         sheet = wb.createSheet();       
         
-        row  = sheet.createRow(1);
+        row  = sheet.createRow(0);
+        headerStyle = createStyle(wb);
         //
-        // add cells for the header in the second row 
+        // add cells for the header and set their style
         //
         for (i = 0; i < allCols.size(); i++) {
             cell = row.createCell(i);
             cell.setCellValue(allCols.get(i));   
+            cell.setCellStyle(headerStyle);
         }
                 
-        rowIndex = 2;
+        rowIndex = 1;
         resIndex = 0;
         auxIndex = 0;
         samId = null;
@@ -894,6 +900,34 @@ public class DataViewBean implements DataViewRemote {
                 domain = (String)aux[3];
             }
             
+            resRow = null;
+            auxRow = null;             
+            if (addResultRow) {
+                /*
+                 * check to see if the value of this result was selected by
+                 * the user to be shown in the sheet and if it was add a row 
+                 * for it to the sheet otherwise don't
+                 */
+                resultVal = getResultValue(analyteResultMap, res, dcl);
+                if (resultVal != null)
+                    resRow = sheet.createRow(rowIndex++);
+                else
+                    addResultRow = false;                
+            }
+            
+            if (addAuxDataRow) {
+                /*
+                 * check to see if the value of this aux data was selected by the
+                 * user to be shown in the sheet and if it was add a row for it
+                 * to the sheet otherwise don't
+                 */
+                auxDataVal = getAuxDataValue(auxFieldValueMap, aux, dcl);
+                if (auxDataVal != null) 
+                    auxRow = sheet.createRow(rowIndex++);
+                else 
+                    addAuxDataRow = false;                               
+            }
+            
             /*
              * skip showing any data for this sample if ths user asked to exclude
              * samples/analyses with results overriden and this sample has such 
@@ -922,8 +956,6 @@ public class DataViewBean implements DataViewRemote {
                 continue;
             }
             
-            resRow = null;
-            auxRow = null; 
             if (addResultRow) {
                 /*
                  * skip showing any data for this analysis if ths user asked to 
@@ -943,37 +975,6 @@ public class DataViewBean implements DataViewRemote {
                     prevAnaId = anaId;
                     addResultRow = false;
                 }
-                if (addResultRow) {
-                    /*
-                     * check to see if the value of this result was selected by
-                     * the user to be shown in the sheet and if it was add a row 
-                     * for it to the sheet otherwise don't
-                     */
-                    resultVal = getResultValue(analyteResultMap, res, dcl);
-                    if (resultVal != null) {
-                        resRow = sheet.createRow(rowIndex++);
-                        cell = resRow.createCell(0);
-                        cell.setCellValue( ((String)res[1]).trim());
-                    } else {
-                        addResultRow = false;
-                    }
-                }
-            }
-            
-            if (addAuxDataRow) {
-                /*
-                 * check to see if the value of this aux data was selected by the
-                 * user to be shown in the sheet and if it was add a row for it
-                 * to the sheet otherwise don't
-                 */
-                auxDataVal = getAuxDataValue(auxFieldValueMap, aux, dcl);
-                if (auxDataVal != null) {
-                    auxRow = sheet.createRow(rowIndex++);
-                    cell = auxRow.createCell(0);
-                    cell.setCellValue(((String)aux[1]).trim());
-                } else {
-                    addAuxDataRow = false;
-                }                
             }
             
             if (!addResultRow && !addAuxDataRow)
@@ -1049,7 +1050,7 @@ public class DataViewBean implements DataViewRemote {
                     if (addResultRow) 
                         addPrivateWellOrganizationCells(resRow, resRow.getPhysicalNumberOfCells(), data, well);
                     if (addAuxDataRow)
-                        addPrivateWellOrganizationCells(resRow, resRow.getPhysicalNumberOfCells(), data, well);
+                        addPrivateWellOrganizationCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, well);
                 } else {
                     if (org == null) {
                         try {
@@ -1193,15 +1194,19 @@ public class DataViewBean implements DataViewRemote {
             
             if (addResultRow) { 
                 //
-                // set the value in the last cell of a row showing the result                
+                // set the value in the last two cells of a row showing a result                
                 //
+                cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
+                cell.setCellValue( ((String)res[1]).trim());
                 cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
                 cell.setCellValue(resultVal);
             }
             if (addAuxDataRow) { 
                  //
-                 // set the value in the last cell of a row showing an aux data                
+                 // set the value in the last two cells of a row showing an aux data                
                  //
+                cell = auxRow.createCell(auxRow.getPhysicalNumberOfCells());
+                cell.setCellValue(((String)aux[1]).trim());
                 cell = auxRow.createCell(auxRow.getPhysicalNumberOfCells());
                 cell.setCellValue(auxDataVal);
             }
@@ -2039,7 +2044,7 @@ public class DataViewBean implements DataViewRemote {
     private String getOrganizationIds(String moduleName) throws Exception {
        String clause, orgIds;
         /*
-         * retrieving the organization Ids to which the user belongs to from the
+         * retrieving the organization Ids to which the user belongs from the
          * security clause in the userPermission
          */
         clause = EJBFactory.getUserCache()
@@ -2048,7 +2053,22 @@ public class DataViewBean implements DataViewRemote {
                            .getClause();
         orgIds = ReportUtil.parseClauseAsString(clause)
                            .get(SampleMeta.getSampleOrgOrganizationId());
-        return orgIds;
+        return orgIds;        
+    }
+    
+    private CellStyle createStyle(HSSFWorkbook wb) {
+        CellStyle headerStyle;
+        Font      font;
+
+        font = wb.createFont();
+        font.setColor(IndexedColors.WHITE.getIndex());
+        headerStyle = wb.createCellStyle();
+        headerStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        headerStyle.setVerticalAlignment(CellStyle.VERTICAL_BOTTOM);
+        headerStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        headerStyle.setFillForegroundColor(IndexedColors.GREY_80_PERCENT.getIndex());
+        headerStyle.setFont(font);
         
+        return headerStyle;
     }
 }

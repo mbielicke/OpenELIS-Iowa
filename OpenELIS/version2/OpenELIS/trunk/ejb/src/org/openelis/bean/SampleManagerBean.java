@@ -267,7 +267,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     }
     
     private void updateCache(SampleManager man) {
-        boolean override;
+        boolean sampleOverriden, analysisOverriden;
         Integer priority;
         String domain, orgName, prjName, owner, pwsName;
         AnalysisManager am;
@@ -334,10 +334,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             svo.setCollectionDate(sample.getCollectionDate());
             svo.setCollectionTime(sample.getCollectionTime());
             sqm = man.getQaEvents();
-            if (sqm.hasResultOverrideQA()) 
-                override = true;
-            else 
-                override = false;
+            sampleOverriden = sqm.hasResultOverrideQA();
             
             svo.setReportToName(orgName); 
             svo.setSampleEnvironmentalPriority(priority);
@@ -350,12 +347,11 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
              * AnalysisCacheVOs are created for each analysis under this sample 
              * and are used to update the various caches used for the ToDo lists   
              */
+            analysisOverriden = false;
             for (int i = 0; i < im.count(); i++ ) {
                 am = im.getAnalysisAt(i);                
                 for (int j = 0; j < am.count(); j++ ) {
                     ana = am.getAnalysisAt(j);
-                    if (!ana.isChanged())
-                        continue;
                     test = am.getTestAt(j).getTest();
                     avo = new AnalysisCacheVO();
                     avo.setId(ana.getId());
@@ -369,11 +365,16 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                     avo.setTestMethodName(ana.getMethodName());
                     avo.setSectionName(scl.getById(ana.getSectionId()).getName());
                     aqm = am.getQAEventAt(j);
+                    if (sampleOverriden) 
+                        avo.setSampleQaeventResultOverride("Y");
+                    else 
+                        avo.setSampleQaeventResultOverride("N");
+                    
                     if (aqm.hasResultOverrideQA()) {
-                        override = true;
-                        avo.setQaeventResultOverride("Y");
+                        analysisOverriden = true;
+                        avo.setAnalysisQaeventResultOverride("Y");
                     } else {
-                        avo.setQaeventResultOverride("N");
+                        avo.setAnalysisQaeventResultOverride("N");
                     }
                     avo.setSampleDomain(domain);
                     avo.setSampleAccessionNumber(sample.getAccessionNumber());
@@ -389,7 +390,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
                 }
             }       
             
-            if (override) 
+            if (sampleOverriden || analysisOverriden) 
                 svo.setQaeventResultOverride("Y");
             else 
                 svo.setQaeventResultOverride("N");

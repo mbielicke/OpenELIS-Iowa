@@ -48,5 +48,5 @@ public interface DataViewRemote {
     
     public ReportStatus saveQuery(DataViewVO data) throws Exception;
     
-    public DataViewVO loadQuery(String fileName) throws Exception;
+    public DataViewVO loadQuery(String path) throws Exception;
 }
