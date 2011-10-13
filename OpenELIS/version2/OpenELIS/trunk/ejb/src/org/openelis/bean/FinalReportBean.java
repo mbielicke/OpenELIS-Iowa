@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
 import java.sql.Connection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -150,6 +152,44 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             p = new ArrayList<Prompt>();
 
             prn = PrinterList.getInstance().getListByType("pdf");
+            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
+                                                          .setWidth(200)
+                                                          .setOptionList(prn)
+                                                          .setMutiSelect(false)
+                                                          .setRequired(true));
+            return p;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    /**
+     * Returns the prompt for a batch re-print
+     */
+    public ArrayList<Prompt> getPromptsForBatchReprint() throws Exception {
+        ArrayList<OptionListItem> prn;
+        ArrayList<Prompt> p;
+
+        try {
+            p = new ArrayList<Prompt>();
+
+            p.add(new Prompt("BEGIN_PRINTED", Prompt.Type.DATETIME)
+             .setPrompt("Begin Printed:")
+             .setWidth(130)
+             .setDatetimeStartCode(Prompt.Datetime.YEAR)
+             .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+             .setRequired(true));
+
+            p.add(new Prompt("END_PRINTED", Prompt.Type.DATETIME)
+             .setPrompt("End Printed:")
+             .setWidth(130)
+             .setDatetimeStartCode(Prompt.Datetime.YEAR)
+             .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+             .setRequired(true));
+
+            prn = PrinterList.getInstance().getListByType("pdf");
+            prn.add(0, new OptionListItem("-view-", "View PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
@@ -447,6 +487,108 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          */
         for (Integer id : lockList)
             lock.unlock(ReferenceTable.SAMPLE, id);
+
+        return status;
+    }
+
+    /**
+     * Reprints a batch report for the specified printed date range.  This routine
+     * does not re-timestamp the analyses nor does it lock the samples
+     */
+    @RolesAllowed("r_final-select")
+    @TransactionTimeout(600)
+    public ReportStatus runReportForBatchReprint(ArrayList<QueryData> paramList) throws Exception {
+        int i;
+        String printer;
+        ReportStatus status;
+        Object[] result, list;
+        ArrayList<Object[]> resultList;
+        ArrayList<OrganizationPrint> orgPrintList;
+        Date beginPrinted, endPrinted;
+        HashMap<String, QueryData> param;
+        HashMap<Integer, HashMap<Integer, Integer>> orgMap;
+        HashMap<Integer, Integer> anaMap, samMap;
+        Integer samId, orgId, anaId;
+        Iterator<Integer> orgIter;
+        OrganizationPrint orgPrint;
+        SimpleDateFormat format;
+
+        /*
+         * Recover the printer and printed date range
+         */
+        param = ReportUtil.getMapParameter(paramList);
+        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        beginPrinted = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_PRINTED"));
+        endPrinted = format.parse(ReportUtil.getSingleParameter(param, "END_PRINTED"));
+        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+
+        /*
+         * obtain the list of sample ids, organization ids and analysis ids
+         */
+        samMap = null;
+        anaMap = new HashMap<Integer, Integer>();
+        orgMap = new HashMap<Integer, HashMap<Integer, Integer>>();
+
+        status = new ReportStatus();
+        status.setMessage("Initializing report");
+        session.setAttribute("FinalReport", status);
+
+        /*
+         * loop through the list and lock all the samples obtained from
+         * resultList
+         */
+        resultList = sample.fetchSamplesForFinalReportBatchReprint(beginPrinted, endPrinted);
+        i = 0;
+        while (i < resultList.size()) {
+            result = resultList.get(i++);
+            samId = (Integer)result[0];
+            orgId = (Integer)result[1];
+            anaId = (Integer)result[2];
+
+            /*
+             * we are adding this sample id to the list of samples maintained
+             * for this organization
+             */
+            samMap = orgMap.get(orgId);
+            if (samMap == null) {
+                samMap = new HashMap<Integer, Integer>();
+                orgMap.put(orgId, samMap);
+            }
+            /*
+             * keep a unique analysis id list for update
+             */
+            samMap.put(samId, samId);
+            anaMap.put(anaId, anaId);
+        }
+
+        /*
+         * create what we need to print and call print
+         */
+        orgPrintList = new ArrayList<OrganizationPrint>();
+        orgIter = orgMap.keySet().iterator();
+        while (orgIter.hasNext()) {
+            orgId = orgIter.next();
+            samMap = orgMap.get(orgId);
+            list = samMap.values().toArray();
+            /*
+             * samples with null organizations (such as private well) are
+             * managed as single print rather then a batch for null organization
+             */
+            if (orgId == null) {
+                for (i = 0; i < list.length; i++ ) {
+                    orgPrint = new OrganizationPrint();
+                    orgPrint.setOrganizationId(orgId);
+                    orgPrint.setSampleIds((Integer)list[i]);
+                    orgPrintList.add(orgPrint);
+                }
+            } else {
+                orgPrint = new OrganizationPrint();
+                orgPrint.setOrganizationId(orgId);
+                orgPrint.setSampleIds(list);
+                orgPrintList.add(orgPrint);
+            }
+        }
+        print(orgPrintList, "R", true, status, printer);
 
         return status;
     }

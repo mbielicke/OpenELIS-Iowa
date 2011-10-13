@@ -213,12 +213,14 @@ public class WorksheetAnalysisManagerProxy {
             // Rewrite temporary QC accession number
             //
             accessionNumber = analysis.getAccessionNumber();
+            if (accessionNumber.startsWith("X."))
+                analysis.setAccessionNumber(accessionNumber.replaceFirst("X", manager.getWorksheetId().toString()));
+            
             //
-            // We are only initializing the QCs that were not added from another
+            // We are only initiating records that were not added from another
             // worksheet
             //
-            if (accessionNumber.startsWith("X.")) {
-                analysis.setAccessionNumber(accessionNumber.replaceFirst("X", manager.getWorksheetId().toString()));
+            if ("N".equals(analysis.getIsFromOther())) {
                 qcManager = QcManager.fetchById(analysis.getQcId());
                 wqrManager = manager.getWorksheetQcResultAt(i);
                 initializeWorksheetQcResults(qcManager, wqrManager);
@@ -253,23 +255,24 @@ public class WorksheetAnalysisManagerProxy {
                 for (k = 0; k < aManager.count(); k++) {
                     aVDO = aManager.getAnalysisAt(k);
                     if (analysis.getAnalysisId().equals(aVDO.getId())) {
-                        arManager = aManager.getAnalysisResultAt(k);
-                        if (arManager.rowCount() <= 0) {
-                            try {
-                                arManager = AnalysisResultManager.fetchByTestId(aVDO.getTestId(), aVDO.getUnitOfMeasureId());
-                                aManager.setAnalysisResultAt(arManager, k);
-                            } catch (NotFoundException nfE) {
-                                // ignore result not found error and leave the
-                                // empty AnalysisResultManager attached to the
-                                // AnalysisManger
+                        //
+                        // We are only initiating records that were not added from another
+                        // worksheet
+                        //
+                        if ("N".equals(analysis.getIsFromOther())) {
+                            arManager = aManager.getAnalysisResultAt(k);
+                            if (arManager.rowCount() <= 0) {
+                                try {
+                                    arManager = AnalysisResultManager.fetchByTestId(aVDO.getTestId(), aVDO.getUnitOfMeasureId());
+                                    aManager.setAnalysisResultAt(arManager, k);
+                                } catch (NotFoundException nfE) {
+                                    // ignore result not found error and leave the
+                                    // empty AnalysisResultManager attached to the
+                                    // AnalysisManger
+                                }
                             }
-                        }
-                        wrManager = manager.getWorksheetResultAt(i);
-                        //
-                        // We are only initializing the analyses that were not added
-                        // from another worksheet
-                        //
-                        if (wrManager.count() <= 0) {
+                        
+                            wrManager = manager.getWorksheetResultAt(i);
                             aManager.initiateAnalysisAt(k);
                             initializeWorksheetResults(aVDO, arManager, wrManager);
                         }
@@ -308,6 +311,13 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetAnalysisLocal    local;
         
         local = EJBFactory.getWorksheetAnalysis();
+        
+        //
+        // We are only updating records that were not added from another
+        // worksheet
+        //
+        if ("Y".equals(analysis.getIsFromOther()))
+            return;
         
         if (analysis.getId() == null) {
             assert false : "not supported";
@@ -373,23 +383,30 @@ public class WorksheetAnalysisManagerProxy {
 
     public void validate(WorksheetAnalysisManager manager, ValidationErrorsList errorList) throws Exception {
         int                       i;
+        WorksheetAnalysisDO       waDO;
         WorksheetAnalysisListItem listItem;
         WorksheetAnalysisLocal    local;
 
         local = EJBFactory.getWorksheetAnalysis();
         for (i = 0; i < manager.count(); i++) {
+            waDO = manager.getWorksheetAnalysisAt(i);
+            //
+            // We are only validating records that were not added from another
+            // worksheet
+            //
+            if ("Y".equals(waDO.getIsFromOther()))
+                continue;
+            
             try {
-                local.validate(manager.getWorksheetAnalysisAt(i));
+                local.validate(waDO);
             } catch (Exception e) {
                 DataBaseUtil.mergeException(errorList, e);
             }
             
             listItem = manager.getItemAt(i);
-            if (manager.getWorksheetAnalysisAt(i).getAnalysisId() != null &&
-                listItem.worksheetResult != null)
+            if (waDO.getAnalysisId() != null && listItem.worksheetResult != null)
                 manager.getWorksheetResultAt(i).validate(errorList);
-            else if (manager.getWorksheetAnalysisAt(i).getQcId() != null &&
-                     listItem.worksheetQcResult != null)
+            else if (waDO.getQcId() != null && listItem.worksheetQcResult != null)
                 manager.getWorksheetQcResultAt(i).validate(errorList);
         }
     }

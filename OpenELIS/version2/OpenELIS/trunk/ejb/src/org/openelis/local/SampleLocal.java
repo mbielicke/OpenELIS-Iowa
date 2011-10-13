@@ -19,6 +19,8 @@ public interface SampleLocal {
 
     public ArrayList<Object[]> fetchSamplesForFinalReportBatch() throws Exception;
 
+    public ArrayList<Object[]> fetchSamplesForFinalReportBatchReprint(Date beginPrinted, Date endPrinted) throws Exception;
+
 	public ArrayList<Object[]> fetchSamplesForFinalReportSingle(Integer sampleId) throws Exception;
 
 	public ArrayList<Object[]> fetchSamplesForFinalReportPreview(Integer sampleId) throws Exception;

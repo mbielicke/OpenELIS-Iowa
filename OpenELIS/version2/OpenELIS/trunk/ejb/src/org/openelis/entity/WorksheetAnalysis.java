@@ -28,10 +28,10 @@ import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
-                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate) "+
+                query = "select new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther) "+
                         "from WorksheetAnalysis wa where wa.worksheetItemId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchById",
-                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate) "+
+                query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther) "+
                         "from WorksheetAnalysis wa where wa.id = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetStatusId",
                 query = "select distinct new org.openelis.domain.WorksheetCacheVO(w.id, w.createdDate, w.systemUserId, w.statusId, t.name, m.name, s.name)"
@@ -68,6 +68,9 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
     @Column(name = "qc_started_date")
     private Date              qcStartedDate;
     
+    @Column(name = "is_from_other")
+    private String            isFromOther;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_item_id", insertable = false, updatable = false)
     private WorksheetItem     worksheetItem;
@@ -150,6 +153,14 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
             this.qcStartedDate = DataBaseUtil.toDate(qcStartedDate);
     }
 
+    public String getIsFromOther() {
+        return isFromOther;
+    }
+
+    public void setIsFromOther(String isFromOther) {
+        this.isFromOther = isFromOther;
+    }
+
     public WorksheetItem getWorksheetItem() {
         return worksheetItem;
     }
@@ -188,7 +199,8 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
                  .setField("qc_id", qcId, original.qcId, ReferenceTable.QC)
                  .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId, ReferenceTable.WORKSHEET_ANALYSIS)
                  .setField("qc_system_user_id", qcSystemUserId, original.qcSystemUserId)
-                 .setField("qc_started_date", qcStartedDate, original.qcStartedDate);
+                 .setField("qc_started_date", qcStartedDate, original.qcStartedDate)
+                 .setField("is_from_other", isFromOther, original.isFromOther);
 
         return audit;
     }
