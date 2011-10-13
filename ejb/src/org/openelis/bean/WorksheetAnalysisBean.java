@@ -142,6 +142,7 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setQcSystemUserId(data.getQcSystemUserId());
         entity.setQcStartedDate(data.getQcStartedDate());
+        entity.setIsFromOther(data.getIsFromOther());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -164,6 +165,7 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setQcSystemUserId(data.getQcSystemUserId());
         entity.setQcStartedDate(data.getQcStartedDate());
+        entity.setIsFromOther(data.getIsFromOther());
 
         return data;
     }
