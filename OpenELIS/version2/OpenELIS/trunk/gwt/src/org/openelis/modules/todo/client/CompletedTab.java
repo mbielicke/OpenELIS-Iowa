@@ -144,7 +144,10 @@ public class CompletedTab extends Screen {
                 row.cells.get(2).setValue(sectName);
                 row.cells.get(3).setValue(data.getTestName());
                 row.cells.get(4).setValue(data.getTestMethodName());
-                row.cells.get(5).setValue(data.getQaeventResultOverride());
+                if ("Y".equals(data.getAnalysisQaeventResultOverride()) || "Y".equals(data.getSampleQaeventResultOverride()))
+                    row.cells.get(5).setValue("Y");
+                else
+                    row.cells.get(5).setValue("N");
                 row.cells.get(6).setValue(data.getCompletedDate());       
                 
                 domain = data.getSampleDomain();                

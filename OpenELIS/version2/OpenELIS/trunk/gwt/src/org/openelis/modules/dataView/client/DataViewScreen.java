@@ -87,7 +87,7 @@ public class DataViewScreen extends Screen {
     private SDWISTab             sdwisTab;
     private Tabs                 tab;
     private FilterScreen         filter;
-    private FileLoad             fileUpload;
+    private FileLoad             fileLoad;
 
     private AppButton            saveQueryButton, executeQueryButton;
     private TabPanel             tabPanel;
@@ -139,14 +139,22 @@ public class DataViewScreen extends Screen {
             }
         });
         
-        fileUpload = (FileLoad)def.getWidget("fileUpload");
-        fileUpload.setAction("upload");
-        fileUpload.setService("org.openelis.modules.dataView.server.DataViewService");
-        fileUpload.setMethod("loadQuery");
-        fileUpload.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
+        fileLoad = (FileLoad)def.getWidget("fileUpload");
+        
+        if(GWT.isScript())
+            // used for normal mode
+            fileLoad.setAction("upload");
+        else
+            // used for hosted mode        
+            fileLoad.setAction("openelis/upload");
+
+                
+        fileLoad.setService("org.openelis.modules.dataView.server.DataViewService");
+        fileLoad.setMethod("loadQuery");
+        fileLoad.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
             public void onSubmitComplete(SubmitCompleteEvent event) {
                 openQuery();
-            }
+            }                        
         });
 
         executeQueryButton = (AppButton)def.getWidget("executeQueryButton");
@@ -208,7 +216,7 @@ public class DataViewScreen extends Screen {
         analysisStatusId = (Dropdown<Integer>)def.getWidget(SampleWebMeta.getAnalysisStatusId());
         addScreenHandler(analysisStatusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisStatusId.setSelection(data.getAnalysisStatusId());
+                analysisStatusId.setSelection(data.getAnalysisStatusId());                                         
             	if(data.getAnalysisStatusId() == null){
             		analysisStatusId.setValue(analysisStatusId.getData().size()-1);
             		analysisStatusId.setText(analysisStatusId.getTextBoxDisplay());
@@ -746,7 +754,7 @@ public class DataViewScreen extends Screen {
             }
             
             if (reportRunUtil == null) 
-                reportRunUtil = new DataViewReportScreen("saveQuery", window);
+                reportRunUtil = new DataViewReportScreen("saveQuery", window, "DataView.xml");
             //
             // we don't want to serialize the following fields
             //
@@ -766,11 +774,20 @@ public class DataViewScreen extends Screen {
             data = (DataViewVO)service.call("openQuery");                    
         } catch (Exception e) {
             Window.alert("There was an error with loading the query: "+ e.getMessage());
-            e.printStackTrace();
             data = createData();
         }
         
-        DataChangeEvent.fire(screen); 
+        DataChangeEvent.fire(screen);
+        
+        commonTab.setData(data);
+        environmentalTab.setData(data);
+        privateWellTab.setData(data);
+        sdwisTab.setData(data);
+        
+        commonTab.draw();
+        environmentalTab.draw();
+        privateWellTab.draw();
+        sdwisTab.draw();
     }            
 
     protected void executeQuery() {

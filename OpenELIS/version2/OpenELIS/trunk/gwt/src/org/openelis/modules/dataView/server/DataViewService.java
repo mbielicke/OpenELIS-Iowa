@@ -26,11 +26,12 @@
 package org.openelis.modules.dataView.server;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
 import org.openelis.domain.DataViewVO;
@@ -86,23 +87,47 @@ public class DataViewService {
         File temp;        
         SystemVariableDO list;
         
-        list = systemVariableRemote().fetchByName("upload_save_directory");
-                    
-        temp = File.createTempFile("dataview", ".xml", new File(list.getValue()));            
-        out = new FileOutputStream(temp);
-        buf = new byte[1024];
-        in = file.getInputStream();
-        while ( (len = in.read(buf)) > 0)
-            out.write(buf, 0, len);
-        out.close();
-        in.close();
+        out = null;
+        in = null;
+        temp = null;
+        try {
+            list = systemVariableRemote().fetchByName("upload_save_directory");
 
-        data = remote().loadQuery(temp.getPath());
-        SessionManager.getSession().setAttribute("dataViewQuery", data);        
+            temp = File.createTempFile("dataview", ".xml", new File(list.getValue()));
+            out = new FileOutputStream(temp);
+            buf = new byte[1024];
+            in = file.getInputStream();
+            while ( (len = in.read(buf)) > 0)
+                out.write(buf, 0, len);
+            out.close();
+
+            data = remote().loadQuery(temp.getPath());
+            in.close(); 
+            temp.delete();
+            SessionManager.getSession().setAttribute("dataViewQuery", data);
+        } catch (Exception e) {
+            if (in != null)
+                in.close(); 
+            if (temp != null)
+                temp.delete();
+            if (out != null) 
+                out.close();
+            throw e;
+        }       
     }
     
     public DataViewVO openQuery() throws Exception {
-        return (DataViewVO)SessionManager.getSession().getAttribute("dataViewQuery");
+        DataViewVO data;
+        HttpSession session;
+        
+        session = SessionManager.getSession();               
+        data = (DataViewVO)session.getAttribute("dataViewQuery");
+        /*
+         * we remove the VO from the session because there's no need to hold on
+         * to it beyond one request 
+         */
+        session.removeAttribute("dataViewQuery");
+        return data;
     }
     
     public ReportStatus saveQuery(DataViewVO data) throws Exception {

@@ -68,7 +68,7 @@ public class FilterScreen extends Screen {
                                       selectAllAuxButton, unselectAllAuxButton,
                                       selectAllValueButton, unselectAllValueButton,
                                       runReportButton, cancelButton;
-    private DataViewReportScreen      reportRunUtil;
+    private DataViewReportScreen      reportScreen;
     
     public FilterScreen() throws Exception {
         super((ScreenDefInt)GWT.create(FilterDef.class));
@@ -240,7 +240,7 @@ public class FilterScreen extends Screen {
                 ResultDataViewVO data;
                 
                 model = resultTable.getData();
-                //TODO comment
+
                 if (model == null)
                     return;
                 for (int i = 0; i < model.size(); i++) {
@@ -432,7 +432,7 @@ public class FilterScreen extends Screen {
                 model = valueTable.getData();
                 if (model == null)
                     return;
-               //TODO comment
+
                 for (int i = 0; i < model.size(); i++) {
                     val = valueTable.getCell(i, 0).getValue();
                     if ("N".equals(val)) {
@@ -537,16 +537,16 @@ public class FilterScreen extends Screen {
         }               
         
         try {
-            if (reportRunUtil == null) 
-                reportRunUtil = new DataViewReportScreen("runReport", window);  
+            if (reportScreen == null) 
+                reportScreen = new DataViewReportScreen("runReport", window, null);  
             else
             	/*
             	 * Since a FilterScreen screen can be reused by DataView Screen in showFilter() 
             	 * and inserted into a new window, we need to reset the window in the runUtil.  
             	 */
-            	reportRunUtil.setWindow(window);
+            	reportScreen.setWindow(window);
             
-            reportRunUtil.runReport(data);
+            reportScreen.runReport(data);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
