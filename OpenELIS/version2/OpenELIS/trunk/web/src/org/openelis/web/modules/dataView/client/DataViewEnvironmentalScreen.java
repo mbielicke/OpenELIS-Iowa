@@ -438,7 +438,6 @@ public class DataViewEnvironmentalScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setProjectName(event.getValue());
-                //changeCount(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -454,7 +453,6 @@ public class DataViewEnvironmentalScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 data.setSampleEnvironmentalDescription(event.getValue());
-               // changeCount(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -743,7 +741,6 @@ public class DataViewEnvironmentalScreen extends Screen {
                 data.setClientReferenceHeader("Y");
                 data.setSampleEnvironmentalLocationHeader("Y");
                 data.setCollectionDate("Y");
-                //data.setCollectionTime(event.getValue());
                 data.setAnalysisTestMethodName("Y");
                 data.setProjectName("Y");
                 data.setSampleEnvironmentalDescription("Y");
@@ -787,7 +784,6 @@ public class DataViewEnvironmentalScreen extends Screen {
         selectAllAnalysisFields = (AppButton)def.getWidget("selectAllAnalysisFields");
         addScreenHandler(selectAllAnalysisFields, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                //selectAllOrganizationFields.setValue(data.getSampleEnvironmentalDescription());
             }
 
             public void onClick(ClickEvent event) {
