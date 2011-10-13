@@ -48,6 +48,10 @@ public class FinalReportService {
         return remote().getPromptsForBatch();
     }
 
+    public ArrayList<Prompt> getPromptsForBatchReprint() throws Exception {
+        return remote().getPromptsForBatchReprint();
+    }
+
     public ReportStatus runReportForSingle(Query query) throws Exception {
         ReportStatus st;
 
@@ -72,6 +76,16 @@ public class FinalReportService {
         ReportStatus st;
 
         st = remote().runReportForBatch(query.getFields());
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            SessionManager.getSession().setAttribute(st.getMessage(), st);
+
+        return st;
+    }
+    
+    public ReportStatus runReportForBatchReprint(Query query) throws Exception {
+        ReportStatus st;
+
+        st = remote().runReportForBatchReprint(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 

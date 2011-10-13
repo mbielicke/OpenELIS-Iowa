@@ -222,8 +222,6 @@ UIRF Software License are applicable instead of those above.
                     <menuPanel layout="vertical" position="beside" style="topMenuContainer">
                       <menuItem description="" enable="true" icon="" key="testReport" label="{resource:getString($constants,'testReport')}" />
                       <menuItem description="" enable="false" icon="" key="qaEventReport" label="{resource:getString($constants,'QAEventReport')}" />
-                      <menuItem description="" enable="true" icon="" key="organizationRef" label="{resource:getString($constants,'organizationRef')}" />
-                      <menuItem description="" enable="true" icon="" key="organizationRelRef" label="{resource:getString($constants,'organizationRelRef')}" />
                     </menuPanel>
                   </menuItem>
                   <menuItem description="" icon="" label="{resource:getString($constants,'summary')}" style="TopMenuRowContainer">
@@ -242,6 +240,9 @@ UIRF Software License are applicable instead of those above.
                       <code>}</code>
 					  <code>if(UserCache.getPermission().hasModule("r_finalbatch","SELECT")){</code>
                       <menuItem key="finalReportBatch" description="" icon="" enable="true" label="{resource:getString($constants,'finalReportBatch')}" />
+                      <code>}</code>
+					  <code>if(UserCache.getPermission().hasModule("r_finalbatch","SELECT")){</code>
+                      <menuItem key="finalReportBatchReprint" description="" icon="" enable="true" label="{resource:getString($constants,'finalReportBatchReprint')}" />
                       <code>}</code>
                     </menuPanel>
                   </menuItem>

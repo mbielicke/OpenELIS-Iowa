@@ -426,51 +426,56 @@ public class WorksheetCreationScreen extends Screen {
                     }
                     
                     if (dataRow.data instanceof ArrayList) {
-                        if (worksheetRemoveQCConfirm == null) {
-                            worksheetRemoveQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
-                                                                   consts.get("worksheetRemoveQCConfirm"),
-                                                                   "Don't Remove", "Remove");
-                            worksheetRemoveQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
-                                public void onSelection(SelectionEvent<Integer> event) {
-                                    TableDataRow        qcRow;
-                                    TestWorksheetItemDO twiDO;
-
-                                    switch(event.getSelectedItem().intValue()) {
-                                        case 1:
-                                            qcRow = worksheetItemTable.getSelection();
-                                            twiDO = (TestWorksheetItemDO) ((ArrayList)qcRow.data).get(0);
-                                            
-                                            if (typeLastSubset.equals(twiDO.getTypeId()) ||
-                                                typeLastRun.equals(twiDO.getTypeId()) ||
-                                                typeLastBoth.equals(twiDO.getTypeId())) {
-                                                if (worksheetRemoveLastOfQCConfirm == null) {
-                                                    worksheetRemoveLastOfQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
-                                                                                                 consts.get("worksheetRemoveLastOfQCConfirm"),
-                                                                                                 "Don't Remove", "Remove");
-                                                    worksheetRemoveLastOfQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
-                                                        public void onSelection(SelectionEvent<Integer> event) {
-                                                            switch(event.getSelectedItem().intValue()) {
-                                                                case 1:
-                                                                    testWorksheetItems.remove(worksheetItemTable.getSelection());
-                                                                    buildQCWorksheet();
-                                                                    mergeAnalysesAndQCs();
-                                                                    break;
+                        if (((ArrayList<Object>)dataRow.data).size() != 3) {
+                            if (worksheetRemoveQCConfirm == null) {
+                                worksheetRemoveQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
+                                                                       consts.get("worksheetRemoveQCConfirm"),
+                                                                       "Don't Remove", "Remove");
+                                worksheetRemoveQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                                    public void onSelection(SelectionEvent<Integer> event) {
+                                        TableDataRow        qcRow;
+                                        TestWorksheetItemDO twiDO;
+    
+                                        switch(event.getSelectedItem().intValue()) {
+                                            case 1:
+                                                qcRow = worksheetItemTable.getSelection();
+                                                twiDO = (TestWorksheetItemDO) ((ArrayList)qcRow.data).get(0);
+                                                
+                                                if (typeLastSubset.equals(twiDO.getTypeId()) ||
+                                                    typeLastRun.equals(twiDO.getTypeId()) ||
+                                                    typeLastBoth.equals(twiDO.getTypeId())) {
+                                                    if (worksheetRemoveLastOfQCConfirm == null) {
+                                                        worksheetRemoveLastOfQCConfirm = new Confirm(Confirm.Type.QUESTION, "",
+                                                                                                     consts.get("worksheetRemoveLastOfQCConfirm"),
+                                                                                                     "Don't Remove", "Remove");
+                                                        worksheetRemoveLastOfQCConfirm.addSelectionHandler(new SelectionHandler<Integer>() {
+                                                            public void onSelection(SelectionEvent<Integer> event) {
+                                                                switch(event.getSelectedItem().intValue()) {
+                                                                    case 1:
+                                                                        testWorksheetItems.remove(worksheetItemTable.getSelection());
+                                                                        buildQCWorksheet();
+                                                                        mergeAnalysesAndQCs();
+                                                                        break;
+                                                                }
                                                             }
-                                                        }
-                                                    });
+                                                        });
+                                                    }
+                                                    worksheetRemoveLastOfQCConfirm.show();
+                                                } else {
+                                                    testWorksheetItems.remove(qcRow);
+                                                    buildQCWorksheet();
+                                                    mergeAnalysesAndQCs();
+                                                    break;
                                                 }
-                                                worksheetRemoveLastOfQCConfirm.show();
-                                            } else {
-                                                testWorksheetItems.remove(qcRow);
-                                                buildQCWorksheet();
-                                                mergeAnalysesAndQCs();
-                                                break;
-                                            }
+                                        }
                                     }
-                                }
-                            });
+                                });
+                            }
+                            worksheetRemoveQCConfirm.show();
+                        } else {
+                            analysisItems.remove(dataRow);
+                            mergeAnalysesAndQCs();
                         }
-                        worksheetRemoveQCConfirm.show();
                     } else if (dataRow.data instanceof WorksheetCreationVO) {
                         if (((String)dataRow.cells.get(1).value).startsWith("D")) {
                             if (worksheetRemoveDuplicateQCConfirm == null) {
@@ -710,8 +715,8 @@ public class WorksheetCreationScreen extends Screen {
             waDO.setId((Integer)row.key);
             waDO.setAccessionNumber((String)row.cells.get(1).value);
             if (row.data instanceof ArrayList) {
-                if (((ArrayList<Object>)row.data).size() == 4 && ((ArrayList<Object>)row.data).get(2) instanceof WorksheetResultManager)
-                    waDO.setAnalysisId(((AnalysisViewDO)((ArrayList<Object>)row.data).get(1)).getId());
+                if (((ArrayList<Object>)row.data).size() == 3)
+                    waDO.setAnalysisId(((AnalysisViewDO)((ArrayList<Object>)row.data).get(0)).getId());
                 else
                     waDO.setQcId(((QcDO)((ArrayList<Object>)row.data).get(1)).getId());
             } else {
@@ -723,15 +728,17 @@ public class WorksheetCreationScreen extends Screen {
                 else
                     waDO.setWorksheetAnalysisId((Integer)row.cells.get(3).getValue());
             }
+            waDO.setIsFromOther("N");
             try {
                 waManager = wiManager.getWorksheetAnalysisAt(i);
                 waManager.addWorksheetAnalysis(waDO);
                 //
                 // If this analysis is from another worksheet, copy the result
-                // records from the manager in the 3rd slot of the ArrayList
+                // records from the manager in the ArrayList
                 //
-                if (row.data instanceof ArrayList && ((ArrayList<Object>)row.data).size() == 4) {
-                    fromFormatId = (Integer) ((ArrayList<Object>)row.data).get(3);
+                if (row.data instanceof ArrayList && ((ArrayList<Object>)row.data).size() >= 3) {
+                    waDO.setIsFromOther("Y");
+                    fromFormatId = (Integer) ((ArrayList<Object>)row.data).get(((ArrayList<Object>)row.data).size() - 1);
                     if (!formatId.equals(fromFormatId)) {
                         fromColumnNames = formatColumnNames.get(fromFormatId);
                         if (fromColumnNames == null) {
@@ -753,8 +760,8 @@ public class WorksheetCreationScreen extends Screen {
                         fromColumnNames = null;
                     }
                     
-                    if (((ArrayList<Object>)row.data).get(2) instanceof WorksheetResultManager) {
-                        wrManager = (WorksheetResultManager) ((ArrayList<Object>)row.data).get(2);
+                    if (((ArrayList<Object>)row.data).size() == 3) {
+                        wrManager = (WorksheetResultManager) ((ArrayList<Object>)row.data).get(1);
                         newWrManager = waManager.getWorksheetResultAt(waManager.count() - 1);
                         for (j = 0; j < wrManager.count(); j++) {
                             wrVDO = wrManager.getWorksheetResultAt(j);
@@ -1243,6 +1250,7 @@ public class WorksheetCreationScreen extends Screen {
                                         waSelectionScreen = new WorksheetAnalysisSelectionScreen();
                                         waSelectionScreen.addActionHandler(new ActionHandler<WorksheetAnalysisSelectionScreen.Action>() {
                                             public void onAction(ActionEvent<WorksheetAnalysisSelectionScreen.Action> event) {
+                                                boolean                  buildQC;
                                                 int                      i, r;
                                                 ArrayList<TableDataRow>  list;
                                                 ArrayList<Object>        data, dataList;
@@ -1267,6 +1275,7 @@ public class WorksheetCreationScreen extends Screen {
                                                         else
                                                             r++;
                                                         
+                                                        buildQC = false;
                                                         for (i = 0; i < list.size(); i++) {
                                                             waDO = (WorksheetAnalysisDO)list.get(i).data;
                                                             if (waDO.getAnalysisId() != null) {
@@ -1274,25 +1283,20 @@ public class WorksheetCreationScreen extends Screen {
                                                                     aVDO = analysisService.call("fetchById", waDO.getAnalysisId());
                                                                     wrManager = worksheetService.call("fetchWorksheeetResultByWorksheetAnalysisId", waDO.getId());
                                                                     
-                                                                    twiDO = new TestWorksheetItemDO();
-                                                                    twiDO.setPosition(r+1);
-                                                                    twiDO.setTypeId(typeFixed);
-//                                                                    twiDO.setQcName(qcManager.getQc().getName());
-                                                                    
                                                                     newRow = new TableDataRow(11);
+                                                                    newRow.key = getNextTempId();
                                                                     newRow.cells.get(1).value = waDO.getAccessionNumber();
                                                                     newRow.cells.get(4).value = aVDO.getTestName();
                                                                     newRow.cells.get(5).value = aVDO.getMethodName();
+                                                                    newRow.cells.get(6).value = aVDO.getStatusId();
                                                                     
                                                                     dataList = new ArrayList<Object>();
-                                                                    dataList.add(twiDO);
                                                                     dataList.add(aVDO);
                                                                     dataList.add(wrManager);
                                                                     dataList.add(fromFormatId);
                                                                     newRow.data = dataList;
                                                                     
-                                                                    testWorksheetItems.add(newRow);
-                                                                    r++;
+                                                                    analysisItems.add(newRow);
                                                                 } catch (Exception anyE) {
                                                                     anyE.printStackTrace();
                                                                     Window.alert("error: " + anyE.getMessage());
@@ -1319,6 +1323,7 @@ public class WorksheetCreationScreen extends Screen {
                                                                     newRow.data = dataList;
                                                                     
                                                                     testWorksheetItems.add(newRow);
+                                                                    buildQC = true;
                                                                     r++;
                                                                 } catch (Exception anyE) {
                                                                     anyE.printStackTrace();
@@ -1327,7 +1332,8 @@ public class WorksheetCreationScreen extends Screen {
                                                             }
                                                         }
                                                         
-                                                        buildQCWorksheet();
+                                                        if (buildQC)
+                                                            buildQCWorksheet();
                                                         mergeAnalysesAndQCs();
 
                                                         isSaved = false;

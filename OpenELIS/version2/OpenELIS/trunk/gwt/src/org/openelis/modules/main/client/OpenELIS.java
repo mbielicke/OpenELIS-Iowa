@@ -64,9 +64,10 @@ import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.dataView.client.DataViewScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
-import org.openelis.modules.report.client.ClientNotificationReleasedReportScreen;
-import org.openelis.modules.report.client.ClientNotificationReportScreen;
+//import org.openelis.modules.report.client.ClientNotificationReleasedReportScreen;
+//import org.openelis.modules.report.client.ClientNotificationReportScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
+import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
@@ -1263,6 +1264,26 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
+        addClickHandler("finalReportBatchReprint", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new FinalReportBatchReprintScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
         addClickHandler("verificationReport", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -1403,45 +1424,45 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("organizationRef", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new ClientNotificationReportScreen());
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
+//        addClickHandler("organizationRef", new ClickHandler() {
+//            public void onClick(ClickEvent event) {
+//                GWT.runAsync(new RunAsyncCallback() {
+//                    public void onSuccess() {
+//                        try {
+//                            browser.addScreen(new ClientNotificationReportScreen());
+//                        } catch (Throwable e) {
+//                            e.printStackTrace();
+//                            Window.alert(e.getMessage());
+//                        }
+//                    }
+//
+//                    public void onFailure(Throwable caught) {
+//                        caught.printStackTrace();
+//                        Window.alert(caught.getMessage());
+//                    }
+//                });
+//            }
+//        });
 
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-
-        addClickHandler("organizationRelRef", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new ClientNotificationReleasedReportScreen());
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
+//        addClickHandler("organizationRelRef", new ClickHandler() {
+//            public void onClick(ClickEvent event) {
+//                GWT.runAsync(new RunAsyncCallback() {
+//                    public void onSuccess() {
+//                        try {
+//                            browser.addScreen(new ClientNotificationReleasedReportScreen());
+//                        } catch (Throwable e) {
+//                            e.printStackTrace();
+//                            Window.alert(e.getMessage());
+//                        }
+//                    }
+//
+//                    public void onFailure(Throwable caught) {
+//                        caught.printStackTrace();
+//                        Window.alert(caught.getMessage());
+//                    }
+//                });
+//            }
+//        });
         
         addClickHandler("orderRecurrence", new ClickHandler() {
             public void onClick(ClickEvent event) {

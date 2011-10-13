@@ -109,6 +109,7 @@ public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup, successfulLoad;
     private Integer              statusWorking, statusFailedRun, origStatus;
+    private String               headerLabels[];
     private ScreenService        instrumentService, sysVarService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
@@ -939,6 +940,7 @@ public class WorksheetCompletionScreen extends Screen {
         SampleDataBundle         bundle;
         SampleDomainInt          sDomain;
         SampleManager            sManager;
+        String                   headerLabels[];
         TableDataRow             row;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
@@ -960,10 +962,17 @@ public class WorksheetCompletionScreen extends Screen {
             anyE.printStackTrace();
         }
 
-        row = new TableDataRow(39);
+        headerLabels = table.view.headers;
+        if (headerLabels == null)
+            headerLabels = new String[39];
         for (i = 0; i < headers.size(); i++)
-            row.cells.get(i).value = headers.get(i).getName();
-        model.add(row);
+            headerLabels[i] = headers.get(i).getName();
+        table.view.header.setHeaders(headerLabels);
+        
+//        row = new TableDataRow(39);
+//        for (i = 0; i < headers.size(); i++)
+//            row.cells.get(i).value = headers.get(i).getName();
+//        model.add(row);
 
         qcLinkMap = new HashMap<Integer,String>();
         try {
@@ -1072,7 +1081,7 @@ public class WorksheetCompletionScreen extends Screen {
 
         // Set the QC Link column for each row to the Accession Number for the
         // row to which it is linked
-        for (i = 1; i < model.size(); i++) {
+        for (i = 0; i < model.size(); i++) {
             row = model.get(i);
             if (row.cells.get(3).value != null)
                 row.cells.get(3).value = qcLinkMap.get(row.cells.get(3).value);
