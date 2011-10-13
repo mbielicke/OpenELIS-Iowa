@@ -516,6 +516,12 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         }
 
         methodCode = methodCodes.get(analysis.getMethodName());
+        //
+        // if we don't have a method code for this analysis we should not be
+        // sending it to SDWIS
+        //
+        if (methodCode == null)
+            return;
         
         try {
             unitDO = dictionaryCache.getById(analysis.getUnitOfMeasureId());
