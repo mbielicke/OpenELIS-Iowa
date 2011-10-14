@@ -593,6 +593,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         return status;
     }
 
+    @RolesAllowed({"w_final_environmental-select", "w_final_privatewell-select", "w_final_sdwis-select"})
     public ReportStatus runReportForWeb(ArrayList<QueryData> paramList) throws Exception {
         int i, indexList[];
         Integer samIdList[];
@@ -681,6 +682,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         return status;
     }
 
+    @RolesAllowed("w_final_environmental-select")
     public ArrayList<SampleEnvironmentalFinalReportWebVO> getSampleEnvironmentalList(ArrayList<QueryData> fields) throws Exception {
         int i, id;
         String clause, orgIds, projName;
@@ -757,6 +759,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         return returnList;
     }
 
+    @RolesAllowed("w_final_privatewell-select")
     public ArrayList<SamplePrivateWellFinalReportWebVO> getSamplePrivateWellList(ArrayList<QueryData> fields) throws Exception {
         String clause, orgIds;
         Query query;
@@ -815,6 +818,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         return returnList;
     }
 
+    @RolesAllowed("w_final_sdwis-select")
     public ArrayList<SampleSDWISFinalReportWebVO> getSampleSDWISList(ArrayList<QueryData> fields) throws Exception {
         String clause, orgIds;
         Query query;
@@ -865,6 +869,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         return returnList;
     }
 
+    @RolesAllowed("w_final_environmental-select")
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {
         String clause;
         ArrayList<Integer> list;
@@ -885,6 +890,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         return sample.fetchProjectsForOrganizations(list);
     }
 
+    @RolesAllowed("w_final_privatewell-select")
     public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {
         String clause;
         ArrayList<Integer> list;
