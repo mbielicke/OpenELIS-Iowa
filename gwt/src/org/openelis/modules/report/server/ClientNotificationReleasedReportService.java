@@ -6,9 +6,7 @@ import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.ClientNotificationReleasedReportRemote;
-import org.openelis.remote.VolumeReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.util.SessionManager;
 
 public class ClientNotificationReleasedReportService {
     public ArrayList<Prompt> getPrompts() throws Exception{
