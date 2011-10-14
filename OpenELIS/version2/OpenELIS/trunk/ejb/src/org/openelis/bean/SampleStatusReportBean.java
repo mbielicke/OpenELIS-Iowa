@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -92,6 +93,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         }
     }
 
+    @RolesAllowed("w_status-select")
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception {
         int id, sampleId, prevSampleId, analysisId;
         String clause, orgIds;
@@ -221,6 +223,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         return returnList;
     }
 
+    @RolesAllowed("w_status-select")
     public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
         String clause;
         ArrayList<Integer> list;
