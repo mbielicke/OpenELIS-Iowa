@@ -410,7 +410,7 @@ public class DataViewBean implements DataViewRemote {
         return data;
     }
     
-    @RolesAllowed("w_datadump_environmental")
+   @RolesAllowed("w_datadump_environmental-select")
     @TransactionTimeout(600)    
     public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
         ArrayList<QueryData> fields;
