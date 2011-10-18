@@ -62,12 +62,12 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
@@ -381,7 +381,14 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 historyUtility.setManager(manager);
-                historyUtility.historyCurrentResult();
+                /*
+                 * Since the analyses shown on this screen are managed by SampleItemAnalysisTreeTab,
+                 * this screen has no knowledge of the analysis selected by the user
+                 * to see the history of its results. So an ActionEvent is fired
+                 * so that SampleItemAnalysisTreeTab can find the desired analysis
+                 * and show the history.
+                 */
+                ActionEvent.fire(envScreen, ResultTab.Action.RESULT_HISTORY, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -692,7 +699,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         // Set up tabs to recieve State Change events from the main Screen.
         // analysis tree section of the screen
-        treeTab = new SampleItemAnalysisTreeTab(def, window, envScreen);
+        treeTab = new SampleItemAnalysisTreeTab(def, window, envScreen, historyUtility);
 
         addScreenHandler(treeTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {

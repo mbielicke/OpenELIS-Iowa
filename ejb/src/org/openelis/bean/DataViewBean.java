@@ -79,6 +79,7 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.TestAnalyteDataViewVO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
@@ -381,7 +382,7 @@ public class DataViewBean implements DataViewRemote {
                  * out, if any, by the code above because of their results being
                  * overridden  
                  */ 
-                resList = result.fetchForDataDump(analysisIds);
+                resList = result.fetchForDataViewByAnalysisIds(analysisIds);
                 data.setAnalytes(getTestAnalytes(resList));
             }
         } catch (NotFoundException e) {
@@ -578,7 +579,9 @@ public class DataViewBean implements DataViewRemote {
                               ", " + SampleWebMeta.getResultIsColumn() +
                               ", " + SampleWebMeta.getResultAnalyteId() +
                               ", " + SampleWebMeta.getResultTypeId() +
-                              ", " + SampleWebMeta.getResultValue());
+                              ", " + SampleWebMeta.getResultValue() +                              
+                              ", " + SampleWebMeta.getResultSortOrder() +
+                              ", " + SampleWebMeta.getResultTestAnalyteRowGroup());
             builder.constructWhere(fields);
             builder.addWhere(SampleWebMeta.getItemId() + "=" +
                              SampleWebMeta.getAnalysisSampleItemId());
@@ -679,14 +682,17 @@ public class DataViewBean implements DataViewRemote {
                                      boolean excludeOverride, DataViewVO data) throws Exception {
         boolean sampleOverriden, anaOverriden, addResultRow, addAuxDataRow, addSampleCells,
                 addOrgCells, addItemCells, addAnalysisCells, addEnvCells, addWellCells, addSDWISCells;
-        int rowIndex, resIndex, auxIndex, numResults, numAuxVals, i; 
-        Integer resAccNum, auxAccNum, samId, resSamId, auxSamId, itemId, anaId, prevSamId, prevItemId, prevAnaId;
-        String resultVal, auxDataVal, domain, qaeNames, compByNames, relByNames, userName;
+        int rowIndex, resIndex, auxIndex, numResults, numAuxVals, i, lastColumn;         
+        Integer resAccNum, auxAccNum, sampleId, resSamId, auxSamId, itemId, analysisId, 
+                prevSamId, prevItemId, prevAnalysisId, rowGroup, prevRowGroup, sortOrder,
+                currSortOrder, prevSortOrder, currColumn, anaIndex;
+        String resultVal, auxDataVal, domain, qaeNames, compByNames, relByNames,
+               userName, anaName;
         StringBuffer buf;
         Object res[], aux[];
         HSSFWorkbook wb;
         HSSFSheet sheet;
-        Row row, resRow, auxRow;
+        Row headerRow, resRow, auxRow;
         Cell cell;             
         CellStyle headerStyle;
         ArrayList<String> allCols, cols;
@@ -702,14 +708,16 @@ public class DataViewBean implements DataViewRemote {
         AnalysisViewDO ana;
         AnalysisQaEventViewDO aqe;
         HashMap<Integer, PWSDO> pwsMap;
+        HashMap<Integer, ArrayList<ResultViewDO>> groupResMap;
+        HashMap<String ,Integer> colIndexAnaMap;
         ArrayList<SampleProjectViewDO> projList;
         ArrayList<SampleOrganizationViewDO> orgList;
         ArrayList<AnalysisQaEventViewDO> aqeList;
-        ArrayList<AnalysisUserViewDO> anaCompList, anaRelList; 
+        ArrayList<AnalysisUserViewDO> anaCompList, anaRelList;    
         DictionaryCacheLocal dcl;
-                
-        allCols = new ArrayList<String>();
+        ArrayList<ResultViewDO> rowGrpResList;  
         
+        allCols = new ArrayList<String>();        
         addSampleCells = false;
         addOrgCells = false;
         addItemCells = false;
@@ -769,13 +777,13 @@ public class DataViewBean implements DataViewRemote {
         wb = new HSSFWorkbook();
         sheet = wb.createSheet();       
         
-        row  = sheet.createRow(0);
+        headerRow  = sheet.createRow(0);
         headerStyle = createStyle(wb);
         //
         // add cells for the header and set their style
         //
         for (i = 0; i < allCols.size(); i++) {
-            cell = row.createCell(i);
+            cell = headerRow.createCell(i);
             cell.setCellValue(allCols.get(i));   
             cell.setCellStyle(headerStyle);
         }
@@ -783,9 +791,9 @@ public class DataViewBean implements DataViewRemote {
         rowIndex = 1;
         resIndex = 0;
         auxIndex = 0;
-        samId = null;
+        sampleId = null;
         itemId = null;
-        anaId = null;
+        analysisId = null;
         domain =  null;
         qaeNames = null; 
         compByNames = null;
@@ -794,7 +802,7 @@ public class DataViewBean implements DataViewRemote {
         auxDataVal = null;
         prevSamId = null;
         prevItemId = null;
-        prevAnaId = null; 
+        prevAnalysisId = null; 
         collDateTime = null;
         sam = null;
         proj = null;
@@ -815,6 +823,12 @@ public class DataViewBean implements DataViewRemote {
         dcl = EJBFactory.getDictionaryCache();
         sampleOverriden = false;
         anaOverriden = false;
+        groupResMap = null;
+        rowGroup = null;
+        prevRowGroup = null;
+        rowGrpResList = null;
+        colIndexAnaMap = new HashMap<String ,Integer>();
+        lastColumn = 0;
         
         if (resultList == null)
             numResults = 0;
@@ -855,25 +869,25 @@ public class DataViewBean implements DataViewRemote {
                     addResultRow = true;
                     addAuxDataRow = false;
                     resIndex++;
-                    samId = resSamId;
+                    sampleId = resSamId;
                     domain = (String)res[3];
                     itemId = (Integer)res[4];
-                    anaId = (Integer)res[5];                    
+                    analysisId = (Integer)res[5];                    
                 } else if (resAccNum > auxAccNum)  {
                     addAuxDataRow = true;
                     addResultRow = false;
                     auxIndex++;
-                    samId = auxSamId;
+                    sampleId = auxSamId;
                     domain = (String)aux[3];
                 } else {
                     addResultRow = true;
                     addAuxDataRow = true;
                     resIndex++;
                     auxIndex++;
-                    samId = resSamId;
+                    sampleId = resSamId;
                     domain = (String)res[3];
                     itemId = (Integer)res[4];
-                    anaId = (Integer)res[5];                    
+                    analysisId = (Integer)res[5];                    
                 }
             } else if (resIndex < numResults) {
                 addResultRow = true;
@@ -884,10 +898,10 @@ public class DataViewBean implements DataViewRemote {
                 res = resultList.get(resIndex);
 
                 resIndex++;
-                samId = (Integer)res[2];
+                sampleId = (Integer)res[2];
                 domain = (String)res[3];
                 itemId = (Integer)res[4];
-                anaId = (Integer)res[5];
+                analysisId = (Integer)res[5];
             } else if (auxIndex < numAuxVals) {
                 addAuxDataRow = true;
                 addResultRow = false;
@@ -896,7 +910,7 @@ public class DataViewBean implements DataViewRemote {
                 //
                 aux = auxDataList.get(auxIndex);                
                 auxIndex++;
-                samId = (Integer)aux[2];
+                sampleId = (Integer)aux[2];
                 domain = (String)aux[3];
             }
             
@@ -933,12 +947,12 @@ public class DataViewBean implements DataViewRemote {
              * samples/analyses with results overriden and this sample has such 
              * a qa event  
              */
-            if (!samId.equals(prevSamId)) {
+            if (!sampleId.equals(prevSamId)) {
                 if (excludeOverride) {
                     try {
-                        sampleQaEvent.fetchResultOverrideBySampleId(samId);
+                        sampleQaEvent.fetchResultOverrideBySampleId(sampleId);
                         sampleOverriden = true;
-                        prevSamId = samId;
+                        prevSamId = sampleId;
                         continue;
                     } catch (NotFoundException e) {
                         sampleOverriden = false;
@@ -952,7 +966,7 @@ public class DataViewBean implements DataViewRemote {
                 sdwis = null;
                 collDateTime = null;
             } else if (sampleOverriden) {
-                prevSamId = samId;
+                prevSamId = sampleId;
                 continue;
             }
             
@@ -962,17 +976,17 @@ public class DataViewBean implements DataViewRemote {
                  * exclude samples/analyses with results overriden and this analysis
                  * has such a qa event  
                  */
-                if (!anaId.equals(prevAnaId)) {
+                if (!analysisId.equals(prevAnalysisId)) {
                     try {
-                        analysisQaEvent.fetchResultOverrideByAnalysisId(anaId);    
+                        analysisQaEvent.fetchResultOverrideByAnalysisId(analysisId);    
                         anaOverriden = true;
-                        prevAnaId = anaId;
+                        prevAnalysisId = analysisId;
                         addResultRow = false;
                     } catch (NotFoundException e) {
                         anaOverriden = false;
                     }
                 } else if (anaOverriden) {
-                    prevAnaId = anaId;
+                    prevAnalysisId = analysisId;
                     addResultRow = false;
                 }
             }
@@ -995,7 +1009,7 @@ public class DataViewBean implements DataViewRemote {
                 // add cells for the selected fields belonging to samples   
                 //
                 if (sam == null)
-                    sam = sample.fetchById(samId);
+                    sam = sample.fetchById(sampleId);
                 if ("Y".equals(data.getProjectName()) && proj == null) {
                     try {
                         /*
@@ -1005,7 +1019,7 @@ public class DataViewBean implements DataViewRemote {
                          * for a sample and that method is called for each
                          * analyte under a sample
                          */
-                        projList = sampleProject.fetchPermanentBySampleId(samId);
+                        projList = sampleProject.fetchPermanentBySampleId(sampleId);
                         proj = projList.get(0);
                     } catch (NotFoundException e) {
                         // ignore
@@ -1046,7 +1060,7 @@ public class DataViewBean implements DataViewRemote {
                  */
                 if ("W".equals(domain)) {
                     if (well == null) 
-                        well = samplePrivateWell.fetchBySampleId(samId);   
+                        well = samplePrivateWell.fetchBySampleId(sampleId);   
                     if (addResultRow) 
                         addPrivateWellOrganizationCells(resRow, resRow.getPhysicalNumberOfCells(), data, well);
                     if (addAuxDataRow)
@@ -1054,7 +1068,7 @@ public class DataViewBean implements DataViewRemote {
                 } else {
                     if (org == null) {
                         try {
-                            orgList = sampleOrganization.fetchReportToBySampleId(samId);
+                            orgList = sampleOrganization.fetchReportToBySampleId(sampleId);
                             org = orgList.get(0);
                         } catch (NotFoundException e) {
                             // ignore
@@ -1088,8 +1102,9 @@ public class DataViewBean implements DataViewRemote {
                  * or the organization directly linked to a private well sample
                  */
                 if (addResultRow) {                    
-                    if (!anaId.equals(prevAnaId)) {
-                        ana = analysis.fetchById(anaId);
+                    if (!analysisId.equals(prevAnalysisId)) {
+                        groupResMap = new HashMap<Integer, ArrayList<ResultViewDO>>();
+                        ana = analysis.fetchById(analysisId);
                         aqeList = null;
                         anaCompList = null;
                         anaRelList = null;
@@ -1104,7 +1119,7 @@ public class DataViewBean implements DataViewRemote {
                                  * fetch them and create a string by concatinating
                                  * their names together  
                                  */
-                                aqeList = analysisQaEvent.fetchByAnalysisId(anaId);                            
+                                aqeList = analysisQaEvent.fetchByAnalysisId(analysisId);                            
                                 buf = new StringBuffer();                            
                                 for (i = 0; i < aqeList.size(); i++) {
                                     aqe = aqeList.get(i);
@@ -1120,7 +1135,7 @@ public class DataViewBean implements DataViewRemote {
                         }                    
                         if ("Y".equals(data.getAnalysisCompletedBy()) && anaCompList == null) {
                             try {
-                                anaCompList = analysisUser.fetchByActionAndAnalysisId(anaId, completedActionId);  
+                                anaCompList = analysisUser.fetchByActionAndAnalysisId(analysisId, completedActionId);  
                                 buf = new StringBuffer();                            
                                 for (i = 0; i < anaCompList.size(); i++) {
                                     userName = anaCompList.get(i).getSystemUser();
@@ -1142,13 +1157,13 @@ public class DataViewBean implements DataViewRemote {
                         }                    
                         if ("Y".equals(data.getAnalysisReleasedBy()) && anaRelList == null) {
                             try {
-                                anaRelList = analysisUser.fetchByActionAndAnalysisId(anaId, releasedActionId);
+                                anaRelList = analysisUser.fetchByActionAndAnalysisId(analysisId, releasedActionId);
                                 relByNames = anaRelList.get(0).getSystemUser();
                             } catch (NotFoundException ignE) {
                                 // ignore
                             }
                         }    
-                        prevAnaId = anaId;
+                        
                     }
                     addAnalysisCells(resRow, resRow.getPhysicalNumberOfCells(), data, ana, qaeNames, compByNames, relByNames);
                 } 
@@ -1164,7 +1179,7 @@ public class DataViewBean implements DataViewRemote {
              */
             if (addEnvCells) {
                 if ("E".equals(domain) && env == null) 
-                        env = sampleEnvironmental.fetchBySampleId(samId);        
+                        env = sampleEnvironmental.fetchBySampleId(sampleId);        
                 if (addResultRow) 
                     addEnvironmentalCells(resRow, resRow.getPhysicalNumberOfCells(), data, env);
                 if (addAuxDataRow) 
@@ -1173,7 +1188,7 @@ public class DataViewBean implements DataViewRemote {
             
             if (addWellCells) {
                 if ("W".equals(domain) && well == null) 
-                        well = samplePrivateWell.fetchBySampleId(samId);  
+                        well = samplePrivateWell.fetchBySampleId(sampleId);  
                 if (addResultRow) 
                     addPrivateWellCells(resRow, resRow.getPhysicalNumberOfCells(), data, well);
                 if (addAuxDataRow) 
@@ -1182,7 +1197,7 @@ public class DataViewBean implements DataViewRemote {
             
             if (addSDWISCells) {
                 if ("S".equals(domain) && sdwis == null) { 
-                    sdwis = sampleSDWIS.fetchBySampleId(samId);                
+                    sdwis = sampleSDWIS.fetchBySampleId(sampleId);                
                     if ("Y".equals(data.getSampleSDWISPwsId()) && pwsMap == null) 
                         pwsMap = new HashMap<Integer, PWSDO>();                                            
                 }
@@ -1191,33 +1206,136 @@ public class DataViewBean implements DataViewRemote {
                 if (addAuxDataRow) 
                     addSDWISCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, sdwis, pwsMap);
             }
-            
+
             if (addResultRow) { 
                 //
-                // set the value in the last two cells of a row showing a result                
+                // set the analyte's name and the result's value 
                 //
                 cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
                 cell.setCellValue( ((String)res[1]).trim());
                 cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
                 cell.setCellValue(resultVal);
+                //
+                // fetch the column analytes if there are any
+                //
+                sortOrder = (Integer)res[10];
+                rowGroup = (Integer)res[11];      
+                if (!analysisId.equals(prevAnalysisId)) {
+                    groupResMap = new HashMap<Integer, ArrayList<ResultViewDO>>();
+                    rowGrpResList = null;
+                } else if ( !rowGroup.equals(prevRowGroup)) { 
+                    rowGrpResList = groupResMap.get(rowGroup);
+                }
+                
+                if (rowGrpResList == null) {
+                    try {
+                        /*
+                         * this is the list of all the results belonging to the
+                         * same row group as the test analyte of this result and
+                         * for which is_column = "Y"
+                         */
+                        rowGrpResList = result.fetchForDataViewByAnalysisIdAndRowGroup(analysisId, rowGroup);
+                        groupResMap.put(rowGroup, rowGrpResList);
+                    } catch (NotFoundException e) {
+                        // ignore
+                    }
+                }                
+                                
+                /*
+                 * if there are column analytes with values then the names of
+                 * the analytes are added to the header such that if an analyte B
+                 * is found first for any reason then it's added to the header before
+                 * another analyte A even if A's column appears to the left of B's
+                 * in the test or in a different sample 
+                 */
+                if (rowGrpResList != null) {
+                    if (lastColumn == 0)
+                        lastColumn = resRow.getPhysicalNumberOfCells();
+                    currColumn = resRow.getPhysicalNumberOfCells();
+                    prevSortOrder = sortOrder;
+                    for (ResultViewDO rvdo : rowGrpResList) {
+                        currSortOrder = rvdo.getSortOrder();                        
+                        
+                        /*
+                         * we only show those analytes' values in this row in the
+                         * sheet that belong to the row in the test starting with
+                         * the analyte selected by the user and none before it    
+                         */
+                        if (currSortOrder < sortOrder) {
+                            prevSortOrder = currSortOrder;
+                            continue;
+                        } 
+                        
+                        /* 
+                         * The first check is done to know when the row starting
+                         * with the selected analyte has ended (the sort order
+                         * of the next analyte is 2 more than the previous one's)
+                         * i.e. the next one is a column analyte. The second check
+                         * is done to know when the row starting with the selected
+                         * analyte begins, i.e. the first column analyte's sort 
+                         * order is one more than that of the selected analyte.         
+                         */
+                        if (currSortOrder > prevSortOrder + 1 && currSortOrder > sortOrder + 1)
+                            break;
+                        
+                        anaName = rvdo.getAnalyte();
+                        anaIndex = colIndexAnaMap.get(anaName); 
+
+                        if (anaIndex == null) {    
+                            /*
+                             * If an analyte's name is not found in the map then we
+                             * create a new column in the header row and set its value
+                             * as the name. We also start adding values under that column 
+                             */
+                            anaIndex = lastColumn++;
+                            colIndexAnaMap.put(anaName, anaIndex);
+                            cell = headerRow.createCell(anaIndex);
+                            cell.setCellValue(anaName);    
+                            cell.setCellStyle(headerStyle);
+                            
+                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId(), dcl);
+                            cell = resRow.createCell(anaIndex);
+                            cell.setCellValue(resultVal);    
+                        } else if (anaIndex == currColumn) {   
+                            /*
+                             * we set the value in this cell if this result's analyte
+                             * is shown in this column
+                             */
+                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId(), dcl);
+                            cell = resRow.createCell(currColumn++);
+                            cell.setCellValue(resultVal);
+                        } else {
+                            /*
+                             * if this result's analyte is not shown in this column
+                             * then we set the value in the appropriate column 
+                             */
+                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId(), dcl);
+                            cell = resRow.createCell(anaIndex);
+                            cell.setCellValue(resultVal);                            
+                        }
+                        prevSortOrder = currSortOrder;
+                    }                   
+                }
             }
             if (addAuxDataRow) { 
-                 //
-                 // set the value in the last two cells of a row showing an aux data                
-                 //
+                //
+                // set the analyte's name and the aux data's value                
+                //
                 cell = auxRow.createCell(auxRow.getPhysicalNumberOfCells());
                 cell.setCellValue(((String)aux[1]).trim());
                 cell = auxRow.createCell(auxRow.getPhysicalNumberOfCells());
                 cell.setCellValue(auxDataVal);
             }
                 
-            prevSamId = samId;
+            prevAnalysisId = analysisId;
+            prevSamId = sampleId;
+            prevRowGroup = rowGroup;
         }
         
         //
         // make each column wide enough to show the longest string in it  
         //
-        for (i = 0; i < allCols.size(); i++) 
+        for (i = 0; i < headerRow.getPhysicalNumberOfCells(); i++) 
             sheet.autoSizeColumn(i);        
         
         return wb;
@@ -2008,36 +2126,39 @@ public class DataViewBean implements DataViewRemote {
     
     private String getResultValue(HashMap<Integer, HashMap<String, String>> analyteResultMap,
                                   Object res[], DictionaryCacheLocal dcl) throws Exception {
-        Integer dictId;
         String value;
         HashMap<String, String> valMap;        
         
         valMap = analyteResultMap.get(res[7]);
-        value = (String)res[9];
-        if (resultDictId.equals(res[8])) {
-            dictId = Integer.parseInt(value);
-            value = dcl.getById(dictId).getEntry();                
-        }
+        value = getValue((String)res[9], resultDictId, (Integer)res[8], dcl);
         if (valMap == null || valMap.get(value) == null)
             return null;
                 
         return value;
     }
     
-    private String getAuxDataValue(HashMap<Integer, HashMap<String, String>> auxFieldValueMap, Object aux[], DictionaryCacheLocal dcl) throws Exception {
+    private String getAuxDataValue(HashMap<Integer, HashMap<String, String>> auxFieldValueMap,
+                                   Object aux[], DictionaryCacheLocal dcl) throws Exception {
         HashMap<String, String> valMap;
         String value;
-        Integer dictId;
         
         valMap = auxFieldValueMap.get(aux[4]);
-        value = (String)aux[6];
-        if (auxFieldValueDictId.equals(aux[5])) {
-            dictId = Integer.parseInt(value);
-            value = dcl.getById(dictId).getEntry();
-        }
+        value = getValue((String)aux[6], auxFieldValueDictId, (Integer)aux[5], dcl);
         if (valMap == null || valMap.get(value) == null)
             return null;                
                 
+        return value;
+    }
+    
+    private String getValue(String value, Integer dictionaryId, Integer typeId,
+                                      DictionaryCacheLocal dcl) throws Exception {        
+        Integer id;
+        
+        if (dictionaryId.equals(typeId)) {
+            id = Integer.parseInt(value);
+            value = dcl.getById(id).getEntry();                
+        }
+        
         return value;
     }
     

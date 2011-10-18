@@ -422,12 +422,27 @@ public class ResultBean implements ResultLocal {
         return results;
     }
     
-    public ArrayList<ResultViewDO> fetchForDataDump(ArrayList<Integer> analysisIds) throws Exception {
+    public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIds(ArrayList<Integer> analysisIds) throws Exception {
         List<ResultViewDO> list;        
         Query query;
         
-        query = manager.createNamedQuery("Result.FetchForDataDump");
+        query = manager.createNamedQuery("Result.FetchForDataViewByAnalysisIds");
         query.setParameter("ids", analysisIds);
+   
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
+    }
+    
+    public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIdAndRowGroup(Integer analysisId, Integer rowGroup) throws Exception {
+        List<ResultViewDO> list;        
+        Query query;
+        
+        query = manager.createNamedQuery("Result.FetchForDataViewByAnalysisIdAndRowGroup");
+        query.setParameter("id", analysisId);
+        query.setParameter("rowGroup", rowGroup);
    
         list = query.getResultList();
         if (list.isEmpty())

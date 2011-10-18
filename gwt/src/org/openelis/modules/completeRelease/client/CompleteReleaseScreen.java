@@ -55,8 +55,10 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
+import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
@@ -146,7 +148,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                                      historyAuxData;
 
     private ScreenService            finalReportService;
-    private Integer                  analysisOnHoldId, lastAccession, sampleLoggedInId;
+    private Integer                  analysisOnHoldId, lastAccession;
 
 
     private enum Tabs {
@@ -282,11 +284,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             }
         });
 
-        historyUtility = new SampleHistoryUtility(window) {
-            public void historyCurrentResult() {
-                ActionEvent.fire(completeScreen, ResultTab.Action.RESULT_HISTORY, null);
-            }
-        };
+        historyUtility = new SampleHistoryUtility(window);
 
         unreleaseAnalysis = (MenuItem)def.getWidget("unreleaseAnalysis");
         addScreenHandler(unreleaseAnalysis, new ScreenEventHandler<Object>() {
@@ -425,8 +423,15 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
         addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                
                 historyUtility.setManager(manager);
-                historyUtility.historyCurrentResult();
+                try {                    
+                    historyUtility.historyCurrentResult(dataBundle.getSampleItemIndex(), dataBundle.getAnalysisIndex());
+                    window.clearStatus();
+                } catch (Exception e) {
+                    window.clearStatus();
+                    Window.alert("historyCurrentResult: " + e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -772,8 +777,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
         // preload dictionary models and single entries, close the window if an
         // error is found
-        try {
-            sampleLoggedInId = DictionaryCache.getIdBySystemName("sample_logged_in");
+        try {            
             analysisOnHoldId = DictionaryCache.getIdBySystemName("analysis_on_hold");
         } catch (Exception e) {
             Window.alert(e.getMessage());

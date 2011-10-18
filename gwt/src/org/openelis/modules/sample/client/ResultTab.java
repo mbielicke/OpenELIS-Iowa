@@ -541,7 +541,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         analysisMan.getQAEventAt(bundle.getAnalysisIndex()).hasResultOverrideQA())
                         overrideLabel.setVisible(true);
                     else
-                        overrideLabel.setVisible(false);
+                         overrideLabel.setVisible(false);
                 } catch (Exception anyE) {
                     overrideLabel.setVisible(false);
                 }                    
