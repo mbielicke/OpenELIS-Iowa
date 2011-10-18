@@ -58,8 +58,10 @@ public interface ResultLocal {
 	public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer sampleId,
 			Integer analysisId) throws Exception;
 	
-	public ArrayList<ResultViewDO> fetchForDataDump(ArrayList<Integer> analysisIds) throws Exception;
+	public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIds(ArrayList<Integer> analysisIds) throws Exception;
 
+	public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIdAndRowGroup(Integer analysisId, Integer rowGroup) throws Exception;
+	
 	public ResultViewDO add(ResultViewDO data);
 
 	public ResultViewDO update(ResultViewDO data);

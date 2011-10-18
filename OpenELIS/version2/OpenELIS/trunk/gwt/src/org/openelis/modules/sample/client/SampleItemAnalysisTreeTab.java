@@ -33,10 +33,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -64,12 +61,9 @@ import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.modules.main.client.OpenELIS;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
@@ -87,6 +81,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
     private HasActionHandlers             parentScreen;
     private SampleManager                 manager;
     protected SampleTreeUtility           treeUtil;
+    protected SampleHistoryUtility        historyUtility;
     protected SampleItemAnalysisTreeTab   treeTab;
     protected SampleItemsPopoutTreeLookup treePopoutScreen;
     protected boolean                     loaded = false;
@@ -96,11 +91,13 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
     };
 
     public SampleItemAnalysisTreeTab(ScreenDefInt def, ScreenWindowInt window,
-                                     HasActionHandlers parentScreen) {
+                                     HasActionHandlers parentScreen, 
+                                     SampleHistoryUtility historyUtility) {
         setDefinition(def);
         setWindow(window);
 
         this.parentScreen = parentScreen;
+        this.historyUtility = historyUtility;
 
         initialize();
         initializeDropdowns();
@@ -492,12 +489,6 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
     protected void historyCurrentResult() {
         TreeDataItem item;
         SampleDataBundle bundle;
-        AnalysisResultManager man;
-        int i, j, rowCount, count;
-        ArrayList<ResultViewDO> row;
-        ResultViewDO data;
-        ArrayList<IdNameVO> refVoArrayList;
-        IdNameVO[] refVoList;
 
         item = itemsTree.getSelection();
 
@@ -507,30 +498,9 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
         }
 
         try {
-            bundle = (SampleDataBundle)item.data;
-            man = manager.getSampleItems()
-                         .getAnalysisAt(bundle.getSampleItemIndex())
-                         .getAnalysisResultAt(bundle.getAnalysisIndex());
-            rowCount = man.rowCount();
-            refVoArrayList = new ArrayList<IdNameVO>();
-            for (i = 0; i < rowCount; i++ ) {
-                row = man.getRowAt(i);
-                count = row.size();
-
-                for (j = 0; j < count; j++ ) {
-                    data = row.get(j);
-                    refVoArrayList.add(new IdNameVO(data.getId(), data.getAnalyte()));
-                }
-            }
-
-            refVoList = new IdNameVO[refVoArrayList.size()];
-            for (i = 0; i < refVoArrayList.size(); i++ )
-                refVoList[i] = refVoArrayList.get(i);
-
-            HistoryScreen.showHistory(OpenELIS.consts.get("historyCurrentResult"),
-                                      ReferenceTable.RESULT, refVoList);
+            bundle = (SampleDataBundle)item.data;            
+            historyUtility.historyCurrentResult(bundle.getSampleItemIndex(), bundle.getAnalysisIndex());
             window.clearStatus();
-
         } catch (Exception e) {
             window.clearStatus();
             Window.alert("historyCurrentResult: " + e.getMessage());

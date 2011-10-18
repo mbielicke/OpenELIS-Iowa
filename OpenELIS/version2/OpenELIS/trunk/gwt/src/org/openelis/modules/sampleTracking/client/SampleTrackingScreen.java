@@ -72,6 +72,7 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
 import org.openelis.manager.AnalysisManager;
+import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
@@ -475,8 +476,26 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         historyCurrentResult = (MenuItem)def.getWidget("historyCurrentResult");
         addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
+                TreeDataItem item;
+                SampleDataBundle bundle;
+                
                 historyUtility.setManager(manager);
-                historyUtility.historyCurrentResult();
+
+                item = trackingTree.getSelection();
+
+                if (item == null || !"analysis".equals(item.leafType)) {
+                    window.setError(consts.get("resultHistoryException"));
+                    return;
+                }
+
+                try {
+                    bundle = (SampleDataBundle)item.data;
+                    historyUtility.historyCurrentResult(bundle.getSampleItemIndex(), bundle.getAnalysisIndex());
+                    window.clearStatus();
+                } catch (Exception e) {
+                    window.clearStatus();
+                    Window.alert("historyCurrentResult: " + e.getMessage());
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

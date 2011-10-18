@@ -295,11 +295,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
         });
 
-        historyUtility = new SampleHistoryUtility(window) {
-            public void historyCurrentResult() {
-                ActionEvent.fire(sdwisScreen, ResultTab.Action.RESULT_HISTORY, null);
-            }
-        };
+        historyUtility = new SampleHistoryUtility(window);
 
         historySample = (MenuItem)def.getWidget("historySample");
         addScreenHandler(historySample, new ScreenEventHandler<Object>() {
@@ -366,7 +362,14 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         addScreenHandler(historyCurrentResult, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 historyUtility.setManager(manager);
-                historyUtility.historyCurrentResult();
+                /*
+                 * Since the analyses shown on this screen are managed by SampleItemAnalysisTreeTab,
+                 * this screen has no knowledge of the analysis selected by the user
+                 * to see the history of its results. So an ActionEvent is fired
+                 * so that SampleItemAnalysisTreeTab can find the desired analysis
+                 * and show the history.
+                 */
+                ActionEvent.fire(sdwisScreen, ResultTab.Action.RESULT_HISTORY, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -673,7 +676,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         // Set up tabs to recieve State Change events from the main Screen.
         // analysis tree section of the screen
-        treeTab = new SampleItemAnalysisTreeTab(def, window, sdwisScreen);
+        treeTab = new SampleItemAnalysisTreeTab(def, window, sdwisScreen, historyUtility);
 
         addScreenHandler(treeTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {

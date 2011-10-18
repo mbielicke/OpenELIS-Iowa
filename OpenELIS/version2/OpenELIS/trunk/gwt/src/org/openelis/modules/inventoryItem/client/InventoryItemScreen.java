@@ -37,7 +37,9 @@ import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemDO;
+import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -57,6 +59,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -72,6 +75,7 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;
+import org.openelis.manager.NoteManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.history.client.HistoryScreen;
@@ -104,7 +108,7 @@ public class InventoryItemScreen extends Screen {
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
-    protected MenuItem            invItemHistory,invComponentHistory,invLocationHistory;
+    protected MenuItem            duplicate, invItemHistory,invComponentHistory,invLocationHistory;
     private TextBox               id, name, description, quantityMinLevel, quantityToReorder,
                                   quantityMaxLevel, productUri, parentRatio, averageLeadTime, averageCost,
                                   averageDailyUse;
@@ -240,6 +244,17 @@ public class InventoryItemScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -1033,6 +1048,37 @@ public class InventoryItemScreen extends Screen {
         }
     }
     
+    protected void duplicate() {
+        try {
+            manager = InventoryItemManager.fetchById(manager.getInventoryItem().getId());         
+            manager.getInventoryItem().setIsActive("Y");
+            
+            componentTab.setManager(manager);
+            locationTab.setManager(manager);
+            manufacturingTab.setManager(manager);
+            noteTab.setManager(manager);
+            
+            manager.getComponents();
+            manager.getManufacturing();
+            //manager.getNotes();
+            
+            clearKeys();
+            
+            componentTab.draw();
+            locationTab.draw();
+            manufacturingTab.draw();
+            noteTab.draw();     
+            
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+            
+            setFocus(name);
+            window.setDone(consts.get("enterInformationPressCommit"));
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+    }
+    
     protected void invItemHistory() {
         IdNameVO hist;
         
@@ -1151,5 +1197,42 @@ public class InventoryItemScreen extends Screen {
                 noteTab.draw();
                 break;
         }
+    }
+    
+    private void clearKeys() {
+       int i;
+       InventoryComponentManager icman;
+       NoteManager nman;
+       InventoryComponentViewDO comp;
+       NoteViewDO note;
+       
+       manager.getInventoryItem().setId(null);
+       try {
+           icman = manager.getComponents();
+           for (i = 0; i < icman.count(); i++) {
+               comp = icman.getComponentAt(i);
+               comp.setId(null);
+               comp.setInventoryItemId(null);
+           }
+           
+           nman = manager.getManufacturing();
+           for (i = 0; i < nman.count(); i++ ) {
+               note = nman.getNoteAt(i);
+               note.setId(null);
+               note.setReferenceId(null);
+               note.setReferenceTableId(null);
+           }
+           
+           nman = manager.getNotes();
+           for (i = 0; i < nman.count(); i++ ) {
+               note = nman.getNoteAt(i);
+               note.setId(null);
+               note.setReferenceId(null);
+               note.setReferenceTableId(null);
+           }
+       } catch (Exception e) {
+           Window.alert(e.getMessage());
+           e.printStackTrace();
+       }
     }
 }

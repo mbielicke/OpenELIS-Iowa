@@ -792,10 +792,11 @@ public class DataViewScreen extends Screen {
 
     protected void executeQuery() {
         int ec, wc, sc; 
+        String domain;
         Query query;
         ArrayList<QueryData> queryList;
         QueryData field;
-        DataViewVO ldata;        
+        DataViewVO ldata;
         
         clearErrors();
         
@@ -828,8 +829,28 @@ public class DataViewScreen extends Screen {
         field = new QueryData();
         field.query = data.getExcludeResultOverride();
         field.key = "excludeResultOverride";
-        field.type = QueryData.Type.STRING;
+        field.type = QueryData.Type.STRING;        
         queryList.add(field);
+        
+        /*
+         * assert the domain if the user has selected one or more checkboxes in
+         * one of the tabs showing fields specific to a given domain 
+         */
+        domain = null;
+        if (ec == 1) 
+            domain = "E";
+        else if (wc == 1) 
+            domain = "W";
+        else if (sc == 1) 
+            domain = "S";        
+        
+        if (domain != null) {
+            field = new QueryData();
+            field.query = domain;
+            field.key = SampleWebMeta.getDomain();
+            field.type = QueryData.Type.STRING;        
+            queryList.add(field);
+        }
         
         data.setQueryFields(query.getFields());
         window.setBusy(consts.get("querying"));
