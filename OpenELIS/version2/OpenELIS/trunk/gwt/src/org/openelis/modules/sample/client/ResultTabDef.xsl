@@ -114,6 +114,22 @@ UIRF Software License are applicable instead of those above.
                   </text>
                 </HorizontalPanel>
               </appButton>
+              <appButton key="checkAllButton" style="Button">
+                <HorizontalPanel>
+                  <AbsolutePanel style = "Checked"/>
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'checkAll')" />
+                    </text>
+                </HorizontalPanel>
+              </appButton>
+              <appButton key="uncheckAllButton" style="Button">
+                <HorizontalPanel>
+                  <AbsolutePanel style = "Unchecked"/>
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'uncheckAll')" />
+                    </text>
+                </HorizontalPanel>
+              </appButton>
               <text key="overrideLabel" style="WarningLabel">
                 <xsl:value-of select="resource:getString($constants,'resultsOverridden')" />
               </text>

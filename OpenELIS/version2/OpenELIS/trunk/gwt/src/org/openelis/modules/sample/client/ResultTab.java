@@ -92,7 +92,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     private boolean                                 loaded;
 
     protected AppButton                             addResultButton, removeResultButton,
-                                                    suggestionsButton, popoutTable;
+                                                    suggestionsButton, popoutTable,
+                                                    checkAllButton, uncheckAllButton;
     protected Label                                 overrideLabel;
     protected TableWidget                           testResultsTable;
     private ArrayList<TableColumn>                  resultTableCols;
@@ -146,8 +147,13 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             public void onDataChange(DataChangeEvent event) {
                 testResultsTable.load(getTableModel());
 
-                if (testResultsTable.numRows() > 0)
+                if (testResultsTable.numRows() > 0) {
                     popoutTable.enable(true);
+                    if (state == State.ADD || state == State.UPDATE) {
+                        checkAllButton.enable(true);
+                        uncheckAllButton.enable(true);
+                    }
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -189,6 +195,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     addResultButton.enable(false);
                     removeResultButton.enable(false);
                     suggestionsButton.enable(false);
+                    checkAllButton.enable(false);
+                    uncheckAllButton.enable(false);
                 }
             }
         });
@@ -532,6 +540,39 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 popoutTable.enable(false);
             }
         });
+        
+        checkAllButton = (AppButton)def.getWidget("checkAllButton");
+        addScreenHandler(checkAllButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                makeAllReportable();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                checkAllButton.enable(false);
+            }
+        });
+        
+        uncheckAllButton = (AppButton)def.getWidget("uncheckAllButton");
+        addScreenHandler(uncheckAllButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                makeAllNotReportable();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                uncheckAllButton.enable(false);
+            }
+        });
+        
+        popoutTable = (AppButton)def.getWidget("popoutTable");
+        addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onTablePopoutClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                popoutTable.enable(false);
+            }
+        });
 
         overrideLabel = (Label)def.getWidget("overrideLabel");
         addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
@@ -854,6 +895,29 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             return;
         }
     }
+    
+    private void makeAllReportable() {
+        ResultViewDO data;
+        
+        for (int i = 0; i < displayManager.rowCount(); i++) {
+            data = displayManager.getObjectAt(i, 0);
+            if (data != null) {
+                data.setIsReportable("Y");
+            }
+        }   
+        DataChangeEvent.fire(this);
+    }
+    
+    private void makeAllNotReportable() {
+        ResultViewDO data;
+        
+        for (int i = 0; i < displayManager.rowCount(); i++) {
+            data = displayManager.getObjectAt(i, 0);
+            if (data != null)
+                data.setIsReportable("N");
+        }        
+        DataChangeEvent.fire(this);
+    }
 
     private void initializeDropdowns() {
         try {
@@ -919,4 +983,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             tabcol.setResultGroupModel(rg, model);
         }
     }
+    
+
 }
