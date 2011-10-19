@@ -411,7 +411,7 @@ public class DataViewBean implements DataViewRemote {
         return data;
     }
     
-   @RolesAllowed("w_datadump_environmental-select")
+    @RolesAllowed("w_datadump_environmental-select")
     @TransactionTimeout(600)    
     public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
         ArrayList<QueryData> fields;
@@ -428,12 +428,12 @@ public class DataViewBean implements DataViewRemote {
         
         fields.add(field);
         
-        return runReport(data, "w_datadump_environmental");
+        return runReport(data, "w_datadump_environmental", true);
     }
     
     @TransactionTimeout(600)
     public ReportStatus runReport(DataViewVO data) throws Exception {
-        return runReport(data, null);
+        return runReport(data, null, false);
     }
     
     public ReportStatus saveQuery(DataViewVO data) throws Exception {
@@ -488,7 +488,7 @@ public class DataViewBean implements DataViewRemote {
         return data;
     }
        
-    private ReportStatus runReport(DataViewVO data, String moduleName) throws Exception {
+    private ReportStatus runReport(DataViewVO data, String moduleName, boolean showReportableColumnsOnly) throws Exception {
         boolean excludeOverride;
         FileOutputStream out;
         File tempFile;
@@ -644,7 +644,8 @@ public class DataViewBean implements DataViewRemote {
             auxDataList = query.getResultList(); 
         }
                 
-        wb = getWorkbook(resultList, auxDataList, analyteResultMap, auxFieldValueMap,excludeOverride, data);        
+        wb = getWorkbook(resultList, auxDataList, analyteResultMap, auxFieldValueMap,
+                         excludeOverride, showReportableColumnsOnly, data);        
         if (wb != null) {
             out = null;
             try {
@@ -679,7 +680,8 @@ public class DataViewBean implements DataViewRemote {
     private HSSFWorkbook getWorkbook(List<Object[]> resultList,  List<Object[]> auxDataList,                                     
                                      HashMap<Integer, HashMap<String, String>> analyteResultMap,
                                      HashMap<Integer, HashMap<String, String>> auxFieldValueMap,
-                                     boolean excludeOverride, DataViewVO data) throws Exception {
+                                     boolean excludeOverride, boolean showReportableColumnsOnly,
+                                     DataViewVO data) throws Exception {
         boolean sampleOverriden, anaOverriden, addResultRow, addAuxDataRow, addSampleCells,
                 addOrgCells, addItemCells, addAnalysisCells, addEnvCells, addWellCells, addSDWISCells;
         int rowIndex, resIndex, auxIndex, numResults, numAuxVals, i, lastColumn;         
@@ -1215,9 +1217,7 @@ public class DataViewBean implements DataViewRemote {
                 cell.setCellValue( ((String)res[1]).trim());
                 cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
                 cell.setCellValue(resultVal);
-                //
-                // fetch the column analytes if there are any
-                //
+                
                 sortOrder = (Integer)res[10];
                 rowGroup = (Integer)res[11];      
                 if (!analysisId.equals(prevAnalysisId)) {
@@ -1227,6 +1227,9 @@ public class DataViewBean implements DataViewRemote {
                     rowGrpResList = groupResMap.get(rowGroup);
                 }
                 
+                //
+                // fetch the column analytes if there are any
+                //
                 if (rowGrpResList == null) {
                     try {
                         /*
@@ -1246,7 +1249,7 @@ public class DataViewBean implements DataViewRemote {
                  * the analytes are added to the header such that if an analyte B
                  * is found first for any reason then it's added to the header before
                  * another analyte A even if A's column appears to the left of B's
-                 * in the test or in a different sample 
+                 * in this test or any other 
                  */
                 if (rowGrpResList != null) {
                     if (lastColumn == 0)
@@ -1255,7 +1258,11 @@ public class DataViewBean implements DataViewRemote {
                     prevSortOrder = sortOrder;
                     for (ResultViewDO rvdo : rowGrpResList) {
                         currSortOrder = rvdo.getSortOrder();                        
-                        
+                        if (showReportableColumnsOnly && "N".equals(rvdo.getIsReportable())) {
+                            prevSortOrder = currSortOrder;
+                            continue;
+                        }
+                            
                         /*
                          * we only show those analytes' values in this row in the
                          * sheet that belong to the row in the test starting with
@@ -1268,12 +1275,12 @@ public class DataViewBean implements DataViewRemote {
                         
                         /* 
                          * The first check is done to know when the row starting
-                         * with the selected analyte has ended (the sort order
-                         * of the next analyte is 2 more than the previous one's)
-                         * i.e. the next one is a column analyte. The second check
-                         * is done to know when the row starting with the selected
-                         * analyte begins, i.e. the first column analyte's sort 
-                         * order is one more than that of the selected analyte.         
+                         * with the selected analyte has ended (the sort order of
+                         * the next analyte is 2 more than the previous one's, i.e.
+                         * the next one is a column analyte in the next row). The
+                         * second check is done to know when the row starting with
+                         * the selected analyte begins, i.e. the first column analyte's
+                         * sort order is one more than that of the selected analyte.         
                          */
                         if (currSortOrder > prevSortOrder + 1 && currSortOrder > sortOrder + 1)
                             break;

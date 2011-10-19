@@ -37,7 +37,6 @@ import org.openelis.domain.IdNameStoreVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryComponentViewDO;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ReferenceTable;
@@ -59,9 +58,9 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CheckBox;
@@ -69,7 +68,6 @@ import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.manager.InventoryComponentManager;
@@ -1060,7 +1058,6 @@ public class InventoryItemScreen extends Screen {
             
             manager.getComponents();
             manager.getManufacturing();
-            //manager.getNotes();
             
             clearKeys();
             
@@ -1221,15 +1218,7 @@ public class InventoryItemScreen extends Screen {
                note.setId(null);
                note.setReferenceId(null);
                note.setReferenceTableId(null);
-           }
-           
-           nman = manager.getNotes();
-           for (i = 0; i < nman.count(); i++ ) {
-               note = nman.getNoteAt(i);
-               note.setId(null);
-               note.setReferenceId(null);
-               note.setReferenceTableId(null);
-           }
+           }           
        } catch (Exception e) {
            Window.alert(e.getMessage());
            e.printStackTrace();
