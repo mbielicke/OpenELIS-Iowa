@@ -426,8 +426,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         cellNameIndex = i+"."+a;
                         r = createQcResultCellsForFormat(resultSheet, row, tRow,
                                                          cellNameIndex, tCellNames,
-                                                         waDO.getQcId(), wqrManager,
-                                                         isEditable);
+                                                         waDO.getQcId(), wqrManager);
                     }
 
                     //
@@ -463,10 +462,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                     // users (override)
                     cell = oRow.createCell(5);
-                    if (isEditable)
-                        cell.setCellStyle(styles.get("row_edit"));
-                    else
-                        cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellStyle(styles.get("row_edit"));
                     try {
                         userVO = EJBFactory.getUserCache().getSystemUser(waDO.getQcSystemUserId());
                         if (userVO != null)
@@ -1077,8 +1073,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     private int createQcResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow,
                                              String nameIndexPrefix, HashMap<String,String> cellNames,
-                                             Integer qcId, WorksheetQcResultManager wqrManager,
-                                             boolean isEditable) {
+                                             Integer qcId, WorksheetQcResultManager wqrManager) {
         int                     c, i, r;
         Object                  value;
         String                  cellNameIndex, name;
@@ -1117,10 +1112,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 tCell = tRow.getCell(c);
                 
                 cell = row.createCell(c);
-                if (isEditable)
-                    cell.setCellStyle(tCell.getCellStyle());
-                else
-                    cell.setCellStyle(styles.get("row_no_edit"));
+                cell.setCellStyle(tCell.getCellStyle());
                 name = cellNames.get(sheet.getSheetName()+"!$"+
                                      CellReference.convertNumToColString(tCell.getColumnIndex())+
                                      "$"+(tCell.getRowIndex()+1));
