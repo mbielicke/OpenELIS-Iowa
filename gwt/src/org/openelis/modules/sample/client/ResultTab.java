@@ -544,7 +544,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         checkAllButton = (AppButton)def.getWidget("checkAllButton");
         addScreenHandler(checkAllButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                makeAllReportable();
+                setReportableForAll("Y");
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -555,7 +555,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         uncheckAllButton = (AppButton)def.getWidget("uncheckAllButton");
         addScreenHandler(uncheckAllButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                makeAllNotReportable();
+                setReportableForAll("N");
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -563,17 +563,6 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             }
         });
         
-        popoutTable = (AppButton)def.getWidget("popoutTable");
-        addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                onTablePopoutClick();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                popoutTable.enable(false);
-            }
-        });
-
         overrideLabel = (Label)def.getWidget("overrideLabel");
         addScreenHandler(popoutTable, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -896,27 +885,22 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         }
     }
     
-    private void makeAllReportable() {
+    private void setReportableForAll(String val) {
+        boolean isHeader;        
         ResultViewDO data;
+        TableDataRow row;
         
-        for (int i = 0; i < displayManager.rowCount(); i++) {
-            data = displayManager.getObjectAt(i, 0);
-            if (data != null) {
-                data.setIsReportable("Y");
+        for (int j = 0; j< testResultsTable.numRows(); j++) {
+            row = testResultsTable.getRow(j);
+            isHeader = (Boolean)row.data;
+            if (isHeader)
+                continue;            
+            data = displayManager.getObjectAt(j, 0);
+            if (!DataBaseUtil.isSame(val, data.getIsReportable())) {
+                data.setIsReportable(val);
+                testResultsTable.setCell(j, 0, val);
             }
-        }   
-        DataChangeEvent.fire(this);
-    }
-    
-    private void makeAllNotReportable() {
-        ResultViewDO data;
-        
-        for (int i = 0; i < displayManager.rowCount(); i++) {
-            data = displayManager.getObjectAt(i, 0);
-            if (data != null)
-                data.setIsReportable("N");
-        }        
-        DataChangeEvent.fire(this);
+        }
     }
 
     private void initializeDropdowns() {
@@ -983,6 +967,4 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
             tabcol.setResultGroupModel(rg, model);
         }
     }
-    
-
 }
