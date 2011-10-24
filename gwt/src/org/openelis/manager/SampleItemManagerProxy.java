@@ -59,27 +59,26 @@ public class SampleItemManagerProxy {
     }
 
     public void validate(SampleItemManager man, ValidationErrorsList errorsList) throws Exception {
+        int i;
         String sequenceNum;
         SampleItemListItem item;
         //you have to have at least 1 sample item
-        if(man.count() == 0)
+        if (man.count() == 0)
             errorsList.add(new FormErrorException("minOneSampleItemException"));
         
-        for(int i=0; i<man.count(); i++){
+        for (i = 0; i < man.count(); i++) {
             sequenceNum = man.getSampleItemAt(i).getItemSequence().toString();
             //validate the sample item
-            if(man.getSampleItemAt(i).getTypeOfSampleId() == null)
+            if (man.getSampleItemAt(i).getTypeOfSampleId() == null)
                 errorsList.add(new FormErrorException("sampleItemTypeMissing", sequenceNum));
             
             item = man.getItemAt(i);
             //validate the children
-            if(item.storage != null)
+            if (item.storage != null)
                 man.getStorageAt(i).validate(errorsList);
             
-            if(item.analysis != null)
+            if (item.analysis != null)
                 man.getAnalysisAt(i).validate(sequenceNum, man.getSampleItemAt(i).getTypeOfSampleId(), man.getSampleManager().getSample().getDomain(), errorsList);
-            else
-                errorsList.add(new FormErrorWarning("minOneAnalysisException", sequenceNum));
         }
     }
 }
