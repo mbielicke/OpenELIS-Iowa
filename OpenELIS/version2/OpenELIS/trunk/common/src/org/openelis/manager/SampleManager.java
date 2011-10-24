@@ -123,7 +123,11 @@ public class SampleManager implements RPC, HasAuxDataInt {
     public SampleManager update() throws Exception {
         updateSampleStatus();
         return proxy().update(this);
+    }
+    
 
+    public void updateCache() {
+        proxy().updateCache(this);      
     }
 
     public SampleManager fetchForUpdate() throws Exception {

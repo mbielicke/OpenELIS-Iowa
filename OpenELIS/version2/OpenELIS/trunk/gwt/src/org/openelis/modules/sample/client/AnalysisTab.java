@@ -110,7 +110,7 @@ import com.google.gwt.user.client.Window;
 public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab.Action> {
     public enum Action {
         ANALYSIS_ADDED, PANEL_ADDED, ORDER_LIST_ADDED, CHANGED_DONT_CHECK_PREPS,
-        ITEM_CHANGED, SAMPLE_TYPE_CHANGED
+        ITEM_CHANGED, SAMPLE_TYPE_CHANGED, UNIT_CHANGED
     };
 
     private boolean                                     loaded;
@@ -528,11 +528,12 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     }
                     unitOfMeasureId.setModel(units);
                 }
-                unitOfMeasureId.setSelection(analysis.getUnitOfMeasureId());
+                unitOfMeasureId.setSelection(analysis.getUnitOfMeasureId());                
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
                 analysis.setUnitOfMeasureId(event.getValue());
+                ActionEvent.fire(anTab, Action.UNIT_CHANGED, bundle);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {

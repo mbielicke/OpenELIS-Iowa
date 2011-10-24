@@ -369,6 +369,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
                     treeUtil.updateSampleItemRow(selected);
                     itemsTree.refreshRow(selected);
                 }
+                
             }
         });
     }
@@ -497,14 +498,9 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
             return;
         }
 
-        try {
-            bundle = (SampleDataBundle)item.data;            
-            historyUtility.historyCurrentResult(bundle.getSampleItemIndex(), bundle.getAnalysisIndex());
-            window.clearStatus();
-        } catch (Exception e) {
-            window.clearStatus();
-            Window.alert("historyCurrentResult: " + e.getMessage());
-        }
+        bundle = (SampleDataBundle)item.data;            
+        historyUtility.historyCurrentResult(bundle.getSampleItemIndex(), bundle.getAnalysisIndex());
+        window.clearStatus();        
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {

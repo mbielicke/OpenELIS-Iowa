@@ -877,10 +877,16 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
-                if (state != State.QUERY)
-                    ActionEvent.fire(envScreen, event.getAction(), event.getData());
+                if (state != State.QUERY && event.getAction() != AnalysisTab.Action.UNIT_CHANGED)                     
+                    ActionEvent.fire(envScreen, event.getAction(), event.getData());                
             }
         });
+        /*
+         * The action UNIT_CHANGED fired by AnalysisTab affects only ResultTab and
+         * no other so it doesn't need to be processed by the above handler which
+         * makes SampleItemAnalysisTreeTab to respond to those actions.
+         */
+        analysisTab.addActionHandler(testResultsTab);
         
         testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
             public void onAction(ActionEvent<ResultTab.Action> event) {
