@@ -1079,7 +1079,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 }
             }
         });
-
+        
         testResultsTab = new ResultTab(def, window, this);
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1105,6 +1105,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 testResultsTab.setState(event.getState());
             }
         });
+        
+        /*
+         * to notify ResultTab that an analysis' unit of measure has changed
+         */
+        analysisTab.addActionHandler(testResultsTab);
         
         testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
             public void onAction(ActionEvent<ResultTab.Action> event) {

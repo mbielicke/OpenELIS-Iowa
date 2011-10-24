@@ -84,7 +84,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Label;
 
-public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Action> {
+public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Action>, ActionHandler<AnalysisTab.Action> {
     public enum Action {
         RESULT_HISTORY, REFLEX_ADDED
     };
@@ -117,7 +117,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     private String                                  addedAnalyteName;
 
     private TestReflexUtility                       reflexTestUtil;
-
+    
     public ResultTab(ScreenDefInt def, ScreenWindowInt window, Screen parentScreen) {
         setDefinition(def);
         setWindow(window);
@@ -625,6 +625,26 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     public HandlerRegistration addActionHandler(ActionHandler<ResultTab.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
+    }
+    
+    public void onAction(ActionEvent<AnalysisTab.Action> event) {
+        if (event.getAction() == AnalysisTab.Action.UNIT_CHANGED) {                   
+            bundle = (SampleDataBundle)event.getData();
+            try {
+                analysisMan = bundle.getSampleManager()
+                                  .getSampleItems()
+                                  .getAnalysisAt(bundle.getSampleItemIndex());
+                analysis = analysisMan.getAnalysisAt(bundle.getAnalysisIndex());
+                //
+                // reload the manager with the default values for the new unit
+                //
+                manager.reloadDefaultValues(analysis.getUnitOfMeasureId());
+                DataChangeEvent.fire(this);
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
+            }          
+        }
     }
 
     private ArrayList<TableDataRow> getTableModel() {

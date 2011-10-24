@@ -663,6 +663,11 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             }
         });
 
+        /*
+         * in order to notify ResultTab that an analysis' unit of measure has changed
+         */
+        analysisTab.addActionHandler(testResultsTab);
+        
         testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
             @SuppressWarnings("unchecked")
             public void onAction(ActionEvent<ResultTab.Action> event) {

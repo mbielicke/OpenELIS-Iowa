@@ -189,7 +189,6 @@ public class ResultBean implements ResultLocal {
                 resultDO.setIsReportable(data.getIsReportable());
                 resultDO.setAnalyteId(data.getAnalyteId());
                 resultDO.setAnalyte(data.getAnalyteName());
-                resultDO.setTypeId(data.getTypeId());
                 resultDO.setResultGroup(data.getResultGroup());
                 
                 rg = data.getRowGroup();

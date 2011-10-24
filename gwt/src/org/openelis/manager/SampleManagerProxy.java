@@ -99,7 +99,10 @@ public class SampleManagerProxy {
     public SampleManager update(SampleManager man) throws Exception {
         return service.call("update", man);
     }
-
+    
+    public void updateCache(SampleManager man) {      
+    }
+    
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
         return service.call("fetchForUpdate", sampleId);
     }

@@ -243,6 +243,32 @@ public class AnalysisResultManager implements RPC {
         else
             return resultValidators.get(resultGroup.intValue() - 1).getDefault(unitOfMeasureId);
     }
+    
+    public void reloadDefaultValues(Integer unitOfMeasureId) {
+        ResultValidator rv;
+        String def;
+        
+        if (results == null)
+            return;
+        /*
+         * The whole grid is iterated through to find out which result group each
+         * result belongs to. If that group has a default for this unit, then the
+         * result's value is set to the default, otherwise the previous value remains
+         * unchanged. The type is set to null to make sure that the right type gets
+         * set only if validation succeeds for the default is valid for the new
+         * unit, otherwise not.   
+         */        
+        for (ArrayList<ResultViewDO> row : results) {
+            for (ResultViewDO result : row) {
+                rv = resultValidators.get(result.getResultGroup() - 1);
+                def = rv.getDefault(unitOfMeasureId);
+                if (def != null) {
+                    result.setValue(def);
+                    result.setTypeId(null);
+                }
+            }
+        }
+    }
 
     public ArrayList<TestAnalyteViewDO> getNonColumnTestAnalytes(Integer rowGroup) {
         TestAnalyteListItem li;

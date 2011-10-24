@@ -28,16 +28,24 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleCacheVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
+import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.SectionCacheLocal;
+import org.openelis.local.ToDoCacheLocal;
 import org.openelis.meta.SampleMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -390,6 +398,143 @@ public class SampleManagerProxy {
 
         if ( !quickEntry && man.auxData != null)
             man.getAuxData().validate(errorsList);
+    }
+    
+    public void updateCache(SampleManager man) {
+        boolean sampleOverriden, analysisOverriden;
+        Integer priority;
+        String domain, orgName, prjName, owner, pwsName;
+        AnalysisManager am;
+        SampleItemManager im;
+        AnalysisViewDO ana;
+        SampleProjectViewDO sproj;
+        AnalysisCacheVO avo;  
+        SampleCacheVO svo;
+        SectionCacheLocal scl;
+        ToDoCacheLocal tcl;
+        SampleQaEventManager sqm;
+        AnalysisQaEventManager aqm;
+        SampleEnvironmentalManager sem;        
+        SamplePrivateWellManager spwm;
+        SampleSDWISManager ssdm;
+        SamplePrivateWellViewDO spw;
+        SampleOrganizationViewDO rt;
+        TestViewDO test;
+        SampleDO sample;
+               
+        try {
+            scl = EJBFactory.getSectionCache();
+            tcl = EJBFactory.getToDoCache();
+            sample = man.getSample();
+            rt = man.getOrganizations().getReportTo();
+            priority = null;
+            orgName = null;
+            prjName = null;
+            owner = null;
+            pwsName= null;
+            domain = sample.getDomain();
+
+            if ("E".equals(domain)) {                 
+                if (rt != null)             
+                    orgName = rt.getOrganizationName();
+                sem = (SampleEnvironmentalManager)man.getDomainManager();
+                priority = sem.getEnvironmental().getPriority();
+                sproj = man.getProjects().getFirstPermanentProject();
+                if (sproj != null)
+                    prjName = sproj.getProjectName();
+            } else if ("W".equals(domain)) {
+                spwm = (SamplePrivateWellManager)man.getDomainManager();
+                spw = spwm.getPrivateWell();
+                if (spw.getOrganizationId() == null)
+                    orgName = spw.getReportToName();
+                else
+                    orgName = spw.getOrganization().getName();
+                owner = spw.getOwner();
+            } else if ("S".equals(domain)) { 
+                if (rt != null)             
+                    orgName = rt.getOrganizationName();
+                ssdm = (SampleSDWISManager)man.getDomainManager();
+                pwsName = ssdm.getSDWIS().getPwsName();
+            }
+            
+            /*
+             * a SampleCacheVO is created for this sample and is used to update
+             * the various caches used for the ToDo lists   
+             */
+            svo = new SampleCacheVO();
+            svo.setId(sample.getId());
+            svo.setStatusId(sample.getStatusId());
+            svo.setDomain(domain);
+            svo.setAccessionNumber(sample.getAccessionNumber());
+            svo.setReceivedDate(sample.getReceivedDate());
+            svo.setCollectionDate(sample.getCollectionDate());
+            svo.setCollectionTime(sample.getCollectionTime());
+            sqm = man.getQaEvents();
+            sampleOverriden = sqm.hasResultOverrideQA();
+            
+            svo.setReportToName(orgName); 
+            svo.setSampleEnvironmentalPriority(priority);
+            svo.setSampleProjectName(prjName);
+            svo.setSamplePrivateWellOwner(owner);
+            svo.setSampleSDWISPWSName(pwsName);
+            
+            im = man.getSampleItems();
+            /*
+             * AnalysisCacheVOs are created for each analysis under this sample 
+             * and are used to update the various caches used for the ToDo lists   
+             */
+            analysisOverriden = false;
+            for (int i = 0; i < im.count(); i++ ) {
+                am = im.getAnalysisAt(i);                
+                for (int j = 0; j < am.count(); j++ ) {
+                    ana = am.getAnalysisAt(j);
+                    test = am.getTestAt(j).getTest();
+                    avo = new AnalysisCacheVO();
+                    avo.setId(ana.getId());
+                    avo.setStatusId(ana.getStatusId());
+                    avo.setStartedDate(ana.getStartedDate());
+                    avo.setCompletedDate(ana.getCompletedDate());
+                    avo.setReleasedDate(ana.getReleasedDate());
+                    avo.setTestName(test.getName());
+                    avo.setTestTimeHolding(test.getTimeHolding());
+                    avo.setTestTimeTaAverage(test.getTimeTaAverage());
+                    avo.setTestMethodName(ana.getMethodName());
+                    avo.setSectionName(scl.getById(ana.getSectionId()).getName());
+                    aqm = am.getQAEventAt(j);
+                    if (sampleOverriden) 
+                        avo.setSampleQaeventResultOverride("Y");
+                    else 
+                        avo.setSampleQaeventResultOverride("N");
+                    
+                    if (aqm.hasResultOverrideQA()) {
+                        analysisOverriden = true;
+                        avo.setAnalysisQaeventResultOverride("Y");
+                    } else {
+                        avo.setAnalysisQaeventResultOverride("N");
+                    }
+                    avo.setSampleDomain(domain);
+                    avo.setSampleAccessionNumber(sample.getAccessionNumber());
+                    avo.setSampleReportToName(orgName);
+                    avo.setSampleReceivedDate(sample.getReceivedDate());
+                    avo.setSampleCollectionDate(sample.getCollectionDate());
+                    avo.setSampleCollectionTime(sample.getCollectionTime());
+                    avo.setSampleEnvironmentalPriority(priority);
+                    avo.setSampleProjectName(prjName);
+                    avo.setSamplePrivateWellOwner(owner);
+                    avo.setSampleSDWISPWSName(pwsName);
+                    tcl.update(avo);   
+                }
+            }       
+            
+            if (sampleOverriden || analysisOverriden) 
+                svo.setQaeventResultOverride("Y");
+            else 
+                svo.setQaeventResultOverride("N");
+            
+            tcl.update(svo);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
     }
 
     private void validateAccessionNumber(SampleDO data, ValidationErrorsList errorsList) throws Exception {
