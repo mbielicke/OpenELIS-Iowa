@@ -88,6 +88,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     private static Timer              timeoutTimer, forceTimer;
     private static int                SESSION_TIMEOUT = 1000 * 60 * 30, FORCE_TIMEOUT = 1000 * 60;
     private HandlerRegistration       closeHandler;
+    protected LinkButton              homeLink,finalReportEnv,finalReportWell,finalReportSDWIS,statusReport,dataDumpEnv,dataDumpWell,dataDumpSDWIS,notificationPref,changePassword;
 
     /**
      * No-arg Constructor
@@ -122,7 +123,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 
         screens = new HashMap<String, Screen>();
         content = (AbsolutePanel)def.getWidget("content");
-        linksPanel = (AbsolutePanel)def.getWidget("links");
+        //linksPanel = (AbsolutePanel)def.getWidget("links");
         userName = (Label<String>)def.getWidget("userName");
 
         content.add(window);
@@ -160,121 +161,149 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addLinkHandler("homeIcon", "Home", null, new ClickHandler() {
+        try {
+        homeLink = (LinkButton)def.getWidget("homeLink");
+        homeLink.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
             	History.newItem("home", true);
                 window.setCrumbLink(null);
             }
         });
-
-        addLinkHandler("finalReportEnvironmentalIcon", consts.get("environmentalFinalReport"), "w_final_environmental", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                    Screen screen = new FinalReportEnvironmentalScreen();
-                    setScreen(screen, consts.get("environmentalFinalReport"), "finalReportEnvironmental");
-                    window.setCrumbLink(null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-
-        addLinkHandler("finalReportPrivateWellIcon", consts.get("privateWellFinalReport"), "w_final_privatewell", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                    Screen screen = new FinalReportPrivateWellScreen();
-                    setScreen(screen, consts.get("privateWellFinalReport"), "finalReportPrivateWell");
-                    window.setCrumbLink(null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
         
-        addLinkHandler("finalReportSDWISIcon", consts.get("sdwisFinalReport"), "w_final_sdwis", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                    Screen screen = new FinalReportSDWISScreen();
-                    setScreen(screen, consts.get("sdwisFinalReport"), "finalReportSDWIS");
-                    window.setCrumbLink(null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
+        //if(UserCache.getPermission().getModule("w_final_environmental").hasSelectPermission()) {
+        	finalReportEnv = (LinkButton)def.getWidget("finalReportEnvLink");
+        	finalReportEnv.addClickHandler(new ClickHandler() {
+        		public void onClick(ClickEvent event) {
+        			try {
+        				Screen screen = new FinalReportEnvironmentalScreen();
+        				setScreen(screen, consts.get("environmentalFinalReport"), "finalReportEnvironmental");
+        				window.setCrumbLink(null);
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        				Window.alert(e.getMessage());
+        			}
+        		}
+        	});
+        //}
 
-        addLinkHandler("statusReportIcon", consts.get("sampleInhouseStatusReport"), "w_samplestat", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                    Screen screen = new SampleStatusScreen();
-                    setScreen(screen, consts.get("sampleInhouseStatusReport"), "sampleStatus");
-                    window.setCrumbLink(null);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
+        //if(UserCache.getPermission().getModule("w_final_privatewell").hasSelectPermission()) {
+        	finalReportWell = (LinkButton)def.getWidget("finalReportPrivateWellLink");
+            finalReportWell.addClickHandler(new ClickHandler() {
+            	public void onClick(ClickEvent event) {
+            		try {
+            			Screen screen = new FinalReportPrivateWellScreen();
+            			setScreen(screen, consts.get("privateWellFinalReport"), "finalReportPrivateWell");
+            			window.setCrumbLink(null);
+            		} catch (Exception e) {
+            			e.printStackTrace();
+            			Window.alert(e.getMessage());
+            		}
+            	}
+            });
+        //}
+        
+        //if(UserCache.getPermission().getModule("w_final_sdwis").hasSelectPermission()) {
+        	finalReportSDWIS = (LinkButton)def.getWidget("finalReportSDWISLink");
+        	finalReportSDWIS.addClickHandler(new ClickHandler() {
+        		public void onClick(ClickEvent event) {
+        			try {
+        				Screen screen = new FinalReportSDWISScreen();
+        				setScreen(screen, consts.get("sdwisFinalReport"), "finalReportSDWIS");
+        				window.setCrumbLink(null);
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        				Window.alert(e.getMessage());
+        			}
+        		}
+        	});
+        //}
+        
+        //if(UserCache.getPermission().getModule("w_samplestat").hasSelectPermission()) {
+        	statusReport = (LinkButton)def.getWidget("statusReport");
+        	statusReport.addClickHandler(new ClickHandler() {
+        		public void onClick(ClickEvent event) {
+        			try {
+        				Screen screen = new SampleStatusScreen();
+        				setScreen(screen, consts.get("sampleInhouseStatusReport"), "sampleStatus");
+        				window.setCrumbLink(null);
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        				Window.alert(e.getMessage());
+        			}
+        		}
+        	});
+        //}
 
-        addLinkHandler("dataDumpEnvironmentalIcon", consts.get("environmentalSamplesByTest"), "w_datadump_environmental", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                    Screen screen = new DataViewEnvironmentalScreen();
-                    setScreen(screen, consts.get("environmentalSamplesByTest"), "environmentalSampleByTest");
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
+        //if(UserCache.getPermission().getModule("w_datadump_environmental").hasSelectPermission()) {
+        	dataDumpEnv = (LinkButton)def.getWidget("dataDumoEnvLink");
+        	dataDumpEnv.addClickHandler(new ClickHandler() {
+        		public void onClick(ClickEvent event) {
+        			try {
+        				Screen screen = new DataViewEnvironmentalScreen();
+        				setScreen(screen, consts.get("environmentalSamplesByTest"), "environmentalSampleByTest");
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        				Window.alert(e.getMessage());
+        			}
+        		}
+        	});
+        //}
         
-        addLinkHandler("dataDumpPrivateWellIcon", consts.get("privateWellSamplesByTest"), "", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
+        //if(UserCache.getPermission().getModule("w_datadump_privatewell").hasSelectPermission()) {
+        	dataDumpWell = (LinkButton)def.getWidget("dataDumpPrivateWellLink");
+        	dataDumpWell.addClickHandler(new ClickHandler() {
+        		public void onClick(ClickEvent event) {
+        			try {
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        				Window.alert(e.getMessage());
+        			}
+        		}
+        	});
+        //}
         
-        addLinkHandler("dataDumpSDWISIcon", consts.get("sdwisSamplesByTest"), "", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
+        //if(UserCache.getPermission().getModule("w_datadump_sdwis").hasSelectPermission()) {
+        	dataDumpSDWIS = (LinkButton)def.getWidget("dataDumpSDWISLink");
+        	dataDumpSDWIS.addClickHandler(new ClickHandler() {
+        		public void onClick(ClickEvent event) {
+        			try {
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        				Window.alert(e.getMessage());
+        			}
+        		}
+        	});
+        //}
 
-
+        //if(UserCache.getPermission().getModule("w_notify").hasSelectPermission()) {
+        	notificationPref = (LinkButton)def.getWidget("notificationPrefLink");
+        	notificationPref.addClickHandler(new ClickHandler() {
+        		public void onClick(ClickEvent event) {
+        			try {
+        				Screen screen = new NotificationPreferenceScreen();
+        				setScreen(screen, consts.get("notificationPreference"), "notificationPref");
+        				window.setCrumbLink(null);
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        				Window.alert(e.getMessage());
+        			}
+        		}
+        	});
+        //}
         
-        addLinkHandler("notificationPrefIcon", consts.get("notificationPreference"), "w_notify", new ClickHandler() {
+        changePassword = (LinkButton)def.getWidget("changePassword");
+        changePassword.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
-                    Screen screen = new NotificationPreferenceScreen();
-                    setScreen(screen, consts.get("notificationPreference"), "notificationPref");
-                    window.setCrumbLink(null);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
                 }
             }
         });
-        
-        addLinkHandler("changePasswordIcon", consts.get("changePassword"), "", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
+        }catch(Exception e) {
+        	e.printStackTrace();
+        }
 
     }
 
