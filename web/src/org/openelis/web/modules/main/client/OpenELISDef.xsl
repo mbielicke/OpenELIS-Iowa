@@ -63,7 +63,18 @@ UIRF Software License are applicable instead of those above.
         	</row> 
         	<row>
         	  <widget width="56px" valign="top">   	  
-        	    <AbsolutePanel style="Links" key="links"  width="56px"/>
+        	    <AbsolutePanel style="Links" key="links"  width="56px">
+        	       <linkButton key="homeLink" style="webButton" icon="homeIcon" popup="Home" width="56" height="40"/>
+        	       <linkButton key="finalReportEnvLink" style="webButton" icon="finalReportEnvironmentalIcon" popup="{resource:getString($constants,'environmentalFinalReport')}" width="56" height="40"/>
+		           <linkButton key="finalReportPrivateWellLink" style="webButton" icon="finalReportPrivateWellIcon" popup="{resource:getString($constants,'privateWellFinalReport')}" width="56" height="40"/>
+		           <linkButton key="finalReportSDWISLink" style="webButton" icon="finalReportSDWISIcon" popup="{resource:getString($constants,'sdwisFinalReport')}" width="56" height="40"/>
+		           <linkButton key="statusReportLink" style="webButton" icon="statusReportIcon" popup="{resource:getString($constants,'sampleInhouseStatusReport')}" width="56" height="40"/>
+		           <linkButton key="dataDumpEnvLink" style="webButton" icon="dataDumpEnvironmentalIcon" popup="{resource:getString($constants,'environmentalSamplesByTest')}" width="56" height="40"/>
+		           <linkButton key="dataDumpPrivateWellLink" style="webButton" icon="dataDumpPrivateWellIcon" popup="{resource:getString($constants,'privateWellSamplesByTest')}" width="56" height="40"/>
+		           <linkButton key="dataDumpSDWISLink" style="webButton" icon="dataDumpSDWISIcon" popup="{resource:getString($constants,'sdwisSamplesByTest')}" width="56" height="40"/>
+		           <linkButton key="notificationPrefLink" style="webButton" icon="notificationPrefIcon" popup="{resource:getString($constants,'notificationPreference')}" width="56" height="40"/>
+		           <linkButton key="changePasswordLink" style="webButton" icon="changePasswordIcon" popup="{resource:getString($constants,'changePassword')}" width="56" height="40"/>       		           
+        	    </AbsolutePanel>
               </widget>
               <widget width="100%" valign="top">
         	    <AbsolutePanel key="content" width="100%" height="100%"/>
