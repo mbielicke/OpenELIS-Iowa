@@ -222,6 +222,7 @@ UIRF Software License are applicable instead of those above.
                     <menuPanel layout="vertical" position="beside" style="topMenuContainer">
                       <menuItem description="" enable="true" icon="" key="testReport" label="{resource:getString($constants,'testReport')}" />
                       <menuItem description="" enable="false" icon="" key="qaEventReport" label="{resource:getString($constants,'QAEventReport')}" />
+                      <menuItem description="" enable="true" icon="" key="billingRef" label="{resource:getString($constants,'billingRef')}" />
                     </menuPanel>
                   </menuItem>
                   <menuItem description="" icon="" label="{resource:getString($constants,'summary')}" style="TopMenuRowContainer">
