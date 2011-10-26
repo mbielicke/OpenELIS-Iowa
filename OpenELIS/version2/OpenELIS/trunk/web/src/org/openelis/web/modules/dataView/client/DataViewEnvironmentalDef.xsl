@@ -170,17 +170,24 @@ UIRF Software License are applicable instead of those above.
                 </widget>
               </HorizontalPanel>              
             </VerticalPanel>
-            <VerticalPanel height="280" padding="0" spacing="0" style="help" width="400">
+            <VerticalPanel padding="0" spacing="0" style="help">
               <TablePanel width="100%">
-                <row>
-                  <html>Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat Lorem ipsum dolor sit amet, consectetuer  adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat</html>
-                </row>
+               <row> 
+                 <html><xsl:value-of select='resource:getString($constants,"envSamplesByTest.header1")' /></html>
+               </row>               
               </TablePanel>
             </VerticalPanel>
           </HorizontalPanel>
         </deck>
         <deck>
           <VerticalPanel padding="0" spacing="0">
+            <VerticalPanel style="help">
+              <TablePanel>
+               <row> 
+                 <html><xsl:value-of select='resource:getString($constants,"envSamplesByTest.header2")' /></html>
+               </row>               
+              </TablePanel>
+            </VerticalPanel>
           <HorizontalPanel>
             <VerticalPanel>
               <TablePanel>
