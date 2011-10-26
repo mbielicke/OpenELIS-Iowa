@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.apache.log4j.Logger;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
@@ -37,12 +38,31 @@ import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryCacheLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utils.EJBFactory;
 
 public class AnalysisResultManagerProxy {
+    protected static Integer    dictTypeId;
+
+    private static final Logger log  = Logger.getLogger(AnalysisResultManagerProxy.class);
+    
+    public AnalysisResultManagerProxy() {
+        DictionaryLocal l;
+
+        if (dictTypeId == null) {
+            l = EJBFactory.getDictionary();
+
+            try {
+                dictTypeId = l.fetchBySystemName("test_res_type_dictionary").getId();                
+            } catch (Exception e) {
+                log.error("Failed to lookup constants for dictionary entries", e);
+            }
+        }
+    }    
 
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
         ArrayList<ArrayList<ResultViewDO>> results;
@@ -289,9 +309,11 @@ public class AnalysisResultManagerProxy {
     }
 
     private void mergeResultGrid(ArrayList<ArrayList<ResultViewDO>> oldGrid,
-                                 ArrayList<ArrayList<ResultViewDO>> newGrid) {
+                                 ArrayList<ArrayList<ResultViewDO>> newGrid) throws Exception {
         int i,j, k,l;        
+        String val;
         ResultViewDO r1, r2;
+        DictionaryCacheLocal dcl;
         ArrayList<ResultViewDO> newList, oldList;
 
         
@@ -299,6 +321,7 @@ public class AnalysisResultManagerProxy {
          * we go through each row in the new test's grid of analytes and find the 
          * first matching row analyte from the old test's grid  
          */
+        dcl = EJBFactory.getDictionaryCache();
         for (i = 0; i < newGrid.size(); i++ ) {            
             for (j = 0; j < oldGrid.size(); j++ ) {
                 newList = newGrid.get(i);
@@ -318,8 +341,12 @@ public class AnalysisResultManagerProxy {
                             r1 = newList.get(k);
                             r2 = oldList.get(l);
 
-                            if (r1.getAnalyteId().equals(r2.getAnalyteId()))
-                                r1.setValue(r2.getValue());                                                          
+                            if (r1.getAnalyteId().equals(r2.getAnalyteId())) {
+                                val = r2.getValue();
+                                if (dictTypeId.equals(r2.getTypeId()) && !DataBaseUtil.isEmpty(val)) 
+                                    val = dcl.getById(Integer.valueOf(val)).getEntry();
+                                r1.setValue(val);                   
+                            }
                         }                                               
                     } 
                     break;

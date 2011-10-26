@@ -255,8 +255,8 @@ public class AnalysisResultManager implements RPC {
          * result belongs to. If that group has a default for this unit, then the
          * result's value is set to the default, otherwise the previous value remains
          * unchanged. The type is set to null to make sure that the right type gets
-         * set only if validation succeeds for the default is valid for the new
-         * unit, otherwise not.   
+         * set only if validation succeeds if the default is valid for the new unit,
+         * otherwise not.   
          */        
         for (ArrayList<ResultViewDO> row : results) {
             for (ResultViewDO result : row) {
