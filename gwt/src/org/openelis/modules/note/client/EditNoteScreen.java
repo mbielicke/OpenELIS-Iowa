@@ -32,6 +32,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
@@ -107,13 +108,23 @@ public class EditNoteScreen extends Screen implements HasActionHandlers<EditNote
 
         tree.addSelectionHandler(new SelectionHandler<TreeDataItem>() {
             public void onSelection(SelectionEvent<TreeDataItem> event) {
-                // TreeRow selectedRow = event.getSelectedItem();
-                TreeDataItem item = event.getSelectedItem();
+                TreeDataItem item, parent;
 
-                if ("note".equals(item.leafType))
+                item = event.getSelectedItem();
+                if ("note".equals(item.leafType)) {
                     preview.setValue((String)item.data, true);
-                else
+                    /*
+                     * set the category's name as the subject if it already hasn't
+                     * been specified and if the textbox for it is showing
+                     */
+                    if (subject.isEnabled() && subject.isVisible() &&
+                        DataBaseUtil.isEmpty(subject.getText())) {
+                        parent = item.parent;
+                        subject.setText((String)parent.cells.get(0).getValue());
+                    }
+                } else {
                     preview.setValue("", true);
+                }
             }
         });
 

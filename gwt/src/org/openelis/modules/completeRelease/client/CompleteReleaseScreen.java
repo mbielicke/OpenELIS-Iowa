@@ -63,6 +63,7 @@ import org.openelis.manager.NoteManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.EditNoteScreen.Action;
@@ -105,7 +106,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     protected TextBox<Datetime>      collectedTime;
 
     protected Dropdown<Integer>      statusId;
-    protected TreeWidget             itemsTree;
     protected AppButton              removeRow, releaseButton, reportButton, completeButton,
                                      addItem, addAnalysis, queryButton, updateButton,
                                      commitButton, abortButton;
@@ -662,6 +662,45 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                 testResultsTab.setState(event.getState());
             }
         });
+        
+        analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
+            public void onAction(ActionEvent event) {
+                if (event.getAction() == AnalysisTab.Action.ANALYSIS_ADDED) {
+                    try {
+                        if (testPrepUtil == null) {
+                            testPrepUtil = new TestPrepUtility();
+                            testPrepUtil.setScreen(completeScreen);
+
+                            testPrepUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
+                                public void onAction(ActionEvent<TestPrepUtility.Action> event) {
+                                    ArrayList<SampleDataBundle> list;
+                                    
+                                    list = (ArrayList<SampleDataBundle>)event.getData();                                    
+                                    dataBundle = (SampleDataBundle)list.get(0);
+                                    manager = dataBundle.getSampleManager();
+                                    try {
+                                        updateTableRowCells(completeReleaseTable.getSelectedRow(),
+                                                            manager.getSample(),
+                                                            manager.getSampleItems()
+                                                                   .getAnalysisAt(dataBundle.getSampleItemIndex())
+                                                                   .getAnalysisAt(dataBundle.getAnalysisIndex()));
+
+                                        resetScreen();
+                                    } catch (Exception e) {
+                                        Window.alert("analysisTestChanged: " + e.getMessage());
+                                    }
+                                }
+                            });
+                        }
+
+                        testPrepUtil.lookup(dataBundle, TestPrepUtility.Type.TEST,
+                                            (Integer)event.getData());
+                    } catch (Exception e) {
+                        Window.alert("analysisTestChanged: " + e.getMessage());
+                    }
+                }
+            }
+        });
 
         /*
          * in order to notify ResultTab that an analysis' unit of measure has changed
@@ -847,7 +886,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             manager = manager.fetchForUpdate();
 
             // update row data
-            // updateTableRow(completeReleaseTable.getSelectedRow());
             updateAllRows(manager.getSample().getAccessionNumber());
 
             setState(State.UPDATE);
@@ -1726,7 +1764,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                              ":\n\n" + e1.getMessage());
             }
         }
-    }
+    }   
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());

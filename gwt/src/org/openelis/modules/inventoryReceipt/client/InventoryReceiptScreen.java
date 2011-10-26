@@ -96,7 +96,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.Focusable;
 
-public class InventoryReceiptScreen extends Screen implements ActionHandler<ItemTab.Action> {
+public class InventoryReceiptScreen extends Screen {
     
     private ModulePermission                          userPermission;
 
@@ -637,7 +637,70 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
             }
         });
         
-        itemTab.addActionHandler(this);
+        itemTab.addActionHandler(new ActionHandler<ItemTab.Action>() {            
+            public void onAction(ActionEvent<ItemTab.Action> event) {
+                int i,r;
+                LocalizedException ex;
+                ArrayList<LocalizedException> exceptions;
+                TableDataRow row, val;        
+
+                r = receiptTable.getSelectedRow();
+                row = receiptTable.getSelection();
+                val = (TableDataRow)receiptTable.getObject(r, 4);
+                exceptions = row.cells.get(4).getExceptions();        
+                if (event.getAction() == Action.LOT_NUMBER_CHANGED) {
+                    if(exceptions != null && event.getData() != null) {
+                        for (i = 0; i < exceptions.size(); i++) {
+                            ex = exceptions.get(i);
+                            if ("lotNumRequiredForOrderItemException".equals(ex.getKey())) {
+                                exceptions.remove(i);
+                                break;
+                            }                                        
+                        }                
+                        
+                        //
+                        // this will redraw the exceptions
+                        //
+                        receiptTable.setCell(r, 4, val);    
+                        
+                        //
+                        // the list of exceptions for this  cell is set to null if it is
+                        // empty to make sure that in the method validate(), when checkValue()
+                        // is called for this cell, an empty but non-null list of exceptions
+                        // isn't confused with a list that contains exceptions and validate()
+                        // isn't made to return false 
+                        //
+                        if (exceptions.size() == 0) 
+                            row.cells.get(4).clearExceptions();                    
+                    }
+                } else if (event.getAction() == Action.STORAGE_LOCATION_CHANGED) {            
+                    if(exceptions != null && event.getData() != null) {
+                        for (i = 0; i < exceptions.size(); i++) {
+                            ex = exceptions.get(i);
+                            if ("storageLocReqForItemException".equals(ex.getKey())) {
+                                exceptions.remove(i);
+                                break;
+                            }                                        
+                        }
+                        
+                        //
+                        // this will redraw the exceptions
+                        //
+                        receiptTable.setCell(r, 4, val);
+                        
+                        //
+                        // the list of exceptions for this  cell is set to null if it is
+                        // empty to make sure that in the method validate(), when checkValue()
+                        // is called for this cell, an empty but non-null list of exceptions
+                        // isn't confused with a list that contains exceptions and validate()
+                        // isn't made to return false 
+                        //
+                        if (exceptions.size() == 0) 
+                            row.cells.get(4).clearExceptions();
+                    }
+                }
+            }
+        });
 
         vendorTab = new VendorAddressTab(def, window);
         addScreenHandler(vendorTab, new ScreenEventHandler<Object>() {
@@ -848,68 +911,7 @@ public class InventoryReceiptScreen extends Screen implements ActionHandler<Item
         }
     }
     
-    public void onAction(ActionEvent<ItemTab.Action> event) {
-        int i,r;
-        LocalizedException ex;
-        ArrayList<LocalizedException> exceptions;
-        TableDataRow row, val;        
 
-        r = receiptTable.getSelectedRow();
-        row = receiptTable.getSelection();
-        val = (TableDataRow)receiptTable.getObject(r, 4);
-        exceptions = row.cells.get(4).getExceptions();        
-        if (event.getAction() == Action.LOT_NUMBER_CHANGED) {
-            if(exceptions != null && event.getData() != null) {
-                for (i = 0; i < exceptions.size(); i++) {
-                    ex = exceptions.get(i);
-                    if ("lotNumRequiredForOrderItemException".equals(ex.getKey())) {
-                        exceptions.remove(i);
-                        break;
-                    }                                        
-                }                
-                
-                //
-                // this will redraw the exceptions
-                //
-                receiptTable.setCell(r, 4, val);    
-                
-                //
-                // the list of exceptions for this  cell is set to null if it is
-                // empty to make sure that in the method validate(), when checkValue()
-                // is called for this cell, an empty but non-null list of exceptions
-                // isn't confused with a list that contains exceptions and validate()
-                // isn't made to return false 
-                //
-                if (exceptions.size() == 0) 
-                    row.cells.get(4).clearExceptions();                    
-            }
-        } else if (event.getAction() == Action.STORAGE_LOCATION_CHANGED) {            
-            if(exceptions != null && event.getData() != null) {
-                for (i = 0; i < exceptions.size(); i++) {
-                    ex = exceptions.get(i);
-                    if ("storageLocReqForItemException".equals(ex.getKey())) {
-                        exceptions.remove(i);
-                        break;
-                    }                                        
-                }
-                
-                //
-                // this will redraw the exceptions
-                //
-                receiptTable.setCell(r, 4, val);
-                
-                //
-                // the list of exceptions for this  cell is set to null if it is
-                // empty to make sure that in the method validate(), when checkValue()
-                // is called for this cell, an empty but non-null list of exceptions
-                // isn't confused with a list that contains exceptions and validate()
-                // isn't made to return false 
-                //
-                if (exceptions.size() == 0) 
-                    row.cells.get(4).clearExceptions();
-            }
-        }
-    }
     
     public void showErrors(ValidationErrorsList list) {
         ArrayList<LocalizedException> formErrors;
