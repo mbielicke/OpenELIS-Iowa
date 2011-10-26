@@ -219,7 +219,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         //}
         
         //if(UserCache.getPermission().getModule("w_samplestat").hasSelectPermission()) {
-        	statusReport = (LinkButton)def.getWidget("statusReport");
+        	statusReport = (LinkButton)def.getWidget("statusReportLink");
         	statusReport.addClickHandler(new ClickHandler() {
         		public void onClick(ClickEvent event) {
         			try {
@@ -235,7 +235,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         //}
 
         //if(UserCache.getPermission().getModule("w_datadump_environmental").hasSelectPermission()) {
-        	dataDumpEnv = (LinkButton)def.getWidget("dataDumoEnvLink");
+        	dataDumpEnv = (LinkButton)def.getWidget("dataDumpEnvLink");
         	dataDumpEnv.addClickHandler(new ClickHandler() {
         		public void onClick(ClickEvent event) {
         			try {
