@@ -456,7 +456,7 @@ UIRF Software License are applicable instead of those above.
              </text>
              <VerticalPanel style="Form">
             <widget valign="top">
-                <table key="availAnalyteTable" maxRows="9" style = "ScreenTableWithSides" title="" width="auto">
+                <table key="availAnalyteTable" maxRows="4" style = "ScreenTableWithSides" title="" width="auto">
                   <col key="select" width="20">
                       <check/>
                     </col>
@@ -497,7 +497,7 @@ UIRF Software License are applicable instead of those above.
              </text>   
              <VerticalPanel style="Form">                     
             <widget valign="top">
-                <table key="availAuxTable" maxRows="9" style = "ScreenTableWithSides"  title="" width="auto">
+                <table key="availAuxTable" maxRows="4" style = "ScreenTableWithSides"  title="" width="auto">
                   <col key="select" width="20">
                      <check/>
                   </col>
