@@ -281,29 +281,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 if (event.getState() == State.QUERY)
                     queryButton.setState(ButtonState.LOCK_PRESSED);
             }
-        });
-
-        envMenuQuery = (MenuItem)def.getWidget("environmentalSample");
-        envMenuQuery.addClickHandler(new ClickHandler() {
+            
             public void onClick(ClickEvent event) {
-                query(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+            	query(null);
             }
         });
-
-        wellMenuQuery = (MenuItem)def.getWidget("privateWellWaterSample");
-        wellMenuQuery.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                query(SampleManager.WELL_DOMAIN_FLAG);
-            }
-        });
-
-        sdwisMenuQuery = (MenuItem)def.getWidget("sdwisSample");
-        sdwisMenuQuery.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                query(SampleManager.SDWIS_DOMAIN_FLAG);
-            }
-        });
-
+ 
         updateButton = (AppButton)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -1405,18 +1388,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         manager = SampleManager.getInstance();
         trackingTree.clear();
         tab = null;
-
-        manager.getSample().setDomain(domain);
-        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
-            tab = Tabs.ENVIRONMENT;
-
-        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
-            tab = Tabs.PRIVATE_WELL;
-
-        else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
-            tab = Tabs.SDWIS;
-
-        showTabs(tab, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.TEST_RESULT, Tabs.STORAGE,
+        
+        showTabs(Tabs.ENVIRONMENT, Tabs.PRIVATE_WELL, Tabs.SDWIS, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.TEST_RESULT, Tabs.STORAGE,
                  Tabs.QA_EVENTS, Tabs.AUX_DATA);
 
         setState(State.QUERY);
@@ -1496,6 +1469,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     protected void commit() {
+    	ArrayList<QueryData> fields;
+    	
         setFocus(null);
         
         if ( !validate()) {
@@ -1505,8 +1480,17 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         
         if (state == State.QUERY) {
             query = new Query();
-            query.setFields(getQueryFields());
-
+            
+            fields = getQueryFields();
+            
+            try {
+            	setDomain(fields);
+            }catch(Exception e) {
+            	window.setError(consts.get("queryDomainException"));
+            	return;
+            }
+            
+            query.setFields(fields);
             executeQuery(query);
 
         } else if (state == State.UPDATE) {
@@ -1594,14 +1578,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
     
     public ArrayList<QueryData> getQueryFields() {
-        boolean              addDomain;
         int                  i;
-        ArrayList<QueryData> fields, auxFields, tmpFields;
+        ArrayList<QueryData> fields, auxFields;
         QueryData            field;
 
         fields = super.getQueryFields();
-        tmpFields = null;
-        addDomain = true;
 
         // add aux data values if necessary
         auxFields = auxDataTab.getQueryFields();                
@@ -1620,33 +1601,48 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             } 
         }
         
-        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
-            tmpFields = environmentalTab.getQueryFields();
-        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
-            tmpFields = wellTab.getQueryFields();            
-        } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
-            tmpFields = sdwisTab.getQueryFields();
-        }
-
-        if (tmpFields.size() > 0) {
-            fields.addAll(tmpFields);
-            addDomain = false;
-        }
-        
         addPrivateWellFields(fields);
 
-        if (addDomain) {
+        return fields;
+    }
+    
+    private void setDomain(ArrayList<QueryData> fields) throws Exception {
+    	String domain = null;
+    	ArrayList<QueryData> envFields,wellFields,sdwisFields;
+    	QueryData field;
+    	
+    	envFields = environmentalTab.getQueryFields();
+    	wellFields = wellTab.getQueryFields();
+    	sdwisFields = sdwisTab.getQueryFields();
+    	
+    	if(envFields.size() > 0) {
+    		domain = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
+    		fields.addAll(envFields);
+    	}
+    	if(wellFields.size() > 0) {
+    		if(domain == null) {
+    			domain = SampleManager.WELL_DOMAIN_FLAG;
+    			fields.addAll(wellFields);
+    		}else
+    			throw new Exception();
+    	}
+    	if(sdwisFields.size() > 0) {
+    		if(domain == null) {
+    	   		domain = SampleManager.SDWIS_DOMAIN_FLAG;
+    	   		fields.addAll(sdwisFields);
+    		}else
+    			throw new Exception();
+    	}
+    	
+        if (domain != null) {
             // Added this Query Param to keep Quick Entry Samples out of
             // query results
             field = new QueryData();
-            field.query = "!Q";
             field.key = SampleMeta.getDomain();
-            field.query = manager.getSample().getDomain();
+            field.query = domain;
             field.type = QueryData.Type.STRING;
             fields.add(field);
         }
-
-        return fields;
     }
 
     protected void previousPage() {

@@ -84,28 +84,14 @@ UIRF Software License are applicable instead of those above.
               </HorizontalPanel>
             </appButton>
             <xsl:call-template name="buttonPanelDivider" />
-            <menuItem>
-              <menuDisplay>
-                <appButton action="query" key="query" shortcut="ctrl+q" style="ButtonPanelButton" toggle="true">
-                  <HorizontalPanel>
-                    <AbsolutePanel height="20" style="QueryButtonImage" width="20" />
-                    <text>
-                      <xsl:value-of select='resource:getString($constants,"query")' />
-                    </text>
-                    <AbsolutePanel height="20px" style="OptionsButtonImage" width="20px" />
-                  </HorizontalPanel>
-                </appButton>
-              </menuDisplay>
-              <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                <menuItem description="" icon="environmentalSampleLoginIcon" key="environmentalSample" label="{resource:getString($constants,'environmentalSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="true" icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSample" label="{resource:getString($constants,'privateWellWaterSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="true" icon="sdwisSampleLoginIcon" key="sdwisSample" label="{resource:getString($constants,'sdwisSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="clinicalSampleLoginIcon" key="clinicalSample" label="{resource:getString($constants,'clinicalSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="newbornScreeningSampleLoginIcon" key="newbornScreeningSample" label="{resource:getString($constants,'newbornScreeningSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="animalSampleLoginIcon" key="animalSample" label="{resource:getString($constants,'animalSample')}" style="TopMenuRowContainer" />
-                <menuItem description="" enable="false" icon="ptSampleLoginIcon" key="ptSample" label="{resource:getString($constants,'ptSample')}" style="TopMenuRowContainer" />
-              </menuPanel>
-            </menuItem>
+            <appButton action="query" key="query" shortcut="ctrl+q" style="ButtonPanelButton" toggle="true">
+                <HorizontalPanel>
+                  <AbsolutePanel height="20" style="QueryButtonImage" width="20" />
+                  <text>
+                    <xsl:value-of select='resource:getString($constants,"query")' />
+                  </text>
+                </HorizontalPanel>
+             </appButton>
             <xsl:call-template name="buttonPanelDivider" />
             <xsl:call-template name="updateButton" />
             <xsl:call-template name="buttonPanelDivider" />
