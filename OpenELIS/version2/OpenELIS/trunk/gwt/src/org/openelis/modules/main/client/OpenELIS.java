@@ -66,6 +66,7 @@ import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 //import org.openelis.modules.report.client.ClientNotificationReleasedReportScreen;
 //import org.openelis.modules.report.client.ClientNotificationReportScreen;
+import org.openelis.modules.report.client.BillingReportScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
@@ -1463,6 +1464,26 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 //                });
 //            }
 //        });
+        
+        addClickHandler("billingRef", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new BillingReportScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
         
         addClickHandler("orderRecurrence", new ClickHandler() {
             public void onClick(ClickEvent event) {
