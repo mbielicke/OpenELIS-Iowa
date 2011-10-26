@@ -32,6 +32,8 @@ public interface SampleLocal {
 	public ArrayList<Object[]> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception;
     
     public ArrayList<Object[]> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception;
+    
+    public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception;
         
     public ArrayList<IdNameVO> fetchProjectsForOrganizations(ArrayList<Integer> organizationId) throws Exception;
     

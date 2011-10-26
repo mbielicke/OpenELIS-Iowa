@@ -108,7 +108,12 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Sample.FetchForCachingByStatusId",
                 query = "select distinct new org.openelis.domain.SampleCacheVO(s.id, s.statusId, s.domain, s.accessionNumber," +
                         "s.receivedDate, s.collectionDate, s.collectionTime, '', '')"
-                      + " from Sample s where s.statusId = :statusId order by s.accessionNumber ")})  
+                      + " from Sample s where s.statusId = :statusId order by s.accessionNumber "),
+    @NamedQuery( name = "Sample.FetchForBillingReport",
+                query = "select s.id, s.accessionNumber, s.domain, s.clientReference, s.receivedDate, a.id, t.id, t.name, m.name, se.name " 
+                      + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se "
+                      + " where s.releasedDate between :startDate and :endDate and s.statusId = (select id from Dictionary where systemName = ('sample_released')) and"
+                      +" si.sampleId = s.id and a.sampleItemId = si.id and a.statusId in (select id from Dictionary where systemName = ('analysis_released')) and a.isReportable = 'Y' and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and a.sectionId = se.id order by s.accessionNumber, a.id ")})  
                       
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportBatch",     

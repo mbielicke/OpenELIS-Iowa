@@ -268,6 +268,25 @@ public class SampleBean implements SampleLocal, SampleRemote {
         else
             return list;        
     } 
+    
+    public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception {
+        Query query;
+        ArrayList<Object[]> list;       
+        query = manager.createNamedQuery("Sample.FetchForBillingReport");     
+        query.setParameter("startDate", stDate);
+        query.setParameter("endDate", endDate);
+        
+        try {
+            list = DataBaseUtil.toArrayList(query.getResultList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
+        if (list.isEmpty()|| list==null)
+            throw new NotFoundException("noRecordsFound");
+        else
+            return list;        
+    } 
 
     public ArrayList<IdNameVO> fetchProjectsForOrganizations(ArrayList<Integer> organizationIdList) throws Exception {
         Query query;
