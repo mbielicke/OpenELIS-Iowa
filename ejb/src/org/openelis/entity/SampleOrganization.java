@@ -63,7 +63,15 @@ import org.openelis.utils.Auditable;
                         "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
                         "o.address.faxPhone)"
                       + " from SampleOrganization so LEFT JOIN so.organization o "
-                      + " where so.sampleId = :id and so.typeId in (select id from Dictionary d where d.systemName = 'org_report_to') ")})
+                      + " where so.sampleId = :id and so.typeId in (select id from Dictionary d where d.systemName = 'org_report_to') "),
+    @NamedQuery( name = "SampleOrganization.FetchBillToBySampleId",
+                query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, " +
+                        "so.sampleId, so.organizationId, so.organizationAttention, " +
+                        "so.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, " +
+                        "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
+                        "o.address.faxPhone)"
+                      + " from SampleOrganization so LEFT JOIN so.organization o "
+                      + " where so.sampleId = :id and so.typeId in (select id from Dictionary d where d.systemName = 'org_bill_to') ")})
 @Entity
 @Table(name = "sample_organization")
 @EntityListeners( {AuditUtil.class})

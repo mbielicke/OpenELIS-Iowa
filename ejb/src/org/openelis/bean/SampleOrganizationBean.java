@@ -31,6 +31,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -38,6 +39,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.entity.SampleOrganization;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.SampleOrganizationLocal;
 
@@ -74,6 +76,23 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
             throw new NotFoundException();
         
         return DataBaseUtil.toArrayList(returnList);
+    }
+    
+    public SampleOrganizationViewDO fetchBillToBySampleId(Integer sampleId) throws Exception {
+        SampleOrganizationViewDO data;
+        Query query;
+        
+        query = manager.createNamedQuery("SampleOrganization.FetchBillToBySampleId");
+        query.setParameter("id", sampleId);
+        
+        try {
+            data = (SampleOrganizationViewDO)query.getSingleResult();            
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
     }
     
     public SampleOrganizationViewDO add(SampleOrganizationViewDO data) {
