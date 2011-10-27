@@ -105,9 +105,6 @@ public class AnalysisManagerProxy {
 
         quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDomain);
 
-        if (man.count() == 0)
-            errorsList.add(new FormErrorWarning("minOneAnalysisException", sampleItemSequence));
-
         for (int i = 0; i < man.count(); i++ ) {
             analysisDO = man.getAnalysisAt(i);
             testMan = man.getTestAt(i);
