@@ -1588,6 +1588,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                          .getAnalysisAt(anIndex);
 
             updateTableRowCells(index, sample, data);
+            row.data = bundle;
         } catch (Exception e) {
             Window.alert("updateSelectedTableRow: " + e.getMessage());
         }
