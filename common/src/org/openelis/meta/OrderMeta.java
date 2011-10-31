@@ -53,6 +53,7 @@ public class OrderMeta implements Meta, MetaMap {
 	                               BILL_TO_ID = "_order.billToId",
 	                               BILL_TO_ATTENTION = "_order.billToAttention",
 	                               SHIP_FROM_ID = "_order.shipFromId",
+	                               NUMBER_OF_FORMS = "_order.numberOfForms",
 	                               
 	                               ORGANIZATION_ADDRESS_ID = "_organization.address.id",
                                    ORGANIZATION_ADDRESS_MULTIPLE_UNIT = "_organization.address.multipleUnit",
@@ -154,7 +155,7 @@ public class OrderMeta implements Meta, MetaMap {
                                                   NEEDED_IN_DAYS, REQUESTED_BY, COST_CENTER_ID,
                                                   ORGANIZATION_ID,ORGANIZATION_ATTENTION, TYPE,
                                                   EXTERNAL_ORDER_NUMBER, REPORT_TO_ID, REPORT_TO_ATTENTION,
-                                                  BILL_TO_ID, BILL_TO_ATTENTION, SHIP_FROM_ID,
+                                                  BILL_TO_ID, BILL_TO_ATTENTION, SHIP_FROM_ID, NUMBER_OF_FORMS,
                                                   
                                                   ORGANIZATION_ADDRESS_ID, ORGANIZATION_ADDRESS_MULTIPLE_UNIT,
                                                   ORGANIZATION_ADDRESS_STREET_ADDRESS, ORGANIZATION_ADDRESS_CITY,
@@ -269,6 +270,10 @@ public class OrderMeta implements Meta, MetaMap {
 
     public static String getShipFromId() {
         return SHIP_FROM_ID;
+    }
+    
+    public static String getNumberOfForms() {
+        return NUMBER_OF_FORMS;
     }
     
     public static String getOrganizationAddressId() {

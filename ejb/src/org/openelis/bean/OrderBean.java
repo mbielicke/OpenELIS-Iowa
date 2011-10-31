@@ -51,6 +51,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.OrderLocal;
 import org.openelis.local.OrganizationLocal;
+import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.remote.OrderRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -166,7 +167,8 @@ public class OrderBean implements OrderRemote, OrderLocal {
                           OrderMeta.getReportToAttention()+", " +
                           OrderMeta.getBillToId()+", " +
                           OrderMeta.getBillToAttention()+", " +
-                          OrderMeta.getShipFromId() + ") ");
+                          OrderMeta.getShipFromId()+", " +
+                          OrderMeta.getNumberOfForms()+ ") ");
         builder.constructWhere(fields);       
         builder.addWhere(OrderMeta.getType()+" <> 'V'");        
         
@@ -217,6 +219,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         entity.setBillToId(data.getBillToId());
         entity.setBillToAttention(data.getBillToAttention());
         entity.setShipFromId(data.getShipFromId());
+        entity.setNumberOfForms(data.getNumberOfForms());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -248,6 +251,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         entity.setBillToId(data.getBillToId());
         entity.setBillToAttention(data.getBillToAttention());
         entity.setShipFromId(data.getShipFromId());
+        entity.setNumberOfForms(data.getNumberOfForms());
 
         return data;
     }
@@ -261,6 +265,9 @@ public class OrderBean implements OrderRemote, OrderLocal {
 
         if (DataBaseUtil.isEmpty(data.getNeededInDays()))
             list.add(new FieldErrorException("fieldRequiredException", OrderMeta.getNeededInDays()));
+        
+        if ("S".equals(data.getType()) && DataBaseUtil.isEmpty(data.getNumberOfForms()))
+            list.add(new FieldErrorException("fieldRequiredException", OrderMeta.getNumberOfForms()));
 
         if (list.size() > 0)
             throw list;

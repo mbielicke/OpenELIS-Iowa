@@ -57,7 +57,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Order.FetchById",
                 query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
                 		"o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
-                		"o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId)"
+                		"o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId,o.numberOfForms)"
                 	  + " from Order o where o.id = :id"),
     @NamedQuery( name = "Order.FetchByDescription",
                 query = "select distinct new org.openelis.domain.IdNameVO(o.id,o.description)"
@@ -65,7 +65,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Order.FetchByShippingItemId",
                query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
                         "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
-                        "o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId)"
+                        "o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId,o.numberOfForms)"
                       + " from Order o left join o.orderItem i "
                       +	" where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.id = :id)")})
 
@@ -126,6 +126,9 @@ public class Order implements Auditable, Cloneable {
 
     @Column(name = "ship_from_id")
     private Integer               shipFromId;
+    
+    @Column(name = "number_of_forms")
+    private Integer               numberOfForms;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", insertable = false, updatable = false)
@@ -315,6 +318,15 @@ public class Order implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(shipFromId, this.shipFromId))
             this.shipFromId = shipFromId;
     }
+    
+    public Integer getNumberOfForms() {
+        return numberOfForms;
+    }
+
+    public void setNumberOfForms(Integer numberOfForms) {
+        if (DataBaseUtil.isDifferent(numberOfForms, this.numberOfForms))
+            this.numberOfForms = numberOfForms;
+    }    
 
     public Organization getBillTo() {
         return billTo;
@@ -396,7 +408,8 @@ public class Order implements Auditable, Cloneable {
                  .setField("external_order_number", externalOrderNumber, original.externalOrderNumber)
                  .setField("report_to_id", reportToId, original.reportToId)
                  .setField("bill_to_id", billToId, original.billToId)
-                 .setField("ship_from_id", shipFromId, original.shipFromId);
+                 .setField("ship_from_id", shipFromId, original.shipFromId)
+                 .setField("number_of_forms", numberOfForms, original.numberOfForms);
 
         return audit;
     }

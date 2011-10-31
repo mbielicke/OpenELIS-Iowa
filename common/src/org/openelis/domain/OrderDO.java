@@ -39,7 +39,7 @@ public class OrderDO extends DataObject {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, parentOrderId, statusId, neededInDays, costCenterId, organizationId, reportToId,
-                              billToId, shipFromId;
+                              billToId, shipFromId, numberOfForms;
     protected String          description, requestedBy, type, externalOrderNumber, organizationAttention, reportToAttention, billToAttention;
     protected Datetime        orderedDate;
 
@@ -51,7 +51,7 @@ public class OrderDO extends DataObject {
                    Integer costCenterId, Integer organizationId,String organizationAttention, 
                    String type, String externalOrderNumber, Integer reportToId,
                    String reportToAttention, Integer billToId, String billToAttention,
-                   Integer shipFromId) {
+                   Integer shipFromId, Integer numberOfForms) {
         setId(id);
         setParentOrderId(parentOrderId);
         setDescription(description);
@@ -69,6 +69,8 @@ public class OrderDO extends DataObject {
         setBillToId(billToId);
         setBillToAttention(billToAttention);
         setShipFromId(shipFromId);
+        setNumberOfForms(numberOfForms);
+        
         _changed = false;
     }
 
@@ -195,6 +197,15 @@ public class OrderDO extends DataObject {
 
     public void setShipFromId(Integer shipFromId) {
         this.shipFromId = shipFromId;
+        _changed = true;
+    }
+
+    public Integer getNumberOfForms() {
+        return numberOfForms;
+    }
+
+    public void setNumberOfForms(Integer numberOfForms) {
+        this.numberOfForms = numberOfForms;
         _changed = true;
     }
 
