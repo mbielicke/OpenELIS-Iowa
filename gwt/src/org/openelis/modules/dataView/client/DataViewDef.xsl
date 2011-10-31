@@ -211,7 +211,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'project')" />:
                   </text>
-                  <dropdown field="Integer" key="{meta:getProjectId()}" popWidth="auto" width="85" tab = "{meta:getAnalysisTestName()},{meta:getClientReference()}"/>
+                  <dropdown field="Integer" key="{meta:getProjectId()}" popWidth="auto" width="120" tab = "{meta:getAnalysisTestName()},{meta:getClientReference()}"/>
                 </row>
               </TablePanel>
             </VerticalPanel>
