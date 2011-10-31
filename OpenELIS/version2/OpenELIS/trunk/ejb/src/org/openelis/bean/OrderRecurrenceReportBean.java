@@ -198,7 +198,8 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal, Or
         ndata.setReportToAttention(data.getReportToAttention());
         ndata.setBillToId(data.getBillToId());
         ndata.setBillToAttention(data.getBillToAttention());
-        ndata.setShipFromId(data.getShipFromId());        
+        ndata.setShipFromId(data.getShipFromId());   
+        ndata.setNumberOfForms(data.getNumberOfForms());
     }
     
     /**
