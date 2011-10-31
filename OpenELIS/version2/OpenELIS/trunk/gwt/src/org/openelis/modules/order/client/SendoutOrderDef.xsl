@@ -133,6 +133,10 @@ UIRF Software License are applicable instead of those above.
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
                     <xsl:call-template name="duplicateRecordMenuItem" />
+                    <html>&lt;hr/&gt;</html>
+                    <menuItem description="" enable="false" icon="shippingIcon" key="shippingInfo" label="{resource:getString($constants,'shippingInfo')}" />
+                    <menuItem description="" enable="false" icon="" key="orderRequestForm" label="{resource:getString($constants,'orderRequestForm')}" />
+                    <html>&lt;hr/&gt;</html>
                     <menuItem description="" enable="false" icon="historyIcon" key="orderHistory" label="{resource:getString($constants,'orderHistory')}" />
                     <menuItem description="" enable="false" icon="historyIcon" key="itemHistory" label="{resource:getString($constants,'orderItemHistory')}" />
                     <menuItem description="" enable="false" icon="historyIcon" key="testHistory" label="{resource:getString($constants,'orderTestHistory')}" />
@@ -153,15 +157,21 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"neededDays")' />:
                 </text>
-                <widget colspan="5">
-                  <textbox field="Integer" key="{meta:getNeededInDays()}" tab="{meta:getShipFromId()},{meta:getId()}" width="75" />
+                <widget colspan="2">
+                  <textbox field="Integer" key="{meta:getNeededInDays()}" tab="{meta:getNumberOfForms()},{meta:getId()}" width="35" />
+                </widget>
+                <text style="Prompt">
+                  <xsl:value-of select='resource:getString($constants,"numForms")' />:
+                </text>
+                <widget colspan="2">
+                  <textbox field="Integer" key="{meta:getNumberOfForms()}" tab="{meta:getShipFromId()},{meta:getNeededInDays()}" width="35" />
                 </widget>
               </row>
               <row>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"shipFrom")' />:
                 </text>
-                <dropdown case="MIXED" field="Integer" key="{meta:getShipFromId()}" tab="{meta:getOrganizationName()},{meta:getNeededInDays()}" width="203" />
+                <dropdown case="MIXED" field="Integer" key="{meta:getShipFromId()}" tab="{meta:getOrganizationName()},{meta:getNumberOfForms()}" width="203" />
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"shipTo")' />:
                 </text>

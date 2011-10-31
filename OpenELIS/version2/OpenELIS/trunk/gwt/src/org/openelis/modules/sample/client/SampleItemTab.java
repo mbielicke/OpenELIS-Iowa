@@ -42,7 +42,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -89,9 +88,9 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
                 ActionEvent.fire(itemTab, Action.CHANGED, null);
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                typeOfSampleId.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                                          .contains(event.getState()));
+            public void onStateChange(StateChangeEvent<State> event) {                
+                typeOfSampleId.enable(event.getState() == State.QUERY  || (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
                 typeOfSampleId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -109,8 +108,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sourceOfSampleId.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                            .contains(event.getState()));
+                sourceOfSampleId.enable(event.getState() == State.QUERY  || (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                .contains(event.getState())));
                 sourceOfSampleId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -126,8 +125,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sourceOther.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                                       .contains(event.getState()));
+                sourceOther.enable(event.getState() == State.QUERY  || (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                .contains(event.getState())));
                 sourceOther.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -145,8 +144,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                containerId.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                                       .contains(event.getState()));
+                containerId.enable(event.getState() == State.QUERY  || (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                .contains(event.getState())));
                 containerId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -162,8 +161,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                containerReference.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                                              .contains(event.getState()));
+                containerReference.enable(event.getState() == State.QUERY  || (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                .contains(event.getState())));
                 containerReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -180,8 +179,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                quantity.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                                    .contains(event.getState()));
+                quantity.enable(event.getState() == State.QUERY  || (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                .contains(event.getState())));
                 quantity.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -197,8 +196,8 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                unitOfMeasureId.enable(canEdit() && EnumSet.of(State.QUERY, State.ADD, State.UPDATE, State.DELETE)
-                                                           .contains(event.getState()));
+                unitOfMeasureId.enable(event.getState() == State.QUERY  || (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                .contains(event.getState())));
                 unitOfMeasureId.setQueryMode(event.getState() == State.QUERY);
             }
         });

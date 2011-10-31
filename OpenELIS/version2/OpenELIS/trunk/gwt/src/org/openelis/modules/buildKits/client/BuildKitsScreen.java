@@ -865,7 +865,6 @@ public class BuildKitsScreen extends Screen {
                 
         selRows = componentTable.getSelectedRows();
         toItem = null;
-        fromItem = null;
         
         if (selRows.length == 0) {
             Window.alert(consts.get("selRowsToTransfer"));
@@ -878,11 +877,17 @@ public class BuildKitsScreen extends Screen {
             icman = manager.getInventoryItem().getComponents();
             Arrays.sort(selRows);
             for (int i = 0; i < selRows.length; i++) {
+                fromItem = null;
+                
                 comp = icman.getComponentAt(selRows[i]);
                 itman.addTransfer();           
                 
                 toItem = InventoryItemCache.getById(comp.getComponentId());
-                fromItem = InventoryItemCache.getById(toItem.getParentInventoryItemId());                
+                if (toItem.getParentInventoryItemId() == null) {
+                    window.setError(consts.get("transferNotAllowed")+ " "+ toItem.getName());
+                    return null;
+                }
+                    fromItem = InventoryItemCache.getById(toItem.getParentInventoryItemId());                
                 
                 itman.setToInventoryItemAt(toItem, i);                
                 itman.setFromInventoryItemAt(fromItem, i);

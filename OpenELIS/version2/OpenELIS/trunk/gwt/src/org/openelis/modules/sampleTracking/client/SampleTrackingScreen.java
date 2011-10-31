@@ -39,16 +39,16 @@ import org.openelis.gwt.event.BeforeDropEvent;
 import org.openelis.gwt.event.BeforeDropHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.DropEnterEvent;
+import org.openelis.gwt.event.DropEnterEvent.DropPosition;
 import org.openelis.gwt.event.DropEnterHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.event.DropEnterEvent.DropPosition;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
@@ -58,7 +58,6 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -72,7 +71,6 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
 import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
@@ -95,7 +93,6 @@ import org.openelis.modules.sample.client.StorageTab;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -112,7 +109,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     private SampleManager        manager;
     private ModulePermission     userPermission, unreleasePermission;
-
+    private SampleTrackingScreen trackingScreen;
     private EnvironmentalTab     environmentalTab;
     private PrivateWellTab       wellTab;
     private SDWISTab             sdwisTab;
@@ -133,7 +130,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private AppButton            prevPage, nextPage, similarButton, expandButton, collapseButton,
                                  queryButton, updateButton, commitButton, abortButton, addTestButton,
                                  cancelTestButton;
-    private MenuItem             envMenuQuery, wellMenuQuery, sdwisMenuQuery, unreleaseSample,previewFinalReport,historySample,
+    private MenuItem             unreleaseSample,previewFinalReport,historySample,
                                  historySampleSpec, historySampleProject, historySampleOrganization,
                                  historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
                                  historySampleQA, historyAnalysisQA, historyAuxData;
@@ -217,9 +214,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         DataChangeEvent.fire(this);
     }
 
-    private void initialize() {
-        final SampleTrackingScreen trackingScreen;
-
+    private void initialize() {       
         trackingScreen = this;
 
         //
@@ -1389,8 +1384,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         trackingTree.clear();
         tab = null;
         
-        showTabs(Tabs.ENVIRONMENT, Tabs.PRIVATE_WELL, Tabs.SDWIS, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.TEST_RESULT, Tabs.STORAGE,
-                 Tabs.QA_EVENTS, Tabs.AUX_DATA);
+        showTabs(Tabs.ENVIRONMENT, Tabs.PRIVATE_WELL, Tabs.SDWIS, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.AUX_DATA);
 
         setState(State.QUERY);
         DataChangeEvent.fire(this);
@@ -1401,11 +1395,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         sdwisTab.draw();
         sampleItemTab.draw();
         analysisTab.draw();
-        testResultsTab.draw();
         analysisNotesTab.draw();
         sampleNotesTab.draw();
-        storageTab.draw();
-        qaEventsTab.draw();
         auxDataTab.draw();
 
         setFocus(accessionNumber);
@@ -1484,7 +1475,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             fields = getQueryFields();
             
             try {
-            	setDomain(fields);
+            	setDomainFields(fields);
             }catch(Exception e) {
             	window.setError(consts.get("queryDomainException"));
             	return;
@@ -1601,42 +1592,42 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             } 
         }
         
-        addPrivateWellFields(fields);
-
         return fields;
     }
     
-    private void setDomain(ArrayList<QueryData> fields) throws Exception {
-    	String domain = null;
-    	ArrayList<QueryData> envFields,wellFields,sdwisFields;
-    	QueryData field;
-    	
-    	envFields = environmentalTab.getQueryFields();
-    	wellFields = wellTab.getQueryFields();
-    	sdwisFields = sdwisTab.getQueryFields();
-    	
-    	if(envFields.size() > 0) {
-    		domain = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
-    		fields.addAll(envFields);
-    	}
-    	if(wellFields.size() > 0) {
-    		if(domain == null) {
-    			domain = SampleManager.WELL_DOMAIN_FLAG;
-    			fields.addAll(wellFields);
-    		}else
-    			throw new Exception();
-    	}
-    	if(sdwisFields.size() > 0) {
-    		if(domain == null) {
-    	   		domain = SampleManager.SDWIS_DOMAIN_FLAG;
-    	   		fields.addAll(sdwisFields);
-    		}else
-    			throw new Exception();
-    	}
-    	
+    private void setDomainFields(ArrayList<QueryData> fields) throws Exception {
+        String domain = null;
+        ArrayList<QueryData> envFields, wellFields, sdwisFields;
+        QueryData field;
+
+        envFields = environmentalTab.getQueryFields();
+        wellFields = wellTab.getQueryFields();
+        sdwisFields = sdwisTab.getQueryFields();
+
+        if (envFields.size() > 0) {
+            domain = SampleManager.ENVIRONMENTAL_DOMAIN_FLAG;
+            fields.addAll(envFields);
+        }
+        if (wellFields.size() > 0) {
+            if (domain == null) {
+                domain = SampleManager.WELL_DOMAIN_FLAG;
+                fields.addAll(wellFields);
+                addPrivateWellFields(fields);
+            } else {
+                throw new Exception();
+            }
+        }
+        if (sdwisFields.size() > 0) {
+            if (domain == null) {
+                domain = SampleManager.SDWIS_DOMAIN_FLAG;
+                fields.addAll(sdwisFields);
+            } else {
+                throw new Exception();
+            }
+        }
+
         if (domain != null) {
-            // Added this Query Param to keep Quick Entry Samples out of
-            // query results
+            // Added this Query Param to keep Quick Entry Samples out of query results
             field = new QueryData();
             field.key = SampleMeta.getDomain();
             field.query = domain;
@@ -1801,6 +1792,8 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     window.setDone(consts.get("noRecordsFound"));
                     trackingTree.clear();
                     setState(State.DEFAULT);
+                    manager = SampleManager.getInstance();
+                    DataChangeEvent.fire(trackingScreen);
                 } else if (error instanceof LastPageException) {
                     page = query.getPage();
                     query.setPage(page - 1);

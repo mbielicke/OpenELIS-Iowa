@@ -46,6 +46,7 @@ import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.ShippingViewDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorWarning;
@@ -91,9 +92,11 @@ import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
+import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.utilcommon.ResultValidator;
 
 import com.google.gwt.core.client.GWT;
@@ -105,6 +108,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.rpc.SyncCallback;
 
 public class SendoutOrderScreen extends Screen {
 
@@ -130,9 +134,10 @@ public class SendoutOrderScreen extends Screen {
     private AppButton                              queryButton, previousButton, nextButton,
                                                    addButton, updateButton, commitButton,
                                                    abortButton;
-    private MenuItem                               duplicate, orderHistory, itemHistory,
-                                                   testHistory, containerHistory;
-    private TextBox                                id, neededInDays, requestedBy,
+    private MenuItem                               duplicate, shippingInfo, orderRequestForm,
+                                                   orderHistory, itemHistory, testHistory,
+                                                   containerHistory;
+    private TextBox                                id, neededInDays, numberOfForms, requestedBy,
                                                    organizationAttention, organizationAddressMultipleUnit,
                                                    organizationAddressStreetAddress,
                                                    organizationAddressCity, organizationAddressState,
@@ -142,16 +147,22 @@ public class SendoutOrderScreen extends Screen {
     private AutoComplete<Integer>                  organizationName;
     private AutoComplete<String>                   description;
     private TabPanel                               tabPanel;
-    private Integer                                status_pending, status_recurring,
-                                                   auxAlphaLowerId, auxAlphaMixedId, 
-                                                   auxAlphaUpperId, auxDateId, auxDateTimeId,
-                                                   auxDefaultId, auxDictionaryId, 
-                                                   auxNumericId, auxTimeId;
+    
+    private ShippingManager                        shippingManager;
+    private ShippingScreen                         shippingScreen;
+    private OrderRequestFormReportScreen           requestformReportScreen;
+    
+    private Integer                                statusPendingId, statusRecurringId,
+                                                   statusProcessedId, auxAlphaLowerId,
+                                                   auxAlphaMixedId, auxAlphaUpperId, 
+                                                   auxDateId, auxDateTimeId, auxDefaultId,
+                                                   auxDictionaryId, auxNumericId,
+                                                   auxTimeId;
     private String                                 descQuery;
 
     private HashMap<Integer, ResultValidator.Type> types;
 
-    protected ScreenService                        organizationService, panelService;
+    protected ScreenService                        organizationService, panelService, shippingService;
 
     private enum Tabs {
         REPORT_TO, AUX_DATA, CONTAINER, ITEM, SHIP_NOTE, CUSTOMER_NOTE, INTERNAL_NOTE, RECURRENCE, FILL 
@@ -174,7 +185,8 @@ public class SendoutOrderScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
-
+        shippingService = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
+        
         userPermission = UserCache.getPermission();
         userModulePermission = userPermission.getModule("sendoutorder");
         if (userModulePermission == null)
@@ -321,6 +333,28 @@ public class SendoutOrderScreen extends Screen {
                 duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        shippingInfo = (MenuItem)def.getWidget("shippingInfo");
+        addScreenHandler(shippingInfo, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                shippingInfo();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {                
+                shippingInfo.enable(false);
+            }
+        });
+        
+        orderRequestForm = (MenuItem)def.getWidget("orderRequestForm");
+        addScreenHandler(orderRequestForm, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                orderRequestForm();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {                
+                orderRequestForm.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
 
         orderHistory = (MenuItem)def.getWidget("orderHistory");
         addScreenHandler(orderHistory, new ScreenEventHandler<Object>() {
@@ -402,6 +436,23 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
+        numberOfForms = (TextBox)def.getWidget(OrderMeta.getNumberOfForms());
+        addScreenHandler(numberOfForms, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                numberOfForms.setValue(manager.getOrder().getNumberOfForms());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getOrder().setNumberOfForms(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                numberOfForms.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                           .contains(event.getState()));
+                numberOfForms.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
         shipFromId = (Dropdown)def.getWidget(OrderMeta.getShipFromId());
         addScreenHandler(shipFromId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -522,7 +573,11 @@ public class SendoutOrderScreen extends Screen {
         statusId = (Dropdown)def.getWidget(OrderMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                statusId.setSelection(manager.getOrder().getStatusId());
+                Integer id;
+                
+                id = manager.getOrder().getStatusId();
+                statusId.setSelection(id);
+                shippingInfo.enable(state == State.DISPLAY && statusProcessedId.equals(id));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1061,8 +1116,9 @@ public class SendoutOrderScreen extends Screen {
             types.put(auxNumericId, ResultValidator.Type.NUMERIC);
             auxTimeId = DictionaryCache.getIdBySystemName("aux_time");
             types.put(auxTimeId, ResultValidator.Type.TIME);
-            status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
-            status_recurring = DictionaryCache.getIdBySystemName("order_status_recurring");
+            statusPendingId = DictionaryCache.getIdBySystemName("order_status_pending");
+            statusRecurringId = DictionaryCache.getIdBySystemName("order_status_recurring");
+            statusProcessedId = DictionaryCache.getIdBySystemName("order_status_processed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1143,7 +1199,7 @@ public class SendoutOrderScreen extends Screen {
 
         manager = OrderManager.getInstance();
         data = manager.getOrder();
-        data.setStatusId(status_pending);
+        data.setStatusId(statusPendingId);
         data.setOrderedDate(now);
         data.setRequestedBy(UserCache.getPermission().getLoginName());
         data.setType(OrderManager.TYPE_SEND_OUT);
@@ -1162,7 +1218,7 @@ public class SendoutOrderScreen extends Screen {
         try {
             manager = manager.fetchForUpdate();
             stId = manager.getOrder().getStatusId();
-            if ( !status_pending.equals(stId) && !status_recurring.equals(stId)) {
+            if ( !statusPendingId.equals(stId) && !statusRecurringId.equals(stId)) {
                 Window.alert(consts.get("orderStatusNotPendingOrRecurForUpdate"));
                 manager = manager.abortUpdate();
             } else {
@@ -1205,8 +1261,8 @@ public class SendoutOrderScreen extends Screen {
                 data = manager.getOrder();
                 orec = manager.getRecurrence();
                 prevStatusId = data.getStatusId();
-                if ("Y".equals(orec.getIsActive()) && !status_recurring.equals(prevStatusId))  
-                    data.setStatusId(status_recurring);
+                if ("Y".equals(orec.getIsActive()) && !statusRecurringId.equals(prevStatusId))  
+                    data.setStatusId(statusRecurringId);
                 
                 manager = manager.add();
                 setState(State.DISPLAY);
@@ -1233,8 +1289,8 @@ public class SendoutOrderScreen extends Screen {
                 data = manager.getOrder();
                 orec = manager.getRecurrence();
                 prevStatusId = data.getStatusId();
-                if ("Y".equals(orec.getIsActive()) && !status_recurring.equals(prevStatusId))  
-                    data.setStatusId(status_recurring);
+                if ("Y".equals(orec.getIsActive()) && !statusRecurringId.equals(prevStatusId))  
+                    data.setStatusId(statusRecurringId);
                 
                 manager = manager.update();
                 setState(State.DISPLAY);
@@ -1299,7 +1355,7 @@ public class SendoutOrderScreen extends Screen {
             }
 
             data = manager.getOrder();
-            data.setStatusId(status_pending);
+            data.setStatusId(statusPendingId);
             data.setOrderedDate(now);
             data.setRequestedBy(UserCache.getPermission().getLoginName());
             data.setType(OrderManager.TYPE_SEND_OUT);
@@ -1334,6 +1390,76 @@ public class SendoutOrderScreen extends Screen {
             window.setDone(consts.get("enterInformationPressCommit"));
         } catch (Exception e) {
             Window.alert(e.getMessage());
+        }
+    }
+    
+    protected void shippingInfo() {
+        try {           
+            window.setBusy(consts.get("fetching"));
+
+            shippingService.call("fetchByOrderId", manager.getOrder().getId(),
+                                 new SyncCallback<ShippingViewDO>() {
+                                     public void onSuccess(ShippingViewDO result) {
+                                         try {
+                                             if (result != null)
+                                                 shippingManager = ShippingManager.fetchById(result.getId());
+                                             else
+                                                 shippingManager = null;
+                                         } catch (Throwable e) {
+                                             shippingManager = null;
+                                             e.printStackTrace();
+                                             Window.alert(e.getMessage());
+                                             window.clearStatus();
+                                         }
+                                     }
+
+                                     public void onFailure(Throwable error) {
+                                         shippingManager = null;
+                                         error.printStackTrace();
+                                         Window.alert("Error: Fetch failed; " + error.getMessage());
+                                         window.clearStatus();
+                                     }
+                                 });
+
+            if (shippingManager != null)
+                showShippingScreen(shippingManager, State.DISPLAY);
+            else 
+                window.setDone(consts.get("noRecordsFound"));
+        } catch (Throwable e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            window.clearStatus();
+            return;
+        }
+    }
+    
+    protected void orderRequestForm() {        
+        Query query;
+        QueryData field;
+        
+        query = new Query();        
+        field = new QueryData();
+        field.key = "ORDERID";
+        field.query = manager.getOrder().getId().toString();
+        field.type = QueryData.Type.INTEGER;
+        query.setFields(field);
+        
+        field = new QueryData();
+        field.key = "PRINTER";
+        field.query = "-view-";
+        field.type = QueryData.Type.INTEGER;
+        query.setFields(field);
+        
+        try {
+            if (requestformReportScreen == null) 
+                requestformReportScreen = new OrderRequestFormReportScreen(window);  
+            else
+                requestformReportScreen.setWindow(window);
+            
+            requestformReportScreen.runReport(query);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -1696,5 +1822,18 @@ public class SendoutOrderScreen extends Screen {
         }
                 
         return rv;
+    }
+    
+    private void showShippingScreen(ShippingManager manager, State state) throws Exception {
+        ScreenWindow modal;
+        
+        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+        modal.setName(consts.get("shipping"));
+        if (shippingScreen == null)
+            shippingScreen = new ShippingScreen(modal);
+        
+        modal.setContent(shippingScreen);
+        shippingScreen.loadShippingData(manager, state);
+        window.clearStatus();
     }
 }

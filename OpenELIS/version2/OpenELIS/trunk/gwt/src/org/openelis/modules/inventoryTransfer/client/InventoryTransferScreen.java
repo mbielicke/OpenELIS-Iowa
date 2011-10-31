@@ -366,7 +366,7 @@ public class InventoryTransferScreen extends Screen {
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);
-                            row.key = -1;
+                            row.key = storLoc.getId();
                             location = StorageLocationManager.getLocationForDisplay(storLoc.getName(),
                                                                                     storLoc.getStorageUnitDescription(),
                                                                                     storLoc.getLocation());

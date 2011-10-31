@@ -111,7 +111,7 @@ public class ShippingScreen extends Screen {
     private Dropdown<Integer>              statusId, shippedFromId, shippedMethodId;
     private AutoComplete<Integer>          shippedToName;
     private TabPanel                       tabPanel;
-    private Integer                        status_processed, status_shipped;
+    private Integer                        statusProcessedId, statusShippedId;
     private ShippingScreen                 screen;
     private ProcessShippingScreen          processShippingScreen;
         
@@ -284,7 +284,7 @@ public class ShippingScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                processShipping.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                processShipping.enable(EnumSet.of(State.DISPLAY, State.DEFAULT).contains(event.getState()));
             }
         });
         
@@ -346,7 +346,7 @@ public class ShippingScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {                
-                if (!status_shipped.equals(event.getValue())) {
+                if (!statusShippedId.equals(event.getValue())) {
                     manager.getShipping().setShippedDate(null);
                     shippedDate.setValue(manager.getShipping().getShippedDate());
                 }
@@ -815,8 +815,8 @@ public class ShippingScreen extends Screen {
         shippedMethodId.setModel(model);
         
         try {
-            status_processed  = DictionaryCache.getIdBySystemName("shipping_status_processed");
-            status_shipped  = DictionaryCache.getIdBySystemName("shipping_status_shipped");
+            statusProcessedId  = DictionaryCache.getIdBySystemName("shipping_status_processed");
+            statusShippedId  = DictionaryCache.getIdBySystemName("shipping_status_shipped");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -865,7 +865,7 @@ public class ShippingScreen extends Screen {
             this.manager = manager;
         
         data = this.manager.getShipping();
-        data.setStatusId(status_processed);
+        data.setStatusId(statusProcessedId);
         data.setProcessedDate(now);
         data.setProcessedBy(UserCache.getPermission().getLoginName());
 
@@ -883,9 +883,9 @@ public class ShippingScreen extends Screen {
         try {            
             ok = true;
             
-            if (status_processed.equals(manager.getShipping().getStatusId())) 
+            if (statusProcessedId.equals(manager.getShipping().getStatusId())) 
                 ok = Window.confirm(consts.get("shippingStatusProcessed"));                
-            else if (status_shipped.equals(manager.getShipping().getStatusId())) 
+            else if (statusShippedId.equals(manager.getShipping().getStatusId())) 
                 ok = Window.confirm(consts.get("shippingStatusShipped"));                            
             
             if (!ok) {
@@ -1027,8 +1027,8 @@ public class ShippingScreen extends Screen {
                                  * or "Shipped"
                                  */
                                 setState(State.UPDATE);
-                                if ( !status_shipped.equals(data.getStatusId()) &&
-                                    !status_processed.equals(data.getStatusId())) {
+                                if ( !statusShippedId.equals(data.getStatusId()) &&
+                                    !statusProcessedId.equals(data.getStatusId())) {
                                     Window.alert(consts.get("statusProcessedShipped"));
                                     abort();
                                     return;
@@ -1205,6 +1205,6 @@ public class ShippingScreen extends Screen {
     
     private void setProcessShippingData(ShippingViewDO data) throws Exception {
         data.setShippedDate(Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY));        
-        data.setStatusId(status_shipped);        
+        data.setStatusId(statusShippedId);        
     }
 }
