@@ -418,7 +418,7 @@ public class ItemTab extends Screen {
             
             if(orderManager != null) {
                 modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-                modal.setName(consts.get("kitOrder"));
+                modal.setName(consts.get("sendoutOrder"));
                 if (sendoutOrderScreen == null)
                     sendoutOrderScreen = new SendoutOrderScreen(modal);
                                 

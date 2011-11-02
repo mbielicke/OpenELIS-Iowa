@@ -82,7 +82,7 @@ UIRF Software License are applicable instead of those above.
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
                   <menuItem description="{resource:getString($constants,'preferenceDescription')}" enable="false" icon="preferenceIcon" key="preference" label="{resource:getString($constants,'preference')}" />
-                  <menuItem description="{resource:getString($constants,'logoutDescription')}" icon="logoutIcon" key="Logout" label="{resource:getString($constants,'logout')}" />
+                  <menuItem description="{resource:getString($constants,'logoutDescription')}" enable="true" icon="logoutIcon" key="logout" label="{resource:getString($constants,'logout')}" />
                 </menuPanel>
               </menuItem>
               <menuItem>
@@ -90,12 +90,8 @@ UIRF Software License are applicable instead of those above.
                   <label style="topMenuBarItem" text="{resource:getString($constants,'label')}" />
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <code>if(UserCache.getPermission().hasModule("r_loginlabel","SELECT")){</code>
-                  <menuItem description="" enable="true" icon="" key="sampleLoginLabelReport" label="{resource:getString($constants,'loginBarcode')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("r_loginlabelrep","SELECT")){</code>
-                  <menuItem description="" enable="true" icon="" key="sampleLoginLabelAdditionalReport" label="{resource:getString($constants,'loginBarcodeAdd')}" />
-                  <code>}</code>
+                  <menuItem description="" enable="false" icon="" key="sampleLoginLabelReport" label="{resource:getString($constants,'loginBarcode')}" />
+                  <menuItem description="" enable="false" icon="" key="sampleLoginLabelAdditionalReport" label="{resource:getString($constants,'loginBarcodeAdd')}" />
                 </menuPanel>
               </menuItem>
               <menuItem>
@@ -103,39 +99,21 @@ UIRF Software License are applicable instead of those above.
                   <label style="topMenuBarItem" text="{resource:getString($constants,'sample')}" />
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <code>if(UserCache.getPermission().hasModule("quickentry","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'quickEntryDescription')}" enable="true" icon="quickEntryIcon" key="quickEntry" label="{resource:getString($constants,'quickEntry')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("verification","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'verificationDescription')}" enable="true" icon="QCIcon" key="verification" label="{resource:getString($constants,'verification')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("sampletracking","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'trackingDescription')}" enable="true" icon="trackingIcon" key="tracking" label="{resource:getString($constants,'tracking')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'quickEntryDescription')}" enable="false" icon="quickEntryIcon" key="quickEntry" label="{resource:getString($constants,'quickEntry')}" />
+                  <menuItem description="{resource:getString($constants,'verificationDescription')}" enable="false" icon="QCIcon" key="verification" label="{resource:getString($constants,'verification')}" />
+                  <menuItem description="{resource:getString($constants,'trackingDescription')}" enable="false" icon="trackingIcon" key="tracking" label="{resource:getString($constants,'tracking')}" />
                   <html>&lt;hr/&gt;</html>
-                  <code>if(UserCache.getPermission().hasModule("sampleenvironmental","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'environmentalSampleLoginDescription')}" icon="environmentalSampleLoginIcon" key="environmentalSampleLogin" label="{resource:getString($constants,'environmentalSampleLogin')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("sampleprivatewell","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'privateWellWaterSampleLoginDescription')}" enable="true" icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSampleLogin" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("samplesdwis","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'sdwisSampleLoginDescription')}" enable="true" icon="sdwisSampleLoginIcon" key="sdwisSampleLogin" label="{resource:getString($constants,'sdwisSampleLogin')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'environmentalSampleLoginDescription')}" enable="false" icon="environmentalSampleLoginIcon" key="environmentalSampleLogin" label="{resource:getString($constants,'environmentalSampleLogin')}" />
+                  <menuItem description="{resource:getString($constants,'privateWellWaterSampleLoginDescription')}" enable="false" icon="privateWellWaterSampleLoginIcon" key="privateWellWaterSampleLogin" label="{resource:getString($constants,'privateWellWaterSampleLogin')}" />
+                  <menuItem description="{resource:getString($constants,'sdwisSampleLoginDescription')}" enable="false" icon="sdwisSampleLoginIcon" key="sdwisSampleLogin" label="{resource:getString($constants,'sdwisSampleLogin')}" />
                   <menuItem description="{resource:getString($constants,'clinicalSampleLoginDescription')}" enable="false" icon="clinicalSampleLoginIcon" key="clinicalSampleLogin" label="{resource:getString($constants,'clinicalSampleLogin')}" />
                   <menuItem description="{resource:getString($constants,'newbornScreeningSampleLoginDescription')}" enable="false" icon="newbornScreeningSampleLoginIcon" key="newbornScreeningSampleLogin" label="{resource:getString($constants,'newbornScreeningSampleLogin')}" />
                   <menuItem description="{resource:getString($constants,'animalSampleLoginDescription')}" enable="false" icon="animalSampleLoginIcon" key="animalSampleLogin" label="{resource:getString($constants,'animalSampleLogin')}" />
                   <menuItem description="{resource:getString($constants,'ptSampleLoginDescription')}" enable="false" icon="ptSampleLoginIcon" key="ptSampleLogin" label="{resource:getString($constants,'ptSampleLogin')}" />
                   <html>&lt;hr/&gt;</html>
-                  <code>if(UserCache.getPermission().hasModule("project","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'projectDescription')}" icon="projectIcon" key="project" label="{resource:getString($constants,'project')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("provider","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'providerDescription')}" icon="providerIcon" key="provider" label="{resource:getString($constants,'provider')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("organization","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'organizationDescription')}" icon="organizationIcon" key="organization" label="{resource:getString($constants,'organization')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'projectDescription')}" enable="false" icon="projectIcon" key="project" label="{resource:getString($constants,'project')}" />
+                  <menuItem description="{resource:getString($constants,'providerDescription')}" enable="false" icon="providerIcon" key="provider" label="{resource:getString($constants,'provider')}" />
+                  <menuItem description="{resource:getString($constants,'organizationDescription')}" enable="false" icon="organizationIcon" key="organization" label="{resource:getString($constants,'organization')}" />
                 </menuPanel>
               </menuItem>
               <menuItem>
@@ -143,27 +121,15 @@ UIRF Software License are applicable instead of those above.
                   <label style="topMenuBarItem" text="{resource:getString($constants,'analysis')}" />
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <code>if(UserCache.getPermission().hasModule("worksheet","ADD")){</code>
-                  <menuItem description="{resource:getString($constants,'worksheetCreationDescription')}" enable="true" icon="worksheetCreationIcon" key="worksheetCreation" label="{resource:getString($constants,'worksheetCreation')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("worksheet","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'worksheetCompletionDescription')}" enable="true" icon="worksheetCompletionIcon" key="worksheetCompletion" label="{resource:getString($constants,'worksheetCompletion')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'worksheetCreationDescription')}" enable="false" icon="worksheetCreationIcon" key="worksheetCreation" label="{resource:getString($constants,'worksheetCreation')}" />
+                  <menuItem description="{resource:getString($constants,'worksheetCompletionDescription')}" enable="false" icon="worksheetCompletionIcon" key="worksheetCompletion" label="{resource:getString($constants,'worksheetCompletion')}" />
                   <menuItem description="{resource:getString($constants,'addOrCancelDescription')}" enable="false" icon="addOrCancelIcon" key="addOrCancel" label="{resource:getString($constants,'addOrCancel')}" />
-                  <code>if(UserCache.getPermission().hasModule("samplecompleterelease","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="true" icon="reviewAndReleaseIcon" key="reviewAndRelease" label="{resource:getString($constants,'reviewAndRelease')}" />
-                  <code>}</code>
-                  <menuItem description="{resource:getString($constants,'toDoDescription')}" enable="true" icon="toDoIcon" key="toDo" label="{resource:getString($constants,'toDo')}" />
+                  <menuItem description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="false" icon="reviewAndReleaseIcon" key="reviewAndRelease" label="{resource:getString($constants,'reviewAndRelease')}" />
+                  <menuItem description="{resource:getString($constants,'toDoDescription')}" enable="false" icon="toDoIcon" key="toDo" label="{resource:getString($constants,'toDo')}" />
                   <menuItem description="{resource:getString($constants,'labelForDescription')}" enable="false" icon="labelForIcon" key="labelFor" label="{resource:getString($constants,'labelFor')}" />
-                  <code>if(UserCache.getPermission().hasModule("storage","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'storageDescription')}" enable="true" icon="storageIcon" key="storage" label="{resource:getString($constants,'storage')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("qc","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'QCDescription')}" icon="QCIcon" key="QC" label="{resource:getString($constants,'QC')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("analyteparameter","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'analyteParameterDescription')}" icon="QCIcon" key="analyteParameter" label="{resource:getString($constants,'analyteParameter')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'storageDescription')}" enable="false" icon="storageIcon" key="storage" label="{resource:getString($constants,'storage')}" />
+                  <menuItem description="{resource:getString($constants,'QCDescription')}" enable="false" icon="QCIcon" key="QC" label="{resource:getString($constants,'QC')}" />
+                  <menuItem description="{resource:getString($constants,'analyteParameterDescription')}" enable="false" icon="QCIcon" key="analyteParameter" label="{resource:getString($constants,'analyteParameter')}" />
                 </menuPanel>
               </menuItem>
               <menuItem>
@@ -171,39 +137,19 @@ UIRF Software License are applicable instead of those above.
                   <label style="topMenuBarItem" text="{resource:getString($constants,'inventoryOrder')}" />
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <code>if(UserCache.getPermission().hasModule("internalorder","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'internalOrderDescription')}" enable="true" icon="internalOrderIcon" key="internalOrder" label="{resource:getString($constants,'internalOrder')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("vendororder","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'vendorOrderDescription')}" enable="true" icon="vendorOrderIcon" key="vendorOrder" label="{resource:getString($constants,'vendorOrder')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("sendoutorder","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'kitOrderDescription')}" enable="true" icon="kitOrderIcon" key="kitOrder" label="{resource:getString($constants,'kitOrder')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'internalOrderDescription')}" enable="false" icon="internalOrderIcon" key="internalOrder" label="{resource:getString($constants,'internalOrder')}" />
+                  <menuItem description="{resource:getString($constants,'vendorOrderDescription')}" enable="false" icon="vendorOrderIcon" key="vendorOrder" label="{resource:getString($constants,'vendorOrder')}" />
+                  <menuItem description="{resource:getString($constants,'sendoutOrderDescription')}" enable="false" icon="sendoutOrderIcon" key="sendoutOrder" label="{resource:getString($constants,'sendoutOrder')}" />
                   <html>&lt;hr/&gt;</html>
-                  <code>if(UserCache.getPermission().hasModule("fillorder","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'fillOrderDescription')}" enable="true" icon="fillOrderIcon" key="fillOrder" label="{resource:getString($constants,'fillOrder')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("shipping","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'shippingDescription')}" enable="true" icon="shippingIcon" key="shipping" label="{resource:getString($constants,'shipping')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'fillOrderDescription')}" enable="false" icon="fillOrderIcon" key="fillOrder" label="{resource:getString($constants,'fillOrder')}" />
+                  <menuItem description="{resource:getString($constants,'shippingDescription')}" enable="false" icon="shippingIcon" key="shipping" label="{resource:getString($constants,'shipping')}" />
                   <html>&lt;hr/&gt;</html>
-                  <code>if(UserCache.getPermission().hasModule("buildkits","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'buildKitsDescription')}" enable="true" icon="buildKitsIcon" key="buildKits" label="{resource:getString($constants,'buildKits')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("inventorytransfer","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'inventoryTransferDescription')}" enable="true" icon="inventoryTransferIcon" key="inventoryTransfer" label="{resource:getString($constants,'inventoryTransfer')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'buildKitsDescription')}" enable="false" icon="buildKitsIcon" key="buildKits" label="{resource:getString($constants,'buildKits')}" />
+                  <menuItem description="{resource:getString($constants,'inventoryTransferDescription')}" enable="false" icon="inventoryTransferIcon" key="inventoryTransfer" label="{resource:getString($constants,'inventoryTransfer')}" />
                   <html>&lt;hr/&gt;</html>
-                  <code>if(UserCache.getPermission().hasModule("inventoryreceipt","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'inventoryReceiptDescription')}" enable="true" icon="inventoryReceiptIcon" key="inventoryReceipt" label="{resource:getString($constants,'inventoryReceipt')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("inventoryadjustment","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'inventoryAdjustmentDescription')}" enable="true" icon="inventoryAdjustmentIcon" key="inventoryAdjustment" label="{resource:getString($constants,'inventoryAdjustment')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("inventoryitem","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'inventoryItemDescription')}" enable="true" icon="inventoryItemIcon" key="inventoryItem" label="{resource:getString($constants,'inventoryItem')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'inventoryReceiptDescription')}" enable="false" icon="inventoryReceiptIcon" key="inventoryReceipt" label="{resource:getString($constants,'inventoryReceipt')}" />
+                  <menuItem description="{resource:getString($constants,'inventoryAdjustmentDescription')}" enable="false" icon="inventoryAdjustmentIcon" key="inventoryAdjustment" label="{resource:getString($constants,'inventoryAdjustment')}" />
+                  <menuItem description="{resource:getString($constants,'inventoryItemDescription')}" enable="false" icon="inventoryItemIcon" key="inventoryItem" label="{resource:getString($constants,'inventoryItem')}" />
                 </menuPanel>
               </menuItem>
               <menuItem>
@@ -213,38 +159,29 @@ UIRF Software License are applicable instead of those above.
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
                   <menuItem description="" icon="" label="{resource:getString($constants,'login')}" style="TopMenuRowContainer">
                     <menuPanel layout="vertical" position="beside" style="topMenuContainer">
-                      <menuItem description="" enable="true" icon="" key="verificationReport" label="{resource:getString($constants,'verificationReport')}" />
+                      <menuItem description="" enable="false" icon="" key="verificationReport" label="{resource:getString($constants,'verificationReport')}" />
                       <menuItem description="" enable="false" icon="" key="testRequestFormReport" label="{resource:getString($constants,'TRFReport')}" />
-                      <menuItem description="" enable="true" icon="" key="orderRequestForm" label="{resource:getString($constants,'orderRequestForm')}" />
+                      <menuItem description="" enable="false" icon="" key="orderRequestForm" label="{resource:getString($constants,'orderRequestForm')}" />
                     </menuPanel>
                   </menuItem>
                   <menuItem description="" icon="" label="{resource:getString($constants,'reference')}" style="TopMenuRowContainer">
                     <menuPanel layout="vertical" position="beside" style="topMenuContainer">
-                      <menuItem description="" enable="true" icon="" key="testReport" label="{resource:getString($constants,'testReport')}" />
-                      <menuItem description="" enable="false" icon="" key="qaEventReport" label="{resource:getString($constants,'QAEventReport')}" />
-                      <menuItem description="" enable="true" icon="" key="billingRef" label="{resource:getString($constants,'billingRef')}" />
+                      <menuItem description="" enable="false" icon="" key="testReport" label="{resource:getString($constants,'testReport')}" />
                     </menuPanel>
                   </menuItem>
                   <menuItem description="" icon="" label="{resource:getString($constants,'summary')}" style="TopMenuRowContainer">
                     <menuPanel layout="vertical" position="beside" style="topMenuContainer">
-                      <menuItem description="" enable="true" icon="" key="sampleInhouseReport" label="{resource:getString($constants,'sampleInhouseReport')}" />
-                      <menuItem description="" enable="true" icon="" key="volumeReport" label="{resource:getString($constants,'volumeReport')}" />
+                      <menuItem description="" enable="false" icon="" key="sampleInhouseReport" label="{resource:getString($constants,'sampleInhouseReport')}" />
+                      <menuItem description="" enable="false" icon="" key="volumeReport" label="{resource:getString($constants,'volumeReport')}" />
                       <menuItem description="" enable="false" icon="" key="sampleDataExport" label="{resource:getString($constants,'sampleDataExport')}" />
-                      <menuItem description="" enable="true" icon="" key="QAByOrganization" label="{resource:getString($constants,'QAByOrganization')}" />
+                      <menuItem description="" enable="false" icon="" key="QAByOrganization" label="{resource:getString($constants,'QAByOrganization')}" />
                       <menuItem description="" enable="false" icon="" key="testCountByFacility" label="{resource:getString($constants,'testCountByFacility')}" />
-                      <menuItem description="" enable="true" icon="" key="turnaround" label="{resource:getString($constants,'turnaround')}" />
-                      <menuItem description="" enable="true" icon="" key="sdwisUnloadReport" label="{resource:getString($constants,'sdwisUnloadReport')}" />
-                      <menuItem description="" enable="true" icon="" key="dataView" label="{resource:getString($constants,'dataView')}" />
-                      <menuItem description="" enable="true" icon="" key="finalReport" label="{resource:getString($constants,'finalReport')}" />
-					  <code>if(UserCache.getPermission().hasModule("r_final","SELECT")){</code>
-                      <menuItem key="orderRecurrence" description="" icon="" enable="true" label="{resource:getString($constants,'orderRecurrence')}" />
-                      <code>}</code>
-					  <code>if(UserCache.getPermission().hasModule("r_finalbatch","SELECT")){</code>
-                      <menuItem key="finalReportBatch" description="" icon="" enable="true" label="{resource:getString($constants,'finalReportBatch')}" />
-                      <code>}</code>
-					  <code>if(UserCache.getPermission().hasModule("r_finalbatch","SELECT")){</code>
-                      <menuItem key="finalReportBatchReprint" description="" icon="" enable="true" label="{resource:getString($constants,'finalReportBatchReprint')}" />
-                      <code>}</code>
+                      <menuItem description="" enable="false" icon="" key="turnaround" label="{resource:getString($constants,'turnaround')}" />
+                      <menuItem description="" enable="false" icon="" key="sdwisUnloadReport" label="{resource:getString($constants,'sdwisUnloadReport')}" />
+                      <menuItem description="" enable="false" icon="" key="dataView" label="{resource:getString($constants,'dataView')}" />
+                      <menuItem description="" enable="false" icon="" key="finalReport" label="{resource:getString($constants,'finalReport')}" />
+                      <menuItem key="orderRecurrence" description="" enable="false" icon="" label="{resource:getString($constants,'orderRecurrence')}" />
+                      <menuItem key="finalReportBatch" description="" enable="false" icon="" label="{resource:getString($constants,'finalReportBatch')}" />
                     </menuPanel>
                   </menuItem>
                 </menuPanel>
@@ -254,60 +191,28 @@ UIRF Software License are applicable instead of those above.
                   <label style="topMenuBarItem" text="{resource:getString($constants,'maintenance')}" />
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <code>if(UserCache.getPermission().hasModule("test","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'testDescription')}" icon="testIcon" key="test" label="{resource:getString($constants,'test')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("method","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'methodDescription')}" icon="methodIcon" key="method" label="{resource:getString($constants,'method')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("panel","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'panelDescription')}" enable="true" icon="panelIcon" key="panel" label="{resource:getString($constants,'panel')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("qaevent","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'QAEventDescription')}" icon="QAEventIcon" key="QAEvent" label="{resource:getString($constants,'QAEvent')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("section","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'labSectionDescription')}" icon="labSectionIcon" key="labSection" label="{resource:getString($constants,'labSection')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'testDescription')}" enable="false" icon="testIcon" key="test" label="{resource:getString($constants,'test')}" />
+                  <menuItem description="{resource:getString($constants,'methodDescription')}" enable="false" icon="methodIcon" key="method" label="{resource:getString($constants,'method')}" />
+                  <menuItem description="{resource:getString($constants,'panelDescription')}" enable="false" icon="panelIcon" key="panel" label="{resource:getString($constants,'panel')}" />
+                  <menuItem description="{resource:getString($constants,'QAEventDescription')}" enable="false" icon="QAEventIcon" key="QAEvent" label="{resource:getString($constants,'QAEvent')}" />
+                  <menuItem description="{resource:getString($constants,'labSectionDescription')}" enable="false" icon="labSectionIcon" key="labSection" label="{resource:getString($constants,'labSection')}" />
                   <html>&lt;hr/&gt;</html>
-                  <code>if(UserCache.getPermission().hasModule("analyte","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'analyteDescription')}" icon="analyteIcon" key="analyte" label="{resource:getString($constants,'analyte')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("dictionary","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'dictionaryDescription')}" icon="dictionaryIcon" key="dictionary" label="{resource:getString($constants,'dictionary')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("auxiliary","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'auxiliaryPromptDescription')}" enable="true" icon="auxiliaryPromptIcon" key="auxiliaryPrompt" label="{resource:getString($constants,'auxiliaryPrompt')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'analyteDescription')}" enable="false" icon="analyteIcon" key="analyte" label="{resource:getString($constants,'analyte')}" />
+                  <menuItem description="{resource:getString($constants,'dictionaryDescription')}" enable="false" icon="dictionaryIcon" key="dictionary" label="{resource:getString($constants,'dictionary')}" />
+                  <menuItem description="{resource:getString($constants,'auxiliaryPromptDescription')}" enable="false" icon="auxiliaryPromptIcon" key="auxiliaryPrompt" label="{resource:getString($constants,'auxiliaryPrompt')}" />
                   <html>&lt;hr/&gt;</html>
-                  <code>if(UserCache.getPermission().hasModule("label","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'labelDescription')}" enable="true" icon="labelIcon" key="label" label="{resource:getString($constants,'label')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("standardnote","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'standardNoteDescription')}" icon="standardNoteIcon" key="standardNote" label="{resource:getString($constants,'standardNote')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("testtrailer","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'trailerForTestDescription')}" icon="trailerForTestIcon" key="trailerForTest" label="{resource:getString($constants,'trailerForTest')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'labelDescription')}" enable="false" icon="labelIcon" key="label" label="{resource:getString($constants,'label')}" />
+                  <menuItem description="{resource:getString($constants,'standardNoteDescription')}" enable="false" icon="standardNoteIcon" key="standardNote" label="{resource:getString($constants,'standardNote')}" />
+                  <menuItem description="{resource:getString($constants,'trailerForTestDescription')}" enable="false" icon="trailerForTestIcon" key="trailerForTest" label="{resource:getString($constants,'trailerForTest')}" />
                   <html>&lt;hr/&gt;</html>
-                  <code>if(UserCache.getPermission().hasModule("storageunit","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'storageUnitDescription')}" enable="true" icon="storageUnitIcon" key="storageUnit" label="{resource:getString($constants,'storageUnit')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("storagelocation","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'storageLocationDescription')}" enable="true" icon="storageLocationIcon" key="storageLocation" label="{resource:getString($constants,'storageLocation')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'storageUnitDescription')}" enable="false" icon="storageUnitIcon" key="storageUnit" label="{resource:getString($constants,'storageUnit')}" />
+                  <menuItem description="{resource:getString($constants,'storageLocationDescription')}" enable="false" icon="storageLocationIcon" key="storageLocation" label="{resource:getString($constants,'storageLocation')}" />
                   <html>&lt;hr/&gt;</html>
-                  <code>if(UserCache.getPermission().hasModule("instrument","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'instrumentDescription')}" enable="true" icon="instrumentIcon" key="instrument" label="{resource:getString($constants,'instrument')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'instrumentDescription')}" enable="false" icon="instrumentIcon" key="instrument" label="{resource:getString($constants,'instrument')}" />
                   <html>&lt;hr/&gt;</html>
                   <menuItem description="{resource:getString($constants,'scriptletDescription')}" enable="false" icon="scriptletIcon" key="scriptlet" label="{resource:getString($constants,'scriptlet')}" />
-                  <code>if(UserCache.getPermission().hasModule("systemvariable","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'systemVariableDescription')}" icon="systemVariableIcon" key="systemVariable" label="{resource:getString($constants,'systemVariable')}" />
-                  <code>}</code>
-                  <code>if(UserCache.getPermission().hasModule("pws","SELECT")){</code>
-                  <menuItem description="{resource:getString($constants,'pwsInformationDescription')}" icon="sdwisSampleLoginIcon" key="pws" label="{resource:getString($constants,'pwsInformation')}" />
-                  <code>}</code>
+                  <menuItem description="{resource:getString($constants,'systemVariableDescription')}" enable="false" icon="systemVariableIcon" key="systemVariable" label="{resource:getString($constants,'systemVariable')}" />
+                  <menuItem description="{resource:getString($constants,'pwsInformationDescription')}" enable="false" icon="sdwisSampleLoginIcon" key="pws" label="{resource:getString($constants,'pwsInformation')}" />
                 </menuPanel>
               </menuItem>
             </menuPanel>

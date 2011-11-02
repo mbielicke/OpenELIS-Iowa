@@ -42,7 +42,7 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="language" select="locale" />
     <xsl:variable name="props" select="props" />
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen id="SendoutOrder" name="{resource:getString($constants,'kitOrder')}">
+    <screen id="SendoutOrder" name="{resource:getString($constants,'sendoutOrder')}">
       <HorizontalPanel padding="0" spacing="0">
 <!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">

@@ -1194,7 +1194,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         ScreenWindow modal;
         try {
                 modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-                modal.setName(consts.get("kitOrder"));
+                modal.setName(consts.get("sendoutOrder"));
                 if (sendoutOrderScreen == null)
                     sendoutOrderScreen = new SendoutOrderScreen(modal);
 
