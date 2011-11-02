@@ -25,6 +25,9 @@
  */
 package org.openelis.modules.main.client;
 
+import org.openelis.cache.UserCache;
+import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -178,22 +181,13 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     }
 
     protected void initialize() {
-        addClickHandler("preference", new ClickHandler() {
+        addClickHandler("preference", "openelis", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
 
-        addClickHandler("FavoritesMenu", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                CollapsePanel cp = (CollapsePanel)def.getWidget("favoritesCollapse");
-                if (cp.isOpen)
-                    cp.close();
-                else
-                    cp.open();
-            }
-        });
-        addClickHandler("Logout", new ClickHandler() {
+        addClickHandler("logout", "openelis", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     logout();
@@ -204,7 +198,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("quickEntry", new ClickHandler() {
+        addClickHandler("quickEntry", "quickentry", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -223,7 +217,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("verification", new ClickHandler() {
+
+        addClickHandler("verification", "verification", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -242,7 +237,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("tracking", new ClickHandler() {
+
+        addClickHandler("tracking", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -261,7 +257,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("environmentalSampleLogin", new ClickHandler() {
+
+        addClickHandler("environmentalSampleLogin", "sampleenvironmental", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -281,7 +278,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("clinicalSampleLogin", new ClickHandler() {
+        addClickHandler("clinicalSampleLogin", "sampleclinical", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -302,7 +299,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("animalSampleLogin", new ClickHandler() {
+        addClickHandler("animalSampleLogin", "sampleanimal", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -322,7 +319,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("newbornScreeningSampleLogin", new ClickHandler() {
+        addClickHandler("newbornScreeningSampleLogin", "samplenewborn", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -343,7 +340,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("ptSampleLogin", new ClickHandler() {
+        addClickHandler("ptSampleLogin", "samplept", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -362,7 +359,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("sdwisSampleLogin", new ClickHandler() {
+
+        addClickHandler("sdwisSampleLogin", "samplesdwis", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -381,7 +379,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("privateWellWaterSampleLogin", new ClickHandler() {
+
+        addClickHandler("privateWellWaterSampleLogin", "sampleprivatewell", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -401,7 +400,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("project", new ClickHandler() {
+        addClickHandler("project", "project", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -420,7 +419,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("provider", new ClickHandler() {
+
+        addClickHandler("provider", "provider", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -439,7 +439,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("organization", new ClickHandler() {
+
+        addClickHandler("organization", "organization", new ClickHandler() {
             public void onClick(ClickEvent event) {
 
                 GWT.runAsync(new RunAsyncCallback() {
@@ -459,7 +460,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("worksheetCreation", new ClickHandler() {
+
+        addClickHandler("worksheetCreation", "worksheet", new ClickHandler() {
             public void onClick(ClickEvent event) {
 
                 GWT.runAsync(new RunAsyncCallback() {
@@ -479,7 +481,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("worksheetCompletion", new ClickHandler() {
+
+        addClickHandler("worksheetCompletion", "worksheet", new ClickHandler() {
             public void onClick(ClickEvent event) {
 
                 GWT.runAsync(new RunAsyncCallback() {
@@ -499,12 +502,14 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("addOrCancel", new ClickHandler() {
+
+        addClickHandler("addOrCancel", null, new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        addClickHandler("reviewAndRelease", new ClickHandler() {
+
+        addClickHandler("reviewAndRelease", "samplecompleterelease", new ClickHandler() {
             public void onClick(ClickEvent event) {
 
                 GWT.runAsync(new RunAsyncCallback() {
@@ -525,7 +530,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("storage", new ClickHandler() {
+        addClickHandler("storage", "storage", new ClickHandler() {
             public void onClick(ClickEvent event) {
 
                 GWT.runAsync(new RunAsyncCallback() {
@@ -546,7 +551,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("toDo", new ClickHandler() {
+        addClickHandler("toDo", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -565,13 +570,14 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("labelFor", new ClickHandler() {
+
+        addClickHandler("labelFor", null, new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
 
-        addClickHandler("storageLocation", new ClickHandler() {
+        addClickHandler("storageLocation", "storagelocation", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -591,7 +597,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("QC", new ClickHandler() {
+        addClickHandler("QC", "qc", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -611,7 +617,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("analyteParameter", new ClickHandler() {
+        addClickHandler("analyteParameter", "analyteparameter", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -631,7 +637,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("internalOrder", new ClickHandler() {
+        addClickHandler("internalOrder", "internalorder", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -651,7 +657,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("vendorOrder", new ClickHandler() {
+        addClickHandler("vendorOrder", "vendororder", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -671,7 +677,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("kitOrder", new ClickHandler() {
+        addClickHandler("sendoutOrder", "sendoutorder", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -691,7 +697,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("fillOrder", new ClickHandler() {
+        addClickHandler("fillOrder", "fillorder", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -710,7 +716,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("shipping", new ClickHandler() {
+
+        addClickHandler("shipping", "shipping", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -730,7 +737,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("buildKits", new ClickHandler() {
+        addClickHandler("buildKits", "buildkits", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -749,7 +756,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("inventoryReceipt", new ClickHandler() {
+        
+        addClickHandler("inventoryReceipt", "inventoryreceipt", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -768,7 +776,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("inventoryTransfer", new ClickHandler() {
+
+        addClickHandler("inventoryTransfer", "inventorytransfer", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -787,7 +796,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("inventoryAdjustment", new ClickHandler() {
+
+        addClickHandler("inventoryAdjustment", "inventoryadjustment", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -806,7 +816,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("inventoryItem", new ClickHandler() {
+        
+        addClickHandler("inventoryItem", "inventoryitem", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -826,7 +837,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("instrument", new ClickHandler() {
+        addClickHandler("instrument", "instrument", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -846,7 +857,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("test", new ClickHandler() {
+        addClickHandler("test", "test", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -865,7 +876,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("method", new ClickHandler() {
+
+        addClickHandler("method", "method", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -885,7 +897,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("panel", new ClickHandler() {
+        addClickHandler("panel", "panel", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -905,7 +917,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("QAEvent", new ClickHandler() {
+        addClickHandler("QAEvent", "qaevent", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -924,7 +936,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("labSection", new ClickHandler() {
+        
+        addClickHandler("labSection", "section", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -943,7 +956,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("analyte", new ClickHandler() {
+        
+        addClickHandler("analyte", "analyte", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -962,7 +976,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("dictionary", new ClickHandler() {
+        
+        addClickHandler("dictionary", "dictionary", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -982,7 +997,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("auxiliaryPrompt", new ClickHandler() {
+        addClickHandler("auxiliaryPrompt", "auxiliary", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1002,7 +1017,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("label", new ClickHandler() {
+        addClickHandler("label", "label", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1022,7 +1037,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("standardNote", new ClickHandler() {
+        addClickHandler("standardNote", "standardnote", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1041,7 +1056,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("trailerForTest", new ClickHandler() {
+
+        addClickHandler("trailerForTest", "testtrailer", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1061,7 +1077,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("storageUnit", new ClickHandler() {
+        addClickHandler("storageUnit", "storageunit", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1080,7 +1096,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        addClickHandler("storageLocation", new ClickHandler() {
+        
+        addClickHandler("storageLocation", "storagelocation", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1100,12 +1117,13 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("scriptlet", new ClickHandler() {
+        addClickHandler("scriptlet", "scriptlet", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 // browser.addScreen(new )
             }
         });
-        addClickHandler("systemVariable", new ClickHandler() {
+
+        addClickHandler("systemVariable", "systemvariable", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1125,7 +1143,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("pws", new ClickHandler() {
+        addClickHandler("pws", "pws", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1145,7 +1163,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("testReport", new ClickHandler() {
+        addClickHandler("testReport", "test", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1165,7 +1183,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("sampleLoginLabelReport", new ClickHandler() {
+        addClickHandler("sampleLoginLabelReport", "r_loginlabel", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1185,7 +1203,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("sampleLoginLabelAdditionalReport", new ClickHandler() {
+        addClickHandler("sampleLoginLabelAdditionalReport", "r_loginlabel", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1205,7 +1223,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
         
-        addClickHandler("dataView", new ClickHandler() {
+        addClickHandler("dataView", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1225,7 +1243,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("finalReport", new ClickHandler() {
+        addClickHandler("finalReport", "r_final", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1245,7 +1263,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("finalReportBatch", new ClickHandler() {
+        addClickHandler("finalReportBatch", "r_finalbatch", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1265,7 +1283,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("finalReportBatchReprint", new ClickHandler() {
+        addClickHandler("finalReportBatchReprint", "r_finalbatch", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1285,7 +1303,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("verificationReport", new ClickHandler() {
+        addClickHandler("verificationReport", "verification", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1305,7 +1323,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("orderRequestForm", new ClickHandler() {
+        addClickHandler("orderRequestForm", "sendoutorder", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1325,7 +1343,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("sampleInhouseReport", new ClickHandler() {
+        addClickHandler("sampleInhouseReport", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1345,7 +1363,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("volumeReport", new ClickHandler() {
+        addClickHandler("volumeReport", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1365,7 +1383,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("turnaround", new ClickHandler() {
+        addClickHandler("turnaround", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1385,7 +1403,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("QAByOrganization", new ClickHandler() {
+        addClickHandler("QAByOrganization", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1405,7 +1423,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("sdwisUnloadReport", new ClickHandler() {
+        addClickHandler("sdwisUnloadReport", "samplesdwis", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1424,48 +1442,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-
-//        addClickHandler("organizationRef", new ClickHandler() {
-//            public void onClick(ClickEvent event) {
-//                GWT.runAsync(new RunAsyncCallback() {
-//                    public void onSuccess() {
-//                        try {
-//                            browser.addScreen(new ClientNotificationReportScreen());
-//                        } catch (Throwable e) {
-//                            e.printStackTrace();
-//                            Window.alert(e.getMessage());
-//                        }
-//                    }
-//
-//                    public void onFailure(Throwable caught) {
-//                        caught.printStackTrace();
-//                        Window.alert(caught.getMessage());
-//                    }
-//                });
-//            }
-//        });
-
-//        addClickHandler("organizationRelRef", new ClickHandler() {
-//            public void onClick(ClickEvent event) {
-//                GWT.runAsync(new RunAsyncCallback() {
-//                    public void onSuccess() {
-//                        try {
-//                            browser.addScreen(new ClientNotificationReleasedReportScreen());
-//                        } catch (Throwable e) {
-//                            e.printStackTrace();
-//                            Window.alert(e.getMessage());
-//                        }
-//                    }
-//
-//                    public void onFailure(Throwable caught) {
-//                        caught.printStackTrace();
-//                        Window.alert(caught.getMessage());
-//                    }
-//                });
-//            }
-//        });
         
-        addClickHandler("billingRef", new ClickHandler() {
+        addClickHandler("billingRef", "system", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1485,7 +1463,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
         
-        addClickHandler("orderRecurrence", new ClickHandler() {
+        addClickHandler("orderRecurrence", "system", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
@@ -1613,11 +1591,17 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     /**
      * register a click handler
      */
-    private void addClickHandler(String screenName, ClickHandler handler) {
+    private void addClickHandler(String screenName, String modulePermission, ClickHandler handler) {
         MenuItem item;
+        ModulePermission perm;
 
         item = ((MenuItem)def.getWidget(screenName));
-        if (item != null)
-            item.addClickHandler(handler);
+        if (item != null && modulePermission != null) {
+            perm = UserCache.getPermission().getModule(modulePermission);
+            if (perm != null && perm.hasSelectPermission()) {
+                item.enable(true);
+                item.addClickHandler(handler);
+            }
+        }
     }
 }
