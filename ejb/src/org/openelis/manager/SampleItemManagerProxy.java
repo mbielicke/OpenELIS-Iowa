@@ -31,6 +31,7 @@ import java.util.HashMap;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleItemLocal;
@@ -176,5 +177,9 @@ public class SampleItemManagerProxy {
                 numOfUnresolved = numOfUnresolved + man.getAnalysisAt(i).update(idHash);
 
         } while (numOfUnresolved != 0);
+    }
+
+    protected Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
+        return Datetime.getInstance(begin, end);
     }
 }
