@@ -38,12 +38,14 @@ import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.HasActionHandlers;
+import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindow;
@@ -69,9 +71,12 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         DONE
     };
 
-    protected Integer                              anInPrepId, auxAlphaLowerId, auxAlphaMixedId,
-                    auxAlphaUpperId, auxDateId, auxDateTimeId, auxDefaultId, auxDictionaryId,
-                    auxNumericId, auxTimeId;
+    protected Integer                              anLoggedInId, anInPrepId, anCompletedId,
+                                                   anReleasedId, anCancelledId,
+                                                   auxAlphaLowerId, auxAlphaMixedId,
+                                                   auxAlphaUpperId, auxDateId, auxDateTimeId,
+                                                   auxDefaultId, auxDictionaryId,
+                                                   auxNumericId, auxTimeId;
     protected Screen                               screen;
 
     private ArrayList<SampleDataBundle>            bundles, analysisDataBundles;
@@ -83,7 +88,11 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         types = new HashMap<Integer, ResultValidator.Type>();
         try {
+            anLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
             anInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
+            anCompletedId = DictionaryCache.getIdBySystemName("analysis_completed");
+            anReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
+            anCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
             auxAlphaLowerId = DictionaryCache.getIdBySystemName("aux_alpha_lower");
             types.put(auxAlphaLowerId, ResultValidator.Type.ALPHA_LOWER);
             auxAlphaMixedId = DictionaryCache.getIdBySystemName("aux_alpha_mixed");
@@ -229,6 +238,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         SampleManager manager;
         TestManager testMan;
         TestPrepManager prepMan;
+        TestSectionViewDO sectionVDO;
 
         analysisDataBundle = analysisDataBundles.get(0);
         manager = analysisDataBundle.getSampleManager();
@@ -237,47 +247,45 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
         prepBundles = new ArrayList<ArrayList<Object>>();
         for (int i = 0; i < testIds.size(); i++ ) {
             idVO = testIds.get(i);
+            sectionVDO = tsVDO;
 
             if (idVO.getId() != null) {
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(idVO.getId());
 
-                if (testMan.canAssignThisSection(tsVDO)) {
-                    if (i == 0) // the first test id row will be in the analysis
-                                // manager already
-                        addedIndex = analysisDataBundle.getAnalysisIndex();
-                    else
-                        addedIndex = anMan.addAnalysis();
-
-                    anMan.setTestAt(testMan, addedIndex);
-                    if (tsVDO != null)
-                        anMan.getAnalysisAt(addedIndex).setSectionId(tsVDO.getSectionId());
-
-                    anBundle = anMan.getBundleAt(addedIndex);
-                    bundles.add(anBundle);
-
-                    // create prep bundle and add to list for prep picker screen
-                    try {
-                        prepMan = testMan.getPrepTests();
-                        if (prepMan.count() > 0) {
-                            prepBundle = new ArrayList<Object>(2);
-                            prepBundle.add(anBundle);
-                            prepBundle.add(prepMan);
-                            prepBundles.add(prepBundle);
-                        }
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                    }
-                } else {
-                    if (tsVDO != null) {
-                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTestForSection",
-                                                              testMan.getTest().getName(),
-                                                              testMan.getTest().getMethodName(),
-                                                              tsVDO.getSection()));
-                    } else {
+                if (!testMan.canAssignThisSection(sectionVDO)) {
+                    sectionVDO = testMan.getTestSections().getDefaultSection();
+                    if (sectionVDO == null || !testMan.canAssignThisSection(sectionVDO)) {
                         errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
                                                               testMan.getTest().getName(),
                                                               testMan.getTest().getMethodName()));
+                        continue;
                     }
+                }
+                        
+                if (i == 0) // the first test id row will be in the analysis
+                            // manager already
+                    addedIndex = analysisDataBundle.getAnalysisIndex();
+                else
+                    addedIndex = anMan.addAnalysis();
+
+                anMan.setTestAt(testMan, addedIndex);
+                if (sectionVDO != null)
+                    anMan.getAnalysisAt(addedIndex).setSectionId(sectionVDO.getSectionId());
+
+                anBundle = anMan.getBundleAt(addedIndex);
+                bundles.add(anBundle);
+
+                // create prep bundle and add to list for prep picker screen
+                try {
+                    prepMan = testMan.getPrepTests();
+                    if (prepMan.count() > 0) {
+                        prepBundle = new ArrayList<Object>(2);
+                        prepBundle.add(anBundle);
+                        prepBundle.add(prepMan);
+                        prepBundles.add(prepBundle);
+                    }
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
                 }
             } else {
                 anMan.removeTestAt(analysisDataBundle.getAnalysisIndex());
@@ -437,12 +445,17 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
 
             prepDO = checkForPrepTest(anMan, tpId);
 
-            if (prepDO != null) { // prep already exists
+            if (prepDO != null && !anCancelledId.equals(prepDO.getStatusId())) { // prep already exists
                 anDO = anMan.getAnalysisAt(parentIndex);
 
                 anDO.setPreAnalysisId(prepDO.getId());
-                anDO.setStatusId(anInPrepId);
-                anDO.setAvailableDate(null);
+                if (anCompletedId.equals(prepDO.getStatusId()) || anReleasedId.equals(prepDO.getStatusId())) {
+                    anDO.setStatusId(anLoggedInId);
+                    anDO.setAvailableDate(Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+                } else {
+                    anDO.setStatusId(anInPrepId);
+                    anDO.setAvailableDate(null);
+                }
                 anDO.setPreAnalysisTest(prepDO.getTestName());
                 anDO.setPreAnalysisMethod(prepDO.getMethodName());
             } else { // prep doesn't exist in the manager yet
@@ -451,22 +464,24 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                     testMan = TestManager.fetchWithPrepTestsSampleTypes(tpId);
                     tsVDO = new TestSectionViewDO();
                     tsVDO.setSectionId(sectionId);
-                    if (testMan.canAssignThisSection(tsVDO)) {
-                        addedIndex = anMan.addPreAnalysis(parentIndex);
-                        indexLinks.put(prepBundle, addedIndex);
-                        anDO = anMan.getAnalysisAt(addedIndex);
-                        anMan.setTestAt(testMan, addedIndex);
-                        bundles.add(anMan.getBundleAt(addedIndex));
-                    } else {
-                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTestForSection",
-                                                              testMan.getTest().getName(),
-                                                              testMan.getTest().getMethodName(),
-                                                              tsVDO.getSection()));
+                    if (!testMan.canAssignThisSection(tsVDO)) {
+                        tsVDO = testMan.getTestSections().getDefaultSection();
+                        if (tsVDO == null || !testMan.canAssignThisSection(tsVDO)) {
+                            errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
+                                                                  testMan.getTest().getName(),
+                                                                  testMan.getTest().getMethodName()));
+                            return;
+                        }
                     }
+                    addedIndex = anMan.addPreAnalysis(parentIndex);
+                    indexLinks.put(prepBundle, addedIndex);
+                    anDO = anMan.getAnalysisAt(addedIndex);
+                    anMan.setTestAt(testMan, addedIndex);
+                    anDO.setSectionId(tsVDO.getSectionId());
+                    bundles.add(anMan.getBundleAt(addedIndex));
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
-
             }
         } catch (Exception anyE) {
             errorsList.add(new FormErrorException());

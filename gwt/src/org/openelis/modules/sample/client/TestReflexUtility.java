@@ -209,18 +209,21 @@ public class TestReflexUtility extends Screen implements
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(reflexVDO.getAddTestId());
                 tsVDO = new TestSectionViewDO();
                 tsVDO.setSectionId(sectionId);
-                if (testMan.canAssignThisSection(tsVDO)) {
-                    anMan = itemMan.getAnalysisAt(anaBundle.getSampleItemIndex());
-                    anVDO = anMan.getAnalysisAt(anaBundle.getAnalysisIndex());
-                    addedIndex = anMan.addReflexAnalysis(anVDO.getId(), rVDO.getId());
-                    anMan.setTestAt(testMan, addedIndex);
-                    bundles.add(anMan.getBundleAt(addedIndex));
-                } else {
-                    errorsList.add(new FormErrorException("insufficientPrivilegesAddTestForSection",
-                                                          testMan.getTest().getName(),
-                                                          testMan.getTest().getMethodName(),
-                                                          tsVDO.getSection()));
+                if (!testMan.canAssignThisSection(tsVDO)) {
+                    tsVDO = testMan.getTestSections().getDefaultSection();
+                    if (tsVDO == null || !testMan.canAssignThisSection(tsVDO)) {
+                        errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",
+                                                              testMan.getTest().getName(),
+                                                              testMan.getTest().getMethodName()));
+                        return;
+                    }
                 }
+                anMan = itemMan.getAnalysisAt(anaBundle.getSampleItemIndex());
+                anVDO = anMan.getAnalysisAt(anaBundle.getAnalysisIndex());
+                addedIndex = anMan.addReflexAnalysis(anVDO.getId(), rVDO.getId());
+                anMan.setTestAt(testMan, addedIndex);
+                anVDO.setSectionId(tsVDO.getSectionId());
+                bundles.add(anMan.getBundleAt(addedIndex));
             }
         } catch(Exception e) {
             Window.alert("addReflexTest: "+e.getMessage());
