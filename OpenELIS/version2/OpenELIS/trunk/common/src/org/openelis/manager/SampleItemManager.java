@@ -30,16 +30,19 @@ import java.util.ArrayList;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.screen.Calendar;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
 public class SampleItemManager implements RPC {
     private static final long                         serialVersionUID = 1L;
 
     protected Integer                                 sampleId;
-    protected transient Integer                       anInPrepId;
+    protected transient Integer                       anLoggedInId, anInPrepId,
+                                                      anCompletedId, anReleasedId;
     protected SampleManager                           sampleManager;
     private int                                       tempId;
     protected ArrayList<SampleItemListItem>           items;
@@ -282,8 +285,13 @@ public class SampleItemManager implements RPC {
         anDO.setPreAnalysisId(prepDO.getId());
         anDO.setPreAnalysisTest(prepDO.getTestName());
         anDO.setPreAnalysisMethod(prepDO.getMethodName());
-        anDO.setStatusId(anInPrepId);
-        anDO.setAvailableDate(null);
+        if (anCompletedId.equals(prepDO.getStatusId()) || anReleasedId.equals(prepDO.getStatusId())) {
+            anDO.setStatusId(anLoggedInId);
+            anDO.setAvailableDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
+        } else {
+            anDO.setStatusId(anInPrepId);
+            anDO.setAvailableDate(null);
+        }
     }
 
     // these are friendly methods so only managers and proxies can call this
@@ -353,8 +361,12 @@ public class SampleItemManager implements RPC {
     }
     
     private void loadDictionaryEntries() throws Exception {
-        if (anInPrepId == null) 
+        if (anInPrepId == null) {
+            anLoggedInId = proxy().getIdFromSystemName("analysis_logged_in");
             anInPrepId = proxy().getIdFromSystemName("analysis_inprep");
+            anCompletedId = proxy().getIdFromSystemName("analysis_completed");
+            anReleasedId = proxy().getIdFromSystemName("analysis_released");
+        }
     }
 
     private static SampleItemManagerProxy proxy() {
