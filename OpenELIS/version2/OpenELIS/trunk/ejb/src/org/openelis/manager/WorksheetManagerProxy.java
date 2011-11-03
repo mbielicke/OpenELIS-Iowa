@@ -27,15 +27,11 @@ package org.openelis.manager;
 
 import java.util.Iterator;
 
-import org.openelis.domain.InstrumentLogDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.local.InstrumentLogLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.utils.EJBFactory;
 
@@ -102,8 +98,6 @@ public class WorksheetManagerProxy {
     public WorksheetManager add(WorksheetManager manager) throws Exception {
         Integer                 id;
         Iterator<SampleManager> iter;
-        InstrumentLogDO         ilDO;
-        InstrumentLogLocal      il;
         LockLocal               lock;
         SampleManager           sManager;
 
@@ -123,6 +117,7 @@ public class WorksheetManagerProxy {
                     sManager.update();
                     lock.unlock(ReferenceTable.SAMPLE, sManager.getSample().getId());  
                     manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
+                    sManager.updateCache();
                 }
             }
         }
@@ -158,6 +153,7 @@ public class WorksheetManagerProxy {
                     sManager.update();
                     lock.unlock(ReferenceTable.SAMPLE, sManager.getSample().getId());  
                     manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
+                    sManager.updateCache();
                 }
             }
         }
