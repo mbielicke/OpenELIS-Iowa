@@ -690,7 +690,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                             anDO = anMan.getAnalysisAt(j);
 
                             if ( !currentId.equals(anDO.getId()) && anDO.getTestName() != null &&
-                                anDO.getTestName().startsWith(match)) {
+                                anDO.getTestName().startsWith(match) && !analysisCancelledId.equals(anDO.getStatusId())) {
                                 row = new TableDataRow(
                                                        anDO.getId(),
                                                        anDO.getTestName() +

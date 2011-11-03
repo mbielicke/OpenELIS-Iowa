@@ -26,9 +26,11 @@
 package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.manager.SampleItemManager.SampleItemListItem;
 
@@ -80,5 +82,9 @@ public class SampleItemManagerProxy {
             if (item.analysis != null)
                 man.getAnalysisAt(i).validate(sequenceNum, man.getSampleItemAt(i).getTypeOfSampleId(), man.getSampleManager().getSample().getDomain(), errorsList);
         }
+    }
+
+    protected Datetime getCurrentDatetime(byte begin, byte end) throws Exception {
+        return Calendar.getCurrentDatetime(begin, end);
     }
 }
