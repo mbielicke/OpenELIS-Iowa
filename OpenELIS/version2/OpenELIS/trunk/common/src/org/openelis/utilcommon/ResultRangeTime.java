@@ -48,8 +48,14 @@ public class ResultRangeTime implements ResultRange {
             if (st.length != 2)
             	throw new ParseException("illegalTimeValueException");
             
+            if (st[0].length() > 2)
+                st[0] = st[0].substring(st[0].length()-2, st[0].length());
             hrs = Integer.parseInt(st[0]);
+
+            if (st[1].length() > 2)
+                st[1] = st[1].substring(st[1].length()-2, st[1].length());
             min = Integer.parseInt(st[1]);            
+            
             if (hrs < 0 || hrs > 23 || min < 0 || min > 59) 
             	throw new ParseException("illegalTimeValueException");
 
