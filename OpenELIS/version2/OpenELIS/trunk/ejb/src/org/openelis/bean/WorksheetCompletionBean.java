@@ -1354,7 +1354,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             
                         case Cell.CELL_TYPE_NUMERIC:
                             if (DateUtil.isCellDateFormatted(cell))
-                                value = cell.getDateCellValue();
+                                value = new Datetime(Datetime.YEAR, Datetime.MINUTE, cell.getDateCellValue());
                             else
                                 value = cell.getNumericCellValue();
                             break;
@@ -1369,7 +1369,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                 case Cell.CELL_TYPE_NUMERIC:
                     if (DateUtil.isCellDateFormatted(cell))
-                        value = cell.getDateCellValue();
+                        value = new Datetime(Datetime.YEAR, Datetime.MINUTE, cell.getDateCellValue());
                     else
                         value = cell.getNumericCellValue();
                     break;
