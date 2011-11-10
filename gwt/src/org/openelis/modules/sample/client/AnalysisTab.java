@@ -140,7 +140,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                                         analysisOnHoldId, analysisRequeueId,
                                                         analysisCompletedId, analysisCancelledId,
                                                         analysisReleasedId, analysisInPrepId,
-                                                        actionReleasedId, newTestId;;
+                                                        actionReleasedId;
 
     private Confirm                                     changeTestConfirm;
     protected ScreenService                             panelService, testService,
@@ -168,30 +168,26 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 test.setSelection(analysis.getTestId(), analysis.getTestName());
             }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {    
-                /*
-                 * if we don't make this variable a member of the class and declare it as 
-                 * final in this method, then when it gets used by the handler for the Confirm 
-                 * window's SelectionEvent, which is only created when the window is null, 
-                 * the same value will be used after the first time the window is brought up.  
-                 */
-                newTestId = event.getValue();
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                TableDataRow selectedRow;
+
+                selectedRow = test.getSelection();
                 //
                 // we allow test&method to change if analysis has not been committed. However, 
                 // if analysis has been committed, then we will only allow method to be changed.
                 // For those cases that the user blanks the entire field (selecting nothing;
-                // newtestid == null), we will put the test back in the dropdown.
+                // selectedRow == null), we will put the test back in the dropdown.
                 //
                 if (analysis.getId() == null || analysis.getId() < 0) {
-                    testChanged(event.getValue());
+                    testChanged();
                     return;
-                } else if (newTestId == null) {
+                } else if (selectedRow == null) {
                     test.setSelection(analysis.getTestId(), analysis.getTestName());
                     method.setValue(analysis.getMethodName());                                       
                     return;
                 }
 
-                if (! DataBaseUtil.isSame(newTestId, analysis.getTestId())) {
+                if (! DataBaseUtil.isSame(((TestMethodVO)selectedRow.data).getTestId(), analysis.getTestId())) {
                     if (changeTestConfirm == null) {
                         changeTestConfirm = new Confirm(Confirm.Type.WARN,
                                                         consts.get("loseResultsCaption"),
@@ -206,7 +202,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                         method.setValue(analysis.getMethodName());                                       
                                         break;
                                     case 1:
-                                        testChanged(newTestId);
+                                        testChanged();
                                         break;
                                 }
                             }
@@ -344,9 +340,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
                     for (i = 0; i < autoList.size(); i++ ) {
                         autoDO = autoList.get(i);
-                        row = new TableDataRow(autoDO.getTestId(),
-                                               autoDO.getTestName(),
-                                               autoDO.getMethodName(),
+                        row = new TableDataRow(i, autoDO.getTestName(), autoDO.getMethodName(),
                                                autoDO.getTestDescription());
                         row.data = autoDO;
                         model.add(row);
@@ -1039,8 +1033,9 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         return model;
     }
 
-    private void testChanged(Integer id) {
+    private void testChanged() {
         TableDataRow selectedRow;
+        TestMethodVO tmVO;
 
         /*
          * we need to see if what they selected is a test or a panel
@@ -1048,10 +1043,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         try {
             selectedRow = test.getSelection();
             if (selectedRow != null) {
-                if (((TestMethodVO)selectedRow.data).getMethodId() == null)
-                    ActionEvent.fire(this, Action.PANEL_ADDED, id);
+                tmVO = (TestMethodVO)selectedRow.data;
+                if (tmVO.getMethodId() == null)
+                    ActionEvent.fire(this, Action.PANEL_ADDED, tmVO.getTestId());
                 else
-                    ActionEvent.fire(this, Action.ANALYSIS_ADDED, id);
+                    ActionEvent.fire(this, Action.ANALYSIS_ADDED, tmVO.getTestId());
             } else {
                 ActionEvent.fire(this, Action.ANALYSIS_ADDED, null);
             }

@@ -579,7 +579,10 @@ public class WorksheetCreationScreen extends Screen {
                                     data = (WorksheetCreationVO)row.data;
                                     
                                     if (formatId == null) {
-                                        formatId = data.getWorksheetFormatId();
+                                        if (data.getWorksheetFormatId() != null)
+                                            formatId = data.getWorksheetFormatId();
+                                        else
+                                            formatId = formatTotal;
                                     } else if (!formatId.equals(data.getWorksheetFormatId())) {
                                         message.append(consts.get("accessionNum")).append(data.getAccessionNumber())
                                                .append("\t").append(data.getTestName().trim()).append(", ")
