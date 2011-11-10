@@ -219,7 +219,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
             for (a = 0; a < waManager.count(); a++) {
                 waDO = waManager.getWorksheetAnalysisAt(a);
-                isEditable = "N".equals(waDO.getIsFromOther());
                 
                 if (waDO.getWorksheetAnalysisId() != null) {
                     waLinkDO = worksheetAnalysisLocal.fetchById(waDO.getWorksheetAnalysisId());
@@ -243,6 +242,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 
                 cellNameIndex = i+"."+a;
                 if (waDO.getAnalysisId() != null) {
+                    isEditable = "N".equals(waDO.getIsFromOther());
                     bundle = waManager.getBundleAt(a);
                     sManager = bundle.getSampleManager();
                     sDomain = sManager.getDomainManager();
@@ -477,10 +477,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                     // started (override)
                     cell = oRow.createCell(6);
-                    if (isEditable)
-                        cell.setCellStyle(styles.get("row_edit"));
-                    else
-                        cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellStyle(styles.get("row_edit"));
                     if (waDO.getQcStartedDate() != null)
                         cell.setCellValue(waDO.getQcStartedDate().toString());
                     cellName = wb.createName();
@@ -621,9 +618,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     rowIndex++;
 
                 waDO = waManager.getWorksheetAnalysisAt(a);
-                editLocked = "Y".equals(waDO.getIsFromOther());
                 if (waDO.getAnalysisId() != null) {
                     anaModified = false;
+                    editLocked = "Y".equals(waDO.getIsFromOther());
+
                     bundle = waManager.getBundleAt(a);
                     newBundle = lockManagerIfNeeded(manager, waDO, bundle);
                     if (newBundle != null) {
@@ -792,54 +790,45 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     }
                 } else if (waDO.getQcId() != null) {
                     wqrManager = waManager.getWorksheetQcResultAt(a);
-                    if (!editLocked) {
-                        for (r = 0; r < wqrManager.count(); r++, rowIndex++) {
-                            wqrVDO = wqrManager.getWorksheetQcResultAt(r);
-                            for (c = 0; c < 30; c++) {
-                                value = getValueFromCellByCoords(wb.getSheet("Worksheet"), rowIndex, 9 + c);
-                                if (value != null)
-                                    wqrVDO.setValueAt(c, value.toString());
-                            }
+                    for (r = 0; r < wqrManager.count(); r++, rowIndex++) {
+                        wqrVDO = wqrManager.getWorksheetQcResultAt(r);
+                        for (c = 0; c < 30; c++) {
+                            value = getValueFromCellByCoords(wb.getSheet("Worksheet"), rowIndex, 9 + c);
+                            if (value != null)
+                                wqrVDO.setValueAt(c, value.toString());
                         }
-    
-                        if (waDO.getQcSystemUserId() == null) {
-                            value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_users."+i+"."+a);
-                            if (value != null) {
-                                tokenizer = new StringTokenizer((String)value, ",");
-                                if (tokenizer.hasMoreTokens()) {
-                                    userToken = tokenizer.nextToken();
-                                    try {
-                                        userVO = EJBFactory.getUserCache().getSystemUser(userToken);
-                                        if (userVO != null) {
-                                            waDO.setQcSystemUserId(userVO.getId());
-                                        } else {
-                                            errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
-                                        }
-                                    } catch (Exception anyE) {
+                    }
+
+                    if (waDO.getQcSystemUserId() == null) {
+                        value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_users."+i+"."+a);
+                        if (value != null) {
+                            tokenizer = new StringTokenizer((String)value, ",");
+                            if (tokenizer.hasMoreTokens()) {
+                                userToken = tokenizer.nextToken();
+                                try {
+                                    userVO = EJBFactory.getUserCache().getSystemUser(userToken);
+                                    if (userVO != null) {
+                                        waDO.setQcSystemUserId(userVO.getId());
+                                    } else {
                                         errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
                                     }
-                                }
-                            } else {
-                                try {
-                                    userVO = EJBFactory.getUserCache().getSystemUser();
-                                    waDO.setQcSystemUserId(userVO.getId());
                                 } catch (Exception anyE) {
-                                    errorList.add(new FormErrorException("defaultWorksheetQcUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
+                                    errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
                                 }
                             }
+                        } else {
+                            try {
+                                userVO = EJBFactory.getUserCache().getSystemUser();
+                                waDO.setQcSystemUserId(userVO.getId());
+                            } catch (Exception anyE) {
+                                errorList.add(new FormErrorException("defaultWorksheetQcUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
+                            }
                         }
-                        
-                        value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
-                        if (value != null && waDO.getQcStartedDate() == null)
-                            waDO.setQcStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
-                    } else {
-                        //
-                        // increment rowIndex and r since we skipped running through
-                        // the result records due to permissions or status
-                        //
-                        r = wqrManager.count();
-                        rowIndex += r;
                     }
+                    
+                    value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
+                    if (value != null && waDO.getQcStartedDate() == null)
+                        waDO.setQcStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
                 }
             }
             //
