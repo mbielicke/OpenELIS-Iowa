@@ -50,7 +50,10 @@ import org.openelis.utils.Auditable;
                      + " where s.id in (:ids) and aq.dictionary.systemName = 'qaevent_override'"),
    @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideBySampleId",
                query = "select aq from AnalysisQaevent as aq left join aq.analysis a left join a.sampleItem si left join si.sample s"
-                     + " where s.id = :id and aq.dictionary.systemName = 'qaevent_override'")})
+                     + " where s.id = :id and aq.dictionary.systemName = 'qaevent_override'"),
+   @NamedQuery( name = "AnalysisQaevent.FetchNotBillableByAnalysisId",
+               query = "select new org.openelis.domain.AnalysisQaEventDO(aq.id, aq.analysisId, aq.qaeventId, " +
+                       "aq.typeId, aq.isBillable) from AnalysisQaevent aq where aq.analysisId = :id and aq.isBillable = 'N' ")})
 @Entity
 @Table(name = "analysis_qaevent")
 @EntityListeners( {AuditUtil.class})

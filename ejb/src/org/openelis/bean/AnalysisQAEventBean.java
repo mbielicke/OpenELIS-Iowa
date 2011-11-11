@@ -106,6 +106,20 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
+    public ArrayList<AnalysisQaEventDO> fetchNotBillableByAnalysisId(Integer analysisId) throws Exception {
+        Query query;
+        List returnList;
+        
+        query = manager.createNamedQuery("AnalysisQaevent.FetchNotBillableByAnalysisId");
+        query.setParameter("id", analysisId);
+        returnList = query.getResultList();
+        
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
+    
     public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisIdList(ArrayList<Integer> ids) throws Exception {
         Query query;
         List returnList;

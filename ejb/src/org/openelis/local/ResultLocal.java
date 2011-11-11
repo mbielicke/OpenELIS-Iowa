@@ -31,6 +31,7 @@ import java.util.HashMap;
 import javax.ejb.Local;
 
 import org.openelis.domain.AnalyteDO;
+import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
@@ -61,6 +62,8 @@ public interface ResultLocal {
 	public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIds(ArrayList<Integer> analysisIds) throws Exception;
 
 	public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIdAndRowGroup(Integer analysisId, Integer rowGroup) throws Exception;
+	
+	public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) throws Exception;
 	
 	public ResultViewDO add(ResultViewDO data);
 

@@ -48,7 +48,6 @@ import org.openelis.local.LockLocal;
 
 @Stateless
 @SecurityDomain("openelis")
-//@RolesAllowed("organization-select")
 public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
 
     @PersistenceContext(unitName = "openelis")
@@ -57,13 +56,13 @@ public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
     @EJB
     private LockLocal     lock;
 
-    public AnalysisReportFlagsDO fetchByAnalysisId(Integer id) throws Exception {
+    public AnalysisReportFlagsDO fetchByAnalysisId(Integer analysisId) throws Exception {
         Query query;
         AnalysisReportFlagsDO data;
 
         data = null;
         query = manager.createNamedQuery("AnalysisReportFlags.FetchByAnalysisId");
-        query.setParameter("id", id);
+        query.setParameter("id", analysisId);
 
         try {
             data = (AnalysisReportFlagsDO)query.getSingleResult();
@@ -112,15 +111,14 @@ public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
         return data;
     }
 
-    public ArrayList<AnalysisReportFlagsDO> fetchForUpdateBySampleId(List<Integer> id) throws Exception {
+    public ArrayList<AnalysisReportFlagsDO> fetchForUpdateBySampleAccessionNumbers(List<Integer> ids) throws Exception {
         Query query;
         AnalysisReportFlagsDO data;
         ArrayList<AnalysisReportFlagsDO> returnList;
         List list;
 
-        data = null;
-        query = manager.createNamedQuery("AnalysisReportFlags.FetchBySampleId");
-        query.setParameter("id", id);
+        query = manager.createNamedQuery("AnalysisReportFlags.FetchBySampleAccessionNumbers");
+        query.setParameter("ids", ids);
 
         list = query.getResultList();
         returnList = new ArrayList<AnalysisReportFlagsDO>();
@@ -135,10 +133,15 @@ public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
         }
         return returnList;
     }
+    
+    public AnalysisReportFlagsDO fetchForUpdateByAnalysisId(Integer analysisId) throws Exception {
+        lock.lock(ReferenceTable.ANALYSIS_REPORT_FLAGS, analysisId);
+        return fetchByAnalysisId(analysisId);
+    }
 
-    public AnalysisReportFlagsDO abortUpdate(Integer analysis_id) throws Exception {
-        lock.unlock(ReferenceTable.ANALYSIS_REPORT_FLAGS, analysis_id);
-        return fetchByAnalysisId(analysis_id);
+    public AnalysisReportFlagsDO abortUpdate(Integer analysisId) throws Exception {
+        lock.unlock(ReferenceTable.ANALYSIS_REPORT_FLAGS, analysisId);
+        return fetchByAnalysisId(analysisId);
     }
 
     public void delete(AnalysisReportFlagsDO data) throws Exception {

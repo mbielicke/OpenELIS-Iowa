@@ -233,7 +233,7 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
             text = contents.toString();
             try {
                 sendemail(rcvd_email, text);
-                anaList = anaReportFlagsBean.fetchForUpdateBySampleId(sampleId);
+                anaList = anaReportFlagsBean.fetchForUpdateBySampleAccessionNumbers(sampleId);
                 for (int k = 0; k < anaList.size(); k++ ) {
                     anaData = anaList.get(k);
                     anaData.setNotifiedReleased("Y");

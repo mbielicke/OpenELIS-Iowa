@@ -39,6 +39,7 @@ public interface AnalysisQAEventLocal {
     public ArrayList<AnalysisQaEventViewDO> fetchInternalByAnalysisId(Integer analysisId) throws Exception;
     public ArrayList<AnalysisQaEventViewDO> fetchExternalByAnalysisId(Integer analysisId) throws Exception;
     public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisId(Integer analysisId) throws Exception;
+    public ArrayList<AnalysisQaEventDO> fetchNotBillableByAnalysisId(Integer analysisId) throws Exception;
     public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisIdList(ArrayList<Integer> ids) throws Exception;
     public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleIdList(ArrayList<Integer> ids) throws Exception;
     public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleId(Integer id) throws Exception;

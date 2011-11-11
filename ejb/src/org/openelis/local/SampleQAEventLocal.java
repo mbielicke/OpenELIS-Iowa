@@ -38,7 +38,8 @@ public interface SampleQAEventLocal {
     public ArrayList<SampleQaEventViewDO> fetchInternalBySampleId(Integer sampleId) throws Exception;
     public ArrayList<SampleQaEventViewDO> fetchExternalBySampleId(Integer sampleId) throws Exception;
     public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIdList(ArrayList<Integer> ids) throws Exception;
-    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleId(Integer id) throws Exception;
+    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleId(Integer sampleId) throws Exception;
+    public ArrayList<SampleQaEventDO> fetchNotBillableBySampleId(Integer sampleId) throws Exception;
     public void add(SampleQaEventViewDO sampleQAEventDO) throws Exception;
     public void update(SampleQaEventViewDO sampleQAEventDO) throws Exception;
     public void delete(SampleQaEventViewDO sampleQAEventDO) throws Exception;
