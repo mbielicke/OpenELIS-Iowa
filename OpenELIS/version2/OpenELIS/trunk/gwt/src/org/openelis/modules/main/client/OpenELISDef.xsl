@@ -123,7 +123,7 @@ UIRF Software License are applicable instead of those above.
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
                   <menuItem description="{resource:getString($constants,'worksheetCreationDescription')}" enable="false" icon="worksheetCreationIcon" key="worksheetCreation" label="{resource:getString($constants,'worksheetCreation')}" />
                   <menuItem description="{resource:getString($constants,'worksheetCompletionDescription')}" enable="false" icon="worksheetCompletionIcon" key="worksheetCompletion" label="{resource:getString($constants,'worksheetCompletion')}" />
-                  <menuItem description="{resource:getString($constants,'addOrCancelDescription')}" enable="false" icon="addOrCancelIcon" key="addOrCancel" label="{resource:getString($constants,'addOrCancel')}" />
+                  <menuItem description="{resource:getString($constants,'addOrCancelDescription')}" enable="false" icon="addOrCancelIcon" key="addOrCancel" label="{resource:getString($constants,'manageMultipleSamples')}" />
                   <menuItem description="{resource:getString($constants,'reviewAndReleaseDescription')}" enable="false" icon="reviewAndReleaseIcon" key="reviewAndRelease" label="{resource:getString($constants,'reviewAndRelease')}" />
                   <menuItem description="{resource:getString($constants,'toDoDescription')}" enable="false" icon="toDoIcon" key="toDo" label="{resource:getString($constants,'toDo')}" />
                   <menuItem description="{resource:getString($constants,'labelForDescription')}" enable="false" icon="labelForIcon" key="labelFor" label="{resource:getString($constants,'labelFor')}" />
@@ -167,6 +167,7 @@ UIRF Software License are applicable instead of those above.
                   <menuItem description="" icon="" label="{resource:getString($constants,'reference')}" style="TopMenuRowContainer">
                     <menuPanel layout="vertical" position="beside" style="topMenuContainer">
                       <menuItem description="" enable="false" icon="" key="testReport" label="{resource:getString($constants,'testReport')}" />
+                      <menuItem description="" enable="false" icon="" key="billingReport" label="{resource:getString($constants,'billingReport')}" />
                     </menuPanel>
                   </menuItem>
                   <menuItem description="" icon="" label="{resource:getString($constants,'summary')}" style="TopMenuRowContainer">

@@ -86,7 +86,7 @@ public class DictionaryCache {
             data = (DictionaryDO)service.call("getBySystemName", systemName);
             add(data);
         } catch (Exception e) {
-            throw new Exception("DictionaryCache.getBySystemNameInt: \"" + systemName +
+            throw new Exception("DictionaryCache.getBySystemNameInt: System name \"" + systemName +
                                 "\" not found in system.");
         }
 

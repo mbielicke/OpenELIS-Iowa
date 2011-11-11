@@ -394,12 +394,14 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                         testResultsTable.setCell(index, i, val);
 
                         if ( !DataBaseUtil.isEmpty(val)) {                            
-                            testResult = displayManager.validateResultValue(manager,
-                                                                            data,
+                            testResult = displayManager.validateResultValue(manager,data.getResultGroup(),
+                                                                            val,
                                                                             analysis.getUnitOfMeasureId());
                             val = manager.formatResultValue(data.getResultGroup(),
                                                             analysis.getUnitOfMeasureId(),
                                                             testResult.getId(), val);
+                            data.setTypeId(testResult.getTypeId());
+                            data.setTestResultId(testResult.getId());
                             data.setValue(val);
 
                             if (typeDictionary.equals(testResult.getTypeId()))
@@ -602,27 +604,9 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     }
 
     public void draw() {
-        if ( !loaded) {
-            try {
-                if (analysisMan == null || analysis.getTestId() == null)
-                    manager = AnalysisResultManager.getInstance();
-                else {
-                    if (state == State.ADD || state == State.UPDATE)
-                        manager = analysisMan.getAnalysisResultAt(bundle.getAnalysisIndex());
-                    else
-                        manager = analysisMan.getDisplayAnalysisResultAt(bundle.getAnalysisIndex());
-                }
-                displayManager = new TestAnalyteDisplayManager<ResultViewDO>();
-                displayManager.setDataGrid(manager.getResults());
-                DataChangeEvent.fire(this);
-                loaded = true;
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                e.printStackTrace();
-            }
-        }
+        reload(true);
     }
-
+    
     public HandlerRegistration addActionHandler(ActionHandler<ResultTab.Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }
@@ -638,12 +622,49 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                 //
                 // reload the manager with the default values for the new unit
                 //
-                manager.reloadDefaultValues(analysis.getUnitOfMeasureId());
-                DataChangeEvent.fire(this);
+                if (manager == null || !loaded) {
+                    /*
+                     * since we fire DataChangeEvent after reloading the manager
+                     * with the defaults for the new unit, we don't need to fire
+                     * it in reload()                     
+                     */
+                    reload(false);                
+                }
+                /*
+                 * since reload() doesn't throw an exception we need to check to
+                 * see if it succeeded in setting "manager" to something not null  
+                 */
+                if (manager != null) {
+                    manager.reloadDefaultValues(analysis.getUnitOfMeasureId());
+                    DataChangeEvent.fire(this);
+                }
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 e.printStackTrace();
             }          
+        }
+    }
+    
+    private void reload(boolean fireDataChange) {
+        if ( !loaded) {
+            try {
+                if (analysisMan == null || analysis.getTestId() == null)
+                    manager = AnalysisResultManager.getInstance();
+                else {
+                    if (state == State.ADD || state == State.UPDATE)
+                        manager = analysisMan.getAnalysisResultAt(bundle.getAnalysisIndex());
+                    else
+                        manager = analysisMan.getDisplayAnalysisResultAt(bundle.getAnalysisIndex());
+                }
+                displayManager = new TestAnalyteDisplayManager<ResultViewDO>();
+                displayManager.setDataGrid(manager.getResults());
+                if (fireDataChange)
+                    DataChangeEvent.fire(this);
+                loaded = true;
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
+            }
         }
     }
 
@@ -725,6 +746,11 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     } else {
                         entry = DictionaryCache.getById(Integer.parseInt(val)).getEntry();
                         row.cells.get(c+2).setValue(entry);
+                        /*
+                         * we have to make sure that a dictionary entry's text
+                         * is validated and not its id as explained later
+                         */
+                        val = entry;
                     }
                     
                     if ( !headerFilled && c > 0)
@@ -733,14 +759,24 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     if ( !validateResults)
                         continue;
                     
-                    entry = null;
-                    if ( !DataBaseUtil.isEmpty(val)) {
+                    if ( !DataBaseUtil.isEmpty(val)) {    
+                        /*
+                         * We pass "val" and not "data.getValue()" to the validator
+                         * because if the latter is a dictionary entry's id and 
+                         * is valid for a numeric range then validation succeeds
+                         * for it and its type is erroneously set to numeric. This
+                         * can happen e.g. when on changing the unit of the analysis
+                         * the data in the table is reloaded with the defaults for
+                         * the new unit and one of the result groups doesn't have
+                         * a default for the new unit so the old value remains unchanged.                             
+                         */
                         testResult = displayManager.validateResultValue(manager,
-                                                                        data,
+                                                                        rg, val,
                                                                         analysis.getUnitOfMeasureId());
-                        val = manager.formatResultValue(rg,
-                                                        analysis.getUnitOfMeasureId(),
+                        val = manager.formatResultValue(rg, analysis.getUnitOfMeasureId(),
                                                         testResult.getId(), val);
+                        data.setTypeId(testResult.getTypeId());
+                        data.setTestResultId(testResult.getId());
                         data.setValue(val);
                         /* 
                          * Since a default can match a dictionary entry for the
