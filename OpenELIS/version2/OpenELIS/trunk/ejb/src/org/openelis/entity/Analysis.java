@@ -165,7 +165,7 @@ public class Analysis implements Auditable, Cloneable {
     
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
-    private Collection<Result>          result;
+    private Collection<Result>          result;   
 
     @Transient
     private Analysis                    original;
@@ -313,6 +313,22 @@ public class Analysis implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferentYM(printedDate, this.printedDate))
             this.printedDate = DataBaseUtil.toDate(printedDate);
     }
+    
+    public SampleItem getSampleItem() {
+        return sampleItem;
+    }
+
+    public void setSampleItem(SampleItem sampleItem) {
+        this.sampleItem = sampleItem;
+    }    
+
+    public Analysis getPreAnalysis() {
+        return preAnalysis;
+    }
+
+    public void setPreAnalysis(Analysis preAnalysis) {
+        this.preAnalysis = preAnalysis;
+    }
 
     public Test getTest() {
         return test;
@@ -320,6 +336,14 @@ public class Analysis implements Auditable, Cloneable {
 
     public void setTest(Test test) {
         this.test = test;
+    }
+    
+    public Section getSection() {
+        return section;
+    }
+
+    public void setSection(Section section) {
+        this.section = section;
     }
 
     public Collection<AnalysisQaevent> getAnalysisQAEvent() {
@@ -337,31 +361,7 @@ public class Analysis implements Auditable, Cloneable {
     public void setResult(Collection<Result> result) {
         this.result = result;
     }
-
-    public SampleItem getSampleItem() {
-        return sampleItem;
-    }
-
-    public void setSampleItem(SampleItem sampleItem) {
-        this.sampleItem = sampleItem;
-    }
-
-    public Analysis getPreAnalysis() {
-        return preAnalysis;
-    }
-
-    public void setPreAnalysis(Analysis preAnalysis) {
-        this.preAnalysis = preAnalysis;
-    }
-
-    public Section getSection() {
-        return section;
-    }
-
-    public void setSection(Section section) {
-        this.section = section;
-    }
-
+    
     public void setClone() {
         try {
             original = (Analysis)this.clone();

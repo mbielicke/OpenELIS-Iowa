@@ -40,6 +40,7 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultDO;
@@ -270,7 +271,7 @@ public class ResultBean implements ResultLocal {
                                   HashMap<Integer, TestAnalyteListItem> testAnalyteList,
                                   ArrayList<ResultValidator> resultValidators) throws Exception {
 
-        // build the grid
+        
         int i;
         Integer j, rg;
         ResultViewDO rdo;
@@ -340,7 +341,9 @@ public class ResultBean implements ResultLocal {
         j = -1;
         ar = null;
         results.clear();
-
+     
+        // build the grid
+        
         if (rslts == null || rslts.size() == 0)
             throw new NotFoundException();
 
@@ -450,6 +453,19 @@ public class ResultBean implements ResultLocal {
         return DataBaseUtil.toArrayList(list);
     }
     
+    public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) throws Exception {
+        List<ResultViewDO> list;        
+        Query query;
+        
+        query = manager.createNamedQuery("Result.FetchForBillingByAnalysisId");
+        query.setParameter("id", analysisId);
+   
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
+    }
 
     public ResultViewDO add(ResultViewDO data) {
         Result entity;

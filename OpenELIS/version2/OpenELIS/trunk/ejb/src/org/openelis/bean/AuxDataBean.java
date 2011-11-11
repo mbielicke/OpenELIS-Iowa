@@ -94,20 +94,21 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         return data;
     }
     
-    public ArrayList<AuxDataViewDO> fetchForDataDump(ArrayList<Integer> refIdList, Integer refTableId) throws Exception {
+    public ArrayList<AuxDataViewDO> fetchForDataView(ArrayList<Integer> refIdList,
+                                                     Integer referenceTableId) throws Exception {
         Query query;
         List<AuxDataViewDO> list;
         
-        query = manager.createNamedQuery("AuxData.FetchForDataDump");
+        query = manager.createNamedQuery("AuxData.FetchForDataView");
         query.setParameter("ids", refIdList);
-        query.setParameter("tableId", refTableId);
+        query.setParameter("tableId", referenceTableId);
         list = (List<AuxDataViewDO>)query.getResultList();
 
         if (list.isEmpty())
             throw new NotFoundException();
         
         return DataBaseUtil.toArrayList(list);
-    }
+    }    
 
     public IdVO fetchGroupIdBySystemVariable(String sysVariableKey) throws Exception {
         SystemVariableDO sysVariable;
@@ -126,6 +127,23 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         idVO = new IdVO(groupDO.getId());
     
         return idVO;
+    }
+    
+    public ArrayList<AuxDataViewDO> fetchByIdAnalyteName(Integer referenceId, Integer referenceTableId,
+                                                         String analyteName) throws Exception {
+        Query query;
+        List<AuxDataViewDO> list;
+        
+        query = manager.createNamedQuery("AuxData.FetchByIdAnalyteName");
+        query.setParameter("id", referenceId);
+        query.setParameter("tableId", referenceTableId);
+        query.setParameter("analyteName", analyteName);
+        list = (List<AuxDataViewDO>)query.getResultList();
+
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
     }
 
     public AuxDataViewDO add(AuxDataViewDO data) throws Exception {

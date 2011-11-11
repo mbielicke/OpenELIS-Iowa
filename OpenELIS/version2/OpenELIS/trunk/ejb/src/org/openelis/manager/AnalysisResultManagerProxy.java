@@ -220,8 +220,6 @@ public class AnalysisResultManagerProxy {
                          ValidationErrorsList errorsList) throws Exception {
         ArrayList<ResultViewDO> results;
         ResultViewDO result;
-        TestResultDO data;
-        Integer testResultId;
 
         // go through the results and put a form error if one is found to be
         // invalid
@@ -232,15 +230,8 @@ public class AnalysisResultManagerProxy {
                 for (int j = 0; j < results.size(); j++ ) {
                     result = results.get(j);
 
-                    if (!DataBaseUtil.isEmpty(result.getValue())) {
-                        testResultId = man.validateResultValue(result.getResultGroup(),
-                                                               anDO.getUnitOfMeasureId(),
-                                                               result.getValue());
-                        data = man.getTestResultList().get(testResultId);
-
-                        result.setTypeId(data.getTypeId());
-                        result.setTestResultId(data.getId());
-                    }
+                    if (!DataBaseUtil.isEmpty(result.getValue())) 
+                        validateResult(man, anDO, result);                    
                 }
             }
 
@@ -255,8 +246,6 @@ public class AnalysisResultManagerProxy {
                                     ValidationErrorsList errorsList) throws Exception {
         ArrayList<ResultViewDO> results;
         ResultViewDO result;
-        TestResultDO testResultDO;
-        Integer testResultId;
         Integer resultRequiredId;
         int i, j;
 
@@ -279,15 +268,8 @@ public class AnalysisResultManagerProxy {
 
                 // make sure the result is valid if its filled out
                 try {
-                    if (!DataBaseUtil.isEmpty(result.getValue())) {
-                        testResultId = man.validateResultValue(result.getResultGroup(),
-                                                               anDO.getUnitOfMeasureId(),
-                                                               result.getValue());
-                        testResultDO = man.getTestResultList().get(testResultId);
-
-                        result.setTypeId(testResultDO.getTypeId());
-                        result.setTestResultId(testResultDO.getId());
-                    }
+                    if (!DataBaseUtil.isEmpty(result.getValue()))                         
+                        validateResult(man, anDO, result);                    
                 } catch (ParseException e) {
                     errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
                                                           anDO.getTestName(), anDO.getMethodName()));
@@ -350,10 +332,34 @@ public class AnalysisResultManagerProxy {
                         }                                               
                     } 
                     break;
-                } 
-                
-                
+                }                                 
             }
         }
+    }
+    
+    private void validateResult(AnalysisResultManager man, AnalysisViewDO anDO, ResultViewDO result) throws Exception {
+        TestResultDO data;
+        Integer testResultId, typeId;
+        
+        testResultId = man.validateResultValue(result.getResultGroup(),
+                                               anDO.getUnitOfMeasureId(),
+                                               result.getValue());
+        data = man.getTestResultList().get(testResultId);
+        typeId = data.getTypeId();
+        result.setTypeId(typeId);
+        /*
+         * Since the validation done for the results of type 
+         * dictionary succeeds if the value of the result matches 
+         * the entry of the dictionary record that the corresponding
+         * test result has the id of, it can happen that the value
+         * set in the result, from the default for this unit, passes
+         * validation. In that case the type will be set to dictionary
+         * in the result and the value won't be a valid id. The 
+         * following check makes sure that the value is set to 
+         * the correct id taken from the test result.                  
+         */
+        if (dictTypeId.equals(typeId))
+            result.setValue(data.getValue());
+        result.setTestResultId(data.getId());
     }
 }
