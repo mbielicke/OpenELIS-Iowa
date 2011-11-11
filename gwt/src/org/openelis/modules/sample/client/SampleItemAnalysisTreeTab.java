@@ -85,6 +85,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
     protected SampleItemAnalysisTreeTab   treeTab;
     protected SampleItemsPopoutTreeLookup treePopoutScreen;
     protected boolean                     loaded = false;
+    protected DictionaryDO                dictDrinkingWater;
 
     public enum Action {
         REFRESH_TABS
@@ -208,11 +209,12 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
 
         itemsTree.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
+                int addedIndex;
                 TreeDataItem addedRow, parentRow;
                 SampleDataBundle parentData;
-                int addedIndex;
                 SampleItemManager itemMan;
-                AnalysisManager anMan;
+                SampleItemViewDO data;
+                AnalysisManager anMan;                
 
                 try {
                     addedRow = (TreeDataItem)event.getRow();
@@ -220,11 +222,21 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
                     if ("sampleItem".equals(addedRow.leafType)) {
                         itemMan = manager.getSampleItems();
                         addedIndex = itemMan.addSampleItem();
+                        data = itemMan.getSampleItemAt(addedIndex);          
+                        /*
+                         * if the domain of the sample is sdwis then we set the
+                         * sample type for the newly added item to "Drinking Water"
+                         */
+                        if (SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
+                            if (dictDrinkingWater == null)
+                                dictDrinkingWater = DictionaryCache.getBySystemName("drinking_water"); 
+                            data.setTypeOfSampleId(dictDrinkingWater.getId());
+                            data.setTypeOfSample(dictDrinkingWater.getEntry());
+                        }
                         addedRow.data = itemMan.getBundleAt(addedIndex);
 
                         treeUtil.updateSampleItemRow(addedRow);
                         itemsTree.refreshRow(addedRow);
-
                     } else if ("analysis".equals(addedRow.leafType)) {
                         parentRow = addedRow.parent;
                         parentData = (SampleDataBundle)parentRow.data;
@@ -236,7 +248,6 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
 
                         treeUtil.updateAnalysisRow(addedRow);
                         itemsTree.refreshRow(addedRow);
-
                     }
                 } catch (Exception e) {
                     Window.alert(e.getMessage());

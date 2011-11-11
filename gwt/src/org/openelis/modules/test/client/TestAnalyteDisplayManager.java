@@ -148,19 +148,13 @@ public class TestAnalyteDisplayManager<T> {
         return indexes.size();
     }
     
-    public TestResultDO validateResultValue(AnalysisResultManager man, ResultViewDO resultDO, 
-                                    Integer unitOfMeasureId) throws Exception {
+    public TestResultDO validateResultValue(AnalysisResultManager man, Integer resultGroup, 
+                                            String value, Integer unitOfMeasureId) throws Exception {
         Integer testResultId;
         TestResultDO testResultDo;
-        
-        
-        testResultId = man.validateResultValue(resultDO.getResultGroup(),
-                                                   unitOfMeasureId,
-                                                   resultDO.getValue());
-        
+                
+        testResultId = man.validateResultValue(resultGroup, unitOfMeasureId, value);        
         testResultDo = man.getTestResultList().get(testResultId);
-        resultDO.setTypeId(testResultDo.getTypeId());
-        resultDO.setTestResultId(testResultDo.getId());
         
         return testResultDo;
     }

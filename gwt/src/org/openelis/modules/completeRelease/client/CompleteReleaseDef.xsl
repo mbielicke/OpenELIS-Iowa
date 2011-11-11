@@ -133,19 +133,19 @@ UIRF Software License are applicable instead of those above.
           </HorizontalPanel>
         </AbsolutePanel>
         <table key="completeReleaseTable" width="auto" maxRows="10" multiSelect="true" showScroll="ALWAYS">
-          <col key="{meta:getAccessionNumber()}" width="115" header="Accession #" sort="true">
+          <col key="{meta:getAccessionNumber()}" width="115" header="{resource:getString($constants,'accessionNum')}" sort="true">
             <textbox field="Integer" />
           </col>
-          <col key="{meta:getAnalysisTestName()}" width="192" header="Test" sort="true">
-            <textbox field="String" />
+          <col key="{meta:getAnalysisTestName()}" width="192" header="{resource:getString($constants,'test')}" sort="true">
+            <textbox case = "LOWER" field="String" />
           </col>
-          <col key="{meta:getAnalysisMethodName()}" width="192" header="Method" sort="true">
-            <textbox field="String" />
+          <col key="{meta:getAnalysisMethodName()}" width="192" header="{resource:getString($constants,'accessionNum')}" sort="true">
+            <textbox case = "LOWER" field="String" />
           </col>
-          <col key="{meta:getAnalysisStatusId()}" width="101" header="Analysis Status" sort="true">
+          <col key="{meta:getAnalysisStatusId()}" width="101" header="{resource:getString($constants,'analysisStatus')}" sort="true">
             <dropdown width="100" field="Integer" />
           </col>
-          <col key="{meta:getStatusId()}" width="100" header="Sample Status" sort="true">
+          <col key="{meta:getStatusId()}" width="100" header="{resource:getString($constants,'sampleStatus')}" sort="true">
             <dropdown width="100" field="Integer" />
           </col>
         </table>
