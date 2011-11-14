@@ -49,6 +49,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.FormulaEvaluator;
@@ -357,9 +358,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     // started (override)
                     cell = oRow.createCell(6);
                     if (isEditable)
-                        cell.setCellStyle(styles.get("row_edit"));
+                        cell.setCellStyle(styles.get("datetime_edit"));
                     else
-                        cell.setCellStyle(styles.get("row_no_edit"));
+                        cell.setCellStyle(styles.get("datetime_no_edit"));
                     cellName = wb.createName();
                     cellName.setNameName("analysis_started."+cellNameIndex);
                     cellName.setRefersToFormula("Overrides!$"+CellReference.convertNumToColString(6)+
@@ -368,9 +369,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     // completed (override)
                     cell = oRow.createCell(7);
                     if (isEditable)
-                        cell.setCellStyle(styles.get("row_edit"));
+                        cell.setCellStyle(styles.get("datetime_edit"));
                     else
-                        cell.setCellStyle(styles.get("row_no_edit"));
+                        cell.setCellStyle(styles.get("datetime_no_edit"));
                     cellName = wb.createName();
                     cellName.setNameName("analysis_completed."+cellNameIndex);
                     cellName.setRefersToFormula("Overrides!$"+CellReference.convertNumToColString(7)+
@@ -477,7 +478,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                     // started (override)
                     cell = oRow.createCell(6);
-                    cell.setCellStyle(styles.get("row_edit"));
+                    cell.setCellStyle(styles.get("datetime_edit"));
                     if (waDO.getQcStartedDate() != null)
                         cell.setCellValue(waDO.getQcStartedDate().toString());
                     cellName = wb.createName();
@@ -487,7 +488,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
                     // completed (override)
                     cell = oRow.createCell(7);
-                    cell.setCellStyle(styles.get("row_no_edit"));
+                    cell.setCellStyle(styles.get("datetime_no_edit"));
                     cellName = wb.createName();
                     cellName.setNameName("analysis_completed."+cellNameIndex);
                     cellName.setRefersToFormula("Overrides!$"+CellReference.convertNumToColString(7)+
@@ -895,9 +896,12 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     }
     
     private void createStyles(HSSFWorkbook wb) {
-        CellStyle headerStyle, rowEditStyle, rowNoEditStyle;
-        Font      font;
+        CellStyle      dateTimeEditStyle, dateTimeNoEditStyle, headerStyle,
+                       rowEditStyle, rowNoEditStyle;
+        CreationHelper helper;
+        Font           font;
 
+        helper = wb.getCreationHelper();
         styles = new HashMap<String,CellStyle>();
 
         font = wb.createFont();
@@ -924,6 +928,22 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         rowNoEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
         rowNoEditStyle.setLocked(true);
         styles.put("row_no_edit", rowNoEditStyle);
+        
+        dateTimeEditStyle = wb.createCellStyle();
+        dateTimeEditStyle.setDataFormat(helper.createDataFormat().getFormat("yyyy-MM-dd hh:mm"));
+        rowEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        rowEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        rowEditStyle.setLocked(false);
+        styles.put("datetime_edit", dateTimeEditStyle);
+
+        dateTimeNoEditStyle = wb.createCellStyle();
+        dateTimeNoEditStyle.setDataFormat(helper.createDataFormat().getFormat("yyyy-MM-dd hh:mm"));
+        rowNoEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        rowNoEditStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        rowNoEditStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
+        rowNoEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        rowNoEditStyle.setLocked(true);
+        styles.put("datetime_no_edit", dateTimeNoEditStyle);
     }
 
     private int createResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow, String nameIndexPrefix,
