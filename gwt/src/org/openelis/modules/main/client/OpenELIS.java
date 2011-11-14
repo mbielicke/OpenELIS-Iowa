@@ -1443,7 +1443,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
         
-        addClickHandler("billingReport", "sendoutorder", new ClickHandler() {
+        addClickHandler("billingReport", "system", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
