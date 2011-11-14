@@ -53,7 +53,7 @@ public class ResultRangeTime implements ResultRange {
             hrs = Integer.parseInt(st[0]);
 
             if (st[1].length() > 2)
-                st[1] = st[1].substring(st[1].length()-2, st[1].length());
+                st[1] = st[1].substring(0, 2);
             min = Integer.parseInt(st[1]);            
             
             if (hrs < 0 || hrs > 23 || min < 0 || min > 59) 
