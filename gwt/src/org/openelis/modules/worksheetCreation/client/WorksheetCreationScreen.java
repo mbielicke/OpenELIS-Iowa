@@ -210,7 +210,7 @@ public class WorksheetCreationScreen extends Screen {
         setState(State.DEFAULT);
         openLookupWindow();
         initializeDropdowns();
-        clearQCTemplate();
+        loadDefaultQCTemplate();
         
         DataChangeEvent.fire(this);
     }
@@ -619,12 +619,11 @@ public class WorksheetCreationScreen extends Screen {
                                 if (message.length() > 0)
                                     Window.alert(consts.get("worksheetItemsFormatConflict")+":\n\n"+message.toString());
 
-                                if (testIds.size() > 1) {
+                                if (testIds.size() > 1)
                                     Window.alert(consts.get("multipleTestsOnWorksheet"));
-                                    clearQCTemplate();
-                                } else if (!isTemplateLoaded) {
+                                else if (!isTemplateLoaded)
                                     loadQCTemplate();
-                                }
+
                                 mergeAnalysesAndQCs();
 
                                 isSaved = false;
@@ -896,7 +895,7 @@ public class WorksheetCreationScreen extends Screen {
                     // If there is no worksheet definition for the test, load
                     // default definition and clear items list
                     //
-                    clearQCTemplate();
+                    loadDefaultQCTemplate();
                     return;
                 }                
             }
@@ -1498,7 +1497,7 @@ public class WorksheetCreationScreen extends Screen {
         return --tempId;
     }
     
-    private void clearQCTemplate() {
+    private void loadDefaultQCTemplate() {
         twManager = null;
         if (testWorksheetDO == null)
             testWorksheetDO = new TestWorksheetDO();

@@ -653,7 +653,7 @@ public class QuickEntryScreen extends Screen {
                 item = managers.get(sManager.getSample().getAccessionNumber());
                 if (item == null)
                     managers.put(sManager.getSample().getAccessionNumber(), new Item(sManager, 1));
-                else
+                else if (i > 0)
                     item.count++;
 
                 updateQuickEntryRowFromBundle(quickEntryTable.numRows() - 1);
