@@ -86,10 +86,9 @@ Phone # 515-725-1600]]></text>
 				<textElement verticalAlignment="Middle" rotation="Left">
 					<font fontName="Arial" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="true"/>
 				</textElement>
-				<text><![CDATA[State Hygienic Laboratory
-The University of Iowa
-UI Research Park
-Iowa City, IA 52242-5002
+				<text><![CDATA[U of I Research Park
+2490 Crosspark Road
+Coralville, IA 52241-4721
 Phone # 319-335-4500 or
                800-421-IOWA]]></text>
 			</staticText>
