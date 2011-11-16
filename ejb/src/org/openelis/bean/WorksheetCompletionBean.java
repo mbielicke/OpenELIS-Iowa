@@ -699,13 +699,13 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         
                         value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
                         if (value != null) {
-                            aVDO.setStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
+                            aVDO.setStartedDate((Datetime)value);
                             anaModified = true;
                         }
                         
                         value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_completed."+i+"."+a);
                         if (value != null) {
-                            aVDO.setCompletedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
+                            aVDO.setCompletedDate((Datetime)value);
                             anaModified = true;
                         }
                         
@@ -829,7 +829,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     
                     value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
                     if (value != null && waDO.getQcStartedDate() == null)
-                        waDO.setQcStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, (Date)value));
+                        waDO.setQcStartedDate((Datetime)value);
                 }
             }
             //

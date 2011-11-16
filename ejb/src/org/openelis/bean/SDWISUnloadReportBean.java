@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,13 +75,25 @@ import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.SDWISUnloadReportRemote;
 import org.openelis.report.Prompt;
+import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
+
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("sample-select")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
+public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRemote {
 
     @Resource
     private SessionContext  ctx;
@@ -112,6 +125,9 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
     private static Integer releasedStatusId, typeDictionaryId;
     private static HashMap<String, String> methodCodes, contaminantIds;
     
+    private int                                statIndex;
+    private ArrayList<HashMap<String, Object>> stats;
+    
     @PostConstruct
     public void init() {
         initMethodCodes();
@@ -128,7 +144,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
      * Returns the prompt for a single re-print
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<OptionListItem> loc;
+        ArrayList<OptionListItem> loc, prn;
         ArrayList<Prompt>         p;
         Calendar                  fromDate, toDate;
         SimpleDateFormat          format;
@@ -177,6 +193,13 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                                                            .setMutiSelect(false)
                                                            .setRequired(true));
             
+            prn = PrinterList.getInstance().getListByType("pdf");
+            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
+                                                          .setWidth(200)
+                                                          .setOptionList(prn)
+                                                          .setMutiSelect(false)
+                                                          .setRequired(true));
+            
             return p;
         } catch (Exception e) {
             e.printStackTrace();
@@ -194,18 +217,23 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         ArrayList<SampleDO> samples;
         ArrayList<AnalysisViewDO> analyses;
         Date beginReleased, endReleased;
-        File tempFile;
+        File tempFile, statFile;
         FileOutputStream out;
+        HashMap<String, Object> statRow;
         HashMap<String, QueryData> param;
         Iterator<SampleDO> sIter;
         Iterator<AnalysisViewDO> aIter;
+        JRExporter jexport;
+        JasperPrint jprint;
+        JasperReport jreport;
         PrintWriter writer;
         ReportStatus status;
         SampleDO sDO;
         SampleSDWISViewDO ssVDO;
         SectionViewDO secVDO;
         SimpleDateFormat format;
-        String location;
+        String location, printer;
+        URL url;
 
         /*
          * push status into session so we can query it while the report is
@@ -223,9 +251,11 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         beginReleased = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_RELEASED"));
         endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
         location = ReportUtil.getSingleParameter(param, "LOCATION");
+        printer = ReportUtil.getSingleParameter(param, "PRINTER");
         
         try {
             tempFile = File.createTempFile("sdwisUnload", ".lrr", new File("/tmp"));
+            statFile = File.createTempFile("sdwisUnloadStatus", ".pdf", new File("/tmp"));
             out = new FileOutputStream(tempFile);
         } catch (Exception anyE) {
             anyE.printStackTrace();
@@ -245,6 +275,9 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             writeHeaderRow(writer, location);
 
             sampleCount = 0;
+            
+            stats = new ArrayList<HashMap<String, Object>>();
+            statIndex = -1;
             
             samples = sample.fetchSDWISByReleasedAndLocation(beginReleased, endReleased, location);
             sIter = samples.iterator();
@@ -266,6 +299,12 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                     }
                 }
                 
+                statRow = new HashMap<String, Object>();
+                statRow.put("pws_id", ssVDO.getPwsNumber0());
+                statRow.put("accession_number", sDO.getAccessionNumber());
+                statRow.put("status", reject ? "Rejected" : "Generated");
+                stats.add((HashMap<String, Object>) statRow.clone());
+                
                 sampleCount++;
                 status.setPercentComplete((sampleCount / samples.size()) * 80 + 10);
             }
@@ -274,9 +313,25 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             
             writer.close();
             out.close();
+            
+            /*
+             * Print the status report
+             */
+            url = ReportUtil.getResourceURL("org/openelis/report/sdwisunload/main.jasper");
+            jreport = (JasperReport)JRLoader.loadObject(url);
+            jprint = JasperFillManager.fillReport(jreport, null, this);
+            jexport = new JRPdfExporter();
+            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(statFile));
+            jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
+
+            status.setPercentComplete(90);
+            
+            jexport.exportReport();
 
             status.setPercentComplete(100);
 
+            ReportUtil.print(statFile, printer, 1);
+            
             tempFile = ReportUtil.saveForUpload(tempFile);
             status.setMessage(tempFile.getName())
                   .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
@@ -698,5 +753,30 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         contaminantIds.put("Fecal Coliform",            "3013");
         contaminantIds.put("Heterotrophic Plate Count", "3001");
         contaminantIds.put("Total Coliform Bacteria",   "3100");
+    }
+    
+    public boolean next() throws JRException {
+        boolean hasNext = false;
+        
+        if (stats != null) {
+            statIndex++;
+            hasNext = statIndex < stats.size();
+        }
+        
+        return hasNext;
+    }
+    
+    public Object getFieldValue(JRField field) throws JRException {
+        Object                  objValue = null;
+        HashMap<String, Object> statRow;
+
+        if (field != null && stats != null) {
+            statRow = (HashMap<String, Object>) stats.get(statIndex);
+            if (!statRow.containsKey(field.getName()))
+                throw new JRException("Unable to get value for field '" + field.getName());
+            objValue = statRow.get(field.getName());
+        }
+        
+        return objValue;
     }
 }
