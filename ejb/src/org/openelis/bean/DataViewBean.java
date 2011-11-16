@@ -259,7 +259,6 @@ public class DataViewBean implements DataViewRemote {
     public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(ArrayList<QueryData> fields) throws Exception {
         QueryData field;
        
-        
         if (fields == null || fields.size() == 0)
             throw new InconsistencyException("You may not execute an empty query");      
         field = new QueryData();
@@ -269,7 +268,7 @@ public class DataViewBean implements DataViewRemote {
         
         fields.add(field);
         
-        return fetchAnalyteAndAuxField(fields, "w_datadump_environmental");
+        return fetchAnalyteAndAuxField(fields, "w_dataview_environmental");
     }
     
 
@@ -410,7 +409,7 @@ public class DataViewBean implements DataViewRemote {
         return data;
     }
     
-    @RolesAllowed("w_datadump_environmental-select")
+    @RolesAllowed("w_dataview_environmental-select")
     @TransactionTimeout(600)    
     public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
         ArrayList<QueryData> fields;
@@ -427,7 +426,7 @@ public class DataViewBean implements DataViewRemote {
         
         fields.add(field);
         
-        return runReport(data, "w_datadump_environmental", true);
+        return runReport(data, "w_dataview_environmental", true);
     }
     
     @TransactionTimeout(600)
@@ -504,7 +503,7 @@ public class DataViewBean implements DataViewRemote {
         
         status = new ReportStatus();
         status.setMessage("Initializing report");
-        session.setAttribute("DataDump", status);        
+        session.setAttribute("DataView", status);        
         anaList = data.getTestAnalytes();
         analyteResultMap = null;
         if (anaList != null) {
@@ -1368,7 +1367,7 @@ public class DataViewBean implements DataViewRemote {
         resMap = null;
         dcl = EJBFactory.getDictionaryCache();
         /*
-         * a TestAnalyteDataDumpVO is created for an analyte only once, no matter
+         * a TestAnalyteDataViewVO is created for an analyte only once, no matter
          * how many times it appears in the list of ResultViewDOs
          */
         for (ResultViewDO res : resList) {
