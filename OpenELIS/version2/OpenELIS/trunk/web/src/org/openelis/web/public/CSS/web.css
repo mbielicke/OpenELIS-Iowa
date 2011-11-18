@@ -1,17 +1,161 @@
+.header-nav .header-section .link-hover {
+	color: #464D6C;
+	cursor: pointer;
+	font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+	font-size: 11px;
+	padding-top:1px;
+	padding-left: 8px;
+}
+
+.heading {
+	padding: 0;
+	margine: 0;
+}
+
+.HeaderLabel {
+	padding: 0;
+}
+
 .AppBackground {
- background:white;
+    background: #343434;
+}
+.spinnerIcon {
+    background: url("../Images/OSXspinnerGIF.gif") no-repeat white;
+}
+.ConfirmWindow .middleLeft,
+.ConfirmWindow .middleRight,
+.ConfirmWindow .middleRightInner,
+.ConfirmWindow .bottomCenterInner,
+.ConfirmWindow .topCenter,
+.ConfirmWindow .bottomLeft,
+.ConfirmWindow .bottomRightInner,
+.ConfirmWindow .bottomCenter,
+.ConfirmWindow .topLeftInner,
+.ConfirmWindow .topRightInner,
+.WindowTL, .WindowLeft, .WindowRight,
+.WindowBL, .WindowBR, .WindowTR, .TodayBar, .middleCenter
+{
+    background:none;
+}
+.WindowTL, .WindowLeft, .WindowRight,
+.WindowBL, .WindowBR, .WindowTR{
+    width:0;
+}
+.BottomButtonPanelContainer{
+    background:none;
+    height:34px;
+}
+.WindowBody{
+    background:none;
+    border:0;
+}
+.WindowPanel{
+    background:#1f1f1f;
+}
+.dragdrop-handle, .StatusBar{
+    background:black;
+}
+.ConfirmCaptionLabel{
+    padding:4px;
+    background:black;
+}
+.ConfirmWindow .middleCenterInner{
+    padding:0;
+    padding-bottom:8px;
+    background:#1f1f1f;
+}
+.ConfirmWindow .Form{
+    color:#ABABAB;
+}
+.largeErrorIcon{
+    margin:4px;
+    margin-left:8px;
+}
+.Prompt{
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+    font-size: 12px;
+}
+.ButtonLeftSide, .ButtonPanelButton .ButtonLeftSide{
+    width:0;
+    margin-left:0;
+    background:none;
+}
+.ButtonRightSide, .ButtonPanelButton .ButtonRightSide{
+    background:none;
+    width:0;
+}
+.Hover .ButtonContent, .Hover .ButtonPanelButton .ButtonContent .ScreenPanel{ 
+    background: url("../Images/webbuttonbg.gif") repeat-x;
+    color:#333;
+}
+.ButtonContent, .disabled .ButtonContent, .ButtonPanelButton .ButtonContent{
+    height:20px;
+    color:#7D88DA;
+    border: 1px solid #CCCCCC;    
+    background: url("../Images/webbuttonbg.gif") repeat-x;
+    padding: 4px 8px;
+}
+.ButtonContent .ScreenLabel{
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+    font-size: 13px;
+}
+
+.header-nav {
+    background: url("../Images/webheader.gif") repeat-x 0 6px;
+    height: 116px;
+    width: 100%;
+}
+.header-logo {
+    background: url("../Images/shl-logo.gif") no-repeat;
+    height: 134px;
+    margin: -6px 0 0 8px;
+    width: 230px;
+    cursor:pointer;
+}
+.header-nav TD {
+    float: left;
+    vertical-align: top;
+}
+.header-nav .header-section {
+    background: url("../Images/webheaderdivider.gif") no-repeat left -1px;
+    height: 110px;
+    margin-left: 8px;
+    margin-top: 6px;
+}
+.header-nav .header-section .section-label {
+    color: white;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+    font-size: 13px;
+    text-transform: uppercase;
+    height: 22px;
+    margin-top:4px;
+    padding-left: 8px;
+}
+.header-nav .header-section .label {
+    color: black;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+    font-size: 11px;
+    padding-left: 8px;
+}
+.header-nav .header-section .link {
+    color: white;
+    cursor: pointer;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+    font-size: 11px;
+    padding-top:1px;
+    padding-left: 8px;
 }
 
 .help div{
     padding:6px;
     padding-left:60px;
-    font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
 	font-size : 12px;
     color:gray;
 }
 
 .helpLeftAlign div{
-    font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
 	font-size : 12px;
     color:gray;
 }
@@ -19,8 +163,8 @@
 .helpHeader{
 	-moz-user-select: none;
     color:#c74a1e;
-    font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
-    padding:2px;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+    /*padding:2px;*/
     font-size:12px;
     background:none;
     text-align:left;
@@ -29,7 +173,7 @@
 
 .welcome, .news{
     padding:6px;
-    font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
 	font-size : 12px;
     color:gray;
     	background: #EFEFEF url('../Images/row-over.gif') repeat-x scroll left top;
@@ -38,11 +182,14 @@ margin:8px;
 }
 .ContentPanel{
     padding:12px;
-    background:url("../Images/whitecontentpanel.jpg") no-repeat;
-    width:925px;
+    background:#fafafa;/*url("../Images/whitecontentpanel.jpg") no-repeat;*/
+    width:992px;
     height:668px;
+    margin-left:8px;
 }
-
+.WhiteContentPanel{
+    background:#fafafa;
+}
 .HorizontalDivider hr{
     color:white;
 }
@@ -65,13 +212,15 @@ width:58px;
     background:url("../Images/clickable.jpg") no-repeat right 10px;
 }
 .crumbline {
-    margin:2px 0 0 2px;
-    background: url("../Images/crumbline.jpg") no-repeat scroll 0 0 transparent;
+    margin:2px 0 0 8px;
+    background:black;/* url("../Images/crumbline.jpg") no-repeat scroll 0 0 transparent;*/
     height: 28px;
-    width: 950px;
+    width: 1016px;
 }
 .crumbline .webLabel{
-    padding:4px 0 0 6px;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
+    font-size: 16px;
+    padding:0 0 0 6px;
 }
 .Links {
     background: url("../Images/links.jpg") no-repeat;
@@ -115,7 +264,7 @@ width:6px;
 .FormTitle{
 	-moz-user-select: none;
     color:#c74a1e;
-    font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
     padding:2px;
     font-size:18px;
     background:none;
@@ -128,9 +277,7 @@ width:6px;
 .Prompt{
     color:#333;
 }
-.middleCenter{
-background:#deecfd;
-		}
+
 .Links .ConfirmWindow .middleRight {
     background:none;
 }
@@ -156,7 +303,7 @@ background:#deecfd;
 }
 .HomeText{
     color:#333;
-    font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
 	font-size : 12px;
 	padding:16px;
 }
@@ -208,13 +355,13 @@ background:#deecfd;
 }
 
 .webLabel {
-	font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
 	font-size : 12px;
 	color:white;
 }
 
 .menuLabel {
-	font-family : Verdana,Geneva,Arial,Helevetica,sans-serif;
+    font-family: "Trebuchet MS",Arial,Helvetica,sans-serif;
 	font-size : 10px;
 	color:white;
 }

@@ -181,7 +181,7 @@ UIRF Software License are applicable instead of those above.
         </deck>
         <deck>
           <VerticalPanel padding="0" spacing="0">
-            <VerticalPanel style="help">
+            <VerticalPanel style="helpLeftAlign">
               <TablePanel>
                <row> 
                  <html><xsl:value-of select='resource:getString($constants,"finalReport.header2")' /></html>
@@ -191,26 +191,26 @@ UIRF Software License are applicable instead of those above.
           <HorizontalPanel>         
             <VerticalPanel>
               <widget valign="top">
-                <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="820">
+                <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="940">
                   <col header="{resource:getString($constants,'select')}" key="select" width="60">
                     <check />
                   </col>
                   <col header="{resource:getString($constants,'AccessionNo')}" key="accessionNumber" width="80">
                     <textbox field="Integer" />
                   </col>
-                  <col header="{resource:getString($constants,'collectionSite')}" key="collectionSite" width="120">
+                  <col header="{resource:getString($constants,'collectionSite')}" key="collectionSite" width="170">
                     <textbox field="String" />
                   </col>
                   <col header="{resource:getString($constants,'dateCollected')}" key="collectedDate" width="120">
                     <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}" />
                   </col>
-                  <col header="{resource:getString($constants,'collectorName')}" key="collectorName" width="120">
+                  <col header="{resource:getString($constants,'collectorName')}" key="collectorName" width="170">
                     <textbox field="String" />
                   </col>
                   <col header="{resource:getString($constants,'status')}" key="status" width="70">
                     <dropdown field="Integer" width="70" />
                   </col>
-                  <col header="{resource:getString($constants,'collectionTown')}" key="town" width="120">
+                  <col header="{resource:getString($constants,'collectionTown')}" key="town" width="150">
                     <textbox field="String" />
                   </col>
                   <col header="{resource:getString($constants,'projectCode')}" key="project" width="120">
@@ -223,7 +223,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel height="20">
               <label field="String" key="numSampleSelected" style="Prompt" />
             </VerticalPanel>
-            <HorizontalPanel width="820px">            
+            <HorizontalPanel width="940">            
              <widget halign="left">
                 <appButton key="backButton" style="Button" visible="false" >
                   <HorizontalPanel>

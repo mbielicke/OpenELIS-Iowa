@@ -111,7 +111,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");
         finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
-        userPermission = UserCache.getPermission().getModule("w_datadump_environmental");
+        userPermission = UserCache.getPermission().getModule("w_dataview_environmental");
         if (userPermission == null)
             throw new PermissionException("screenPermException",
                                           "Final Report Environmental Screen");
@@ -1177,7 +1177,7 @@ public class DataViewEnvironmentalScreen extends Screen {
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "report?file=" + st.getMessage();
 
-                Window.open(URL.encode(url), "Final Report", null);
+                Window.open(URL.encode(url), "FinalReport", null);
                 window.setStatus("Generated file " + st.getMessage(), "");
             } else {
                 window.setStatus(st.getMessage(), "");
