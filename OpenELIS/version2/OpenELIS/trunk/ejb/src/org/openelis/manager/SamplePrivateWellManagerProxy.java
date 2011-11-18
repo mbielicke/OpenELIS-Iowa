@@ -63,6 +63,10 @@ public class SamplePrivateWellManagerProxy {
         return man;
     }
     
+    public void delete(SamplePrivateWellManager man) throws Exception {
+        EJBFactory.getSamplePrivateWell().delete(man.getPrivateWell());
+    }
+    
     public void validate(SamplePrivateWellManager man, ValidationErrorsList errorsList) throws Exception {       
     }
 }

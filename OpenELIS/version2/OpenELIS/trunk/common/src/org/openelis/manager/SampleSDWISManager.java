@@ -77,4 +77,8 @@ public class SampleSDWISManager implements RPC, SampleDomainInt {
 
         return proxy;
     }
+
+    public void delete() throws Exception {
+        proxy().delete(this);
+    }
 }

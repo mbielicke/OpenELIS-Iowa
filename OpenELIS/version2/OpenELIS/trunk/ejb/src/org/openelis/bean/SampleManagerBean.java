@@ -50,7 +50,6 @@ import org.openelis.local.LockLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SystemVariableLocal;
-import org.openelis.local.ToDoCacheLocal;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.SampleItemManager;
@@ -80,9 +79,6 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
     @EJB
     private SampleLocal sample;     
     
-    @EJB
-    private ToDoCacheLocal todoCache;
-
     public SampleManager fetchById(Integer id) throws Exception {
         return SampleManager.fetchById(id);
     }

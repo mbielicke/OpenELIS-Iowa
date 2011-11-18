@@ -63,6 +63,10 @@ public class SampleSDWISManagerProxy {
 
         return man;
     }
+    
+    public void delete(SampleSDWISManager man) throws Exception {
+        EJBFactory.getSampleSDWIS().delete(man.getSDWIS());
+    }
 
     public void validate(SampleSDWISManager man, ValidationErrorsList errorsList) throws Exception {
         ValidationErrorsList list;

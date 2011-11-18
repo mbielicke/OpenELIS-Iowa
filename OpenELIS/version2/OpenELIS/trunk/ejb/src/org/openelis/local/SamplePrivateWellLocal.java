@@ -31,8 +31,8 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 
 @Local
 public interface SamplePrivateWellLocal {
-    public SamplePrivateWellViewDO fetchBySampleId(Integer sampleId) throws Exception;
-    
-    public SamplePrivateWellViewDO add(SamplePrivateWellViewDO privateWellSampleDO) throws Exception ;
-    public SamplePrivateWellViewDO update(SamplePrivateWellViewDO privateWellSampleDO) throws Exception;
+    public SamplePrivateWellViewDO fetchBySampleId(Integer sampleId) throws Exception;    
+    public SamplePrivateWellViewDO add(SamplePrivateWellViewDO data) throws Exception ;
+    public SamplePrivateWellViewDO update(SamplePrivateWellViewDO data) throws Exception;
+    public void delete(SamplePrivateWellViewDO data) throws Exception;
 }

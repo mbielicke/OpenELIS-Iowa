@@ -459,8 +459,10 @@ public class BillingReportBean implements BillingReportRemote {
                         text.append(clientPatientId2);
                     text.append("|");
 
-                    if (projectName != null)
+                    if (projectName != null) {
+                        projectName = projectName.toUpperCase();
                         text.append(projectName);
+                    }
                     text.append("|");
                     text.append("\n");
 

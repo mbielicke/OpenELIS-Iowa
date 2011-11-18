@@ -51,9 +51,11 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
     
-    @EJB private AddressLocal addressBean;
+    @EJB
+    private AddressLocal address;
     
-    @EJB private OrganizationLocal organizationBean;
+    @EJB
+    private OrganizationLocal organization;
 
     public SamplePrivateWellViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;
@@ -64,7 +66,7 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         try {
             data = (SamplePrivateWellViewDO)query.getSingleResult();
             if (data.getOrganizationId() != null)
-                data.setOrganization(organizationBean.fetchById(data.getOrganizationId()));
+                data.setOrganization(organization.fetchById(data.getOrganizationId()));
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -82,17 +84,17 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         entity = new SamplePrivateWell();
 
         // add the location address and set the id
-        if (addressBean.isEmpty(data.getLocationAddress())) 
+        if (address.isEmpty(data.getLocationAddress())) 
             data.getLocationAddress().setId(null);
         else 
-            addressBean.add(data.getLocationAddress());        
+            address.add(data.getLocationAddress());        
         
         // only one of organization or report to address can be specified  
         if (data.getOrganizationId() == null) {
-            if (addressBean.isEmpty(data.getReportToAddress())) 
+            if (address.isEmpty(data.getReportToAddress())) 
                 data.getReportToAddress().setId(null);
            else 
-                addressBean.add(data.getReportToAddress());           
+                address.add(data.getReportToAddress());           
         }
 
         entity.setSampleId(data.getSampleId()); 
@@ -124,18 +126,18 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
 
         entity = manager.find(SamplePrivateWell.class, data.getId());
 
-        if (addressBean.isEmpty(data.getLocationAddress())) {
+        if (address.isEmpty(data.getLocationAddress())) {
             if (data.getLocationAddress().getId() != null) {
-                addressBean.delete(data.getLocationAddress());             
+                address.delete(data.getLocationAddress());             
                 data.getLocationAddress().setId(null);
             }
         } else {
             if (data.getLocationAddress().isChanged()) {
                 entity.setAuditLocationAddressId(true);
                 if (data.getLocationAddress().getId() != null)
-                    addressBean.update(data.getLocationAddress());
+                    address.update(data.getLocationAddress());
                 else
-                    addressBean.add(data.getLocationAddress());
+                    address.add(data.getLocationAddress());
             }
         }
 
@@ -145,17 +147,17 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         //
         if (data.getOrganizationId() != null) {
             if (entity.getReportToAddressId() != null)
-                addressBean.delete(entity.getReportToAddressId());
+                address.delete(entity.getReportToAddressId());
             data.setReportToName(null);
             data.getReportToAddress().setId(null);            
         } else {
             if (data.getReportToAddress().getId() == null) {
-                if ( !addressBean.isEmpty(data.getReportToAddress())) 
-                    addressBean.add(data.getReportToAddress());                                    
+                if ( !address.isEmpty(data.getReportToAddress())) 
+                    address.add(data.getReportToAddress());                                    
             } else {
                 if (data.getReportToAddress().isChanged()) {
                     entity.setAuditReportToAddressId(true);
-                    addressBean.update(data.getReportToAddress());
+                    address.update(data.getReportToAddress());
                 }
             }
         }
@@ -172,5 +174,21 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         entity.setWellNumber(data.getWellNumber());
 
         return data;
+    }
+
+    public void delete(SamplePrivateWellViewDO data) throws Exception {
+        SamplePrivateWell entity;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = manager.find(SamplePrivateWell.class, data.getId());
+        
+        if (entity != null) {
+            if (data.getLocationAddress().getId() != null)
+                address.delete(data.getLocationAddress());
+            if (data.getReportToAddress().getId() != null)
+                address.delete(data.getReportToAddress());
+            manager.remove(entity);
+        }              
     }
 }

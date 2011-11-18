@@ -29,8 +29,10 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -43,7 +45,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
     protected SampleOrganizationManager           organizations;
     protected SampleProjectManager                projects;
     protected SampleQaEventManager                qaEvents;
-    protected SampleDomainInt                     sampleDomain;
+    protected SampleDomainInt                     domainManager, deletedDomainManager;
     protected NoteManager                         sampleInternalNotes;
     protected NoteManager                         sampleExternalNote;
     protected AuxDataManager                      auxData;
@@ -67,7 +69,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
         sampleItems = null;
         organizations = null;
         projects = null;
-        sampleDomain = null;
+        domainManager = null;
     }
 
     /**
@@ -191,6 +193,17 @@ public class SampleManager implements RPC, HasAuxDataInt {
     
         return bundle;
     }
+    
+    public void changeDomain(String newDomain) throws Exception {
+        if (DataBaseUtil.isEmpty(newDomain) || sample.getDomain().equals(newDomain))
+            return;
+        if (deletedDomainManager != null)
+            throw new InconsistencyException("canChangeDomainOnlyOnce");
+        
+        deletedDomainManager = domainManager;        
+        sample.setDomain(newDomain);        
+        createEmptyDomainManager();
+    }
 
     //
     // other managers
@@ -202,17 +215,17 @@ public class SampleManager implements RPC, HasAuxDataInt {
 
         assert domain != null : "domain is null";
 
-        if (sampleDomain == null) {
+        if (domainManager == null) {
             if (sample.getId() != null) {
                 try {
                     if (domain.equals(HUMAN_DOMAIN_FLAG))
-                        sampleDomain = SampleHumanManager.findBySampleId(sample.getId());
+                        domainManager = SampleHumanManager.findBySampleId(sample.getId());
                     else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
-                        sampleDomain = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
+                        domainManager = SampleEnvironmentalManager.fetchBySampleId(sample.getId());
                     else if (domain.equals(WELL_DOMAIN_FLAG))
-                        sampleDomain = SamplePrivateWellManager.fetchBySampleId(sample.getId());
+                        domainManager = SamplePrivateWellManager.fetchBySampleId(sample.getId());
                     else if (domain.equals(SDWIS_DOMAIN_FLAG))
-                        sampleDomain = SampleSDWISManager.fetchBySampleId(sample.getId());
+                        domainManager = SampleSDWISManager.fetchBySampleId(sample.getId());
 
                 } catch (NotFoundException e) {
                     // ignore
@@ -221,11 +234,11 @@ public class SampleManager implements RPC, HasAuxDataInt {
                 }
             }
 
-            if (sampleDomain == null)
+            if (domainManager == null)
                 createEmptyDomainManager();
         }
 
-        return sampleDomain;
+        return domainManager;
     }
 
     public void createEmptyDomainManager() throws Exception {
@@ -235,13 +248,13 @@ public class SampleManager implements RPC, HasAuxDataInt {
         assert domain != null : "domain is null";
 
         if (domain.equals(HUMAN_DOMAIN_FLAG))
-            sampleDomain = SampleHumanManager.getInstance();
+            domainManager = SampleHumanManager.getInstance();
         else if (domain.equals(ENVIRONMENTAL_DOMAIN_FLAG))
-            sampleDomain = SampleEnvironmentalManager.getInstance();
+            domainManager = SampleEnvironmentalManager.getInstance();
         else if (domain.equals(WELL_DOMAIN_FLAG))
-            sampleDomain = SamplePrivateWellManager.getInstance();
+            domainManager = SamplePrivateWellManager.getInstance();
         else if (domain.equals(SDWIS_DOMAIN_FLAG))
-            sampleDomain = SampleSDWISManager.getInstance();
+            domainManager = SampleSDWISManager.getInstance();
     }
 
     public SampleProjectManager getProjects() throws Exception {
@@ -392,6 +405,10 @@ public class SampleManager implements RPC, HasAuxDataInt {
     public boolean hasReleasedAnalysis() throws Exception {
         return getSampleItems().hasReleasedAnalysis();
     }
+    
+    public SampleDomainInt getDeletedDomainManager() {
+        return deletedDomainManager;
+    }
 
     protected void updateSampleStatus() throws Exception {
         int e, l, c, r;
@@ -476,7 +493,7 @@ public class SampleManager implements RPC, HasAuxDataInt {
 
         return s;
     }
-
+    
     private static SampleManagerProxy proxy() {
         if (proxy == null)
             proxy = new SampleManagerProxy();

@@ -135,6 +135,11 @@ public class SampleHumanManager implements RPC, SampleDomainInt {
     public SampleHumanManager update() throws Exception {
         return null;
     }
+
+    public void delete() throws Exception {
+        // TODO Auto-generated method stub
+        
+    }
     
     public void validate() throws Exception {
     }
