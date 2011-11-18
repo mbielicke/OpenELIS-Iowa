@@ -170,7 +170,7 @@ UIRF Software License are applicable instead of those above.
                 </widget>
               </HorizontalPanel>
             </VerticalPanel>
-            <VerticalPanel padding="0" spacing="0" style="helpLeftAlign">
+            <VerticalPanel padding="0" spacing="0" style="help">
               <TablePanel width="100%">
                 <row>
                   <html><xsl:value-of select='resource:getString($constants,"finalReport.header1")' /></html>
@@ -181,7 +181,7 @@ UIRF Software License are applicable instead of those above.
         </deck>
         <deck>
           <VerticalPanel padding="0" spacing="0">
-            <VerticalPanel style="help">
+            <VerticalPanel style="helpLeftAlign">
               <TablePanel>
                <row> 
                  <html><xsl:value-of select='resource:getString($constants,"finalReport.header2")' /></html>
