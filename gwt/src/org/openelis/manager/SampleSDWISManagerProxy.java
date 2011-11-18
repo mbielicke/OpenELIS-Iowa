@@ -50,21 +50,11 @@ public class SampleSDWISManagerProxy {
         assert false : "not supported";
         return null;
     }
-
-    public void validate(SampleSDWISManager man, ValidationErrorsList errorsList) throws Exception {
-        // validate that the pwsid is valid
-        /*try {
-            fetchPwsByPwsId(man.getSDWIS().getPwsId());
-
-        } catch (NotFoundException e) {
-            errorsList.add(new FieldErrorException("invalidPwsException",
-                                                   SampleMeta.getSDWISPwsId()));
-        } catch (Exception e) {
-
-        }*/
+    
+    public void delete(SampleSDWISManager man) throws Exception {
+        assert false : "not supported";
     }
 
-    /*public PwsDO fetchPwsByPwsId(String pwsId) throws Exception {
-        return service.call("fetchPwsByPwsId", pwsId);
-    }*/
+    public void validate(SampleSDWISManager man, ValidationErrorsList errorsList) throws Exception {
+    }
 }

@@ -139,7 +139,7 @@ UIRF Software License are applicable instead of those above.
           <col key="{meta:getAnalysisTestName()}" width="192" header="{resource:getString($constants,'test')}" sort="true">
             <textbox case = "LOWER" field="String" />
           </col>
-          <col key="{meta:getAnalysisMethodName()}" width="192" header="{resource:getString($constants,'accessionNum')}" sort="true">
+          <col key="{meta:getAnalysisMethodName()}" width="192" header="{resource:getString($constants,'method')}" sort="true">
             <textbox case = "LOWER" field="String" />
           </col>
           <col key="{meta:getAnalysisStatusId()}" width="101" header="{resource:getString($constants,'analysisStatus')}" sort="true">

@@ -130,6 +130,7 @@ UIRF Software License are applicable instead of those above.
                  <menuPanel layout="vertical" position="below" style="topMenuContainer">
                   <menuItem key="unreleaseSample" description="" enable="false" icon="unreleaseIcon" label="Unrelease Sample" />
                   <menuItem key="previewFinalReport" description="" enable="false" icon="unreleaseIcon" label = "{resource:getString($constants,'viewFinalReport')}" />  					
+                  <menuItem key="changeDomain" description="" enable="false" icon="unreleaseIcon" label = "{resource:getString($constants,'changeDomain')}" />
                   <html>&lt;hr/&gt;</html>
                   <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
                   <menuItem key="historySampleSpec" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleSpec')}" />
@@ -268,12 +269,16 @@ UIRF Software License are applicable instead of those above.
                   <AbsolutePanel key="envDomainPanel"/>
                 </tab>
 <!-- Private Well Deck -->
-                <tab text="{resource:getString($constants,'privateWell')}" visible="false">
+                <tab text="{resource:getString($constants,'privateWell')}" visible="false" tab="{meta:getWellOrganizationName()},{meta:getBillTo()}">
                   <AbsolutePanel key="privateWellDomainPanel"/>
                 </tab>
 <!--     SDWISS Tab -->
-                <tab text="{resource:getString($constants,'sdwis')}" visible="false">
+                <tab text="{resource:getString($constants,'sdwis')}" visible="false" tab="{meta:getSDWISPwsNumber0()},{meta:getBillTo()}">
                   <AbsolutePanel key="sdwisDomainPanel"/>
+                </tab> 
+<!--   Quick Entry Tab -->
+                <tab text="{resource:getString($constants,'quickEntry')}" visible="false">
+                  <AbsolutePanel key="quickEntryDomainPanel"/>
                 </tab> 
 <!-- Sample Item Deck -->
                 <tab text="{resource:getString($constants,'sampleItem')}" visible="false" tab="{meta:getItemTypeOfSampleId()},{meta:getItemUnitOfMeasureId()}">

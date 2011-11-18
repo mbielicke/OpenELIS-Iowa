@@ -423,9 +423,7 @@ public class SDWISTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                billTo.enable(event.getState() == State.QUERY ||
-                              (canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState())));
-                billTo.setQueryMode(event.getState() == State.QUERY);
+                billTo.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
