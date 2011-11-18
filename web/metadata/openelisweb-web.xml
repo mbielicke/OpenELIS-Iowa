@@ -26,8 +26,8 @@ UIRF Software License are applicable instead of those above.
 -->
 
 <web-app>
- <display-name>OpenELIS Web Application v0.0</display-name>
- <description>Initial Development of OpenELIS Web Applciation</description>
+ <display-name>OpenELIS Web Portal V2</display-name>
+ <description>OpenELIS Web Application Portal for External Organizations</description>
   
    <filter>
         <filter-name>Login Filter</filter-name>
@@ -36,31 +36,19 @@ UIRF Software License are applicable instead of those above.
             <param-name>AppRoot</param-name>
             <param-value>${catalina.home}/apps/openelisweb/</param-value>
         </init-param>
-        <init-param>
-            <param-name>ipTrys</param-name>
-            <param-value>9</param-value>
-        </init-param>
-        <init-param>
-            <param-name>userTrys</param-name>
-            <param-value>3</param-value>
-        </init-param>
     </filter>
  
   <filter-mapping>
     <filter-name>Login Filter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
+
   <!-- OpenELISServlets Servlets -->
 
   <servlet>
     <servlet-name>OpenELISServlet</servlet-name>
     <servlet-class>org.openelis.gwt.server.ScreenControllerServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
-  </servlet>
-  <servlet>
-    <servlet-name>PreferencesServlet</servlet-name>
-    <servlet-class>org.openelis.web.server.PreferencesServlet</servlet-class>
-    <load-on-startup>3</load-on-startup>
   </servlet>
   
   <servlet>
@@ -72,11 +60,6 @@ UIRF Software License are applicable instead of those above.
   <servlet-mapping>
     <servlet-name>OpenELISServlet</servlet-name>
     <url-pattern>/OpenELISServlet</url-pattern>
-  </servlet-mapping>
-  
-  <servlet-mapping>
-    <servlet-name>PreferencesServlet</servlet-name>
-    <url-pattern>/PreferencesServlet</url-pattern>
   </servlet-mapping>
   
   <servlet-mapping>

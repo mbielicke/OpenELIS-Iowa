@@ -28,6 +28,7 @@ package org.openelis.web.modules.main.client;
 import java.util.HashMap;
 
 import org.openelis.cache.UserCache;
+import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -35,7 +36,6 @@ import org.openelis.gwt.screen.ScreenSessionTimer;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Label;
-import org.openelis.gwt.widget.web.LinkButton;
 import org.openelis.gwt.widget.web.WebWindow;
 import org.openelis.web.modules.dataView.client.DataViewEnvironmentalScreen;
 import org.openelis.web.modules.finalReport.client.FinalReportEnvironmentalScreen;
@@ -48,6 +48,10 @@ import org.openelis.web.modules.sampleStatusReport.client.SampleStatusScreen;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOutEvent;
+import com.google.gwt.event.dom.client.MouseOutHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -60,6 +64,8 @@ import com.google.gwt.user.client.Window.ClosingEvent;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 /**
  * 
@@ -88,7 +94,6 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     private static Timer              timeoutTimer, forceTimer;
     private static int                SESSION_TIMEOUT = 1000 * 60 * 30, FORCE_TIMEOUT = 1000 * 60;
     private HandlerRegistration       closeHandler;
-    protected LinkButton              homeLink,finalReportEnv,finalReportWell,finalReportSDWIS,statusReport,dataDumpEnv,dataDumpWell,dataDumpSDWIS,notificationPref,changePassword;
 
     /**
      * No-arg Constructor
@@ -118,28 +123,12 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
      * Menu screen into the content panel.
      */
     protected void initialize() {
-        String name;
-        Label<String> userName;
+        Section section;
+        Label<String> link;
 
         screens = new HashMap<String, Screen>();
         content = (AbsolutePanel)def.getWidget("content");
-        //linksPanel = (AbsolutePanel)def.getWidget("links");
-        userName = (Label<String>)def.getWidget("userName");
-
         content.add(window);
-
-        name = null;
-        try {
-            name = UserCache.getPermission().getFirstName();
-            if (name != null)
-                name += " " + UserCache.getPermission().getLastName();
-            else
-                name = UserCache.getName();
-        } catch (Exception e) {
-            name = "who are you?";
-        } finally {
-            userName.setText(name);
-        }
 
         History.addValueChangeHandler(new ValueChangeHandler<String>() {
             public void onValueChange(ValueChangeEvent<String> event) {
@@ -148,9 +137,180 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         });
 
         //
-        // add all the buttons/links
+        // link the logo with home screen
         //
-        addClickHandler("logout", new ClickHandler() {
+        link = (Label)def.getWidget("logo");
+        if (link != null) {
+            link.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    try {
+                        gotoScreen("home");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        //
+        // section: RESULT REPORT
+        // final reports & result by analyte
+        section = new Section("RESULT REPORTS");
+
+        if (showMenu("w_final_environmental")) {
+            link = section.addLink("ENVIRONMENTAL FINAL REPORT");
+            link.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    try {
+                        Screen screen = new FinalReportEnvironmentalScreen();
+                        setScreen(screen, consts.get("environmentalFinalReport"),
+                                  "finalReportEnvironmental");
+                        window.setCrumbLink(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        if (showMenu("w_final_privatewell")) {
+            link = section.addLink("PRIVATE WELL FINAL REPORT");
+            link.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    try {
+                        Screen screen = new FinalReportPrivateWellScreen();
+                        setScreen(screen,
+                                  consts.get("privateWellFinalReport"),
+                                  "finalReportPrivateWell");
+                        window.setCrumbLink(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        if (showMenu("w_final_sdwis")) {
+            link = section.addLink("SDWIS FINAL REPORT");
+            link.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    try {
+                        Screen screen = new FinalReportSDWISScreen();
+                        setScreen(screen, consts.get("sdwisFinalReport"), "finalReportSDWIS");
+                        window.setCrumbLink(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        if (showMenu("w_dataview_environmental")) {
+            link = section.addLink("ENVIRONMENTAL RESULT BY ANALYTE");
+            link.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    try {
+                        Screen screen = new DataViewEnvironmentalScreen();
+                        setScreen(screen, consts.get("environmentalSamplesByTest"),
+                                  "environmentalSampleByTest");
+                        window.setCrumbLink(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        if (showMenu("w_dataview_privatewell")) {
+            link = section.addLink("PRIVATE WELL RESULT BY ANALYTE");
+            link.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    try {
+                        window.setCrumbLink(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        if (showMenu("w_dataview_sdwis")) {
+            link = section.addLink("SDWIS RESULT BY ANALYTE");
+            link.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    try {
+                        window.setCrumbLink(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        //
+        // section: SAMPLE
+        //
+        section = new Section("STATUS REPORTS");
+
+        if (showMenu("w_status")) {
+            link = section.addLink("STATUS OF SAMPLES RECEIVED");
+            link.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    try {
+                        Screen screen = new SampleStatusScreen();
+                        setScreen(screen, consts.get("sampleInhouseStatusReport"), "sampleStatus");
+                        window.setCrumbLink(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        // section: ACCOUNT
+        // username, change password, logout is always enabled so add them first
+        section = new Section("ACCOUNT");
+
+        section.addLabel(UserCache.getPermission().getLoginName());
+
+        if (showMenu("w_notify")) {
+            link = section.addLink("SAMPLE EMAIL NOTIFICATION");
+            link.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                    try {
+                        Screen screen = new NotificationPreferenceScreen();
+                        setScreen(screen, consts.get("notificationPreference"), "notificationPref");
+                        window.setCrumbLink(null);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+
+        link = section.addLink("CHANGE PASSWORD");
+        link.addClickHandler(new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                try {
+                    window.setCrumbLink(null);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+
+        link = section.addLink("LOGOUT");
+        link.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
                     logout();
@@ -160,151 +320,6 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 }
             }
         });
-
-        try {
-        homeLink = (LinkButton)def.getWidget("homeLink");
-        homeLink.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-            	History.newItem("home", true);
-                window.setCrumbLink(null);
-            }
-        });
-        
-        //if(UserCache.getPermission().getModule("w_final_environmental").hasSelectPermission()) {
-        	finalReportEnv = (LinkButton)def.getWidget("finalReportEnvLink");
-        	finalReportEnv.addClickHandler(new ClickHandler() {
-        		public void onClick(ClickEvent event) {
-        			try {
-        				Screen screen = new FinalReportEnvironmentalScreen();
-        				setScreen(screen, consts.get("environmentalFinalReport"), "finalReportEnvironmental");
-        				window.setCrumbLink(null);
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        				Window.alert(e.getMessage());
-        			}
-        		}
-        	});
-        //}
-
-        //if(UserCache.getPermission().getModule("w_final_privatewell").hasSelectPermission()) {
-        	finalReportWell = (LinkButton)def.getWidget("finalReportPrivateWellLink");
-            finalReportWell.addClickHandler(new ClickHandler() {
-            	public void onClick(ClickEvent event) {
-            		try {
-            			Screen screen = new FinalReportPrivateWellScreen();
-            			setScreen(screen, consts.get("privateWellFinalReport"), "finalReportPrivateWell");
-            			window.setCrumbLink(null);
-            		} catch (Exception e) {
-            			e.printStackTrace();
-            			Window.alert(e.getMessage());
-            		}
-            	}
-            });
-        //}
-        
-        //if(UserCache.getPermission().getModule("w_final_sdwis").hasSelectPermission()) {
-        	finalReportSDWIS = (LinkButton)def.getWidget("finalReportSDWISLink");
-        	finalReportSDWIS.addClickHandler(new ClickHandler() {
-        		public void onClick(ClickEvent event) {
-        			try {
-        				Screen screen = new FinalReportSDWISScreen();
-        				setScreen(screen, consts.get("sdwisFinalReport"), "finalReportSDWIS");
-        				window.setCrumbLink(null);
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        				Window.alert(e.getMessage());
-        			}
-        		}
-        	});
-        //}
-        
-        //if(UserCache.getPermission().getModule("w_samplestat").hasSelectPermission()) {
-        	statusReport = (LinkButton)def.getWidget("statusReportLink");
-        	statusReport.addClickHandler(new ClickHandler() {
-        		public void onClick(ClickEvent event) {
-        			try {
-        				Screen screen = new SampleStatusScreen();
-        				setScreen(screen, consts.get("sampleInhouseStatusReport"), "sampleStatus");
-        				window.setCrumbLink(null);
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        				Window.alert(e.getMessage());
-        			}
-        		}
-        	});
-        //}
-
-        //if(UserCache.getPermission().getModule("w_datadump_environmental").hasSelectPermission()) {
-        	dataDumpEnv = (LinkButton)def.getWidget("dataDumpEnvLink");
-        	dataDumpEnv.addClickHandler(new ClickHandler() {
-        		public void onClick(ClickEvent event) {
-        			try {
-        				Screen screen = new DataViewEnvironmentalScreen();
-        				setScreen(screen, consts.get("environmentalSamplesByTest"), "environmentalSampleByTest");
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        				Window.alert(e.getMessage());
-        			}
-        		}
-        	});
-        //}
-        
-        //if(UserCache.getPermission().getModule("w_datadump_privatewell").hasSelectPermission()) {
-        	dataDumpWell = (LinkButton)def.getWidget("dataDumpPrivateWellLink");
-        	dataDumpWell.addClickHandler(new ClickHandler() {
-        		public void onClick(ClickEvent event) {
-        			try {
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        				Window.alert(e.getMessage());
-        			}
-        		}
-        	});
-        //}
-        
-        //if(UserCache.getPermission().getModule("w_datadump_sdwis").hasSelectPermission()) {
-        	dataDumpSDWIS = (LinkButton)def.getWidget("dataDumpSDWISLink");
-        	dataDumpSDWIS.addClickHandler(new ClickHandler() {
-        		public void onClick(ClickEvent event) {
-        			try {
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        				Window.alert(e.getMessage());
-        			}
-        		}
-        	});
-        //}
-
-        //if(UserCache.getPermission().getModule("w_notify").hasSelectPermission()) {
-        	notificationPref = (LinkButton)def.getWidget("notificationPrefLink");
-        	notificationPref.addClickHandler(new ClickHandler() {
-        		public void onClick(ClickEvent event) {
-        			try {
-        				Screen screen = new NotificationPreferenceScreen();
-        				setScreen(screen, consts.get("notificationPreference"), "notificationPref");
-        				window.setCrumbLink(null);
-        			} catch (Exception e) {
-        				e.printStackTrace();
-        				Window.alert(e.getMessage());
-        			}
-        		}
-        	});
-        //}
-        
-        changePassword = (LinkButton)def.getWidget("changePassword");
-        changePassword.addClickHandler(new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                try {
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-        }catch(Exception e) {
-        	e.printStackTrace();
-        }
-
     }
 
     /**
@@ -429,24 +444,91 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     }
 
     /**
-     * register a click handler
+     * Convenience method to check for a module select permission to enable it
+     * on menu
      */
-    private void addClickHandler(String screenName, ClickHandler handler) {
-        Label l;
+    private boolean showMenu(String module) {
+        ModulePermission perm;
 
-        l = ((Label)def.getWidget(screenName));
-        if (l != null)
-            l.addClickHandler(handler);
+        perm = UserCache.getPermission().getModule(module);
+        return perm != null && perm.hasSelectPermission();
     }
 
-    private void addLinkHandler(String icon, String balloonHelp, String secModule, ClickHandler handler) {
-        LinkButton b;
+    /*
+     * Section subclass manages section header and link items
+     */
 
-//        if (secModule == null || UserCache.getPermission().getModule(secModule).hasSelectPermission()) {
-            b = new LinkButton(icon, null, balloonHelp, 56, 40);
-            b.addClickHandler(handler);
-            b.addStyleName("webButton");
-            linksPanel.add(b);
-//        }
+    private class Section {
+        int             count;
+        boolean         first;
+        String          title;
+        HorizontalPanel section;
+        VerticalPanel   current;
+
+        public Section(String sectionTitle) {
+            title = sectionTitle;
+            first = true;
+            count = 0;
+            current = null;
+        }
+
+        public void addLabel(String text) {
+            add(text, "label");
+        }
+
+        public Label<String> addLink(String text) {
+            final Label<String> l;
+
+            l = add(text, "link");
+            l.addMouseOverHandler(new MouseOverHandler() {
+                public void onMouseOver(MouseOverEvent event) {
+                    l.setStyleName("link-hover");
+                }
+            });
+            l.addMouseOutHandler(new MouseOutHandler() {
+                public void onMouseOut(MouseOutEvent event) {
+                    l.setStyleName("link");
+                }
+            });
+            
+            return l;
+        }
+
+        public Label<String> add(String text, String style) {
+            HorizontalPanel header;
+
+            //
+            // since the menus are based on user permission, we will delay adding a
+            // menu section until the user has a menu item for that section.
+            //
+            if (first) {
+                first = false;
+                section = new HorizontalPanel();
+                section.addStyleName("header-section");
+
+                header = (HorizontalPanel)def.getWidget("header");
+                header.add(section);
+            }
+            if (current == null || count % 4 == 0) {
+                current = new VerticalPanel();
+                current.addStyleName("header-subsection");
+                section.add(current);
+                addLabel( (count == 0) ? title : "", "section-label");
+            }
+
+            count++ ;
+            return addLabel(text, style);
+        }
+
+        private Label<String> addLabel(String text, String style) {
+            Label<String> l;
+
+            l = new Label<String>();
+            l.setText(text);
+            l.setStyleName(style);
+            current.add(l);
+
+            return l;
+        }
     }
 }

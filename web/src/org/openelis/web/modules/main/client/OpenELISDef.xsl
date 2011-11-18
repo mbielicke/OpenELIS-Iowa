@@ -43,44 +43,19 @@ UIRF Software License are applicable instead of those above.
       <xalan:script lang="javaclass" src="xalan://java.util.Locale"/>
     </xalan:component>
     
-  
     <xsl:variable name="language"><xsl:value-of select="doc/locale"/></xsl:variable>
     <xsl:variable name="props"><xsl:value-of select="doc/props"/></xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))"/>
     <xsl:template match="doc">
       <screen name="Openelis Web V2.0">
-        <TablePanel width="1024px" height="100%" spacing="0" padding="0">
-        	<row >
-        	  <widget align="right" colspan="2" style="WelcomeLogout" valign="top">
-        	    <TablePanel spacing="0" padding="0">
-        	      <row>
-        	      <AbsolutePanel style="title"/>
-        	      <label style="webLabel,clickable" key="logout" text="Logout"/>
-              	  <label style="webLabel" key="userName"/>
-              	  </row>
-                </TablePanel>
-              </widget>
-        	</row> 
-        	<row>
-        	  <widget width="56px" valign="top">   	  
-        	    <AbsolutePanel style="Links" key="links"  width="56px">
-        	       <linkButton key="homeLink" style="webButton" icon="homeIcon" popup="Home" width="56" height="40"/>
-        	       <linkButton key="finalReportEnvLink" style="webButton" icon="finalReportEnvironmentalIcon" popup="{resource:getString($constants,'environmentalFinalReport')}" width="56" height="40"/>
-		           <linkButton key="finalReportPrivateWellLink" style="webButton" icon="finalReportPrivateWellIcon" popup="{resource:getString($constants,'privateWellFinalReport')}" width="56" height="40"/>
-		           <linkButton key="finalReportSDWISLink" style="webButton" icon="finalReportSDWISIcon" popup="{resource:getString($constants,'sdwisFinalReport')}" width="56" height="40"/>
-		           <linkButton key="statusReportLink" style="webButton" icon="statusReportIcon" popup="{resource:getString($constants,'sampleInhouseStatusReport')}" width="56" height="40"/>
-		           <linkButton key="dataDumpEnvLink" style="webButton" icon="dataDumpEnvironmentalIcon" popup="{resource:getString($constants,'environmentalSamplesByTest')}" width="56" height="40"/>
-		           <linkButton key="dataDumpPrivateWellLink" style="webButton" icon="dataDumpPrivateWellIcon" popup="{resource:getString($constants,'privateWellSamplesByTest')}" width="56" height="40"/>
-		           <linkButton key="dataDumpSDWISLink" style="webButton" icon="dataDumpSDWISIcon" popup="{resource:getString($constants,'sdwisSamplesByTest')}" width="56" height="40"/>
-		           <linkButton key="notificationPrefLink" style="webButton" icon="notificationPrefIcon" popup="{resource:getString($constants,'notificationPreference')}" width="56" height="40"/>
-		           <linkButton key="changePasswordLink" style="webButton" icon="changePasswordIcon" popup="{resource:getString($constants,'changePassword')}" width="56" height="40"/>       		           
-        	    </AbsolutePanel>
-              </widget>
-              <widget width="100%" valign="top">
-        	    <AbsolutePanel key="content" width="100%" height="100%"/>
-        	  </widget>
-        	</row>
-        </TablePanel>
-      </screen>
+        <VerticalPanel width="1024px" height="100%" spacing="0" padding="0">
+			<HorizontalPanel key="header" style="header-nav" spacing="0">
+				<AbsolutePanel>
+					<label key="logo" style="header-logo"></label>
+				</AbsolutePanel>
+			</HorizontalPanel>
+      		<AbsolutePanel key="content" width="100%" height="100%"/>
+       	</VerticalPanel>
+     </screen>
     </xsl:template>
 </xsl:stylesheet>

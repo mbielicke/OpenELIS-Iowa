@@ -52,7 +52,7 @@ UIRF Software License are applicable instead of those above.
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
     <screen id="FinalReport" name="{resource:getString($constants,'finalReport')}">
-      <DeckPanel height="100%" key="deck" width="100%" style="ContentPanel">
+      <DeckPanel height="100%" key="deck" style="ContentPanel" width="100%">
         <deck>
           <HorizontalPanel padding="0" spacing="0">
             <VerticalPanel padding="0" spacing="0">
@@ -168,349 +168,38 @@ UIRF Software License are applicable instead of those above.
                     </HorizontalPanel>
                   </appButton>
                 </widget>
-              </HorizontalPanel>              
+              </HorizontalPanel>
             </VerticalPanel>
             <VerticalPanel padding="0" spacing="0" style="help">
               <TablePanel width="100%">
-               <row> 
-                 <html><xsl:value-of select='resource:getString($constants,"envSamplesByTest.header1")' /></html>
-               </row>               
+                <row>
+                  <html>
+                    <xsl:value-of select='resource:getString($constants,"envSamplesByTest.header1")' />
+                  </html>
+                </row>
               </TablePanel>
             </VerticalPanel>
           </HorizontalPanel>
         </deck>
         <deck>
           <VerticalPanel padding="0" spacing="0">
-            <VerticalPanel style="help">
-              <TablePanel>
-               <row> 
-                 <html><xsl:value-of select='resource:getString($constants,"envSamplesByTest.header2")' /></html>
-               </row>               
-              </TablePanel>
+            <VerticalPanel style="helpLeftAlign">
+              <html>
+                <xsl:value-of select='resource:getString($constants,"envSamplesByTest.header2")' />
+              </html>
             </VerticalPanel>
-          <HorizontalPanel>
-            <VerticalPanel>
-              <TablePanel>
-                <row>
-                  <widget>
-                    <text style="heading" >
-                      <xsl:value-of select='resource:getString($constants,"selectSampleField")' />
-                    </text>                    
-                  </widget>
-                    <text >
-                     -
-                    </text> 
-                        <widget halign="left" >
-                            <appButton key="selectAllSampleFields" style="Button">
-                              <HorizontalPanel>
-                                <AbsolutePanel style="Checked" />
-                                <text>
-                                  <xsl:value-of select="resource:getString($constants,'selectAll')" />
-                                </text>
-                              </HorizontalPanel>
-                            </appButton>
-                          </widget>             
-                  </row>  
-                  </TablePanel>
-                  <HorizontalPanel>
-                  <AbsolutePanel width="30px"/>
-                  <TablePanel>               
-                <row>  
-                  <check key="{meta:getAccessionNumber()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"accessionNum")' />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getCollectionDate()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"dateCollected")' />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getReceivedDate()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'received')" />
-                  </text>
-                 <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getReleasedDate()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'released')" />
-                  </text>
-                </row>
-                <row> 
-                  <check key="{meta:getStatusId()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"status")' />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getProjectIdHeader()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"projectCode")' />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getClientReferenceHeader()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'clientReference')" />
-                  </text> 
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                      <check key="{meta:getEnvCollectorHeader()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"collector")' />
-                  </text>            
-                </row>
-                <row> 
-                  <check key="{meta:getEnvLocationHeader()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'collectionSite')" />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getEnvDescription()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"sampleDescription")' />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getEnvCollectorPhone()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"phoneNumber")' />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getItemTypeofSampleId()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'sampleType')" />
-                  </text>
-                </row>
-                <row>
-               <check key="{meta:getItemSourceOfSampleId()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'source')" />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>                  
-                </row>
-              </TablePanel>
-              </HorizontalPanel>
-            </VerticalPanel>
-            <VerticalPanel width = "20px"/>
-            <VerticalPanel>
-            <TablePanel>
-                <row>
-                  <widget>
-                    <text style="heading">
-                      <xsl:value-of select='resource:getString($constants,"selectOrganizationField")' />
-                    </text>                    
-                  </widget>
-                  <text >
-                     -
-                    </text> 
-                        <widget halign="left" >
-                            <appButton key="selectAllOrganizationFields" style="Button">
-                              <HorizontalPanel>
-                                <AbsolutePanel style="Checked" />
-                                <text>
-                                  <xsl:value-of select="resource:getString($constants,'selectAll')" />
-                                </text>
-                              </HorizontalPanel>
-                            </appButton>
-                          </widget>              
-                  </row>
-                   </TablePanel>
-                   <HorizontalPanel>
-                  <AbsolutePanel width="30px"/>
-                  <TablePanel> 
-                  <row>
-                  <check key="{meta:getSampleOrgOrganizationName()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"name")' />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getAddressMultipleUnit()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"aptSuite")' />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getAddressStreetAddress()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'address')" />
-                  </text>
-                  </row>
-                  <row>
-                  <check key="{meta:getAddressCity()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'city')" />
-                  </text>    
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getAddressState()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'state')" />
-                  </text> 
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget> 
-                  <check key="{meta:getAddressZipCode()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'zipcode')" />
-                  </text>               
-                </row>
-                </TablePanel>
-                </HorizontalPanel>
-            </VerticalPanel>
-            </HorizontalPanel>
-            <VerticalPanel>
-            <TablePanel>
-                <row>
-                  <widget>
-                    <text style="heading">
-                      <xsl:value-of select='resource:getString($constants,"selectAnalysisField")' />
-                    </text>                    
-                  </widget>
-                   <text >
-                     -
-                    </text> 
-                        <widget halign="left" >
-                            <appButton key="selectAllAnalysisFields" style="Button">
-                              <HorizontalPanel>
-                                <AbsolutePanel style="Checked" />
-                                <text>
-                                  <xsl:value-of select="resource:getString($constants,'selectAll')" />
-                                </text>
-                              </HorizontalPanel>
-                            </appButton>
-                          </widget>               
-                  </row>
-                  </TablePanel>
-                  <HorizontalPanel>
-                  <AbsolutePanel width="30px"/>
-                  <TablePanel>    
-                  <row>
-                  <check key="{meta:getAnalysisTestNameHeader()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'test')" />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getAnalysisMethodNameHeader()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'method')" />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getAnalysisRevision()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'revision')" />
-                  </text>
-                  </row>
-                  <row>
-                  <check key="{meta:getAnalysisStartedDate()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'started')" />
-                  </text>  
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget>
-                  <check key="{meta:getAnalysisCompletedDate()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'completed')" />
-                  </text>
-                  <widget>
-                    <HorizontalPanel width="10" />
-                  </widget> 
-                  <check key="{meta:getAnalysisReleasedDate()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select="resource:getString($constants,'released')" />
-                  </text>     
-                </row>
-                </TablePanel>
-                </HorizontalPanel>
-            </VerticalPanel>
-            <VerticalPanel width="10px"></VerticalPanel>
             <HorizontalPanel>
-            <VerticalPanel >
-             <text style="heading">
-               <xsl:value-of select='resource:getString($constants,"testAnalyteHeading")' />
-             </text>
-             <VerticalPanel style="Form">
-            <widget valign="top">
-                <table key="availAnalyteTable" maxRows="4" style = "ScreenTableWithSides" title="" width="auto">
-                  <col key="select" width="20">
-                      <check/>
-                    </col>
-                  <col header="{resource:getString($constants,'name')}" width="220">
-                    <label field="String" />
-                  </col>                  
-                </table>
-              </widget>
-                 <HorizontalPanel>
-                  <HorizontalPanel width="5" />
-                  <widget style="TableButtonFooter">
-                    <HorizontalPanel>
-                      <appButton key="selectAllAnalyteButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="Checked"/>
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'selectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                      <appButton key="unselectAllAnalyteButton" style="Button">
-                        <HorizontalPanel>
-                          <AbsolutePanel style="Unchecked"/>
-                          <text>
-                            <xsl:value-of select="resource:getString($constants,'unselectAll')" />
-                          </text>
-                        </HorizontalPanel>
-                      </appButton>
-                    </HorizontalPanel>
-                  </widget>
-                </HorizontalPanel>
-                </VerticalPanel>
-            </VerticalPanel>             
-            <HorizontalPanel width="60px" />
-            <VerticalPanel>           
-             <text style="heading">
-               <xsl:value-of select='resource:getString($constants,"auxDataHeading")' />
-             </text>   
-             <VerticalPanel style="Form">                     
-            <widget valign="top">
-                <table key="availAuxTable" maxRows="4" style = "ScreenTableWithSides"  title="" width="auto">
-                  <col key="select" width="20">
-                     <check/>
-                  </col>
-                  <col header="{resource:getString($constants,'name')}" width="220">
-                    <label field="String" />
-                  </col>                  
-                </table>
-              </widget>
-              <HorizontalPanel>
-                  <HorizontalPanel width="5" />
-                  <widget style="TableButtonFooter">
-                    <HorizontalPanel>
-                      <appButton key="selectAllAuxButton" style="Button">
+              <VerticalPanel>
+                <TablePanel>
+                  <row>
+                    <widget>
+                      <text style="heading">
+                        <xsl:value-of select='resource:getString($constants,"selectSampleField")' />
+                      </text>
+                    </widget>
+                    <text>-</text>
+                    <widget halign="left">
+                      <appButton key="selectAllSampleFields" style="Button">
                         <HorizontalPanel>
                           <AbsolutePanel style="Checked" />
                           <text>
@@ -518,36 +207,334 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                      <appButton key="unselectAllAuxButton" style="Button">
+                    </widget>
+                  </row>
+                </TablePanel>
+                <HorizontalPanel>
+                  <AbsolutePanel width="30px" />
+                  <TablePanel>
+                    <row>
+                      <check key="{meta:getAccessionNumber()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"accessionNum")' />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getCollectionDate()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"dateCollected")' />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getReceivedDate()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'received')" />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getReleasedDate()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'released')" />
+                      </text>
+                    </row>
+                    <row>
+                      <check key="{meta:getStatusId()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"status")' />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getProjectIdHeader()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"projectCode")' />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getClientReferenceHeader()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'clientReference')" />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getEnvCollectorHeader()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"collector")' />
+                      </text>
+                    </row>
+                    <row>
+                      <check key="{meta:getEnvLocationHeader()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'collectionSite')" />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getEnvDescription()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"sampleDescription")' />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getEnvCollectorPhone()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"phoneNumber")' />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getItemTypeofSampleId()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'sampleType')" />
+                      </text>
+                    </row>
+                    <row>
+                      <check key="{meta:getItemSourceOfSampleId()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'source')" />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                    </row>
+                  </TablePanel>
+                </HorizontalPanel>
+              </VerticalPanel>
+              <VerticalPanel width="20px" />
+              <VerticalPanel>
+                <TablePanel>
+                  <row>
+                    <widget>
+                      <text style="heading">
+                        <xsl:value-of select='resource:getString($constants,"selectOrganizationField")' />
+                      </text>
+                    </widget>
+                    <text>-</text>
+                    <widget halign="left">
+                      <appButton key="selectAllOrganizationFields" style="Button">
                         <HorizontalPanel>
-                          <AbsolutePanel style="Unchecked"/>
+                          <AbsolutePanel style="Checked" />
                           <text>
-                            <xsl:value-of select="resource:getString($constants,'unselectAll')" />
+                            <xsl:value-of select="resource:getString($constants,'selectAll')" />
                           </text>
                         </HorizontalPanel>
                       </appButton>
-                    </HorizontalPanel>
-                  </widget>
+                    </widget>
+                  </row>
+                </TablePanel>
+                <HorizontalPanel>
+                  <AbsolutePanel width="30px" />
+                  <TablePanel>
+                    <row>
+                      <check key="{meta:getSampleOrgOrganizationName()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"name")' />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getAddressMultipleUnit()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"aptSuite")' />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getAddressStreetAddress()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'address')" />
+                      </text>
+                    </row>
+                    <row>
+                      <check key="{meta:getAddressCity()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'city')" />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getAddressState()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'state')" />
+                      </text>
+                      <widget>
+                        <HorizontalPanel width="10" />
+                      </widget>
+                      <check key="{meta:getAddressZipCode()}" />
+                      <text style="LeftAlignPrompt">
+                        <xsl:value-of select="resource:getString($constants,'zipcode')" />
+                      </text>
+                    </row>
+                  </TablePanel>
                 </HorizontalPanel>
-            </VerticalPanel> 
-            </VerticalPanel>
+              </VerticalPanel>
             </HorizontalPanel>
-                      
             <VerticalPanel>
-            <widget>
-               <VerticalPanel height="20" />
-              </widget>
-            </VerticalPanel>
-            <TablePanel style="HorizontalDivider" width="100%">
+              <TablePanel>
                 <row>
-                  <html>&lt;hr/&gt;</html>
+                  <widget>
+                    <text style="heading">
+                      <xsl:value-of select='resource:getString($constants,"selectAnalysisField")' />
+                    </text>
+                  </widget>
+                  <text>-</text>
+                  <widget halign="left">
+                    <appButton key="selectAllAnalysisFields" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="Checked" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'selectAll')" />
+                        </text>
+                      </HorizontalPanel>
+                    </appButton>
+                  </widget>
                 </row>
               </TablePanel>
-            <HorizontalPanel style="TableFooterPanel">            
-             <widget halign="center">
+              <HorizontalPanel>
+                <AbsolutePanel width="30px" />
+                <TablePanel>
+                  <row>
+                    <check key="{meta:getAnalysisTestNameHeader()}" />
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select="resource:getString($constants,'test')" />
+                    </text>
+                    <widget>
+                      <HorizontalPanel width="10" />
+                    </widget>
+                    <check key="{meta:getAnalysisMethodNameHeader()}" />
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select="resource:getString($constants,'method')" />
+                    </text>
+                    <widget>
+                      <HorizontalPanel width="10" />
+                    </widget>
+                    <check key="{meta:getAnalysisRevision()}" />
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select="resource:getString($constants,'revision')" />
+                    </text>
+                  </row>
+                  <row>
+                    <check key="{meta:getAnalysisStartedDate()}" />
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select="resource:getString($constants,'started')" />
+                    </text>
+                    <widget>
+                      <HorizontalPanel width="10" />
+                    </widget>
+                    <check key="{meta:getAnalysisCompletedDate()}" />
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select="resource:getString($constants,'completed')" />
+                    </text>
+                    <widget>
+                      <HorizontalPanel width="10" />
+                    </widget>
+                    <check key="{meta:getAnalysisReleasedDate()}" />
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select="resource:getString($constants,'released')" />
+                    </text>
+                  </row>
+                </TablePanel>
+              </HorizontalPanel>
+            </VerticalPanel>
+            <VerticalPanel width="10px"></VerticalPanel>
+            <HorizontalPanel>
+              <VerticalPanel>
+                <text style="heading">
+                  <xsl:value-of select='resource:getString($constants,"testAnalyteHeading")' />
+                </text>
+                <VerticalPanel style="Form">
+                  <widget valign="top">
+                    <table key="availAnalyteTable" maxRows="4" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
+                      <col key="select" width="20">
+                        <check />
+                      </col>
+                      <col header="{resource:getString($constants,'name')}" width="220">
+                        <label field="String" />
+                      </col>
+                    </table>
+                  </widget>
+                  <HorizontalPanel>
+                    <HorizontalPanel width="5" />
+                    <widget style="TableButtonFooter">
+                      <HorizontalPanel>
+                        <appButton key="selectAllAnalyteButton" style="Button">
+                          <HorizontalPanel>
+                            <AbsolutePanel style="Checked" />
+                            <text>
+                              <xsl:value-of select="resource:getString($constants,'selectAll')" />
+                            </text>
+                          </HorizontalPanel>
+                        </appButton>
+                        <appButton key="unselectAllAnalyteButton" style="Button">
+                          <HorizontalPanel>
+                            <AbsolutePanel style="Unchecked" />
+                            <text>
+                              <xsl:value-of select="resource:getString($constants,'unselectAll')" />
+                            </text>
+                          </HorizontalPanel>
+                        </appButton>
+                      </HorizontalPanel>
+                    </widget>
+                  </HorizontalPanel>
+                </VerticalPanel>
+              </VerticalPanel>
+              <HorizontalPanel width="60px" />
+              <VerticalPanel>
+                <text style="heading">
+                  <xsl:value-of select='resource:getString($constants,"auxDataHeading")' />
+                </text>
+                <VerticalPanel style="Form">
+                  <widget valign="top">
+                    <table key="availAuxTable" maxRows="4" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="auto">
+                      <col key="select" width="20">
+                        <check />
+                      </col>
+                      <col header="{resource:getString($constants,'name')}" width="220">
+                        <label field="String" />
+                      </col>
+                    </table>
+                  </widget>
+                  <HorizontalPanel>
+                    <HorizontalPanel width="5" />
+                    <widget style="TableButtonFooter">
+                      <HorizontalPanel>
+                        <appButton key="selectAllAuxButton" style="Button">
+                          <HorizontalPanel>
+                            <AbsolutePanel style="Checked" />
+                            <text>
+                              <xsl:value-of select="resource:getString($constants,'selectAll')" />
+                            </text>
+                          </HorizontalPanel>
+                        </appButton>
+                        <appButton key="unselectAllAuxButton" style="Button">
+                          <HorizontalPanel>
+                            <AbsolutePanel style="Unchecked" />
+                            <text>
+                              <xsl:value-of select="resource:getString($constants,'unselectAll')" />
+                            </text>
+                          </HorizontalPanel>
+                        </appButton>
+                      </HorizontalPanel>
+                    </widget>
+                  </HorizontalPanel>
+                </VerticalPanel>
+              </VerticalPanel>
+            </HorizontalPanel>
+            <TablePanel style="HorizontalDivider" width="100%">
+              <row>
+                <html>&lt;hr/&gt;</html>
+              </row>
+            </TablePanel>
+            <HorizontalPanel style="TableFooterPanel">
+              <widget halign="center">
                 <appButton key="backButton" style="Button" visible="false">
                   <HorizontalPanel>
-                    <AbsolutePanel />                   
                   </HorizontalPanel>
                 </appButton>
               </widget>

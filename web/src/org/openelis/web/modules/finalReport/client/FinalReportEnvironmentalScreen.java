@@ -596,7 +596,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "report?file=" + st.getMessage();
 
-                Window.open(URL.encode(url), "Final Report", null);
+                Window.open(URL.encode(url), "FinalReport", null);
                 window.setStatus("Generated file " + st.getMessage(), "");
             } else {
                 window.setStatus(st.getMessage(), "");
