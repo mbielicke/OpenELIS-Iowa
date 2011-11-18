@@ -116,6 +116,7 @@ public class SampleManagerProxy {
     }
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
+        SampleDomainInt domMan;
         SampleDO data;
         NoteManager noteMan;
 
@@ -152,7 +153,12 @@ public class SampleManagerProxy {
                 errorsList.add(new FormErrorException("unreleaseNoNoteException"));
         }
 
-        man.getDomainManager().validate(errorsList);
+        //
+        // the domain manager can be null if the domain is quick entry 
+        //
+        domMan = man.getDomainManager();
+        if (domMan != null)
+            domMan.validate(errorsList);
 
         if (man.sampleItems != null)
             man.getSampleItems().validate(errorsList);

@@ -3,15 +3,21 @@ package org.openelis.modules.sampleTracking.client;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -72,8 +78,12 @@ import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.manager.SamplePrivateWellManager;
+import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
@@ -82,6 +92,7 @@ import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.PrivateWellTab;
 import org.openelis.modules.sample.client.QAEventsTab;
+import org.openelis.modules.sample.client.QuickEntryTab;
 import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.sample.client.SDWISTab;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
@@ -107,51 +118,57 @@ import com.google.gwt.user.client.ui.Widget;
 
 public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
-    private SampleManager        manager;
-    private ModulePermission     userPermission, unreleasePermission;
-    private SampleTrackingScreen trackingScreen;
-    private EnvironmentalTab     environmentalTab;
-    private PrivateWellTab       wellTab;
-    private SDWISTab             sdwisTab;
-    private SampleItemTab        sampleItemTab;
-    private AnalysisTab          analysisTab;
-    private QAEventsTab          qaEventsTab;
-    private StorageTab           storageTab;
-    private SampleNotesTab       sampleNotesTab;
-    private AnalysisNotesTab     analysisNotesTab;
-    private AuxDataTab           auxDataTab;
-    private ResultTab            testResultsTab;
+    private SampleManager            manager;
+    private ModulePermission         userPermission, unreleasePermission, changeDomainPermission;
+    private SampleTrackingScreen     trackingScreen;
+    private EnvironmentalTab         environmentalTab;
+    private PrivateWellTab           wellTab;
+    private SDWISTab                 sdwisTab;
+    private QuickEntryTab            quickEntryTab;
+    private SampleItemTab            sampleItemTab;
+    private AnalysisTab              analysisTab;
+    private QAEventsTab              qaEventsTab;
+    private StorageTab               storageTab;
+    private SampleNotesTab           sampleNotesTab;
+    private AnalysisNotesTab         analysisNotesTab;
+    private AuxDataTab               auxDataTab;
+    private ResultTab                testResultsTab;
 
-    private TreeWidget           trackingTree;
-    private TextBox              clientReference;
-    private TextBox<Integer>     accessionNumber, orderNumber;
-    private TextBox<Datetime>    collectedTime;
-    private Dropdown<Integer>    statusId;
-    private AppButton            prevPage, nextPage, similarButton, expandButton, collapseButton,
-                                 queryButton, updateButton, commitButton, abortButton, addTestButton,
-                                 cancelTestButton;
-    private MenuItem             unreleaseSample,previewFinalReport,historySample,
-                                 historySampleSpec, historySampleProject, historySampleOrganization,
-                                 historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
-                                 historySampleQA, historyAnalysisQA, historyAuxData;
-    private CalendarLookUp       collectedDate, receivedDate;
+    private TreeWidget               trackingTree;
+    private TextBox                  clientReference;
+    private TextBox<Integer>         accessionNumber, orderNumber;
+    private TextBox<Datetime>        collectedTime;
+    private Dropdown<Integer>        statusId;
+    private AppButton                prevPage, nextPage, similarButton, expandButton,
+                                     collapseButton, queryButton, updateButton, commitButton, abortButton,
+                                     addTestButton, cancelTestButton;
+    private MenuItem                 unreleaseSample, previewFinalReport, changeDomain,
+                                     historySample, historySampleSpec, historySampleProject,
+                                     historySampleOrganization, historySampleItem, historyAnalysis,
+                                     historyCurrentResult, historyStorage, historySampleQA, historyAnalysisQA,
+                                     historyAuxData;
+    private CalendarLookUp           collectedDate, receivedDate;
 
-    private Tabs                 tab;
-    private TabPanel             tabPanel;
+    private Tabs                     tab;
+    private TabPanel                 tabPanel;
 
-    private SampleTreeUtility    treeUtil;
-    private SampleHistoryUtility historyUtility;
+    private SampleTreeUtility        treeUtil;
+    private SampleHistoryUtility     historyUtility;
 
-    private Integer              analysisLoggedInId, sampleReleasedId;
-    private Query                query;
-    
-    private ScreenService        finalReportService;
+    private Integer                  analysisLoggedInId, sampleReleasedId;
+    private Query                    query;
+
+    private ScreenService            finalReportService;
 
     protected AccessionNumberUtility accessionNumUtil;
 
+    private ChangeDomainScreen       changeDomainScreen;
+
+    private HashMap<String, Integer> domainMap;
+
     public enum Tabs {
-        BLANK, ENVIRONMENT, PRIVATE_WELL, SDWIS, SAMPLE_ITEM, ANALYSIS, TEST_RESULT,
-        ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA
+        BLANK, ENVIRONMENT, PRIVATE_WELL, SDWIS, QUICK_ENTRY, SAMPLE_ITEM, ANALYSIS, 
+        TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA
     };
 
     public SampleTrackingScreen() throws Exception {
@@ -175,7 +192,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             throw new PermissionException("screenPermException", "Sample Tracking Screen");
         if (unreleasePermission == null)
             unreleasePermission = new ModulePermission();
-
+        
+        changeDomainPermission = UserCache.getPermission().getModule("sampledomainchange");
+        if (changeDomainPermission == null)
+            changeDomainPermission = new ModulePermission();
         /*
          * this is done here in order to make sure that if the screen is brought
          * up from some other screen (i.e. window != null) then its widgets are 
@@ -367,6 +387,20 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 previewFinalReport.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        changeDomain = (MenuItem)def.getWidget("changeDomain");
+        addScreenHandler(changeDomain, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                changeDomain();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                changeDomain.enable(EnumSet.of(State.UPDATE).contains(event.getState())
+                                    && changeDomainPermission.hasSelectPermission()
+                                    && !SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())
+                                    && !sampleReleasedId.equals(manager.getSample().getStatusId()));
             }
         });
 
@@ -945,6 +979,15 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         } catch (Exception e) {
             Window.alert("sdwis tab initialize: " + e.getMessage());
         }
+        
+        try {
+            quickEntryTab = new QuickEntryTab(window);
+            AbsolutePanel sdwisTabPanel = (AbsolutePanel)def.getWidget("quickEntryDomainPanel");
+            sdwisTabPanel.add(quickEntryTab);
+
+        } catch (Exception e) {
+            Window.alert("quick entryTab initialize: " + e.getMessage());
+        }
 
         addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -967,6 +1010,30 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 sdwisTab.setState(event.getState());
+            }
+        });
+        
+        addScreenHandler(quickEntryTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                TreeDataItem selectedRow;
+
+                selectedRow = trackingTree.getSelection();
+
+                if (selectedRow != null && "sample".equals(selectedRow.leafType) &&
+                    SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) {
+                    quickEntryTab.setData(manager);                    
+                    showTabs(Tabs.QUICK_ENTRY); 
+
+                    addTestButton.enable(false);
+                    cancelTestButton.enable(false);
+                } else {
+                    quickEntryTab.setData(null);
+                }
+                quickEntryTab.draw();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                quickEntryTab.setState(event.getState());
             }
         });
 
@@ -1349,12 +1416,20 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     private void initializeDropdowns() {
+        Integer id;
         ArrayList<TableDataRow> model;
 
         // preload dictionary models and single entries, close the window if an
         // error is found
         try {
             analysisLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
+            domainMap = new HashMap<String, Integer>();
+            id = DictionaryCache.getIdBySystemName("environmental");
+            domainMap.put(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG, id);
+            id = DictionaryCache.getIdBySystemName("private_well");
+            domainMap.put(SampleManager.WELL_DOMAIN_FLAG, id);
+            id = DictionaryCache.getIdBySystemName("sdwis");
+            domainMap.put(SampleManager.SDWIS_DOMAIN_FLAG, id);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1374,15 +1449,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
         ((Dropdown<Integer>)trackingTree.getColumns().get("analysis").get(1).colWidget).setModel(model);
-
     }
 
     protected void query(String domain) {
-        Tabs tab;
-
         manager = SampleManager.getInstance();
         trackingTree.clear();
-        tab = null;
         
         showTabs(Tabs.ENVIRONMENT, Tabs.PRIVATE_WELL, Tabs.SDWIS, Tabs.SAMPLE_ITEM, Tabs.ANALYSIS, Tabs.AUX_DATA);
 
@@ -1503,6 +1574,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showWarningsDialog(e);
             } catch (Exception e) {
                 Window.alert("commitUpdate(): " + e.getMessage());
+                e.printStackTrace();
                 window.clearStatus();
             }
         }
@@ -2147,6 +2219,120 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         });
 
     }
+    
+    private void changeDomain() {
+        ScreenWindow modal;
+        String domain;
+        
+        if (changeDomainScreen == null) {
+            try {
+                changeDomainScreen = new ChangeDomainScreen();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("changeDomainScreen error: " + e.getMessage());
+                return;
+            }   
+            
+            changeDomainScreen.addActionHandler(new ActionHandler<ChangeDomainScreen.Action>() {                              
+                public void onAction(ActionEvent<ChangeDomainScreen.Action> event) {
+                    Integer mapKey, val;                    
+                    String oldDomain;
+                    TreeDataItem selectedRow;
+                    SampleDO sample;
+                    SampleOrganizationManager som;
+                    SampleEnvironmentalManager sem;
+                    SamplePrivateWellManager spm;
+
+                    selectedRow = trackingTree.getSelection();                    
+                    val = (Integer)event.getData();
+                    sample = manager.getSample();
+                    oldDomain = sample.getDomain();
+                    try {
+                        if (ChangeDomainScreen.Action.OK == event.getAction() && val != null) {
+                            mapKey = domainMap.get(oldDomain);
+                            /*
+                             * if the new domain is the same as the old one then
+                             * do nothing   
+                             */
+                            if (mapKey.equals(val))
+                                return;                
+                            som = manager.getOrganizations();
+                            if (val.equals(domainMap.get(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))) {
+                               manager.changeDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+                               sem = (SampleEnvironmentalManager)manager.getDomainManager();
+                               sem.getEnvironmental().setIsHazardous("N");
+                               
+                               if (SampleManager.WELL_DOMAIN_FLAG.equals(oldDomain)) {
+                                   /*
+                                    * if the old domain was private well then
+                                    * find its "report to" and if it was an organization
+                                    * then set the new domain's "report to" as that 
+                                    */
+                                   spm = (SamplePrivateWellManager)manager.getDeletedDomainManager();
+                                   setReportTo(sample, som, spm);
+                               }
+                               /*
+                                * reload the tab and refresh its data if the sample's
+                                * node is selected  
+                                */
+                               environmentalTab.setData(manager);
+                               if ("sample".equals(selectedRow.leafType))
+                                   showTabs(Tabs.ENVIRONMENT); 
+                               environmentalTab.draw();
+                            } else if (val.equals(domainMap.get(SampleManager.WELL_DOMAIN_FLAG))) {
+                                manager.changeDomain(SampleManager.WELL_DOMAIN_FLAG);
+                                /*
+                                 * If the previous domain had a "report to" then
+                                 * set it as the "organization" for this one.Mark
+                                 * the old "report to" for deletion because private
+                                 * well doesn't have sample organization of that type.                                 
+                                 */
+                                spm = (SamplePrivateWellManager)manager.getDomainManager();
+                                setPrivateWellReportTo(sample, som, spm);
+                                som.removeReportTo();  
+                                /*
+                                 * reload the tab and refresh its data if the sample's
+                                 * node is selected  
+                                 */
+                                wellTab.setData(manager);
+                                if ("sample".equals(selectedRow.leafType))
+                                    showTabs(Tabs.PRIVATE_WELL); 
+                                wellTab.draw();
+                            } else if (val.equals(domainMap.get(SampleManager.SDWIS_DOMAIN_FLAG))) {
+                                manager.changeDomain(SampleManager.SDWIS_DOMAIN_FLAG);
+                                if (SampleManager.WELL_DOMAIN_FLAG.equals(oldDomain)) {
+                                    /*
+                                     * if the old domain was private well then
+                                     * find its "report to" and if it was an organization
+                                     * then set the new domain's "report to" as that 
+                                     */
+                                    spm = (SamplePrivateWellManager)manager.getDeletedDomainManager();
+                                    setReportTo(sample, som, spm);
+                                }
+                                /*
+                                 * reload the tab and refresh its data if the sample's
+                                 * node is selected  
+                                 */
+                                sdwisTab.setData(manager);
+                                if ("sample".equals(selectedRow.leafType))
+                                    showTabs(Tabs.SDWIS); 
+                                sdwisTab.draw();
+                            }
+                        }
+                   } catch (Exception e) {
+                        e.printStackTrace();
+                        Window.alert(e.getMessage());
+                    }
+                }
+            });
+        }
+                
+        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        modal.setName(consts.get("changeDomain"));
+        modal.setContent(changeDomainScreen);
+        domain = manager.getSample().getDomain();
+        changeDomainScreen.setDomain(domainMap.get(domain));
+    }
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
@@ -2244,6 +2430,59 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 fields.add(data);
             }
         }
-
     }
+    
+    private void setReportTo(SampleDO sample, SampleOrganizationManager som, SamplePrivateWellManager spm) {
+        AddressDO addr;
+        OrganizationDO org;           
+        SampleOrganizationViewDO sorg;
+        
+        org = spm.getPrivateWell().getOrganization();
+        if (org != null) {
+            sorg = new SampleOrganizationViewDO();
+            addr = org.getAddress();
+            
+            sorg.setSampleId(sample.getId());
+            sorg.setOrganizationCity(addr.getCity());
+            sorg.setOrganizationAttention(spm.getPrivateWell().getReportToAttention());
+            sorg.setOrganizationFaxPhone(addr.getFaxPhone());
+            sorg.setOrganizationId(org.getId());
+            sorg.setOrganizationMultipleUnit(addr.getMultipleUnit());
+            sorg.setOrganizationName(org.getName());
+            sorg.setOrganizationState(addr.getState());
+            sorg.setOrganizationStreetAddress(addr.getStreetAddress());
+            sorg.setOrganizationWorkPhone(addr.getWorkPhone());
+            sorg.setOrganizationZipCode(addr.getZipCode());                  
+            som.setReportTo(sorg);
+        }
+    }
+    
+    private void setPrivateWellReportTo(SampleDO sample, SampleOrganizationManager som, SamplePrivateWellManager spm) {
+        Integer id;
+        AddressDO addr;
+        OrganizationDO org;           
+        SamplePrivateWellViewDO spw;
+        SampleOrganizationViewDO sorg;
+        
+        sorg = som.getReportTo();
+        if (sorg != null) {
+            id = sorg.getOrganizationId();
+            spw = spm.getPrivateWell();
+            org = new OrganizationDO();
+            spw.setOrganization(org);              
+            org.setId(id);
+            org.setName(sorg.getOrganizationName());
+            spw.setOrganizationId(id);
+            addr = org.getAddress();
+            
+            spw.setReportToAttention(sorg.getOrganizationAttention());
+            addr.setCity(sorg.getOrganizationCity());
+            addr.setFaxPhone(sorg.getOrganizationFaxPhone());
+            addr.setMultipleUnit(sorg.getOrganizationMultipleUnit());
+            addr.setState(sorg.getOrganizationState());
+            addr.setStreetAddress(sorg.getOrganizationStreetAddress());
+            addr.setWorkPhone(sorg.getOrganizationWorkPhone());
+            addr.setZipCode(sorg.getOrganizationZipCode());                                           
+        }
+    } 
 }

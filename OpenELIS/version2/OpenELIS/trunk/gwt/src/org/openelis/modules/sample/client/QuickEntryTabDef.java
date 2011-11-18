@@ -23,26 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.sample.client;
 
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public class SampleEnvironmentalManagerProxy {
-    public SampleEnvironmentalManager fetchBySampleId(Integer sampleId) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public SampleEnvironmentalManager add(SampleEnvironmentalManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
+public interface QuickEntryTabDef extends ScreenDefInt {
 
-    public SampleEnvironmentalManager update(SampleEnvironmentalManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    } 
-    
-    public void delete(SampleEnvironmentalManager man) throws Exception {
-        assert false : "not supported";
-    }
 }

@@ -621,7 +621,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                collectedDate.enable(event.getSource() == State.QUERY ||
+                collectedDate.enable(event.getState() == State.QUERY ||
                                      (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                           .contains(event.getState())));
                 collectedDate.setQueryMode(event.getState() == State.QUERY);

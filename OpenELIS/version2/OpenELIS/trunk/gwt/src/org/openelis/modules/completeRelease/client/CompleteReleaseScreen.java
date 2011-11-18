@@ -846,6 +846,20 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         ((Dropdown<Integer>)completeReleaseTable.getColumnWidget(SampleMeta.getAnalysisStatusId())).setModel(model);
 
     }
+    
+    public void showErrors(ValidationErrorsList errors) {
+        super.showErrors(errors);
+        
+        // call the correct domain tab show error method
+        if (manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
+            environmentalTab.showErrors(errors);
+
+        if (manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
+            wellTab.showErrors(errors);
+
+        if (manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+            sdwisTab.showErrors(errors);
+    }
 
     protected void query() {
         manager = SampleManager.getInstance();
@@ -1261,7 +1275,10 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
     protected void commitWithWarnings() {
         clearErrors();
-
+        environmentalTab.clearErrors();
+        wellTab.clearErrors();
+        sdwisTab.clearErrors();
+        
         manager.setStatusWithError(true);
 
         if (state == State.UPDATE) {
@@ -1282,10 +1299,14 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         }
     }
 
-    public void abort() {
+    protected void abort() {
         String domain;
 
+        setFocus(null);
         clearErrors();
+        environmentalTab.clearErrors();
+        wellTab.clearErrors();
+        sdwisTab.clearErrors();
         window.setBusy(consts.get("cancelChanges"));
 
         if (state == State.QUERY) {
@@ -1315,7 +1336,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         }
     }
 
-    public ArrayList<TableDataRow> getModel(ArrayList<SampleDataBundle> result) {
+    private ArrayList<TableDataRow> getModel(ArrayList<SampleDataBundle> result) {
         ArrayList<TableDataRow> model;
         TableDataRow analysis;
         SampleManager sampleMan;

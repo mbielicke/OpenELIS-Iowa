@@ -47,6 +47,10 @@ public class SamplePrivateWellManagerProxy {
         return null;
     }
     
+    public void delete(SamplePrivateWellManager man) throws Exception {
+        assert false : "not supported";
+    }
+    
     public void validate(SamplePrivateWellManager man, ValidationErrorsList errorsList) throws Exception {
         SamplePrivateWellViewDO wellDO;
         

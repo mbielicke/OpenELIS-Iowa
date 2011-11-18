@@ -303,5 +303,4 @@ public class DictionaryLookupScreen extends Screen implements
         
         window.setDone(consts.get("done"));
     }
-
 }
