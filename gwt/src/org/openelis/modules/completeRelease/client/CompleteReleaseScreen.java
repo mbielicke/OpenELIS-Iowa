@@ -1220,7 +1220,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                 String url;
 
                 url = "report?file=" + status.getMessage();
-                Window.open(URL.encode(url), consts.get("finalReportSingleReprint"), null);
+                Window.open(URL.encode(url), "FinalReport", null);
                 window.setDone(consts.get("done"));
             }
 
