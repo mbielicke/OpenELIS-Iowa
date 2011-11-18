@@ -130,6 +130,13 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
         return data;
     }
 
-    public void validate() throws Exception {
+    public void delete(SampleEnvironmentalDO data) throws Exception {
+        SampleEnvironmental entity;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = manager.find(SampleEnvironmental.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
     }
 }

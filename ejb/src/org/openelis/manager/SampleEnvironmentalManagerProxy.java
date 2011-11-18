@@ -61,4 +61,8 @@ public class SampleEnvironmentalManagerProxy {
         
         return man;
     }
+    
+    public void delete(SampleEnvironmentalManager man) throws Exception {
+        EJBFactory.getSampleEnvironmental().delete(man.getEnvironmental());
+    }
 }

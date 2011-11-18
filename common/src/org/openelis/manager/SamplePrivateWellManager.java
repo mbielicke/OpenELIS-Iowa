@@ -57,6 +57,10 @@ public class SamplePrivateWellManager implements RPC, SampleDomainInt {
     public SamplePrivateWellManager update() throws Exception {
         return proxy().update(this);
     }
+    
+    public void delete() throws Exception {
+        proxy().delete(this);
+    }
 
     public void validate() throws Exception {
         ValidationErrorsList errorsList = new ValidationErrorsList();

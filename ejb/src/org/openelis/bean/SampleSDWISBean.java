@@ -128,17 +128,47 @@ public class SampleSDWISBean implements SampleSDWISLocal {
     }
 
     public void validate(SampleSDWISViewDO data) throws Exception {
+        Integer id;
         ValidationErrorsList list;
+        
              
         list = new ValidationErrorsList();
-        try {
-            pws.fetchById(data.getPwsId());
-        } catch (NotFoundException e) {            
-            list.add(new FieldErrorException("invalidPwsException",
-                                                   SampleMeta.getSDWISPwsId()));
-        } 
-         
+        
+        id = data.getPwsId();        
+        if (id != null) {
+            try {
+                pws.fetchById(id);
+            } catch (NotFoundException e) {
+                list.add(new FieldErrorException("invalidPwsException", SampleMeta.getSDWISPwsNumber0()));
+            }
+        } else {
+            list.add(new FieldErrorException("pwsIdRequiredException", SampleMeta.getSDWISPwsNumber0()));
+        }
+        
+        if (data.getStateLabId() == null)
+            list.add(new FieldErrorException("stateLabNumRequiredException", SampleMeta.getSDWISStateLabId()));
+        
+        if (data.getSampleTypeId() == null)
+            list.add(new FieldErrorException("sampleTypeRequiredException", SampleMeta.getSDWISSampleTypeId()));
+        
+        if (data.getSamplePointId() == null)
+            list.add(new FieldErrorException("samplePtIdRequiredException", SampleMeta.getSDWISSamplePointId()));
+        
+        if (data.getSampleCategoryId() == null)
+            list.add(new FieldErrorException("sampleCatRequiredException", SampleMeta.getSDWISSampleCategoryId()));
+        
         if (list.size() > 0)
             throw list;
+    }
+
+    public void delete(SampleSDWISViewDO data) throws Exception {
+        SampleSDWIS entity;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = manager.find(SampleSDWIS.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
+        
     }
 }

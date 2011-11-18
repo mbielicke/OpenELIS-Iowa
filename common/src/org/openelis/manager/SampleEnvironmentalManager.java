@@ -32,7 +32,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
 
     private static final long                           serialVersionUID = 1L;
-    protected Integer sampleId;
+    protected Integer                                   sampleId;
     protected SampleEnvironmentalDO                     environmental;
 
     protected transient static SampleEnvironmentalManagerProxy proxy;
@@ -81,6 +81,10 @@ public class SampleEnvironmentalManager implements RPC, SampleDomainInt {
     
     public SampleEnvironmentalManager update() throws Exception {
         return proxy().update(this);
+    }
+    
+    public void delete() throws Exception {
+        proxy().delete(this);
     }
     
     public void validate() throws Exception {

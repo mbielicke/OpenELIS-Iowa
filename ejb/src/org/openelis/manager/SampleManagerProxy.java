@@ -307,11 +307,14 @@ public class SampleManagerProxy {
         EJBFactory.getSample().update(man.getSample());
         sampleId = man.getSample().getId();
 
-        if (man.sampleDomain != null) {
+        if (man.deletedDomainManager != null) 
+            man.getDeletedDomainManager().delete();  
+        
+        if (man.domainManager != null) {
             man.getDomainManager().setSampleId(sampleId);
             man.getDomainManager().update();
         }
-
+        
         if (man.sampleItems != null) {
             man.getSampleItems().setSampleId(sampleId);
             man.getSampleItems().update();
@@ -384,6 +387,9 @@ public class SampleManagerProxy {
                                                        SampleMeta.getReceivedDate()));
         }
 
+        if (man.domainManager != null)
+            man.getDomainManager().validate(errorsList);
+            
         if (man.sampleItems != null)
             man.getSampleItems().validate(errorsList);
 

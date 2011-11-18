@@ -34,5 +34,6 @@ public interface SampleSDWISLocal {
     public SampleSDWISViewDO fetchBySampleId(Integer sampleId) throws Exception;        
     public SampleSDWISViewDO add(SampleSDWISViewDO data) throws Exception ;
     public SampleSDWISViewDO update(SampleSDWISViewDO data) throws Exception;
+    public void delete(SampleSDWISViewDO data) throws Exception;
     public void validate (SampleSDWISViewDO data) throws Exception;
 }
