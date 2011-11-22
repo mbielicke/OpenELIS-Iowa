@@ -191,7 +191,7 @@ UIRF Software License are applicable instead of those above.
           <HorizontalPanel>         
             <VerticalPanel>
               <widget valign="top">
-                <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="940">
+                <table key="sampleEntTable" maxRows="12" showScroll="ALWAYS" style="ScreenTableWithSides" title="" width="945">
                   <col header="{resource:getString($constants,'select')}" key="select" width="60">
                     <check />
                   </col>
@@ -223,7 +223,7 @@ UIRF Software License are applicable instead of those above.
             <VerticalPanel height="20">
               <label field="String" key="numSampleSelected" style="Prompt" />
             </VerticalPanel>
-            <HorizontalPanel width="940">            
+            <HorizontalPanel>            
              <widget halign="left">
                 <appButton key="backButton" style="Button" visible="false" >
                   <HorizontalPanel>

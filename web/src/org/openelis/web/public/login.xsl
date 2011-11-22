@@ -81,6 +81,15 @@ UIRF Software License are applicable instead of those above.
                 font-family : "Trebuchet MS", Arial, Helvetica, sans-serif;
                 font-size : 13px;
             }
+            .error {
+                color:#ac0000;
+                font-family : "Trebuchet MS", Arial, Helvetica, sans-serif;
+                font-size : 13px;
+                text-align:center;
+                padding-top:32px;
+                height:50px;
+                
+            }
             .submit {
                 border : 1px solid #616161;
                 color : #7D88DA;
@@ -124,13 +133,13 @@ UIRF Software License are applicable instead of those above.
                 			</td>
 			            </tr>
             			<tr>
-                			<td>
+                			<td colspan="2">
+                			    <div class="error">
                     			<xsl:for-each select="error">
 	                        		<xsl:variable name="errorKey" select="."/>
-	                        		<div style="color:#ac0000;" class="prompt">
 	                            		<xsl:value-of select="resource:getString($constants,$errorKey)"/>
-	                        		</div>
-			                    </xsl:for-each>
+                    			</xsl:for-each>
+                			    </div>
 			                </td>
             			</tr>
         			</table>

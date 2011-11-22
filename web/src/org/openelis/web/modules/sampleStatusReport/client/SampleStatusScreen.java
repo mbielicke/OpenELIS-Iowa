@@ -87,12 +87,10 @@ public class SampleStatusScreen extends Screen {
     private ArrayList<SampleStatusWebReportVO> results;
     private Integer                            statusReleased;
     private SampleStatusQALookupScreen         sampleStatusQALookupscreen;
-    
+
     private enum Decks {
         QUERY, LIST
     };
-    
-
 
     /**
      * No-Arg constructor
@@ -100,7 +98,7 @@ public class SampleStatusScreen extends Screen {
     public SampleStatusScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleStatusDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.report.server.SampleStatusReportService");
-        
+
         userPermission = UserCache.getPermission().getModule("w_status");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Sample Status Screen");
@@ -177,7 +175,7 @@ public class SampleStatusScreen extends Screen {
                 }
             }
         });
-        
+
         accessionFrom = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberFrom());
         addScreenHandler(accessionFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -199,7 +197,7 @@ public class SampleStatusScreen extends Screen {
                 accessionFrom.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
         });
-        
+
         accessionTo = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberTo());
         addScreenHandler(accessionTo, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -289,15 +287,15 @@ public class SampleStatusScreen extends Screen {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 String s, str[];
                 Integer id;
-                
+
                 ScreenWindow modal;
                 TableDataRow row;
                 TableDataCell cell;
-                
+
                 cell = sampleEntTable.getCell(event.getRow(), event.getCol());
-                
+
                 if (event.getCol() == 6 && cell.getValue() != null) {
-                    if(sampleStatusQALookupscreen == null) {
+                    if (sampleStatusQALookupscreen == null) {
                         try {
                             sampleStatusQALookupscreen = new SampleStatusQALookupScreen();
                         } catch (Exception e) {
@@ -305,27 +303,28 @@ public class SampleStatusScreen extends Screen {
                             Window.alert("SampleStatusQALookup error: " + e.getMessage());
                             return;
                         }
-                    }                  
+                    }
+                    modal = new ScreenWindow(ScreenWindow.Mode.DIALOG, false);
+                    modal.setName(consts.get("sampleStatusQALookUp"));
+                    modal.setContent(sampleStatusQALookupscreen);
+
                     row = sampleEntTable.getRow(event.getRow());
                     s = (String)row.data;
                     str = s.split(":");
                     id = Integer.parseInt(str[1]);
-                    if("SAMPLE".equals(str[0]))
+                    if ("SAMPLE".equals(str[0]))
                         sampleStatusQALookupscreen.refresh(id, SampleStatusQALookupScreen.Type.SAMPLE);
                     else
                         sampleStatusQALookupscreen.refresh(id, SampleStatusQALookupScreen.Type.ANALYSIS);
-                    modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-                    modal.setName(consts.get("sampleStatusQALookUp"));
-                    modal.setContent(sampleStatusQALookupscreen);
                 }
                 event.cancel();
             }
         });
-        
+
         backButton = (AppButton)def.getWidget("backButton");
         addScreenHandler(backButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-               loadDeck(null);
+                loadDeck(null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -361,9 +360,9 @@ public class SampleStatusScreen extends Screen {
             e.printStackTrace();
         }
         projectCode.setModel(model);
-        
-       try {
-            statusReleased = DictionaryCache.getIdBySystemName("analysis_released");           
+
+        try {
+            statusReleased = DictionaryCache.getIdBySystemName("analysis_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -432,7 +431,7 @@ public class SampleStatusScreen extends Screen {
                 deck = Decks.LIST;
                 setState(State.ADD);
                 setResults(list);
-                backButton.setVisible(true);  
+                backButton.setVisible(true);
                 break;
             case LIST:
                 deckpanel.showWidget(0);
@@ -455,16 +454,16 @@ public class SampleStatusScreen extends Screen {
         Datetime temp1;
         ArrayList<TableDataRow> model;
         TableDataRow row;
-        
+
         model = new ArrayList<TableDataRow>();
         if (results == null || results.size() == 0)
             return model;
-        
+
         accNumPrev = null;
         accRow = 0;
         completed = consts.get("completed");
         inProgress = consts.get("inProgress");
-        
+
         for (SampleStatusWebReportVO data : results) {
             accNum = data.getAccessionNumber();
             /*
@@ -472,7 +471,7 @@ public class SampleStatusScreen extends Screen {
              * "Completed status", for all other statuses screen displays
              * "In Progress".
              */
-            if (!accNum.equals(accNumPrev)) {                           
+            if ( !accNum.equals(accNumPrev)) {
                 if (data.getCollectionDate() != null) {
                     temp = data.getCollectionDate().getDate();
                     if (data.getCollectionTime() == null) {
@@ -487,7 +486,7 @@ public class SampleStatusScreen extends Screen {
                     temp1 = null;
                 }
 
-                accRow++;
+                accRow++ ;
                 row = new TableDataRow(7);
                 row.cells.get(0).setValue(data.getAccessionNumber());
                 row.cells.get(1).setValue(data.getCollector());
@@ -495,40 +494,43 @@ public class SampleStatusScreen extends Screen {
                 row.cells.get(4).setValue(data.getReceivedDate());
                 row.cells.get(5).setValue(data.getClientReference());
                 if (data.getHasSampleQAEvent()) {
-                    row.cells.get(6).setValue("Yes");
                     if (data.getHasSampleOverride())
-                        row.cells.get(6).style = "ScreenLabelLinkRed";
+                        row.cells.get(6).setValue("No Result");
                     else if (data.getHasSampleWarning())
-                        row.cells.get(6).style = "ScreenLabelLinkYellow";
+                        row.cells.get(6).setValue("Warning");
                 }
-                row.style = (accRow%2 == 0)?"AltTableRow":""; 
-                row.data = "SAMPLE:"+data.getSampleId();
+                row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
+                row.data = "SAMPLE:" + data.getSampleId();
                 model.add(row);
 
                 row = new TableDataRow(7);
                 row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
-                                                          data.getMethodReportingDescription());
-                row.cells.get(2).setValue(statusReleased.equals(data.getStatusId())?completed:inProgress);
-                if(data.getHasAnalysisQAEvent())
-                    row.cells.get(6).setValue("Yes"); 
-
-                row.data = "ANALYSIS:"+data.getAnalysisId();
-                row.style = (accRow%2 == 0)?"AltTableRow":"";                
+                                          data.getMethodReportingDescription());
+                row.cells.get(2).setValue(statusReleased.equals(data.getStatusId()) ? completed
+                                                                                   : inProgress);
+                if (data.getHasAnalysisQAEvent()) {
+                    if (data.getHasAnalysisOverride())
+                        row.cells.get(6).setValue("No Result");
+                    else if (data.getHasAnalysisWarning())
+                        row.cells.get(6).setValue("Warning");
+                }
+                row.data = "ANALYSIS:" + data.getAnalysisId();
+                row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
                 model.add(row);
             } else {
                 row = new TableDataRow(7);
                 row.cells.get(1).setValue(data.getTestReportingDescription() + " : " +
-                                                           data.getMethodReportingDescription());
-                row.cells.get(2).setValue(statusReleased.equals(data.getStatusId())?completed:inProgress);
-                if(data.getHasAnalysisQAEvent()) {
-                    row.cells.get(6).setValue("Yes"); 
+                                          data.getMethodReportingDescription());
+                row.cells.get(2).setValue(statusReleased.equals(data.getStatusId()) ? completed
+                                                                                   : inProgress);
+                if (data.getHasAnalysisQAEvent()) {
                     if (data.getHasAnalysisOverride())
-                        row.cells.get(6).style = "ScreenLabelLinkRed";
+                        row.cells.get(6).setValue("No Result");
                     else if (data.getHasAnalysisWarning())
-                        row.cells.get(6).style = "ScreenLabelLinkYellow";
+                        row.cells.get(6).setValue("Warning");
                 }
-                row.data = "ANALYSIS:"+data.getAnalysisId();
-                row.style = (accRow%2 == 0)?"AltTableRow":""; 
+                row.data = "ANALYSIS:" + data.getAnalysisId();
+                row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
                 model.add(row);
             }
             accNumPrev = accNum;
@@ -578,10 +580,10 @@ public class SampleStatusScreen extends Screen {
                     fAcc.query = fAcc.query + ".." + field.query;
                     list.add(fAcc);
                 }
-            }else {
+            } else {
                 list.add(field);
             }
         }
         return list;
-    }    
+    }
 }

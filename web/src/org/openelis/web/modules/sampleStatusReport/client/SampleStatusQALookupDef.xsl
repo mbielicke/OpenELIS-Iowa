@@ -35,6 +35,7 @@ UIRF Software License are applicable instead of those above.
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
   xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
+  <xsl:import href="IMPORT/button.xsl" />
   <xalan:component prefix="resource">
     <xalan:script lang="javaclass" src="xalan://org.openelis.util.UTFResource" />
   </xalan:component>
@@ -49,18 +50,21 @@ UIRF Software License are applicable instead of those above.
       <xsl:value-of select="props" />
     </xsl:variable>
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
-    <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SampleStatusQALookUp" name="{resource:getString($constants,'qaLookUp')}">
+
+    <screen id="SampleStatusQALookUp" name="{resource:getString($constants,'qaLookUp')}">
       <VerticalPanel spacing="0">
-        <widget>
-          <table key="sampleStatusQALookUpTable" style = "ScreenTableWithSides" width="auto" maxRows="7" showScroll="ALWAYS" title="">
-            <col key="qaEvent" width="120" sort="false" header="{resource:getString($constants,'QAEvent')}">
-              <label width="120" field="String" />
-            </col>
-            <col key="type" width="100" sort="false" header="{resource:getString($constants,'type')}">
-              <dropdown field="Integer" width="100" />
-            </col>
-          </table>
-        </widget>
+        <table key="sampleStatusQALookUpTable" style="ScreenTableWithSides" width="650" maxRows="7" showScroll="ALWAYS" title="">
+          <col key="qaEvent" width="1200" sort="false" header="{resource:getString($constants,'QAEvent')}">
+            <label field="String" />
+          </col>
+        </table>
+        <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
+           <xsl:call-template name="okButton">
+             <xsl:with-param name="language">
+               <xsl:value-of select="language" />
+             </xsl:with-param>
+           </xsl:call-template>
+        </AbsolutePanel>
       </VerticalPanel>
     </screen>
   </xsl:template>
