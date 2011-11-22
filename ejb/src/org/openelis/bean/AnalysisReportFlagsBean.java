@@ -48,6 +48,7 @@ import org.openelis.local.LockLocal;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
 
     @PersistenceContext(unitName = "openelis")

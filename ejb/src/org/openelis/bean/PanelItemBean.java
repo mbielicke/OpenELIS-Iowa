@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -37,7 +36,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.PanelItemDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.entity.PanelItem;
@@ -52,7 +50,7 @@ import org.openelis.meta.PanelMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("panel-select")
+
 public class PanelItemBean implements PanelItemLocal {
 
     @PersistenceContext(unitName = "openelis")

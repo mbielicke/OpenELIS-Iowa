@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -47,7 +46,7 @@ import org.openelis.meta.OrganizationMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("organization-select")
+
 public class OrganizationParameterBean implements OrganizationParameterLocal {
 
     @PersistenceContext(unitName = "openelis")

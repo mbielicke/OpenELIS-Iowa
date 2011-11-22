@@ -59,6 +59,7 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal, OrderRecurrenceReportRemote {
     
     @EJB

@@ -12,10 +12,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.PatientDO;
-import org.openelis.domain.ProviderDO;
 import org.openelis.domain.SampleHumanDO;
-import org.openelis.entity.Provider;
 import org.openelis.entity.SampleHuman;
 import org.openelis.local.LockLocal;
 import org.openelis.local.SampleHumanLocal;
@@ -24,9 +21,8 @@ import org.openelis.manager.SampleHumanManager;
 import org.openelis.remote.SampleHumanRemote;
 
 @Stateless
-
 @SecurityDomain("openelis")
-//@RolesAllowed("inventory-select")
+
 public class SampleHumanBean implements SampleHumanRemote, SampleHumanLocal {
 
     @PersistenceContext(unitName = "openelis")

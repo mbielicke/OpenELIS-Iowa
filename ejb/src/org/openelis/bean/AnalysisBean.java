@@ -46,8 +46,8 @@ import org.openelis.local.AnalysisLocal;
 import org.openelis.remote.AnalysisRemote;
 
 @Stateless
-
 @SecurityDomain("openelis")
+
 public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
 
     @PersistenceContext(unitName = "openelis")

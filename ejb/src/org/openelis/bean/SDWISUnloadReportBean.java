@@ -40,11 +40,21 @@ import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
+
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
@@ -78,21 +88,10 @@ import org.openelis.report.Prompt;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.JRLoader;
-
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("sample-select")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
+
 public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRemote {
 
     @Resource

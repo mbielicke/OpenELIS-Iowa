@@ -34,6 +34,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.HistoryVO;
 import org.openelis.entity.History;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -43,6 +44,8 @@ import org.openelis.remote.HistoryRemote;
 import org.openelis.utils.EJBFactory;
 
 @Stateless
+@SecurityDomain("openelis")
+
 public class HistoryBean implements HistoryRemote, HistoryLocal {
 
     @PersistenceContext(unitName = "openelis")

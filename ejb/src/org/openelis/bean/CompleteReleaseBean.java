@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -25,9 +24,8 @@ import org.openelis.remote.CompleteReleaseRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
-
 @SecurityDomain("openelis")
-@RolesAllowed("samplecompleterelease-select")
+
 public class CompleteReleaseBean implements CompleteReleaseRemote {
 
 	@PersistenceContext(unitName = "openelis")

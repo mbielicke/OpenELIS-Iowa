@@ -42,6 +42,7 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Service(objectName = "jboss:custom=DictionaryCacheBean")
+
 public class DictionaryCacheBean implements DictionaryCacheLocal, DictionaryCacheRemote {
 
     private Cache           cache;

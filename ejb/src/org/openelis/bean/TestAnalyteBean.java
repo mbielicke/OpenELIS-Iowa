@@ -27,7 +27,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -46,7 +45,7 @@ import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("test-select")
+
 public class TestAnalyteBean implements TestAnalyteLocal {
 
     @PersistenceContext(unitName = "openelis")

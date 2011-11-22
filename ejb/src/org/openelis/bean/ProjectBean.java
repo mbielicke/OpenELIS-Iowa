@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -57,7 +56,7 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("project-select")
+
 public class ProjectBean implements ProjectLocal, ProjectRemote {
 
     @PersistenceContext(unitName = "openelis")

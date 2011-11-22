@@ -35,7 +35,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.entity.SampleQaevent;
@@ -45,6 +44,7 @@ import org.openelis.local.SampleQAEventLocal;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class SampleQAEventBean implements SampleQAEventLocal {
 
     @PersistenceContext(unitName = "openelis")

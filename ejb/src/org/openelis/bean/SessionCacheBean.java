@@ -44,6 +44,7 @@ import org.openelis.local.SessionCacheLocal;
 
 @SecurityDomain("openelis")
 @Service(objectName = "jboss:custom=SessionCacheBean")
+
 public class SessionCacheBean implements SessionCacheLocal {
 
     @Resource

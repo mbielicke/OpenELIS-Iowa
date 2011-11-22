@@ -25,7 +25,6 @@
 */
 package org.openelis.bean;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -47,9 +46,8 @@ import org.openelis.local.SampleSDWISLocal;
 import org.openelis.meta.SampleMeta;
 
 @Stateless
-
 @SecurityDomain("openelis")
-@RolesAllowed("samplesdwis-select")
+
 public class SampleSDWISBean implements SampleSDWISLocal {
 
     @PersistenceContext(unitName = "openelis")

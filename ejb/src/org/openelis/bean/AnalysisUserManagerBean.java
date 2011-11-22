@@ -32,7 +32,6 @@ import org.openelis.manager.AnalysisUserManager;
 import org.openelis.remote.AnalysisUserManagerRemote;
 
 @Stateless
-
 @SecurityDomain("openelis")
 public class AnalysisUserManagerBean implements AnalysisUserManagerRemote {
 

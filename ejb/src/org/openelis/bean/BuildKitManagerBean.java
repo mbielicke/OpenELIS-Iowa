@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
@@ -41,7 +40,6 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("buildkits-select")
 @TransactionManagement(TransactionManagementType.BEAN)
 
 public class BuildKitManagerBean implements BuildKitManagerRemote {

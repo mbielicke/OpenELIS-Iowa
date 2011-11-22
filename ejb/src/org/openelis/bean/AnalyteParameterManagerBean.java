@@ -26,13 +26,11 @@
 package org.openelis.bean;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.naming.InitialContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
@@ -47,7 +45,6 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("analyteparameter-select")
 @TransactionManagement(TransactionManagementType.BEAN)
 public class AnalyteParameterManagerBean implements AnalyteParameterManagerRemote {   
     

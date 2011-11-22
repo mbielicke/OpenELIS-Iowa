@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -71,8 +70,8 @@ import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("test-select")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
+
 public class SampleInhouseReportBean implements SampleInhouseReportRemote {
 
     @Resource

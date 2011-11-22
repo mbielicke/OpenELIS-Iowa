@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -52,7 +51,7 @@ import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("test-select")
+
 public class TestResultBean implements TestResultLocal {
 
     @PersistenceContext(unitName = "openelis")

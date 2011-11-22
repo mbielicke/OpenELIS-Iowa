@@ -25,8 +25,6 @@
 */
 package org.openelis.bean;
 
-import javax.ejb.EJB;
-
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
@@ -35,7 +33,6 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.Service;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.local.InventoryItemCacheLocal;
-import org.openelis.local.InventoryItemLocal;
 import org.openelis.remote.InventoryItemCacheRemote;
 import org.openelis.utils.EJBFactory;
 
@@ -45,6 +42,7 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Service(objectName = "jboss:custom=InventoryCacheBean")
+
 public class InventoryItemCacheBean implements InventoryItemCacheLocal, InventoryItemCacheRemote {
 
     private Cache              cache;

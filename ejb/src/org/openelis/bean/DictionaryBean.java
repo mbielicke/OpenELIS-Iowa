@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -57,7 +56,7 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("dictionary-select")
+
 public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
 
     @PersistenceContext(unitName = "openelis")

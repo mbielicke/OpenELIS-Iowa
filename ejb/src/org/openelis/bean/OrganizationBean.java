@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -58,7 +57,7 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("organization-select")
+
 public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
     @PersistenceContext(unitName = "openelis")

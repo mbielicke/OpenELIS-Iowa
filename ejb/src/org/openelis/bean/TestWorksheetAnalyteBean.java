@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -40,14 +39,13 @@ import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.entity.TestWorksheetAnalyte;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestWorksheetAnalyteLocal;
 import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("test-select")
+
 public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
 
     @PersistenceContext(unitName = "openelis")

@@ -114,6 +114,7 @@ import org.openelis.utils.EJBFactory;
 @Stateless
 @SecurityDomain("openelis")
 @RolesAllowed("worksheet-update")
+
 public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
     @EJB

@@ -45,6 +45,7 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Service(objectName = "jboss:custom=CategoryCacheBean")
+
 public class CategoryCacheBean implements CategoryCacheLocal, CategoryCacheRemote {
 
     private Cache           cache, dictCache;

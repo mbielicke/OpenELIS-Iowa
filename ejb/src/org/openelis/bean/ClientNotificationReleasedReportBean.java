@@ -35,8 +35,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Properties;
 
-import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.mail.Message;
@@ -46,7 +44,6 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.sql.DataSource;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisReportFlagsDO;
@@ -65,8 +62,7 @@ import org.openelis.utils.JasperUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("test-select")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
+
 public class ClientNotificationReleasedReportBean implements ClientNotificationReleasedReportRemote {
 
     @EJB

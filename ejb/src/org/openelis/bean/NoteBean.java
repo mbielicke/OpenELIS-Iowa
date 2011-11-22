@@ -44,6 +44,7 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class NoteBean implements NoteLocal {
 
     @PersistenceContext(unitName = "openelis")

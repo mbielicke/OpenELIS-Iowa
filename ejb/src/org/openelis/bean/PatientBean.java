@@ -15,9 +15,8 @@ import org.openelis.local.PatientLocal;
 import org.openelis.remote.PatientRemote;
 
 @Stateless
-
 @SecurityDomain("openelis")
-//@RolesAllowed("inventory-select")
+
 public class PatientBean implements PatientRemote, PatientLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

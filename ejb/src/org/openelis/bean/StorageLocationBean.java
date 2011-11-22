@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -54,7 +53,7 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("storagelocation-select")
+
 public class StorageLocationBean implements StorageLocationRemote, StorageLocationLocal {
 
     @PersistenceContext(unitName = "openelis")

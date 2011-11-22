@@ -51,6 +51,7 @@ import org.openelis.remote.AuxDataRemote;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
     @PersistenceContext(unitName = "openelis")

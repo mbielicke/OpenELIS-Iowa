@@ -28,8 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -37,7 +35,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
@@ -45,13 +42,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryLocationLocal;
 import org.openelis.local.InventoryXAdjustLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("inventoryadjustment-select")
+
 public class InventoryXAdjustBean implements InventoryXAdjustLocal {
 
     @PersistenceContext(unitName = "openelis")

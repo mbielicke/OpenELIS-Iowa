@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -57,7 +56,7 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("sample-select")
+
 public class SampleBean implements SampleLocal, SampleRemote {
 
     @PersistenceContext(unitName = "openelis")

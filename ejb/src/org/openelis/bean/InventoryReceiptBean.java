@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -75,7 +74,7 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("inventoryreceipt-select")
+
 public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryReceiptLocal {
 
     @PersistenceContext(unitName = "openelis")

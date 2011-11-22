@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -56,18 +55,17 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("dictionary-select")
 public class CategoryBean implements CategoryRemote, CategoryLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager          manager;
+    private EntityManager       manager;
 
     @EJB
-    private CategoryCacheLocal      catCache;
-    
-    private static CategoryMeta    meta = new CategoryMeta();
+    private CategoryCacheLocal  catCache;
 
-    public CategoryBean() {        
+    private static CategoryMeta meta = new CategoryMeta();
+
+    public CategoryBean() {
     }
 
     public CategoryDO fetchById(Integer id) throws Exception {
@@ -85,16 +83,16 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         }
         return data;
     }
-    
+
     public CategoryDO fetchBySystemName(String systemName) throws Exception {
         Query query;
         CategoryDO data;
-        
+
         data = null;
         query = manager.createNamedQuery("Category.FetchBySystemName");
         query.setParameter("systemName", systemName);
         try {
-            data = (CategoryDO)query.getSingleResult();        
+            data = (CategoryDO)query.getSingleResult();
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -102,21 +100,20 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         }
         return data;
     }
-    
+
     public ArrayList<IdNameVO> fetchByName(String name) throws Exception {
         Query query;
         List list;
-        
+
         query = manager.createNamedQuery("Category.FetchByName");
-        query.setParameter("name",name);
+        query.setParameter("name", name);
         list = query.getResultList();
-        
-        if(list.isEmpty())
+
+        if (list.isEmpty())
             throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(list);
-    }    
-    
+    }
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
@@ -125,8 +122,8 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + CategoryMeta.getId() + ", " +
-                          CategoryMeta.getName() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + CategoryMeta.getId() +
+                          ", " + CategoryMeta.getName() + ") ");
 
         builder.constructWhere(fields);
         builder.setOrderBy(CategoryMeta.getName());
@@ -170,15 +167,15 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         Category entity;
 
         catCache.evict(data.getSystemName());
-        if (!data.isChanged())
+        if ( !data.isChanged())
             return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(Category.class, data.getId());
-        
+
         // need to remove it before we change it
-        catCache.evict(entity.getSystemName());        
-        
+        catCache.evict(entity.getSystemName());
+
         entity.setDescription(data.getDescription());
         entity.setName(data.getName());
         entity.setSectionId(data.getSectionId());
@@ -187,7 +184,7 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
 
         return data;
     }
-    
+
     public void validate(CategoryDO data) throws Exception {
         ValidationErrorsList list;
         Integer catId;
@@ -195,33 +192,31 @@ public class CategoryBean implements CategoryRemote, CategoryLocal {
         CategoryDO category;
 
         list = new ValidationErrorsList();
-        
+
         sysName = data.getSystemName();
         name = data.getName();
         catId = null;
-        
+
         if (DataBaseUtil.isEmpty(sysName)) {
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             CategoryMeta.getSystemName()));
+            list.add(new FieldErrorException("fieldRequiredException", CategoryMeta.getSystemName()));
         } else {
             try {
                 category = fetchBySystemName(sysName);
                 catId = category.getId();
             } catch (NotFoundException ignE) {
                 // do nothing
-            }            
-            
-            if (!DataBaseUtil.isEmpty(catId) && !catId.equals(data.getId())) {
+            }
+
+            if ( !DataBaseUtil.isEmpty(catId) && !catId.equals(data.getId())) {
                 list.add(new FieldErrorException("fieldUniqueException",
                                                  CategoryMeta.getSystemName()));
             }
         }
 
-        if (DataBaseUtil.isEmpty(name)) 
-            list.add(new FieldErrorException("fieldRequiredException", 
-                                             CategoryMeta.getName()));              
-        
-        if(list.size() > 0)
+        if (DataBaseUtil.isEmpty(name))
+            list.add(new FieldErrorException("fieldRequiredException", CategoryMeta.getName()));
+
+        if (list.size() > 0)
             throw list;
     }
 

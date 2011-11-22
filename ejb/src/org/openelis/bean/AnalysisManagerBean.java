@@ -32,8 +32,8 @@ import org.openelis.manager.AnalysisManager;
 import org.openelis.remote.AnalysisManagerRemote;
 
 @Stateless
-
 @SecurityDomain("openelis")
+
 public class AnalysisManagerBean implements AnalysisManagerRemote {
     
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {

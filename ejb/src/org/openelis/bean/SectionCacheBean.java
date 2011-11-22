@@ -44,6 +44,7 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Service(objectName = "jboss:custom=SectionCacheBean")
+
 public class SectionCacheBean implements SectionCacheLocal, SectionCacheRemote {
 
     private Cache        cache;

@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -61,10 +60,9 @@ import org.openelis.remote.SampleManagerRemote;
 import org.openelis.utils.EJBFactory;
 
 @Stateless
+@SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-@SecurityDomain("openelis")
-@RolesAllowed("sample-select")
 public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLocal {
     
     @Resource

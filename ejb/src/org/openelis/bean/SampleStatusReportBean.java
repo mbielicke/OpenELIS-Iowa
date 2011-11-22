@@ -60,6 +60,7 @@ import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class SampleStatusReportBean implements SampleStatusReportRemote {
 
     @EJB

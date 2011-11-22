@@ -30,10 +30,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -42,7 +40,6 @@ import javax.persistence.Query;
 
 import org.apache.poi.hssf.usermodel.HSSFName;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.AreaReference;
 import org.apache.poi.ss.util.CellReference;
 import org.jboss.ejb3.annotation.SecurityDomain;
@@ -65,7 +62,7 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("organization-select")
+
 public class WorksheetCreationBean implements WorksheetCreationRemote {
 
     @EJB

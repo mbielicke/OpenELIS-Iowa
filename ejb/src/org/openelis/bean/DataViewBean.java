@@ -112,6 +112,7 @@ import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class DataViewBean implements DataViewRemote {
     
     @PersistenceContext(unitName = "openelis")

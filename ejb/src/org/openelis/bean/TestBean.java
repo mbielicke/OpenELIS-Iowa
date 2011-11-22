@@ -56,7 +56,7 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("test-select")
+
 public class TestBean implements TestRemote, TestLocal {
 
     @PersistenceContext(unitName = "openelis")
