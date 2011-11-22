@@ -66,6 +66,8 @@ public class OpenELISEntry implements EntryPoint, NativePreviewHandler {
         // mouseDown is combined with the ctrl key
         if (event.getTypeInt() == Event.ONMOUSEDOWN && event.getNativeEvent().getCtrlKey())
             event.getNativeEvent().preventDefault();
+		  if(event.getTypeInt() == Event.ONMOUSEWHEEL && event.getNativeEvent().getShiftKey())
+			  event.getNativeEvent().preventDefault();
 
     }
 }
