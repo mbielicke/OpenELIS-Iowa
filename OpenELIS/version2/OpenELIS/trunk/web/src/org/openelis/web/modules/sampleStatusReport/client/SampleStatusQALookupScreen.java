@@ -27,10 +27,8 @@ package org.openelis.web.modules.sampleStatusReport.client;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -38,7 +36,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
@@ -47,16 +45,18 @@ import org.openelis.manager.AnalysisQaEventManager;
 import org.openelis.manager.SampleQaEventManager;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 
 public class SampleStatusQALookupScreen extends Screen {
 
-    protected TableWidget qaLookupTable; 
+    protected TableWidget qaLookupTable;
     protected Integer     id;
     protected Type        type;
     protected Integer     qaInternalId;
+    protected AppButton   okButton;
 
     public enum Type {
         SAMPLE, ANALYSIS
@@ -83,47 +83,43 @@ public class SampleStatusQALookupScreen extends Screen {
 
         qaLookupTable = (TableWidget)def.getWidget("sampleStatusQALookUpTable");
         addScreenHandler(qaLookupTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-             public void onDataChange(DataChangeEvent event) {
-                 qaLookupTable.load(getTableModel());
-             }
+            public void onDataChange(DataChangeEvent event) {
+                qaLookupTable.load(getTableModel());
+            }
 
-             public void onStateChange(StateChangeEvent<State> event) {
-                 qaLookupTable.enable(true);
-             }
-         });
-        
+            public void onStateChange(StateChangeEvent<State> event) {
+                qaLookupTable.enable(true);
+            }
+        });
+
         qaLookupTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 event.cancel();
             }
         });
+
+        okButton = (AppButton)def.getWidget("ok");
+        addScreenHandler(okButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                window.close();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                okButton.enable(true);
+            }
+        });
     }
-    
+
     private void initializeDropdowns() {
-        ArrayList<TableDataRow> model;
-        ArrayList<DictionaryDO> lst;
-        TableDataRow row;   
-        /*
-         * Initializing the qa event type column 
-         * status.
-         */
-        model = new ArrayList<TableDataRow>();
-        lst = CategoryCache.getBySystemName("qaevent_type");
-        for (DictionaryDO d : lst) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            model.add(row);
-        }
-        ((Dropdown<Integer>) (qaLookupTable.getColumnWidget("type"))).setModel(model);
-        
         try {
-            qaInternalId = DictionaryCache.getIdBySystemName("qaevent_internal");           
+            qaInternalId = DictionaryCache.getIdBySystemName("qaevent_internal");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
         }
     }
 
-    public void refresh(Integer id, Type type) {        
+    public void refresh(Integer id, Type type) {
         this.id = id;
         this.type = type;
         DataChangeEvent.fire(this);
@@ -144,10 +140,9 @@ public class SampleStatusQALookupScreen extends Screen {
                 sqm = SampleQaEventManager.fetchBySampleId(id);
                 for (int i = 0; i < sqm.count(); i++ ) {
                     sampleData = sqm.getSampleQAAt(i);
-                    if(qaInternalId != sampleData.getTypeId()) {
-                        row = new TableDataRow(2);
-                        row.cells.get(0).setValue(sampleData.getQaEventName());
-                        row.cells.get(1).setValue(sampleData.getTypeId());
+                    if (qaInternalId != sampleData.getTypeId()) {
+                        row = new TableDataRow(1);
+                        row.cells.get(0).setValue(sampleData.getQaEventReportingText());
                         model.add(row);
                     }
                 }
@@ -161,10 +156,9 @@ public class SampleStatusQALookupScreen extends Screen {
                 aqm = AnalysisQaEventManager.fetchByAnalysisId(id);
                 for (int i = 0; i < aqm.count(); i++ ) {
                     analysisData = aqm.getAnalysisQAAt(i);
-                    if(qaInternalId != analysisData.getTypeId()) {
-                        row = new TableDataRow(2);
-                        row.cells.get(0).setValue(analysisData.getQaEventName());
-                        row.cells.get(1).setValue(analysisData.getTypeId());
+                    if (qaInternalId != analysisData.getTypeId()) {
+                        row = new TableDataRow(1);
+                        row.cells.get(0).setValue(analysisData.getQaEventReportingText());
                         model.add(row);
                     }
                 }

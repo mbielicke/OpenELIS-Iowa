@@ -50,8 +50,9 @@ UIRF Software License are applicable instead of those above.
     <xsl:value-of select="doc/props" />
   </xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
+
   <xsl:template match="doc">
-    <screen id="SampleStatus" name="{resource:getString($constants,'finalReport')}">
+    <screen id="SampleStatus">
       <DeckPanel height="100%" key="deck" width="100%" style="ContentPanel">
         <deck>
           <HorizontalPanel padding="0" spacing="0" >
@@ -145,11 +146,11 @@ UIRF Software License are applicable instead of those above.
           <VerticalPanel padding="0" spacing="0">
             <VerticalPanel>
               <widget valign="top">
-                <table key="sampleEntTable" maxRows="23" style = "ScreenTable" showScroll="ALWAYS" title="" width="auto">
+                <table key="sampleEntTable" maxRows="26" style = "ScreenTable" showScroll="ALWAYS" title="" width="945">
                   <col header="{resource:getString($constants,'AccessionNo')}" key="accessionNumber" width="73">
                     <label field="Integer" />
                   </col>
-                  <col header="{resource:getString($constants,'sampleTestDescription')}" key="sampleTestDescription" width="325">
+                  <col header="{resource:getString($constants,'sampleTestDescription')}" key="sampleTestDescription" width="375">
                     <label field="String" />
                   </col>
                   <col header="{resource:getString($constants,'analysisStatus')}" key="analysisStatus" width="72">
@@ -161,7 +162,7 @@ UIRF Software License are applicable instead of those above.
                   <col header="{resource:getString($constants,'datereceived')}" key="datereceived" width="105">
                     <label field="Date" pattern="{resource:getString($constants,'dateTimeMinutePattern')}" />
                   </col>
-                  <col header="{resource:getString($constants,'clntRef')}" key="clntRef" width="105">
+                  <col header="{resource:getString($constants,'clntRef')}" key="clntRef" width="155">
                     <label field="String" />
                   </col>
                   <col header="{resource:getString($constants,'QAEvent')}" key="qaEvent" width="60">

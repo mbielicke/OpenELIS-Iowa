@@ -62,7 +62,7 @@ UIRF Software License are applicable instead of those above.
         </TablePanel>              
           <VerticalPanel style="subform">           
               <widget valign="top">
-                <table key="sampleEntTable" width="auto" maxRows="12"  style="ScreenTableWithSides"  title="">
+                <table key="sampleEntTable" width="auto" maxRows="12"  style="ScreenTableWithSides" title="">
                   <col key="select" width="60" header="{resource:getString($constants,'select')}">
                     <check/>
                   </col>
