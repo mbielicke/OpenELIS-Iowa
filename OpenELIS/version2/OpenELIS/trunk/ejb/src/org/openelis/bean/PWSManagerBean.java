@@ -25,7 +25,6 @@
 */
 package org.openelis.bean;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
@@ -37,7 +36,7 @@ import org.openelis.remote.PWSManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("pws-select")
+
 public class PWSManagerBean implements PWSManagerRemote {
 
     public PWSManager fetchByTinwsysIsNumber(Integer tinwsysIsNumber) throws Exception {        

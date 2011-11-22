@@ -3,7 +3,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -24,7 +23,7 @@ import org.openelis.meta.ProviderMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("provider-select")
+
 public class ProviderLocationBean implements ProviderLocationLocal {
 
     @PersistenceContext(unitName = "openelis")

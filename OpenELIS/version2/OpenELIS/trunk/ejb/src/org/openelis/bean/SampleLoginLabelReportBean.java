@@ -5,11 +5,9 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.sql.DataSource;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OptionListItem;
@@ -30,7 +28,7 @@ import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
+
 public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote {
 
 	@EJB

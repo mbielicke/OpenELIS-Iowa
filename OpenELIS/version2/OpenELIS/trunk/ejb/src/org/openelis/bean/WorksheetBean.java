@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -42,7 +41,6 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InstrumentLogDO;
-import org.openelis.domain.WorksheetCacheVO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.InstrumentLog;
 import org.openelis.entity.Worksheet;
@@ -70,7 +68,7 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("worksheet-select")
+
 public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 
 	@PersistenceContext(unitName = "openelis")

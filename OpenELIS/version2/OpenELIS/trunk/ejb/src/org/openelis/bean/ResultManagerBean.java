@@ -33,6 +33,7 @@ import org.openelis.remote.ResultManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class ResultManagerBean implements ResultManagerRemote {
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
         return AnalysisResultManager.fetchByAnalysisIdForDisplay(analysisId);

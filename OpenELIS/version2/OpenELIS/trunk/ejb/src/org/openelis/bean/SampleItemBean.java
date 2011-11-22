@@ -28,8 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.ejb.EJB;
-import javax.ejb.EJBs;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -43,14 +41,11 @@ import org.openelis.entity.SampleItem;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.LockLocal;
 import org.openelis.local.SampleItemLocal;
 
 @Stateless
-@EJBs({
-    @EJB(name="ejb/Lock",beanInterface=LockLocal.class)
-})
 @SecurityDomain("openelis")
+
 public class SampleItemBean implements SampleItemLocal {
 
     @PersistenceContext(unitName = "openelis")

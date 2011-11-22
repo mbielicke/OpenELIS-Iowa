@@ -46,6 +46,7 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class AnalysisUserBean implements AnalysisUserLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

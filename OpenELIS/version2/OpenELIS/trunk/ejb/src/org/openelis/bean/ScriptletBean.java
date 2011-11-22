@@ -39,6 +39,7 @@ import org.openelis.remote.ScriptletRemote;
 
 @Stateless
 @SecurityDomain("openelis")
+
 public class ScriptletBean implements ScriptletRemote {
 
     @PersistenceContext(unitName = "openelis")

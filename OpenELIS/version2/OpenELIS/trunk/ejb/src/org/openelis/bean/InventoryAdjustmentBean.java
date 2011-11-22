@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -56,7 +55,7 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("inventoryadjustment-select")
+
 public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, InventoryAdjustmentLocal{
 
     @PersistenceContext(unitName = "openelis")

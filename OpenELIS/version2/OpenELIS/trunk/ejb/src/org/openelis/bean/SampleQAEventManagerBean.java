@@ -32,9 +32,8 @@ import org.openelis.manager.SampleQaEventManager;
 import org.openelis.remote.SampleQAEventManagerRemote;
 
 @Stateless
-
 @SecurityDomain("openelis")
-//@RolesAllowed("inventory-select")
+
 public class SampleQAEventManagerBean implements SampleQAEventManagerRemote {
 
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {

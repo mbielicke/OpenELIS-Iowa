@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -51,14 +50,13 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.OrderLocal;
 import org.openelis.local.OrganizationLocal;
-import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.remote.OrderRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed({"order-select", "internalorder-select", "vendororder-select", "sendoutorder-select"})
+
 public class OrderBean implements OrderRemote, OrderLocal {
 
     @PersistenceContext(unitName = "openelis")

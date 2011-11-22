@@ -63,7 +63,6 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("analyteparameter-select")
 public class AnalyteParameterBean implements AnalyteParameterRemote, AnalyteParameterLocal {
 
     @PersistenceContext(unitName = "openelis")

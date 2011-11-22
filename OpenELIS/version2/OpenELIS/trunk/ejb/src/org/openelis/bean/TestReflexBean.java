@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -50,7 +49,7 @@ import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("test-select")
+
 public class TestReflexBean implements TestReflexLocal {
 
     @PersistenceContext(unitName = "openelis")

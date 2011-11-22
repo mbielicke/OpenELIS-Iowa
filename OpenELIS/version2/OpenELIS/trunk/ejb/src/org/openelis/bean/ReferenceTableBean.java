@@ -39,8 +39,8 @@ import org.openelis.local.ReferenceTableLocal;
 import org.openelis.remote.ReferenceTableRemote;
 
 @Stateless
-
 @SecurityDomain("openelis")
+
 public class ReferenceTableBean implements ReferenceTableRemote, ReferenceTableLocal {
 
     @PersistenceContext(unitName = "openelis")

@@ -71,6 +71,7 @@ import org.openelis.utils.ReportUtil;
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
+
 public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
     @EJB

@@ -2,7 +2,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -14,9 +13,8 @@ import org.openelis.remote.SampleRemote;
 import org.openelis.remote.SampleTrackingRemote;
 
 @Stateless
-
 @SecurityDomain("openelis")
-@RolesAllowed("sampletracking-select")
+
 public class SampleTrackingBean implements SampleTrackingRemote {
 
 	@EJB 

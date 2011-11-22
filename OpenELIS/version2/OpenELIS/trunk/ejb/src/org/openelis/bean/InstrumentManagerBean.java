@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -45,7 +44,6 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("instrument-select")
 @TransactionManagement(TransactionManagementType.BEAN)
 
 public class InstrumentManagerBean implements InstrumentManagerRemote {

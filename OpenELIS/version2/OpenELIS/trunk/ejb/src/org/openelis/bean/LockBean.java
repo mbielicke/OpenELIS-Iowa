@@ -35,6 +35,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.entity.Lock;
 import org.openelis.entity.Lock.PK;
 import org.openelis.gwt.common.EntityLockedException;
@@ -43,6 +44,8 @@ import org.openelis.local.LockLocal;
 import org.openelis.local.UserCacheLocal;
 
 @Stateless
+@SecurityDomain("openelis")
+
 public class LockBean implements LockLocal {
 
     @PersistenceContext

@@ -51,6 +51,7 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Service(objectName = "jboss:custom=UserCacheBean")
+
 public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
 
     @Resource

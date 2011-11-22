@@ -13,6 +13,7 @@ import org.openelis.remote.PreferencesRemote;
  */
 @Stateless
 @SecurityDomain("openelis")
+
 public class PreferencesManagerBean implements PreferencesRemote {
 
 	/**

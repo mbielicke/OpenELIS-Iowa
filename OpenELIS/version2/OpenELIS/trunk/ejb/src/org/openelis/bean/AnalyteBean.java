@@ -62,7 +62,6 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("analyte-select")
 public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
 
     @PersistenceContext(unitName = "openelis")

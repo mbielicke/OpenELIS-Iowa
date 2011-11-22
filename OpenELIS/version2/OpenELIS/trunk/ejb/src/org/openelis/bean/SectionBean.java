@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -46,7 +45,6 @@ import org.openelis.entity.Section;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
@@ -62,7 +60,7 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("section-select")
+
 public class SectionBean implements SectionRemote, SectionLocal {
 
     @PersistenceContext(unitName = "openelis")

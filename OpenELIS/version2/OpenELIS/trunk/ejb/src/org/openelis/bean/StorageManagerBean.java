@@ -25,22 +25,18 @@
 */
 package org.openelis.bean;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.StorageManager;
 import org.openelis.remote.StorageManagerRemote;
 
 @Stateless
+@SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-@SecurityDomain("openelis")
-@RolesAllowed("storage-select")
 public class StorageManagerBean implements StorageManagerRemote {
     
     public StorageManager fetchById(Integer referenceTableId, Integer referenceId) throws Exception {

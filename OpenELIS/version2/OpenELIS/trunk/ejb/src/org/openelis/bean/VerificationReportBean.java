@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import javax.annotation.Resource;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -26,7 +25,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OptionListItem;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
@@ -40,8 +38,8 @@ import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("sample-select")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
+
 public class VerificationReportBean implements VerificationReportRemote {
 
     @Resource

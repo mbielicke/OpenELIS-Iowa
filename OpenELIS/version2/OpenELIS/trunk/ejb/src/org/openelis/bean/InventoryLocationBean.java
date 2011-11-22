@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -54,7 +53,7 @@ import org.openelis.remote.InventoryLocationRemote;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("inventoryitem-select")
+
 public class InventoryLocationBean implements InventoryLocationLocal, InventoryLocationRemote {
 
     @PersistenceContext(unitName = "openelis")

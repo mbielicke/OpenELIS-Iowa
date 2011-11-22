@@ -28,7 +28,6 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -44,7 +43,7 @@ import org.openelis.local.PWSMonitorLocal;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("pws-select")
+
 public class PWSMonitorBean implements PWSMonitorLocal {
 
     @PersistenceContext(unitName = "openelis")

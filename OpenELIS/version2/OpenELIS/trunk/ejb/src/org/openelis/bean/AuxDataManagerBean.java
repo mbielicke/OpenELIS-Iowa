@@ -26,8 +26,6 @@
 package org.openelis.bean;
 
 import javax.ejb.Stateless;
-import javax.ejb.TransactionManagement;
-import javax.ejb.TransactionManagementType;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.manager.AuxDataManager;
@@ -35,8 +33,6 @@ import org.openelis.remote.AuxDataManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
-@TransactionManagement(TransactionManagementType.BEAN)
-
 public class AuxDataManagerBean implements AuxDataManagerRemote {
     
     public AuxDataManager fetchById(Integer referenceId, Integer referenceTableId) throws Exception {

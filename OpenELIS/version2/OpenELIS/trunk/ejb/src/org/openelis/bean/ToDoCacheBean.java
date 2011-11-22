@@ -74,6 +74,7 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Service(objectName = "jboss:custom=ToDoCacheBean")
+
 public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
 
     @PersistenceContext(unitName = "openelis")

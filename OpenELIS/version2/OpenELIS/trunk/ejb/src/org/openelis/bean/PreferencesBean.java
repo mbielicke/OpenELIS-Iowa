@@ -30,6 +30,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 
+import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.entity.Preferences;
 import org.openelis.local.PreferencesLocal;
 
@@ -38,6 +39,8 @@ import org.openelis.local.PreferencesLocal;
  * 
  */
 @Stateless
+@SecurityDomain("openelis")
+
 public class PreferencesBean implements PreferencesLocal {
 
     @PersistenceContext(unitName = "openelis")

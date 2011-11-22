@@ -43,8 +43,8 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.SampleProjectLocal;
 
 @Stateless
-
 @SecurityDomain("openelis")
+
 public class SampleProjectBean implements SampleProjectLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

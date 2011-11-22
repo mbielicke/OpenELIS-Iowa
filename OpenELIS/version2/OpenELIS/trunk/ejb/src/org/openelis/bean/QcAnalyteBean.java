@@ -31,7 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -57,7 +56,7 @@ import org.openelis.meta.QcMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("qc-select")
+
 public class QcAnalyteBean implements QcAnalyteLocal {
 
     @PersistenceContext(unitName = "openelis")

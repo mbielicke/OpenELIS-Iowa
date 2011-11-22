@@ -27,7 +27,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -46,7 +45,6 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
@@ -55,7 +53,7 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("storage-select")
+
 public class StorageBean implements StorageLocal {
 
     @PersistenceContext(unitName = "openelis")

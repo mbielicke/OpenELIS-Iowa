@@ -27,7 +27,6 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -48,7 +47,6 @@ import org.openelis.meta.AuxFieldGroupMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("auxiliary-select")
 public class AuxFieldBean implements AuxFieldLocal {
 
     @PersistenceContext(unitName = "openelis")
