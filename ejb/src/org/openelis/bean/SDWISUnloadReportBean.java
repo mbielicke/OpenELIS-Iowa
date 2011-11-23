@@ -45,17 +45,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporter;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JRField;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
-import net.sf.jasperreports.engine.util.JRLoader;
-
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteViewDO;
@@ -85,8 +74,20 @@ import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.SDWISUnloadReportRemote;
 import org.openelis.report.Prompt;
+import org.openelis.utils.EJBFactory;
 import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
+
+import net.sf.jasperreports.engine.JRDataSource;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporter;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JRField;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.util.JRLoader;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -124,8 +125,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
     private static Integer releasedStatusId, typeDictionaryId;
     private static HashMap<String, String> methodCodes, contaminantIds;
     
-    private int                                statIndex;
-    private ArrayList<HashMap<String, Object>> stats;
+    private int                                statusIndex;
+    private ArrayList<HashMap<String, Object>> statusList;
     
     @PostConstruct
     public void init() {
@@ -209,6 +210,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
     /*
      * Execute the report and send its output to specified location
      */
+    @SuppressWarnings("unchecked")
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         boolean reject;
         int sampleCount;
@@ -218,7 +220,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         Date beginReleased, endReleased;
         File tempFile, statFile;
         FileOutputStream out;
-        HashMap<String, Object> statRow;
+        HashMap<String, Object> jparam, statRow;
         HashMap<String, QueryData> param;
         Iterator<SampleDO> sIter;
         Iterator<AnalysisViewDO> aIter;
@@ -275,36 +277,52 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
 
             sampleCount = 0;
             
-            stats = new ArrayList<HashMap<String, Object>>();
-            statIndex = -1;
+            statusList = new ArrayList<HashMap<String, Object>>();
+            statusIndex = -1;
             
             samples = sample.fetchSDWISByReleasedAndLocation(beginReleased, endReleased, location);
             sIter = samples.iterator();
             while (sIter.hasNext()) {
                 sDO = sIter.next();
                 ssVDO = sampleSdwis.fetchBySampleId(sDO.getId());
-                reject = writeSampleRow(writer, sDO, ssVDO);
                 
-                if (!reject) {
-                    analyses = analysis.fetchBySampleId(sDO.getId());
-                    aIter = analyses.iterator();
-                    while (aIter.hasNext()) {
-                        aVDO = aIter.next();
-                        if (releasedStatusId.equals(aVDO.getStatusId())) {
-                            secVDO = sectionCache.getById(aVDO.getSectionId());
-                            if (secVDO != null && secVDO.getName().endsWith(location))
-                                writeResultRows(writer, ssVDO, aVDO);
-                        }
+                if (sDO.getCollectionDate() == null) {                    
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: Sample has no collection date. Sample Skipped");
+                } else if (sDO.getCollectionTime() == null) {
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: Sample has no collection time. Sample Skipped");
+                } else if (ssVDO.getLocation() == null) {
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: Sample has no location. Sample Skipped");
+                } else if (ssVDO.getFacilityId() == null) {
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: SDWIS Facility Id is blank");
+                } else if (ssVDO.getSamplePointId() == null) {
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: SDWIS Sampling Point is blank");
+                } else if (ssVDO.getSampleTypeId() == null) {
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: SDWIS Sample Type is blank");
+                } else {
+                    if (sDO.getRevision() > 0) {
+                        addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Warning: Sample has revision > 0. Please check for previous entry!");
                     }
+                    
+                    reject = writeSampleRow(writer, sDO, ssVDO);
+                    if (!reject) {
+                        analyses = analysis.fetchBySampleId(sDO.getId());
+                        aIter = analyses.iterator();
+                        while (aIter.hasNext()) {
+                            aVDO = aIter.next();
+                            if (releasedStatusId.equals(aVDO.getStatusId())) {
+                                secVDO = sectionCache.getById(aVDO.getSectionId());
+                                if (secVDO != null && secVDO.getName().endsWith(location))
+                                    writeResultRows(writer, sDO, ssVDO, aVDO);
+                            }
+                        }
+                        addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Generated");
+                    } else {
+                        addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Warning: Sample has a Result Override QAEvent!");
+                    }
+
+                    sampleCount++;
                 }
                 
-                statRow = new HashMap<String, Object>();
-                statRow.put("pws_id", ssVDO.getPwsNumber0());
-                statRow.put("accession_number", sDO.getAccessionNumber());
-                statRow.put("status", reject ? "Rejected" : "Generated");
-                stats.add((HashMap<String, Object>) statRow.clone());
-                
-                sampleCount++;
                 status.setPercentComplete((sampleCount / samples.size()) * 80 + 10);
             }
             
@@ -316,9 +334,15 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
             /*
              * Print the status report
              */
+            jparam = new HashMap<String, Object>();
+            jparam.put("LOGIN_NAME", EJBFactory.getUserCache().getName());
+            jparam.put("BEGIN_RELEASED", format.format(beginReleased));
+            jparam.put("END_RELEASED", format.format(endReleased));
+            jparam.put("COUNT", sampleCount);
+
             url = ReportUtil.getResourceURL("org/openelis/report/sdwisunload/main.jasper");
             jreport = (JasperReport)JRLoader.loadObject(url);
-            jprint = JasperFillManager.fillReport(jreport, null, this);
+            jprint = JasperFillManager.fillReport(jreport, jparam, this);
             jexport = new JRPdfExporter();
             jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(statFile));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
@@ -369,7 +393,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
            .append(" ");                                // col 31
         
         if ("-an".equals(location))                     // col 32-36
-            row.append("397  ");                        // Ankemy DNR ID
+            row.append("397  ");                        // Ankeny DNR ID
         else if ("-ic".equals(location))
             row.append("027  ");                        // Iowa City DNR ID
         else if ("-lk".equals(location))
@@ -499,19 +523,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
            .append(getPaddedString(ssVDO.getPwsNumber0(), 9))                       // col 12-20
            .append(getPaddedString(ssVDO.getFacilityId(), 12))                      // col 21-32
            .append(getPaddedString(ssVDO.getSamplePointId(), 11))                   // col 33-43
-           .append(getPaddedString(ssVDO.getLocation(), 20));                       // col 44-63
-        
-        if (sVDO.getCollectionDate() != null)                                       // col 64-71
-            row.append(dateFormat.format(sVDO.getCollectionDate().getDate()));
-        else
-            row.append(getPaddedString("", 8));
-            
-        if (sVDO.getCollectionTime() != null)                                       // col 72-75
-            row.append(timeFormat.format(sVDO.getCollectionTime().getDate()));
-        else
-            row.append(getPaddedString("", 4));
-        
-        row.append(getPaddedString(ssVDO.getCollector(), 20))                       // col 76-95
+           .append(getPaddedString(ssVDO.getLocation(), 20))                        // col 44-63
+           .append(dateFormat.format(sVDO.getCollectionDate().getDate()))           // col 64-71
+           .append(timeFormat.format(sVDO.getCollectionTime().getDate()))           // col 72-75
+           .append(getPaddedString(ssVDO.getCollector(), 20))                       // col 76-95
            .append(dateFormat.format(sVDO.getReceivedDate().getDate()))             // col 96-103
            .append(getPaddedString("OE"+sVDO.getAccessionNumber().toString(), 20)); // col 104-123
         
@@ -545,7 +560,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         return sampleOverride.length() > 0;
     }
 
-    protected void writeResultRows(PrintWriter writer, SampleSDWISViewDO sampleSDWIS, AnalysisViewDO analysis) throws Exception {
+    protected void writeResultRows(PrintWriter writer, SampleDO sample,
+                                   SampleSDWISViewDO sampleSDWIS, AnalysisViewDO analysis) throws Exception {
         int i;
         AnalyteViewDO alVDO;
         ArrayList<ResultViewDO> resultRow;
@@ -574,8 +590,11 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         // if we don't have a method code for this analysis we should not be
         // sending it to SDWIS
         //
-        if (methodCode == null)
+        if (methodCode == null) {
+            addStatusRow(sampleSDWIS.getPwsNumber0(), sample.getAccessionNumber(),
+                         "Warning: No method code for test '"+analysis.getTestName()+", "+analysis.getMethodName()+"'");
             return;
+        }
         
         try {
             unitDO = dictionaryCache.getById(analysis.getUnitOfMeasureId());
@@ -594,6 +613,12 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         while (rowIter.hasNext()) {
             resultRow = rowIter.next();
             rVDO = resultRow.get(0);
+            if (contaminantIds.get(rVDO.getAnalyte()) == null) {
+                addStatusRow(sampleSDWIS.getPwsNumber0(), sample.getAccessionNumber(),
+                             "Error: Compound id not found for '"+rVDO.getAnalyte()+"'");
+                continue;
+            }
+            
             rowData = new HashMap<String,String>();
             rowData.put("contaminantId", contaminantIds.get(rVDO.getAnalyte()));
             if ("TC".equals(sampCatDO.getLocalAbbrev())) {
@@ -734,6 +759,16 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
 
         return value;
     }
+    
+    protected void addStatusRow(String pwsId, Integer accessionNumber, String message) {
+        HashMap<String, Object> statusRow;
+        
+        statusRow = new HashMap<String, Object>();
+        statusRow.put("pws_id", pwsId);
+        statusRow.put("accession_number", accessionNumber);
+        statusRow.put("status", message);
+        statusList.add(statusRow);
+    }
 
     private void initMethodCodes() {
         methodCodes = new HashMap<String, String>();
@@ -757,9 +792,9 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
     public boolean next() throws JRException {
         boolean hasNext = false;
         
-        if (stats != null) {
-            statIndex++;
-            hasNext = statIndex < stats.size();
+        if (statusList != null) {
+            statusIndex++;
+            hasNext = statusIndex < statusList.size();
         }
         
         return hasNext;
@@ -769,8 +804,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         Object                  objValue = null;
         HashMap<String, Object> statRow;
 
-        if (field != null && stats != null) {
-            statRow = (HashMap<String, Object>) stats.get(statIndex);
+        if (field != null && statusList != null) {
+            statRow = (HashMap<String, Object>) statusList.get(statusIndex);
             if (!statRow.containsKey(field.getName()))
                 throw new JRException("Unable to get value for field '" + field.getName());
             objValue = statRow.get(field.getName());

@@ -113,7 +113,6 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-@RolesAllowed("worksheet-update")
 
 public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
@@ -932,18 +931,18 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         
         dateTimeEditStyle = wb.createCellStyle();
         dateTimeEditStyle.setDataFormat(helper.createDataFormat().getFormat("yyyy-MM-dd hh:mm"));
-        rowEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        rowEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        rowEditStyle.setLocked(false);
+        dateTimeEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        dateTimeEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        dateTimeEditStyle.setLocked(false);
         styles.put("datetime_edit", dateTimeEditStyle);
 
         dateTimeNoEditStyle = wb.createCellStyle();
         dateTimeNoEditStyle.setDataFormat(helper.createDataFormat().getFormat("yyyy-MM-dd hh:mm"));
-        rowNoEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
-        rowNoEditStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
-        rowNoEditStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
-        rowNoEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
-        rowNoEditStyle.setLocked(true);
+        dateTimeNoEditStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        dateTimeNoEditStyle.setFillPattern(CellStyle.SOLID_FOREGROUND);
+        dateTimeNoEditStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
+        dateTimeNoEditStyle.setVerticalAlignment(CellStyle.VERTICAL_TOP);
+        dateTimeNoEditStyle.setLocked(true);
         styles.put("datetime_no_edit", dateTimeNoEditStyle);
     }
 
