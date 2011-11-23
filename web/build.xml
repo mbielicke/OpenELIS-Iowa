@@ -68,13 +68,7 @@
   </target>
 
   <target name="war" depends="gwtc" description="Create a war file">
-	<delete file="build/elissecurity.jar" />
-	<jar jarfile="build/elissecurity.jar">
-		<fileset dir="../OpenELIS-Security-EJB/bin">
-			<include name="org/openelis/security/domain/*.class" />
-			<include name="org/openelis/security/remote/*.class" />
-		</fileset>
-	</jar>
+	<mkdir dir="build" />
 	<delete file="build/openelis-common.jar" />
 	<jar jarfile="build/openelis-common.jar">
 		<fileset dir="../OpenELIS-Common/bin">
