@@ -11,7 +11,6 @@
 		<pathelement location="${gwt.sdk}/gwt-user.jar" />
 		<fileset dir="${gwt.sdk}" includes="gwt-dev*.jar" />
 		<fileset dir="war/WEB-INF/lib" includes="**/*.jar" />
-		<pathelement location="/var/lib/tomcat6/shared/ehcache-1.2.jar" />
 		<pathelement location="/var/lib/tomcat6/shared/log4j-1.2.14.jar" />
 	</path>
 
@@ -103,14 +102,13 @@
 
 	<war destfile="build/openelisweb.war" webxml="metadata/openelisweb-web.xml">
 		<webinf dir="metadata" includes="stylesheet/**/*" />
-		<metainf dir="metadata" includes="context.xml, ehcache.xml" />
-		<fileset dir="metadata" excludes="stylesheet/**/**, openelis-web.xml, context.xml, ehcache.xml" />
+		<metainf dir="metadata" includes="context.xml" />
+		<fileset dir="metadata" excludes="stylesheet/**/**, openelisweb-web.xml, context.xml" />
 		<fileset dir="war/openelisweb"/>
 		<classes dir="war/WEB-INF/classes" includes="org/openelis/**/*" />
 		<lib dir="lib" />
 		<lib dir="war/WEB-INF/lib" includes="gwt-servlet.jar" />
-		<lib dir="build" includes="openelis-lib.jar,openelis-common.jar,elissecurity.jar,openelis-gwt.jar" />
-
+		<lib dir="build" includes="openelis-lib.jar,openelis-common.jar,openelis-gwt.jar" />
 	</war>
   </target>
   
