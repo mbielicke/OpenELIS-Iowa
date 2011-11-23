@@ -114,7 +114,6 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
             }
         });
 
-        setState(State.DEFAULT);
         setState(State.QUERY);
         initializeDropdowns();
         DataChangeEvent.fire(this);
@@ -246,18 +245,24 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
     
     @SuppressWarnings("unchecked")
     private void initializeDropdowns() {
+        ArrayList<Object>       statusWorking;
         ArrayList<DictionaryDO> dictList;
         ArrayList<TableDataRow> model;
 
+        statusWorking = new ArrayList<Object>();
         //
         // load worksheet status dropdown model
         //
         dictList  = CategoryCache.getBySystemName("worksheet_status");
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        for (DictionaryDO resultDO : dictList)
+        for (DictionaryDO resultDO : dictList) {
+            if ("worksheet_working".equals(resultDO.getSystemName()))
+                statusWorking.add(resultDO.getId());
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        }
         statusId.setModel(model);
+        statusId.setSelectionKeys(statusWorking);
         ((Dropdown<Integer>)worksheetTable.getColumns().get(3).getColumnWidget()).setModel(model);
     }
 
