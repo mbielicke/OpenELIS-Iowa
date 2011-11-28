@@ -473,7 +473,7 @@ public class FinalReportPrivateWellScreen extends Screen {
                 model.add(row);
             } 
         } catch (Exception e) {
-            e.printStackTrace();
+            Window.alert(e.getMessage());
         }       
         projectCode.setModel(model);
         /*

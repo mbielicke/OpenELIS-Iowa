@@ -34,7 +34,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.manager.AnalysisManager.AnalysisListItem;
 
 public class SampleItemManager implements RPC {

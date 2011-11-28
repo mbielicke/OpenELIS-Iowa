@@ -2022,6 +2022,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     }
 
     public void showErrors(ValidationErrorsList errors) {
+        String domain;
         ArrayList<LocalizedException> formErrors;
         TableFieldErrorException tableE;
         FormErrorException formE;
@@ -2062,15 +2063,49 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             window.setMessagePopup(formErrors, "ErrorPanel");
         }
 
-        // call the correct domain tab show error method
-        if (manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
+        domain = manager.getSample().getDomain();
+        /*
+         * When the screen gets initialized with the widgets defined in the xsl
+         * file, the tabs for the domains aren't present; they are added later to
+         * panels defined in the file. Thus the widgets in the tabs aren't included
+         * in "def" and thus errors don't get added to them when super.showErrors()
+         * is called. Therefore we need to call showErrors() on those tabs separately.      
+         */
+        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
             environmentalTab.showErrors(errors);
-
-        if (manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
+        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
             wellTab.showErrors(errors);
-
-        if (manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+        else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
             sdwisTab.showErrors(errors);
+    }
+    
+    public boolean validate() {        
+        boolean valid;
+        String domain;
+        
+        valid = super.validate();
+        domain = manager.getSample().getDomain();
+        
+        /*
+         * When the screen gets initialized with the widgets defined in the xsl
+         * file, the tabs for the domains aren't present; they are added later to
+         * panels defined in the file. Thus the widgets in the tabs aren't included
+         * in "def" and thus don't get validated when super.validate() is called.
+         * Therefore we need to call validate() on those tabs separately.      
+         */
+        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
+            return valid && environmentalTab.validate();
+        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
+            return valid && wellTab.validate();
+        else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
+            return valid && sdwisTab.validate();
+        else if (state == State.QUERY)
+            //
+            // in the state Query, we show tabs for all domains 
+            //
+            return valid && environmentalTab.validate() && wellTab.validate() &&
+            sdwisTab.validate();
+        return false;
     }
     
     public boolean validateUpdate() throws Exception {

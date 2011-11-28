@@ -35,6 +35,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -55,15 +56,11 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
-import org.openelis.gwt.widget.tree.TreeDataItem;
-import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
-import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.EditNoteScreen.Action;
@@ -848,17 +845,55 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     }
     
     public void showErrors(ValidationErrorsList errors) {
+        String domain;
+        
         super.showErrors(errors);
         
-        // call the correct domain tab show error method
-        if (manager.getSample().getDomain().equals(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG))
+        domain = manager.getSample().getDomain();        
+        /*
+         * When the screen gets initialized with the widgets defined in the xsl
+         * file, the tabs for the domains aren't present; they are added later to
+         * panels defined in the file. Thus the widgets in the tabs aren't included
+         * in "def" and thus errors don't get added to them when super.showErrors()
+         * is called. Therefore we need to call showErrors() on those tabs separately.      
+         */
+        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
             environmentalTab.showErrors(errors);
-
-        if (manager.getSample().getDomain().equals(SampleManager.WELL_DOMAIN_FLAG))
+        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
             wellTab.showErrors(errors);
-
-        if (manager.getSample().getDomain().equals(SampleManager.SDWIS_DOMAIN_FLAG))
+        else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
             sdwisTab.showErrors(errors);
+    }
+    
+    public boolean validate() {        
+        boolean screenValid, tabsValid;
+        String domain;
+        
+        screenValid = super.validate();
+        if (state == State.QUERY)
+            //
+            // in the state Query, there is no domain and we don't show any tabs  
+            //
+            return screenValid;
+        /*
+         * When the screen gets initialized with the widgets defined in the xsl
+         * file, the tabs aren't present; they are added later to panels defined
+         * in the file. Thus the widgets in the tabs aren't included in "def" and 
+         * don't get validated when super.validate() is called. Therefore we need
+         * to call validate() on tabs separately.      
+         */
+        domain = manager.getSample().getDomain();        
+        tabsValid = sampleTab.validate() && sampleItemTab.validate() && 
+                    analysisTab.validate() && testResultsTab.validate()
+                    && storageTab.validate() && auxDataTab.validate();
+        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
+            return screenValid && tabsValid && environmentalTab.validate();
+        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
+            return screenValid && tabsValid && wellTab.validate();
+        else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
+            return screenValid && tabsValid && sdwisTab.validate();
+
+        return false;
     }
 
     protected void query() {
