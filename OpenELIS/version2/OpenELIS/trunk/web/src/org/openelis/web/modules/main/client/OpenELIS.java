@@ -54,8 +54,6 @@ import com.google.gwt.event.dom.client.MouseOverEvent;
 import com.google.gwt.event.dom.client.MouseOverHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Timer;
@@ -79,11 +77,6 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
      * This panel is where the screen content is displayed
      */
     protected AbsolutePanel           content, linksPanel;
-
-    /**
-     * HashMap of Screens navigated
-     */
-    protected HashMap<String, Screen> screens;
 
     /**
      * Static window used to display status messages
@@ -126,15 +119,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         Section section;
         Label<String> link;
 
-        screens = new HashMap<String, Screen>();
         content = (AbsolutePanel)def.getWidget("content");
         content.add(window);
-
-        History.addValueChangeHandler(new ValueChangeHandler<String>() {
-            public void onValueChange(ValueChangeEvent<String> event) {
-                gotoScreen(event.getValue());
-            }
-        });
 
         //
         // link the logo with home screen
@@ -144,7 +130,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             link.addClickHandler(new ClickHandler() {
                 public void onClick(ClickEvent event) {
                     try {
-                        gotoScreen("home");
+                        setScreen(new HomeScreen(), "Home", "home");
                     } catch (Exception e) {
                         e.printStackTrace();
                         Window.alert(e.getMessage());
@@ -301,6 +287,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         link.addClickHandler(new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
+                    Window.open("https://www.shl.uiowa.edu/ldap/loginView.jsp", "password", null);
                     window.setCrumbLink(null);
                 } catch (Throwable e) {
                     e.printStackTrace();
@@ -420,26 +407,11 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
     }
 
     /**
-     * This method is called statically by other modules to display a Screen for
-     * the first time. The Screen will be added to the Screen map and a new
-     * History entry will be added to the browser.
+     * This method is called to initialize the screen and set the main screen
+     * content.
      */
     private void setScreen(Screen screen, String name, String key) {
-        screens.put(key, screen);
         screen.getDefinition().setName(name);
-        History.newItem(key, true);
-    }
-
-    /**
-     * This method is called statically when a user navigates by using the back
-     * or forward buttons
-     * 
-     * @param key
-     */
-    private void gotoScreen(String key) {
-        Screen screen;
-
-        screen = screens.get(key);
         window.setContent(screen);
     }
 
