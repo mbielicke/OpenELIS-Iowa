@@ -13,7 +13,6 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.manager.SampleManager;
@@ -54,20 +53,25 @@ public class SampleTab extends Screen {
                 accessionNumber.setValue(Util.toString(manager.getSample().getAccessionNumber()));
             }
 
-            public void onValueChange(final ValueChangeEvent<Integer> event) {
-                Integer       oldNumber;
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                Integer oldNumber, val;                
+                String oldNumStr;
                 SampleManager quickEntryMan;
 
+                val = event.getValue();
+                if (val == null)
+                    return;
                 oldNumber = manager.getSample().getAccessionNumber();
-                if (oldNumber != null) {
+                oldNumStr = Util.toString(oldNumber);                
+                if (oldNumber != null) {                    
                     if (!Window.confirm(consts.get("accessionNumberEditConfirm"))) {
-                        accessionNumber.setValue(Util.toString(oldNumber));
+                        accessionNumber.setValue(oldNumStr);
                         setFocus(accessionNumber);
                         return;
                     }
                 }
-                try {
-                    manager.getSample().setAccessionNumber(event.getValue());
+                try {                    
+                    manager.getSample().setAccessionNumber(val);
 
                     if (accessionNumUtil == null)
                         accessionNumUtil = new AccessionNumberUtility();
@@ -77,12 +81,12 @@ public class SampleTab extends Screen {
                         throw new Exception(consts.get("quickEntryNumberExists"));
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
-                    accessionNumber.setValue(Util.toString(oldNumber));
+                    accessionNumber.setValue(oldNumStr);
                     manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                    accessionNumber.setValue(Util.toString(oldNumber));
+                    accessionNumber.setValue(oldNumStr);
                     manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 }
