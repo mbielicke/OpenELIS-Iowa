@@ -148,16 +148,16 @@ UIRF Software License are applicable instead of those above.
 					<div style="background:black;padding:8px;width:300px;margin:0px 0 0 240px;" class="prompt">Logging in:</div>
                     <div style="padding:8px;background:#EFEFEF;width:300px;margin:0 0 0 240px;">
                         <ul style="margin:0 0 0 12px;padding:0 0 0 8px;color:#333;" class="prompt">
-                            <li>To log into OpenELIS you will need to use your SHL username that was
-                                assigned to you.</li>
-                            <li>The usernames are formatted as firstname.lastname and are
+                        	<li>Use your SHL assigned username to login to OpenELIS.</li>
+                        	<li>Most usernames are in firstname.lastname format and are
                                 lowercase.</li>
-                            <li>The initial SHL password given during the training is temporary and
-                                will need to be changed.</li>
-                            <li>Once changed, the account is specifically yours.</li>
+                            <li>This is a secure site. Your ID and password are encrypted as they are sent
+                                for authorization.</li>
+                        	<li>If you use a shared computer, please click LOGOUT and then exit the browser
+                        	    after completing your session.</li>
                             <li>If a password is forgotten, lost, or for some reason you cannot log
-                                in to your account; please call 319/335-4358 and they will be able
-                                to reset your password for you.</li>
+                                in to your account, please call 319/335-4358 and we will be able
+                                to reset your password.</li>
 			                <li>Supported Browsers are: Firefox, Chrome, Safari, IE version 7 or later</li>
                         </ul>
                     </div>
