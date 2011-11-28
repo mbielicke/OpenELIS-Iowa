@@ -157,6 +157,9 @@ public class SectionBean implements SectionRemote, SectionLocal {
         manager.persist(entity);
 
         data.setId(entity.getId());
+        
+        // empty the cache so that it gets refreshed on the next fetch        
+        secCache.evict();
 
         return data;
     }
