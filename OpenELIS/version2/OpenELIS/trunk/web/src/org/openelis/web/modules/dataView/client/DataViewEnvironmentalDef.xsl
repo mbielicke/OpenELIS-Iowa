@@ -51,7 +51,7 @@ UIRF Software License are applicable instead of those above.
   </xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-    <screen id="FinalReport" name="{resource:getString($constants,'finalReport')}">
+    <screen>
       <DeckPanel height="100%" key="deck" style="ContentPanel" width="100%">
         <deck>
           <HorizontalPanel padding="0" spacing="0">

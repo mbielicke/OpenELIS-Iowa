@@ -201,36 +201,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 public void onClick(ClickEvent event) {
                     try {
                         Screen screen = new DataViewEnvironmentalScreen();
-                        setScreen(screen, consts.get("environmentalSamplesByTest"),
-                                  "environmentalSampleByTest");
-                        window.setCrumbLink(null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Window.alert(e.getMessage());
-                    }
-                }
-            });
-        }
-
-        if (showMenu("w_dataview_privatewell")) {
-            link = section.addLink("PRIVATE WELL RESULT BY ANALYTE");
-            link.addClickHandler(new ClickHandler() {
-                public void onClick(ClickEvent event) {
-                    try {
-                        window.setCrumbLink(null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        Window.alert(e.getMessage());
-                    }
-                }
-            });
-        }
-
-        if (showMenu("w_dataview_sdwis")) {
-            link = section.addLink("SDWIS RESULT BY ANALYTE");
-            link.addClickHandler(new ClickHandler() {
-                public void onClick(ClickEvent event) {
-                    try {
+                        setScreen(screen, consts.get("environmentalResultByAnalyte"),
+                                  "environmentalResultByAnalyte");
                         window.setCrumbLink(null);
                     } catch (Exception e) {
                         e.printStackTrace();

@@ -50,7 +50,7 @@ UIRF Software License are applicable instead of those above.
   </xsl:variable>
   <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
   <xsl:template match="doc">
-    <screen id="FinalReport" name="{resource:getString($constants,'finalReport')}">
+    <screen>
       <VerticalPanel padding="0" spacing="0" style="ContentPanel">   
        <TablePanel style="Form">
           <row>

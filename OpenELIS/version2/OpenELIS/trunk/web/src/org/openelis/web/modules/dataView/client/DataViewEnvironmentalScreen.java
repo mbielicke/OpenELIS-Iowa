@@ -75,30 +75,33 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class DataViewEnvironmentalScreen extends Screen {
 
-    private DataViewVO                                     data;
-    private ModulePermission                               userPermission;
-    private CalendarLookUp                                 releasedDateFrom, releasedDateTo, collectedDateFrom,
-                                                           collectedDateTo;
-    private TextBox                                        collectorName, accessionFrom,
-                                                           accessionTo, clientReference, collectionSite, collectionTown;
-    private CheckBox                                       accessionNumber, collectorNameHeader, clientReferenceHeader, collectionSiteHeader, collectedDate, 
-                                                           projectCodeHeader, description, 
-                                                           receivedDate, releasedDate, statusId, envCollectorPhone, itemTypeofSampleId, itemSourceOfSampleId,
-                                                           sampleOrgOrganizationName, addressMultipleUnit, addressStreetAddress, addressCity, addressState, addressZipCode,
-                                                           analysisTestNameHeader, analysisMethodNameHeader, analysisRevision, analysisStartedDate, analysisCompletedDate, analysisReleasedDate;
-    private Dropdown<Integer>                              projectCode;
-    private ReportScreenUtility                            util;
-    private DeckPanel                                      deckpanel;
-    private Decks                                          deck;
-    private HorizontalPanel                                hp;
-    private AbsolutePanel                                  ap;
-    private TableWidget                                    availAnalyteTable, availAuxTable;
-    private Label<String>                                  queryDeckLabel;
-    private AppButton                                      getSampleListButton, resetButton, selectAllSampleFields, selectAllOrganizationFields, selectAllAnalysisFields,
-                                                           runReportButton, backButton, selectAllAnalyteButton, unselectAllAnalyteButton, selectAllAuxButton, unselectAllAuxButton;
-    private ScreenService finalReportService;
-    private Screen  screen;
-    private boolean loadTable;
+    private DataViewVO          data;
+    private ModulePermission    userPermission;
+    private CalendarLookUp      releasedDateFrom, releasedDateTo, collectedDateFrom,
+                                collectedDateTo;
+    private TextBox             collectorName, accessionFrom, accessionTo, clientReference,
+                                collectionSite, collectionTown;
+    private CheckBox            accessionNumber, collectorNameHeader, clientReferenceHeader,
+                                collectionSiteHeader, collectedDate, projectCodeHeader, description,
+                                receivedDate, releasedDate, statusId, envCollectorPhone, itemTypeofSampleId,
+                                itemSourceOfSampleId, sampleOrgOrganizationName, addressMultipleUnit,
+                                addressStreetAddress, addressCity, addressState, addressZipCode,
+                                analysisTestNameHeader, analysisMethodNameHeader, analysisRevision,
+                                analysisStartedDate, analysisCompletedDate, analysisReleasedDate;
+    private Dropdown<Integer>   projectCode;
+    private ReportScreenUtility util;
+    private DeckPanel           deckpanel;
+    private Decks               deck;
+    private TableWidget         availAnalyteTable, availAuxTable;
+    private Label<String>       queryDeckLabel;
+    private AppButton           getSampleListButton, resetButton, selectAllSampleFields,
+                                selectAllOrganizationFields, selectAllAnalysisFields, runReportButton,
+                                backButton, selectAllAnalyteButton, unselectAllAnalyteButton,
+                                selectAllAuxButton, unselectAllAuxButton;
+    private ScreenService       finalReportService;
+    private Screen              screen;
+    private boolean             loadTable;
+
     private enum Decks {
         QUERY, LIST
     };
@@ -113,8 +116,7 @@ public class DataViewEnvironmentalScreen extends Screen {
 
         userPermission = UserCache.getPermission().getModule("w_dataview_environmental");
         if (userPermission == null)
-            throw new PermissionException("screenPermException",
-                                          "Final Report Environmental Screen");
+            throw new PermissionException("screenPermException", "Environmental Result By Analyte");
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -143,13 +145,13 @@ public class DataViewEnvironmentalScreen extends Screen {
      * Initialize widgets
      */
     private void initialize() {
-        
+        HorizontalPanel     hp;
+        AbsolutePanel       ap;
+
         screen = this;
-
         util = new ReportScreenUtility(def);
-
         deckpanel = (DeckPanel)def.getWidget("deck");
-        
+
         releasedDateFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getReleasedDateFrom());
         addScreenHandler(releasedDateFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
@@ -353,7 +355,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 projectCode.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         accessionNumber = (CheckBox)def.getWidget(SampleWebMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -368,7 +370,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 accessionNumber.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         collectorNameHeader = (CheckBox)def.getWidget(SampleWebMeta.getEnvCollectorHeader());
         addScreenHandler(collectorNameHeader, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -383,7 +385,6 @@ public class DataViewEnvironmentalScreen extends Screen {
                 collectorNameHeader.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
 
         clientReferenceHeader = (CheckBox)def.getWidget(SampleWebMeta.getClientReferenceHeader());
         addScreenHandler(clientReferenceHeader, new ScreenEventHandler<String>() {
@@ -399,7 +400,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 clientReferenceHeader.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         collectionSiteHeader = (CheckBox)def.getWidget(SampleWebMeta.getEnvLocationHeader());
         addScreenHandler(collectionSiteHeader, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -414,7 +415,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 collectionSiteHeader.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         collectedDate = (CheckBox)def.getWidget(SampleWebMeta.getCollectionDate());
         addScreenHandler(collectedDate, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -429,7 +430,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 collectedDate.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         projectCodeHeader = (CheckBox)def.getWidget(SampleWebMeta.getProjectIdHeader());
         addScreenHandler(projectCodeHeader, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -444,7 +445,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 projectCodeHeader.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         description = (CheckBox)def.getWidget(SampleWebMeta.getEnvDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -458,8 +459,8 @@ public class DataViewEnvironmentalScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 description.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
-        });    
-        
+        });
+
         receivedDate = (CheckBox)def.getWidget(SampleWebMeta.getReceivedDate());
         addScreenHandler(receivedDate, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -473,8 +474,8 @@ public class DataViewEnvironmentalScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 receivedDate.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
-        }); 
-        
+        });
+
         releasedDate = (CheckBox)def.getWidget(SampleWebMeta.getReleasedDate());
         addScreenHandler(releasedDate, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -488,8 +489,8 @@ public class DataViewEnvironmentalScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 releasedDate.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
-        }); 
-        
+        });
+
         statusId = (CheckBox)def.getWidget(SampleWebMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -503,8 +504,8 @@ public class DataViewEnvironmentalScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 statusId.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
-        }); 
-        
+        });
+
         envCollectorPhone = (CheckBox)def.getWidget(SampleWebMeta.getEnvCollectorPhone());
         addScreenHandler(envCollectorPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -518,8 +519,8 @@ public class DataViewEnvironmentalScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 envCollectorPhone.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
-        }); 
-        
+        });
+
         itemTypeofSampleId = (CheckBox)def.getWidget(SampleWebMeta.getItemTypeofSampleId());
         addScreenHandler(itemTypeofSampleId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -533,8 +534,8 @@ public class DataViewEnvironmentalScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 itemTypeofSampleId.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
-        }); 
-        
+        });
+
         itemSourceOfSampleId = (CheckBox)def.getWidget(SampleWebMeta.getItemSourceOfSampleId());
         addScreenHandler(itemSourceOfSampleId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -549,7 +550,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 itemSourceOfSampleId.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         sampleOrgOrganizationName = (CheckBox)def.getWidget(SampleWebMeta.getSampleOrgOrganizationName());
         addScreenHandler(sampleOrgOrganizationName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -561,10 +562,11 @@ public class DataViewEnvironmentalScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleOrgOrganizationName.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+                sampleOrgOrganizationName.enable(EnumSet.of(State.DEFAULT)
+                                                        .contains(event.getState()));
             }
         });
-        
+
         addressMultipleUnit = (CheckBox)def.getWidget(SampleWebMeta.getAddressMultipleUnit());
         addScreenHandler(addressMultipleUnit, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -639,7 +641,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 addressZipCode.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         analysisTestNameHeader = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisTestNameHeader());
         addScreenHandler(analysisTestNameHeader, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -666,10 +668,11 @@ public class DataViewEnvironmentalScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisMethodNameHeader.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+                analysisMethodNameHeader.enable(EnumSet.of(State.DEFAULT)
+                                                       .contains(event.getState()));
             }
         });
-        
+
         analysisRevision = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisRevision());
         addScreenHandler(analysisRevision, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -684,7 +687,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 analysisRevision.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         analysisStartedDate = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisStartedDate());
         addScreenHandler(analysisStartedDate, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -699,7 +702,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 analysisStartedDate.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         analysisCompletedDate = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisCompletedDate());
         addScreenHandler(analysisCompletedDate, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -714,7 +717,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 analysisCompletedDate.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         analysisReleasedDate = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisReleasedDate());
         addScreenHandler(analysisReleasedDate, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -729,7 +732,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 analysisReleasedDate.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         selectAllSampleFields = (AppButton)def.getWidget("selectAllSampleFields");
         addScreenHandler(selectAllSampleFields, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -758,11 +761,11 @@ public class DataViewEnvironmentalScreen extends Screen {
                 selectAllSampleFields.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         selectAllOrganizationFields = (AppButton)def.getWidget("selectAllOrganizationFields");
         addScreenHandler(selectAllOrganizationFields, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                
+
             }
 
             public void onClick(ClickEvent event) {
@@ -771,16 +774,17 @@ public class DataViewEnvironmentalScreen extends Screen {
                 data.setOrganizationAddressAddress("Y");
                 data.setOrganizationAddressCity("Y");
                 data.setOrganizationAddressState("Y");
-                data.setOrganizationAddressZipCode("Y");               
+                data.setOrganizationAddressZipCode("Y");
                 loadTable = false;
                 DataChangeEvent.fire(screen);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                selectAllOrganizationFields.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+                selectAllOrganizationFields.enable(EnumSet.of(State.DEFAULT)
+                                                          .contains(event.getState()));
             }
         });
-        
+
         selectAllAnalysisFields = (AppButton)def.getWidget("selectAllAnalysisFields");
         addScreenHandler(selectAllAnalysisFields, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -792,7 +796,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 data.setAnalysisRevision("Y");
                 data.setAnalysisStartedDate("Y");
                 data.setAnalysisCompletedDate("Y");
-                data.setAnalysisReleasedDate("Y");               
+                data.setAnalysisReleasedDate("Y");
                 loadTable = false;
                 DataChangeEvent.fire(screen);
             }
@@ -801,49 +805,49 @@ public class DataViewEnvironmentalScreen extends Screen {
                 selectAllAnalysisFields.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         availAnalyteTable = (TableWidget)def.getWidget("availAnalyteTable");
         addScreenHandler(availAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {  
+            public void onDataChange(DataChangeEvent event) {
                 /*
-                 * Since datachange event gets fired when checkboxes in the screen gets checked, 
-                 * so we need to make sure that the tables dont get loaded every time a check box is clicked.
+                 * Since datachange event gets fired when checkboxes in the
+                 * screen gets checked, so we need to make sure that the tables
+                 * dont get loaded every time a check box is clicked.
                  */
                 if (loadTable)
-                    availAnalyteTable.load(getAnalyteTableModel()); 
+                    availAnalyteTable.load(getAnalyteTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 availAnalyteTable.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         availAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 TableDataRow arow;
                 TestAnalyteDataViewVO data;
                 String val;
-                
+
                 r = event.getRow();
                 c = event.getCol();
                 arow = availAnalyteTable.getRow(r);
                 val = (String)availAnalyteTable.getObject(r, c);
                 data = (TestAnalyteDataViewVO)arow.data;
                 switch (c) {
-                    case 0: 
+                    case 0:
                         /*
-                         * When the checkbox for an analyte is checked or unchecked
-                         * the analyte need to be flagged as "included" or not
-                         * appropriately   
+                         * When the checkbox for an analyte is checked or
+                         * unchecked the analyte need to be flagged as
+                         * "included" or not appropriately
                          */
-                        updateTestAnalyte(data,val);
+                        updateTestAnalyte(data, val);
                         break;
                 }
             }
         });
-        
-        
+
         selectAllAnalyteButton = (AppButton)def.getWidget("selectAllAnalyteButton");
         addScreenHandler(selectAllAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -851,24 +855,24 @@ public class DataViewEnvironmentalScreen extends Screen {
                 TableDataRow row;
                 TestAnalyteDataViewVO data;
                 Object val;
-                
+
                 model = availAnalyteTable.getData();
-                for (int i = 0; i < model.size(); i++) {
+                for (int i = 0; i < model.size(); i++ ) {
                     val = (String)availAnalyteTable.getCell(i, 0).getValue();
                     if ("N".equals(val)) {
                         row = model.get(i);
                         data = (TestAnalyteDataViewVO)row.data;
-                        updateTestAnalyte(data,"Y");
-                        availAnalyteTable.setCell(i, 0, "Y");                       
+                        updateTestAnalyte(data, "Y");
+                        availAnalyteTable.setCell(i, 0, "Y");
                     }
-                }                
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 selectAllAnalyteButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         unselectAllAnalyteButton = (AppButton)def.getWidget("unselectAllAnalyteButton");
         addScreenHandler(unselectAllAnalyteButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -876,36 +880,37 @@ public class DataViewEnvironmentalScreen extends Screen {
                 TableDataRow row;
                 TestAnalyteDataViewVO data;
                 Object val;
-                
+
                 model = availAnalyteTable.getData();
-                for (int i = 0; i < model.size(); i++) {
+                for (int i = 0; i < model.size(); i++ ) {
                     val = availAnalyteTable.getCell(i, 0).getValue();
                     if ("Y".equals(val)) {
                         row = model.get(i);
                         data = (TestAnalyteDataViewVO)row.data;
-                        updateTestAnalyte(data,"N");
+                        updateTestAnalyte(data, "N");
                         availAnalyteTable.setCell(i, 0, "N");
                     }
-                }                                   
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                unselectAllAnalyteButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+                unselectAllAnalyteButton.enable(EnumSet.of(State.DEFAULT)
+                                                       .contains(event.getState()));
             }
-        });       
-        
+        });
+
         availAuxTable = (TableWidget)def.getWidget("availAuxTable");
         addScreenHandler(availAuxTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {  
+            public void onDataChange(DataChangeEvent event) {
                 if (loadTable)
-                    availAuxTable.load(getAuxTableModel()); 
+                    availAuxTable.load(getAuxTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 availAuxTable.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         availAuxTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
@@ -918,18 +923,18 @@ public class DataViewEnvironmentalScreen extends Screen {
                 val = (String)availAuxTable.getObject(r, c);
                 data = (AuxFieldDataViewVO)arow.data;
                 switch (c) {
-                    case 0: 
+                    case 0:
                         /*
-                         * When the checkbox for an analyte is checked or unchecked
-                         * the analyte need to be flagged as "included" or not
-                         * appropriately   
+                         * When the checkbox for an analyte is checked or
+                         * unchecked the analyte need to be flagged as
+                         * "included" or not appropriately
                          */
-                        updateAuxData(data, val);                                    
+                        updateAuxData(data, val);
                         break;
                 }
             }
         });
-        
+
         selectAllAuxButton = (AppButton)def.getWidget("selectAllAuxButton");
         addScreenHandler(selectAllAuxButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -937,24 +942,24 @@ public class DataViewEnvironmentalScreen extends Screen {
                 TableDataRow row;
                 AuxFieldDataViewVO data;
                 Object val;
-                
+
                 model = availAuxTable.getData();
-                for (int i = 0; i < model.size(); i++) {
+                for (int i = 0; i < model.size(); i++ ) {
                     val = (String)availAuxTable.getCell(i, 0).getValue();
                     if ("N".equals(val)) {
                         row = model.get(i);
                         data = (AuxFieldDataViewVO)row.data;
-                        updateAuxData(data, "Y");  
-                        availAuxTable.setCell(i, 0, "Y");                       
+                        updateAuxData(data, "Y");
+                        availAuxTable.setCell(i, 0, "Y");
                     }
-                }                
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 selectAllAuxButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
-        
+
         unselectAllAuxButton = (AppButton)def.getWidget("unselectAllAuxButton");
         addScreenHandler(unselectAllAuxButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -962,24 +967,24 @@ public class DataViewEnvironmentalScreen extends Screen {
                 TableDataRow row;
                 AuxFieldDataViewVO data;
                 Object val;
-                
+
                 model = availAuxTable.getData();
-                for (int i = 0; i < model.size(); i++) {
+                for (int i = 0; i < model.size(); i++ ) {
                     val = availAuxTable.getCell(i, 0).getValue();
                     if ("Y".equals(val)) {
                         row = model.get(i);
                         data = (AuxFieldDataViewVO)row.data;
-                        updateAuxData(data, "N");  
+                        updateAuxData(data, "N");
                         availAuxTable.setCell(i, 0, "N");
                     }
-                }                                   
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 unselectAllAuxButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
-        });  
-        
+        });
+
         getSampleListButton = (AppButton)def.getWidget("getSampleListButton");
         addScreenHandler(getSampleListButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -989,8 +994,8 @@ public class DataViewEnvironmentalScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 getSampleListButton.enable(true);
             }
-        });       
-        
+        });
+
         resetButton = (AppButton)def.getWidget("resetButton");
         addScreenHandler(resetButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -1016,7 +1021,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         backButton = (AppButton)def.getWidget("backButton");
         addScreenHandler(backButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-               loadDeck();
+                loadDeck();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1031,7 +1036,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         ap.setStyleName("PreviousButtonImage");
         hp.add(ap);
         hp.add(queryDeckLabel);
-        backButton.setWidget(hp);        
+        backButton.setWidget(hp);
     }
 
     private void initializeDropdowns() {
@@ -1054,22 +1059,22 @@ public class DataViewEnvironmentalScreen extends Screen {
         }
         projectCode.setModel(model);
     }
-    
-    private void updateTestAnalyte(TestAnalyteDataViewVO data, String val){
+
+    private void updateTestAnalyte(TestAnalyteDataViewVO data, String val) {
         ArrayList<ResultDataViewVO> list;
-        
-        data.setIsIncluded(val);    
+
+        data.setIsIncluded(val);
         list = data.getResults();
-        for (ResultDataViewVO res : list) 
+        for (ResultDataViewVO res : list)
             res.setIsIncluded(val);
     }
-    
-    private void updateAuxData(AuxFieldDataViewVO data, String val){
+
+    private void updateAuxData(AuxFieldDataViewVO data, String val) {
         ArrayList<AuxDataDataViewVO> list;
-        
-        data.setIsIncluded(val);    
+
+        data.setIsIncluded(val);
         list = data.getValues();
-        for (AuxDataDataViewVO value : list) 
+        for (AuxDataDataViewVO value : list)
             value.setIsIncluded(val);
     }
 
@@ -1126,7 +1131,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 deck = Decks.LIST;
                 setState(State.DEFAULT);
                 setData(data);
-                backButton.setVisible(true);                
+                backButton.setVisible(true);
                 break;
             case LIST:
                 deckpanel.showWidget(0);
@@ -1147,7 +1152,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         String url;
         ReportStatus st;
         ArrayList<TestAnalyteDataViewVO> taList;
-        ArrayList<AuxFieldDataViewVO> afList;  
+        ArrayList<AuxFieldDataViewVO> afList;
 
         numTA = 0;
         numAux = 0;
@@ -1155,11 +1160,11 @@ public class DataViewEnvironmentalScreen extends Screen {
         if (taList != null) {
             for (TestAnalyteDataViewVO ta : taList) {
                 if ("Y".equals(ta.getIsIncluded()))
-                    numTA++;
+                    numTA++ ;
             }
         }
-        
-        if (numTA == 0) {            
+
+        if (numTA == 0) {
             afList = data.getAuxFields();
             if (afList != null) {
                 for (AuxFieldDataViewVO af : afList) {
@@ -1185,19 +1190,19 @@ public class DataViewEnvironmentalScreen extends Screen {
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
-    }    
-    
+    }
+
     private ArrayList<TableDataRow> getAnalyteTableModel() {
         ArrayList<TableDataRow> model;
-        ArrayList<TestAnalyteDataViewVO> analytes;        
-        TableDataRow row;              
-        
+        ArrayList<TestAnalyteDataViewVO> analytes;
+        TableDataRow row;
+
         if (data == null || data.getTestAnalytes() == null)
             return null;
-        analytes =  data.getTestAnalytes();
+        analytes = data.getTestAnalytes();
         model = new ArrayList<TableDataRow>();
         for (TestAnalyteDataViewVO ana : analytes) {
-            row = new TableDataRow(2);   
+            row = new TableDataRow(2);
             row.cells.get(0).setValue("N");
             row.cells.get(1).setValue(ana.getAnalyteName());
             ana.setIsIncluded("N");
@@ -1206,17 +1211,16 @@ public class DataViewEnvironmentalScreen extends Screen {
         }
         return model;
     }
-    
-    
+
     private ArrayList<TableDataRow> getAuxTableModel() {
         ArrayList<TableDataRow> model;
-        ArrayList<AuxFieldDataViewVO> auxFields;        
-        TableDataRow row;              
-        
+        ArrayList<AuxFieldDataViewVO> auxFields;
+        TableDataRow row;
+
         if (data == null || data.getAuxFields() == null)
             return null;
-        
-        auxFields =  data.getAuxFields();
+
+        auxFields = data.getAuxFields();
         model = new ArrayList<TableDataRow>();
         for (AuxFieldDataViewVO aux : auxFields) {
             row = new TableDataRow(2);
@@ -1225,10 +1229,10 @@ public class DataViewEnvironmentalScreen extends Screen {
             aux.setIsIncluded("N");
             row.data = aux;
             model.add(row);
-        }        
+        }
         return model;
     }
-    
+
     private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) {
         int i;
         QueryData field, fRel, fCol, fAcc;
