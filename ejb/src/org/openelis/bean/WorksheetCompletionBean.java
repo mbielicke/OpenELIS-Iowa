@@ -630,6 +630,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         bundle = newBundle;
                         newSampleLock = true;
                     } else {
+                        sManager = manager.getLockedManagers().get(bundle.getSampleManager().getSample().getAccessionNumber());
+                        newBundle = getAnalysisBundle(sManager, waDO.getAnalysisId());
+                        waManager.setBundleAt(newBundle, a);
+                        bundle = newBundle;
                         newSampleLock = false;
                     }
                     
@@ -1417,13 +1421,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     
     private SampleDataBundle lockManagerIfNeeded(WorksheetManager manager, WorksheetAnalysisDO waDO,
                                                  SampleDataBundle bundle) throws Exception {
-        int                     i, j;
         String                  params[];
         Iterator<SampleManager> iter;
-        AnalysisManager         aManager;
-        AnalysisViewDO          aVDO;
         SampleDataBundle        newBundle;
-        SampleItemManager       siManager;
         SampleManager           sManager, tempManager;
         
         newBundle = null;
@@ -1433,17 +1433,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 sManager = sampleManagerLocal.fetchForUpdate(sManager.getSample().getId());
                 manager.getLockedManagers().put(sManager.getSample().getAccessionNumber(), sManager);
                 manager.getSampleManagers().put(sManager.getSample().getAccessionNumber(), sManager);
-                siManager = sManager.getSampleItems();
-                items: for (i = 0; i < siManager.count(); i++) {
-                    aManager = siManager.getAnalysisAt(i);
-                    for (j = 0; j < aManager.count(); j++) {
-                        aVDO = aManager.getAnalysisAt(j);
-                        if (waDO.getAnalysisId().equals(aVDO.getId())) {
-                            newBundle = aManager.getBundleAt(j);
-                            break items;
-                        }
-                    }
-                }
+                newBundle = getAnalysisBundle(sManager, waDO.getAnalysisId());
             } catch (Exception anyE) {
                 // abort update on any samples we may have locked when loading data
                 iter = manager.getLockedManagers().values().iterator();
@@ -1464,5 +1454,28 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             }
         }
         return newBundle;
+    }
+    
+    private SampleDataBundle getAnalysisBundle(SampleManager sManager, Integer anaId) throws Exception {
+        int               i, j;
+        AnalysisManager   aManager;
+        AnalysisViewDO    aVDO;
+        SampleDataBundle  bundle;
+        SampleItemManager siManager;
+        
+        bundle = null;
+        siManager = sManager.getSampleItems();
+        items: for (i = 0; i < siManager.count(); i++) {
+            aManager = siManager.getAnalysisAt(i);
+            for (j = 0; j < aManager.count(); j++) {
+                aVDO = aManager.getAnalysisAt(j);
+                if (anaId.equals(aVDO.getId())) {
+                    bundle = aManager.getBundleAt(j);
+                    break items;
+                }
+            }
+        }
+        
+        return bundle;
     }
 }
