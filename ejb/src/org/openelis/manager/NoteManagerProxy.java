@@ -48,21 +48,29 @@ public class NoteManagerProxy {
     }
 
     public NoteManager add(NoteManager man) throws Exception {
-        NoteViewDO note;
+        NoteViewDO data;
 
         if (man.count() > 0) {
-            note = man.getNoteAt(0);
-            note.setReferenceId(man.getReferenceId());
-            note.setReferenceTableId(man.getReferenceTableId());
-
-            EJBFactory.getNote().add(note);
+            data = man.getNoteAt(0);
+            data.setReferenceId(man.getReferenceId());
+            data.setReferenceTableId(man.getReferenceTableId());
+            if (data.getSubject() != null || data.getText() != null) 
+                EJBFactory.getNote().add(data);
+            else
+                /*
+                 * since the returned manager's lists are not created from scratch
+                 * but only have the changes made in the beans, we need to make
+                 * sure that all new empty notes get removed because they never
+                 * got added to the database to begin with  
+                 */
+                man.removeNoteAt(0);
         }
 
         return man;
     }
 
     public NoteManager update(NoteManager man) throws Exception {
-        NoteViewDO note;
+        NoteViewDO data;
         NoteLocal nl;
 
         nl = EJBFactory.getNote();
@@ -70,13 +78,23 @@ public class NoteManagerProxy {
             nl.delete(man.getDeletedAt(j));
 
         if (man.count() > 0) {
-            note = man.getNoteAt(0);
-            if (note.getId() == null) {
-                note.setReferenceId(man.getReferenceId());
-                note.setReferenceTableId(man.getReferenceTableId());
-                nl.add(note);
+            data = man.getNoteAt(0);
+            if (data.getId() == null) {
+                if (data.getSubject() != null || data.getText() != null) {
+                    data.setReferenceId(man.getReferenceId());
+                    data.setReferenceTableId(man.getReferenceTableId());                
+                    nl.add(data);
+                } else {
+                    /*
+                     * since the returned manager's lists are not created from 
+                     * scratch but only have the changes made in the beans, we
+                     * need to make sure that all new empty notes get removed
+                     * because they never got added to the database to begin with  
+                     */
+                    man.removeNoteAt(0);
+                }
             } else {
-                nl.update(note);
+                nl.update(data);
             }
         }
 

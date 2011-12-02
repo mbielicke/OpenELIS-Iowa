@@ -163,16 +163,16 @@ UIRF Software License are applicable instead of those above.
               <row>
                 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'from')" />:</text>
                 <widget>
-                  <textbox key="inventoryItemDescription" width="225" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="inventoryItemDescription" width="225" case="MIXED" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="inventoryItemStoreId" width="165" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="inventoryItemStoreId" width="165" case="MIXED" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="inventoryItemDispensedUnitsId" width="90" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="inventoryItemDispensedUnitsId" width="90" case="MIXED" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="inventoryLocationLotNumber" width="130" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="inventoryLocationLotNumber" width="130" case="MIXED" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
                   <textbox key="inventoryLocationExpirationDate" width="122" case="MIXED" style="ScreenTextboxDisplayOnly" pattern="{resource:getString($constants,'datePattern')}" field="String" />
@@ -181,16 +181,16 @@ UIRF Software License are applicable instead of those above.
               <row>
                 <text style="Prompt"><xsl:value-of select="resource:getString($constants,'to')" />:</text>
                 <widget>
-                  <textbox key="toDescription" width="225" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="toDescription" width="225" case="MIXED" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="toStoreId" width="165" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="toStoreId" width="165" case="MIXED" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="toDispensedUnits" width="90" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="toDispensedUnits" width="90" case="MIXED" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
-                  <textbox key="toLotNumber" width="130" case="MIXED" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+                  <textbox key="toLotNumber" width="130" case="MIXED" style="ScreenTextboxDisplayOnly" field="String" />
                 </widget>
                 <widget>
                   <textbox key="toExpDate" width="122" case="MIXED" style="ScreenTextboxDisplayOnly" pattern="{resource:getString($constants,'datePattern')}" field="String" />

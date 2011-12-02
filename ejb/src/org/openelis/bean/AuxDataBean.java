@@ -176,7 +176,6 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = manager.find(AuxData.class, data.getId());
 
-        entity.setAuxFieldId(data.getAuxFieldId());
         entity.setSortOrder(data.getSortOrder());
         entity.setAuxFieldId(data.getAuxFieldId());
         entity.setReferenceId(data.getReferenceId());

@@ -449,7 +449,7 @@ public class BuildKitsScreen extends Screen {
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
                             storLoc = storLocList.get(i);
-                            row.key = -1;
+                            row.key = storLoc.getId();
                             location = StorageLocationManager.getLocationForDisplay(storLoc.getName(),
                                                                                     storLoc.getStorageUnitDescription(),
                                                                                     storLoc.getLocation());
@@ -809,8 +809,7 @@ public class BuildKitsScreen extends Screen {
                 for (int i = 0; i < components.count(); i++ ) {
                     data = components.getComponentAt(i);
                     tableRow = new TableDataRow(6);
-                    tableRow.cells.get(0).setValue(data.getComponentName() + " , " +
-                                              data.getComponentDescription());
+                    tableRow.cells.get(0).setValue(data.getComponentName());
                     tableRow.cells.get(3).setValue(data.getComponentDispensedUnitsId());  
                     tableRow.cells.get(4).setValue(data.getTotal());
                     if (data.getInventoryLocationId() != null) {
