@@ -36,6 +36,7 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -82,6 +83,7 @@ import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.EnvironmentalTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
+import org.openelis.modules.sample.client.SampleDuplicateUtil;
 import org.openelis.modules.sample.client.SampleEnvironmentalImportOrder;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
@@ -126,7 +128,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     protected TextBox<Datetime>            collectedTime;
     protected Dropdown<Integer>            statusId;
     protected CalendarLookUp               collectedDate, receivedDate;
-    protected MenuItem                     historySample, historySampleEnvironmental,
+    protected MenuItem                     duplicate, historySample, historySampleEnvironmental,
                                            historySampleProject, historySampleOrganization,
                                            historySampleItem, historyAnalysis,
                                            historyCurrentResult, historyStorage,
@@ -294,6 +296,17 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -1162,6 +1175,47 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 		}
 	}
     
+    protected void duplicate() {       
+        SampleDO data;
+        SampleDataBundle bundle;
+        
+        data = manager.getSample();
+        try {
+            window.setBusy(consts.get("fetching"));
+            manager = SampleManager.fetchWithAllData(data.getId());
+            if (!SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(data.getDomain())) {
+                Window.alert(consts.get("sampleDomainChangedException"));
+                abort();
+                return;
+            }
+            
+            manager = SampleDuplicateUtil.duplicate(manager);            
+            bundle = manager.getBundle();
+            
+            treeTab.setData(manager);
+            environmentalTab.setData(manager);
+            sampleNotesTab.setManager(manager);
+            storageTab.setData(bundle);
+            auxDataTab.setManager(manager);
+            
+            treeTab.draw();
+            environmentalTab.draw();
+            sampleNotesTab.draw();
+            storageTab.draw();
+            auxDataTab.draw();
+        
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+
+            setFocus(accessionNumber);
+            window.setDone(consts.get("enterInformationPressCommit"));
+        } catch (Exception e) {
+            Window.alert("Sample duplicate: " + e.getMessage());
+            e.printStackTrace();
+            abort();           
+        }
+    }
+    
     protected void onOrderLookupClick() {
         Integer id;
         OrderManager man;
@@ -1277,7 +1331,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         // error is found
         try {
             sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-
             // sample status dropdown
             model = new ArrayList<TableDataRow>();
             model.add(new TableDataRow(null, ""));

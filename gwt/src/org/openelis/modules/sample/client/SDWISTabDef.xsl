@@ -50,7 +50,7 @@ UIRF Software License are applicable instead of those above.
                   			<xsl:value-of select="resource:getString($constants,'pwsId')" />:
                 		</text>
                 	    <HorizontalPanel>
-                  		  <textbox key="{meta:getSDWISPwsNumber0()}" width="75" max="9" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String" required="true"/>
+                  		  <textbox key="{meta:getSDWISPwsNumber0()}" width="75" max="9" case="UPPER" tab="pwsName,{meta:getClientReference()}" field="String"/>
                   			<appButton key="pwsButton" style="LookupButton">
                     		  <AbsolutePanel style="LookupButtonImage" />
                             </appButton>
@@ -64,7 +64,7 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                            <xsl:value-of select="resource:getString($constants,'stateLabNo')" />:
                         </text>
-                        <textbox key="{meta:getSDWISStateLabId()}" width="102" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer" required="true"/>
+                        <textbox key="{meta:getSDWISStateLabId()}" width="102" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer"/>
                         <text style="Prompt">
                            <xsl:value-of select="resource:getString($constants,'facilityId')" />:
                         </text>
@@ -74,17 +74,17 @@ UIRF Software License are applicable instead of those above.
                         <text style="Prompt">
                            <xsl:value-of select="resource:getString($constants,'sampleType')" />:
                         </text>
-                        <dropdown key="{meta:getSDWISSampleTypeId()}" width="120" tab="{meta:getSDWISSampleCategoryId()},{meta:getSDWISFacilityId()}" field="Integer" required="true"/>
+                        <dropdown key="{meta:getSDWISSampleTypeId()}" width="120" tab="{meta:getSDWISSampleCategoryId()},{meta:getSDWISFacilityId()}" field="Integer" />
                         <text style="Prompt">
                           <xsl:value-of select="resource:getString($constants,'sampleCat')" />:
                         </text>
-                        <dropdown key="{meta:getSDWISSampleCategoryId()}" width="108" tab="{meta:getSDWISSamplePointId()},{meta:getSDWISSampleTypeId()}" field="Integer" required="true"/>
+                        <dropdown key="{meta:getSDWISSampleCategoryId()}" width="108" tab="{meta:getSDWISSamplePointId()},{meta:getSDWISSampleTypeId()}" field="Integer"/>
                      </row>
                      <row>
                        <text style="Prompt">
                          <xsl:value-of select="resource:getString($constants,'samplePtId')" />:
                        </text>
-                       <textbox key="{meta:getSDWISSamplePointId()}" width="75" max="11" case="UPPER" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String" required="true"/>
+                       <textbox key="{meta:getSDWISSamplePointId()}" width="75" max="11" case="UPPER" tab="{meta:getSDWISLocation()},{meta:getSDWISSampleCategoryId()}" field="String"/>
                        <text style="Prompt">
                          <xsl:value-of select="resource:getString($constants,'location')" />:
                        </text>
