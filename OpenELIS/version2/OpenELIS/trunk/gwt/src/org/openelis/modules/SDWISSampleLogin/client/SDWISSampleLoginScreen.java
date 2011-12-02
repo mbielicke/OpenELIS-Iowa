@@ -36,6 +36,7 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -60,6 +61,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -81,6 +83,7 @@ import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.sample.client.QAEventsTab;
 import org.openelis.modules.sample.client.ResultTab;
 import org.openelis.modules.sample.client.SDWISTab;
+import org.openelis.modules.sample.client.SampleDuplicateUtil;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
@@ -125,7 +128,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     protected TextBox<Datetime>       collectedTime;
     protected Dropdown<Integer>       statusId;
     protected CalendarLookUp          collectedDate, receivedDate;
-    protected MenuItem                historySample, historySampleSdwis, historySampleOrganization,
+    protected MenuItem                duplicate, historySample, historySampleSdwis, historySampleOrganization,
                                       historySampleItem, historyAnalysis, historyCurrentResult, historyStorage,
                                       historySampleQA, historyAnalysisQA, historyAuxData;
 
@@ -292,6 +295,17 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                           .contains(event.getState()));
+            }
+        });
+        
+        duplicate = (MenuItem)def.getWidget("duplicateRecord");
+        addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                duplicate();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -1154,6 +1168,47 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
         } else {
             window.clearStatus();
+        }
+    }
+    
+    protected void duplicate() {       
+        SampleDO data;
+        SampleDataBundle bundle;
+        
+        data = manager.getSample();
+        try {
+            window.setBusy(consts.get("fetching"));
+            manager = SampleManager.fetchWithAllData(data.getId());
+            if (!SampleManager.SDWIS_DOMAIN_FLAG.equals(data.getDomain())) {
+                Window.alert(consts.get("sampleDomainChangedException"));
+                abort();
+                return;
+            }
+            
+            manager = SampleDuplicateUtil.duplicate(manager);            
+            bundle = manager.getBundle();
+            
+            treeTab.setData(manager);
+            sdwisTab.setData(manager);
+            sampleNotesTab.setManager(manager);
+            storageTab.setData(bundle);
+            auxDataTab.setManager(manager);
+            
+            treeTab.draw();
+            sdwisTab.draw();
+            sampleNotesTab.draw();
+            storageTab.draw();
+            auxDataTab.draw();
+        
+            setState(State.ADD);
+            DataChangeEvent.fire(this);
+
+            setFocus(accessionNumber);
+            window.setDone(consts.get("enterInformationPressCommit"));
+        } catch (Exception e) {
+            Window.alert("Sample duplicate: " + e.getMessage());
+            e.printStackTrace();
+            abort();  
         }
     }
     

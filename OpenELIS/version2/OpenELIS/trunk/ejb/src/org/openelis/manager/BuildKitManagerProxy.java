@@ -141,8 +141,7 @@ public class BuildKitManagerProxy {
             component = compMan.getComponentAt(i);
             invItem = il.fetchById(component.getComponentId());
             //
-            // there's no unit cost for inventory items that are marked as
-            // either
+            // there's no unit cost for inventory items that are marked as either
             // "labor" or "do not inventory",
             //
             if ( !"Y".equals(invItem.getIsLabor()) && !"Y".equals(invItem.getIsNotInventoried())) {
@@ -153,13 +152,16 @@ public class BuildKitManagerProxy {
             }
         }
 
-        //
-        // create an inventory receipt record for all the kits that were built
-        //
+        /*
+         * Create an inventory receipt record for all the kits that were built. 
+         * Also, since all the inventory locations updated by an inventory receipt
+         * are locked and unlocked in InventoryReceiptManagerProxy, we don't need 
+         * to lock and unlock them here. Locking them here causes a problem
+         * with kits that are marked as "Add to existing" because the locations
+         * for them are locked in that class and if they are already locked here
+         * then an exception is thrown on trying to lock them again. 
+         */
         kitReceipt = kitMan.getInventoryReceipt();
-        kitLocId = kitReceipt.getInventoryLocations().get(0).getId();
-        if (kitLocId != null)
-            ll.fetchForUpdate(kitLocId);
         kitReceipt.setInventoryItemId(kitMan.getInventoryItemId());
         kitReceipt.setReceivedDate(date);
         kitReceipt.setUnitCost(totalCost);
@@ -168,11 +170,9 @@ public class BuildKitManagerProxy {
         recMan.addReceipt(kitReceipt);
         recMan.add();
 
-        for (i = 0; i < locationIdList.size(); i++ ) {
+        for (i = 0; i < locationIdList.size(); i++ ) 
             ll.abortUpdate(locationIdList.get(i));
-            if (kitLocId != null)
-                ll.abortUpdate(kitLocId);
-        }
+        
 
         return kitMan;
     }

@@ -78,6 +78,8 @@ UIRF Software License are applicable instead of those above.
                   </appButton>
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
+                  <xsl:call-template name="duplicateRecordMenuItem" />
+                    <html>&lt;hr/&gt;</html>
                   <menuItem key="historySample" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySample')}" />
                   <menuItem key="historySampleEnvironmental" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleEnvironmental')}" />
                   <menuItem key="historySampleProject" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'historySampleProject')}" />
