@@ -106,6 +106,10 @@ public class OrganizationService {
         return remoteManager().update(man);
     }
 
+    public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
+        return remoteManager().updateForNotify(man);
+    }
+
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
         return remoteManager().fetchForUpdate(id);
     }
