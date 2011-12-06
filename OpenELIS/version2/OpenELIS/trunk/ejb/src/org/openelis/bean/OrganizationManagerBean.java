@@ -127,6 +127,28 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
         return man;
     }
 
+    public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
+        UserTransaction ut;
+        
+        checkSecurityForNotify(ModuleFlags.SELECT);
+
+        man.getParameters().validate();
+
+        ut = ctx.getUserTransaction();
+        try {
+            ut.begin();
+            lockBean.validateLock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());        
+            man.updateForNotify();
+            lockBean.unlock(ReferenceTable.ORGANIZATION, man.getOrganization().getId());
+            ut.commit();
+        } catch (Exception e) {
+            ut.rollback();
+            throw e;
+        }
+
+        return man;
+    }
+
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
         UserTransaction ut;
         OrganizationManager man;
@@ -159,5 +181,9 @@ public class OrganizationManagerBean implements OrganizationManagerRemote {
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
         EJBFactory.getUserCache().applyPermission("organization", flag);
+    }
+
+    private void checkSecurityForNotify(ModuleFlags flag) throws Exception {
+        EJBFactory.getUserCache().applyPermission("w_notify", flag);
     }
 }
