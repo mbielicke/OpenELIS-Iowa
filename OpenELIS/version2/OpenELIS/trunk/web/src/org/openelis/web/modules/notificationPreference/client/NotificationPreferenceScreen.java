@@ -423,7 +423,7 @@ public class NotificationPreferenceScreen extends Screen {
                      */
                     for (int j = 0; j < list.size(); j++) 
                         pman.addParameter(list.get(j));                    
-                    managerList.set(i, oman.update());
+                    managerList.set(i, oman.updateForNotify());
                     break;
                 }
             }
@@ -475,7 +475,7 @@ public class NotificationPreferenceScreen extends Screen {
                             }
                         }
                     }
-                    managerList.set(i, oman.update());
+                    managerList.set(i, oman.updateForNotify());
                     break;
                 }
             }
@@ -527,7 +527,7 @@ public class NotificationPreferenceScreen extends Screen {
                             }
                         }
                     }
-                    managerList.set(i, oman.update());
+                    managerList.set(i, oman.updateForNotify());
                     break;
                 }
             }
