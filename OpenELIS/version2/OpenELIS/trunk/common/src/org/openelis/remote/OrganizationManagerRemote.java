@@ -25,6 +25,8 @@ public interface OrganizationManagerRemote {
 
     public OrganizationManager update(OrganizationManager man) throws Exception;
 
+    public OrganizationManager updateForNotify(OrganizationManager man) throws Exception;
+
     public OrganizationManager fetchForUpdate(Integer id) throws Exception;
     
     public OrganizationManager abortUpdate(Integer id) throws Exception;
