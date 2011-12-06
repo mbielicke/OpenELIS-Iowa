@@ -120,13 +120,13 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(orgName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    orgName.setSelection(getManager().getPrivateWell().getReportToName(),
+                    orgName.setSelection("-1",
                                          getManager().getPrivateWell().getReportToName());
                     enableReportToFields(state == State.QUERY ||
                                          (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                               .contains(state)));
                 } else {
-                    orgName.setSelection(getManager().getPrivateWell().getOrganization().getName(),
+                    orgName.setSelection(getManager().getPrivateWell().getOrganization().getId().toString(),
                                          getManager().getPrivateWell().getOrganization().getName());
                     enableReportToFields(false);
                 }
@@ -208,7 +208,7 @@ public class PrivateWellTab extends Screen {
                 try {
                     list = orgService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
-                    model.add(row = new TableDataRow(event.getMatch(), event.getMatch(), null,
+                    model.add(new TableDataRow("-1", event.getMatch(), null,
                                                      null, null));
 
                     i = 0;
@@ -216,7 +216,7 @@ public class PrivateWellTab extends Screen {
                         row = new TableDataRow(4);
                         data = list.get(i);
 
-                        row.key = data.getName();
+                        row.key = data.getId().toString();
                         row.cells.get(0).value = data.getName();
                         row.cells.get(1).value = data.getAddress().getStreetAddress();
                         row.cells.get(2).value = data.getAddress().getCity();

@@ -60,6 +60,10 @@ public class OrganizationManagerProxy {
         return service.call("update", man);
     }
 
+    public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
+        return service.call("updateForNotify", man);
+    }
+
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
         return service.call("fetchForUpdate", id);
     }
