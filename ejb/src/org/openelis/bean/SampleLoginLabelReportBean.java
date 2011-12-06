@@ -81,7 +81,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
 					.setRequired(true));
 
 			prn = PrinterList.getInstance().getListByType("zpl");
-			p.add(new Prompt("PRINTER", Prompt.Type.ARRAY)
+			p.add(new Prompt("BARCODE", Prompt.Type.ARRAY)
 					.setPrompt("Printer:")
 					.setWidth(120)
 					.setOptionList(prn)
@@ -131,7 +131,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         }
         received = ReportUtil.getSingleParameter(param, "RECEIVED");
         location = ReportUtil.getSingleParameter(param, "LOCATION");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        printer = ReportUtil.getSingleParameter(param, "BARCODE");
 
         if (DataBaseUtil.isEmpty(received) || DataBaseUtil.isEmpty(location) || DataBaseUtil.isEmpty(printer))
 			throw new InconsistencyException("You must specify # of samples, # of continers, date received,\nlocation, and printer for this report");
@@ -210,7 +210,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
 					.setRequired(true));
 
 			prn = PrinterList.getInstance().getListByType("zpl");
-			p.add(new Prompt("PRINTER", Prompt.Type.ARRAY)
+			p.add(new Prompt("BARCODE", Prompt.Type.ARRAY)
 					.setPrompt("Printer:")
 					.setWidth(120)
 					.setOptionList(prn)
@@ -259,7 +259,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         }
         received = ReportUtil.getSingleParameter(param, "RECEIVED");
     	location = ReportUtil.getSingleParameter(param, "LOCATION");
-    	printer = ReportUtil.getSingleParameter(param, "PRINTER");
+    	printer = ReportUtil.getSingleParameter(param, "BARCODE");
 
     	if (DataBaseUtil.isEmpty(accStr) || DataBaseUtil.isEmpty(location) || DataBaseUtil.isEmpty(printer))
 			throw new InconsistencyException("You must specify accession number, location, and printer for this report");

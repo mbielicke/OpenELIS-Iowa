@@ -118,6 +118,18 @@ public class OrganizationManagerProxy {
         return man;
     }
 
+    public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
+        Integer id;
+
+        id = man.getOrganization().getId();
+        if (man.parameters != null) {
+            man.getParameters().setOrganizationId(id);
+            man.getParameters().update();
+        }
+
+        return man;
+    }
+
     public OrganizationManager fetchForUpdate(OrganizationManager man) throws Exception {
         assert false : "not supported";
         return null;
