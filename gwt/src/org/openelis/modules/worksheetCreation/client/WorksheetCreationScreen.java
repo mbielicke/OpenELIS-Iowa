@@ -503,6 +503,9 @@ public class WorksheetCreationScreen extends Screen {
                             mergeAnalysesAndQCs();
                         }
                     }
+                    
+                    if (worksheetItemTable.numRows() <= 0)
+                        formatId = null;
                 }
             }
 
@@ -683,7 +686,7 @@ public class WorksheetCreationScreen extends Screen {
                 toColumnNames.put(columnNameVO.getName(), columnNameVO.getId());
             }
         } catch (Exception anyE) {
-            Window.alert(consts.get("worksheetToColumnMappingLoadError"));
+//            Window.alert(consts.get("worksheetToColumnMappingLoadError"));
             anyE.printStackTrace();
             toColumnNames = null;
         }
@@ -692,7 +695,7 @@ public class WorksheetCreationScreen extends Screen {
         wVDO.setCreatedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
         wVDO.setSystemUserId(UserCache.getPermission().getSystemUserId());
         wVDO.setStatusId(statusWorking);
-        wVDO.setFormatId(testWorksheetDO.getFormatId());
+        wVDO.setFormatId(formatId);
         wVDO.setSubsetCapacity(testWorksheetDO.getSubsetCapacity());
         if (relatedWorksheetId.getFieldValue() != null)
             wVDO.setRelatedWorksheetId(relatedWorksheetId.getFieldValue());
@@ -753,7 +756,7 @@ public class WorksheetCreationScreen extends Screen {
                                 }
                                 formatColumnNames.put(fromFormatId, fromColumnNames);
                             } catch (Exception anyE1) {
-                                Window.alert(consts.get("worksheetFromColumnMappingLoadError"));
+//                                Window.alert(consts.get("worksheetFromColumnMappingLoadError"));
                                 anyE1.printStackTrace();
                                 fromColumnNames = null;
                             }

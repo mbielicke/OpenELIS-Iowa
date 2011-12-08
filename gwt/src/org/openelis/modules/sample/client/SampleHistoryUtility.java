@@ -355,7 +355,7 @@ public class SampleHistoryUtility {
                 refVoList[i] = new IdNameVO(data.getId(), data.getQaEventName());
             }
             
-            HistoryScreen.showHistory(OpenELIS.consts.get("historySampleItem"),
+            HistoryScreen.showHistory(OpenELIS.consts.get("historySampleQA"),
                                       ReferenceTable.SAMPLE_ITEM, refVoList);
             window.clearStatus();
         } catch (Exception e) {
