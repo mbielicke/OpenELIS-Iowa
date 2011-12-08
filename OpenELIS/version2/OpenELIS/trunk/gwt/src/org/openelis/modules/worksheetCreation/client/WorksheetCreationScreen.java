@@ -504,8 +504,10 @@ public class WorksheetCreationScreen extends Screen {
                         }
                     }
                     
-                    if (worksheetItemTable.numRows() <= 0)
+                    if (worksheetItemTable.numRows() <= 0) {
                         formatId = null;
+                        testIds.clear();
+                    }
                 }
             }
 
