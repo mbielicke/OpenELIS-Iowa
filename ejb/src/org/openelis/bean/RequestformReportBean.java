@@ -30,17 +30,18 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.OrderLocal;
+import org.openelis.local.PrinterCacheLocal;
+import org.openelis.local.RequestformReportLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.remote.RequestformReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
 
-public class RequestformReportBean implements RequestformReportRemote {
+public class RequestformReportBean implements RequestformReportRemote, RequestformReportLocal {
 
     @Resource
     private SessionContext    ctx;
@@ -50,6 +51,9 @@ public class RequestformReportBean implements RequestformReportRemote {
 
     @EJB
     private OrderLocal        order;
+    
+    @EJB
+    private PrinterCacheLocal  printers;
 
     /*
      * Returns the prompt for a single re-print
@@ -65,7 +69,7 @@ public class RequestformReportBean implements RequestformReportRemote {
                                                           .setWidth(100)
                                                           .setRequired(true));
 
-            prn = PrinterList.getInstance().getListByType("pdf");
+            prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
@@ -78,11 +82,13 @@ public class RequestformReportBean implements RequestformReportRemote {
             throw e;
         }
     }
-
+    
     /*
      * Execute the report and send its output to specified location
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
+        int copies;
+        String orderId, printer, dir, printstat, useNumForms;
         URL url;
         File tempFile;
         HashMap<String, QueryData> param;
@@ -91,8 +97,7 @@ public class RequestformReportBean implements RequestformReportRemote {
         ReportStatus status;
         JasperReport jreport;
         JasperPrint jprint;
-        JRExporter jexport;
-        String orderId, printer, dir, printstat;
+        JRExporter jexport;        
         OrderViewDO data;
 
         /*
@@ -109,21 +114,21 @@ public class RequestformReportBean implements RequestformReportRemote {
 
         orderId = ReportUtil.getSingleParameter(param, "ORDERID");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
-
-		if (DataBaseUtil.isEmpty(orderId) || DataBaseUtil.isEmpty(printer)) {
-			throw new InconsistencyException("You must specify the order # and printer for this report");
-		} else {
-		    try {
-		        data = order.fetchById(Integer.parseInt(orderId));
-		        if (!"S".equals(data.getType()))
-		            throw new InconsistencyException("You must specify a valid Send-out order #");
-		    } catch (NumberFormatException  e) {
+        useNumForms = ReportUtil.getSingleParameter(param, "USE_NUM_FORMS");
+        if (DataBaseUtil.isEmpty(orderId) || DataBaseUtil.isEmpty(printer)) {
+            throw new InconsistencyException("You must specify the order # and printer for this report");
+        } else {
+            try {
+                data = order.fetchById(Integer.parseInt(orderId));
+                if (!"S".equals(data.getType()))
+                    throw new InconsistencyException("You must specify a valid Send-out order #");
+            } catch (NumberFormatException  e) {
                 throw new InconsistencyException("You must specify a valid Send-out order #");
             } catch (NotFoundException  e) {
-		        throw new InconsistencyException("You must specify a valid Send-out order #");
+                throw new InconsistencyException("You must specify a valid Send-out order #");
             }
-		}
-		
+        }
+        
         /*
          * start the report
          */
@@ -156,7 +161,10 @@ public class RequestformReportBean implements RequestformReportRemote {
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
+                copies = 1;
+                if (useNumForms != null) 
+                    copies = data.getNumberOfForms();                
+                printstat = ReportUtil.print(tempFile, printer, copies);                 
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 tempFile = ReportUtil.saveForUpload(tempFile);

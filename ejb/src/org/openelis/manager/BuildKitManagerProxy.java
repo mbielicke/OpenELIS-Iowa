@@ -68,7 +68,6 @@ public class BuildKitManagerProxy {
 
     public BuildKitManager add(BuildKitManager kitMan) throws Exception {
         int i;
-        Integer kitLocId;
         Double totalCost;
         InventoryComponentManager compMan;
         InventoryReceiptManager recMan;

@@ -28,12 +28,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.VerificationReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.EJBFactory;
-import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -46,7 +46,10 @@ public class VerificationReportBean implements VerificationReportRemote {
     private SessionContext  ctx;
 
     @EJB
-    private SessionCacheLocal session;    
+    private SessionCacheLocal session; 
+    
+    @EJB
+    private PrinterCacheLocal printers;
 
     /*
      * Returns the prompt for a single re-print
@@ -80,7 +83,7 @@ public class VerificationReportBean implements VerificationReportRemote {
                     .setOptionList(getUsers())
                     .setMutiSelect(true));
 
-            prn = PrinterList.getInstance().getListByType("pdf");
+            prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)

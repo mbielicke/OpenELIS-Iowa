@@ -54,6 +54,7 @@ import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.ProjectLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SessionCacheLocal;
@@ -91,6 +92,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
     @EJB
     private SampleProjectLocal         sampleProject;
+    
+    @EJB
+    private ProjectLocal               project; 
 
     @Resource
     private SessionContext             ctx;
@@ -686,7 +690,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     @RolesAllowed("w_final_environmental-select")
     public ArrayList<SampleEnvironmentalFinalReportWebVO> getSampleEnvironmentalList(ArrayList<QueryData> fields) throws Exception {
         int i, id;
-        String clause, orgIds, projName;
+        String clause, orgIds, projIds, projName;
         Query query;
         QueryBuilderV2 builder;
         ArrayList<SampleProjectViewDO> sprjList;
@@ -703,11 +707,13 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         orgIds = ReportUtil.parseClauseAsString(clause)
                            .get(SampleMeta.getSampleOrgOrganizationId());
 
+        projIds = ReportUtil.parseClauseAsString(clause)
+                            .get(SampleMeta.getSampleProjectProjectId());
         /*
          * if clause is null, then the previous method returns an empty HashMap,
-         * so we need to check if orgIds is empty or not.
+         * so we need to check if orgIds and projIds are empty or not.
          */
-        if (orgIds == null)
+        if (orgIds == null && projIds == null)
             return new ArrayList<SampleEnvironmentalFinalReportWebVO>();
 
         builder = new QueryBuilderV2();
@@ -721,7 +727,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                           SampleWebMeta.getLocationAddrCity() + ", " + "''" + ", " +
                           SampleWebMeta.getSampleOrgOrganizationId() + ") ");
         builder.constructWhere(fields);
-        builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + orgIds);
+        if (projIds != null) 
+            builder.addWhere(SampleWebMeta.getSampleProjectProjectId() + projIds);        
+        if (orgIds != null)
+            builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + orgIds);
         builder.addWhere(SampleWebMeta.getEnvSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
         builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);
@@ -762,7 +771,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
     @RolesAllowed("w_final_privatewell-select")
     public ArrayList<SamplePrivateWellFinalReportWebVO> getSamplePrivateWellList(ArrayList<QueryData> fields) throws Exception {
-        String clause, orgIds;
+        String clause, orgIds, projIds;
         Query query;
         QueryBuilderV2 builder;
         ArrayList<SamplePrivateWellFinalReportWebVO> returnList;        
@@ -776,11 +785,14 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                            .getClause();
         orgIds = ReportUtil.parseClauseAsString(clause)
                            .get(SampleMeta.getSampleOrgOrganizationId());
+
+        projIds = ReportUtil.parseClauseAsString(clause)
+                            .get(SampleMeta.getSampleProjectProjectId());
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if orgIds is empty or not.
          */
-        if (orgIds == null)
+        if (orgIds == null && projIds == null)
             return new ArrayList<SamplePrivateWellFinalReportWebVO>();
 
         builder = new QueryBuilderV2();
@@ -794,7 +806,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                           ", " + SampleWebMeta.getWellOrganizationAddrCity() + ", " +
                           SampleWebMeta.getWellOrganizationId() + ") ");
         builder.constructWhere(fields);
-        builder.addWhere(SampleWebMeta.getWellOrganizationId() + orgIds);
+        if (projIds != null) 
+            builder.addWhere(SampleWebMeta.getSampleProjectProjectId() + projIds);
+        if (orgIds != null)
+            builder.addWhere(SampleWebMeta.getWellOrganizationId() + orgIds);
         builder.addWhere(SampleWebMeta.getWellSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getWellOrganizationAddressId() + "=" +
                          SampleWebMeta.getWellOrganizationAddrId());
@@ -873,43 +888,55 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     @RolesAllowed("w_final_environmental-select")
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {
         String clause;
-        ArrayList<Integer> list;
+        ArrayList<Integer> orgIds, projIds;                
 
         clause = EJBFactory.getUserCache()
                            .getPermission()
                            .getModule("w_final_environmental")
                            .getClause();
-        list = ReportUtil.parseClauseAsArrayList(clause)
+        orgIds = ReportUtil.parseClauseAsArrayList(clause)
                          .get(SampleMeta.getSampleOrgOrganizationId());
+        
+        projIds = ReportUtil.parseClauseAsArrayList(clause)
+                         .get(SampleMeta.getSampleProjectProjectId());
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if the list is empty or not.
+         * We only return the list of projects 
          */
-        if (list == null)
-            return new ArrayList<IdNameVO>();
-
-        return sample.fetchProjectsForOrganizations(list);
+       
+        if (projIds != null) 
+            return project.fetchByIds(projIds);                    
+        else if (orgIds != null) 
+            return sample.fetchProjectsForOrganizations(orgIds);                                                   
+        return new ArrayList<IdNameVO>();        
     }
 
     @RolesAllowed("w_final_privatewell-select")
-    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {
+    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {        
         String clause;
-        ArrayList<Integer> list;
-        
+        ArrayList<Integer> orgIds, projIds;        
+        Object values[];        
+                
         clause = EJBFactory.getUserCache()
                            .getPermission()
                            .getModule("w_final_privatewell")
                            .getClause();
-        list = ReportUtil.parseClauseAsArrayList(clause)
+        orgIds = ReportUtil.parseClauseAsArrayList(clause)
                          .get(SampleMeta.getSampleOrgOrganizationId());
+        
+        projIds = ReportUtil.parseClauseAsArrayList(clause)
+                         .get(SampleMeta.getSampleProjectProjectId());
+
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if the list is empty or not.
          */
-        if (list == null)
-            return new ArrayList<IdNameVO>();
-
-        return sample.fetchProjectsForPrivateOrganizations(list);
+        if (projIds != null) 
+            return project.fetchByIds(projIds);
+        else if (orgIds != null) 
+            return sample.fetchProjectsForPrivateOrganizations(orgIds);                                        
+        return new ArrayList<IdNameVO>();
     }
 
     private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
