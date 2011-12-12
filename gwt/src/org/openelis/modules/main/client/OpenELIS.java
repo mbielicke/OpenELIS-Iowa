@@ -27,7 +27,6 @@ package org.openelis.modules.main.client;
 
 import org.openelis.cache.UserCache;
 import org.openelis.gwt.common.ModulePermission;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -43,6 +42,7 @@ import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
 import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.buildKits.client.BuildKitsScreen;
 import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
+import org.openelis.modules.dataView.client.DataViewScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
@@ -59,19 +59,17 @@ import org.openelis.modules.order.client.VendorOrderScreen;
 import org.openelis.modules.orderFill.client.OrderFillScreen;
 import org.openelis.modules.organization.client.OrganizationScreen;
 import org.openelis.modules.panel.client.PanelScreen;
+import org.openelis.modules.preferences.client.PreferencesScreen;
 import org.openelis.modules.privateWellWaterSampleLogin.client.PrivateWellWaterSampleLoginScreen;
 import org.openelis.modules.project.client.ProjectScreen;
 import org.openelis.modules.provider.client.ProviderScreen;
 import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
-import org.openelis.modules.dataView.client.DataViewScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
-//import org.openelis.modules.report.client.ClientNotificationReleasedReportScreen;
-//import org.openelis.modules.report.client.ClientNotificationReportScreen;
 import org.openelis.modules.report.client.BillingReportScreen;
-import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
+import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
@@ -180,13 +178,27 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         initialize();
     }
 
-    protected void initialize() {
+    protected void initialize() {        
         addClickHandler("preference", "openelis", new ClickHandler() {
             public void onClick(ClickEvent event) {
-                // browser.addScreen(new )
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new PreferencesScreen());
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
             }
         });
-
+        
         addClickHandler("logout", "openelis", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 try {
