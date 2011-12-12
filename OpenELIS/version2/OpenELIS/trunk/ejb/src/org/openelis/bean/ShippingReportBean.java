@@ -52,8 +52,14 @@ public class ShippingReportBean {
             p.add(new Prompt("SHIPPING_ID", Prompt.Type.INTEGER).setPrompt("Shipping Id:")
                                                                      .setWidth(75)
                                                                      .setRequired(true));
+            prn = PrinterList.getInstance().getListByType("pdf");
+            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
+                                                          .setWidth(200)
+                                                          .setOptionList(prn)
+                                                          .setMutiSelect(false)
+                                                          .setRequired(true));
             prn = PrinterList.getInstance().getListByType("zpl");
-            p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Printer:")
+            p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Barcode Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
                                                           .setMutiSelect(false)
