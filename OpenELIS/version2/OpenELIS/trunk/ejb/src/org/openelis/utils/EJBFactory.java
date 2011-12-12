@@ -69,6 +69,7 @@ import org.openelis.local.PWSMonitorLocal;
 import org.openelis.local.PanelItemLocal;
 import org.openelis.local.PanelLocal;
 import org.openelis.local.PreferencesLocal;
+import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.ProjectLocal;
 import org.openelis.local.ProjectParameterLocal;
 import org.openelis.local.ProviderLocal;
@@ -460,6 +461,10 @@ public class EJBFactory {
     
     public static ToDoCacheLocal getToDoCache() {
         return (ToDoCacheLocal)lookup("openelis/ToDoCacheBean/local");
+    }
+    
+    public static PrinterCacheLocal getPrinterCache() {
+        return (PrinterCacheLocal)lookup("openelis/PrinterCacheBean/local");
     }
 
     public static PreferencesLocal getPreferences() {

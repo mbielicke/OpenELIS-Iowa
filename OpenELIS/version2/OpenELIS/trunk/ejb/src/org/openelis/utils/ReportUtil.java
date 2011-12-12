@@ -189,7 +189,7 @@ public class ReportUtil {
      * Determines if the specified destination is a printer.
      */
     public static boolean isPrinter(String destination) {
-        return PrinterList.getInstance().getPrinterByName(destination) != null;
+        return EJBFactory.getPrinterCache().getPrinterByName(destination) != null;
     }
 
     /**

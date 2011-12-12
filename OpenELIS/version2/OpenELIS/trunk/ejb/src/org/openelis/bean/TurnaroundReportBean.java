@@ -54,12 +54,12 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.remote.TurnaroundReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.EJBFactory;
-import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -76,6 +76,9 @@ public class TurnaroundReportBean implements TurnaroundReportRemote {
 
     @EJB
     private SectionLocal    section;
+    
+    @EJB
+    private PrinterCacheLocal printers;
 
     /*
      * Returns the prompt for a single re-print
@@ -110,7 +113,7 @@ public class TurnaroundReportBean implements TurnaroundReportRemote {
                                                           .setOptionList(getSections())
                                                           .setMutiSelect(true));
 
-            prn = PrinterList.getInstance().getListByType("pdf");
+            prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)

@@ -4,7 +4,7 @@
 	<property name="com.jasperassistant.designer.DataSource" value="elis"/>
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="96"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -374,7 +374,7 @@ Phone # 319-335-4500 or
 				<textElement textAlignment="Center">
 					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[For SHL Use Only -- Please do not write bellow this line]]></text>
+				<text><![CDATA[For SHL Use Only -- Please do not write below this line]]></text>
 			</staticText>
 			<staticText>
 				<reportElement positionType="Float" x="85" y="131" width="51" height="10"/>

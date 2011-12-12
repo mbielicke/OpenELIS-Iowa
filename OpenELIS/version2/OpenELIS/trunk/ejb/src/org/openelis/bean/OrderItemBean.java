@@ -39,6 +39,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.OrderItem;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -85,6 +86,21 @@ public class OrderItemBean implements OrderItemLocal {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    public ArrayList<OrderItemDO> fetchByShippingId(Integer id) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("OrderItem.FetchByShippingId");
+        query.setParameter("shippingId", id);
+        query.setParameter("referenceTableId", ReferenceTable.ORDER_ITEM);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
     }
 
     public OrderItemViewDO add(OrderItemViewDO data) throws Exception {

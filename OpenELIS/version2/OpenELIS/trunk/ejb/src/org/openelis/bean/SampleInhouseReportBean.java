@@ -58,6 +58,7 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.ProjectLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
@@ -65,7 +66,6 @@ import org.openelis.local.TestLocal;
 import org.openelis.remote.SampleInhouseReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.EJBFactory;
-import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -91,6 +91,9 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
 
     @EJB
     private ProjectLocal    proj;
+    
+    @EJB
+    private PrinterCacheLocal printers;
 
     /*
      * Returns the prompt for a single re-print
@@ -144,7 +147,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
             p.add(new Prompt("ORGANIZATION_ID", Prompt.Type.INTEGER).setPrompt("Organization Id:")
                                                                     .setWidth(200));
 
-            prn = PrinterList.getInstance().getListByType("pdf");
+            prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)

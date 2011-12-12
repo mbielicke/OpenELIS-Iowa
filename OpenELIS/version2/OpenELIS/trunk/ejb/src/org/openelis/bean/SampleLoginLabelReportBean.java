@@ -18,6 +18,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.LabelReportLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
@@ -39,6 +40,9 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
 	
 	@EJB
 	private SampleLocal sample;
+	
+	@EJB
+	private LabelReportLocal labelReport;
 
 	/*
 	 * Returns the prompt for new setup accession login labels
@@ -158,9 +162,9 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         ps = new PrintStream(tempFile);
         for (i = 0; i < samples; i++) {
         	laccession++;
-    		printlabel(ps, laccession, -1, received, location);
+        	labelReport.sampleLoginLabel(ps, laccession, -1, received, location);
         	for (j = 0; j < containers; j++)
-        		printlabel(ps, laccession, j, received, location);
+        	    labelReport.sampleLoginLabel(ps, laccession, j, received, location);
         }
         ps.close();
     	
@@ -303,7 +307,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
         ps = new PrintStream(tempFile);
     	for (i = 0; i < containers; i++)
-    		printlabel(ps, accession, i+starting, received, location);
+    	    labelReport.sampleLoginLabel(ps, accession, i+starting, received, location);
         ps.close();
     	
         printstat = ReportUtil.print(tempFile, printer, 1);
@@ -313,22 +317,4 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         return status;
     }
 
-	
-	/*
-	 * Prints a zpl barcode label for sample login
-	 */
-	private void printlabel(PrintStream f, int accession, int container, String received, String location) {
-		String s;
-		
-		if (container == -1)
-			s = String.valueOf(accession);
-		else
-			s = accession + "-" + container;
-		f.print("^XA");
-		f.print("^LH0,0");
-		f.print("^FO10,35^AE^BCN,50,N,N,N^FD"+s+"^FS");				// barcoded accession
-		f.print("^FO10,85^AE^FD"+s+"   ("+location+")^FS");			// readable accession + location
-		f.print("^FO10,130^AE^BCN,50,Y,N,N^FD"+received+"^FS");		// barcoded/readable received
-		f.print("^PQ1,,1,^XZ");
-	}
 }

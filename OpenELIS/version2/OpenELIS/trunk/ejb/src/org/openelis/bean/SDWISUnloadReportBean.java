@@ -65,6 +65,7 @@ import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AnalyteLocal;
 import org.openelis.local.AuxDataLocal;
 import org.openelis.local.DictionaryCacheLocal;
+import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleQAEventLocal;
@@ -75,7 +76,6 @@ import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.SDWISUnloadReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.EJBFactory;
-import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
 import net.sf.jasperreports.engine.JRDataSource;
@@ -101,6 +101,9 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
     @EJB
     private SessionCacheLocal session;    
 
+    @EJB
+    private PrinterCacheLocal printers;
+    
     @EJB
     AnalysisLocal        analysis;
     @EJB
@@ -193,7 +196,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                                                            .setMutiSelect(false)
                                                            .setRequired(true));
             
-            prn = PrinterList.getInstance().getListByType("pdf");
+            prn = printers.getListByType("pdf");
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
