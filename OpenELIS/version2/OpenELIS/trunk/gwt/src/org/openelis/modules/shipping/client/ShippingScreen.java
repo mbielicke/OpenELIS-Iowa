@@ -46,6 +46,7 @@ import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -53,6 +54,7 @@ import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.screen.Screen;
@@ -74,8 +76,11 @@ import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.meta.ShippingMeta;
+import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
+import org.openelis.modules.dictionary.client.DictionaryLookupScreen.Action;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.note.client.NotesTab;
+import org.openelis.modules.order.client.OrderRequestFormReportScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -84,13 +89,14 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class ShippingScreen extends Screen {
+public class ShippingScreen extends Screen implements HasActionHandlers<ShippingScreen.Action> {
     private ShippingManager                manager;
     private ModulePermission               userPermission;
 
@@ -102,7 +108,7 @@ public class ShippingScreen extends Screen {
 
     private AppButton                      queryButton, previousButton, nextButton, addButton,
                                            updateButton, commitButton, abortButton;
-    protected MenuItem                     processShipping, shippingHistory, shippingItemHistory,
+    protected MenuItem                     processShipping, showManifest, shippingHistory, shippingItemHistory,
                                            shippingTrackingHistory;
     private TextBox                        id, numberOfPackages, cost, shippedToAddressMultipleUnit,
                                            processedById, shippedToAddressStreetAddress, shippedToAddressCity,
@@ -114,6 +120,7 @@ public class ShippingScreen extends Screen {
     private Integer                        statusProcessedId, statusShippedId;
     private ShippingScreen                 screen;
     private ProcessShippingScreen          processShippingScreen;
+    private ShippingReportScreen           shippingReportScreen;
         
     private boolean                        openedFromMenu;
     
@@ -122,6 +129,10 @@ public class ShippingScreen extends Screen {
     private enum Tabs {
         ITEM, SHIP_NOTE
     };    
+    
+    public enum Action {
+        COMMIT, ABORT
+    };
     
     public ShippingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(ShippingDef.class));
@@ -285,6 +296,17 @@ public class ShippingScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 processShipping.enable(EnumSet.of(State.DISPLAY, State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        showManifest = (MenuItem)def.getWidget("showManifest");
+        addScreenHandler(showManifest, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {                
+                showManifest();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                showManifest.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -762,8 +784,7 @@ public class ShippingScreen extends Screen {
             }
         });
     }    
-    
-    
+        
     public void loadShippingData(ShippingManager manager, State state) { 
         if(state == State.ADD) {
             add(manager);                    
@@ -775,7 +796,11 @@ public class ShippingScreen extends Screen {
             DataChangeEvent.fire(this);
             drawTabs();
         }
-    }    
+    }
+    
+    public HandlerRegistration addActionHandler(ActionHandler<ShippingScreen.Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    }
     
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
@@ -907,7 +932,7 @@ public class ShippingScreen extends Screen {
         }      
     }    
 
-    protected void commit() {
+    protected void commit() {        
         setFocus(null);
 
         if ( !validate()) {
@@ -930,9 +955,10 @@ public class ShippingScreen extends Screen {
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("addingComplete"));
                 
-                if (!openedFromMenu)                     
-                    window.close();                
-                    
+                if (!openedFromMenu) {
+                    ActionEvent.fire(this, Action.COMMIT, manager.getShipping().getId());
+                    window.close();
+                }
             } catch (ValidationErrorsList e) {
                 showErrors(e);
             } catch (Exception e) {
@@ -958,21 +984,44 @@ public class ShippingScreen extends Screen {
     }      
 
     protected void abort() {
-        setFocus(null);
-        clearErrors();
-        window.setBusy(consts.get("cancelChanges"));
-
         if (state == State.QUERY) {
+            setFocus(null);
+            clearErrors();
+            window.setBusy(consts.get("cancelChanges"));
             fetchById(null);
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {
+            if (!openedFromMenu) {
+                /*
+                 * If this screen was brought up from Fill Order screen then we 
+                 * ask the user whether he or she is sure about aborting because then
+                 * no shipping record would be created for the orders sent from
+                 * that screen and there won't be any chance of creating a shipping
+                 * record for them in the future. If the user says no then we don't
+                 * do anything.       
+                 */
+                if (Window.confirm(consts.get("abortNotCreateShippingRecord"))) {
+                    /*
+                     * fetchById(null) is called here to make sure that the screen
+                     * doesn't have any data and is not in Add mode before window.close()
+                     * is called because otherwise window.close() will prevent the
+                     * window from being closed because of it being in Add mode 
+                     */
+                    fetchById(null);
+                    ActionEvent.fire(this, Action.ABORT, null);
+                    window.close();                
+                }
+                return;
+            }
+            setFocus(null);
+            clearErrors();
+            window.setBusy(consts.get("cancelChanges"));
             fetchById(null);
-            window.setDone(consts.get("addAborted"));
-            
-            if (!openedFromMenu)                 
-                window.close();
-            
+            window.setDone(consts.get("addAborted"));                                    
         } else if (state == State.UPDATE) {
+            setFocus(null);
+            clearErrors();
+            window.setBusy(consts.get("cancelChanges"));
             try {
                 manager = manager.abortUpdate();
                 setState(State.DISPLAY);
@@ -983,6 +1032,8 @@ public class ShippingScreen extends Screen {
             }
             window.setDone(consts.get("updateAborted"));
         } else {
+            setFocus(null);
+            clearErrors();
             window.clearStatus();
         }
     }
@@ -1096,6 +1147,37 @@ public class ShippingScreen extends Screen {
         });
     }
     
+    protected void showManifest() {        
+        Query query;
+        QueryData field;
+        
+        query = new Query();        
+        field = new QueryData();
+        field.key = "SHIPPING_ID";
+        field.query = manager.getShipping().getId().toString();
+        field.type = QueryData.Type.INTEGER;
+        query.setFields(field);
+        
+        field = new QueryData();
+        field.key = "PRINTER";
+        field.query = "-view-";
+        field.type = QueryData.Type.INTEGER;
+        query.setFields(field);
+        
+        try {
+            if (shippingReportScreen == null) {
+                shippingReportScreen = new ShippingReportScreen(window);  
+                shippingReportScreen.setRunReportInterface("runReportForManifest");
+            } else {
+                shippingReportScreen.setWindow(window);
+            }
+            
+            shippingReportScreen.runReport(query);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+    }
     
     protected void shippingHistory() {
         IdNameVO hist;

@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.order.client;
+package org.openelis.modules.shipping.client;
 
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.services.ScreenService;
@@ -32,14 +32,15 @@ import org.openelis.modules.report.client.ReportScreen;
 
 /**
  * This class is used to execute reports on behalf of those screens that don't 
- * implement ReportScreen like Send-out Order
+ * implement ReportScreen like Shipping and Fill Order
  */
-public class OrderRequestFormReportScreen extends ReportScreen {
+public class ShippingReportScreen extends ReportScreen {
 
-    public OrderRequestFormReportScreen(ScreenWindowInt window) throws Exception { 
+    public ShippingReportScreen(ScreenWindowInt window) throws Exception { 
         drawScreen(new ScreenDef());        
         this.window = window;
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.RequestformReportService");
+        
+        service = new ScreenService("controller?service=org.openelis.modules.report.server.ShippingReportService");
     }
     
     /**
