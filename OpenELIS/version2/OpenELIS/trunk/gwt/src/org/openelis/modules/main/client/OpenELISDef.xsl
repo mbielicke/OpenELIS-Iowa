@@ -81,7 +81,7 @@ UIRF Software License are applicable instead of those above.
                   <label style="topMenuBarItem" text="{resource:getString($constants,'application')}" />
                 </menuDisplay>
                 <menuPanel layout="vertical" position="below" style="topMenuContainer">
-                  <menuItem description="{resource:getString($constants,'preferenceDescription')}" enable="false" icon="preferenceIcon" key="preference" label="{resource:getString($constants,'preference')}" />
+                  <menuItem description="{resource:getString($constants,'preferenceDescription')}" enable="true" icon="preferenceIcon" key="preference" label="{resource:getString($constants,'preference')}" />
                   <menuItem description="{resource:getString($constants,'logoutDescription')}" enable="true" icon="logoutIcon" key="logout" label="{resource:getString($constants,'logout')}" />
                 </menuPanel>
               </menuItem>
