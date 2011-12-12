@@ -52,6 +52,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.TextBox.Case;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.manager.Preferences;
 import org.openelis.report.Prompt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -74,14 +75,14 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class ReportScreen extends Screen {
 
-	protected ArrayList<Prompt> reportParameters;
+    protected ArrayList<Prompt> reportParameters;
 
-	protected AppButton runReportButton, resetButton;
+    protected AppButton         runReportButton, resetButton;
 
-	protected String name, attachmentName, runReportInterface,
-			promptsInterface;
+    protected String            name, attachmentName, runReportInterface,
+                                promptsInterface;
 
-	protected static String defaultPrinter, defaultBarcodePrinter;
+    protected Preferences       preferences;
 
 	protected ReportScreen() throws Exception {
 		name = null;
@@ -89,7 +90,7 @@ public class ReportScreen extends Screen {
 		runReportInterface = "runReport";
 		promptsInterface = "getPrompts";
 		reportParameters = new ArrayList<Prompt>();
-
+		
 		DeferredCommand.addCommand(new Command() {
 			public void execute() {
 				initialize();
@@ -99,7 +100,14 @@ public class ReportScreen extends Screen {
 
 	protected void initialize() {
 		getReportParameters();
-		window.setName(name);
+		/*
+		 * this check is here to make sure that if the name is not specified, because
+		 * the class implementing ReportScreen doesn't make a screen to show up 
+		 * but acts as a proxy for other screens like Sample Tracking that run reports,
+		 * the name of that screen doesn't get blanked out 
+		 */
+		if (!DataBaseUtil.isEmpty(name))
+		    window.setName(name);
 	}
 
 	/**
@@ -157,10 +165,14 @@ public class ReportScreen extends Screen {
 				new AsyncCallback<ArrayList<Prompt>>() {
 					public void onSuccess(ArrayList<Prompt> result) {
 						reportParameters = result;
-						createReportWindow();
-						window.setDone(consts.get("loadCompleteMessage"));
+						try {
+						    createReportWindow();
+						    window.setDone(consts.get("loadCompleteMessage"));
+						} catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            window.close();                        
+                        }
 					}
-
 					public void onFailure(Throwable caught) {
 						window.close();
 						Window.alert("Failed to get parameters for " + name);
@@ -171,7 +183,7 @@ public class ReportScreen extends Screen {
 	/**
 	 * Draws the prompts and fields in the report window
 	 */
-	protected void createReportWindow() {
+	protected void createReportWindow() throws Exception {
 		int i;
 		VerticalPanel main;
 		FlexTable tp;
@@ -261,7 +273,12 @@ public class ReportScreen extends Screen {
 
 		addScreenHandler(resetButton, new ScreenEventHandler<Object>() {
 			public void onClick(ClickEvent event) {
-				reset();
+			    try {
+			        reset();
+			    } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
 			}
 		});
 
@@ -328,7 +345,7 @@ public class ReportScreen extends Screen {
 	/**
 	 * Resets all the fields to their original report specified values
 	 */
-	protected void reset() {
+	protected void reset() throws Exception {
 		Dropdown<String> dd;
 		TextBox tb;
 		CalendarLookUp cl;
@@ -340,7 +357,7 @@ public class ReportScreen extends Screen {
 				dd.clearExceptions();
 				data = dd.getData();
 				for (Prompt p : reportParameters) {
-					if (key.equals(p.getName())) {
+					if (key.equals(p.getName())) {					    
 						resetDropdown(p, data, dd);
 						break;
 					}
@@ -363,10 +380,17 @@ public class ReportScreen extends Screen {
 	/**
 	 * Resets the dropdown to prompt specified value
 	 */
-	protected void resetDropdown(Prompt p, ArrayList<TableDataRow> l,
-			Dropdown<String> d) {
-		String key;
+	protected void resetDropdown(Prompt p, ArrayList<TableDataRow> l, Dropdown<String> d) throws Exception {
+		String defaultPrinter,defaultBarcodePrinter;
 
+		defaultPrinter = null;
+		defaultBarcodePrinter = null;
+		
+		preferences =  Preferences.userRoot();
+		if (preferences != null) {
+		    defaultPrinter = preferences.get("default_printer", null);
+		    defaultBarcodePrinter = preferences.get("default_bar_code_printer", null);
+		}
 		if (p.getDefaultValue() != null)
 			d.setValue(p.getDefaultValue());
 		else if ("PRINTER".equals(p.getName()) && defaultPrinter != null)
@@ -429,14 +453,6 @@ public class ReportScreen extends Screen {
 			}
 		}
 
-		/*
-		 * remember the last printer & barcode printer they selected
-		 */
-		if ("PRINTER".equals(key))
-			defaultPrinter = qd.query;
-		else if ("BARCODE".equals(key))
-			defaultBarcodePrinter = qd.query;
-
 		return qd;
 	}
 
@@ -480,7 +496,7 @@ public class ReportScreen extends Screen {
 		return qd;
 	}
 
-	protected Dropdown<String> createDropdown(Prompt p) {
+	protected Dropdown<String> createDropdown(Prompt p) throws Exception {
 		Dropdown<String> d;
 		TableColumn c;
 		Label<String> dl;

@@ -56,6 +56,9 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -66,11 +69,11 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -83,12 +86,15 @@ import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.Preferences;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.order.client.CustomerNoteTab;
 import org.openelis.modules.order.client.ShipNoteTab;
+import org.openelis.modules.shipping.client.ShippingReportScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
+import org.openelis.modules.shipping.client.ShippingScreen.Action;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -117,6 +123,7 @@ public class OrderFillScreen extends Screen {
 
     private ShippingManager                    shippingManager;
     private ShippingScreen                     shippingScreen;
+    private ShippingReportScreen               shippingReportScreen;  
 
     private boolean                            treeValid;
     private Integer                            status_pending, status_processed;
@@ -124,6 +131,7 @@ public class OrderFillScreen extends Screen {
     private HashMap<Integer, OrderManager>     combinedMap;
 
     private ScreenService                      shippingService;
+    private String                             defaultPrinter, defaultBarcodePrinter;
 
     private enum Tabs {
         ITEM, SHIP_NOTE, CUSTOMER_NOTE
@@ -1169,13 +1177,72 @@ public class OrderFillScreen extends Screen {
     }
 
     private void showShippingScreen(ShippingManager manager, State state) throws Exception {
-        ScreenWindow modal;
+        ScreenWindow modal;      
+        Preferences preferences;
+        
         if (manager != null) {
+            preferences =  Preferences.userRoot();
+            if (preferences != null) {
+                defaultPrinter = preferences.get("default_printer", null);
+                defaultBarcodePrinter = preferences.get("default_bar_code_printer", null);
+            }
+            
+            if (DataBaseUtil.isEmpty(defaultPrinter) || DataBaseUtil.isEmpty(defaultBarcodePrinter)) {
+                Window.alert(consts.get("mustSpecifyDefPrinters"));
+                return;
+            }
+            
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(consts.get("shipping"));
+            modal.setName(consts.get("shipping"));            
             if (shippingScreen == null)
                 shippingScreen = new ShippingScreen(modal);
 
+            shippingScreen.addActionHandler(new ActionHandler<ShippingScreen.Action>() {
+                public void onAction(ActionEvent<Action> event) {
+                    Integer id; 
+                    Query query;
+                    QueryData field;
+                    
+                    if (event.getAction() == ShippingScreen.Action.COMMIT) {                        
+                        id = (Integer)event.getData();
+                        if (id == null)
+                            return;                        
+                        
+                        query = new Query();
+                        field = new QueryData();
+                        field.key = "SHIPPING_ID";
+                        field.query = id.toString();
+                        field.type = QueryData.Type.INTEGER;
+                        query.setFields(field);
+
+                        try {
+                            field = new QueryData();
+                            field.key = "PRINTER";
+                            field.query = defaultPrinter;
+                            field.type = QueryData.Type.STRING;
+                            query.setFields(field);
+                            
+                            field = new QueryData();
+                            field.key = "BARCODE";
+                            field.query = defaultBarcodePrinter;
+                            field.type = QueryData.Type.STRING;
+                            query.setFields(field);
+                            
+                            if (shippingReportScreen == null) {
+                                shippingReportScreen = new ShippingReportScreen(window);
+                                shippingReportScreen.setRunReportInterface("runReportForProcessing");
+                            } else {
+                                shippingReportScreen.setWindow(window);
+                            }
+                            
+                            shippingReportScreen.runReport(query);
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }                                               
+                }                
+            });
             modal.setContent(shippingScreen);
             shippingScreen.loadShippingData(manager, state);
             window.clearStatus();

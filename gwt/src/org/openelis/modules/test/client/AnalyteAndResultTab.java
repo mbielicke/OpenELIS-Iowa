@@ -134,7 +134,6 @@ public class AnalyteAndResultTab extends Screen implements GetMatchesHandler,
                                                          headerAddedInTheMiddle, canAddRemoveColumn;
 
     private int                                          anaSelCol, tempId;
-
     private ScreenService                                scriptletService, analyteService,
                                                          dictionaryService;
 
