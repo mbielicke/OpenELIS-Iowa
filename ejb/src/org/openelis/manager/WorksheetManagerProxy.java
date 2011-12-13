@@ -117,7 +117,7 @@ public class WorksheetManagerProxy {
                     sManager.update();
                     lock.unlock(ReferenceTable.SAMPLE, sManager.getSample().getId());  
                     manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
-                    sManager.updateCache();
+//                    sManager.updateCache();
                 }
             }
         }
@@ -153,7 +153,7 @@ public class WorksheetManagerProxy {
                     sManager.update();
                     lock.unlock(ReferenceTable.SAMPLE, sManager.getSample().getId());  
                     manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
-                    sManager.updateCache();
+//                    sManager.updateCache();
                 }
             }
         }

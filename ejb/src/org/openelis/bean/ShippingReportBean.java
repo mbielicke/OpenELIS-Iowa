@@ -114,12 +114,6 @@ public class ShippingReportBean implements ShippingReportRemote {
                                                           .setOptionList(prn)
                                                           .setMutiSelect(false)
                                                           .setRequired(true));
-            prn = PrinterList.getInstance().getListByType("pdf");
-            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
-                                                          .setWidth(200)
-                                                          .setOptionList(prn)
-                                                          .setMutiSelect(false)
-                                                          .setRequired(true));
             prn = PrinterList.getInstance().getListByType("zpl");
             p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Barcode Printer:")
                                                           .setWidth(200)
