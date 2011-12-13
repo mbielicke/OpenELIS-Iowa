@@ -218,4 +218,8 @@ public class TestSectionManagerProxy {
         data = EJBFactory.getDictionary().fetchBySystemName(systemName);
         return data.getId();
     }
+    
+    public DictionaryDO getDictionaryById(Integer id) throws Exception {
+        return EJBFactory.getDictionaryCache().getById(id);
+    }
 }
