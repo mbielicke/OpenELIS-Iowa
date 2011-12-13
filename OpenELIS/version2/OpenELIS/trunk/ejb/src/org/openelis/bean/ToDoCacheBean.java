@@ -96,128 +96,128 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
     }
 
     public ArrayList<AnalysisCacheVO> getLoggedIn() throws Exception {
-        int size;
+        //int size;
         ArrayList<AnalysisCacheVO> list;
-        List entryList;
+        //List entryList;
         DictionaryDO data;
 
-        entryList = loggedInCache.getKeysWithExpiryCheck();
-        size = entryList.size();
+        //entryList = loggedInCache.getKeysWithExpiryCheck();
+        //size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
          * less than the total entries, the cache is reloaded from the database
          */
-        if (size == 0 || loggedInCache.getSize() > size) {
-            data = EJBFactory.getDictionaryCache().getBySystemName("analysis_logged_in");
-            list = reloadAnalysisCache(loggedInCache, data.getId());
-        } else {
-            list = getAnalysisListFromCache(loggedInCache);
-        }
+        //if (size == 0 || loggedInCache.getSize() > size) {
+          data = EJBFactory.getDictionaryCache().getBySystemName("analysis_logged_in");
+          list = reloadAnalysisCache(loggedInCache, data.getId());
+        //} else {
+          //  list = getAnalysisListFromCache(loggedInCache);
+        //}
 
         return list;
     }
 
     public ArrayList<AnalysisCacheVO> getInitiated() throws Exception {
-        int size;
+        //int size;
         ArrayList<AnalysisCacheVO> list;
-        List entryList;
+        //List entryList;
         DictionaryDO data;
 
-        entryList = initiatedCache.getKeysWithExpiryCheck();
-        size = entryList.size();
+        //entryList = initiatedCache.getKeysWithExpiryCheck();
+        //size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
          * less than the total entries, the cache is reloaded from the database
          */
-        if (size == 0 || initiatedCache.getSize() > size) {
-            data = EJBFactory.getDictionaryCache().getBySystemName("analysis_initiated");
-            list = reloadAnalysisCache(initiatedCache, data.getId());
-        } else {
-            list = getAnalysisListFromCache(initiatedCache);
-        }
+        //if (size == 0 || initiatedCache.getSize() > size) {
+          data = EJBFactory.getDictionaryCache().getBySystemName("analysis_initiated");
+          list = reloadAnalysisCache(initiatedCache, data.getId());
+       // } else {
+         //   list = getAnalysisListFromCache(initiatedCache);
+       // }
 
         return list;
     }
 
     public ArrayList<AnalysisCacheVO> getCompleted() throws Exception {
-        int size;
+        //int size;
         ArrayList<AnalysisCacheVO> list;
-        List entryList;
+        //List entryList;
         DictionaryDO data;
 
-        entryList = completedCache.getKeysWithExpiryCheck();
-        size = entryList.size();
+        //entryList = completedCache.getKeysWithExpiryCheck();
+        //size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
          * less than the total entries, the cache is reloaded from the database
          */
-        if (size == 0 || completedCache.getSize() > size) {
-            data = EJBFactory.getDictionaryCache().getBySystemName("analysis_completed");
-            list = reloadAnalysisCache(completedCache, data.getId());
-        } else {
-            list = getAnalysisListFromCache(completedCache);
-        }
+        //if (size == 0 || completedCache.getSize() > size) {
+          data = EJBFactory.getDictionaryCache().getBySystemName("analysis_completed");
+          list = reloadAnalysisCache(completedCache, data.getId());
+        //} else {
+          //  list = getAnalysisListFromCache(completedCache);
+        //}
 
         return list;
     }
 
     public ArrayList<AnalysisCacheVO> getReleased() throws Exception {
-        int size;
+        //int size;
         ArrayList<AnalysisCacheVO> list;
-        List entryList;
+        //List entryList;
 
-        entryList = releasedCache.getKeysWithExpiryCheck();
-        size = entryList.size();
+        //entryList = releasedCache.getKeysWithExpiryCheck();
+        //size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
          * less than the total entries, the cache is reloaded from the database
          */
-        if (size == 0 || releasedCache.getSize() > size)
-            list = reloadAnalysisCache(releasedCache, null);
-        else
-            list = getAnalysisListFromCache(releasedCache);
+        //if (size == 0 || releasedCache.getSize() > size)
+         list = reloadAnalysisCache(releasedCache, null);
+        //else
+          //  list = getAnalysisListFromCache(releasedCache);
 
         return list;
     }
 
     public ArrayList<SampleCacheVO> getToBeVerified() throws Exception {
-        int size;
+        //int size;
         ArrayList<SampleCacheVO> list;
-        List entryList;
+        //List entryList;
         DictionaryDO data;
 
-        entryList = toBeVerifiedCache.getKeysWithExpiryCheck();
-        size = entryList.size();
+        //entryList = toBeVerifiedCache.getKeysWithExpiryCheck();
+        //size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
          * less than the total entries, the cache is reloaded from the database
          */
-        if (size == 0 || toBeVerifiedCache.getSize() > size) {
-            data = EJBFactory.getDictionaryCache().getBySystemName("sample_not_verified");
-            list = reloadSampleCache(toBeVerifiedCache, data.getId());
-        } else {
-            list = getSampleListFromCache(toBeVerifiedCache);
-        }
+        //if (size == 0 || toBeVerifiedCache.getSize() > size) {
+          data = EJBFactory.getDictionaryCache().getBySystemName("sample_not_verified");
+          list = reloadSampleCache(toBeVerifiedCache, data.getId());
+       // } else {
+         //   list = getSampleListFromCache(toBeVerifiedCache);
+        //}
 
         return list;
     }
 
     public ArrayList<AnalysisCacheVO> getOther() throws Exception {
-        int size;
+        //int size;
         ArrayList<AnalysisCacheVO> list;
-        List entryList;
+        //List entryList;
 
-        entryList = otherCache.getKeysWithExpiryCheck();
-        size = entryList.size();
+        //entryList = otherCache.getKeysWithExpiryCheck();
+        //size = entryList.size();
         /*
          * if either there are no entries in the cache or the alive entries are
          * less than the total entries, the cache is reloaded from the database
          */
-        if (size == 0 || otherCache.getSize() > size) {
-            list = reloadAnalysisCache(otherCache, null);
-        } else {
-            list = getAnalysisListFromCache(otherCache);
-        }
+        //if (size == 0 || otherCache.getSize() > size) {
+          list = reloadAnalysisCache(otherCache, null);
+        //} else {
+          //  list = getAnalysisListFromCache(otherCache);
+        //}
 
         return list;
     }
