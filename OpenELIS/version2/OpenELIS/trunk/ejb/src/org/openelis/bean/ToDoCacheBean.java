@@ -108,8 +108,9 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
          * less than the total entries, the cache is reloaded from the database
          */
         //if (size == 0 || loggedInCache.getSize() > size) {
-          data = EJBFactory.getDictionaryCache().getBySystemName("analysis_logged_in");
-          list = reloadAnalysisCache(loggedInCache, data.getId());
+        data = EJBFactory.getDictionaryCache().getBySystemName("analysis_logged_in");
+        loggedInCache.removeAll();
+        list = reloadAnalysisCache(loggedInCache, data.getId());
         //} else {
           //  list = getAnalysisListFromCache(loggedInCache);
         //}
@@ -130,8 +131,9 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
          * less than the total entries, the cache is reloaded from the database
          */
         //if (size == 0 || initiatedCache.getSize() > size) {
-          data = EJBFactory.getDictionaryCache().getBySystemName("analysis_initiated");
-          list = reloadAnalysisCache(initiatedCache, data.getId());
+        data = EJBFactory.getDictionaryCache().getBySystemName("analysis_initiated");
+        initiatedCache.removeAll();
+        list = reloadAnalysisCache(initiatedCache, data.getId());
        // } else {
          //   list = getAnalysisListFromCache(initiatedCache);
        // }
@@ -152,8 +154,9 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
          * less than the total entries, the cache is reloaded from the database
          */
         //if (size == 0 || completedCache.getSize() > size) {
-          data = EJBFactory.getDictionaryCache().getBySystemName("analysis_completed");
-          list = reloadAnalysisCache(completedCache, data.getId());
+        data = EJBFactory.getDictionaryCache().getBySystemName("analysis_completed");
+        completedCache.removeAll();
+        list = reloadAnalysisCache(completedCache, data.getId());
         //} else {
           //  list = getAnalysisListFromCache(completedCache);
         //}
@@ -173,7 +176,8 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
          * less than the total entries, the cache is reloaded from the database
          */
         //if (size == 0 || releasedCache.getSize() > size)
-         list = reloadAnalysisCache(releasedCache, null);
+        releasedCache.removeAll();
+        list = reloadAnalysisCache(releasedCache, null);
         //else
           //  list = getAnalysisListFromCache(releasedCache);
 
@@ -194,6 +198,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
          */
         //if (size == 0 || toBeVerifiedCache.getSize() > size) {
           data = EJBFactory.getDictionaryCache().getBySystemName("sample_not_verified");
+          toBeVerifiedCache.removeAll();
           list = reloadSampleCache(toBeVerifiedCache, data.getId());
        // } else {
          //   list = getSampleListFromCache(toBeVerifiedCache);
@@ -214,7 +219,8 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
          * less than the total entries, the cache is reloaded from the database
          */
         //if (size == 0 || otherCache.getSize() > size) {
-          list = reloadAnalysisCache(otherCache, null);
+        otherCache.removeAll();
+        list = reloadAnalysisCache(otherCache, null);
         //} else {
           //  list = getAnalysisListFromCache(otherCache);
         //}
