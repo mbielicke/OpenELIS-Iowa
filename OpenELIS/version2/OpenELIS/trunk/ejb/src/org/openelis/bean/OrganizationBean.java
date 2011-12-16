@@ -51,6 +51,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AddressLocal;
 import org.openelis.local.OrganizationLocal;
+import org.openelis.local.OrganizationParameterLocal;
 import org.openelis.meta.OrganizationMeta;
 import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -61,10 +62,13 @@ import org.openelis.util.QueryBuilderV2;
 public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                    manager;
+    private EntityManager                 manager;
 
     @EJB
-    private AddressLocal                  addressBean;
+    private AddressLocal                  address;
+    
+    @EJB
+    private OrganizationParameterLocal    organizationParameter;
 
     private static final OrganizationMeta meta = new OrganizationMeta();
 
@@ -152,7 +156,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        addressBean.add(data.getAddress());        
+        address.add(data.getAddress());        
         entity = new Organization();
         entity.setIsActive(data.getIsActive());
         entity.setParentOrganizationId(data.getParentOrganizationId());
@@ -179,7 +183,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
         if (data.getAddress().isChanged()) {
             entity.setAuditAddressId(true);
-            addressBean.update(data.getAddress());
+            address.update(data.getAddress());
         }
         
         return data;
@@ -202,5 +206,14 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
         if (list.size() > 0)
             throw list;
+    }
+    
+    public boolean hasDontPrintFinalReport(Integer id) throws Exception {
+        try {
+            organizationParameter.fetchByDictionarySystemName("org_no_finalreport");
+            return true;
+        } catch (NotFoundException e) {
+            return false;
+        }        
     }
 }

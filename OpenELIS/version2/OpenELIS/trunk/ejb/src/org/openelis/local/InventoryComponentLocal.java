@@ -42,5 +42,5 @@ public interface InventoryComponentLocal {
 
     public void delete(InventoryComponentDO data) throws Exception;
 
-    public void validate(InventoryComponentDO data) throws Exception;
+    public void validate(InventoryComponentDO data, Integer inventoryItemStoreId) throws Exception;
 }

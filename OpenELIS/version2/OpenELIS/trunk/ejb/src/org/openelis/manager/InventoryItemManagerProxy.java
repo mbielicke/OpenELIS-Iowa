@@ -156,16 +156,18 @@ public class InventoryItemManagerProxy {
 
     public void validate(InventoryItemManager man) throws Exception {
         ValidationErrorsList list;
+        InventoryItemViewDO data;
         
         list = new ValidationErrorsList();
+        data = man.getInventoryItem();
         try {
-            EJBFactory.getInventoryItem().validate(man.getInventoryItem());
+            EJBFactory.getInventoryItem().validate(data);
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
         try {
             if (man.components != null)
-                man.getComponents().validate();
+                man.getComponents().validate(data.getStoreId());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }

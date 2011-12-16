@@ -54,11 +54,10 @@ import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
-import org.openelis.local.ProjectLocal;
+import org.openelis.local.OrganizationLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SessionCacheLocal;
-import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
@@ -94,8 +93,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     private SampleProjectLocal         sampleProject;
     
     @EJB
-    private ProjectLocal               project; 
-
+    private OrganizationLocal          organization;
+    
     @Resource
     private SessionContext             ctx;
 
@@ -690,7 +689,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     @RolesAllowed("w_final_environmental-select")
     public ArrayList<SampleEnvironmentalFinalReportWebVO> getSampleEnvironmentalList(ArrayList<QueryData> fields) throws Exception {
         int i, id;
-        String clause, orgIds, projIds, projName;
+        String clause, projName;
         Query query;
         QueryBuilderV2 builder;
         ArrayList<SampleProjectViewDO> sprjList;
@@ -704,16 +703,11 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                            .getPermission()
                            .getModule("w_final_environmental")
                            .getClause();
-        orgIds = ReportUtil.parseClauseAsString(clause)
-                           .get(SampleMeta.getSampleOrgOrganizationId());
-
-        projIds = ReportUtil.parseClauseAsString(clause)
-                            .get(SampleMeta.getSampleProjectProjectId());
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if orgIds and projIds are empty or not.
          */
-        if (orgIds == null && projIds == null)
+        if (clause == null)
             return new ArrayList<SampleEnvironmentalFinalReportWebVO>();
 
         builder = new QueryBuilderV2();
@@ -726,11 +720,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                           SampleWebMeta.getEnvCollector() + ", " +
                           SampleWebMeta.getLocationAddrCity() + ", " + "''" + ", " +
                           SampleWebMeta.getSampleOrgOrganizationId() + ") ");
-        builder.constructWhere(fields);
-        if (projIds != null) 
-            builder.addWhere(SampleWebMeta.getSampleProjectProjectId() + projIds);        
-        if (orgIds != null)
-            builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + orgIds);
+        builder.constructWhere(fields);       
+        builder.addWhere("("+clause+")");
         builder.addWhere(SampleWebMeta.getEnvSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
         builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);
@@ -771,7 +762,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
     @RolesAllowed("w_final_privatewell-select")
     public ArrayList<SamplePrivateWellFinalReportWebVO> getSamplePrivateWellList(ArrayList<QueryData> fields) throws Exception {
-        String clause, orgIds, projIds;
+        String clause;
         Query query;
         QueryBuilderV2 builder;
         ArrayList<SamplePrivateWellFinalReportWebVO> returnList;        
@@ -783,16 +774,11 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                            .getPermission()
                            .getModule("w_final_privatewell")
                            .getClause();
-        orgIds = ReportUtil.parseClauseAsString(clause)
-                           .get(SampleMeta.getSampleOrgOrganizationId());
-
-        projIds = ReportUtil.parseClauseAsString(clause)
-                            .get(SampleMeta.getSampleProjectProjectId());
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if orgIds is empty or not.
          */
-        if (orgIds == null && projIds == null)
+        if (clause == null)
             return new ArrayList<SamplePrivateWellFinalReportWebVO>();
 
         builder = new QueryBuilderV2();
@@ -806,10 +792,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                           ", " + SampleWebMeta.getWellOrganizationAddrCity() + ", " +
                           SampleWebMeta.getWellOrganizationId() + ") ");
         builder.constructWhere(fields);
-        if (projIds != null) 
-            builder.addWhere(SampleWebMeta.getSampleProjectProjectId() + projIds);
-        if (orgIds != null)
-            builder.addWhere(SampleWebMeta.getWellOrganizationId() + orgIds);
+        builder.addWhere("("+clause+")");
         builder.addWhere(SampleWebMeta.getWellSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getWellOrganizationAddressId() + "=" +
                          SampleWebMeta.getWellOrganizationAddrId());
@@ -836,7 +819,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
     @RolesAllowed("w_final_sdwis-select")
     public ArrayList<SampleSDWISFinalReportWebVO> getSampleSDWISList(ArrayList<QueryData> fields) throws Exception {
-        String clause, orgIds;
+        String clause;
         Query query;
         QueryBuilderV2 builder;
         ArrayList<SampleSDWISFinalReportWebVO> returnList;
@@ -845,9 +828,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * security clause in the userPermission.
          */
         clause = EJBFactory.getUserCache().getPermission().getModule("w_final_sdwis").getClause();
-        orgIds = ReportUtil.parseClauseAsString(clause)
-                           .get(SampleMeta.getSampleOrgOrganizationId());
 
+        if (clause == null)
+            return new ArrayList<SampleSDWISFinalReportWebVO>();
+        
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.SampleSDWISFinalReportWebVO(" +
@@ -860,7 +844,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                           SampleWebMeta.getSDWISCollector() + ", " + SampleWebMeta.getPwsName() +
                           ", " + SampleWebMeta.getSampleOrgOrganizationId() + ") ");
         builder.constructWhere(fields);
-        builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + orgIds);
+        builder.addWhere("("+clause+")");
         builder.addWhere(SampleWebMeta.getSDWISSampleId() + "=" + SampleWebMeta.getId());
         builder.addWhere(SampleWebMeta.getSDWISPwsId() + "=" + SampleWebMeta.getPwsId());
         builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
@@ -888,69 +872,54 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     @RolesAllowed("w_final_environmental-select")
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {
         String clause;
-        ArrayList<Integer> orgIds, projIds;                
 
         clause = EJBFactory.getUserCache()
                            .getPermission()
                            .getModule("w_final_environmental")
                            .getClause();
-        orgIds = ReportUtil.parseClauseAsArrayList(clause)
-                         .get(SampleMeta.getSampleOrgOrganizationId());
-        
-        projIds = ReportUtil.parseClauseAsArrayList(clause)
-                         .get(SampleMeta.getSampleProjectProjectId());
         /*
          * if clause is null, then the previous method returns an empty HashMap,
-         * so we need to check if the list is empty or not.
-         * We only return the list of projects 
+         * so we need to check if the list is empty or not. We only return the
+         * list of projects
          */
-       
-        if (projIds != null) 
-            return project.fetchByIds(projIds);                    
-        else if (orgIds != null) 
-            return sample.fetchProjectsForOrganizations(orgIds);                                                   
-        return new ArrayList<IdNameVO>();        
+        if (clause != null)             
+            return sample.fetchProjectsForOrganizations(clause);        
+        
+        return new ArrayList<IdNameVO>();
     }
 
     @RolesAllowed("w_final_privatewell-select")
-    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {        
+    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {
         String clause;
-        ArrayList<Integer> orgIds, projIds;        
-        Object values[];        
-                
+
         clause = EJBFactory.getUserCache()
                            .getPermission()
                            .getModule("w_final_privatewell")
                            .getClause();
-        orgIds = ReportUtil.parseClauseAsArrayList(clause)
-                         .get(SampleMeta.getSampleOrgOrganizationId());
-        
-        projIds = ReportUtil.parseClauseAsArrayList(clause)
-                         .get(SampleMeta.getSampleProjectProjectId());
 
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if the list is empty or not.
          */
-        if (projIds != null) 
-            return project.fetchByIds(projIds);
-        else if (orgIds != null) 
-            return sample.fetchProjectsForPrivateOrganizations(orgIds);                                        
+        if (clause != null)
+            return sample.fetchProjectsForOrganizations(clause);
+
         return new ArrayList<IdNameVO>();
     }
 
     private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
                        boolean forMailing, ReportStatus status, String printer) throws Exception {
         int i, n;
+        boolean needBlank;
         URL url;
         File tempFile;
         Integer zero;
-        Connection con;
-        boolean needBlank;
+        Connection con;        
         JasperReport jreport;
         JRExporter jexport;
         String dir, printstat;
         StringBuffer sampleIds;
+        JasperPrint print;
         List<JRPrintPage> pages;
         HashMap<String, Object> jparam;
         JasperPrint masterJprint, blankJprint, statsJprint;
@@ -980,10 +949,17 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              * for each organization, print all the samples
              */
             for (OrganizationPrint o : orgPrintList) {
-                if (o.getOrganizationId() == null)
+                if (o.getOrganizationId() == null) {
                     jparam.put("ORGANIZATION_ID", zero);
-                else
+                } else {
                     jparam.put("ORGANIZATION_ID", o.getOrganizationId());
+                    /*
+                     * we check to see if this organization chose not to have 
+                     * final report printed for or sent to it  
+                     */
+                    if (organization.hasDontPrintFinalReport(o.getOrganizationId()))
+                        continue;
+                }
                 sampleIds = new StringBuffer();
                 if (o.getSampleIds() != null && o.getSampleIds().length > 1) {
                     sampleIds.append("in (");
@@ -1020,7 +996,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              */
             needBlank = forMailing;
             for (OrganizationPrint o : orgPrintList) {
-                pages = o.getJprint().getPages();
+                print = o.getJprint();
+                if (print == null)
+                    continue;
+                pages = print.getPages();
                 n = pages.size();
                 if (n >= UNFOLDABLE_PAGE_COUNT && needBlank) {
                     masterJprint.addPage((JRPrintPage)blankJprint.getPages().get(0));

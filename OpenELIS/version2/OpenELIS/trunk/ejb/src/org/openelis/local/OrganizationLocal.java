@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 
 @Local
@@ -43,4 +42,6 @@ public interface OrganizationLocal {
     public OrganizationViewDO update(OrganizationViewDO data) throws Exception;
 
     public void validate(OrganizationViewDO data) throws Exception;
+    
+    public boolean hasDontPrintFinalReport(Integer id) throws Exception;
 }
