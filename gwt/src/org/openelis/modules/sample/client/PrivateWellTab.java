@@ -120,7 +120,7 @@ public class PrivateWellTab extends Screen {
         addScreenHandler(orgName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 if (getManager().getPrivateWell().getOrganizationId() == null) {
-                    orgName.setSelection("-1",
+                    orgName.setSelection(getManager().getPrivateWell().getReportToName(),
                                          getManager().getPrivateWell().getReportToName());
                     enableReportToFields(state == State.QUERY ||
                                          (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
@@ -145,35 +145,41 @@ public class PrivateWellTab extends Screen {
                     orgDO = null;
 
                 wellDO = getManager().getPrivateWell();
-                if (orgDO != null) { // it's an org record
+                if (orgDO != null) {
+                    // it's an org record
                     wellOrganizationId.setValue(orgDO.getId());
+
                     setAddress(orgDO.getAddress());                    
 
                     wellDO.setOrganizationId(orgDO.getId());
                     wellDO.setOrganization(orgDO);
-
+                    wellDO.setReportToName(null);
+                    
                     enableAddressValues = false;                    
                 } else if (selectedRow != null) { 
                     //
                     // it's a free text entry we only want to clear out the
                     // address values if it was an org before
                     //
-                    if (getManager().getPrivateWell().getOrganizationId() != null) 
+                    wellOrganizationId.setValue("");
+
+                    if (wellDO.getOrganizationId() != null)
                         setAddress(null);
                     
-                    wellOrganizationId.setValue("");
-                    wellDO.setReportToName(event.getValue());
                     wellDO.setOrganizationId(null);
+                    wellDO.setOrganization(null);
+                    wellDO.setReportToName(event.getValue());
 
                     enableAddressValues = true;
-                } else { // it's a clear out
+                } else {
+                    // it's a clear out
                     wellOrganizationId.setValue("");
+                    
                     setAddress(null);
 
-                    wellDO.setReportToName(null);
-                    wellDO.getReportToAddress().setId(null);
                     wellDO.setOrganizationId(null);
-                    wellDO.getOrganization().setName(null);
+                    wellDO.setOrganization(null);
+                    wellDO.setReportToName(null);
 
                     enableAddressValues = true;
                 }
@@ -208,8 +214,8 @@ public class PrivateWellTab extends Screen {
                 try {
                     list = orgService.callList("fetchByIdOrName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
-                    model.add(new TableDataRow("-1", event.getMatch(), null,
-                                                     null, null));
+                    model.add(new TableDataRow(event.getMatch(), event.getMatch(),
+                                               null, null, null));
 
                     i = 0;
                     while (i < maxRows && i < list.size()) {
@@ -1005,8 +1011,16 @@ public class PrivateWellTab extends Screen {
     }
     
     private void setAddress(AddressDO data) {
-        if (data == null)
-            data = new AddressDO();
+        if (data == null) {
+            data = getManager().getPrivateWell().getReportToAddress();
+            data.setMultipleUnit(null);
+            data.setStreetAddress(null);
+            data.setCity(null);
+            data.setState(null);
+            data.setZipCode(null);
+            data.setWorkPhone(null);
+            data.setFaxPhone(null);
+        }
         
         addressMultipleUnit.setValue(data.getMultipleUnit());
         addressStreetAddress.setValue(data.getStreetAddress());
