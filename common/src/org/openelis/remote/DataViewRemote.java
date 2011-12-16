@@ -38,10 +38,12 @@ import org.openelis.gwt.common.data.QueryData;
 public interface DataViewRemote {
     public ArrayList<IdNameVO> fetchPermanentProjectList() throws Exception;
     
+    public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception;
+    
     public DataViewVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields) throws Exception;
     
     public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(ArrayList<QueryData> fields) throws Exception ;
-    
+        
     public ReportStatus runReport(DataViewVO data) throws Exception;
     
     public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception;

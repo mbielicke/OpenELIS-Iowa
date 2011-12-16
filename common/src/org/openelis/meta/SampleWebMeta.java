@@ -917,6 +917,9 @@ public class SampleWebMeta implements Meta, MetaMap {
             from += ", IN (_sample.sampleProject) _sampleProject ";
             from += ", IN (_sampleProject.project) _project ";
         }
+        
+        if (where.indexOf("_sampleProject.") > -1 && where.indexOf("_project.") == -1)
+            from += ", IN (_sample.sampleProject) _sampleProject ";
 
         if (where.indexOf("_organization.") > -1) {
             from += ", IN (_sample.sampleOrganization) _sampleOrganization ";

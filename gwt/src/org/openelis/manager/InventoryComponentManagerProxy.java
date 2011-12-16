@@ -49,6 +49,6 @@ public class InventoryComponentManagerProxy {
         return null;
     }
     
-    public void validate(InventoryComponentManager man) throws Exception {
+    public void validate(InventoryComponentManager man, Integer inventoryItemStoreId) throws Exception {
     }
 }

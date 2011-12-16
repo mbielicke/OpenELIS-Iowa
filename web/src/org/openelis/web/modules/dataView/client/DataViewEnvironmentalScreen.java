@@ -98,7 +98,6 @@ public class DataViewEnvironmentalScreen extends Screen {
                                 selectAllOrganizationFields, selectAllAnalysisFields, runReportButton,
                                 backButton, selectAllAnalyteButton, unselectAllAnalyteButton,
                                 selectAllAuxButton, unselectAllAuxButton;
-    private ScreenService       finalReportService;
     private Screen              screen;
     private boolean             loadTable;
 
@@ -112,7 +111,6 @@ public class DataViewEnvironmentalScreen extends Screen {
     public DataViewEnvironmentalScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DataViewEnvironmentalDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");
-        finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
         userPermission = UserCache.getPermission().getModule("w_dataview_environmental");
         if (userPermission == null)
@@ -1049,9 +1047,9 @@ public class DataViewEnvironmentalScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         try {
-            list = finalReportService.callList("getEnvironmentalProjectList");
-            for (int counter = 0; counter < list.size(); counter++ ) {
-                row = new TableDataRow(list.get(counter).getId(), list.get(counter).getName());
+            list = service.callList("fetchEnvironmentalProjectListForWeb");
+            for (IdNameVO data :  list) {
+                row = new TableDataRow(data.getId(), data.getName());
                 model.add(row);
             }
         } catch (Exception e) {
