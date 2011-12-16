@@ -150,13 +150,18 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
             data.setReportToName(null);
             data.getReportToAddress().setId(null);            
         } else {
-            if (data.getReportToAddress().getId() == null) {
-                if ( !address.isEmpty(data.getReportToAddress())) 
-                    address.add(data.getReportToAddress());                                    
+            if (address.isEmpty(data.getReportToAddress())) {
+                if (entity.getReportToAddressId() != null) {
+                    address.delete(entity.getReportToAddressId());             
+                    data.getReportToAddress().setId(null);
+                }
             } else {
                 if (data.getReportToAddress().isChanged()) {
                     entity.setAuditReportToAddressId(true);
-                    address.update(data.getReportToAddress());
+                    if (data.getReportToAddress().getId() != null)
+                        address.update(data.getReportToAddress());
+                    else
+                        address.add(data.getReportToAddress());
                 }
             }
         }
