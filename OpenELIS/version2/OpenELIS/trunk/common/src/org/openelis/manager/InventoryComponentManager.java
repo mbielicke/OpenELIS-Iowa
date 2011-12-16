@@ -104,8 +104,8 @@ public class InventoryComponentManager implements RPC {
         return proxy().update(this);
     }
 
-    public void validate() throws Exception {
-        proxy().validate(this);
+    public void validate(Integer inventoryItemStoreId) throws Exception {
+        proxy().validate(this, inventoryItemStoreId);
     }
 
     // friendly methods used by managers and proxies

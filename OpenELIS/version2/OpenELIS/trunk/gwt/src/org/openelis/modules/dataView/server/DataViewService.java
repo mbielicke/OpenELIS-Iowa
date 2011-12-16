@@ -50,6 +50,10 @@ public class DataViewService {
         return remote().fetchPermanentProjectList();  
     }
     
+    public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
+        return remote().fetchEnvironmentalProjectListForWeb();  
+    }
+    
     public DataViewVO fetchAnalyteAndAuxField(Query query) throws Exception {
         return remote().fetchAnalyteAndAuxField(query.getFields());
     }
