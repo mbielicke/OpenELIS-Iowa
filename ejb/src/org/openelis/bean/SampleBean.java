@@ -51,6 +51,7 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.local.SampleLocal;
 import org.openelis.meta.SampleMeta;
+import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.SampleRemote;
 import org.openelis.util.QueryBuilderV2;
 
@@ -63,6 +64,8 @@ public class SampleBean implements SampleLocal, SampleRemote {
     private EntityManager           manager;
 
     private static final SampleMeta meta = new SampleMeta();
+    
+    private static final SampleWebMeta webMeta = new SampleWebMeta();
 
     private static HashMap<String, String> wellOrgFieldMap, reportToAddressFieldMap;
 
@@ -287,19 +290,17 @@ public class SampleBean implements SampleLocal, SampleRemote {
             return list;        
     } 
 
-    public ArrayList<IdNameVO> fetchProjectsForOrganizations(ArrayList<Integer> organizationIdList) throws Exception {
+    public ArrayList<IdNameVO> fetchProjectsForOrganizations(String clause) throws Exception {
         Query query;
-
-        query = manager.createNamedQuery("Sample.FetchProjectsForOrganizations");
-        query.setParameter("organizationIds", organizationIdList);
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-    
-    public ArrayList<IdNameVO> fetchProjectsForPrivateOrganizations(ArrayList<Integer> organizationIdList) throws Exception {
-        Query query;
-               
-        query = manager.createNamedQuery("Sample.FetchProjectsForPrivateOrganizations");
-        query.setParameter("organizationIds", organizationIdList);
+        QueryBuilderV2 builder;
+        
+        builder = new QueryBuilderV2();
+        builder.setMeta(webMeta);        
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          SampleWebMeta.getProjectId() + ", " + SampleWebMeta.getProjectName()+ ") ");
+        builder.addWhere("("+clause+")");
+        builder.addWhere(SampleWebMeta.getSampleProjectProjectId() + "=" + SampleWebMeta.getProjectId());
+        query = manager.createQuery(builder.getEJBQL());
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     

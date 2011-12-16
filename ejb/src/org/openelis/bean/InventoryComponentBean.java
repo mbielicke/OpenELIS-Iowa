@@ -37,13 +37,16 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.InventoryComponentDO;
 import org.openelis.domain.InventoryComponentViewDO;
+import org.openelis.domain.InventoryItemDO;
 import org.openelis.entity.InventoryComponent;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.InventoryComponentLocal;
-import org.openelis.meta.InventoryComponentMeta;
+import org.openelis.local.InventoryItemCacheLocal;
+import org.openelis.meta.InventoryItemMeta;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -52,8 +55,6 @@ public class InventoryComponentBean implements InventoryComponentLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;
-
-    private static final InventoryComponentMeta meta = new InventoryComponentMeta();
 
     @SuppressWarnings("unchecked")
     public ArrayList<InventoryComponentViewDO> fetchByInventoryItemId(Integer id) throws Exception {
@@ -112,17 +113,31 @@ public class InventoryComponentBean implements InventoryComponentLocal {
             manager.remove(entity);
     }
 
-    public void validate(InventoryComponentDO data) throws Exception {
-        ValidationErrorsList list;
+    public void validate(InventoryComponentDO data, Integer inventoryItemStoreId) throws Exception {
+        Integer compId;
+        ValidationErrorsList list;       
+        InventoryItemDO item;
+        InventoryItemCacheLocal icl;
 
+        icl = EJBFactory.getInventoryItemCache();
         list = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getComponentId()))
+        compId = data.getComponentId();
+
+        if (DataBaseUtil.isEmpty(compId))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getComponentId()));
+                                             InventoryItemMeta.getComponentId()));
         if (DataBaseUtil.isEmpty(data.getQuantity()))
             list.add(new FieldErrorException("fieldRequiredException",
-                                             meta.getQuantity()));
-
+                                             InventoryItemMeta.getComponentQuantity()));
+        
+        if (inventoryItemStoreId != null) {
+            item = icl.getById(compId);
+            if (!inventoryItemStoreId.equals(item.getStoreId())) {
+                list.add(new FieldErrorException("compStoreNotSameAsKitStoreException",
+                                                 InventoryItemMeta.getComponentName()));
+            }
+        }
+        
         if (list.size() > 0)
             throw list;
     }

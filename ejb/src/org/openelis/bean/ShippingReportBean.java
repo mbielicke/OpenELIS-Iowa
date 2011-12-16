@@ -370,18 +370,20 @@ public class ShippingReportBean implements ShippingReportRemote {
                 //
                 // print the barcode labels                
                 //
-                tempFile = File.createTempFile("shippingAddresslabel", ".txt", new File("/tmp"));
-                ps = new PrintStream(tempFile);
-                for (int i = 0; i < numpkg; i++) {
-                    labelReport.shippingAddressLabel(ps, name, method, fromStreetAddress1, "SH"+shippingIdStr,
-                                                     fromStreetAddress2, fromCity, fromState, fromZip, attention,
-                                                     toStreetAddress1, toStreetAddress2, toCity, toState, toZip);
+                if (numpkg > 0) {
+                    tempFile = File.createTempFile("shippingAddresslabel", ".txt", new File("/tmp"));
+                    ps = new PrintStream(tempFile);
+                    for (int i = 0; i < numpkg; i++ ) {
+                        labelReport.shippingAddressLabel(ps, name, method, fromStreetAddress1,
+                                                         "SH" + shippingIdStr, fromStreetAddress2,
+                                                         fromCity, fromState, fromZip, attention,
+                                                         toStreetAddress1, toStreetAddress2,
+                                                         toCity, toState, toZip);
+                    }
+                    ps.close();
+                    printstat = ReportUtil.print(tempFile, barcodePrinter, 1);
+                    status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 }
-                
-                ps.close();
-                
-                printstat = ReportUtil.print(tempFile, barcodePrinter, 1);
-                status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 tempFile = ReportUtil.saveForUpload(tempFile);
                 status.setMessage(tempFile.getName())

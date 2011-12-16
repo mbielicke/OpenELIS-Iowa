@@ -65,7 +65,10 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Project.FetchActiveByName",
     		    query = "select new org.openelis.domain.ProjectDO(p.id, p.name," + 
                 	    "p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id)" 
-    			      + " from Project p left join p.scriptlet s where p.name like :name and p.isActive = 'Y' order by p.name")})
+    			      + " from Project p left join p.scriptlet s where p.name like :name and p.isActive = 'Y' order by p.name"),
+    @NamedQuery( name = "Project.FetchByIds", 
+    			query = "select new org.openelis.domain.IdNameVO(p.id, p.name)" 
+    			      + " from Project p where p.id in ( :ids ) ")})
                 
 @Entity
 @Table(name="project")

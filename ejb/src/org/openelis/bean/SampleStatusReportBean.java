@@ -38,7 +38,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
@@ -51,12 +50,10 @@ import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleQAEventLocal;
-import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.SampleStatusReportRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.EJBFactory;
-import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -97,7 +94,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
     @RolesAllowed("w_status-select")
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception {
         int id, sampleId, prevSampleId, analysisId;
-        String clause, orgIds;
+        String clause;
         ArrayList<SampleStatusWebReportVO> returnList;
         ArrayList<IdAccessionVO> tempList;
         ArrayList<Integer> idList;
@@ -109,13 +106,11 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * security clause in the userPermission.
          */
         clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
-        orgIds = ReportUtil.parseClauseAsString(clause)
-                           .get(SampleMeta.getSampleOrgOrganizationId());
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if orgIds is empty or not.
          */
-        if (orgIds == null)
+        if (clause == null)
             return new ArrayList<SampleStatusWebReportVO>();
 
         tempList = new ArrayList<IdAccessionVO>();
@@ -130,8 +125,8 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * information at this stage, and also since these are query fields so
          * we can't use named native query.
          */
-        tempList.addAll(getSampleIdsList(fields, orgIds, false));
-        tempList.addAll(getSampleIdsList(fields, orgIds, true));
+        tempList.addAll(getSampleIds(fields, clause, false));
+        tempList.addAll(getSampleIds(fields, clause, true));
         Collections.sort(tempList, new AccessionIdComparator());
 
         if (tempList == null || tempList.size() == 0)
@@ -227,31 +222,27 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
     @RolesAllowed("w_status-select")
     public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
         String clause;
-        ArrayList<Integer> list;
         ArrayList<IdNameVO> projectList;
 
         projectList = new ArrayList<IdNameVO>();
         clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
-        list = ReportUtil.parseClauseAsArrayList(clause)
-                         .get(SampleMeta.getSampleOrgOrganizationId());
         /*
          * if clause is null, then the previous method returns an empty HashMap,
          * so we need to check if the list is empty or not.
          */
-        if (list == null)
+        if (clause == null)
             return new ArrayList<IdNameVO>();
         /*
          * Adding projects from environment and private domain into projectList.
-         * Since Project name is of type char, so we can't use NamedNativeQuery
+         * Since Project name is of type char, we can't use a named native query
          */
-        projectList.addAll(sample.fetchProjectsForOrganizations(list));
-        projectList.addAll(sample.fetchProjectsForPrivateOrganizations(list));
+        projectList.addAll(sample.fetchProjectsForOrganizations(clause));
 
         Collections.sort(projectList, new ProjectComparator());
         return projectList;
     }
     
-    private ArrayList<IdAccessionVO> getSampleIdsList(ArrayList<QueryData> fields, String orgIds,
+    private ArrayList<IdAccessionVO> getSampleIds(ArrayList<QueryData> fields, String clause,
                                                       boolean fromPrivates) throws Exception {
         QueryBuilderV2 builder;
         Query query;
@@ -264,9 +255,9 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         builder.constructWhere(fields);
 
         if (fromPrivates) {
-            builder.addWhere(SampleWebMeta.getWellOrganizationId() + orgIds);
+            builder.addWhere("("+clause+")");
         } else {
-            builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + orgIds);
+            builder.addWhere("("+clause+")");
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
         }
 

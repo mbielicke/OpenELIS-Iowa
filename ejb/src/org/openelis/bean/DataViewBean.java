@@ -247,6 +247,25 @@ public class DataViewBean implements DataViewRemote {
         return sampleProject.fetchPermanentProjectList();
     }
     
+    @RolesAllowed("w_dataview_environmental-select")
+    public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
+        String clause;
+
+        clause = EJBFactory.getUserCache()
+                           .getPermission()
+                           .getModule("w_dataview_environmental")
+                           .getClause();
+        /*
+         * if clause is null, then the previous method returns an empty HashMap,
+         * so we need to check if the list is empty or not. We only return the
+         * list of projects
+         */
+        if (clause != null)
+            return sample.fetchProjectsForOrganizations(clause);
+
+        return new ArrayList<IdNameVO>();
+    }
+    
     @TransactionTimeout(180)
     public DataViewVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields) throws Exception {
         
@@ -302,8 +321,7 @@ public class DataViewBean implements DataViewRemote {
          */
         if (moduleName != null) {
             builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);
-            builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + getOrganizationIds(moduleName));
-            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
+            builder.addWhere("("+getClause(moduleName)+")");
         }
         
         builder.constructWhere(fields);
@@ -590,8 +608,7 @@ public class DataViewBean implements DataViewRemote {
              * in this user's system_user_module for a specific domain.
              */
             if (moduleName != null) {
-                builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + getOrganizationIds(moduleName));
-                builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
+                builder.addWhere("("+getClause(moduleName)+")");
                 builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);
                 builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);
             }          
@@ -628,7 +645,7 @@ public class DataViewBean implements DataViewRemote {
              * in this user's system_user_module for a specific domain.
              */
             if (moduleName != null) {
-                builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + getOrganizationIds(moduleName));
+                builder.addWhere("("+getClause(moduleName)+")");
                 builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
                 builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId); 
             }
@@ -2168,19 +2185,12 @@ public class DataViewBean implements DataViewRemote {
         return value;
     }
     
-    private String getOrganizationIds(String moduleName) throws Exception {
-       String clause, orgIds;
+    private String getClause(String moduleName) throws Exception {
         /*
          * retrieving the organization Ids to which the user belongs from the
          * security clause in the userPermission
          */
-        clause = EJBFactory.getUserCache()
-                           .getPermission()
-                           .getModule(moduleName)
-                           .getClause();
-        orgIds = ReportUtil.parseClauseAsString(clause)
-                           .get(SampleMeta.getSampleOrgOrganizationId());
-        return orgIds;        
+        return EJBFactory.getUserCache().getPermission().getModule(moduleName).getClause();        
     }
     
     private CellStyle createStyle(HSSFWorkbook wb) {

@@ -84,16 +84,17 @@ public class InventoryComponentManagerProxy {
         return man;
     }
     
-    public void validate(InventoryComponentManager man) throws Exception {
+    public void validate(InventoryComponentManager man, Integer inventoryItemStoreId) throws Exception {
         ValidationErrorsList list;
         InventoryComponentLocal cl;
 
         cl = EJBFactory.getInventoryComponent();
         list = new ValidationErrorsList();
+
         for (int i = 0; i < man.count(); i++ ) {
             try {
-                cl.validate(man.getComponentAt(i));
-            } catch (Exception e) {
+                cl.validate(man.getComponentAt(i), inventoryItemStoreId);
+            } catch (ValidationErrorsList e) {
                 DataBaseUtil.mergeException(list, e, "componentTable", i);
             }
         }

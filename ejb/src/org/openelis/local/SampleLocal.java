@@ -35,9 +35,7 @@ public interface SampleLocal {
     
     public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception;
         
-    public ArrayList<IdNameVO> fetchProjectsForOrganizations(ArrayList<Integer> organizationId) throws Exception;
-    
-    public ArrayList<IdNameVO> fetchProjectsForPrivateOrganizations(ArrayList<Integer> organizationId) throws Exception;
+    public ArrayList<IdNameVO> fetchProjectsForOrganizations(String clause) throws Exception;   
     
     public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportEnvironmental(ArrayList<Integer> sampleIdList) throws Exception;
     
