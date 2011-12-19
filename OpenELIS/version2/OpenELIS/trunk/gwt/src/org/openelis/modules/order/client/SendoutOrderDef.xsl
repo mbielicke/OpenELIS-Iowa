@@ -136,6 +136,7 @@ UIRF Software License are applicable instead of those above.
                     <html>&lt;hr/&gt;</html>
                     <menuItem description="" enable="false" icon="shippingIcon" key="shippingInfo" label="{resource:getString($constants,'shippingInfo')}" />
                     <menuItem description="" enable="false" icon="" key="orderRequestForm" label="{resource:getString($constants,'orderRequestForm')}" />
+                    <menuItem description="" enable="false" icon="" key="process" label="{resource:getString($constants,'process')}" />
                     <html>&lt;hr/&gt;</html>
                     <menuItem description="" enable="false" icon="historyIcon" key="orderHistory" label="{resource:getString($constants,'orderHistory')}" />
                     <menuItem description="" enable="false" icon="historyIcon" key="itemHistory" label="{resource:getString($constants,'orderItemHistory')}" />
