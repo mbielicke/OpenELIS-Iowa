@@ -134,7 +134,7 @@ public class SendoutOrderScreen extends Screen {
     private AppButton                              queryButton, previousButton, nextButton,
                                                    addButton, updateButton, commitButton,
                                                    abortButton;
-    private MenuItem                               duplicate, shippingInfo, orderRequestForm,
+    private MenuItem                               duplicate, shippingInfo, orderRequestForm, process,
                                                    orderHistory, itemHistory, testHistory,
                                                    containerHistory;
     private TextBox                                id, neededInDays, numberOfForms, requestedBy,
@@ -159,7 +159,7 @@ public class SendoutOrderScreen extends Screen {
                                                    auxDictionaryId, auxNumericId,
                                                    auxTimeId;
     private String                                 descQuery;
-
+    
     private HashMap<Integer, ResultValidator.Type> types;
 
     protected ScreenService                        organizationService, panelService, shippingService;
@@ -353,6 +353,17 @@ public class SendoutOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {                
                 orderRequestForm.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        process = (MenuItem)def.getWidget("process");
+        addScreenHandler(process, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                process();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {               
+                process.enable(false);
             }
         });
 
@@ -577,7 +588,9 @@ public class SendoutOrderScreen extends Screen {
                 
                 id = manager.getOrder().getStatusId();
                 statusId.setSelection(id);
+                
                 shippingInfo.enable(state == State.DISPLAY && statusProcessedId.equals(id));
+                process.enable(state == State.DISPLAY && statusPendingId.equals(id));
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1213,6 +1226,7 @@ public class SendoutOrderScreen extends Screen {
 
     protected void update() {
         Integer stId;
+        
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
@@ -1460,6 +1474,40 @@ public class SendoutOrderScreen extends Screen {
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
+        }
+    }
+    
+    private void process() {
+        OrderItemManager man;
+        OrderViewDO data;
+
+        window.setBusy(consts.get("lockForUpdate"));
+        try {
+            manager = manager.fetchForUpdate();
+            data = manager.getOrder();
+            if ( !statusPendingId.equals(data.getStatusId())) {
+                Window.alert(consts.get("onlyProcessPendingOrders"));
+                manager = manager.abortUpdate();                
+                DataChangeEvent.fire(this);
+                window.clearStatus();
+                return;
+            } 
+            
+            man = manager.getItems();
+            if (man.count() > 0) {
+                Window.alert(consts.get("onlyProcessOrdersWithNoItems"));
+                manager = manager.abortUpdate();                
+                DataChangeEvent.fire(this);
+                window.clearStatus();
+                return;
+            }
+            setState(State.UPDATE);
+            data.setStatusId(statusProcessedId);
+            commit();
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+            window.clearStatus();
         }
     }
 
