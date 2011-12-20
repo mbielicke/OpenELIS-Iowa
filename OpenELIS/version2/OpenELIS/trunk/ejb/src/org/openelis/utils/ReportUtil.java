@@ -197,6 +197,20 @@ public class ReportUtil {
      * NOTE: This method is very "lpr" and "cups" dependent and will not work on non unix platforms.
      */
     public static String print(File file, String destination, int copies, String... options) throws Exception {
+        try {
+            return printWithoutDelete(file, destination, copies, options);
+        } catch (Exception anyE) {
+            throw anyE;
+        } finally {
+            file.delete();
+        }
+    }
+
+    /**
+     * Sends the file to specified printer and returns the printer's status.
+     * NOTE: This method is very "lpr" and "cups" dependent and will not work on non unix platforms.
+     */
+    public static String printWithoutDelete(File file, String destination, int copies, String... options) throws Exception {
         String status;
         StringBuffer sb;
 
@@ -221,8 +235,6 @@ public class ReportUtil {
             status = "print queued to " + destination;
         } catch (Exception e) {
             throw new Exception("Could not print to queue "+destination+"; "+e.getMessage());
-        } finally {
-            file.delete();
         }
 
         return status;

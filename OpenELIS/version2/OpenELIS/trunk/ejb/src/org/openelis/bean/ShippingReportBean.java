@@ -416,7 +416,7 @@ public class ShippingReportBean implements ShippingReportRemote {
                 if (itemUri != null && itemUri.startsWith(PRN_PREFIX) && data.getQuantity() > 0) {
                     itemUri = itemUri.replaceAll(PRN_PREFIX, "");
                     tempFile = new File(uriPath, itemUri);
-                    ReportUtil.print(tempFile, printer, data.getQuantity());
+                    ReportUtil.printWithoutDelete(tempFile, printer, data.getQuantity());
                 }
                 prevOrderId = orderId;
             }
