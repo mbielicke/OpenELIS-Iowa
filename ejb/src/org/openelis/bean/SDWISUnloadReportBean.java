@@ -186,7 +186,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     .setRequired(true));
 
             loc = new ArrayList<OptionListItem>();
-            loc.add(new OptionListItem("-an", "Ankeny"));
+            loc.add(new OptionListItem("-ank", "Ankeny"));
             loc.add(new OptionListItem("-ic", "Iowa City"));
             loc.add(new OptionListItem("-lk", "Lakeside"));
 
@@ -395,7 +395,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
            .append("LAB-ID")                            // col 25-30
            .append(" ");                                // col 31
         
-        if ("-an".equals(location))                     // col 32-36
+        if ("-ank".equals(location))                    // col 32-36
             row.append("397  ");                        // Ankeny DNR ID
         else if ("-ic".equals(location))
             row.append("027  ");                        // Iowa City DNR ID
