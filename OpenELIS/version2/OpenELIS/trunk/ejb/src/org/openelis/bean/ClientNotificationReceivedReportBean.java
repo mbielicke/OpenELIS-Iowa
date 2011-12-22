@@ -135,7 +135,7 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
         Object[] result;
         Integer samId;
         Boolean hasOverride;
-        String email, to, rcvd_date, col_dt, ref, qaOverride, proj, text;
+        String email, from, to, rcvd_date, col_dt, ref, qaOverride, proj, text;
         StringBuilder contents;
         Timestamp rc_date, col_date_time, col_date, col_time;
         Time cl_time;
@@ -193,7 +193,8 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             printFooter(contents);
             text = contents.toString();
             try {
-                ReportUtil.sendEmail("do-not-reply@shl.uiowa.edu", to, 
+                from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");                
+                ReportUtil.sendEmail(from, to, 
                                      "Samples Received by the State Hygienic Laboratory", text);
                 //sendemail(rcvd_email, text);
                 anaList = analysisReportFlags.fetchForUpdateBySampleAccessionNumbers(sampleId);

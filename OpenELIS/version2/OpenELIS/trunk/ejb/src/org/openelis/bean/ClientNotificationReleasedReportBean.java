@@ -154,7 +154,7 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
         ReportStatus status;
         Object[] result;
         Integer samId;
-        String email, to, rcvdDate, col_dt, ref, proj;
+        String email,from, to, rcvdDate, col_dt, ref, proj;
         String text;
         StringBuilder contents;
         Timestamp rc_date, col_date_time, col_date, col_time;
@@ -213,7 +213,8 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
             printFooter(contents);
             text = contents.toString();
             try {
-                ReportUtil.sendEmail("do-not-reply@shl.uiowa.edu", to, 
+                from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");                
+                ReportUtil.sendEmail(from, to, 
                                      "Your Results are available from the State Hygienic Laboratory at the University of Iowa", text);
                 //sendemail(rcvd_email, text);
                 anaList = analysisReportFlags.fetchForUpdateBySampleAccessionNumbers(sampleId);
