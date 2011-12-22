@@ -421,8 +421,8 @@ public class ReportUtil {
         
         props = new Properties();        
         
-        props.put("mail.smtp.host", getSystemVariableValue("mail.smtp.host"));
-        props.put("mail.smtp.port", getSystemVariableValue("mail.smtp.port"));
+        props.put("mail.smtp.host", getSystemVariableValue("mail_smtp_host"));
+        props.put("mail.smtp.port", getSystemVariableValue("mail_smtp_port"));
         
         session = Session.getDefaultInstance(props, null);
         msg = new MimeMessage(session);
