@@ -612,7 +612,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     }
     
     public void onAction(ActionEvent<AnalysisTab.Action> event) {
-        if (event.getAction() == AnalysisTab.Action.UNIT_CHANGED) {                   
+        if ((state == State.ADD || state == State.UPDATE) &&
+                        event.getAction() == AnalysisTab.Action.UNIT_CHANGED) {                   
             bundle = (SampleDataBundle)event.getData();
             try {
                 analysisMan = bundle.getSampleManager()
