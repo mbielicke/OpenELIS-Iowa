@@ -38,8 +38,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Properties;
 
 import javax.ejb.SessionContext;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
@@ -405,4 +413,25 @@ public class ReportUtil {
         }
         return map;
     }
+    
+    public static void sendEmail(String from, String to, String subject, String body) throws Exception { 
+        Properties props;
+        Session session;
+        Message msg;        
+        
+        props = new Properties();        
+        
+        props.put("mail.smtp.host", getSystemVariableValue("mail.smtp.host"));
+        props.put("mail.smtp.port", getSystemVariableValue("mail.smtp.port"));
+        
+        session = Session.getDefaultInstance(props, null);
+        msg = new MimeMessage(session);
+        msg.setContent(body, "text/html; charset=ISO-8859-1");
+        msg.setFrom(new InternetAddress(from));
+        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+        msg.setSubject(subject);
+        msg.saveChanges();
+
+        Transport.send(msg);
+    }   
 }
