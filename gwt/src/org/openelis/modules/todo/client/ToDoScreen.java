@@ -51,7 +51,7 @@ public class ToDoScreen extends Screen {
 
     private ToDoScreen                screen;
     private CheckBox                  mySection;
-    private AppButton                 refreshButton, trackingButton;
+    private AppButton                 refreshButton, trackingButton, exportToXl;
     private TabPanel                  tabPanel;
     private Tabs                      tab;
     private LoggedInTab               loggedIntab;
@@ -162,6 +162,13 @@ public class ToDoScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 trackingButton.enable(true);
+            }
+        });
+        
+        exportToXl = (AppButton)def.getWidget("exportToXl");
+        addScreenHandler(exportToXl, new ScreenEventHandler<Object>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                exportToXl.enable(false);
             }
         });
         

@@ -8,21 +8,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Properties;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.local.AnalysisReportFlagsLocal;
@@ -32,6 +25,7 @@ import org.openelis.local.SystemVariableLocal;
 import org.openelis.remote.ClientNotificationReceivedReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.JasperUtil;
+import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -41,13 +35,13 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
     private SessionCacheLocal        session;
 
     @EJB
-    private SampleLocal              sampleBean;
+    private SampleLocal              sample;
 
     @EJB
-    private SystemVariableLocal      sysvarBean;
+    private SystemVariableLocal      systemVariable;
 
     @EJB
-    private AnalysisReportFlagsLocal anaReportFlagsBean;
+    private AnalysisReportFlagsLocal analysisReportFlags;
 
     /*
      * Returns the prompt for a single re-print
@@ -70,22 +64,21 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
         ReportStatus status;
         Object[] result;
         ArrayList<Object[]> resultList;
-        Integer samId, qaId, lastAccNum, currentQaId;
+        Integer accNum, qaId, lastAccNum;
         String email;
         Date rc_stDate, rc_endDate;
         SystemVariableDO data;
         Calendar cal;
         DateFormat df;
         HashMap<String, ArrayList<Object[]>> map;
-        HashMap<Integer, Integer> sMap;
+        HashMap<Integer, Boolean> sMap;
         ArrayList<Object[]> l;
 
-        samId = null;
+        accNum = null;
         resultList = null;
 
         map = new HashMap<String, ArrayList<Object[]>>();
-        sMap = new HashMap<Integer, Integer>();
-        lastAccNum = -1;
+        sMap = new HashMap<Integer, Boolean>();
         status = new ReportStatus();
         session.setAttribute("ClientNotificationReceivedReport", status);
 
@@ -98,55 +91,51 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
         rc_endDate = cal.getTime();
 
         try {
-            data = sysvarBean.fetchByName("last_receivable_report_run");
+            data = systemVariable.fetchByName("last_receivable_report_run");
             rc_stDate = df.parse(data.getValue());
         } catch (Exception e) {
             throw e;
         }
 
         if (rc_stDate.compareTo(rc_endDate) < 0)
-            resultList = sampleBean.fetchForClientEmailReceivedReport(rc_stDate, rc_endDate);
+            resultList = sample.fetchForClientEmailReceivedReport(rc_stDate, rc_endDate);
         else
             throw new NotFoundException("Start Date should be earlier than End Date");
+        
+        lastAccNum = -1;
         for (int i = 0; i < resultList.size(); i++ ) {
             result = resultList.get(i);
             email = (String)result[6];
-            samId = (Integer)result[2];
+            accNum = (Integer)result[2];
             qaId = (Integer)result[7];
-            if (map.get(email) == null) {
+            l = map.get(email);
+            if (l == null) {
                 l = new ArrayList<Object[]>();
-                l.add(result);
                 map.put(email, l);
-                sMap.put(samId, qaId);
-                lastAccNum = samId;
-            } else {
-                if (samId > lastAccNum) {
-                    l = map.get(email);
-                    l.add(result);
-                    map.put(email, l);
-                    sMap.put(samId, qaId);
-                    lastAccNum = samId;
-                } else {
-                    currentQaId = sMap.get(samId);
-                    if (currentQaId != null)
-                        continue;
-                    else if (qaId != null)
-                        sMap.put(samId, qaId);
-                }
+                lastAccNum = -1;
             }
+            if (accNum > lastAccNum)
+                l.add(result);
+            lastAccNum = accNum;
+
+            if (qaId != null) 
+                sMap.put(accNum, Boolean.TRUE);  
+            else 
+                sMap.put(accNum, Boolean.FALSE);  
+
         }
         return generateEmailsFromList(map, sMap);
     }
 
     protected ReportStatus generateEmailsFromList(HashMap<String, ArrayList<Object[]>> map,
-                                                  HashMap<Integer, Integer> sMap) throws Exception {
+                                                  HashMap<Integer, Boolean> sMap) throws Exception {
 
         int i, j;
         ReportStatus status;
         Object[] result;
-        Integer samId, qaId;
-        String email, rcvd_email, rcvd_date, col_dt, domain, ref_f1, ref_f2, ref_f3, ref, qaOverride;
-        String text;
+        Integer samId;
+        Boolean hasOverride;
+        String email, to, rcvd_date, col_dt, ref, qaOverride, proj, text;
         StringBuilder contents;
         Timestamp rc_date, col_date_time, col_date, col_time;
         Time cl_time;
@@ -157,11 +146,8 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
         ArrayList<AnalysisReportFlagsDO> anaList;
         AnalysisReportFlagsDO anaData;
 
-        rcvd_date = col_dt = ref = qaOverride = null;
-        samId = null;
-        contents = null;
-        rcvd_email = null;
-        text = null;
+        col_dt = null;
+        to = null;
         sampleId = new ArrayList<Integer>();
         status = new ReportStatus();
         df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -178,12 +164,8 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
                 col_date = (Timestamp)result[3];
                 cl_time = (Time)result[4];
                 rc_date = (Timestamp)result[5];
-                rcvd_email = (String)result[6];
-                domain = Character.toString((Character)result[8]);
+                to = (String)result[6];
                 rcvd_date = df.format(rc_date);
-                ref_f1 = (String)result[9];
-                ref_f2 = (String)result[10];
-                ref_f3 = (String)result[11];
 
                 if (col_date != null) {
                     if (cl_time != null) {
@@ -195,13 +177,13 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
                         col_dt = df1.format(col_date_time);
                     }
                 }
-
-                ref = getReferenceFields(domain, ref_f1, ref_f2, ref_f3);
-                qaId = sMap.get(samId);
-                if (qaId != null)
-                    qaOverride = "YES";
-                else
-                    qaOverride = null;
+                proj = null;
+                if (result[12] != null)
+                    proj = result[12].toString();
+                ref = getReferenceFields((String)result[9], (String)result[10], (String)result[11], proj);
+                
+                hasOverride = sMap.get(samId);
+                qaOverride = hasOverride ? "YES" : null;
                 printBody(contents, samId, rcvd_date, col_dt, ref, qaOverride);
 
                 col_dt = null;
@@ -211,13 +193,15 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             printFooter(contents);
             text = contents.toString();
             try {
-                sendemail(rcvd_email, text);
-                anaList = anaReportFlagsBean.fetchForUpdateBySampleAccessionNumbers(sampleId);
+                ReportUtil.sendEmail("do-not-reply@shl.uiowa.edu", to, 
+                                     "Samples Received by the State Hygienic Laboratory", text);
+                //sendemail(rcvd_email, text);
+                anaList = analysisReportFlags.fetchForUpdateBySampleAccessionNumbers(sampleId);
                 for (int k = 0; k < anaList.size(); k++ ) {
                     anaData = anaList.get(k);
                     anaData.setNotifiedReceived("Y");
-                    anaReportFlagsBean.update(anaData);
-                    anaReportFlagsBean.abortUpdate(anaData.getAnalysisId());
+                    analysisReportFlags.update(anaData);
+                    analysisReportFlags.abortUpdate(anaData.getAnalysisId());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -226,9 +210,9 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
         }
         status.setMessage("emailed").setStatus(ReportStatus.Status.PRINTED);
         try {
-            data = sysvarBean.fetchForUpdateByName("last_receivable_report_run");
+            data = systemVariable.fetchForUpdateByName("last_receivable_report_run");
             data.setValue(df.format(new Date()));
-            sysvarBean.updateAsSystem(data);
+            systemVariable.updateAsSystem(data);
         } catch (Exception e) {
             throw e;
         }
@@ -294,77 +278,19 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             .append("<br><br>\r\n")
             .append("<i>This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify <a href='mailto:ask-shl@uiowa.edu'>ask-shl@uiowa.edu</a> immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited.</i>");
     }
+    
+    protected String getReferenceFields(String... f) {
+        StringBuffer b;
 
-    protected void sendemail(String to_email, String body) throws AddressException,
-                    MessagingException {
-        Message msg;
-        Properties props;
-        Session session;
-
-        props = new Properties();
-        props.put("mail.smtp.host", "mailserver.uhl.uiowa.edu");
-        props.put("mail.smtp.port", "25");
-        session = Session.getDefaultInstance(props, null);
-
-        msg = new MimeMessage(session);
-        msg.setContent(body, "text/html; charset=ISO-8859-1");
-        msg.setFrom(new InternetAddress("do-not-reply@shl.uiowa.edu"));
-        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to_email));
-        msg.setSubject("Samples Received by the State Hygienic Laboratory");
-        msg.saveChanges();
-
-        try {
-            Transport.send(msg);
-        } catch (MessagingException mex) {
-            mex.printStackTrace();
+        b = new StringBuffer();
+        for (int i = 0; i < f.length; i++ ) {
+            if (!DataBaseUtil.isEmpty(f[i])) {
+                if (b.length() > 0) 
+                    b.append(", ");
+                b.append(f[i].trim());
+            }                                       
         }
-    }
 
-    protected String getReferenceFields(String domain, String field1, String field2, String field3) {
-        String project, cl_ref, col_site, owner, collector, ref;
-        ref = null;
-        if (domain.equals("E")) {
-            cl_ref = field1;
-            col_site = field2;
-            project = field3;
-            if ( (project == null) && (cl_ref == null) && (col_site == null))
-                ref = null;
-            else if ( (project != null) && (cl_ref != null) && (col_site != null))
-                ref = project + ", " + cl_ref + ", " + col_site;
-            else if ( (project != null) && (cl_ref != null) && (col_site == null))
-                ref = project + ", " + cl_ref;
-            else if ( (project != null) && (cl_ref == null) && (col_site == null))
-                ref = project;
-            else if ( (project == null) && (cl_ref != null) && (col_site != null))
-                ref = cl_ref + ", " + col_site;
-            else if ( (project == null) && (cl_ref != null) && (col_site == null))
-                ref = cl_ref;
-            else if ( (project == null) && (cl_ref == null) && (col_site != null))
-                ref = col_site;
-            else if ( (project == null) && (cl_ref == null) && (col_site != null))
-                ref = project + ", " + col_site;
-
-        } else {
-            owner = field1;
-            col_site = field2;
-            collector = field3;
-            if ( (collector == null) && (owner == null) && (col_site == null))
-                ref = null;
-            else if ( (collector != null) && (owner != null) && (col_site != null))
-                ref = collector + ", " + owner + ", " + col_site;
-            else if ( (collector != null) && (owner != null) && (col_site == null))
-                ref = collector + ", " + owner;
-            else if ( (collector != null) && (owner == null) && (col_site == null))
-                ref = collector;
-            else if ( (collector == null) && (owner != null) && (col_site == null))
-                ref = owner + ", " + col_site;
-            else if ( (collector == null) && (owner != null) && (col_site == null))
-                ref = owner;
-            else if ( (collector == null) && (owner == null) && (col_site != null))
-                ref = col_site;
-            else if ( (collector != null) && (owner == null) && (col_site != null))
-                ref = collector + ", " + col_site;
-        }
-        return ref;
+        return b.toString();
     }
 }

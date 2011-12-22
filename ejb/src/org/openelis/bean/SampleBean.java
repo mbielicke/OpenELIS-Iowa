@@ -256,8 +256,8 @@ public class SampleBean implements SampleLocal, SampleRemote {
         Query query;
         ArrayList<Object[]> list;       
         query = manager.createNamedQuery("Sample.FetchForClientEmailReleasedReport");     
-        query.setParameter("start_received_date", stDate);
-        query.setParameter("end_received_date", endDate);
+        query.setParameter("start_released_date", stDate);
+        query.setParameter("end_released_date", endDate);
         
         try {
             list = DataBaseUtil.toArrayList(query.getResultList());

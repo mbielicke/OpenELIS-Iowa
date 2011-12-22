@@ -33,22 +33,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Properties;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.OptionListItem;
 import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
@@ -59,6 +52,7 @@ import org.openelis.local.SystemVariableLocal;
 import org.openelis.remote.ClientNotificationReleasedReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.JasperUtil;
+import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -69,13 +63,13 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
     private SessionCacheLocal        session;
 
     @EJB
-    private SampleLocal              sampleBean;
+    private SampleLocal              sample;
 
     @EJB
-    private SystemVariableLocal      sysvarBean;
+    private SystemVariableLocal      systemVariable;
 
     @EJB
-    private AnalysisReportFlagsLocal anaReportFlagsBean;
+    private AnalysisReportFlagsLocal analysisReportFlags;
 
     public ArrayList<Prompt> getPrompts() throws Exception {
         ArrayList<Prompt> p;
@@ -102,8 +96,7 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
         ReportStatus status;
         Object[] result;
         ArrayList<Object[]> resultList;
-        Integer samId;
-        String email;       
+        String email;
         Date rc_stDate, rc_endDate;
         SystemVariableDO data;
         Calendar cal;
@@ -111,47 +104,39 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
         HashMap<String, ArrayList<Object[]>> map;
         ArrayList<Object[]> l;
 
-        samId = null;        
         resultList = null;
         map = new HashMap<String, ArrayList<Object[]>>();
-        
+
         status = new ReportStatus();
         session.setAttribute("ClientNotificationReleasedReport", status);
 
         df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         cal = Calendar.getInstance();
-        // cal.add(Calendar.HOUR, -2);
         cal.add(Calendar.MINUTE, -1);
         rc_endDate = cal.getTime();
 
         try {
-            data = sysvarBean.fetchByName("last_released_report_run");
+            data = systemVariable.fetchByName("last_released_report_run");
             rc_stDate = df.parse(data.getValue());
         } catch (Exception e) {
             throw e;
         }
 
         if (rc_stDate.compareTo(rc_endDate) < 0)
-            resultList = sampleBean.fetchForClientEmailReleasedReport(rc_stDate, rc_endDate);
+            resultList = sample.fetchForClientEmailReleasedReport(rc_stDate, rc_endDate);
         else
             throw new NotFoundException("Start Date should be earlier than End Date");
-        
+
         for (i = 0; i < resultList.size(); i++ ) {
             result = resultList.get(i);
             email = (String)result[5];
-            samId = (Integer)result[1];
-            if (map.get(email) == null) {
+            l = map.get(email);
+            if (l == null)
                 l = new ArrayList<Object[]>();
-                l.add(result);
-                map.put(email, l);
-            } else {
-                l = map.get(email);
-                l.add(result);
-                map.put(email, l);
-            }
+            l.add(result);
+            map.put(email, l);
         }
         return generateEmailsFromList(map);
-        
     }
 
     private ArrayList<OptionListItem> getOptions() {
@@ -169,7 +154,7 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
         ReportStatus status;
         Object[] result;
         Integer samId;
-        String email, rcvd_email, rcvd_date, col_dt, domain, ref, ref_f1, ref_f2, ref_f3;
+        String email, to, rcvdDate, col_dt, ref, proj;
         String text;
         StringBuilder contents;
         Timestamp rc_date, col_date_time, col_date, col_time;
@@ -181,9 +166,9 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
         ArrayList<AnalysisReportFlagsDO> anaList;
         AnalysisReportFlagsDO anaData;
 
-        rcvd_date = col_dt = null;
+        rcvdDate = col_dt = null;
         contents = null;
-        rcvd_email = null;
+        to = null;
         text = null;
         sampleId = new ArrayList<Integer>();
         
@@ -201,12 +186,9 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
                 col_date = (Timestamp)result[2];
                 cl_time = (Time)result[3];
                 rc_date = (Timestamp)result[4];
-                rcvd_email = (String)result[5];
-                domain = Character.toString((Character)result[6]);
-                rcvd_date = df.format(rc_date);
-                ref_f1 = (String)result[7];
-                ref_f2 = (String)result[8];
-                ref_f3 = (String)result[9];
+                to = (String)result[5];                
+                rcvdDate = df.format(rc_date);
+               
                 if (col_date != null) {
                     if (cl_time != null) {
                         col_time = new Timestamp(cl_time.getTime());
@@ -217,24 +199,29 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
                         col_dt = df1.format(col_date_time);
                     }
                 }
-                ref = getReferenceFields(domain, ref_f1, ref_f2, ref_f3);               
+                proj = null;
+                if (result[10] != null)
+                    proj = result[10].toString();               
+                ref = getReferenceFields((String)result[7], (String)result[8], (String)result[9], proj);               
                 
-                printBody(contents, samId, rcvd_date, col_dt, ref);
+                printBody(contents, samId, rcvdDate, col_dt, ref);
 
                 col_dt = null;
-                rcvd_date = null;
+                rcvdDate = null;
                 sampleId.add(samId);
             }
             printFooter(contents);
             text = contents.toString();
             try {
-                sendemail(rcvd_email, text);
-                anaList = anaReportFlagsBean.fetchForUpdateBySampleAccessionNumbers(sampleId);
+                ReportUtil.sendEmail("do-not-reply@shl.uiowa.edu", to, 
+                                     "Your Results are available from the State Hygienic Laboratory at the University of Iowa", text);
+                //sendemail(rcvd_email, text);
+                anaList = analysisReportFlags.fetchForUpdateBySampleAccessionNumbers(sampleId);
                 for (int k = 0; k < anaList.size(); k++ ) {
                     anaData = anaList.get(k);
                     anaData.setNotifiedReleased("Y");
-                    anaReportFlagsBean.update(anaData);
-                    anaReportFlagsBean.abortUpdate(anaData.getAnalysisId());
+                    analysisReportFlags.update(anaData);
+                    analysisReportFlags.abortUpdate(anaData.getAnalysisId());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -248,9 +235,9 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
          * and time.
          */
         try {
-            data = sysvarBean.fetchForUpdateByName("last_released_report_run");
+            data = systemVariable.fetchForUpdateByName("last_released_report_run");
             data.setValue(df.format(new Date()));
-            sysvarBean.updateAsSystem(data);
+            systemVariable.updateAsSystem(data);
         } catch (Exception e) {
             throw e;
         }
@@ -310,76 +297,20 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
             .append("<b>Disclaimer:</b>\r\n")
             .append("<br><br>\r\n")
             .append("<i>This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify <a href='mailto:ask-shl@uiowa.edu'>ask-shl@uiowa.edu</a> immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited.</i>");
-    }
-
-    protected void sendemail(String to_email, String body) throws AddressException,
-                    MessagingException {
-
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "mailserver.uhl.uiowa.edu");
-        props.put("mail.smtp.port", "25");
-        Session session = Session.getDefaultInstance(props, null);
-
-        Message msg = new MimeMessage(session);
-        msg.setContent(body, "text/html; charset=ISO-8859-1");
-        msg.setFrom(new InternetAddress("do-not-reply@shl.uiowa.edu"));
-        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to_email));
-        msg.setSubject("Your Results are available from the State Hygienic Laboratory at the University of Iowa");
-        msg.saveChanges();
-
-        try {
-            Transport.send(msg);
-        } catch (MessagingException mex) {
-            mex.printStackTrace();
-        }
-    }
+    }      
     
-    protected String getReferenceFields(String domain, String field1, String field2, String field3){        
-        String project, cl_ref, col_site, owner, collector, ref;        
-        ref = null;
-        if (domain.equals("E")) {
-            cl_ref = field1;
-            col_site = field2;
-            project = field3;
-            if ( (project == null) && (cl_ref == null) && (col_site == null))
-                ref = null;
-            else if ( (project != null) && (cl_ref != null) && (col_site != null))
-                ref = project + ", " + cl_ref + ", " + col_site;
-            else if ( (project != null) && (cl_ref != null) && (col_site == null))
-                ref = project + ", " + cl_ref;
-            else if ( (project != null) && (cl_ref == null) && (col_site == null))
-                ref = project;
-            else if ( (project == null) && (cl_ref != null) && (col_site != null))
-                ref = cl_ref + ", " + col_site;
-            else if ( (project == null) && (cl_ref != null) && (col_site == null))
-                ref = cl_ref;
-            else if ( (project == null) && (cl_ref == null) && (col_site != null))
-                ref = col_site;
-            else if ( (project == null) && (cl_ref == null) && (col_site != null))
-                ref = project + ", " + col_site;
+    protected String getReferenceFields(String... f) {
+        StringBuffer b;
 
-        } else {
-            owner = field1;
-            col_site = field2;
-            collector = field3;
-            if ( (collector == null) && (owner == null) && (col_site == null))
-                ref = null;
-            else if ( (collector != null) && (owner != null) && (col_site != null))
-                ref = collector + ", " + owner + ", " + col_site;
-            else if ( (collector != null) && (owner != null) && (col_site == null))
-                ref = collector + ", " + owner;
-            else if ( (collector != null) && (owner == null) && (col_site == null))
-                ref = collector;
-            else if ( (collector == null) && (owner != null) && (col_site == null))
-                ref = owner + ", " + col_site;
-            else if ( (collector == null) && (owner != null) && (col_site == null))
-                ref = owner;
-            else if ( (collector == null) && (owner == null) && (col_site != null))
-                ref = col_site;
-            else if ( (collector != null) && (owner == null) && (col_site != null))
-                ref = collector + ", " + col_site;
+        b = new StringBuffer();
+        for (int i = 0; i < f.length; i++ ) {
+            if (!DataBaseUtil.isEmpty(f[i])) {
+                if (b.length() > 0) 
+                    b.append(", ");
+                b.append(f[i].trim());
+            }                                       
         }
-        return ref;
-    }
 
+        return b.toString();
+    }
 }
