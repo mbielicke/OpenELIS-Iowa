@@ -1696,14 +1696,12 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     }
 
     private void showNote() {
-        final int index;
         ScreenWindow modal;
         AnalysisManager man;
 
-        index = dataBundle.getSampleItemIndex();
         try {
-            man = dataBundle.getSampleManager().getSampleItems().getAnalysisAt(index);
-            noteMan = man.getInternalNotesAt(index);
+            man = dataBundle.getSampleManager().getSampleItems().getAnalysisAt(dataBundle.getSampleItemIndex());
+            noteMan = man.getInternalNotesAt(dataBundle.getAnalysisIndex());
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());

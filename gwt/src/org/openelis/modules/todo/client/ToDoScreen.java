@@ -165,7 +165,7 @@ public class ToDoScreen extends Screen {
             }
         });
         
-        exportToXl = (AppButton)def.getWidget("exportToXl");
+        exportToXl = (AppButton)def.getWidget("exportToExcelButton");
         addScreenHandler(exportToXl, new ScreenEventHandler<Object>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 exportToXl.enable(false);
