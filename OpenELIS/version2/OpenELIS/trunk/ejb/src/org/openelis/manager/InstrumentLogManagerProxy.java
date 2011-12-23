@@ -100,17 +100,18 @@ public class InstrumentLogManagerProxy {
     }
     
     private void validateLog(ValidationErrorsList list, InstrumentLogManager man) {
+        int i;
         InstrumentLogLocal il;
         InstrumentLogDO data;
-        TableFieldErrorException exc;
-        Datetime eb,ee;
-        int num;
-        List<Datetime[]> rangeList;
-        Datetime range[];
+//        TableFieldErrorException exc;
+//        Datetime eb,ee;
+//        int num;
+//        List<Datetime[]> rangeList;
+//        Datetime range[];
                 
-        num = 0;
-        rangeList = new ArrayList<Datetime[]>();
-        for(int i=0; i < man.count(); i++) {
+//        num = 0;
+//        rangeList = new ArrayList<Datetime[]>();
+        for (i = 0; i < man.count(); i++) {
             data = man.getLogAt(i);
             il = EJBFactory.getInstrumentLog();
 
@@ -120,32 +121,32 @@ public class InstrumentLogManagerProxy {
                 DataBaseUtil.mergeException(list, e, "logTable", i);
             }            
 
-            ee = data.getEventEnd();
-            eb = data.getEventBegin();            
-            
-            if(DataBaseUtil.isEmpty(ee)) {
-                num++;                   
-                if(num > 1) {
-                    exc = new TableFieldErrorException("moreThanOneEndDateAbsentException", i,
-                                                       InstrumentMeta.getLogEventEnd(),"logTable");                
-                    list.add(exc);
-                }
-            }
-            
-            range = new Datetime[2];
-            range[0] = eb;
-            range[1] = ee;
-            
-            if(dateRangeOverlapping(range,rangeList)){
-                exc = new TableFieldErrorException("intervalOverlapException", i,
-                                                   InstrumentMeta.getLogEventBegin(),"logTable");                
-                list.add(exc);
-                exc = new TableFieldErrorException("intervalOverlapException", i,
-                                                   InstrumentMeta.getLogEventEnd(),"logTable");                
-                list.add(exc);
-            } else {
-                rangeList.add(range);
-            }
+//            ee = data.getEventEnd();
+//            eb = data.getEventBegin();            
+//            
+//            if(DataBaseUtil.isEmpty(ee)) {
+//                num++;                   
+//                if(num > 1) {
+//                    exc = new TableFieldErrorException("moreThanOneEndDateAbsentException", i,
+//                                                       InstrumentMeta.getLogEventEnd(),"logTable");                
+//                    list.add(exc);
+//                }
+//            }
+//            
+//            range = new Datetime[2];
+//            range[0] = eb;
+//            range[1] = ee;
+//            
+//            if(dateRangeOverlapping(range,rangeList)){
+//                exc = new TableFieldErrorException("intervalOverlapException", i,
+//                                                   InstrumentMeta.getLogEventBegin(),"logTable");                
+//                list.add(exc);
+//                exc = new TableFieldErrorException("intervalOverlapException", i,
+//                                                   InstrumentMeta.getLogEventEnd(),"logTable");                
+//                list.add(exc);
+//            } else {
+//                rangeList.add(range);
+//            }
              
         }
     }
