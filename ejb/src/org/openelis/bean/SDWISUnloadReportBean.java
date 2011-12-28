@@ -781,6 +781,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         methodCodes.put("colilert mpn sdwa pm",  "9223B-18QT");
         methodCodes.put("colilert pa sdwa am",   "9223B-PA");
         methodCodes.put("colilert pa sdwa pm",   "9223B-18PA");
+        methodCodes.put("epa 00-02/200.8",       "00-02/200.8");
         methodCodes.put("epa 200.7 drink",       "200.7");
         methodCodes.put("epa 200.8 drink",       "200.8");
         methodCodes.put("epa 200.8 sdwa pb&cu",  "200.8");
@@ -802,8 +803,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         methodCodes.put("epa 550",               "550");
         methodCodes.put("epa 551.1 edb, dbcp",   "551.1");
         methodCodes.put("epa 552.2 haa",         "552.2");
+        methodCodes.put("epa 900.0/200.8",       "900.0/200.8");
         methodCodes.put("epa 901.1",             "901.1");
         methodCodes.put("epa 903.0",             "903");
+        methodCodes.put("epa 903.0/904.0",       "903.0/904.0");
         methodCodes.put("epa 904.0",             "904");
         methodCodes.put("epa 905.0",             "905");
         methodCodes.put("epa 906.0",             "906");
