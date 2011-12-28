@@ -303,10 +303,8 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < autoList.size(); i++ ) {
                         data = autoList.get(i);
-                        row = new TableDataRow(data.getTestId(),
-                                                            data.getTestName(),
-                                                            data.getMethodName(),
-                                                            data.getTestDescription());
+                        row = new TableDataRow(i, data.getTestName(), data.getMethodName(),
+                                               data.getTestDescription());
                         row.data = data;
                         model.add(row);
                     }
