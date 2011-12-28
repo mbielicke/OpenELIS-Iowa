@@ -1009,7 +1009,7 @@ public class WorksheetCreationScreen extends Screen {
                     accessionNumber = (String) qcRow.cells.get(1).value;
                     if (accessionNumber == null || accessionNumber.startsWith("X."))
                         qcRow.cells.get(1).value = "X."+posNum;     // qc accession #
-                    qcItems[posNum-1] = qcRow;
+                    qcItems[posNum-1] = (TableDataRow) qcRow.clone();
                 }
             } else if (typeRand.equals(twiDO.getTypeId())) {
                 qcRandList.add(qcRow);
