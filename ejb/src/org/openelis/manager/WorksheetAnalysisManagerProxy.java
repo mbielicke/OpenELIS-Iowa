@@ -312,17 +312,17 @@ public class WorksheetAnalysisManagerProxy {
         
         local = EJBFactory.getWorksheetAnalysis();
         
-        //
-        // We are only updating records that were not added from another
-        // worksheet
-        //
-        if ("Y".equals(analysis.getIsFromOther()))
-            return;
-        
         if (analysis.getId() == null) {
             assert false : "not supported";
         } else {
             if (analysis.getAnalysisId() != null) {
+                //
+                // We are only updating records that were not added from another
+                // worksheet
+                //
+                if ("Y".equals(analysis.getIsFromOther()))
+                    return;
+                
                 doBreak = false;
                 //
                 // Trim the 'D' off the front of the accession number for analyses
