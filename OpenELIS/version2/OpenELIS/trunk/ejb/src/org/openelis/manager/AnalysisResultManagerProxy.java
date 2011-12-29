@@ -260,7 +260,7 @@ public class AnalysisResultManagerProxy {
                 result = results.get(j);
 
                 // if required if needs to have a value
-                if (resultRequiredId.equals(result.getTypeId()) &&
+                if (resultRequiredId.equals(result.getTestAnalyteTypeId()) &&
                     (DataBaseUtil.isEmpty(result.getValue()))) {
                     errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
                                                           anDO.getTestName(), anDO.getMethodName()));
