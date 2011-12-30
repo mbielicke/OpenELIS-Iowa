@@ -1010,6 +1010,7 @@ public class WorksheetCreationScreen extends Screen {
                     if (accessionNumber == null || accessionNumber.startsWith("X."))
                         qcRow.cells.get(1).value = "X."+posNum;     // qc accession #
                     qcItems[posNum-1] = (TableDataRow) qcRow.clone();
+                    qcItems[posNum-1].data = qcRow.data;
                 }
             } else if (typeRand.equals(twiDO.getTypeId())) {
                 qcRandList.add(qcRow);
@@ -1036,6 +1037,7 @@ public class WorksheetCreationScreen extends Screen {
             for (j = 0; j < lastOf.size(); j++) {
                 qcRow = (TableDataRow) lastOf.get(j).clone();
                 qcRow.cells.get(1).value = "X."+posNum;     // qc accession #
+                qcRow.data = lastOf.get(j).data;
                 qcItems[posNum-1] = qcRow;
                 posNum++;
             }
@@ -1049,6 +1051,7 @@ public class WorksheetCreationScreen extends Screen {
             j = 0;
             while (j < randSize) {
                 qcRow = (TableDataRow) qcRandList.get(j).clone();
+                qcRow.data = qcRandList.get(j).data;
                 posNum = (int) (Math.random() * (testWorksheetDO.getSubsetCapacity() - 1)) + i * testWorksheetDO.getSubsetCapacity() + 1;
                 if (qcItems[posNum-1] == null) {
                     if (posNum < testWorksheetDO.getTotalCapacity()) {
