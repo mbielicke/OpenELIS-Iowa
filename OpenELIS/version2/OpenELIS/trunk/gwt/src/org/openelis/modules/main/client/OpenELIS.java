@@ -36,6 +36,7 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.WindowBrowser;
+import org.openelis.manager.Application;
 import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
 import org.openelis.modules.analyte.client.AnalyteScreen;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
@@ -68,8 +69,8 @@ import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.report.client.BillingReportScreen;
-import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
+import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
@@ -96,6 +97,7 @@ import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
+import org.openelis.modules.cron.client.CronScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -131,9 +133,9 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         VerticalPanel vp;
 
         service = new ScreenService("controller?service=org.openelis.modules.main.server.OpenELISScreenService");
-        rpc = service.call("initialData");
-       
-        consts = rpc.appConstants;
+        //rpc = service.call("initialData");
+    
+        consts = Application.CONSTANTS.getConstants();//rpc.appConstants;
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
 
@@ -151,14 +153,6 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         		browser.resize();
 			}
 		});
-
-        // load the favorite's panel
-        vp = (VerticalPanel)def.getWidget("favoritesPanel");
-        try {
-            vp.add(new FavoritesScreen(def));
-        } catch (Throwable t) {
-            Window.alert("Can't initalize the favorite panel; "+t.getMessage());
-        }
         
         // load the google chart api
         VisualizationUtils.loadVisualizationApi(new Runnable() {
@@ -176,6 +170,14 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         initializeWindowClose();
         initializeTimeout();
         initialize();
+        
+        // load the favorite's panel
+        vp = (VerticalPanel)def.getWidget("favoritesPanel");
+        try {
+            vp.add(new FavoritesScreen(def));
+        } catch (Throwable t) {
+            Window.alert("Can't initalize the favorite panel; "+t.getMessage());
+        }
     }
 
     protected void initialize() {        
@@ -1173,6 +1175,26 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                     }
                 });
             }
+        });
+        
+        addClickHandler("cron","cron",new ClickHandler() {
+        	public void onClick(ClickEvent event) {
+        		GWT.runAsync(new RunAsyncCallback() {
+        			public void onSuccess() {
+        				try {
+        					browser.addScreen(new CronScreen());
+        				}catch(Exception e) {
+        					e.printStackTrace();
+        					Window.alert(e.getMessage());
+        				}
+        			}
+        			
+        			public void onFailure(Throwable caught) {
+        				caught.printStackTrace();
+        				Window.alert(caught.getMessage());
+        			}
+        		});
+        	}
         });
 
         addClickHandler("testReport", "test", new ClickHandler() {
