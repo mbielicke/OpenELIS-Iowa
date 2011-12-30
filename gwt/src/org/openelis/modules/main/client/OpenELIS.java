@@ -36,7 +36,6 @@ import org.openelis.gwt.widget.CollapsePanel;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.WindowBrowser;
-import org.openelis.manager.Application;
 import org.openelis.modules.SDWISSampleLogin.client.SDWISSampleLoginScreen;
 import org.openelis.modules.analyte.client.AnalyteScreen;
 import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
@@ -133,9 +132,9 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         VerticalPanel vp;
 
         service = new ScreenService("controller?service=org.openelis.modules.main.server.OpenELISScreenService");
-        //rpc = service.call("initialData");
+        rpc = service.call("initialData");
     
-        consts = Application.CONSTANTS.getConstants();//rpc.appConstants;
+        consts = rpc.appConstants;
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
 
