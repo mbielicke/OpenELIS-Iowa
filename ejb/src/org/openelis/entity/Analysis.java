@@ -86,7 +86,12 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, a.releasedDate, s.id, s.domain, s.accessionNumber," +
                         "s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name)"
                       + " from Analysis a, SampleItem si, Sample s, Test t, Dictionary d"
-                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = d.id and d.systemName = 'analysis_released' and a.releasedDate >= :releasedDate order by s.accessionNumber")})            
+                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = d.id and d.systemName = 'analysis_released' and a.releasedDate >= :releasedDate order by s.accessionNumber"),          
+    @NamedQuery( name = "Analysis.FetchForMCLViolation",
+                query = "select distinct new org.openelis.domain.MCLViolationReportVO(s.id, s.accessionNumber, s.collectionDate, ss.stateLabId, ss.facilityId, d1.entry, ss.samplePointId, ss.location, p.number0, p.name, p.alternateStNum, o.name, a.id, a.unitOfMeasureId, a.completedDate, a.releasedDate, d2.entry, t.name, t.method.name)"
+                      + " from Analysis a, SampleItem si, Sample s, SampleSDWIS ss, PWS p, SampleOrganization so, Organization o, Test t, Dictionary d1, Dictionary d2, Dictionary d3"
+                      + " where a.sampleItemId = si.id and si.sampleId = s.id and ss.sampleId = s.id and ss.pwsId = p.id and ss.sampleTypeId = d1.id and so.sampleId = s.id and so.organizationId = o.id and a.testId = t.id and a.unitOfMeasureId = d2.id and"
+                      + " so.typeId = d3.id and d3.systemName = 'org_report_to' and a.releasedDate between :startDate and :endDate order by s.accessionNumber, a.releasedDate")})
 @Entity
 @Table(name="analysis")
 @EntityListeners({AuditUtil.class})

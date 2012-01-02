@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -37,6 +38,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.entity.Analysis;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -97,6 +99,21 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
         return data;
     }
     
+    public ArrayList<MCLViolationReportVO> fetchForMCLViolationReport(Date startDate, Date endDate) throws Exception {
+        List<MCLViolationReportVO> list;
+        Query query;
+
+        query = manager.createNamedQuery("Analysis.FetchForMCLViolation");
+        query.setParameter("startDate", startDate);
+        query.setParameter("endDate", endDate);
+        
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
+    }
+
     public AnalysisViewDO add(AnalysisViewDO data) throws Exception{
         Analysis entity;
         

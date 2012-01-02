@@ -25,26 +25,10 @@
 */
 package org.openelis.local;
 
-import java.util.ArrayList;
-import java.util.Date;
-
 import javax.ejb.Local;
 
-import org.openelis.domain.AnalysisViewDO;
-import org.openelis.domain.MCLViolationReportVO;
-import org.openelis.gwt.common.Datetime;
-
-
 @Local
-public interface AnalysisLocal {
-    public AnalysisViewDO fetchById(Integer id) throws Exception;
-    public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception;
-    public ArrayList<AnalysisViewDO> fetchBySampleItemId(Integer sampleItemId) throws Exception;
-    public ArrayList<MCLViolationReportVO> fetchForMCLViolationReport(Date beginPrinted, Date endPrinted) throws Exception;
+public interface MCLViolationReportLocal {
 
-    public AnalysisViewDO add(AnalysisViewDO data) throws Exception;
-    public AnalysisViewDO update(AnalysisViewDO data) throws Exception;
-    public void updatePrintedDate(Integer id, Datetime timeStamp) throws Exception;
-    public void delete(AnalysisViewDO data) throws Exception;
-    
+    public void runReport();
 }
