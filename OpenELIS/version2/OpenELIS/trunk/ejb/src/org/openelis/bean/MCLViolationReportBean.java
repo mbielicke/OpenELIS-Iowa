@@ -141,10 +141,14 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             lastRun = sysVarBean.fetchForUpdateByName("last_mcl_violation_report_run");
             startDate = formatYMDHM.parse(lastRun.getValue());
 
-            if (startDate.compareTo(endDate) < 0)
+            if (startDate.compareTo(endDate) > 0)
+                throw new Exception("Start Date should be earlier than End Date");
+
+            try {
                 analysisList = analysisBean.fetchForMCLViolationReport(startDate, endDate);
-            else
-                throw new NotFoundException("Start Date should be earlier than End Date");
+            } catch (NotFoundException nfE) {
+                analysisList = new ArrayList<MCLViolationReportVO>();
+            }
             
             body = new StringBuilder();
             footer = new StringBuilder();
