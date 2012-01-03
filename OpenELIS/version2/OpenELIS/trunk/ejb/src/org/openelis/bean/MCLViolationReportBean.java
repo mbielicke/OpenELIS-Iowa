@@ -159,7 +159,12 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                 adMan = AuxDataManager.fetchById(analysis.getSampleId(), ReferenceTable.SAMPLE);
                 
                 results = new ArrayList<ArrayList<ResultViewDO>>();
-                resultBean.fetchByAnalysisIdForDisplay(analysis.getAnalysisId(), results);
+                try {
+                    resultBean.fetchByAnalysisIdForDisplay(analysis.getAnalysisId(), results);
+                } catch (NotFoundException nfE) {
+                    log.error("Analysis ("+analysis.getAnalysisId()+") is missing results.");
+                    continue;
+                }
                 for (j = 0; j < results.size(); j++) {
                     resultRow = results.get(j);
                     rowResult = resultRow.get(0);
