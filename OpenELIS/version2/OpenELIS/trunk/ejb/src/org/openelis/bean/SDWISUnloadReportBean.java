@@ -306,7 +306,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                         addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Warning: Sample has revision > 0. Please check for previous entry!");
                     }
                     
-                    reject = writeSampleRow(writer, sDO, ssVDO);
+                    reject = writeSampleRow(writer, sDO, ssVDO, location);
                     if (!reject) {
                         analyses = analysis.fetchBySampleId(sDO.getId());
                         aIter = analyses.iterator();
@@ -393,18 +393,9 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
            .append(format.format(today.getDate()))      // col 14-23
            .append(" ")                                 // col 24
            .append("LAB-ID")                            // col 25-30
-           .append(" ");                                // col 31
-        
-        if ("-ank".equals(location))                    // col 32-36
-            row.append("397  ");                        // Ankeny DNR ID
-        else if ("-ic".equals(location))
-            row.append("027  ");                        // Iowa City DNR ID
-        else if ("-lk".equals(location))
-            row.append("393  ");                        // Lakeside DNR ID
-        else
-            row.append("     ");
-           
-        row.append(" ")                                 // col 37
+           .append(" ")                                 // col 31
+           .append("     ")                             // col 32-36
+           .append(" ")                                 // col 37
            .append("AGENCY")                            // col 38-43
            .append(" ")                                 // col 44
            .append("IA")                                // col 45-46
@@ -424,7 +415,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         writer.println(row.toString());
     }
 
-    protected boolean writeSampleRow(PrintWriter writer, SampleDO sVDO, SampleSDWISViewDO ssVDO) throws Exception {
+    protected boolean writeSampleRow(PrintWriter writer, SampleDO sVDO, SampleSDWISViewDO ssVDO, String location) throws Exception {
         ArrayList<AuxDataViewDO>   adList;
         ArrayList<Integer>         sampleIds;
         ArrayList<SampleQaEventDO> sampleQaList;
@@ -519,7 +510,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         }
         
         row = new StringBuilder();
-        row.append("#SAM")                                                          // col 1-3
+        row.append("#SAM")                                                          // col 1-4
            .append(sampCatDO.getLocalAbbrev())                                      // col 5-6
            .append(sampTypeDO.getLocalAbbrev())                                     // col 7-8
            .append(getPaddedString(pbType, 3))                                      // col 9-11
@@ -558,6 +549,15 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         row.append(getPaddedString(compQuarter, 1));                                // col 185
         row.append(getPaddedString(sampleOverride, 1));                             // col 186
         
+        if ("-ank".equals(location))                                                // col 187-191
+            row.append("397  ");                                                    // Ankeny DNR ID
+        else if ("-ic".equals(location))
+            row.append("027  ");                                                    // Iowa City DNR ID
+        else if ("-lk".equals(location))
+            row.append("393  ");                                                    // Lakeside DNR ID
+        else
+            row.append("     ");
+
         writer.println(row.toString());
         
         return sampleOverride.length() > 0;
