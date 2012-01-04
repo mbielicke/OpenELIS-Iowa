@@ -1366,10 +1366,14 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             break;
                             
                         case Cell.CELL_TYPE_NUMERIC:
-                            if (DateUtil.isCellDateFormatted(cell))
+                            if (DateUtil.isCellDateFormatted(cell)) {
                                 value = new Datetime(Datetime.YEAR, Datetime.MINUTE, cell.getDateCellValue());
-                            else
-                                value = cell.getNumericCellValue();
+                            } else {
+                                cell.setCellType(Cell.CELL_TYPE_STRING);
+                                value = cell.getStringCellValue();
+                                if (((String)value).length() == 0)
+                                    value = null;
+                            }
                             break;
                             
                         case Cell.CELL_TYPE_STRING:
@@ -1381,10 +1385,14 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     break;
                     
                 case Cell.CELL_TYPE_NUMERIC:
-                    if (DateUtil.isCellDateFormatted(cell))
+                    if (DateUtil.isCellDateFormatted(cell)) {
                         value = new Datetime(Datetime.YEAR, Datetime.MINUTE, cell.getDateCellValue());
-                    else
-                        value = cell.getNumericCellValue();
+                    } else {
+                        cell.setCellType(Cell.CELL_TYPE_STRING);
+                        value = cell.getStringCellValue();
+                        if (((String)value).length() == 0)
+                            value = null;
+                    }
                     break;
                     
                 case Cell.CELL_TYPE_STRING:
