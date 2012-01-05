@@ -58,14 +58,10 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
 
     private HashMap<String, String> contaminantIds, methodCodes;
     private Integer                 lastAnalysisId, ugPerLId, ngPerLId, ngPerMlId;
-    private SimpleDateFormat        formatYMD, formatMDY, formatYMDHM;
     private String                  toEmail;
 
     @PostConstruct
     public void init() {
-        formatYMD = new SimpleDateFormat("yyyy-MM-dd");
-        formatMDY = new SimpleDateFormat("MM/dd/yyyy");
-        formatYMDHM = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         initMethodCodes();
         initContaminantIds();
@@ -120,9 +116,12 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         MCLViolationReportVO analysis;
         ReportStatus status;
         ResultViewDO rowResult, colResult;
+        SimpleDateFormat format;
         String resultSign, resultString;
         StringBuilder body, footer;
         SystemVariableDO lastRun;
+
+        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         status = new ReportStatus();
         session.setAttribute("MCLViolationReport", status);
@@ -139,7 +138,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         try {
             toEmail = sysVarBean.fetchByName("mcl_violation_email").getValue();
             lastRun = sysVarBean.fetchForUpdateByName("last_mcl_violation_report_run");
-            startDate = formatYMDHM.parse(lastRun.getValue());
+            startDate = format.parse(lastRun.getValue());
 
             if (startDate.compareTo(endDate) > 0)
                 throw new Exception("Start Date should be earlier than End Date");
@@ -246,8 +245,8 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             .append("      Test: ").append(analysis.getTestName()).append("<br>\r\n")
             .append("    Method: ").append(analysis.getMethodName()).append("<br>\r\n")
             .append("      Unit: ").append(analysis.getUnitDescription()).append("<br>\r\n")
-            .append("  Analyzed: ").append(formatYMD.format(analysis.getAnaCompletedDate().getDate())).append("<br>\r\n")
-            .append("  Released: ").append(analysis.getAnaReleasedDate()).append("<br>\r\n")
+            .append("  Analyzed: ").append(DataBaseUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
+            .append("  Released: ").append(DataBaseUtil.toString(analysis.getAnaReleasedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
             .append("<br>\r\n")
             .append("<table border='1' cellpadding='2' cellspacing='0'>\r\n")
             .append("    <tr><td>Compound</td>")
@@ -305,13 +304,13 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
               .append("Sample Type ").append(analysis.getSampleType().substring(0, 2)).append("<br>\r\n")
               .append("PB Sample Type ").append(pbSampleType).append("<br>\r\n")
               .append("Original Sample # ").append(origSampleNumber).append("<br>\r\n")
-              .append("Sample Collection Date ").append(formatMDY.format(analysis.getCollectionDate().getDate())).append("<br>\r\n")
+              .append("Sample Collection Date ").append(DataBaseUtil.toString(analysis.getCollectionDate(), "MM/dd/yyyy")).append("<br>\r\n")
               .append("Lab Sample # ").append(analysis.getAccessionNumber()).append("<br>\r\n")
               .append("Contaminant ID ").append(contaminantIds.get(rowResult.getAnalyte())).append("<br>\r\n")
               .append("Contaminant Name ").append(rowResult.getAnalyte()).append("<br>\r\n")
               .append("Method Code ").append(methodCodes.get(analysis.getMethodName())).append("<br>\r\n")
-              .append("Date Analyzed ").append(formatYMD.format(analysis.getAnaCompletedDate().getDate())).append("<br>\r\n")
-              .append("Date Released ").append(formatMDY.format(analysis.getAnaReleasedDate().getDate())).append("<br>\r\n")
+              .append("Date Analyzed ").append(DataBaseUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
+              .append("Date Released ").append(DataBaseUtil.toString(analysis.getAnaReleasedDate(), "MM/dd/yyyy")).append("<br>\r\n")
               .append("Result ").append(getAdjustedResult(rowResult, analysis)).append("<br>\r\n");
     }
 
@@ -346,6 +345,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         methodCodes.put("colilert pa sdwa am",   "9223B-PA");
         methodCodes.put("colilert pa sdwa pm",   "9223B-18PA");
         methodCodes.put("epa 00-02/200.8",       "00-02/200.8");
+        methodCodes.put("epa 00-02 including",   "00-02");
         methodCodes.put("epa 200.7 drink",       "200.7");
         methodCodes.put("epa 200.8 drink",       "200.8");
         methodCodes.put("epa 200.8 sdwa pb&cu",  "200.8");
@@ -368,12 +368,13 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         methodCodes.put("epa 551.1 edb, dbcp",   "551.1");
         methodCodes.put("epa 552.2 haa",         "552.2");
         methodCodes.put("epa 900.0/200.8",       "900.0/200.8");
+        methodCodes.put("epa 900.0 including",   "900.0");
         methodCodes.put("epa 901.1",             "901.1");
-        methodCodes.put("epa 903.0",             "903");
+        methodCodes.put("epa 903.0",             "903.0");
         methodCodes.put("epa 903.0/904.0",       "903.0/904.0");
-        methodCodes.put("epa 904.0",             "904");
-        methodCodes.put("epa 905.0",             "905");
-        methodCodes.put("epa 906.0",             "906");
+        methodCodes.put("epa 904.0",             "904.0");
+        methodCodes.put("epa 905.0",             "905.0");
+        methodCodes.put("epa 906.0",             "906.0");
         methodCodes.put("lac 10-107-06-1j",      "10-107-06-1J");
         methodCodes.put("sm 2130 b",             "2130B");
         methodCodes.put("sm 2320 b",             "2320B");
@@ -513,8 +514,8 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Fluorene",                              "2264");
         contaminantIds.put("Fluoride",                              "1025");
         contaminantIds.put("Fonofos",                               "2104"); 
-        contaminantIds.put("Gross Alpha (excluding Uranium)",       "4000");
-        contaminantIds.put("Gross Alpha (including Uranium)",       "4002");
+        contaminantIds.put("Gross Alpha excluding Uranium",         "4000");
+        contaminantIds.put("Gross Alpha including Uranium",         "4002");
         contaminantIds.put("Gross Beta",                            "4100");
         contaminantIds.put("Heptachlor",                            "2065");
         contaminantIds.put("Heptachlor epoxide",                    "2067");
