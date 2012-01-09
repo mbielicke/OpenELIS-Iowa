@@ -3,12 +3,12 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.ejb.Singleton;
 import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.jboss.ejb3.annotation.Service;
 import org.openelis.domain.OptionListItem;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.remote.PrinterCacheRemote;
@@ -17,10 +17,9 @@ import org.openelis.utils.Printer;
 /**
  * This class provides a simple cached interface to the printers.
  */
+@Singleton
 @SecurityDomain("openelis")
-@Service(objectName = "jboss:custom=PrinterCacheBean")
-
-public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote {
+public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote{
 
     protected ArrayList<Printer>       printerList;
     protected HashMap<String, Printer> printerHash;

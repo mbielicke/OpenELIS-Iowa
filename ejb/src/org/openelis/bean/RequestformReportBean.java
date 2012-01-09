@@ -161,7 +161,7 @@ public class RequestformReportBean implements RequestformReportRemote, Requestfo
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                copies = 0;
+                copies = 1;
                 if (useNumForms != null) 
                     copies = data.getNumberOfForms();     
                 if (copies > 0) {

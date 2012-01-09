@@ -33,7 +33,7 @@ import org.openelis.domain.OrganizationParameterDO;
 public interface OrganizationParameterLocal {
     public ArrayList<OrganizationParameterDO> fetchByOrganizationId(Integer id) throws Exception;
     
-    public ArrayList<OrganizationParameterDO> fetchByDictionarySystemName(String systemName) throws Exception;
+    public ArrayList<OrganizationParameterDO> fetchByOrgIdAndDictSystemName(Integer id, String systemName) throws Exception;
 
     public OrganizationParameterDO add(OrganizationParameterDO data) throws Exception;
 

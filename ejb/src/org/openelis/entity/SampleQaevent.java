@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
@@ -35,22 +36,19 @@ import org.openelis.utils.Auditable;
                query = "select new org.openelis.domain.SampleQaEventViewDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable, q.name, q.reportingText)"
                      + " from SampleQaevent sq left join sq.qaEvent q left join sq.dictionary d"
                      + " where sq.sampleId = :id and d.systemName != 'qaevent_internal' order by sq.id"),
-   @NamedQuery( name = "SampleQaevent.FetchResultOverrideBySampleIdList",
+   @NamedQuery( name = "SampleQaevent.FetchResultOverrideBySampleIds",
                query = "select new org.openelis.domain.SampleQaEventDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable)"
                      + " from SampleQaevent sq where sq.sampleId in (:ids) and sq.dictionary.systemName = 'qaevent_override'"),
    @NamedQuery( name = "SampleQaevent.FetchResultOverrideBySampleId",
                query = "select new org.openelis.domain.SampleQaEventDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable)"
-                     + " from SampleQaevent sq where sq.sampleId = :id and sq.dictionary.systemName = 'qaevent_override'"),
-   @NamedQuery( name = "SampleQaevent.FetchNotBillableBySampleId",
-               query = "select new org.openelis.domain.SampleQaEventDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable)"
-                     + " from SampleQaevent sq where sq.sampleId = :id and sq.isBillable = 'N'")})
+                     + " from SampleQaevent sq where sq.sampleId = :id and sq.dictionary.systemName = 'qaevent_override'")})
 @Entity 
 @Table(name = "sample_qaevent")
 @EntityListeners( {AuditUtil.class})
 public class SampleQaevent implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer       id;
 

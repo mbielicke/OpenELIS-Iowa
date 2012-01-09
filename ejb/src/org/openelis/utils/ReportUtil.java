@@ -42,13 +42,10 @@ import java.util.Properties;
 
 import javax.ejb.SessionContext;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -58,7 +55,6 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.SystemVariableLocal;
 
 public class ReportUtil {
 
@@ -159,6 +155,23 @@ public class ReportUtil {
 		}
     	
     	return Datetime.getInstance(startCode, endCode, date);
+    }
+    
+    public static String toString(Datetime datetime, String pattern) {
+        if (datetime == null)
+            return "";
+
+        return toString(datetime.getDate(), pattern);
+    }
+    
+    public static String toString(Date date, String pattern) {
+        SimpleDateFormat format;
+        
+        if (date == null)
+            return "";
+            
+        format = new SimpleDateFormat(pattern);
+        return format.format(date);
     }
     
     /**
@@ -279,15 +292,11 @@ public class ReportUtil {
      */
     public static String getSystemVariableValue(String variableName) {
         String value;
-        InitialContext ctx;
-        SystemVariableLocal local;
         SystemVariableDO data;
 
         value = null;
         try {
-            ctx = new InitialContext();
-            local = (SystemVariableLocal)ctx.lookup("openelis/SystemVariableBean/local");
-            data = local.fetchByName(variableName);
+            data = EJBFactory.getSystemVariable().fetchByName(variableName);
             value = data.getValue();
         } catch (Exception e) {
             System.out.println("Could not find one System Variable with name="+variableName);

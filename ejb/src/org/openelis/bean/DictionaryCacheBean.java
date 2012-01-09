@@ -25,12 +25,13 @@
 */
 package org.openelis.bean;
 
+import javax.ejb.Singleton;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.jboss.ejb3.annotation.Service;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.remote.DictionaryCacheRemote;
@@ -41,12 +42,11 @@ import org.openelis.utils.EJBFactory;
  */
 
 @SecurityDomain("openelis")
-@Service(objectName = "jboss:custom=DictionaryCacheBean")
-
+@Singleton
 public class DictionaryCacheBean implements DictionaryCacheLocal, DictionaryCacheRemote {
 
     private Cache           cache;
-
+    
     public DictionaryCacheBean() {
         CacheManager cm;
 

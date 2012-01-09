@@ -29,13 +29,13 @@ import java.util.HashMap;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
+import javax.ejb.Singleton;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.jboss.ejb3.annotation.Service;
 import org.openelis.local.SessionCacheLocal;
 
 /**
@@ -43,7 +43,7 @@ import org.openelis.local.SessionCacheLocal;
  */
 
 @SecurityDomain("openelis")
-@Service(objectName = "jboss:custom=SessionCacheBean")
+@Singleton
 
 public class SessionCacheBean implements SessionCacheLocal {
 

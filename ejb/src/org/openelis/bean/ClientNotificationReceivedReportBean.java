@@ -9,28 +9,29 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.local.AnalysisReportFlagsLocal;
+import org.openelis.local.ClientNotificationReceivedReportLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
-import org.openelis.remote.ClientNotificationReceivedReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ClientNotificationReceivedReportBean implements ClientNotificationReceivedReportRemote {
+public class ClientNotificationReceivedReportBean implements ClientNotificationReceivedReportLocal {
     @EJB
     private SessionCacheLocal        session;
 
@@ -42,25 +43,15 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
 
     @EJB
     private AnalysisReportFlagsLocal analysisReportFlags;
-
-    /*
-     * Returns the prompt for a single re-print
-     */
-    public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<Prompt> p;
-        try {
-            p = new ArrayList<Prompt>();
-            return p;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-    }
+    
+    private static final Logger log = Logger.getLogger(ClientNotificationReceivedReportBean.class);
 
     /*
      * Execute the report and email its output to specified addresses
      */
-    public ReportStatus runReport() throws Exception {
+    @Asynchronous
+    @TransactionTimeout(600)
+    public void runReport() throws Exception {
         ReportStatus status;
         Object[] result;
         ArrayList<Object[]> resultList;
@@ -94,13 +85,20 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             data = systemVariable.fetchByName("last_receivable_report_run");
             rc_stDate = df.parse(data.getValue());
         } catch (Exception e) {
-            throw e;
+            log.error("System variable 'last_receivable_report_run' not present or invalid date-time", e);
+            return;
         }
 
-        if (rc_stDate.compareTo(rc_endDate) < 0)
-            resultList = sample.fetchForClientEmailReceivedReport(rc_stDate, rc_endDate);
-        else
-            throw new NotFoundException("Start Date should be earlier than End Date");
+        if (rc_stDate.compareTo(rc_endDate) >= 0) {
+            log.error("Start Date should be earlier than End Date");
+            return;
+        }
+        
+        resultList = sample.fetchForClientEmailReceivedReport(rc_stDate, rc_endDate);
+        
+        log.debug("Considering "+ resultList.size()+ " cases to run");        
+        if (resultList.size() == 0)
+            return;
         
         lastAccNum = -1;
         for (int i = 0; i < resultList.size(); i++ ) {
@@ -124,7 +122,7 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
                 sMap.put(accNum, Boolean.FALSE);  
 
         }
-        return generateEmailsFromList(map, sMap);
+        generateEmailsFromList(map, sMap);
     }
 
     protected ReportStatus generateEmailsFromList(HashMap<String, ArrayList<Object[]>> map,
@@ -142,13 +140,13 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
         SystemVariableDO data;
         DateFormat df, df1;
         ArrayList<Object[]> l;
-        ArrayList<Integer> sampleId;
+        ArrayList<Integer> sampleIds;
         ArrayList<AnalysisReportFlagsDO> anaList;
         AnalysisReportFlagsDO anaData;
 
         col_dt = null;
         to = null;
-        sampleId = new ArrayList<Integer>();
+        sampleIds = new ArrayList<Integer>();
         status = new ReportStatus();
         df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         df1 = new SimpleDateFormat("yyyy-MM-dd");
@@ -188,35 +186,35 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
 
                 col_dt = null;
                 rcvd_date = null;
-                sampleId.add(samId);
+                sampleIds.add(samId);
             }
             printFooter(contents);
             text = contents.toString();
-            try {
-                from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");                
-                ReportUtil.sendEmail(from, to, 
-                                     "Samples Received by the State Hygienic Laboratory", text);
-                //sendemail(rcvd_email, text);
-                anaList = analysisReportFlags.fetchForUpdateBySampleAccessionNumbers(sampleId);
-                for (int k = 0; k < anaList.size(); k++ ) {
-                    anaData = anaList.get(k);
-                    anaData.setNotifiedReceived("Y");
-                    analysisReportFlags.update(anaData);
-                    analysisReportFlags.abortUpdate(anaData.getAnalysisId());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");                
+            ReportUtil.sendEmail(from, to, 
+                                 "Samples Received by the State Hygienic Laboratory", text);
+                //sendemail(rcvd_email, text);                
+            
             contents = null;
         }
-        status.setMessage("emailed").setStatus(ReportStatus.Status.PRINTED);
-        try {
-            data = systemVariable.fetchForUpdateByName("last_receivable_report_run");
-            data.setValue(df.format(new Date()));
-            systemVariable.updateAsSystem(data);
-        } catch (Exception e) {
-            throw e;
+        
+        anaList = analysisReportFlags.fetchBySampleAccessionNumbers(sampleIds);
+        for (int k = 0; k < anaList.size(); k++ ) {
+            anaData = anaList.get(k);
+            analysisReportFlags.fetchForUpdateByAnalysisId(anaData.getAnalysisId());
+            anaData.setNotifiedReceived("Y");            
+            analysisReportFlags.update(anaData);
         }
+        
+        status.setMessage("emailed").setStatus(ReportStatus.Status.PRINTED);
+        /*
+         * update system variable last_receivable_report_run with current date
+         * and time.
+         */
+        data = systemVariable.fetchForUpdateByName("last_receivable_report_run");
+        data.setValue(df.format(new Date()));
+        systemVariable.updateAsSystem(data);
+        
         status.setStatus(ReportStatus.Status.SAVED);
         return status;
     }

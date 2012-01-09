@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
@@ -41,26 +42,23 @@ import org.openelis.utils.Auditable;
    @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideByAnalysisId",
                query = "select new org.openelis.domain.AnalysisQaEventDO(aq.id, aq.analysisId, aq.qaeventId, aq.typeId, aq.isBillable) "
                      + " from AnalysisQaevent aq where aq.analysisId = :id and aq.dictionary.systemName = 'qaevent_override'"),               
-   @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideByAnalysisIdList",
+   @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideByAnalysisIds",
                query = "select new org.openelis.domain.AnalysisQaEventDO(aq.id, aq.analysisId, aq.qaeventId, " +
                        "aq.typeId, aq.isBillable) "
                      + " from AnalysisQaevent aq where aq.analysisId in ( :ids ) and aq.dictionary.systemName = 'qaevent_override'"),
-   @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideBySampleIdList",
+   @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideBySampleIds",
                query = "select aq from AnalysisQaevent as aq left join aq.analysis a left join a.sampleItem si left join si.sample s"
                      + " where s.id in (:ids) and aq.dictionary.systemName = 'qaevent_override'"),
    @NamedQuery( name = "AnalysisQaevent.FetchResultOverrideBySampleId",
                query = "select aq from AnalysisQaevent as aq left join aq.analysis a left join a.sampleItem si left join si.sample s"
-                     + " where s.id = :id and aq.dictionary.systemName = 'qaevent_override'"),
-   @NamedQuery( name = "AnalysisQaevent.FetchNotBillableByAnalysisId",
-               query = "select new org.openelis.domain.AnalysisQaEventDO(aq.id, aq.analysisId, aq.qaeventId, " +
-                       "aq.typeId, aq.isBillable) from AnalysisQaevent aq where aq.analysisId = :id and aq.isBillable = 'N' ")})
+                     + " where s.id = :id and aq.dictionary.systemName = 'qaevent_override'")})
 @Entity
 @Table(name = "analysis_qaevent")
 @EntityListeners( {AuditUtil.class})
 public class AnalysisQaevent implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer         id;
 

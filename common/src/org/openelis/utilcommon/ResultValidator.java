@@ -48,7 +48,7 @@ public class ResultValidator implements RPC {
     };
 
     public enum RoundingMethod {
-        EPA_METHOD, INTEGER
+        SIG_FIG, SIG_FIG_NOE, INT, INT_SIG_FIG, INT_SIG_FIG_NOE
     };
 
     public ResultValidator() {
@@ -218,17 +218,32 @@ public class ResultValidator implements RPC {
                             }
                             if (item.roundingMethod != null) {
                                 switch (item.roundingMethod) {
-                                    case EPA_METHOD:
+                                    case SIG_FIG:
                                         if (item.significantDigits != null)
                                             value = SignificantFigures.format(value,
                                                                               item.significantDigits);
                                         break;
-                                    case INTEGER:
+                                    case SIG_FIG_NOE:
+                                        if (item.significantDigits != null)
+                                            value = SignificantFiguresNoE.format(value,
+                                                                              item.significantDigits);
+                                        break;
+                                    case INT:                                        
+                                        value = String.valueOf(Math.round(Double.valueOf(value)));
+                                        break;
+                                    case INT_SIG_FIG:
                                         if (item.significantDigits != null)
                                             value = SignificantFigures.format(value,
                                                                               item.significantDigits);
                                         value = String.valueOf(Math.round(Double.valueOf(value)));
                                         break;
+                                    case INT_SIG_FIG_NOE:
+                                        if (item.significantDigits != null)
+                                            value = SignificantFiguresNoE.format(value,
+                                                                              item.significantDigits);
+                                        value = String.valueOf(Math.round(Double.valueOf(value)));
+                                        break;
+                                        
                                 }
                             }
                             if (compOp != null)

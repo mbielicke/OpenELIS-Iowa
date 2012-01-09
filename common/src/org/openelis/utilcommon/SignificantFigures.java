@@ -102,32 +102,32 @@ public class SignificantFigures extends Number {
      * 
      * @since ostermillerutils 1.00.00
      */
-    private String            original;
+    protected String            original;
     /**
      * Buffer of the significant digits.
      * 
      * @since ostermillerutils 1.00.00
      */
-    private StringBuffer      digits;
+    protected StringBuffer      digits;
     /**
      * The exponent of the digits if a decimal place were inserted after the
      * first digit.
      * 
      * @since ostermillerutils 1.00.00
      */
-    private int               mantissa         = -1;
+    protected int               mantissa         = -1;
     /**
      * positive if true, negative if false.
      * 
      * @since ostermillerutils 1.00.00
      */
-    private boolean           sign             = true;
+    protected boolean           sign             = true;
     /**
      * True if this number has no non-zero digits.
      * 
      * @since ostermillerutils 1.00.00
      */
-    private boolean           isZero           = false;
+    protected boolean           isZero           = false;
 
     /**
      * Create a SignificantFigures object from a String representation of a

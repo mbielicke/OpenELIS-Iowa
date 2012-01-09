@@ -23,22 +23,17 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
+package org.openelis.local;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import javax.ejb.Remote;
+import javax.ejb.Local;
 
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.QueryData;
-import org.openelis.report.Prompt;
+import org.openelis.domain.CronDO;
+import org.openelis.entity.Cron;
 
-@Remote
-public interface BillingReportRemote {
-    
-public ArrayList<Prompt> getPrompts() throws Exception;
-    
-public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception;
-
-
+@Local
+public interface CronLocal {
+    public CronDO fetchById(Integer id) throws Exception;
+    public List<Cron> fetchActive() throws Exception;
 }

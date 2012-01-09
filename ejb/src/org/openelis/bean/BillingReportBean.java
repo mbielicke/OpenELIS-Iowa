@@ -33,33 +33,37 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.annotation.PostConstruct;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.OptionListItem;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.ResultDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.domain.SampleQaEventDO;
+import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.AnalysisReportFlagsLocal;
 import org.openelis.local.AuxDataLocal;
+import org.openelis.local.BillingReportLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.local.SampleEnvironmentalLocal;
 import org.openelis.local.SampleLocal;
@@ -68,18 +72,12 @@ import org.openelis.local.SamplePrivateWellLocal;
 import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
-import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
-import org.openelis.remote.BillingReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class BillingReportBean implements BillingReportRemote {
-
-    @EJB
-    private SessionCacheLocal        session;
+public class BillingReportBean implements BillingReportLocal {
 
     @EJB
     private SampleLocal              sample;
@@ -116,521 +114,507 @@ public class BillingReportBean implements BillingReportRemote {
     
     @EJB
     private AnalysisReportFlagsLocal analysisReportFlags; 
-        
+    
+    @EJB
+    private DictionaryLocal          dictionary;
+    
     private static final String      RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT";
+    
+    private static Integer           organizationReportToId, organizationBillToId, analysisCancelledId;
     
     private static final Logger      log  = Logger.getLogger(BillingReportBean.class);
 
-    public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<Prompt> p;
-
+    @PostConstruct
+    public void init() {
         try {
-            p = new ArrayList<Prompt>();
-
-            p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Do you want to run this report:")
-                                                          .setWidth(150)
-                                                          .setOptionList(getOptions())
-                                                          .setMutiSelect(true));
-            return p;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
+            organizationBillToId = dictionary.fetchBySystemName("sample_error").getId();
+            analysisCancelledId = dictionary.fetchBySystemName("analysis_cancelled").getId();
+        } catch (Throwable e) {
+            log.error("Failed to lookup constants for dictionary entries", e);
         }
     }
-
+    
     /**
      * Execute the report and email its output to specified addresses
      */
-    public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
-        int i, billableSQa, billableAnalytes, numDTR;
-        Integer billedAnalytes, samId, prevSamId, nextSamId, samAcc, anaId;
-        boolean showCid1, createCharge, createCredit, dataInFile;
-        String billedZero, billableZero, poAnalyteName, message, clientCode;
-        ReportStatus status;
-        Object[] row, nextRow;
+
+    @Asynchronous
+    @TransactionTimeout(600)
+    public void runReport() throws Exception {        
+        String poAnalyteName, billDir;
         ArrayList<Object[]> resultList;
-        String domain, owner, collector, clientReference, location, clientName,
-               billingType, lastName, firstName, pws, clientCity, clientState, 
-               clientZip, clientPatientId2, projectName, orgMultipleUnit, orgStAddress,
-               rcDateStr, procedureCode, procedureDescription, section, labCode, 
-               labDept, endDateStr, value, tokens[];
-        Date stDate, endDate;
-        Datetime currDateTime;
-        SystemVariableDO sysVarLastReportRun;
-        Timestamp rcDate, billedDate;
+        Date lastRunDate, currentDate;
+        SystemVariableDO lastRun;
         Calendar cal;
         SimpleDateFormat df;
-        AddressDO address;
-        SampleEnvironmentalDO env;
-        SampleSDWISViewDO sdwis;
-        SamplePrivateWellViewDO well;
-        SampleOrganizationViewDO sampleOrg;
-        AnalysisReportFlagsDO anaRepFlags;
-        ArrayList<SampleOrganizationViewDO> sampleOrgReportToList;
-        ArrayList<SampleProjectViewDO> sampleProjList;
-        ArrayList<SampleQaEventDO> sampleQaList;
-        ArrayList<ResultDO> results;
-        ArrayList<AuxDataViewDO> auxList;
-        StringBuilder text;
         FileWriter out;
         File tempFile;        
 
-        owner = null;
-        clientCode = null;
-        labCode = null;
-        labDept = null;
-        firstName = null;
-        clientPatientId2 = null;
-        out = null;
-        text = new StringBuilder();
-        well = null;
-        address = null;
-        sampleOrg = null;
-        orgMultipleUnit = null;
-        orgStAddress = null;
-        clientCity = null;
-        clientState = null;
-        clientZip = null;
-        billableSQa = 0;
-        billableAnalytes = 0;       
-        sysVarLastReportRun = null;
-        tempFile = null;
-        dataInFile = false;
+        // System variable that points to the analyte in the aux group 
+        poAnalyteName = ReportUtil.getSystemVariableValue("billing_po");
         
-        status = new ReportStatus();
-        status.setMessage("Initializing report");
-        session.setAttribute("BillingReport", status);
-
+        billDir = ReportUtil.getSystemVariableValue("billing_directory");
+        if (billDir == null) {
+            log.error("System variable 'billing_directory' is not available");
+            return;
+        }                
+        
+        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        lastRun = null;
         try {
-            df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-            cal = Calendar.getInstance();
-            cal.add(Calendar.MINUTE, -1);
-            endDate = cal.getTime();
-            currDateTime = Datetime.getInstance(Datetime.YEAR , Datetime.MINUTE, endDate);
-            
-            sysVarLastReportRun = systemVariable.fetchForUpdateByName("last_billing_report_run");
-            stDate = df.parse(sysVarLastReportRun.getValue());   
-            
-            poAnalyteName = ReportUtil.getSystemVariableValue("billing_po");
-            
-            if (stDate.compareTo(endDate) < 0)
-                resultList = sample.fetchForBillingReport(stDate, endDate);
-            else
-                throw new InconsistencyException("Start Date should be earlier than End Date");
-
-            prevSamId = null;
-
-            df.applyPattern("yyyyMMddHHmm");
-            endDateStr = df.format(endDate);
-            
-            status.setMessage("Outputing report").setPercentComplete(20);
-            tempFile = File.createTempFile("billingReport", ".txt", new File("/tmp"));
-            out = new FileWriter(tempFile);
-            numDTR = 0; 
-            dataInFile = false;
-            for (i = 0; i < resultList.size(); i++ ) {
-                row = resultList.get(i);
-                samId = (Integer)row[0];
-                samAcc = (Integer)row[1];
-                domain = (String)row[2];
-                clientReference = DataBaseUtil.trim((String)row[3]);
-                rcDate = (Timestamp)row[4];
-                anaId = (Integer)row[5];
-                
-                if (!samId.equals(prevSamId)) {
-                    numDTR = 0;                 
-                    text.setLength(0);
-                    showCid1 = false;
-                    df.applyPattern("yyyyMMdd");
-                    rcDateStr = df.format(rcDate);
-                    billingType = RECUR;
-                    
-                    // primary project                    
-                    try {
-                        sampleProjList = sampleProject.fetchPermanentBySampleId(samId);
-                        projectName = sampleProjList.get(0).getProjectName();
-                    } catch (NotFoundException e) {
-                        projectName = null;
-                    }
-                    /*
-                     * If sample has BillTo organization id, make it the
-                     * clientCode, if not, then make reportTo organization id
-                     * the clientCode.
-                     */
-                    try {
-                        sampleOrg = sampleOrganization.fetchBillToBySampleId(samId);
-                        clientCode = sampleOrg.getOrganizationId().toString();
-                        clientName = sampleOrg.getOrganizationName();
-                        lastName = samAcc.toString();
-                        address = null;
-                    } catch (NotFoundException e) {
-                        if ("W".equals(domain)) {
-                            well = samplePrivateWell.fetchBySampleId(samId);
-                            if (well.getOrganizationId() != null) {
-                                clientCode = well.getOrganizationId().toString();
-                                clientName = well.getOrganization().getName();
-                                lastName = samAcc.toString();
-                                address = well.getOrganization().getAddress();
-                                sampleOrg = null;
-                            } else {
-                                /*
-                                 * If the sample doesn't have any billTo or
-                                 * reportTo organization id, then its billing
-                                 * type is "OneTime", else it will be of type
-                                 * "Recur".
-                                 */
-                                billingType = ONE_TIME;
-                                if (owner != null)
-                                    lastName = owner;
-                                else
-                                    lastName = well.getReportToName();
-
-                                clientName = well.getReportToName();
-                                address = well.getReportToAddress();
-                                clientCode = OT_CLIENT_CODE;
-                                sampleOrg = null;
-                            }
-                        } else {
-                            sampleOrgReportToList = sampleOrganization.fetchReportToBySampleId(samId);
-                            clientCode = sampleOrgReportToList.get(0).getOrganizationId().toString();
-                            clientName = sampleOrgReportToList.get(0).getOrganizationName();
-                            lastName = samAcc.toString();
-                            sampleOrg = sampleOrgReportToList.get(0);
-                            address = null;
-                        }
-                    }
-                    if (sampleOrg != null) {
-                        orgMultipleUnit = sampleOrg.getOrganizationMultipleUnit();
-                        orgStAddress = sampleOrg.getOrganizationStreetAddress();
-                        clientCity = sampleOrg.getOrganizationCity();
-                        clientState = sampleOrg.getOrganizationState();
-                        clientZip = sampleOrg.getOrganizationZipCode();
-                    } else if (address != null) {
-                        orgMultipleUnit = address.getMultipleUnit();
-                        orgStAddress = address.getStreetAddress();
-                        clientCity = address.getCity();
-                        clientState = address.getState();
-                        clientZip = address.getZipCode();
-                    }
-
-                    text.append("HDR").append("|").append(endDateStr).append("|")
-                        .append(samAcc).append("|").append(billingType).append("|")
-                        .append(rcDateStr).append("|");
-                    if (clientCode != null)
-                        text.append(clientCode);
-                    text.append("|");
-                    text.append(lastName).append("|");
-                    if (firstName != null)
-                        text.append(firstName);
-                    text.append("|");
-                    text.append(clientName).append("|");
-                    /*
-                     * we can show either the apt/suite # or the street address 
-                     * if apt/suite # isn't present as client address #1
-                     */
-                    if (orgMultipleUnit != null) {
-                        text.append(orgMultipleUnit);
-                    } else if (orgStAddress != null) {
-                        text.append(orgStAddress);
-                        orgStAddress = null;
-                    }
-                    text.append("|");
-                    if (orgStAddress != null)
-                        text.append(orgStAddress);
-                    text.append("|");
-                    if (clientCity != null)
-                        text.append(clientCity);
-                    text.append("|");
-                    if (clientState != null)
-                        text.append(clientState);
-                    text.append("|");
-                    if (clientZip != null)
-                        text.append(clientZip);
-                    text.append("|");
-
-                    //
-                    // create the "Mush" fields for the various domains
-                    //
-                    if (poAnalyteName != null) {
-                        try {
-                            auxList = auxData.fetchByIdAnalyteName(samId, ReferenceTable.SAMPLE,
-                                                                   poAnalyteName);
-                            value = auxList.get(0).getValue();
-                            if ( !DataBaseUtil.isEmpty(value)) {
-                                text.append("PO-").append(value);
-                                showCid1 = true;
-                            }
-                        } catch (NotFoundException e) {
-                            // ignore
-                        }
-                    }
-
-                    if ("W".equals(domain)) {
-                        if (well == null)
-                            well = samplePrivateWell.fetchBySampleId(samId);
-                        owner = well.getOwner();
-                        collector = well.getCollector();
-                        location = well.getLocation();
-                        if (clientReference != null) {
-                            if (showCid1)
-                                text.append(",");
-                            else
-                                showCid1 = true;
-                            text.append("REF-").append(clientReference);
-                        }
-                        if (owner != null) {
-                            if (showCid1)
-                                text.append(",");
-                            else
-                                showCid1 = true;
-                            text.append("OWNER-").append(owner);
-                        }
-                        if (collector != null) {
-                            if (showCid1)
-                                text.append(",");
-                            else
-                                showCid1 = true;
-                            text.append("COL-").append(collector);
-                        }
-                        if (location != null) {
-                            if (showCid1)
-                                text.append(",");
-                            text.append("LOC-").append(location);
-                        }
-                    } else if ("E".equals(domain)) {
-                        env = sampleEnvironmental.fetchBySampleId(samId);
-                        collector = env.getCollector();
-                        location = env.getLocation();
-                        if (clientReference != null) {
-                            if (showCid1)
-                                text.append(",");
-                            else
-                                showCid1 = true;
-                            text.append("REF-").append(clientReference);
-                        }
-                        if (collector != null) {
-                            if (showCid1)
-                                text.append(",");
-                            else
-                                showCid1 = true;
-                            text.append("COL-").append(collector);
-                        }
-                        if (location != null) {
-                            if (showCid1)
-                                text.append(",");
-                            text.append("LOC-").append(location);
-                        }
-                    } else if ("S".equals(domain)) {
-                        sdwis = sampleSDWIS.fetchBySampleId(samId);
-                        collector = sdwis.getCollector();
-                        location = sdwis.getLocation();
-                        pws = sdwis.getPwsNumber0();
-                        if (showCid1)
-                            text.append(",");
-                        text.append("PWS-").append(pws);
-                        if (clientReference != null)
-                            text.append(",").append("REF-").append(clientReference);
-                        if (collector != null)
-                            text.append(",").append("COL-").append(collector);
-                        if (location != null)
-                            text.append(",").append("LOC-").append(location);
-                    }
-                    text.append("|");
-
-                    if (clientPatientId2 != null)
-                        text.append(clientPatientId2);
-                    text.append("|");
-
-                    if (projectName != null) {
-                        projectName = projectName.toUpperCase();
-                        text.append(projectName);
-                    }
-                    text.append("|");
-                    text.append("\n");
-
-                    try {
-                        sampleQaList = sampleQaevent.fetchNotBillableBySampleId(samId);
-                        billableSQa = sampleQaList.size();
-                    } catch (NotFoundException e) {
-                        billableSQa = 0;
-                    }
-                }
-
-                // process DTR
-                billableZero = "N";
-                /*
-                 * here we determine if the number of billable analytes for an
-                 * analysis is to be overridden by 0
-                 */
-                if (billableSQa > 0) {
-                    /*
-                     * if the sample has even one qa event that's not billable
-                     * then the analytes for all analyses are overridden
-                     */
-                    billableZero = "Y";
-                } else {
-                    /*
-                     * if the analysis has even one qa event that's not billable
-                     * then the analytes for this analysis are overridden
-                     */
-                    try {
-                        analysisQaevent.fetchNotBillableByAnalysisId(anaId);
-                        billableZero = "Y";
-                    } catch (NotFoundException e) {
-                        billableZero = "N";
-                    }
-                }
-
-                try {
-                    results = result.fetchForBillingByAnalysisId(anaId);
-                    billableAnalytes = results.size();
-                } catch (NotFoundException e1) {
-                    billableAnalytes = 0;
-                }
-
-                procedureCode = ((Integer)row[6]).toString();
-                procedureDescription = DataBaseUtil.trim((String)row[7]) + " by " +
-                                       DataBaseUtil.trim((String)row[8]);
-                section = DataBaseUtil.trim((String)row[9]);
-                tokens = section.split("-");
-                if (tokens.length == 2) {
-                    labDept = tokens[0];
-                    labCode = tokens[1];
-                }
-
-                createCredit = false;
-                createCharge = false;
-
-                /*
-                 * if the values set for the fields billed_analytes and
-                 * billed_zero in AnalysisReportFlags for this analysis are
-                 * different from the ones determined right now, then we create
-                 * a row with "CR" as the transaction type with the old values
-                 */
-                billedDate = (Timestamp)row[10];
-                billedAnalytes = (Integer)row[11];
-                billedZero = (String)row[12];                       
-                if ( (billedDate != null && billedAnalytes != null && billedZero != null) &&
-                    (billableAnalytes != billedAnalytes || !billableZero.equals(billedZero))) {
-                    createCredit = true;
-                    createCharge = true;
-                } else if (billedDate == null) {
-                    createCharge = true;
-                }
-
-                if (createCharge) {
-                    /*
-                     * if we can add the DTR with the charge (CH) then we try to
-                     * lock the record in AnalysisReportFlags for this analysis
-                     * and set its billed_date to the current date
-                     */
-                    try {
-                        anaRepFlags = analysisReportFlags.fetchForUpdateByAnalysisId(anaId);
-                        anaRepFlags.setBilledDate(currDateTime);
-                        anaRepFlags.setBilledAnalytes(billableAnalytes);
-                        anaRepFlags.setBilledZero(billableZero);
-                        analysisReportFlags.update(anaRepFlags);
-                        analysisReportFlags.abortUpdate(anaId);
-                    } catch (Exception e) {
-                        /*
-                         * if we can't lock the record then we need to abandon the
-                         * process of filling the file and delete the file 
-                         */                        
-                        tempFile.delete();
-                        throw e;
-                    }
-                    if (createCredit) {
-                        text.append("DTR").append("|").append(df.format(billedDate))
-                            .append("|").append(samAcc).append("|").append(procedureCode)
-                            .append("|").append(procedureDescription).append("|")
-                            .append("CR").append("|").append(billedAnalytes).append("|");
-                        if ("Y".equals(billedZero))
-                            text.append(0);
-                        text.append("|");
-                        text.append(labCode.toUpperCase()).append("|").append(labDept)
-                            .append("|").append("\n");
-                    }
-                    /*
-                     * create a record with transaction type "CH" if either the
-                     * client wasn't billed for this analysis or there's a
-                     * change between the current number of billable analytes
-                     * and previous one
-                     */
-                    text.append("DTR").append("|").append(df.format(endDate))
-                        .append("|").append(samAcc).append("|").append(procedureCode)
-                        .append("|").append(procedureDescription).append("|")
-                        .append("CH").append("|").append(billableAnalytes).append("|");
-                    if ("Y".equals(billableZero))
-                        text.append(0);
-                    text.append("|");
-                    text.append(labCode.toUpperCase()).append("|").append(labDept)
-                        .append("|").append("\n");
-                    
-                    numDTR++;
-                }               
-                /*
-                 * The data for a sample is written to the file either if the next
-                 * record in the list returned by the query belongs to a different
-                 * sample or if the end of the list has been reached. An "HDR" is 
-                 * only written if there are one or more "DTR" for the sample.                
-                 */
-                if (numDTR > 0) {
-                    if (i+1 < resultList.size()) {
-                        nextRow = resultList.get(i+1);
-                        nextSamId = (Integer)nextRow[0];
-                        if ( !samId.equals(nextSamId)) {
-                            out.write(text.toString());
-                            text.setLength(0);
-                        }
-                    } else {
-                        out.write(text.toString());
-                    }
-                    dataInFile = true;
-                }
-                prevSamId = samId;
-            }
-            status.setPercentComplete(100);
-            out.close();
-            if (dataInFile) {
-                sysVarLastReportRun.setValue(currDateTime.toString());
-                systemVariable.update(sysVarLastReportRun);                
-
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
-                      .setStatus(ReportStatus.Status.SAVED);
-            } else {
-                tempFile.delete();
-                message = "No data written to billing report. File not generated";
-                log.info(message);
-                status.setMessage(message);
-            }
-            systemVariable.abortUpdate(sysVarLastReportRun.getId());
+            lastRun = systemVariable.fetchForUpdateByName("last_billing_report_run");            
+            lastRunDate = df.parse(lastRun.getValue());   
         } catch (Exception e) {
-            if (sysVarLastReportRun != null)
-                systemVariable.abortUpdate(sysVarLastReportRun.getId());
+            log.error("System variable 'last_billing_report_run' is not available or valid", e);
+            if (lastRun != null)
+                systemVariable.abortUpdate(lastRun.getId());
+            return;
+        }        
+        
+        cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, -1);
+        currentDate = cal.getTime();                  
+        if (lastRunDate.compareTo(currentDate) >= 0) {
+            log.error("Start Date should be earlier than End Date");
+            return;
+        }
+            
+        resultList = sample.fetchForBillingReport(lastRunDate, currentDate);        
+        log.debug("Considering "+ resultList.size()+ " cases to run");        
+        if (resultList.size() == 0)
+            return;
+                   
+        out = null;
+        tempFile = null;
+        try {
+            tempFile = File.createTempFile("billingReport", ".txt", new File(billDir));
+            out = new FileWriter(tempFile);
+            
+            outputBilling(out, currentDate, poAnalyteName, resultList);  
+            out.close();
+            
+            lastRun.setValue(df.format(currentDate));
+            systemVariable.update(lastRun);        
+        } catch (Exception e) {
+            if (out != null) 
+                out.close();
             if (tempFile != null)
-               tempFile.delete();
-            log.error("Failed to generate billing report ", e);
-            throw e;
-        } finally {
-            try {                
-                if (out != null)
-                    out.close();
+                tempFile.delete();
+            log.error(e);
+            systemVariable.abortUpdate(lastRun.getId());     
+            //
+            // we need to roll back the entire transaction
+            //
+            throw new DatabaseException(e);
+        }  
+    }
+    
+    private void outputBilling(FileWriter out, Date currentDate, String poAnalyteName,
+                              ArrayList<Object[]> resultList) throws Exception {
+        int i, billableAnalytes;
+        boolean sampleZeroCharge, anaZeroCharge, needCharge;
+        Integer billedAnalytes, samId, prevSamId, accession, anaId, statusId, testId;
+        String billedZero, clientCode;
+        Object[] row;
+        String domain, clientReference, billingType, lastName, projectName,
+               domainInfo, testName, methodName, section, labCode,
+               labDept, currentDateStr, po, procedure, anaReportable,
+               tokens[];
+        Datetime currDateTime;        
+        Timestamp recieved, billed;
+        SimpleDateFormat df;
+        AddressDO addr;
+        SampleEnvironmentalDO env;
+        SampleSDWISViewDO sdwis;
+        SamplePrivateWellViewDO well;
+        OrganizationDO org;
+        AnalysisReportFlagsDO anaRepFlags;
+        ArrayList<SampleQaEventViewDO> sampleQas;
+        ArrayList<AnalysisQaEventViewDO> anaQas; 
+        StringBuilder hdr, dtrcr, dtrch;
+
+        hdr = new StringBuilder();
+        dtrcr = new StringBuilder();
+        dtrch = new StringBuilder();
+        org = null;
+        prevSamId = null;
+        
+        currDateTime = Datetime.getInstance(Datetime.YEAR , Datetime.MINUTE, currentDate);    
+        df = new SimpleDateFormat("yyyyMMddHHmm");
+        currentDateStr = df.format(currentDate);
+                                               
+        sampleZeroCharge = false;
+        for (i = 0; i < resultList.size(); i++) {
+            row = resultList.get(i);
+            samId = (Integer)row[0];
+            accession = (Integer)row[1];
+            domain = (String)row[2];
+            clientReference = DataBaseUtil.trim((String)row[3]);
+            recieved = (Timestamp)row[4];
+            anaId = (Integer)row[5];
+            testId = (Integer)row[6];
+            testName = DataBaseUtil.trim((String)row[7]);
+            methodName = DataBaseUtil.trim((String)row[8]);
+            section = DataBaseUtil.trim((String)row[9]);
+            billed = (Timestamp)row[10];
+            billedAnalytes = (Integer)row[11];
+            billedZero = (String)row[12];
+            anaReportable = (String)row[13];  
+            statusId = (Integer)row[14];
+            
+            if (!samId.equals(prevSamId))  {                  
+                lastName = null;
+                domainInfo = null;
+                sampleZeroCharge = false;
+                po = getBillingPO(samId, poAnalyteName);  
+                
+                switch (domain.charAt(0)) {                    
+                    case 'W':
+                        well = samplePrivateWell.fetchBySampleId(samId);                                               
+                        org = getOrganization(samId, well);  
+                        if (org.getId() == null) 
+                            lastName = (well.getOwner() != null) ? well.getOwner() : org.getName();                        
+                        domainInfo = getDomainInfo(clientReference, po, well);                                               
+                        break;
+                    case 'E':
+                        env = sampleEnvironmental.fetchBySampleId(samId);                                            
+                        org = getOrganization(samId, null);                        
+                        domainInfo = getDomainInfo(clientReference, po, env);
+                        break;
+                    case 'S':
+                        sdwis = sampleSDWIS.fetchBySampleId(samId);
+                        org = getOrganization(samId, null);
+                        domainInfo = getDomainInfo(clientReference, po, sdwis);
+                        break;
+                }                
+                clientCode = (org.getId() != null) ? org.getId().toString() : OT_CLIENT_CODE;
+                billingType = (org.getId() != null) ? RECUR : ONE_TIME;
+                addr = org.getAddress();
+                lastName = (lastName != null) ? lastName : accession.toString();                
+                projectName = getProject(samId);               
+                                                      
+                try {
+                    sampleQas = sampleQaevent.fetchBySampleId(samId);
+                    for (SampleQaEventViewDO sqa : sampleQas) {
+                        if ("N".equals(sqa.getIsBillable())) {
+                            sampleZeroCharge = true;
+                            break;
+                        }
+                    }
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    log.error("Problem with fetching sample qa events for id " + samId);
+                    throw e;
+                }
+                
+                hdr.setLength(0);
+                df.applyPattern("yyyyMMdd");
+                hdr.append("HDR").append("|")
+                    .append(currentDateStr).append("|")
+                    .append(accession).append("|")
+                    .append(billingType).append("|")
+                    .append(df.format(recieved)).append("|")
+                    .append(clientCode).append("|")                
+                    .append(lastName).append("|")
+                    .append("|")                                // reserved for patient first name
+                    .append(org.getName()).append("|");                
+                if (addr.getMultipleUnit() != null) {
+                    hdr.append(addr.getMultipleUnit()).append("|"); 
+                    if (addr.getStreetAddress() != null)
+                        hdr.append(addr.getStreetAddress()).append("|");
+                    else 
+                        hdr.append("|");
+                } else if (addr.getStreetAddress() != null) {
+                    hdr.append(addr.getStreetAddress()).append("|")
+                        .append("|");
+                } else {
+                    hdr.append("||");
+                }
+                
+                hdr.append(DataBaseUtil.toString(addr.getCity())).append("|")
+                    .append(DataBaseUtil.toString(addr.getState())).append("|")
+                    .append(DataBaseUtil.toString(addr.getZipCode())).append("|")
+                    .append(domainInfo).append("|")
+                    .append("|")                            // reserved for Client Patient Id 2
+                    .append(DataBaseUtil.toString(projectName).toUpperCase()).append("|");
+            }
+            
+            /*
+             * if the sample has even one qa event that's not billable
+             * then the change for all analyses is zero
+             */
+            anaZeroCharge = sampleZeroCharge;
+            if (!sampleZeroCharge) {                
+                try {
+                    anaQas = analysisQaevent.fetchByAnalysisId(anaId);
+                    for (AnalysisQaEventViewDO aqa : anaQas) {                        
+                        if ("N".equals(aqa.getIsBillable())) {
+                            anaZeroCharge = true;
+                            break;
+                        }
+                    }
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    log.error("Problem with fetching analysis qa events for id "+ anaId);
+                    throw e;
+                }
+            }
+
+            try {
+                billableAnalytes = result.fetchForBillingByAnalysisId(anaId).size();
+            } catch (NotFoundException e) {
+                billableAnalytes = 0;
             } catch (Exception e) {
-                // ignore
+                log.error("Problem with fetching results for analysis with id "+ anaId);
+                throw e;
+            }          
+
+            /*
+             * section's name is in the format "virology-ic" 
+             */
+            tokens = section.split("-");
+            labCode = labDept = "";
+            if (tokens.length >= 1) 
+                labDept = tokens[0];
+            if (tokens.length >= 2) 
+                labCode = tokens[1];            
+            procedure = testName + " by " + methodName;
+            /*
+             * if the values set for the fields billed_analytes and
+             * billed_zero in AnalysisReportFlags for this analysis are
+             * different from the ones determined right now, then we create
+             * a row with "CR" as the transaction type with the old values
+             */ 
+            dtrcr.setLength(0);
+            dtrch.setLength(0);            
+            df.applyPattern("yyyyMMddHHmm");
+            if (billed != null && (billableAnalytes != billedAnalytes ||
+                !billedZero.equals(anaZeroCharge ? "0" : ""))) {                
+                dtrcr.append("DTR").append("|")
+                     .append(df.format(billed)).append("|")
+                     .append(accession).append("|")
+                     .append(testId).append("|")
+                     .append(procedure).append("|")
+                     .append("CR").append("|")
+                     .append(billedAnalytes).append("|")
+                     .append(billedZero).append("|")
+                     .append(labCode.toUpperCase()).append("|")
+                     .append(labDept).append("|");                 
+            }            
+            /*
+             *  we need to figure out if we charge for this analysis
+             */
+            needCharge = false;
+            if (billed == null || billableAnalytes != billedAnalytes ||
+                !billedZero.equals(anaZeroCharge ? "Y" : "N")) {                
+                if (!analysisCancelledId.equals(statusId) && ("Y".equals(anaReportable) ||
+                                "billing misc".equals(testName) || "billing misc1".equals(testName))) 
+                    needCharge = true;
+            }
+                
+            if (needCharge) {            
+                dtrch.append("DTR").append("|")
+                     .append(currentDateStr).append("|")
+                     .append(accession).append("|")
+                     .append(testId).append("|")
+                     .append(procedure).append("|")
+                     .append("CH").append("|")
+                     .append(billableAnalytes).append("|")
+                     .append(anaZeroCharge ? "0": "").append("|")
+                     .append(labCode.toUpperCase()).append("|")
+                     .append(labDept).append("|");
+            }
+            
+            if (dtrcr.length() == 0 && dtrch.length() == 0)               
+                continue;
+            
+            if (!samId.equals(prevSamId)) {
+                prevSamId = samId;
+                out.write(hdr.toString());
+                out.write("\n");
+            }
+            
+            if (dtrcr.length() > 0) {
+                out.write(dtrcr.toString());
+                out.write("\n");
+            }
+            
+            if (dtrch.length() > 0) {
+                out.write(dtrch.toString());
+                out.write("\n");
+            }
+                        
+            /*
+             * if we can add the DTR with the charge (CH) then we try to
+             * lock the record in AnalysisReportFlags for this analysis
+             * and set its billed_date to the current date
+             */
+            try {
+                anaRepFlags = analysisReportFlags.fetchForUpdateByAnalysisId(anaId);
+                anaRepFlags.setBilledDate(currDateTime);
+                anaRepFlags.setBilledAnalytes(billableAnalytes);
+                anaRepFlags.setBilledZero(anaZeroCharge ? "Y" : "N");
+                analysisReportFlags.update(anaRepFlags);
+            } catch (EntityLockedException e) {
+                /*
+                 * if we can't lock the record then we need to abandon the
+                 * process of filling the file and delete the file 
+                 */                                      
+                log.error("Could not lock analysis report flag for id "+ anaId);
+                throw e;
+            } catch (Exception e) {
+                /*
+                 * if we can't lock the record then we need to abandon the
+                 * process of filling the file and delete the file 
+                 */                                      
+                log.error("Could not lock analysis report flag for id "+ anaId);
+                throw e;
+            }                                                        
+        }
+    }
+    
+    private String getProject(Integer id) throws Exception {
+        String projectName;
+        ArrayList<SampleProjectViewDO> sampleProjList;
+        
+        try {
+            sampleProjList = sampleProject.fetchPermanentBySampleId(id);
+            projectName = sampleProjList.get(0).getProjectName();
+        } catch (NotFoundException e) {
+            projectName = null;
+        }
+        return projectName;
+    }
+    
+    private OrganizationDO getOrganization(Integer id, SamplePrivateWellViewDO well) throws Exception {
+        int index;
+        SampleOrganizationViewDO so;
+        OrganizationDO org;
+        ArrayList<SampleOrganizationViewDO> list;
+        AddressDO addr, repAddr;
+        
+        list = null;
+        index = -1;    
+        try {
+            list = sampleOrganization.fetchBySampleId(id);
+            for (int i = 0; i < list.size(); i++ ) {
+                so = list.get(i);
+                if (organizationBillToId.equals(so.getTypeId())) {
+                    index = i;
+                    break;
+                } else if (organizationReportToId.equals(so.getTypeId())) {
+                    index = i;
+                }
+            }
+        } catch (NotFoundException e) {
+            /*
+             * if well == null then this sample's domain must be different from
+             * private well and so it must have at least one sample organization
+             * defined which is of type "report to"
+             */
+            if (well == null)
+                return null;
+        }
+
+        org = null;
+        if (index > -1) {
+            //
+            // a sample organization of type "bill to" or "report to" was found
+            //
+            so = list.get(index);
+            org = new OrganizationDO();
+            org.setId(so.getOrganizationId());
+            org.setName(so.getOrganizationName());
+            addr = org.getAddress();
+            addr.setMultipleUnit(so.getOrganizationMultipleUnit());
+            addr.setStreetAddress(so.getOrganizationStreetAddress());
+            addr.setCity(so.getOrganizationCity());
+            addr.setState(so.getOrganizationState());
+            addr.setZipCode(so.getOrganizationZipCode());
+        } else if (well != null) {
+            //
+            // find the organization or address specified as "report to"
+            //
+            org = well.getOrganization();
+            if (org == null) {
+                repAddr = well.getReportToAddress();
+                if (repAddr != null) {
+                    org = new OrganizationDO();
+                    org.setName(well.getReportToName());
+                    addr = org.getAddress();
+                    addr.setMultipleUnit(repAddr.getMultipleUnit());
+                    addr.setStreetAddress(repAddr.getStreetAddress());
+                    addr.setCity(repAddr.getCity());
+                    addr.setState(repAddr.getState());
+                    addr.setZipCode(repAddr.getZipCode());
+                }
             }
         }
-        return status;
+
+        return org;
     }
-
-    private ArrayList<OptionListItem> getOptions() {
-        ArrayList<OptionListItem> l;
-
-        l = new ArrayList<OptionListItem>();
-        l.add(new OptionListItem("Yes", "Yes"));
-        l.add(new OptionListItem("No", "No"));
-
-        return l;
+    
+    private String getBillingPO(Integer id, String analyteName) throws Exception {
+        ArrayList<AuxDataViewDO> auxList;
+        String value;
+        
+        value = null;
+        try {
+            auxList = auxData.fetchByIdAnalyteName(id, ReferenceTable.SAMPLE, analyteName);
+            value = auxList.get(0).getValue();            
+        } catch (NotFoundException e) {
+            // ignore
+        }
+        
+        return value;
     }
+    
+    private String getDomainInfo(String clientReference, String po, SamplePrivateWellViewDO sample) {
+        StringBuffer buf;
+        
+        buf = new StringBuffer();
+        append(buf, "PO-", po);
+        append(buf, "REF-", clientReference);
+        append(buf, "OWNER-", sample.getOwner());
+        append(buf, "COL-", sample.getCollector());
+        append(buf, "LOC-", sample.getLocation());                        
+        
+        return buf.toString();
+    }
+    
+    private String getDomainInfo(String clientReference, String po, SampleEnvironmentalDO sample) {
+        StringBuffer buf;
+        
+        buf = new StringBuffer();
+        append(buf, "PO-", po);
+        append(buf, "REF-", clientReference);
+        append(buf, "COL-", sample.getCollector());
+        append(buf, "LOC-", sample.getLocation());                        
+        
+        return buf.toString();
+    }
+    
+    private String getDomainInfo(String clientReference, String po, SampleSDWISViewDO sample) {
+        StringBuffer buf;
+        
+        buf = new StringBuffer();
+        append(buf, "PO-", po);
+        append(buf, "PWS-", sample.getPwsNumber0());
+        append(buf, "REF-", clientReference);
+        append(buf, "COL-", sample.getCollector());
+        append(buf, "LOC-", sample.getLocation());                        
+        
+        return buf.toString();
+    }
+    
+    private void append(StringBuffer buf, String prefix, String value) {
+        if (!DataBaseUtil.isEmpty(value)) {
+            if (buf.length() > 0) 
+                buf.append(", ");
+            buf.append(prefix).append(value);
+        }
+    }    
 }

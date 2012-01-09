@@ -18,13 +18,13 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.LabelReportLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.remote.SampleLoginLabelReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -40,6 +40,9 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
 	
 	@EJB
 	private SampleLocal sample;
+	
+	@EJB
+	private PrinterCacheLocal printer;
 	
 	@EJB
 	private LabelReportLocal labelReport;
@@ -84,7 +87,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
 					.setOptionList(l)
 					.setRequired(true));
 
-			prn = PrinterList.getInstance().getListByType("zpl");
+			prn = printer.getListByType("zpl");
 			p.add(new Prompt("BARCODE", Prompt.Type.ARRAY)
 					.setPrompt("Printer:")
 					.setWidth(120)
@@ -213,7 +216,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
 					.setOptionList(l)
 					.setRequired(true));
 
-			prn = PrinterList.getInstance().getListByType("zpl");
+			prn = printer.getListByType("zpl");
 			p.add(new Prompt("BARCODE", Prompt.Type.ARRAY)
 					.setPrompt("Printer:")
 					.setWidth(120)

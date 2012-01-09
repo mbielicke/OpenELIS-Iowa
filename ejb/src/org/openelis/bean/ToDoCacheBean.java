@@ -30,6 +30,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -39,7 +40,6 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.jboss.ejb3.annotation.Service;
 import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.DictionaryDO;
@@ -54,6 +54,7 @@ import org.openelis.domain.SectionDO;
 import org.openelis.domain.WorksheetCacheVO;
 import org.openelis.entity.AnalysisQaevent;
 import org.openelis.entity.Sample;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisQAEventLocal;
@@ -73,7 +74,7 @@ import org.openelis.utils.EJBFactory;
  */
 
 @SecurityDomain("openelis")
-@Service(objectName = "jboss:custom=ToDoCacheBean")
+@Singleton
 
 public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
 
@@ -527,7 +528,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
          */
         try {
             if (sidList != null && sidList.size() > 0) {
-                sqeList = sqel.fetchResultOverrideBySampleIdList(sidList);
+                sqeList = sqel.fetchResultOverrideBySampleIds(sidList);
                 for (SampleQaEventDO sqe : sqeList) {
                     elem = cache.get(sqe.getSampleId());
                     svo = (SampleCacheVO)elem.getValue();
@@ -548,7 +549,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
          */
         try {
             if (sidList != null && sidList.size() > 0) {
-                aqeList = aqel.fetchResultOverrideBySampleIdList(sidList);
+                aqeList = aqel.fetchResultOverrideBySampleIds(sidList);
                 for (AnalysisQaevent aqe : aqeList) {
                     sample = aqe.getAnalysis().getSampleItem().getSample();
                     elem = cache.get(sample.getId());
@@ -709,7 +710,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
          */
         try {
             if (aidList != null && aidList.size() > 0) {
-                aqeList = aqel.fetchResultOverrideByAnalysisIdList(aidList);
+                aqeList = aqel.fetchResultOverrideByAnalysisIds(aidList);
                 for (AnalysisQaEventDO aqe : aqeList) {
                     elem = cache.get(aqe.getAnalysisId());
                     cvo = (AnalysisCacheVO)elem.getValue();

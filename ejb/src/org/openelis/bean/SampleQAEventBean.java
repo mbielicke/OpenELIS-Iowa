@@ -92,11 +92,14 @@ public class SampleQAEventBean implements SampleQAEventLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
-    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIdList(ArrayList<Integer> ids) throws Exception {
+    public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIds(ArrayList<Integer> ids) throws Exception {
         Query query;
-        List returnList;
+        List returnList;        
+
+        if (ids.size() == 0)
+            throw new NotFoundException();
         
-        query = manager.createNamedQuery("SampleQaevent.FetchResultOverrideBySampleIdList");
+        query = manager.createNamedQuery("SampleQaevent.FetchResultOverrideBySampleIds");
         query.setParameter("ids", ids);
         
         returnList = query.getResultList();
@@ -112,21 +115,6 @@ public class SampleQAEventBean implements SampleQAEventLocal {
         List returnList;
         
         query = manager.createNamedQuery("SampleQaevent.FetchResultOverrideBySampleId");
-        query.setParameter("id", id);
-        
-        returnList = query.getResultList();
-        
-        if(returnList.size() == 0)
-            throw new NotFoundException();
-        
-        return DataBaseUtil.toArrayList(returnList);
-    }
-    
-    public ArrayList<SampleQaEventDO> fetchNotBillableBySampleId(Integer id) throws Exception {
-        Query query;
-        List returnList;
-        
-        query = manager.createNamedQuery("SampleQaevent.FetchNotBillableBySampleId");
         query.setParameter("id", id);
         
         returnList = query.getResultList();

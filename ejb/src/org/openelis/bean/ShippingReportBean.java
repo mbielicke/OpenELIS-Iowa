@@ -40,12 +40,12 @@ import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.InventoryItemCacheLocal;
 import org.openelis.local.LabelReportLocal;
 import org.openelis.local.OrderItemLocal;
+import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.RequestformReportLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.ShippingLocal;
 import org.openelis.remote.ShippingReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -73,8 +73,11 @@ public class ShippingReportBean implements ShippingReportRemote {
     
     @EJB
     private DictionaryCacheLocal     dictionaryCache;
+    
+    @EJB
+    private PrinterCacheLocal        printer;
 
-    private final static String      PRN_PREFIX = "prn://";
+    private final static String      PRN_PREFIX = "print://";
     
     private static Integer           shipFromICId, shipFromAnkId;
     
@@ -108,13 +111,13 @@ public class ShippingReportBean implements ShippingReportRemote {
             p.add(new Prompt("SHIPPING_ID", Prompt.Type.INTEGER).setPrompt("Shipping Id:")
                                                                 .setWidth(75)
                                                                 .setRequired(true));
-            prn = PrinterList.getInstance().getListByType("pdf");
+            prn = printer.getListByType("pdf");
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
                                                           .setMutiSelect(false)
                                                           .setRequired(true));
-            prn = PrinterList.getInstance().getListByType("zpl");
+            prn = printer.getListByType("zpl");
             p.add(new Prompt("BARCODE", Prompt.Type.ARRAY).setPrompt("Barcode Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
@@ -285,7 +288,7 @@ public class ShippingReportBean implements ShippingReportRemote {
             shipData = shipping.fetchById(shippingId);
         } catch (NotFoundException e) {
             throw new NotFoundException("A shipping record with id " + shippingIdStr +
-                                        " does not exists");
+                                        " does not exist");
         } catch (Exception e) {
             e.printStackTrace();
             throw e;

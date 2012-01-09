@@ -130,5 +130,6 @@ public class ReferenceTable {
                             ANALYTE_PARAMETER =             105,
                             SECTION_PARAMETER =             106,
                             ANALYSIS_REPORT_FLAGS =         107,
-                            ORDER_RECURRENCE =              108;
+                            ORDER_RECURRENCE =              108,
+    						CRON =                          109;
 }

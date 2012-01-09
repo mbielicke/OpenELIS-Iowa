@@ -41,6 +41,13 @@
 				<include name="org/openelis/utilcommon/*.class" />
 			</fileset>
 		</jar>
+		<delete file="build/security-common.jar" />
+		<jar jarfile="build/security-common.jar">
+		    <fileset dir="../Security-Common/bin">
+			  <include name="org/openelis/security/domain/*.class"/>
+		      <include name="org/openelis/security/remote/*.class"/>
+		    </fileset>
+		</jar>
 		<!--
 		<copy file="../OpenELIS-Security-EJB/security-client.jar" todir="./lib" overwrite="true" />
 		-->
@@ -56,9 +63,11 @@
 			<fileset dir="build">
 				<include name="openelis-common.jar" />
 			</fileset>
+			<fileset dir="build">
+				<include name="security-common.jar" />
+		    </fileset>
 			<fileset dir=".">
 				<include name="lib/openelis-lib.jar" />
-				<include name="lib/security-client.jar" />
 				<include name="lib/poi-3.6-20091214.jar" />
 				<include name="lib/iText-2.1.7.jar" />
 				<include name="lib/jcommon-1.0.15.jar" />
@@ -75,7 +84,7 @@
 	</target>
 
 	<target name="deploy-openelis-ejb" depends="ejbjar">
-		<copy file="build/openelis.ear" todir="/usr/local/java/jboss/server/uhl/deploy" />
+		<copy file="build/openelis.ear" todir="/usr/local/java/jboss-6.1.0.Final/server/shl/deploy" />
 	</target>
 
 </project>

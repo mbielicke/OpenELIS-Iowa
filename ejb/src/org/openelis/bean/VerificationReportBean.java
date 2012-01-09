@@ -238,7 +238,7 @@ public class VerificationReportBean implements VerificationReportRemote {
         l = new ArrayList<OptionListItem>();
         l.add(new OptionListItem("", ""));
         try {
-            s = EJBFactory.getUserCache().getSystemUsers("%", 500);
+            s = EJBFactory.getUserCache().getEmployees("%", 500);
             for (SystemUserVO n : s)
                 l.add(new OptionListItem(n.getId().toString(), n.getLoginName()));
         } catch (Exception e) {

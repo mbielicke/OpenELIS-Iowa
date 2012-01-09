@@ -29,13 +29,13 @@ import java.util.ArrayList;
 
 import javax.annotation.Resource;
 import javax.ejb.SessionContext;
+import javax.ejb.Singleton;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.jboss.ejb3.annotation.Service;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SectionPermission.SectionFlags;
@@ -50,7 +50,7 @@ import org.openelis.utils.EJBFactory;
  */
 
 @SecurityDomain("openelis")
-@Service(objectName = "jboss:custom=UserCacheBean")
+@Singleton
 
 public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
 
@@ -89,7 +89,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         String parts[];
         
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
-        if (parts.length == 3)
+        if (parts.length > 0)
             return parts[0];
 
         return null;
@@ -104,7 +104,8 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         String parts[];
         
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
-        if (parts.length == 3)
+        // the user 'system' will not have session id
+        if (parts.length > 1)
             return parts[1];
 
         return "";
@@ -119,7 +120,8 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         String parts[];
         
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
-        if (parts.length == 3)
+        // the user 'system' will not have locale
+        if (parts.length > 2)
             return parts[2];
 
         return "";
@@ -156,7 +158,6 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
             cache.put(new Element(data.getId(), data));
             cache.put(new Element(data.getLoginName(), data));
         } catch (Exception e1) {
-            e1.printStackTrace();
             data = null;
         }
 
@@ -174,7 +175,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         e = cache.get(name);
         if (e != null)
             return (SystemUserVO)e.getValue();
-
+        
         data = null;
         try {
             list = getSystemUsers(name, 1);
@@ -184,7 +185,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
                 cache.put(new Element(data.getLoginName(), data));
             }
         } catch (Exception e1) {
-            e1.printStackTrace();
+            data = null;
         }
 
         return data;
@@ -257,7 +258,18 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         try {
             list = EJBFactory.getSecurity().fetchByLoginName(name, max);
         } catch (Exception e1) {
-            e1.printStackTrace();
+            list = null;
+        }
+
+        return list;
+    }
+    
+    public ArrayList<SystemUserVO> getEmployees(String name, int max) throws Exception {
+        ArrayList<SystemUserVO> list;
+
+        try {
+            list = EJBFactory.getSecurity().fetchEmployeeByLoginName(name, max);
+        } catch (Exception e1) {
             list = null;
         }
 
@@ -274,17 +286,20 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
 
         name = getName();
         e = permCache.get(name);
-        if (e != null)
+        if (e != null) {
             return (SystemUserPermission)e.getValue();
+        }
 
-        data = null;
         try {
             data = EJBFactory.getSecurity().fetchByApplicationAndLoginName("openelis", name);
-            permCache.put(new Element(name, data));
-            cache.put(new Element(data.getLoginName(), data.getUser()));
-            cache.put(new Element(data.getSystemUserId(), data.getUser()));
+            if (data != null) {
+                permCache.put(new Element(name, data));
+                cache.put(new Element(data.getLoginName(), data.getUser()));
+                cache.put(new Element(data.getSystemUserId(), data.getUser()));
+            }
         } catch (Exception e1) {
             e1.printStackTrace();
+            data = null;
         }
 
         return data;

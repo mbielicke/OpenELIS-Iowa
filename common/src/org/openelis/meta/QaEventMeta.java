@@ -43,8 +43,8 @@ public class QaEventMeta implements Meta, MetaMap {
                                   REPORTING_SEQUENCE = "_qae.reportingSequence",
                                   REPORTING_TEXT     = "_qae.reportingText",
                                   
-                                  TEST_NAME          = "_qae.test.name",
-                                  TEST_METHOD_NAME   = "_test.method.name";                       
+                                  TEST_NAME          = "_test.name",
+                                  TEST_METHOD_NAME   = "_method.name";                       
 
     
     private static HashSet<String> names;

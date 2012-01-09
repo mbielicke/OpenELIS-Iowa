@@ -29,10 +29,23 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.report.Prompt;
+import org.openelis.domain.CronDO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.data.QueryData;
 
 @Remote
-public interface OrderRecurrenceReportRemote {
-    public ArrayList<Prompt> getPrompts();
-    public void recurOrders();
+public interface CronRemote {
+    public CronDO fetchById(Integer id) throws Exception;
+    
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
+
+    public CronDO add(CronDO data) throws Exception;
+
+    public CronDO update(CronDO data) throws Exception;
+
+    public CronDO fetchForUpdate(Integer id) throws Exception;
+
+    public CronDO abortUpdate(Integer id) throws Exception;
+    
+    public void delete(CronDO data) throws Exception;	 
 }

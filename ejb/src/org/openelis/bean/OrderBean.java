@@ -124,7 +124,6 @@ public class OrderBean implements OrderRemote, OrderLocal {
                           OrderMeta.getRequestedBy() + ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(OrderMeta.getId() + " DESC");
-
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);
         builder.setQueryParams(query, fields);
@@ -272,22 +271,20 @@ public class OrderBean implements OrderRemote, OrderLocal {
     }
     
     private void setOrganizationReportToBillTo(OrderViewDO data) throws Exception {
-        int i;
-        Integer ids[];   
+        ArrayList<Integer> ids;   
         List<OrganizationViewDO> list;
         OrganizationViewDO organization;
         
-        ids = new Integer[3];
-        i = 0;
+        ids = new ArrayList<Integer>(3);
         if (data.getOrganizationId() != null)
-            ids[i++] = data.getOrganizationId();
+            ids.add(data.getOrganizationId());
         if (data.getReportToId() != null) 
-            ids[i++] = data.getReportToId();
+            ids.add(data.getReportToId());
         if (data.getBillToId() != null) 
-            ids[i++] = data.getBillToId();
-        if (i != 0) {
+            ids.add(data.getBillToId());
+        if (ids.size() != 0) {
             list = organizationBean.fetchByIds(ids);
-            for (i = 0; i < list.size(); i++) {
+            for (int i = 0; i < list.size(); i++) {
                 organization = list.get(i);
                 if (organization.getId().equals(data.getOrganizationId()) && data.getOrganization() == null)
                     data.setOrganization(organization);

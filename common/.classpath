@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/usr/local/java/jboss/common/lib/ejb3-persistence.jar"/>
 	<classpathentry kind="lib" path="/usr/local/java/jboss/common/lib/jboss-ejb3-ext-api.jar"/>
-	<classpathentry kind="lib" path="/usr/local/java/jboss/common/lib/jboss-javaee.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry kind="lib" path="/OpenELIS-GWT/war/WEB-INF/classes"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/usr/local/java/jboss-6.1.0.Final/client/jbossall-client.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

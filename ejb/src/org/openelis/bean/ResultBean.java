@@ -65,7 +65,8 @@ public class ResultBean implements ResultLocal {
     @EJB
     private DictionaryLocal dictionary;
 
-    private static Integer supplementalTypeId, roundEpaId, roundIntegerId, qaEventOverrideId;
+    private static Integer supplementalTypeId, roundSigFigId, roundSigFigNOEId,
+                           roundIntId, roundIntSigFigId, roundIntSigFigNOEId, qaEventOverrideId;
     private static HashMap<Integer, Type> types;
 
     @PostConstruct
@@ -86,8 +87,11 @@ public class ResultBean implements ResultLocal {
 
                 supplementalTypeId = dictionary.fetchBySystemName("test_analyte_suplmtl").getId();
                 qaEventOverrideId = dictionary.fetchBySystemName("qaevent_override").getId();
-                roundEpaId = dictionary.fetchBySystemName("round_epa").getId();
-                roundIntegerId = dictionary.fetchBySystemName("round_integer").getId();
+                roundSigFigId = dictionary.fetchBySystemName("round_sig_fig").getId();
+                roundSigFigNOEId = dictionary.fetchBySystemName("round_sig_fig_noe").getId();
+                roundIntId = dictionary.fetchBySystemName("round_int").getId();
+                roundIntSigFigId = dictionary.fetchBySystemName("round_int_sig_fig").getId();
+                roundIntSigFigNOEId = dictionary.fetchBySystemName("round_int_sig_fig_noe").getId();
             } catch (Throwable e) {
                 e.printStackTrace();
             }
@@ -425,18 +429,21 @@ public class ResultBean implements ResultLocal {
         return results;
     }
     
-    public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIds(ArrayList<Integer> analysisIds) throws Exception {
-        List<ResultViewDO> list;        
+    public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIds(ArrayList<Integer> ids) throws Exception {
+        List<ResultViewDO> results;        
         Query query;
-        
-        query = manager.createNamedQuery("Result.FetchForDataViewByAnalysisIds");
-        query.setParameter("ids", analysisIds);
-   
-        list = query.getResultList();
-        if (list.isEmpty())
+
+        if (ids.size() == 0)
             throw new NotFoundException();
         
-        return DataBaseUtil.toArrayList(list);
+        query = manager.createNamedQuery("Result.FetchForDataViewByAnalysisIds");
+        query.setParameter("ids", ids);
+   
+        results = query.getResultList();
+        if (results.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(results);
     }
     
     public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIdAndRowGroup(Integer analysisId, Integer rowGroup) throws Exception {
@@ -545,10 +552,17 @@ public class ResultBean implements ResultLocal {
                     resultValidators.add(rv);
                 }
                 
-                if (DataBaseUtil.isSame(roundEpaId, data.getRoundingMethodId()))
-                    method = RoundingMethod.EPA_METHOD;
-                else if (DataBaseUtil.isSame(roundIntegerId, data.getRoundingMethodId()))
-                    method = RoundingMethod.INTEGER;
+                
+                if (DataBaseUtil.isSame(roundSigFigId, data.getRoundingMethodId()))
+                    method = RoundingMethod.SIG_FIG;
+                else if (DataBaseUtil.isSame(roundSigFigNOEId, data.getRoundingMethodId()))
+                    method = RoundingMethod.SIG_FIG_NOE;
+                else if (DataBaseUtil.isSame(roundIntId, data.getRoundingMethodId()))
+                    method = RoundingMethod.INT;
+                else if (DataBaseUtil.isSame(roundIntSigFigId, data.getRoundingMethodId()))
+                    method = RoundingMethod.INT_SIG_FIG;
+                else if (DataBaseUtil.isSame(roundIntSigFigNOEId, data.getRoundingMethodId()))
+                    method = RoundingMethod.INT_SIG_FIG_NOE;
                 
                 type = types.get(data.getTypeId());
                 if (type == Type.DICTIONARY) {

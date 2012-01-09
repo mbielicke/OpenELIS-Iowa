@@ -38,6 +38,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -84,19 +85,19 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
                         "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription, s.id, a.id)"
                       + " from Sample s, SampleItem si, Test t, Method m, SampleEnvironmental se, Analysis a"
-                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and se.sampleId = s.id and"
+                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and se.sampleId = s.id and"
                       + " si.sampleId = s.id and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
     @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportPrivateWell",
                 query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
                         "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription, s.id, a.id)"
                       + " from Sample s, SampleItem si, Test t, Method m, SamplePrivateWell se, Analysis a" 
-                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and se.sampleId = s.id and"
+                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and se.sampleId = s.id and"
                       + " si.sampleId = s.id and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
     @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportSDWIS",
                 query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
                         "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription, s.id, a.id)" 
                       + " from Sample s, SampleItem si, Test t, Method m, SampleSDWIS se, Analysis a"
-                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.isActive = 'Y' and t.methodId = m.id and se.sampleId = s.id and"
+                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and se.sampleId = s.id and"
                       + " si.sampleId = s.id  and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
     @NamedQuery( name = "Sample.FetchSDWISByReleasedAndLocation",
                 query = "select distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain," +
@@ -110,11 +111,11 @@ import org.openelis.utils.Auditable;
                         "s.receivedDate, s.collectionDate, s.collectionTime, '', '')"
                       + " from Sample s where s.statusId = :statusId order by s.accessionNumber "),
     @NamedQuery( name = "Sample.FetchForBillingReport",
-                query = "select s.id, s.accessionNumber, s.domain, s.clientReference, s.receivedDate, a.id, t.id, t.name, m.name, se.name, arf.billedDate, arf.billedAnalytes, arf.billedZero" 
+                query = "select s.id, s.accessionNumber, s.domain, s.clientReference, s.receivedDate, a.id, t.id, t.name, m.name, se.name, arf.billedDate, arf.billedAnalytes, arf.billedZero, a.isReportable, a.statusId" 
                       + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, AnalysisReportFlags arf"
                       + " where s.releasedDate between :startDate and :endDate and s.statusId = (select id from Dictionary where systemName = ('sample_released')) and"
-                      + " si.sampleId = s.id and a.sampleItemId = si.id and a.statusId in (select id from Dictionary where systemName = ('analysis_released')) and a.isReportable = 'Y' and a.testId = t.id"
-                      + " and t.isActive = 'Y' and t.methodId = m.id and a.sectionId = se.id and a.id = arf.analysisId order by s.accessionNumber, a.id ")})  
+                      + " si.sampleId = s.id and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and a.sectionId = se.id and"
+                      + " a.id = arf.analysisId order by s.accessionNumber, a.id")})  
                       
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportBatch",     
@@ -425,7 +426,7 @@ import org.openelis.utils.Auditable;
 public class Sample implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                         id;
 
