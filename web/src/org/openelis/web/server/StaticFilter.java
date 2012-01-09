@@ -182,7 +182,7 @@ public class StaticFilter implements Filter {
             props = new Properties();
             props.load(new FileInputStream(propFile));
             props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY, "org.jboss.security.jndi.LoginInitialContextFactory");
-            props.setProperty(InitialContext.SECURITY_PROTOCOL, "openelis");
+            props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
             props.setProperty(Context.SECURITY_PRINCIPAL, parts);
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
