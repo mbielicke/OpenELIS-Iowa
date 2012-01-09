@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleInhouse" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="ireport.callouts" value="##Tue Sep 21 15:30:40 CDT 2010"/>
+	<import value="java.util.Calendar"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SECTION" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TEST" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FROM" class="java.lang.String"/>
+	<parameter name="TO" class="java.lang.String"/>
+	<parameter name="STATUS" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PROJECT" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ORG_ID" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="LOGIN_NAME" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain, se.priority,
+       t.description t_description, t.time_ta_average, t.time_holding, m.name m_name, d.entry as status, a.id as a_id
+FROM sample sa, sample_item si, sample_environmental se, test t, section s, test_section ts,
+     analysis a, method m, dictionary d, sample_organization sd
+WHERE sa.domain ='E' and sa.entered_date BETWEEN $P{FROM} AND $P{TO} and
+      si.sample_id =sa.id and a.sample_item_id = si.id and
+      a.test_id = t.id and t.is_active = "Y" and
+      t.method_id = m.id and t.id = ts.test_id and
+      ts.section_id = s.id and a.section_id = s.id and
+      se.sample_id = sa.id and d.id = a.status_id and a.status_id $P!{STATUS}
+      $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
+UNION
+SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain,0,
+       t.description t_description, t.time_ta_average, t.time_holding, m.name m_name, d.entry as status, a.id as a_id
+FROM sample sa, sample_item si, test t, section s, test_section ts,
+     analysis a, method m, dictionary d, sample_organization sd
+WHERE sa.domain !='E' and sa.entered_date BETWEEN $P{FROM} AND $P{TO} and
+      si.sample_id =sa.id and a.sample_item_id = si.id and
+      a.test_id = t.id and t.is_active = "Y" and
+      t.method_id = m.id and t.id = ts.test_id and
+      ts.section_id = s.id and a.section_id = s.id and
+      d.id = a.status_id and a.status_id $P!{STATUS}
+      $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
+UNION
+SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain, 0,
+       t.description t_description, t.time_ta_average, t.time_holding, m.name m_name, d.entry as status, a.id as a_id
+FROM sample sa, sample_item si, test t, section s, test_section ts,
+     analysis a,method m, dictionary d, sample_private_well sd
+WHERE sa.domain ='W' and sa.entered_date BETWEEN $P{FROM} AND $P{TO} and
+      si.sample_id =sa.id and a.sample_item_id = si.id and
+      a.test_id = t.id and t.is_active = "Y" and
+      t.method_id = m.id and t.id = ts.test_id and
+      ts.section_id = s.id and a.section_id = s.id and
+      d.id = a.status_id and a.status_id $P!{STATUS}
+      $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
+
+ORDER BY sa.accession_number]]>
+	</queryString>
+	<field name="accession_number" class="java.lang.Integer"/>
+	<field name="collection_date" class="java.sql.Timestamp"/>
+	<field name="received_date" class="java.sql.Timestamp"/>
+	<field name="t_description" class="java.lang.String"/>
+	<field name="m_name" class="java.lang.String"/>
+	<field name="status" class="java.lang.String"/>
+	<field name="collection_time" class="java.sql.Timestamp"/>
+	<field name="domain" class="java.lang.String"/>
+	<field name="priority" class="java.lang.Integer"/>
+	<field name="time_ta_average" class="java.lang.Integer"/>
+	<field name="time_holding" class="java.lang.Integer"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<pageHeader>
+		<band height="38" splitType="Stretch">
+			<staticText>
+				<reportElement x="278" y="0" width="178" height="15"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Sample Inhouse Report]]></text>
+			</staticText>
+			<textField pattern="MMM dd, yyyy">
+				<reportElement x="0" y="0" width="100" height="12"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm:ss">
+				<reportElement x="0" y="12" width="100" height="12"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="661" y="0" width="77" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + " of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="">
+				<reportElement x="742" y="0" width="10" height="12"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="657" y="12" width="95" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="12" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="62" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Accession #]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="62" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Collected]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="152" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Received]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="242" y="0" width="235" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Test, Method]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="476" y="0" width="95" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Status]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="571" y="0" width="91" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Due Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="662" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Expires]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13">
+			<textField>
+				<reportElement x="0" y="0" width="57" height="12"/>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="62" y="0" width="85" height="12"/>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{collection_date}]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="152" y="0" width="85" height="12"/>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{received_date}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="242" y="1" width="230" height="12"/>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{t_description},", ",$F{m_name})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="476" y="0" width="90" height="12"/>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{status}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="571" y="0" width="86" height="12">
+					<printWhenExpression><![CDATA[$F{priority} != null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[JasperUtil.changeDate($F{received_date}, $F{priority}, Calendar.DAY_OF_MONTH)]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="571" y="0" width="86" height="12">
+					<printWhenExpression><![CDATA[$F{priority} == null]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[JasperUtil.changeDate($F{received_date}, $F{time_ta_average}, Calendar.DAY_OF_MONTH)]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="662" y="0" width="90" height="12">
+					<printWhenExpression><![CDATA[$F{time_holding} <= 48]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[JasperUtil.changeDate(
+JasperUtil.concatDateAndTime($F{collection_date},$F{collection_time}),
+$F{time_holding}, Calendar.HOUR)]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
