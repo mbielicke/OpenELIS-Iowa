@@ -28,19 +28,14 @@ package org.openelis.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.CategoryCacheVO;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryCacheRemote;
 
 public class CategoryCacheService {
     public CategoryCacheVO getBySystemName(String systemName) throws Exception {
-        return remote().getBySystemName(systemName);
+        return EJBFactory.getCategoryCache().getBySystemName(systemName);
     }
 
     public ArrayList<CategoryCacheVO> getBySystemNames(String... systemNames) throws Exception {        
-        return remote().getBySystemNames(systemNames);
+        return EJBFactory.getCategoryCache().getBySystemNames(systemNames);
     }
 
-    private CategoryCacheRemote remote() {
-        return (CategoryCacheRemote)EJBFactory.lookup("openelis/CategoryCacheBean/remote");
-    }
 }

@@ -31,45 +31,39 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.LabelDO;
 import org.openelis.domain.LabelViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.LabelRemote;
+import org.openelis.server.EJBFactory;
 
 public class LabelService {
 
     public LabelViewDO fetchById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getLabel().fetchById(id);
     }
 
     public ArrayList<LabelDO> fetchByName(String search) throws Exception {
-        return remote().fetchByName(search + "%", 10);
+        return EJBFactory.getLabel().fetchByName(search + "%", 10);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getLabel().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public LabelViewDO add(LabelViewDO data) throws Exception {
-        return remote().add(data);
+        return EJBFactory.getLabel().add(data);
     }
 
     public LabelViewDO update(LabelViewDO data) throws Exception {
-        return remote().update(data);
+        return EJBFactory.getLabel().update(data);
     }
 
     public LabelViewDO fetchForUpdate(Integer id) throws Exception {
-        return remote().fetchForUpdate(id);
+        return EJBFactory.getLabel().fetchForUpdate(id);
     }
 
     public void delete(LabelViewDO data) throws Exception {
-        remote().delete(data);
+        EJBFactory.getLabel().delete(data);
     }
 
     public LabelViewDO abortUpdate(Integer id) throws Exception {
-        return remote().abortUpdate(id);
+        return EJBFactory.getLabel().abortUpdate(id);
     }
-
-    private LabelRemote remote() {
-        return (LabelRemote)EJBFactory.lookup("openelis/LabelBean/remote");
-    }
-
 }

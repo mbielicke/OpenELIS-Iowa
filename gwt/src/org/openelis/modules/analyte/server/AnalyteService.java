@@ -31,43 +31,40 @@ import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
+import org.openelis.server.EJBFactory;
 import org.openelis.remote.AnalyteRemote;
 
 public class AnalyteService {
     public AnalyteViewDO fetchById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getAnalyte().fetchById(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getAnalyte().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public AnalyteViewDO add(AnalyteViewDO data) throws Exception {
-        return remote().add(data);
+        return EJBFactory.getAnalyte().add(data);
     }
 
     public AnalyteViewDO update(AnalyteViewDO data) throws Exception {
-        return remote().update(data);
+        return EJBFactory.getAnalyte().update(data);
     }
 
     public AnalyteViewDO fetchForUpdate(Integer id) throws Exception {
-        return remote().fetchForUpdate(id);
+        return EJBFactory.getAnalyte().fetchForUpdate(id);
     }
 
     public void delete(AnalyteViewDO data) throws Exception {
-        remote().delete(data);
+    	EJBFactory.getAnalyte().delete(data);
     }
 
     public AnalyteViewDO abortUpdate(Integer id) throws Exception {
-        return remote().abortUpdate(id);
+        return EJBFactory.getAnalyte().abortUpdate(id);
     }
 
     public ArrayList<AnalyteDO> fetchByName(String search) throws Exception {
-        return remote().fetchByName(search + "%", 100);
+        return EJBFactory.getAnalyte().fetchByName(search + "%", 100);
     }
 
-    private AnalyteRemote remote() {
-        return (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
-    }
 }

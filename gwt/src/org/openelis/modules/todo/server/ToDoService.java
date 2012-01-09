@@ -30,41 +30,37 @@ import java.util.ArrayList;
 import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.SampleCacheVO;
 import org.openelis.domain.WorksheetCacheVO;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.ToDoCacheRemote;
+import org.openelis.server.EJBFactory;
 
 public class ToDoService {
 
     public ArrayList<AnalysisCacheVO> getLoggedIn() throws Exception {
-        return remote().getLoggedIn();
+        return EJBFactory.getToDoCache().getLoggedIn();
     }
     
     public ArrayList<AnalysisCacheVO> getInitiated() throws Exception {
-        return remote().getInitiated();
+        return EJBFactory.getToDoCache().getInitiated();
     }
     
     public ArrayList<AnalysisCacheVO> getCompleted() throws Exception {
-        return remote().getCompleted();
+        return EJBFactory.getToDoCache().getCompleted();
     }
     
     public ArrayList<AnalysisCacheVO> getReleased() throws Exception {
-        return remote().getReleased();
+        return EJBFactory.getToDoCache().getReleased();
     }
     
     public ArrayList<SampleCacheVO> getToBeVerified() throws Exception {
-        return remote().getToBeVerified();
+        return EJBFactory.getToDoCache().getToBeVerified();
     }
     
     public ArrayList<AnalysisCacheVO> getOther() throws Exception {
-        return remote().getOther();
+        return EJBFactory.getToDoCache().getOther();
     }
     
     public ArrayList<WorksheetCacheVO> getWorksheet() throws Exception {
-        return remote().getWorksheet();
+        return EJBFactory.getToDoCache().getWorksheet();
     }
-    
-    private ToDoCacheRemote remote() {
-        return (ToDoCacheRemote)EJBFactory.lookup("openelis/ToDoCacheBean/remote");
-    } 
+   
 }
 

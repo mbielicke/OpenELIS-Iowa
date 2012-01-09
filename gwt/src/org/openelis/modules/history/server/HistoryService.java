@@ -30,8 +30,7 @@ import java.util.ArrayList;
 import org.openelis.domain.HistoryVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.HistoryRemote;
+import org.openelis.server.EJBFactory;
 
 public class HistoryService {
 
@@ -45,10 +44,6 @@ public class HistoryService {
         field = query.getFields().get(1);
         referenceTableId = Integer.parseInt(field.query);
 
-        return remote().fetchByReferenceIdAndTable(referenceId, referenceTableId);
-    }
-
-    private HistoryRemote remote() {
-        return (HistoryRemote)EJBFactory.lookup("openelis/HistoryBean/remote");
+        return EJBFactory.getHistory().fetchByReferenceIdAndTable(referenceId, referenceTableId);
     }
 }

@@ -29,24 +29,20 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.manager.WorksheetManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.WorksheetCompletionRemote;
+import org.openelis.server.EJBFactory;
 
 public class WorksheetCompletionService {
 
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
-        return remote().saveForEdit(manager);
+        return EJBFactory.getWorksheetCompletion().saveForEdit(manager);
     }
 
     public WorksheetManager loadFromEdit(WorksheetManager manager) throws Exception {
-        return remote().loadFromEdit(manager);
+        return EJBFactory.getWorksheetCompletion().loadFromEdit(manager);
     }
 
     public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager manager) throws Exception {
-        return remote().getHeaderLabelsForScreen(manager);
+        return EJBFactory.getWorksheetCompletion().getHeaderLabelsForScreen(manager);
     }
     
-    private WorksheetCompletionRemote remote() {
-        return (WorksheetCompletionRemote)EJBFactory.lookup("openelis/WorksheetCompletionBean/remote");
-    }
 }

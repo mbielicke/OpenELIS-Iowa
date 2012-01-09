@@ -860,15 +860,11 @@ public class VendorOrderScreen extends Screen {
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            manager = manager.fetchForUpdate();
-            if ( !status_pending.equals(manager.getOrder().getStatusId())) {
-                Window.alert(consts.get("orderStatusNotPendingForUpdate"));
-                manager = manager.abortUpdate();
-            } else {
-                setState(State.UPDATE);
-                DataChangeEvent.fire(this);
-                setFocus(neededInDays);
-            }
+            manager = manager.fetchForUpdate();      
+            
+            setState(State.UPDATE);
+            DataChangeEvent.fire(this);
+            setFocus(neededInDays);            
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }

@@ -36,9 +36,8 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.OrganizationContactManager;
 import org.openelis.manager.OrganizationManager;
 import org.openelis.manager.OrganizationParameterManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.remote.OrganizationRemote;
+import org.openelis.server.EJBFactory;
 
 /*
  * This class provides service for OrganizationManager and
@@ -47,93 +46,90 @@ import org.openelis.remote.OrganizationRemote;
 public class OrganizationService {
 
     public OrganizationManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getOrganizationManager().fetchById(id);
     }
-    
+
     public ArrayList<OrganizationManager> fetchByIdList(Query query) throws Exception {
         Integer id;
         ArrayList<Integer> ids;
         ArrayList<OrganizationManager> list;
-        
+
         ids = new ArrayList<Integer>();
         for (QueryData f : query.getFields()) {
             id = Integer.parseInt(f.query);
             ids.add(id);
         }
-        list = remoteManager().fetchByIdList(ids);
-        return list; 
+        list = EJBFactory.getOrganizationManager().fetchByIdList(ids);
+        return list;
     }
-    
+
     public ArrayList<OrganizationDO> fetchByIdOrName(String search) throws Exception {
         int id;
         ArrayList<OrganizationDO> list;
+        OrganizationRemote remote;
 
+        remote = EJBFactory.getOrganization();
         try {
             id = Integer.parseInt(search);
             list = new ArrayList<OrganizationDO>(1);
-            list.add(remote().fetchActiveById(id));
+            list.add(remote.fetchActiveById(id));
         } catch (NumberFormatException e) {
-            list = remote().fetchActiveByName(search + "%", 10);
+            list = remote.fetchActiveByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<OrganizationDO>(0);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
         return list;
-    }       
+    }
 
     public OrganizationManager fetchWithContacts(Integer id) throws Exception {
-        return remoteManager().fetchWithContacts(id);
+        return EJBFactory.getOrganizationManager().fetchWithContacts(id);
     }
-    
+
     public OrganizationManager fetchWithNotes(Integer id) throws Exception {
-        return remoteManager().fetchWithNotes(id);
+        return EJBFactory.getOrganizationManager().fetchWithNotes(id);
     }
 
     public OrganizationManager fetchWithParameters(Integer id) throws Exception {
-        return remoteManager().fetchWithParameters(id);
+        return EJBFactory.getOrganizationManager().fetchWithParameters(id);
     }
-    
+
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getOrganization().query(query.getFields(),
+                                                  query.getPage() * query.getRowsPerPage(),
+                                                  query.getRowsPerPage());
     }
 
     public OrganizationManager add(OrganizationManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getOrganizationManager().add(man);
     }
 
     public OrganizationManager update(OrganizationManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getOrganizationManager().update(man);
     }
 
     public OrganizationManager updateForNotify(OrganizationManager man) throws Exception {
-        return remoteManager().updateForNotify(man);
+        return EJBFactory.getOrganizationManager().updateForNotify(man);
     }
 
     public OrganizationManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getOrganizationManager().fetchForUpdate(id);
     }
 
     public OrganizationManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getOrganizationManager().abortUpdate(id);
     }
 
     //
     // support for OrganizationContactManager and OrganizationParameterManager
     //
     public OrganizationContactManager fetchContactByOrganizationId(Integer id) throws Exception {
-        return remoteManager().fetchContactByOrganizationId(id);
+        return EJBFactory.getOrganizationManager().fetchContactByOrganizationId(id);
     }
 
     public OrganizationParameterManager fetchParameterByOrganizationId(Integer id) throws Exception {
-        return remoteManager().fetchParameterByOrganizationId(id);
+        return EJBFactory.getOrganizationManager().fetchParameterByOrganizationId(id);
     }
 
-    private OrganizationRemote remote() {
-        return (OrganizationRemote)EJBFactory.lookup("openelis/OrganizationBean/remote");
-    }
-
-    private OrganizationManagerRemote remoteManager() {
-        return (OrganizationManagerRemote)EJBFactory.lookup("openelis/OrganizationManagerBean/remote");
-    }
 }

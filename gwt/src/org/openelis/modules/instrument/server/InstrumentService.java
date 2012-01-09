@@ -32,58 +32,47 @@ import org.openelis.domain.InstrumentViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.InstrumentManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.InstrumentManagerRemote;
-import org.openelis.remote.InstrumentRemote;
+import org.openelis.server.EJBFactory;
 
 public class InstrumentService {
 
     public InstrumentManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getInstrumentManager().fetchById(id);
     }
 
     public ArrayList<InstrumentViewDO> fetchByName(String name) throws Exception {
-        return remote().fetchByName(name + "%", 10);
+        return EJBFactory.getInstrument().fetchByName(name + "%", 10);
     }
 
     public ArrayList<InstrumentViewDO> fetchActiveByName(String name) throws Exception {
-        return remote().fetchActiveByName(name + "%", 10);
+        return EJBFactory.getInstrument().fetchActiveByName(name + "%", 10);
     }
 
     public InstrumentManager fetchWithLogs(Integer id) throws Exception {
-        return remoteManager().fetchWithLogs(id);
+        return EJBFactory.getInstrumentManager().fetchWithLogs(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getInstrument().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public InstrumentManager add(InstrumentManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getInstrumentManager().add(man);
     }
 
     public InstrumentManager update(InstrumentManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getInstrumentManager().update(man);
     }
 
     public InstrumentManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getInstrumentManager().fetchForUpdate(id);
     }
 
     public InstrumentManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getInstrumentManager().abortUpdate(id);
     }
 
     public InstrumentLogManager fetchLogByInstrumentId(Integer id) throws Exception {
-        return remoteManager().fetchLogByInstrumentId(id);
+        return EJBFactory.getInstrumentManager().fetchLogByInstrumentId(id);
     }
-
-    private InstrumentRemote remote() {
-        return (InstrumentRemote)EJBFactory.lookup("openelis/InstrumentBean/remote");
-    }
-
-    private InstrumentManagerRemote remoteManager() {
-        return (InstrumentManagerRemote)EJBFactory.lookup("openelis/InstrumentManagerBean/remote");
-    }
-
 }

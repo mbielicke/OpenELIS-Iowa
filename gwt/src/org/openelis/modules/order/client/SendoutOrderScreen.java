@@ -48,6 +48,7 @@ import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.exception.ParseException;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.LastPageException;
@@ -1224,24 +1225,17 @@ public class SendoutOrderScreen extends Screen {
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
-    protected void update() {
-        Integer stId;
-        
+    protected void update() {       
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            manager = manager.fetchForUpdate();
-            stId = manager.getOrder().getStatusId();
-            if ( !statusPendingId.equals(stId) && !statusRecurringId.equals(stId)) {
-                Window.alert(consts.get("orderStatusNotPendingOrRecurForUpdate"));
-                manager = manager.abortUpdate();
-            } else {
-                setState(State.UPDATE);
-                setFocus(neededInDays);
-            }
-
+            manager = manager.fetchForUpdate();   
+            
+            setState(State.UPDATE);
             DataChangeEvent.fire(this);
+            setFocus(neededInDays);   
         } catch (Exception e) {
+            e.printStackTrace();
             Window.alert(e.getMessage());
         }
         window.clearStatus();
@@ -1274,6 +1268,15 @@ public class SendoutOrderScreen extends Screen {
             try {
                 data = manager.getOrder();
                 orec = manager.getRecurrence();
+                /*
+                 * if the user entered data in the fields for recurrence but didn't
+                 * click on the "active" checkbox, this code will make sure that
+                 * a record in the table for recurrence isn't attempted to be
+                 * created for this order with null in that field because that
+                 * field is required    
+                 */
+                if (orec.getIsActive() == null && !isRecurrenceEmpty(orec)) 
+                    orec.setIsActive("N");                
                 prevStatusId = data.getStatusId();
                 if ("Y".equals(orec.getIsActive()) && !statusRecurringId.equals(prevStatusId))  
                     data.setStatusId(statusRecurringId);
@@ -1303,6 +1306,15 @@ public class SendoutOrderScreen extends Screen {
                 data = manager.getOrder();
                 orec = manager.getRecurrence();
                 prevStatusId = data.getStatusId();
+                /*
+                 * if the user entered data in the fields for recurrence but didn't
+                 * click on the "active" checkbox, this code will make sure that
+                 * a record in the table for recurrence isn't attempted to be
+                 * created for this order with null in that field because that
+                 * field is required    
+                 */
+                if (orec.getIsActive() == null && !isRecurrenceEmpty(orec)) 
+                    orec.setIsActive("N");                
                 if ("Y".equals(orec.getIsActive()) && !statusRecurringId.equals(prevStatusId))  
                     data.setStatusId(statusRecurringId);
                 
@@ -1650,7 +1662,8 @@ public class SendoutOrderScreen extends Screen {
         field = new QueryData();
         field.key = OrderMeta.getType();
         field.query = OrderManager.TYPE_SEND_OUT;
-        field.type = QueryData.Type.STRING;        
+        field.type = QueryData.Type.STRING;
+        //fields.add(field);
         
         if (auxFields.size() > 0) {
             // add ref table
@@ -1883,5 +1896,18 @@ public class SendoutOrderScreen extends Screen {
         modal.setContent(shippingScreen);
         shippingScreen.loadShippingData(manager, state);
         window.clearStatus();
+    }
+    
+    private boolean isRecurrenceEmpty(OrderRecurrenceDO data) {
+        if (data == null)
+            return true;
+        
+        if (DataBaseUtil.isEmpty(data.getId()) && DataBaseUtil.isEmpty(data.getOrderId())
+           && DataBaseUtil.isEmpty(data.getIsActive()) && DataBaseUtil.isEmpty(data.getActiveBegin())
+           && DataBaseUtil.isEmpty(data.getActiveEnd()) && DataBaseUtil.isEmpty(data.getFrequency())
+           && DataBaseUtil.isEmpty(data.getUnitId()))
+           return true;
+        
+       return false;
     }
 }

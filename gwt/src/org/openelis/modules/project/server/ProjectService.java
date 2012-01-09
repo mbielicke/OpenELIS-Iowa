@@ -35,33 +35,31 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.ProjectManager;
 import org.openelis.manager.ProjectParameterManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.ProjectManagerRemote;
-import org.openelis.remote.ProjectRemote;
+import org.openelis.server.EJBFactory;
 
 public class ProjectService {
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getProject().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public ProjectManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getProjectManager().fetchById(id);
     }
 
     public ProjectViewDO fetchDOById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getProject().fetchById(id);
     }
 
     public ProjectManager fetchWithParameters(Integer id) throws Exception {
-        return remoteManager().fetchWithParameters(id);
+        return EJBFactory.getProjectManager().fetchWithParameters(id);
     }
 
     public ArrayList<ProjectDO> fetchActiveByName(String search) throws Exception {
         ArrayList<ProjectDO> list;
 
         try {
-            list = remote().fetchActiveByName(search + "%", 10);
+            list = EJBFactory.getProject().fetchActiveByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<ProjectDO>(0);
         } catch (RuntimeException e) {
@@ -73,7 +71,7 @@ public class ProjectService {
     public ProjectDO fetchSingleByName(String name) throws Exception {
         ArrayList<ProjectDO> list;
         
-        list = remote().fetchActiveByName(name, 1);
+        list = EJBFactory.getProject().fetchActiveByName(name, 1);
         
         if(list.size() > 0)
             return list.get(0);
@@ -82,33 +80,25 @@ public class ProjectService {
     }
 
     public ProjectManager add(ProjectManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getProjectManager().add(man);
     }
 
     public ProjectManager update(ProjectManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getProjectManager().update(man);
     }
 
     public ProjectManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getProjectManager().fetchForUpdate(id);
     }
 
     public ProjectManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getProjectManager().abortUpdate(id);
     }
 
     //
     // support for ProjectParameterManager
     //
     public ProjectParameterManager fetchParameterByProjectId(Integer id) throws Exception {
-        return remoteManager().fetchParameterByProjectId(id);
-    }
-
-    private ProjectRemote remote() {
-        return (ProjectRemote)EJBFactory.lookup("openelis/ProjectBean/remote");
-    }
-
-    private ProjectManagerRemote remoteManager() {
-        return (ProjectManagerRemote)EJBFactory.lookup("openelis/ProjectManagerBean/remote");
+        return EJBFactory.getProjectManager().fetchParameterByProjectId(id);
     }
 }

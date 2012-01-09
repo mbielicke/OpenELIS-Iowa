@@ -29,8 +29,7 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.NoteManager;
 import org.openelis.meta.NoteMeta;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.NoteManagerRemote;
+import org.openelis.server.EJBFactory;
 
 public class NoteService {
 
@@ -50,10 +49,7 @@ public class NoteService {
             }
         }
 
-        return remote().fetchByRefTableRefIdIsExt(refTableId, refId, isExternal);
+        return EJBFactory.getNoteManager().fetchByRefTableRefIdIsExt(refTableId, refId, isExternal);
     }
-    
-    private NoteManagerRemote remote() {
-        return (NoteManagerRemote)EJBFactory.lookup("openelis/NoteManagerBean/remote");
-    }
+   
 }

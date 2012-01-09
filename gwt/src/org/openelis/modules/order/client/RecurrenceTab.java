@@ -66,7 +66,7 @@ public class RecurrenceTab extends Screen {
     private AppButton         showDateButton;
     private TableWidget       table;
     private boolean           loaded;
-    private Integer           dayId, monthId, yearId; 
+    private Integer           statusProcessedId, dayId, monthId, yearId; 
     
     public RecurrenceTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
@@ -90,7 +90,8 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceIsActive.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                recurrenceIsActive.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) && 
+                                          (!statusProcessedId.equals(manager.getOrder().getStatusId())));
                 recurrenceIsActive.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -107,7 +108,8 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceActiveBegin.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                recurrenceActiveBegin.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) &&
+                                             (!statusProcessedId.equals(manager.getOrder().getStatusId())));
                 recurrenceActiveBegin.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -124,7 +126,8 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceActiveEnd.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                recurrenceActiveEnd.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) &&
+                                           (!statusProcessedId.equals(manager.getOrder().getStatusId())));
                 recurrenceActiveEnd.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -140,7 +143,8 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceFrequency.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                recurrenceFrequency.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) &&
+                                           (!statusProcessedId.equals(manager.getOrder().getStatusId())));
                 recurrenceFrequency.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -156,7 +160,8 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceUnitId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                recurrenceUnitId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) &&
+                                        (!statusProcessedId.equals(manager.getOrder().getStatusId())));
                 recurrenceUnitId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -212,6 +217,7 @@ public class RecurrenceTab extends Screen {
         recurrenceUnitId.setModel(model);
         
         try {
+            statusProcessedId = DictionaryCache.getIdBySystemName("order_status_processed");
             dayId = DictionaryCache.getIdBySystemName("order_recurrence_unit_days");
             monthId = DictionaryCache.getIdBySystemName("order_recurrence_unit_months");
             yearId = DictionaryCache.getIdBySystemName("order_recurrence_unit_years");

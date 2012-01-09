@@ -42,6 +42,7 @@ import org.openelis.modules.analyteParameter.client.AnalyteParameterScreen;
 import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.buildKits.client.BuildKitsScreen;
 import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
+import org.openelis.modules.cron.client.CronScreen;
 import org.openelis.modules.dataView.client.DataViewScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
@@ -67,9 +68,8 @@ import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
-import org.openelis.modules.report.client.BillingReportScreen;
-import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
+import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.client.FinalReportScreen;
 import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
@@ -96,7 +96,6 @@ import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
-import org.openelis.modules.cron.client.CronScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -133,7 +132,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
 
         service = new ScreenService("controller?service=org.openelis.modules.main.server.OpenELISScreenService");
         rpc = service.call("initialData");
-    
+        
         consts = rpc.appConstants;
 
         drawScreen((ScreenDefInt)GWT.create(OpenELISDef.class));
@@ -1177,23 +1176,23 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
         });
         
         addClickHandler("cron","cron",new ClickHandler() {
-        	public void onClick(ClickEvent event) {
-        		GWT.runAsync(new RunAsyncCallback() {
-        			public void onSuccess() {
-        				try {
-        					browser.addScreen(new CronScreen());
-        				}catch(Exception e) {
-        					e.printStackTrace();
-        					Window.alert(e.getMessage());
-        				}
-        			}
-        			
-        			public void onFailure(Throwable caught) {
-        				caught.printStackTrace();
-        				Window.alert(caught.getMessage());
-        			}
-        		});
-        	}
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new CronScreen());
+                        }catch(Exception e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+                    
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
         });
 
         addClickHandler("testReport", "test", new ClickHandler() {
@@ -1462,26 +1461,6 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new SDWISUnloadReportScreen());
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
-        
-        addClickHandler("billingReport", "system", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new BillingReportScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

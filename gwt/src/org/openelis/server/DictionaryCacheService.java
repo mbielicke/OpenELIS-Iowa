@@ -26,20 +26,15 @@
 package org.openelis.server;
 
 import org.openelis.domain.DictionaryDO;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.DictionaryCacheRemote;
 
 public class DictionaryCacheService {
 
     public DictionaryDO getBySystemName(String systemName) throws Exception {
-        return remote().getBySystemName(systemName);
+        return EJBFactory.getDictionaryCache().getBySystemName(systemName);
     }
 
     public DictionaryDO getById(Integer id) throws Exception {
-        return remote().getById(id);
+        return EJBFactory.getDictionaryCache().getById(id);
     }
 
-    private DictionaryCacheRemote remote() {
-       return (DictionaryCacheRemote)EJBFactory.lookup("openelis/DictionaryCacheBean/remote");
-    }    
 }

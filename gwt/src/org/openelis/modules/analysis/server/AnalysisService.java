@@ -28,34 +28,21 @@ package org.openelis.modules.analysis.server;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.AnalysisManagerRemote;
-import org.openelis.remote.AnalysisQAEventManagerRemote;
-import org.openelis.remote.AnalysisRemote;
+import org.openelis.server.EJBFactory;
 
 public class AnalysisService {
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
-        return managerRemote().fetchBySampleItemId(sampleItemId);
+        return EJBFactory.getAnalysisManager().fetchBySampleItemId(sampleItemId);
     }
     
     public AnalysisViewDO fetchById(Integer analysisId) throws Exception {
-        return remote().fetchById(analysisId);
+        return EJBFactory.getAnalysis().fetchById(analysisId);
     }
 
     // qa method
     public AnalysisQaEventManager fetchQaByAnalysisId(Integer analysisId) throws Exception {
-        return qaRemote().fetchByAnalysisId(analysisId);
+        return EJBFactory.getAnalysisQAEventManager().fetchByAnalysisId(analysisId);
     }
 
-    private AnalysisRemote remote() {
-        return (AnalysisRemote)EJBFactory.lookup("openelis/AnalysisBean/remote");
-    }
 
-    private AnalysisManagerRemote managerRemote() {
-        return (AnalysisManagerRemote)EJBFactory.lookup("openelis/AnalysisManagerBean/remote");
-    }
-
-    private AnalysisQAEventManagerRemote qaRemote() {
-        return (AnalysisQAEventManagerRemote)EJBFactory.lookup("openelis/AnalysisQAEventManagerBean/remote");
-    }
 }

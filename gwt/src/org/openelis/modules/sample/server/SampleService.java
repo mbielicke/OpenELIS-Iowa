@@ -37,93 +37,91 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.PWSRemote;
-import org.openelis.remote.SampleManagerRemote;
-import org.openelis.remote.SampleQAEventManagerRemote;
-import org.openelis.remote.SampleRemote;
 import org.openelis.remote.SystemVariableRemote;
+import org.openelis.server.EJBFactory;
 
 public class SampleService {
     public SampleManager fetchById(Integer sampleId) throws Exception {
-        return managerRemote().fetchById(sampleId);
+        return EJBFactory.getSampleManager().fetchById(sampleId);
     }
 
     public SampleManager fetchByAccessionNumber(Integer accessionNumber) throws Exception {
-        return managerRemote().fetchByAccessionNumber(accessionNumber);
+        return EJBFactory.getSampleManager().fetchByAccessionNumber(accessionNumber);
     }
     
     public SampleManager fetchWithItemsAnalyses(Integer sampleId) throws Exception {
-        return managerRemote().fetchWithItemsAnalysis(sampleId);
+        return EJBFactory.getSampleManager().fetchWithItemsAnalysis(sampleId);
     }
     
     public SampleManager fetchWithAllData(Integer sampleId) throws Exception {
-        return managerRemote().fetchWithAllData(sampleId);
+        return EJBFactory.getSampleManager().fetchWithAllData(sampleId);
     }
 
     // sample methods
     public ArrayList<IdAccessionVO> query(Query query) throws Exception {          
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getSample().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
         
     }
 
     public SampleManager add(SampleManager man) throws Exception {
-        return managerRemote().add(man);
+        return EJBFactory.getSampleManager().add(man);
     }
 
     public SampleManager update(SampleManager man) throws Exception {
-        return managerRemote().update(man);
+        return EJBFactory.getSampleManager().update(man);
     }
 
     public SampleManager fetchForUpdate(Integer sampleId) throws Exception {
-        return managerRemote().fetchForUpdate(sampleId);
+        return EJBFactory.getSampleManager().fetchForUpdate(sampleId);
     }
 
     public SampleManager abortUpdate(Integer sampleId) throws Exception {
-        return managerRemote().abortUpdate(sampleId);
+        return EJBFactory.getSampleManager().abortUpdate(sampleId);
     }
 
     // sample org methods
     public SampleOrganizationManager fetchSampleOrganizationsBySampleId(Integer sampleId)
                                                                                          throws Exception {
-        return managerRemote().fetchSampleOrgsBySampleId(sampleId);
+        return EJBFactory.getSampleManager().fetchSampleOrgsBySampleId(sampleId);
     }
 
     // sample project methods
     public SampleProjectManager fetchSampleprojectsBySampleId(Integer sampleId) throws Exception {
-        return managerRemote().fetchSampleProjectsBySampleId(sampleId);
+        return EJBFactory.getSampleManager().fetchSampleProjectsBySampleId(sampleId);
     }
 
     // sample item methods
     public SampleItemManager fetchSampleItemsBySampleId(Integer sampleId) throws Exception {
-        return managerRemote().fetchSampleItemsBySampleId(sampleId);
+        return EJBFactory.getSampleManager().fetchSampleItemsBySampleId(sampleId);
     }
 
     // sample qa method
     public SampleQaEventManager fetchBySampleId(Integer sampleId) throws Exception {
-        return qaRemote().fetchBySampleId(sampleId);
+        return EJBFactory.getSampleQAEventManager().fetchBySampleId(sampleId);
     }
 
     public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception {
-        return managerRemote().validateAccessionNumber(sampleDO);
+        return EJBFactory.getSampleManager().validateAccessionNumber(sampleDO);
     }
 
     public Integer getNewAccessionNumber() throws Exception {
         SystemVariableDO sysVarDO;
         int tries, i;
         Integer value;
+        SystemVariableRemote svRemote;
 
         sysVarDO = null;
         tries = 5;
         value = null;
         i = 0;
+        svRemote = EJBFactory.getSystemVariable();
         while (i < tries && sysVarDO == null) {
             try {
-                sysVarDO = sysVarRemote().fetchForUpdateByName("last_accession_number");
+                sysVarDO = svRemote.fetchForUpdateByName("last_accession_number");
                 value = Integer.valueOf(sysVarDO.getValue());
                 value = value + 1;
                 sysVarDO.setValue(value.toString());
-                sysVarRemote().update(sysVarDO);
+                svRemote.update(sysVarDO);
             } catch (Exception e) {
                 Thread.sleep(50);
             }
@@ -134,26 +132,6 @@ public class SampleService {
     }
     
     public PWSDO fetchPwsByPwsId(String number0) throws Exception {
-        return pwsRemote().fetchByNumber0(number0);
-    }
-
-    private SampleRemote remote() {
-        return (SampleRemote)EJBFactory.lookup("openelis/SampleBean/remote");
-    }
-
-    private SampleManagerRemote managerRemote() {
-        return (SampleManagerRemote)EJBFactory.lookup("openelis/SampleManagerBean/remote");
-    }
-
-    private SampleQAEventManagerRemote qaRemote() {
-        return (SampleQAEventManagerRemote)EJBFactory.lookup("openelis/SampleQAEventManagerBean/remote");
-    }
-
-    private SystemVariableRemote sysVarRemote() {
-        return (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-    }
-    
-    private PWSRemote pwsRemote() {
-        return (PWSRemote)EJBFactory.lookup("openelis/PWSBean/remote");
+        return EJBFactory.getPWS().fetchByNumber0(number0);
     }
 }

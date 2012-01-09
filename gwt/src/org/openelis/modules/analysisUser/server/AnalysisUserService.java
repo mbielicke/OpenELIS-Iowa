@@ -26,18 +26,12 @@
 package org.openelis.modules.analysisUser.server;
 
 import org.openelis.manager.AnalysisUserManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.AnalysisUserManagerRemote;
+import org.openelis.server.EJBFactory;
 
 public class AnalysisUserService {
     
     public AnalysisUserManager fetchByAnalysisId(Integer analysisId) throws Exception {
-        return remote().fetchByAnalysisId(analysisId);
-    }
-    
-    private AnalysisUserManagerRemote remote() {
-        return (AnalysisUserManagerRemote)EJBFactory.lookup("openelis/AnalysisUserManagerBean/remote");
-        
+        return EJBFactory.getAnalysisUserManager().fetchByAnalysisId(analysisId);
     }
 
 }

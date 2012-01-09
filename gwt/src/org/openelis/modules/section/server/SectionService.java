@@ -32,56 +32,46 @@ import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.SectionManager;
 import org.openelis.manager.SectionParameterManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SectionManagerRemote;
-import org.openelis.remote.SectionRemote;
+import org.openelis.server.EJBFactory;
 
 public class SectionService {
 
     public SectionManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getSectionManager().fetchById(id);
     }
 
     public ArrayList<SectionDO> fetchByName(String search) throws Exception {
-        return remote().fetchByName(search + "%", 10);
+        return EJBFactory.getSection().fetchByName(search + "%", 10);
     }
     
     public SectionManager fetchWithParameters(Integer id) throws Exception {
-        return remoteManager().fetchWithParameters(id);
+        return EJBFactory.getSectionManager().fetchWithParameters(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getSection().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public SectionManager add(SectionManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getSectionManager().add(man);
     }
 
     public SectionManager update(SectionManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getSectionManager().update(man);
     }
 
     public SectionManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getSectionManager().fetchForUpdate(id);
     }
 
     public SectionManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getSectionManager().abortUpdate(id);
     }
     
     //
     // support for SectionParameterManager
     //   
     public SectionParameterManager fetchParameterBySectionId(Integer id) throws Exception {
-        return remoteManager().fetchParameterBySectionId(id);
-    }
-
-    private SectionRemote remote() {
-        return (SectionRemote)EJBFactory.lookup("openelis/SectionBean/remote");
-    }
-    
-    private SectionManagerRemote remoteManager() {
-        return (SectionManagerRemote)EJBFactory.lookup("openelis/SectionManagerBean/remote");
+        return EJBFactory.getSectionManager().fetchParameterBySectionId(id);
     }
 }

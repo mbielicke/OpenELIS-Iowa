@@ -1732,7 +1732,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             internalEditNote.setNote(internalNote);
         } catch (Exception e) {
             e.printStackTrace();
-            Window.alert("error!");
+            Window.alert(e.getMessage());
         }
     }
 

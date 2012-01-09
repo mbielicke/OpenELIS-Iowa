@@ -26,17 +26,13 @@
 package org.openelis.modules.buildKits.server;
 
 import org.openelis.manager.BuildKitManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.BuildKitManagerRemote;
+import org.openelis.server.EJBFactory;
 
 
 public class BuildKitsService {
     
     public BuildKitManager add(BuildKitManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getBuildKitManager().add(man);
     }
     
-    private BuildKitManagerRemote remoteManager() {
-        return (BuildKitManagerRemote)EJBFactory.lookup("openelis/BuildKitManagerBean/remote");        
-    }
 }

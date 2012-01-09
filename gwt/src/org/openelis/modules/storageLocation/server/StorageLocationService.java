@@ -32,38 +32,36 @@ import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.StorageLocationManagerRemote;
-import org.openelis.remote.StorageLocationRemote;
+import org.openelis.server.EJBFactory;
 
 public class StorageLocationService {
 
     public StorageLocationManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getStorageLocationManager().fetchById(id);
     }
 
     public StorageLocationManager fetchWithChildren(Integer id) throws Exception {
-        return remoteManager().fetchWithChildren(id);
+        return EJBFactory.getStorageLocationManager().fetchWithChildren(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getStorageLocation().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public StorageLocationManager add(StorageLocationManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getStorageLocationManager().add(man);
     }
 
     public StorageLocationManager update(StorageLocationManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getStorageLocationManager().update(man);
     }
 
     public StorageLocationManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getStorageLocationManager().fetchForUpdate(id);
     }
 
     public StorageLocationManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getStorageLocationManager().abortUpdate(id);
     }
 
     //
@@ -71,20 +69,12 @@ public class StorageLocationService {
     //
     public StorageLocationChildManager fetchChildByParentStorageLocationId(Integer id)
                                                                                       throws Exception {
-        return remoteManager().fetchChildByParentStorageLocationId(id);
+        return EJBFactory.getStorageLocationManager().fetchChildByParentStorageLocationId(id);
     }
 
     public StorageLocationViewDO validateForDelete(StorageLocationViewDO data) throws Exception {
-        remote().validateForDelete(data);
+        EJBFactory.getStorageLocation().validateForDelete(data);
         return data;
-    }
-
-    private StorageLocationRemote remote() {
-        return (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
-    }
-
-    private StorageLocationManagerRemote remoteManager() {
-        return (StorageLocationManagerRemote)EJBFactory.lookup("openelis/StorageLocationManagerBean/remote");
     }
 
 }

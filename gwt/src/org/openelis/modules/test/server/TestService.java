@@ -38,102 +38,91 @@ import org.openelis.manager.TestReflexManager;
 import org.openelis.manager.TestResultManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.manager.TestWorksheetManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.TestManagerRemote;
-import org.openelis.remote.TestRemote;
+import org.openelis.server.EJBFactory;
 
 public class TestService {
 
     public TestManager fetchById(Integer testId) throws Exception {
-        return remoteManager().fetchById(testId);
+        return EJBFactory.getTestManager().fetchById(testId);
     }
 
     public ArrayList<TestMethodVO> fetchByName(String name) throws Exception {
-        return remote().fetchByName(name + "%", 1000);
+        return EJBFactory.getTest().fetchByName(name + "%", 1000);
     }
     
     public ArrayList<TestMethodVO> fetchByPanelId(Integer id) throws Exception {
-        return remote().fetchByPanelId(id);
+        return EJBFactory.getTest().fetchByPanelId(id);
     }
 
     public ArrayList<PanelVO> fetchNameMethodSectionByName(String name) throws Exception {
-        return remote().fetchNameMethodSectionByName(name + "%", 1000000);
+        return EJBFactory.getTest().fetchNameMethodSectionByName(name + "%", 1000000);
     }
     
     public ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception {
-        return remote().fetchTestMethodSampleTypeList();
+        return EJBFactory.getTest().fetchTestMethodSampleTypeList();
     }
 
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception {
-        return remoteManager().fetchSampleTypeByTestId(testId);
+        return EJBFactory.getTestManager().fetchSampleTypeByTestId(testId);
     }
 
     public TestAnalyteManager fetchTestAnalyteByTestId(Integer testId) throws Exception {
-        return remoteManager().fetchTestAnalytesByTestId(testId);
+        return EJBFactory.getTestManager().fetchTestAnalytesByTestId(testId);
     }
 
     public TestResultManager fetchTestResultByTestId(Integer testId) throws Exception {
-        return remoteManager().fetchTestResultsByTestId(testId);
+        return EJBFactory.getTestManager().fetchTestResultsByTestId(testId);
     }
 
     public TestPrepManager fetchPrepTestsByTestId(Integer testId) throws Exception {
-        return remoteManager().fetchPrepTestsByTestId(testId);
+        return EJBFactory.getTestManager().fetchPrepTestsByTestId(testId);
     }
 
     public TestReflexManager fetchReflexiveTestByTestId(Integer testId) throws Exception {
-        return remoteManager().fetchReflexiveTestsByTestId(testId);
+        return EJBFactory.getTestManager().fetchReflexiveTestsByTestId(testId);
     }
 
     public TestWorksheetManager fetchWorksheetByTestId(Integer testId) throws Exception {
-        return remoteManager().fetchWorksheetByTestId(testId);
+        return EJBFactory.getTestManager().fetchWorksheetByTestId(testId);
     }
 
     public TestManager fetchWithSampleTypes(Integer testId) throws Exception {
-        return remoteManager().fetchWithSampleTypes(testId);
+        return EJBFactory.getTestManager().fetchWithSampleTypes(testId);
     }
 
     public TestManager fetchWithAnalytesAndResults(Integer testId) throws Exception {
-        return remoteManager().fetchWithAnalytesAndResults(testId);
+        return EJBFactory.getTestManager().fetchWithAnalytesAndResults(testId);
     }
 
     public TestManager fetchWithPrepTestsSampleTypes(Integer testId) throws Exception {
-        return remoteManager().fetchWithPrepTestsSampleTypes(testId);
+        return EJBFactory.getTestManager().fetchWithPrepTestsSampleTypes(testId);
     }
 
     public TestManager fetchWithPrepTestsAndReflexTests(Integer testId) throws Exception {
-        return remoteManager().fetchWithPrepTestsAndReflexTests(testId);
+        return EJBFactory.getTestManager().fetchWithPrepTestsAndReflexTests(testId);
     }
 
     public TestManager fetchWithWorksheet(Integer testId) throws Exception {
-        return remoteManager().fetchWithWorksheet(testId);
+        return EJBFactory.getTestManager().fetchWithWorksheet(testId);
     }
 
     public ArrayList<TestMethodVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getTest().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public TestManager add(TestManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getTestManager().add(man);
     }
 
     public TestManager update(TestManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getTestManager().update(man);
     }
 
     public TestManager fetchForUpdate(Integer testId) throws Exception {
-        return remoteManager().fetchForUpdate(testId);
+        return EJBFactory.getTestManager().fetchForUpdate(testId);
     }
 
     public TestManager abortUpdate(Integer testId) throws Exception {
-        return remoteManager().abortUpdate(testId);
+        return EJBFactory.getTestManager().abortUpdate(testId);
     }
-
-    private TestRemote remote() {
-        return (TestRemote)EJBFactory.lookup("openelis/TestBean/remote");
-    }
-
-    private TestManagerRemote remoteManager() {
-        return (TestManagerRemote)EJBFactory.lookup("openelis/TestManagerBean/remote");
-    }
-
 }

@@ -26,17 +26,11 @@
 package org.openelis.server;
 
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.InventoryItemCacheRemote;
 
 public class InventoryItemCacheService {   
     
     public InventoryItemDO getById(Integer id) throws Exception {
-        return remote().getById(id);
+        return EJBFactory.getInventoryItemCache().getById(id);
     }  
     
-    public InventoryItemCacheRemote remote() {
-        return (InventoryItemCacheRemote)EJBFactory.lookup("openelis/InventoryItemCacheBean/remote");
-    }
-
 }

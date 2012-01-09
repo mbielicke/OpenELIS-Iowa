@@ -39,7 +39,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
+import org.openelis.server.EJBFactory;
 import org.openelis.remote.DataViewRemote;
 import org.openelis.remote.SystemVariableRemote;
 import org.openelis.util.SessionManager;
@@ -47,25 +47,25 @@ import org.openelis.util.SessionManager;
 public class DataViewService {
   
     public ArrayList<IdNameVO> fetchPermanentProjectList() throws Exception {
-        return remote().fetchPermanentProjectList();  
+        return EJBFactory.getDataView().fetchPermanentProjectList();  
     }
     
     public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
-        return remote().fetchEnvironmentalProjectListForWeb();  
+        return EJBFactory.getDataView().fetchEnvironmentalProjectListForWeb();  
     }
     
     public DataViewVO fetchAnalyteAndAuxField(Query query) throws Exception {
-        return remote().fetchAnalyteAndAuxField(query.getFields());
+        return EJBFactory.getDataView().fetchAnalyteAndAuxField(query.getFields());
     }
     
     public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(Query query) throws Exception {
-        return remote().fetchAnalyteAndAuxFieldForWebEnvironmental(query.getFields());
+        return EJBFactory.getDataView().fetchAnalyteAndAuxFieldForWebEnvironmental(query.getFields());
     }
     
     public ReportStatus runReport(DataViewVO data) throws Exception {
         ReportStatus st;
 
-        st = remote().runReport(data);
+        st = EJBFactory.getDataView().runReport(data);
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
@@ -75,7 +75,7 @@ public class DataViewService {
     public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
         ReportStatus st;
 
-        st = remote().runReportForWebEnvironmental(data);
+        st = EJBFactory.getDataView().runReportForWebEnvironmental(data);
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
@@ -95,7 +95,7 @@ public class DataViewService {
         in = null;
         temp = null;
         try {
-            list = systemVariableRemote().fetchByName("upload_save_directory");
+            list = EJBFactory.getSystemVariable().fetchByName("upload_save_directory");
 
             temp = File.createTempFile("dataview", ".xml", new File(list.getValue()));
             out = new FileOutputStream(temp);
@@ -105,7 +105,7 @@ public class DataViewService {
                 out.write(buf, 0, len);
             out.close();
 
-            data = remote().loadQuery(temp.getPath());
+            data = EJBFactory.getDataView().loadQuery(temp.getPath());
             in.close(); 
             temp.delete();
             SessionManager.getSession().setAttribute("dataViewQuery", data);
@@ -137,18 +137,10 @@ public class DataViewService {
     public ReportStatus saveQuery(DataViewVO data) throws Exception {
         ReportStatus st;
 
-        st = remote().saveQuery(data);
+        st = EJBFactory.getDataView().saveQuery(data);
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
-    
-    private DataViewRemote remote() {
-        return (DataViewRemote)EJBFactory.lookup("openelis/DataViewBean/remote");
-    }       
-    
-    private SystemVariableRemote systemVariableRemote() {
-        return (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
-    } 
 }

@@ -503,7 +503,7 @@ UIRF Software License are applicable instead of those above.
                             <textbox case="MIXED" field="Integer" />
                           </col>
                           <col key="{meta:getResultRoundingMethodId()}" width="104" header="{resource:getString($constants,'roundingMethod')}">
-                            <dropdown width="100" case="MIXED" field="Integer" />
+                            <dropdown width="200" case="MIXED" field="Integer" />
                           </col>
                         </table>
                       </widget>

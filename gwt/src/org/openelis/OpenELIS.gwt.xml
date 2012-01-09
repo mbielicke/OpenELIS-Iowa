@@ -93,6 +93,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.report.Report"/>
     <inherits name="org.openelis.modules.dataView.DataView"/>
     <inherits name="org.openelis.modules.todo.ToDo"/>
+    <inherits name="org.openelis.modules.cron.Cron"/>
     <source path="manager"/>
     <source path="cache"/>
     <source path="common"/>

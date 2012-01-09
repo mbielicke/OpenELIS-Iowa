@@ -30,44 +30,39 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.TestTrailerRemote;
+import org.openelis.server.EJBFactory;
 
 public class TestTrailerService {
 
     public TestTrailerDO fetchById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getTestTrailer().fetchById(id);
     }
 
     public ArrayList<IdNameVO> fetchByName(String search) throws Exception {
-        return remote().fetchByName(search + "%", 10);
+        return EJBFactory.getTestTrailer().fetchByName(search + "%", 10);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getTestTrailer().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public TestTrailerDO add(TestTrailerDO data) throws Exception {
-        return remote().add(data);
+        return EJBFactory.getTestTrailer().add(data);
     }
 
     public TestTrailerDO update(TestTrailerDO data) throws Exception {
-        return remote().update(data);
+        return EJBFactory.getTestTrailer().update(data);
     }
 
     public TestTrailerDO fetchForUpdate(Integer id) throws Exception {
-        return remote().fetchForUpdate(id);
+        return EJBFactory.getTestTrailer().fetchForUpdate(id);
     }
 
     public void delete(TestTrailerDO data) throws Exception {
-        remote().delete(data);
+        EJBFactory.getTestTrailer().delete(data);
     }
 
     public TestTrailerDO abortUpdate(Integer id) throws Exception {
-        return remote().abortUpdate(id);
-    }
-
-    private TestTrailerRemote remote() {
-        return (TestTrailerRemote)EJBFactory.lookup("openelis/TestTrailerBean/remote");
+        return EJBFactory.getTestTrailer().abortUpdate(id);
     }
 }

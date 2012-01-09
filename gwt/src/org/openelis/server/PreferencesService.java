@@ -26,8 +26,6 @@
 package org.openelis.server;
 
 import org.openelis.manager.Preferences;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.PreferencesRemote;
 
 /**
  * This class is the tomcat pass through for the PreferencesBean on JBoss
@@ -42,7 +40,7 @@ public class PreferencesService {
 	 * @throws Exception
 	 */
 	public Preferences systemRoot() throws Exception {
-		return remote().systemRoot();
+		return EJBFactory.getPreferences().systemRoot();
 	}
 	
 	/**
@@ -52,7 +50,7 @@ public class PreferencesService {
 	 * @throws Exception
 	 */
     public Preferences userRoot() throws Exception {
-        return remote().userRoot();
+        return EJBFactory.getPreferences().userRoot();
     }
 
     /**
@@ -61,14 +59,7 @@ public class PreferencesService {
      * @throws Exception
      */
     public void flush(Preferences prefs) throws Exception {
-        remote().flush(prefs);
+        EJBFactory.getPreferences().flush(prefs);
     }
 
-    /**
-     * Method will look up and return a reference to the PreferencesRemote interface
-     * @return
-     */
-    private PreferencesRemote remote() {
-        return (PreferencesRemote)EJBFactory.lookup("openelis/PreferencesManagerBean/remote");
-    }
 }

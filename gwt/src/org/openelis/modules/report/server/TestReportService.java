@@ -29,30 +29,25 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.TestReportRemote;
 import org.openelis.report.Prompt;
+import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 
 public class TestReportService {    
     
     public ArrayList<Prompt> getPrompts() throws Exception{
-        return remote().getPrompts();      
+        return EJBFactory.getTestReport().getPrompts();      
     }
     
     public ReportStatus runReport(Query query) throws Exception { 
         ReportStatus st;
         
-        st = remote().runReport(query.getFields());
+        st = EJBFactory.getTestReport().runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
-    
-    private TestReportRemote remote() {
-        return (TestReportRemote)EJBFactory.lookup("openelis/TestReportBean/remote");
-    } 
 }
 
 

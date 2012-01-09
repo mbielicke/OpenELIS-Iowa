@@ -214,6 +214,7 @@ UIRF Software License are applicable instead of those above.
                   <menuItem description="{resource:getString($constants,'scriptletDescription')}" enable="false" icon="scriptletIcon" key="scriptlet" label="{resource:getString($constants,'scriptlet')}" />
                   <menuItem description="{resource:getString($constants,'systemVariableDescription')}" enable="false" icon="systemVariableIcon" key="systemVariable" label="{resource:getString($constants,'systemVariable')}" />
                   <menuItem description="{resource:getString($constants,'pwsInformationDescription')}" enable="false" icon="sdwisSampleLoginIcon" key="pws" label="{resource:getString($constants,'pwsInformation')}" />
+                  <menuItem description="{resource:getString($constants,'cronDescription')}" icon="cronIcon" key="cron" label="{resource:getString($constants,'cron')}" />
                 </menuPanel>
               </menuItem>
             </menuPanel>

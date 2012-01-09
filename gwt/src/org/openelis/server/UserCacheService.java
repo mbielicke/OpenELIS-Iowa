@@ -29,25 +29,22 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.UserCacheRemote;
 
 public class UserCacheService {
     
     public SystemUserVO getSystemUser(Integer id) throws Exception {
-        return remote().getSystemUser(id);
+        return EJBFactory.getUserCache().getSystemUser(id);
     }
 
     public ArrayList<SystemUserVO> getSystemUsers(String name) throws Exception {
-        return remote().getSystemUsers(name + "%", 10);
+        return EJBFactory.getUserCache().getSystemUsers(name + "%", 10);
+    }
+    
+    public ArrayList<SystemUserVO> getEmployees(String name) throws Exception {
+        return EJBFactory.getUserCache().getEmployees(name + "%", 10);
     }
 
     public SystemUserPermission getPermission() throws Exception {
-       return remote().getPermission();
-    }    
-    
-    private UserCacheRemote remote() {
-        return (UserCacheRemote)EJBFactory.lookup("openelis/UserCacheBean/remote");
-    }
-    
+       return EJBFactory.getUserCache().getPermission();
+    }        
 }

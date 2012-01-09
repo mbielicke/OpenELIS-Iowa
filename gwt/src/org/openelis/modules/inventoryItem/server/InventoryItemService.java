@@ -35,22 +35,22 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.InventoryComponentManager;
 import org.openelis.manager.InventoryItemManager;
 import org.openelis.manager.InventoryLocationManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.InventoryItemManagerRemote;
 import org.openelis.remote.InventoryItemRemote;
+import org.openelis.server.EJBFactory;
 
 public class InventoryItemService {
     public InventoryItemManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getInventoryItemManager().fetchById(id);
     }
 
     public ArrayList<InventoryItemDO> fetchActiveByName(String search) throws Exception {
-        return remote().fetchActiveByName(search+"%", 100);
+        return EJBFactory.getInventoryItem().fetchActiveByName(search+"%", 100);
     }
 
     public ArrayList<InventoryItemDO> fetchActiveByNameAndStore(Query query) throws Exception {
         Integer storeId;
         String name;
+        InventoryItemRemote remote;
         
         storeId = null;
         name = null;
@@ -63,10 +63,11 @@ public class InventoryItemService {
                     storeId = Integer.valueOf(field.query);
             }
         }
+        remote = EJBFactory.getInventoryItem();
         if (storeId == null)
-            return remote().fetchActiveByName(name+"%", 10);
+            return remote.fetchActiveByName(name+"%", 10);
         else
-            return remote().fetchActiveByNameAndStore(name+"%", storeId, 10);
+            return remote.fetchActiveByNameAndStore(name+"%", storeId, 10);
     }
     
     public ArrayList<InventoryItemDO> fetchActiveByNameStoreAndParentInventoryItem(Query query) throws Exception {
@@ -89,65 +90,57 @@ public class InventoryItemService {
             }
         }
         
-        return remote().fetchActiveByNameStoreAndParentInventoryItem(name+"%", parentInventoryItemId, 10);
+        return EJBFactory.getInventoryItem().fetchActiveByNameStoreAndParentInventoryItem(name+"%", parentInventoryItemId, 10);
     }
     
     public InventoryItemViewDO fetchInventoryItemById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getInventoryItem().fetchById(id);
     }
 
     public InventoryItemManager fetchWithComponents(Integer id) throws Exception {
-        return remoteManager().fetchWithComponents(id);
+        return EJBFactory.getInventoryItemManager().fetchWithComponents(id);
     }
 
     public InventoryItemManager fetchWithLocations(Integer id) throws Exception {
-        return remoteManager().fetchWithLocations(id);
+        return EJBFactory.getInventoryItemManager().fetchWithLocations(id);
     }
 
     public InventoryItemManager fetchWithManufacturing(Integer id) throws Exception {
-        return remoteManager().fetchWithManufacturing(id);
+        return EJBFactory.getInventoryItemManager().fetchWithManufacturing(id);
     }
 
     public InventoryItemManager fetchWithNotes(Integer id) throws Exception {       
-        return remoteManager().fetchWithNotes(id);
+        return EJBFactory.getInventoryItemManager().fetchWithNotes(id);
     }
 
     public ArrayList<IdNameStoreVO> query(Query query) throws Exception {        
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getInventoryItem().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public InventoryItemManager add(InventoryItemManager man) throws Exception {        
-        return remoteManager().add(man);
+        return EJBFactory.getInventoryItemManager().add(man);
     }
 
     public InventoryItemManager update(InventoryItemManager man) throws Exception {       
-        return remoteManager().update(man);
+        return EJBFactory.getInventoryItemManager().update(man);
     }
 
     public InventoryItemManager fetchForUpdate(Integer id) throws Exception {        
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getInventoryItemManager().fetchForUpdate(id);
     }
 
     public InventoryItemManager abortUpdate(Integer id) throws Exception {       
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getInventoryItemManager().abortUpdate(id);
     }
 
     //
     // support for InventoryComponentManager and InventoryLocationManager
     //
     public InventoryComponentManager fetchComponentByInventoryItemId(Integer id) throws Exception {        
-        return remoteManager().fetchComponentByInventoryItemId(id);
+        return EJBFactory.getInventoryItemManager().fetchComponentByInventoryItemId(id);
     }
     
     public InventoryLocationManager fetchLocationByInventoryItemId(Integer id) throws Exception {        
-        return remoteManager().fetchLocationByInventoryItemId(id);
-    }
-
-    private InventoryItemRemote remote() {
-        return (InventoryItemRemote)EJBFactory.lookup("openelis/InventoryItemBean/remote");
-    }
-
-    private InventoryItemManagerRemote remoteManager() {
-        return (InventoryItemManagerRemote)EJBFactory.lookup("openelis/InventoryItemManagerBean/remote");
+        return EJBFactory.getInventoryItemManager().fetchLocationByInventoryItemId(id);
     }
 }
