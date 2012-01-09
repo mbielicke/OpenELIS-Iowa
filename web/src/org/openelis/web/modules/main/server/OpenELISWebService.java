@@ -31,8 +31,7 @@ import java.util.Locale;
 
 import javax.servlet.http.HttpSession;
 
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.UserCacheRemote;
+import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 import org.openelis.util.UTFResource;
 import org.openelis.web.modules.main.client.OpenELISRPC;
@@ -58,7 +57,7 @@ public class OpenELISWebService {
         HttpSession session;
 
         try {
-            remote().logout();
+            EJBFactory.getUserCache().logout();
             session = SessionManager.getSession();
             if (session != null) {
                 SessionManager.removeSession(session.getId());
@@ -93,9 +92,5 @@ public class OpenELISWebService {
         }
 
         return consts;
-    }
-
-    private UserCacheRemote remote() {
-        return (UserCacheRemote)EJBFactory.lookup("openelis/UserCacheBean/remote");
     }
 }
