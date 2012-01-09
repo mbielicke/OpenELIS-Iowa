@@ -31,7 +31,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
-import javax.naming.InitialContext;
 import javax.transaction.UserTransaction;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
@@ -56,6 +55,9 @@ public class InventoryReceiptManagerBean implements InventoryReceiptManagerRemot
 
     @EJB
     private LockLocal      lockBean;
+    
+    @EJB
+    private InventoryReceiptLocal inventoryReceipt;
     
     public InventoryReceiptManager add(InventoryReceiptManager man) throws Exception {
         UserTransaction ut;
@@ -104,15 +106,13 @@ public class InventoryReceiptManagerBean implements InventoryReceiptManagerRemot
     public InventoryReceiptManager fetchForUpdate(InventoryReceiptManager man) throws Exception {
         UserTransaction ut;
         InventoryReceiptViewDO data;
-        InventoryReceiptLocal rl;
 
-        rl = local();
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
             for (int i = 0; i < man.count(); i++ ) {
                 data = man.getReceiptAt(i);
-                man.setReceiptAt(rl.fetchForUpdate(data.getId()), i);
+                man.setReceiptAt(inventoryReceipt.fetchForUpdate(data.getId()), i);
             }
             ut.commit();
             return man;
@@ -124,12 +124,10 @@ public class InventoryReceiptManagerBean implements InventoryReceiptManagerRemot
     
     public InventoryReceiptManager abortUpdate(InventoryReceiptManager man) throws Exception {
         InventoryReceiptViewDO data;
-        InventoryReceiptLocal rl;
         
-        rl = local();
         for (int i = 0; i < man.count(); i++) {
             data = man.getReceiptAt(i);
-            man.setReceiptAt(rl.abortUpdate(data.getId()), i);
+            man.setReceiptAt(inventoryReceipt.abortUpdate(data.getId()), i);
         }
         return man;
     }
@@ -137,15 +135,4 @@ public class InventoryReceiptManagerBean implements InventoryReceiptManagerRemot
     private void checkSecurity(ModuleFlags flag) throws Exception {
         EJBFactory.getUserCache().applyPermission("inventoryreceipt", flag);
     }
-    
-    private InventoryReceiptLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (InventoryReceiptLocal)ctx.lookup("openelis/InventoryReceiptBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
 }

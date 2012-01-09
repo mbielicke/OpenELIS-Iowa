@@ -95,20 +95,23 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         return data;
     }
     
-    public ArrayList<AuxDataViewDO> fetchForDataView(ArrayList<Integer> refIdList,
-                                                     Integer referenceTableId) throws Exception {
+    public ArrayList<AuxDataViewDO> fetchForDataView(Integer referenceTableId,
+                                                     ArrayList<Integer> ids) throws Exception {
         Query query;
-        List<AuxDataViewDO> list;
-        
-        query = manager.createNamedQuery("AuxData.FetchForDataView");
-        query.setParameter("ids", refIdList);
-        query.setParameter("tableId", referenceTableId);
-        list = (List<AuxDataViewDO>)query.getResultList();
+        List<AuxDataViewDO> auxList;
 
-        if (list.isEmpty())
+        if (ids.size() == 0)
             throw new NotFoundException();
         
-        return DataBaseUtil.toArrayList(list);
+        query = manager.createNamedQuery("AuxData.FetchForDataView");
+        query.setParameter("ids", ids);
+        query.setParameter("tableId", referenceTableId);
+        auxList = (List<AuxDataViewDO>)query.getResultList();
+
+        if (auxList.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(auxList);
     }    
 
     public IdVO fetchGroupIdBySystemVariable(String sysVariableKey) throws Exception {

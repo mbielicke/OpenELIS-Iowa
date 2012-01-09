@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -28,7 +29,8 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "OrganizationParameter.FetchByDictionarySystemName",
                 query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId," +
                         "p.typeId,p.value)"
-                      + " from OrganizationParameter p, Dictionary d where p.typeId = d.id and d.systemName = :systemName")})
+                      + " from OrganizationParameter p, Dictionary d where p.organizationId = :id and"
+                      +	" p.typeId = d.id and d.systemName = :systemName")})
 
 @Entity
 @Table(name = "organization_parameter")
@@ -36,7 +38,7 @@ import org.openelis.utils.Auditable;
 public class OrganizationParameter implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer               id;
 

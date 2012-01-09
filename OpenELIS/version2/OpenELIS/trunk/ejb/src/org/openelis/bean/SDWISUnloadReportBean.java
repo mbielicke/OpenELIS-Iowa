@@ -453,7 +453,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         try {
             sampleIds = new ArrayList<Integer>();
             sampleIds.add(sVDO.getId());
-            sampleQaList = sampleQA.fetchResultOverrideBySampleIdList(sampleIds);
+            sampleQaList = sampleQA.fetchResultOverrideBySampleIds(sampleIds);
             if (sampleQaList.size() > 0)
                 sampleOverride = "S";
         } catch (NotFoundException nfE) {
@@ -782,6 +782,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         methodCodes.put("colilert pa sdwa am",   "9223B-PA");
         methodCodes.put("colilert pa sdwa pm",   "9223B-18PA");
         methodCodes.put("epa 00-02/200.8",       "00-02/200.8");
+        methodCodes.put("epa 00-02 including",   "00-02");
         methodCodes.put("epa 200.7 drink",       "200.7");
         methodCodes.put("epa 200.8 drink",       "200.8");
         methodCodes.put("epa 200.8 sdwa pb&cu",  "200.8");
@@ -804,12 +805,13 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         methodCodes.put("epa 551.1 edb, dbcp",   "551.1");
         methodCodes.put("epa 552.2 haa",         "552.2");
         methodCodes.put("epa 900.0/200.8",       "900.0/200.8");
+        methodCodes.put("epa 900.0 including",   "900.0");
         methodCodes.put("epa 901.1",             "901.1");
-        methodCodes.put("epa 903.0",             "903");
+        methodCodes.put("epa 903.0",             "903.0");
         methodCodes.put("epa 903.0/904.0",       "903.0/904.0");
-        methodCodes.put("epa 904.0",             "904");
-        methodCodes.put("epa 905.0",             "905");
-        methodCodes.put("epa 906.0",             "906");
+        methodCodes.put("epa 904.0",             "904.0");
+        methodCodes.put("epa 905.0",             "905.0");
+        methodCodes.put("epa 906.0",             "906.0");
         methodCodes.put("lac 10-107-06-1j",      "10-107-06-1J");
         methodCodes.put("sm 2130 b",             "2130B");
         methodCodes.put("sm 2320 b",             "2320B");
@@ -949,8 +951,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("Fluorene",                              "2264");
         contaminantIds.put("Fluoride",                              "1025");
         contaminantIds.put("Fonofos",                               "2104"); 
-        contaminantIds.put("Gross Alpha (excluding Uranium)",       "4000");
-        contaminantIds.put("Gross Alpha (including Uranium)",       "4002");
+        contaminantIds.put("Gross Alpha excluding Uranium",         "4000");
+        contaminantIds.put("Gross Alpha including Uranium",         "4002");
         contaminantIds.put("Gross Beta",                            "4100");
         contaminantIds.put("Heptachlor",                            "2065");
         contaminantIds.put("Heptachlor epoxide",                    "2067");

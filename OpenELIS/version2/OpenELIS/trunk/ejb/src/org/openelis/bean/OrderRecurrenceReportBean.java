@@ -30,6 +30,7 @@ import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -53,14 +54,13 @@ import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderTestManager;
-import org.openelis.remote.OrderRecurrenceReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal, OrderRecurrenceReportRemote {
+public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
     
     @EJB
     private DictionaryLocal     dictionary;
@@ -81,17 +81,13 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal, Or
                 log.error("Failed to lookup constants for dictionary entries", e);
             }
         }
-    }
-    
-    public ArrayList<Prompt> getPrompts() {
-        return new ArrayList<Prompt>();
-    }
+    }   
 
     /**
      * Creates new orders from the orders that are to be recurred today 
      */
-    @RolesAllowed("r_final-select")
-    @TransactionTimeout(600)
+    @Asynchronous
+    @TransactionTimeout(600)    
     public void recurOrders() {
         Integer id;
         Datetime now, today;
@@ -108,7 +104,7 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal, Or
         try {
             list = EJBFactory.getOrderRecurrence().fetchActiveList();
         } catch (NotFoundException e) {
-            log.info("No recurring orders found", e);
+            log.debug("No recurring orders found", e);
             return;
         } catch (Exception e) {
             log.error("Failed to fetch orders", e);

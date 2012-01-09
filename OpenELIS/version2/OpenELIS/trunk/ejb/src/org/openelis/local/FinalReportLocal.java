@@ -34,5 +34,7 @@ import org.openelis.gwt.common.data.QueryData;
 
 @Local
 public interface FinalReportLocal {
+    public void runReportForBatch() throws Exception;
+    
     public ReportStatus runReportForBatch(ArrayList<QueryData> paramList) throws Exception;
 }

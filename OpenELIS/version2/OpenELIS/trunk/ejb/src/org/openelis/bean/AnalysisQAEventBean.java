@@ -106,47 +106,39 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
-    public ArrayList<AnalysisQaEventDO> fetchNotBillableByAnalysisId(Integer analysisId) throws Exception {
+    public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisIds(ArrayList<Integer> ids) throws Exception {
         Query query;
         List returnList;
-        
-        query = manager.createNamedQuery("AnalysisQaevent.FetchNotBillableByAnalysisId");
-        query.setParameter("id", analysisId);
-        returnList = query.getResultList();
-        
-        if(returnList.size() == 0)
+
+        if (ids.size() == 0)
             throw new NotFoundException();
-        
+
+        query = manager.createNamedQuery("AnalysisQaevent.FetchResultOverrideByAnalysisIds");
+        query.setParameter("ids", ids);
+
+        returnList = query.getResultList();
+
+        if (returnList.size() == 0)
+            throw new NotFoundException();
+
         return DataBaseUtil.toArrayList(returnList);
     }
-    
-    public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisIdList(ArrayList<Integer> ids) throws Exception {
+
+    public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleIds(ArrayList<Integer> ids) throws Exception {
         Query query;
         List returnList;
-        
-        query = manager.createNamedQuery("AnalysisQaevent.FetchResultOverrideByAnalysisIdList");
-        query.setParameter("ids", ids);
-        
-        returnList = query.getResultList();
-        
-        if(returnList.size() == 0)
+
+        if (ids.size() == 0)
             throw new NotFoundException();
-        
-        return DataBaseUtil.toArrayList(returnList);
-    }
-    
-    public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleIdList(ArrayList<Integer> ids) throws Exception {
-        Query query;
-        List returnList;
-        
-        query = manager.createNamedQuery("AnalysisQaevent.FetchResultOverrideBySampleIdList");
+
+        query = manager.createNamedQuery("AnalysisQaevent.FetchResultOverrideBySampleIds");
         query.setParameter("ids", ids);
-        
+
         returnList = query.getResultList();
-        
-        if(returnList.size() == 0)
+
+        if (returnList.size() == 0)
             throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(returnList);
     }
     

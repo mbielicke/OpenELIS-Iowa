@@ -31,16 +31,15 @@ import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.StorageLocationLocal;
+import org.openelis.utils.EJBFactory;
 
 public class StorageLocationManagerProxy {
 
     public StorageLocationManager fetchById(Integer id) throws Exception {
-        StorageLocationLocal sl;
         StorageLocationViewDO data;
         StorageLocationManager m;
         
-        sl = local();
-        data = sl.fetchById(id);
+        data = EJBFactory.getStorageLocation().fetchById(id);
         m = StorageLocationManager.getInstance();
         
         m.setStorageLocation(data);
@@ -61,10 +60,8 @@ public class StorageLocationManagerProxy {
     public StorageLocationManager add(StorageLocationManager man) throws Exception {
         Integer id;
         String name;
-        StorageLocationLocal sl;
         
-        sl = local();
-        sl.add(man.getStorageLocation());
+        EJBFactory.getStorageLocation().add(man.getStorageLocation());
         id = man.getStorageLocation().getId();
         man.setStorageLocationId(id);        
         name = man.getStorageLocation().getName();
@@ -81,10 +78,8 @@ public class StorageLocationManagerProxy {
     public StorageLocationManager update(StorageLocationManager man) throws Exception {
         Integer id;
         String name;
-        StorageLocationLocal sl;
         
-        sl = local();
-        sl.update(man.getStorageLocation());
+        EJBFactory.getStorageLocation().update(man.getStorageLocation());
         id = man.getStorageLocation().getId();
         name = man.getStorageLocation().getName();
         
@@ -114,7 +109,7 @@ public class StorageLocationManagerProxy {
         list = new ValidationErrorsList();
         
         try {
-            local().validateParentStorageLocation(man.getStorageLocation());
+            EJBFactory.getStorageLocation().validateParentStorageLocation(man.getStorageLocation());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
@@ -127,16 +122,5 @@ public class StorageLocationManagerProxy {
         
         if (list.size() > 0)
             throw list;
-    }
-    
-    private StorageLocationLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (StorageLocationLocal)ctx.lookup("openelis/StorageLocationBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
+    }  
 }

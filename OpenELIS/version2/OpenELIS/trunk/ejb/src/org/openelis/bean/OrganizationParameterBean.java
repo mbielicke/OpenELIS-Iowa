@@ -66,11 +66,12 @@ public class OrganizationParameterBean implements OrganizationParameterLocal {
         return DataBaseUtil.toArrayList(list);
     }
     
-    public ArrayList<OrganizationParameterDO> fetchByDictionarySystemName(String systemName) throws Exception {
+    public ArrayList<OrganizationParameterDO> fetchByOrgIdAndDictSystemName(Integer id, String systemName) throws Exception {
         Query query;
         List list;
 
         query = manager.createNamedQuery("OrganizationParameter.FetchByDictionarySystemName");
+        query.setParameter("id", id);
         query.setParameter("systemName", systemName);
 
         list = query.getResultList();

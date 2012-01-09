@@ -415,7 +415,7 @@ public class DataViewBean implements DataViewRemote {
              * in this list  
              */  
             if (sampleIds.size() > 0) {
-                auxList = auxData.fetchForDataView(sampleIds, ReferenceTable.SAMPLE);
+                auxList = auxData.fetchForDataView(ReferenceTable.SAMPLE, sampleIds);
                 data.setAuxFields(getAuxFields(auxList));
             }
         } catch (NotFoundException e) {

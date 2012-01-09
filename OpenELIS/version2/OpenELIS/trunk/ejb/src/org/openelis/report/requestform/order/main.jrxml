@@ -242,7 +242,7 @@ Phone # 319-335-4500 or
 				<textElement textAlignment="Center">
 					<font fontName="Arial" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<text><![CDATA[Chain of Custody Signatures]]></text>
+				<text><![CDATA[Chain of Custody/Tracking Signatures]]></text>
 			</staticText>
 			<staticText>
 				<reportElement key="" positionType="Float" mode="Transparent" x="85" y="23" width="61" height="10"/>

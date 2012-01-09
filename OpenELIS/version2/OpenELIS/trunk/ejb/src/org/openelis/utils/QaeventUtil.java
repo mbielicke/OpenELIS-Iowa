@@ -38,12 +38,14 @@ public class QaeventUtil {
     public static String getAnalysisQaeventText(Integer analysisId, Boolean notInternal) {        
         StringBuffer text;
         ArrayList<QaEventDO> list;
+        QaeventLocal ql;
    
         try {
+            ql = EJBFactory.getQaevent();
             if (notInternal)
-                list = qaeventLocal().fetchNotInternalByAnalysisId(analysisId);
+                list = ql.fetchNotInternalByAnalysisId(analysisId);
             else
-                list = qaeventLocal().fetchByAnalysisId(analysisId);
+                list = ql.fetchByAnalysisId(analysisId);
             
             text = new StringBuffer();
             for (QaEventDO data : list) 
@@ -59,12 +61,14 @@ public class QaeventUtil {
     public static String getSampleQaeventText(Integer sampleId, Boolean notInternal) {                   
         StringBuffer text;
         ArrayList<QaEventDO> list;
-   
+        QaeventLocal ql;
+        
         try {
+            ql = EJBFactory.getQaevent();
             if (notInternal)
-                list = qaeventLocal().fetchNotInternalBySampleId(sampleId);
+                list = ql.fetchNotInternalBySampleId(sampleId);
             else
-                list = qaeventLocal().fetchBySampleId(sampleId);
+                list = ql.fetchBySampleId(sampleId);
             
             text = new StringBuffer();
             for (QaEventDO data : list) 
@@ -76,14 +80,4 @@ public class QaeventUtil {
             return null;
         }
     }   
-    
-    private static QaeventLocal qaeventLocal() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (QaeventLocal)ctx.lookup("openelis/QaEventBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }           
-    }
 }

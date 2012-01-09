@@ -235,59 +235,32 @@ public class SampleBean implements SampleLocal, SampleRemote {
     
     public ArrayList<Object[]> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception {
         Query query;
-        ArrayList<Object[]> list;       
-        query = manager.createNamedQuery("Sample.FetchForClientEmailReceivedReport");     
+
+        query = manager.createNamedQuery("Sample.FetchForClientEmailReceivedReport");
         query.setParameter("start_received_date", stDate);
         query.setParameter("end_received_date", endDate);
-            
-        try {
-            list = DataBaseUtil.toArrayList(query.getResultList());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        if (list.isEmpty()|| list==null)
-            throw new NotFoundException("noRecordsFound");
-        else
-            return list;        
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     } 
     
     public ArrayList<Object[]> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception {
         Query query;
-        ArrayList<Object[]> list;       
+        
         query = manager.createNamedQuery("Sample.FetchForClientEmailReleasedReport");     
         query.setParameter("start_released_date", stDate);
         query.setParameter("end_released_date", endDate);
         
-        try {
-            list = DataBaseUtil.toArrayList(query.getResultList());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        if (list.isEmpty()|| list==null)
-            throw new NotFoundException("noRecordsFound");
-        else
-            return list;        
+        return DataBaseUtil.toArrayList(query.getResultList());
     } 
     
     public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception {
         Query query;
-        ArrayList<Object[]> list;       
+        
         query = manager.createNamedQuery("Sample.FetchForBillingReport");     
         query.setParameter("startDate", stDate);
         query.setParameter("endDate", endDate);
         
-        try {
-            list = DataBaseUtil.toArrayList(query.getResultList());
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-        if (list.isEmpty()|| list==null)
-            throw new NotFoundException("noRecordsFound");
-        else
-            return list;        
+        return DataBaseUtil.toArrayList(query.getResultList());
     } 
 
     public ArrayList<IdNameVO> fetchProjectsForOrganizations(String clause) throws Exception {

@@ -27,13 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.ProjectParameterDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.ProjectParameterLocal;
-import org.openelis.manager.ProjectParameterManager;
+import org.openelis.utils.EJBFactory;
 
 public class ProjectParameterManagerProxy {
 
@@ -41,7 +39,7 @@ public class ProjectParameterManagerProxy {
         ProjectParameterManager pm;
         ArrayList<ProjectParameterDO> parameters;
 
-        parameters = local().fetchByProjectId(id);
+        parameters = EJBFactory.getProjectParameter().fetchByProjectId(id);
         pm = ProjectParameterManager.getInstance();
         pm.setProjectId(id);
         pm.setParameters(parameters);
@@ -53,7 +51,7 @@ public class ProjectParameterManagerProxy {
         ProjectParameterLocal pm;
         ProjectParameterDO parameter;
 
-        pm = local();
+        pm = EJBFactory.getProjectParameter();
         for (int i = 0; i < man.count(); i++ ) {
             parameter = man.getParameterAt(i);
             parameter.setProjectId(man.getProjectId());
@@ -67,7 +65,7 @@ public class ProjectParameterManagerProxy {
         ProjectParameterLocal pm;
         ProjectParameterDO parameter;
 
-        pm = local();
+        pm = EJBFactory.getProjectParameter();
         for (int j = 0; j < man.deleteCount(); j++ )
             pm.delete(man.getDeletedAt(j));
 
@@ -89,7 +87,7 @@ public class ProjectParameterManagerProxy {
         ValidationErrorsList list;
         ProjectParameterLocal pm;
 
-        pm = local();
+        pm = EJBFactory.getProjectParameter();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
             try {
@@ -100,15 +98,5 @@ public class ProjectParameterManagerProxy {
         }
         if (list.size() > 0)
             throw list;
-    }
-
-    private ProjectParameterLocal local() {
-        try {
-            InitialContext ctx = new InitialContext();
-            return (ProjectParameterLocal)ctx.lookup("openelis/ProjectParameterBean/local");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return null;
-        }
     }
 }

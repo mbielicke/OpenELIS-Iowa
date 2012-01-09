@@ -27,12 +27,13 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.ejb.Singleton;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.jboss.ejb3.annotation.Service;
 import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.local.CategoryCacheLocal;
@@ -44,8 +45,7 @@ import org.openelis.utils.EJBFactory;
  */
 
 @SecurityDomain("openelis")
-@Service(objectName = "jboss:custom=CategoryCacheBean")
-
+@Singleton
 public class CategoryCacheBean implements CategoryCacheLocal, CategoryCacheRemote {
 
     private Cache           cache, dictCache;

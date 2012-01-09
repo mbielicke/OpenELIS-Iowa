@@ -103,6 +103,7 @@ import org.openelis.local.TestPrepLocal;
 import org.openelis.local.TestReflexLocal;
 import org.openelis.local.TestResultLocal;
 import org.openelis.local.TestSectionLocal;
+import org.openelis.local.TestTrailerLocal;
 import org.openelis.local.TestTypeOfSampleLocal;
 import org.openelis.local.TestWorksheetAnalyteLocal;
 import org.openelis.local.TestWorksheetItemLocal;
@@ -124,363 +125,369 @@ import org.openelis.security.remote.SystemUserPermissionRemote;
 public class EJBFactory {
     
     public static AnalysisLocal getAnalysis() {
-        return (AnalysisLocal)lookup("openelis/AnalysisBean/local");
+        return (AnalysisLocal)lookup("AnalysisBean!org.openelis.local.AnalysisLocal");
     }
 
     public static AnalysisQAEventLocal getAnalysisQAEvent() {
-        return (AnalysisQAEventLocal)lookup("openelis/AnalysisQAEventBean/local");
+        return (AnalysisQAEventLocal)lookup("AnalysisQAEventBean!org.openelis.local.AnalysisQAEventLocal");
     }
 
     public static AnalysisReportFlagsLocal getAnalysisReportFlags() {
-        return (AnalysisReportFlagsLocal)lookup("openelis/AnalysisReportFlagsBean/local");
+        return (AnalysisReportFlagsLocal)lookup("AnalysisReportFlagsBean!org.openelis.local.AnalysisReportFlagsLocal");
     }
 
     public static AnalysisUserLocal getAnalysisUser() {
-        return (AnalysisUserLocal)lookup("openelis/AnalysisUserBean/local");
+        return (AnalysisUserLocal)lookup("AnalysisUserBean!org.openelis.local.AnalysisUserLocal");
     }
     
     public static AnalyteParameterLocal getAnalyteParameter() {
-        return (AnalyteParameterLocal)lookup("openelis/AnalyteParameterBean/local");
+        return (AnalyteParameterLocal)lookup("AnalyteParameterBean!org.openelis.local.AnalyteParameterLocal");
     }
 
     public static AuxDataLocal getAuxData() {
-        return (AuxDataLocal)lookup("openelis/AuxDataBean/local");
+        return (AuxDataLocal)lookup("AuxDataBean!org.openelis.local.AuxDataLocal");
     }    
 
     public static AuxFieldGroupLocal getAuxFieldGroup() {
-        return (AuxFieldGroupLocal)lookup("openelis/AuxFieldGroupBean/local");
+        return (AuxFieldGroupLocal)lookup("AuxFieldGroupBean!org.openelis.local.AuxFieldGroupLocal");
     }
 
     public static AuxFieldLocal getAuxField() {
-        return (AuxFieldLocal)lookup("openelis/AuxFieldBean/local");
+        return (AuxFieldLocal)lookup("AuxFieldBean!org.openelis.local.AuxFieldLocal");
     }
 
     public static AuxFieldValueLocal getAuxFieldValue() {
-        return (AuxFieldValueLocal)lookup("openelis/AuxFieldValueBean/local");
+        return (AuxFieldValueLocal)lookup("AuxFieldValueBean!org.openelis.local.AuxFieldValueLocal");
     }
     
     public static CategoryLocal getCategory() {
-        return (CategoryLocal)lookup("openelis/CategoryBean/local");
+        return (CategoryLocal)lookup("CategoryBean!org.openelis.local.CategoryLocal");
     }
 
     public static DictionaryLocal getDictionary() {
-        return (DictionaryLocal)lookup("openelis/DictionaryBean/local");
+        return (DictionaryLocal)lookup("DictionaryBean!org.openelis.local.DictionaryLocal");
     }    
     
     public static HistoryLocal getHistory() {
-        return (HistoryLocal)lookup("openelis/HistoryBean/local");
+        return (HistoryLocal)lookup("HistoryBean!org.openelis.local.HistoryLocal");
     }
 
     public static InstrumentLocal getInstrument() {
-        return (InstrumentLocal)lookup("openelis/InstrumentBean/local");
+        return (InstrumentLocal)lookup("InstrumentBean!org.openelis.local.InstrumentLocal");
     }   
     
     public static InstrumentLogLocal getInstrumentLog() {
-        return (InstrumentLogLocal)lookup("openelis/InstrumentLogBean/local");
+        return (InstrumentLogLocal)lookup("InstrumentLogBean!org.openelis.local.InstrumentLogLocal");
     }
     
     public static InventoryAdjustmentLocal getInventoryAdjustment() {
-        return (InventoryAdjustmentLocal)lookup("openelis/InventoryAdjustmentBean/local");
+        return (InventoryAdjustmentLocal)lookup("InventoryAdjustmentBean!org.openelis.local.InventoryAdjustmentLocal");
     }
 
     public static InventoryComponentLocal getInventoryComponent() {
-        return (InventoryComponentLocal)lookup("openelis/InventoryComponentBean/local");
+        return (InventoryComponentLocal)lookup("InventoryComponentBean!org.openelis.local.InventoryComponentLocal");
     }
 
     public static InventoryItemLocal getInventoryItem() {
-        return (InventoryItemLocal)lookup("openelis/InventoryItemBean/local");
+        return (InventoryItemLocal)lookup("InventoryItemBean!org.openelis.local.InventoryItemLocal");
     }
 
     public static InventoryLocationLocal getInventoryLocation() {
-        return (InventoryLocationLocal)lookup("openelis/InventoryLocationBean/local");
+        return (InventoryLocationLocal)lookup("InventoryLocationBean!org.openelis.local.InventoryLocationLocal");
     }    
 
     public static InventoryReceiptLocal getInventoryReceipt() {
-        return (InventoryReceiptLocal)lookup("openelis/InventoryReceiptBean/local");
+        return (InventoryReceiptLocal)lookup("InventoryReceiptBean!org.openelis.local.InventoryReceiptLocal");
     }
 
     public static InventoryXAdjustLocal getInventoryXAdjust() {
-        return (InventoryXAdjustLocal)lookup("openelis/InventoryXAdjustBean/local");
+        return (InventoryXAdjustLocal)lookup("InventoryXAdjustBean!org.openelis.local.InventoryXAdjustLocal");
     }
 
     public static InventoryXPutLocal getInventoryXPut() {
-        return (InventoryXPutLocal)lookup("openelis/InventoryXPutBean/local");
+        return (InventoryXPutLocal)lookup("InventoryXPutBean!org.openelis.local.InventoryXPutLocal");
     }
 
     public static InventoryXUseLocal getInventoryXUse() {
-        return (InventoryXUseLocal)lookup("openelis/InventoryXUseBean/local");
+        return (InventoryXUseLocal)lookup("InventoryXUseBean!org.openelis.local.InventoryXUseLocal");
     }
     
     public static LockLocal getLock() {
-        return (LockLocal)lookup("openelis/LockBean/local");
+        return (LockLocal)lookup("LockBean!org.openelis.local.LockLocal");
     }
 
     public static NoteLocal getNote() {
-        return (NoteLocal)lookup("openelis/NoteBean/local");
+        return (NoteLocal)lookup("NoteBean!org.openelis.local.NoteLocal");
     }
 
     public static OrderContainerLocal getOrderContainer() {
-        return (OrderContainerLocal)lookup("openelis/OrderContainerBean/local");
+        return (OrderContainerLocal)lookup("OrderContainerBean!org.openelis.local.OrderContainerLocal");
     }
 
     public static OrderItemLocal getOrderItem() {
-        return (OrderItemLocal)lookup("openelis/OrderItemBean/local");
+        return (OrderItemLocal)lookup("OrderItemBean!org.openelis.local.OrderItemLocal");
     }
     
     public static OrderLocal getOrder() {
-        return (OrderLocal)lookup("openelis/OrderBean/local");
+        return (OrderLocal)lookup("OrderBean!org.openelis.local.OrderLocal");
     }
     
     public static OrderTestLocal getOrderTest() {
-        return (OrderTestLocal)lookup("openelis/OrderTestBean/local");
+        return (OrderTestLocal)lookup("OrderTestBean!org.openelis.local.OrderTestLocal");
     }
     
     public static OrderRecurrenceLocal getOrderRecurrence() {
-        return (OrderRecurrenceLocal)lookup("openelis/OrderRecurrenceBean/local");
+        return (OrderRecurrenceLocal)lookup("OrderRecurrenceBean!org.openelis.local.OrderRecurrenceLocal");
     }
     
     public static OrganizationContactLocal getOrganizationContact() {
-        return (OrganizationContactLocal)lookup("openelis/OrganizationContactBean/local");
+        return (OrganizationContactLocal)lookup("OrganizationContactBean!org.openelis.local.OrganizationContactLocal");
     }
     
     public static OrganizationLocal getOrganization() {
-        return (OrganizationLocal)lookup("openelis/OrganizationBean/local");
+        return (OrganizationLocal)lookup("OrganizationBean!org.openelis.local.OrganizationLocal");
     }
     
     public static OrganizationParameterLocal getOrganizationParameter() {
-        return (OrganizationParameterLocal)lookup("openelis/OrganizationParameterBean/local");
+        return (OrganizationParameterLocal)lookup("OrganizationParameterBean!org.openelis.local.OrganizationParameterLocal");
     }
 
     public static PanelItemLocal getPanelItem() {
-        return (PanelItemLocal)lookup("openelis/PanelItemBean/local");
+        return (PanelItemLocal)lookup("PanelItemBean!org.openelis.local.PanelItemLocal");
     }
     
     public static PanelLocal getPanel() {
-        return (PanelLocal)lookup("openelis/PanelBean/local");
+        return (PanelLocal)lookup("PanelBean!org.openelis.local.PanelLocal");
     }
     
     public static ProjectLocal getProject() {
-        return (ProjectLocal)lookup("openelis/ProjectBean/local");
+        return (ProjectLocal)lookup("ProjectBean!org.openelis.local.ProjectLocal");
     }
     
     public static ProjectParameterLocal getProjectParameter() {
-        return (ProjectParameterLocal)lookup("openelis/ProjectParameterBean/local");
+        return (ProjectParameterLocal)lookup("ProjectParameterBean!org.openelis.local.ProjectParameterLocal");
     }
     
     public static ProviderLocal getProvider() {
-        return (ProviderLocal)lookup("openelis/ProviderBean/local");
+        return (ProviderLocal)lookup("ProviderBean!org.openelis.local.ProviderLocal");
     }
     
     public static ProviderLocationLocal getProviderLocation() {
-        return (ProviderLocationLocal)lookup("openelis/ProviderLocationBean/local");
+        return (ProviderLocationLocal)lookup("ProviderLocationBean!org.openelis.local.ProviderLocationLocal");
     }
     
     public static PWSAddressLocal getPWSAddress() {
-        return (PWSAddressLocal)lookup("openelis/PWSAddressBean/local");
+        return (PWSAddressLocal)lookup("PWSAddressBean!org.openelis.local.PWSAddressLocal");
     }
     
     public static PWSFacilityLocal getPWSFacility() {
-        return (PWSFacilityLocal)lookup("openelis/PWSFacilityBean/local");
+        return (PWSFacilityLocal)lookup("PWSFacilityBean!org.openelis.local.PWSFacilityLocal");
     }        
     
     public static PWSLocal getPWS() {
-        return (PWSLocal)lookup("openelis/PWSBean/local");
+        return (PWSLocal)lookup("PWSBean!org.openelis.local.PWSLocal");
     }
     
     public static PWSMonitorLocal getPWSMonitor() {
-        return (PWSMonitorLocal)lookup("openelis/PWSMonitorBean/local");
+        return (PWSMonitorLocal)lookup("PWSMonitorBean!org.openelis.local.PWSMonitorLocal");
     }
 
     public static QaeventLocal getQaevent() {
-        return (QaeventLocal)lookup("openelis/QaEventBean/local");
+        return (QaeventLocal)lookup("QaEventBean!org.openelis.local.QaEventLocal");
     }
     
     public static QcAnalyteLocal getQcAnalyte() {
-        return (QcAnalyteLocal)lookup("openelis/QcAnalyteBean/local");
+        return (QcAnalyteLocal)lookup("QcAnalyteBean!org.openelis.local.QcAnalyteLocal");
     }
     
     public static QcLocal getQc() {
-        return (QcLocal)lookup("openelis/QcBean/local");
+        return (QcLocal)lookup("QcBean!org.openelis.local.QcLocal");
     }
 
     public static ResultLocal getResult() {
-        return (ResultLocal)lookup("openelis/ResultBean/local");
+        return (ResultLocal)lookup("ResultBean!org.openelis.local.ResultLocal");
     }
     
     public static SampleEnvironmentalLocal getSampleEnvironmental() {
-        return (SampleEnvironmentalLocal)lookup("openelis/SampleEnvironmentalBean/local");
+        return (SampleEnvironmentalLocal)lookup("SampleEnvironmentalBean!org.openelis.local.SampleEnvironmentalLocal");
     }
     
     public static SampleItemLocal getSampleItem() {
-        return (SampleItemLocal)lookup("openelis/SampleItemBean/local");
+        return (SampleItemLocal)lookup("SampleItemBean!org.openelis.local.SampleItemLocal");
     }
     
     public static SampleLocal getSample() {
-        return (SampleLocal)lookup("openelis/SampleBean/local");
+        return (SampleLocal)lookup("SampleBean!org.openelis.local.SampleLocal");
     }
     
     public static SampleManagerLocal getSampleManager() {
-        return (SampleManagerLocal)lookup("openelis/SampleManagerBean/local");
+        return (SampleManagerLocal)lookup("SampleManagerBean!org.openelis.local.SampleManagerLocal");
     }
     
     public static SampleOrganizationLocal getSampleOrganization() {
-        return (SampleOrganizationLocal)lookup("openelis/SampleOrganizationBean/local");
+        return (SampleOrganizationLocal)lookup("SampleOrganizationBean!org.openelis.local.SampleOrganizationLocal");
     }
     
     public static SamplePrivateWellLocal getSamplePrivateWell() {
-        return (SamplePrivateWellLocal)lookup("openelis/SamplePrivateWellBean/local");
+        return (SamplePrivateWellLocal)lookup("SamplePrivateWellBean!org.openelis.local.SamplePrivateWellLocal");
     }
     
     public static SampleProjectLocal getSampleProject() {
-        return (SampleProjectLocal)lookup("openelis/SampleProjectBean/local");
+        return (SampleProjectLocal)lookup("SampleProjectBean!org.openelis.local.SampleProjectLocal");
     }
     
     public static SampleQAEventLocal getSampleQAEvent() {
-        return (SampleQAEventLocal)lookup("openelis/SampleQAEventBean/local");
+        return (SampleQAEventLocal)lookup("SampleQAEventBean!org.openelis.local.SampleQAEventLocal");
     }
     
     public static SampleSDWISLocal getSampleSDWIS() {
-        return (SampleSDWISLocal)lookup("openelis/SampleSDWISBean/local");
+        return (SampleSDWISLocal)lookup("SampleSDWISBean!org.openelis.local.SampleSDWISLocal");
     }
     
     public static SectionLocal getSection() {
-        return (SectionLocal)lookup("openelis/SectionBean/local");
+        return (SectionLocal)lookup("SectionBean!org.openelis.local.SectionLocal");
     }    
     
     public static SectionParameterLocal getSectionParameter() {
-        return (SectionParameterLocal)lookup("openelis/SectionParameterBean/local");    
+        return (SectionParameterLocal)lookup("SectionParameterBean!org.openelis.local.SectionParameterLocal");    
     }
     
     public static ShippingItemLocal getShippingItem() {
-        return (ShippingItemLocal)lookup("openelis/ShippingItemBean/local");
+        return (ShippingItemLocal)lookup("ShippingItemBean!org.openelis.local.ShippingItemLocal");
     }
     
     public static ShippingLocal getShipping() {
-        return (ShippingLocal)lookup("openelis/ShippingBean/local");
+        return (ShippingLocal)lookup("ShippingBean!org.openelis.local.ShippingLocal");
     }
     
     public static ShippingTrackingLocal getShippingTracking() {
-        return (ShippingTrackingLocal)lookup("openelis/ShippingTrackingBean/local");
+        return (ShippingTrackingLocal)lookup("ShippingTrackingBean!org.openelis.local.ShippingTrackingLocal");
     }
     
     public static StorageLocal getStorage() {
-        return (StorageLocal)lookup("openelis/StorageBean/local");
+        return (StorageLocal)lookup("StorageBean!org.openelis.local.StorageLocal");
     }
     
     public static StorageLocationLocal getStorageLocation() {
-        return (StorageLocationLocal)lookup("openelis/StorageLocationBean/local");
+        return (StorageLocationLocal)lookup("StorageLocationBean!org.openelis.local.StorageLocationLocal");
     }
     
     public static SystemVariableLocal getSystemVariable() {
-        return (SystemVariableLocal)lookup("openelis/SystemVariableBean/local");
+        return (SystemVariableLocal)lookup("SystemVariableBean!org.openelis.local.SystemVariableLocal");
     }
     
     public static TestAnalyteLocal getTestAnalyte() {
-        return (TestAnalyteLocal)lookup("openelis/TestAnalyteBean/local");
+        return (TestAnalyteLocal)lookup("TestAnalyteBean!org.openelis.local.TestAnalyteLocal");
     }
     
     public static TestLocal getTest() {
-        return (TestLocal)lookup("openelis/TestBean/local");
+        return (TestLocal)lookup("TestBean!org.openelis.local.TestLocal");
     }
     
     public static TestPrepLocal getTestPrep() {
-        return (TestPrepLocal)lookup("openelis/TestPrepBean/local");
+        return (TestPrepLocal)lookup("TestPrepBean!org.openelis.local.TestPrepLocal");
     }
     
     public static TestReflexLocal getTestReflex() {
-        return (TestReflexLocal)lookup("openelis/TestReflexBean/local");
+        return (TestReflexLocal)lookup("TestReflexBean!org.openelis.local.TestReflexLocal");
     }
     
     public static TestResultLocal getTestResult() {
-        return (TestResultLocal)lookup("openelis/TestResultBean/local");
+        return (TestResultLocal)lookup("TestResultBean!org.openelis.local.TestResultLocal");
     }
     
     public static TestSectionLocal getTestSection() {
-        return (TestSectionLocal)lookup("openelis/TestSectionBean/local");
+        return (TestSectionLocal)lookup("TestSectionBean!org.openelis.local.TestSectionLocal");
+    }
+    
+    public static TestTrailerLocal getTestTrailer() {
+        return (TestTrailerLocal)lookup("TestTrailerBean!org.openelis.local.TestTrailerLocal");
     }
     
     public static TestTypeOfSampleLocal getTestTypeOfSample() {
-        return (TestTypeOfSampleLocal)lookup("openelis/TestTypeOfSampleBean/local");
+        return (TestTypeOfSampleLocal)lookup("TestTypeOfSampleBean!org.openelis.local.TestTypeOfSampleLocal");
     }
     
     public static TestWorksheetAnalyteLocal getTestWorksheetAnalyte() {
-        return (TestWorksheetAnalyteLocal)lookup("openelis/TestWorksheetAnalyteBean/local");
+        return (TestWorksheetAnalyteLocal)lookup("TestWorksheetAnalyteBean!org.openelis.local.TestWorksheetAnalyteLocal");
     }
     
     public static TestWorksheetItemLocal getTestWorksheetItem() {
-        return (TestWorksheetItemLocal)lookup("openelis/TestWorksheetItemBean/local");
+        return (TestWorksheetItemLocal)lookup("TestWorksheetItemBean!org.openelis.local.TestWorksheetItemLocal");
     }
     
     public static TestWorksheetLocal getTestWorksheet() {
-        return (TestWorksheetLocal)lookup("openelis/TestWorksheetBean/local");
+        return (TestWorksheetLocal)lookup("TestWorksheetBean!org.openelis.local.TestWorksheetLocal");
     }
     
     public static WorksheetAnalysisLocal getWorksheetAnalysis() {
-        return (WorksheetAnalysisLocal)lookup("openelis/WorksheetAnalysisBean/local");
+        return (WorksheetAnalysisLocal)lookup("WorksheetAnalysisBean!org.openelis.local.WorksheetAnalysisLocal");
     }
     
     public static WorksheetItemLocal getWorksheetItem() {
-        return (WorksheetItemLocal)lookup("openelis/WorksheetItemBean/local");
+        return (WorksheetItemLocal)lookup("WorksheetItemBean!org.openelis.local.WorksheetItemLocal");
     }
     
     public static WorksheetLocal getWorksheet() {
-        return (WorksheetLocal)lookup("openelis/WorksheetBean/local");
+        return (WorksheetLocal)lookup("WorksheetBean!org.openelis.local.WorksheetLocal");
     }
     
     public static WorksheetQcResultLocal getWorksheetQcResult() {
-        return (WorksheetQcResultLocal)lookup("openelis/WorksheetQcResultBean/local");
+        return (WorksheetQcResultLocal)lookup("WorksheetQcResultBean!org.openelis.local.WorksheetQcResultLocal");
     }
     
     public static WorksheetResultLocal getWorksheetResult() {
-        return (WorksheetResultLocal)lookup("openelis/WorksheetResultBean/local");
+        return (WorksheetResultLocal)lookup("WorksheetResultBean!org.openelis.local.WorksheetResultLocal");
     }
     
     public static DictionaryCacheLocal getDictionaryCache() {
-        return (DictionaryCacheLocal) lookup("openelis/DictionaryCacheBean/local");
+        return (DictionaryCacheLocal) lookup("DictionaryCacheBean!org.openelis.local.DictionaryCacheLocal");
     }
     
     public static CategoryCacheLocal getCategoryCache() {
-        return (CategoryCacheLocal) lookup("openelis/CategoryCacheBean/local");
+        return (CategoryCacheLocal) lookup("CategoryCacheBean!org.openelis.local.CategoryCacheLocal");
     }
     
     public static InventoryItemCacheLocal getInventoryItemCache() {
-        return (InventoryItemCacheLocal) lookup("openelis/InventoryItemCacheBean/local");
+        return (InventoryItemCacheLocal) lookup("InventoryItemCacheBean!org.openelis.local.InventoryItemCacheLocal");
     }
     
     public static SectionCacheLocal getSectionCache() {
-        return (SectionCacheLocal) lookup("openelis/SectionCacheBean/local");
+        return (SectionCacheLocal) lookup("SectionCacheBean!org.openelis.local.SectionCacheLocal");
     }
     
     public static SessionCacheLocal getSessionCache() {
-        return (SessionCacheLocal)lookup("openelis/SessionCacheBean/local");
+        return (SessionCacheLocal)lookup("SessionCacheBean!org.openelis.local.SessionCacheLocal");
     }
     
     public static UserCacheLocal getUserCache() {
-        return (UserCacheLocal)lookup("openelis/UserCacheBean/local");
+        return (UserCacheLocal)lookup("UserCacheBean!org.openelis.local.UserCacheLocal");
     }
     
     public static ToDoCacheLocal getToDoCache() {
-        return (ToDoCacheLocal)lookup("openelis/ToDoCacheBean/local");
-    }
-    
-    public static PrinterCacheLocal getPrinterCache() {
-        return (PrinterCacheLocal)lookup("openelis/PrinterCacheBean/local");
-    }
+        return (ToDoCacheLocal)lookup("ToDoCacheBean!org.openelis.local.ToDoCacheLocal");
+    } 
 
     public static PreferencesLocal getPreferences() {
-        return (PreferencesLocal)lookup("openelis/PreferencesBean/local");
+        return (PreferencesLocal)lookup("PreferencesBean!org.openelis.local.PreferencesLocal");
     }
 
+    public static PrinterCacheLocal getPrinterCache() {
+    	return (PrinterCacheLocal)lookup("PrinterCacheBean!org.openelis.local.PrinterCacheLocal");
+    }
     /*
      * Bean from Security project
      */
     public static SystemUserPermissionRemote getSecurity() {
-        return (SystemUserPermissionRemote)lookup("security/SystemUserPermissionBean/remote");
+        return (SystemUserPermissionRemote)lookup("/security/security.jar/SystemUserPermissionBean!org.openelis.security.remote.SystemUserPermissionRemote");
     }
 
     private static Object lookup(String bean) {
         InitialContext ctx;
-
+        
+        if (!bean.startsWith("/"))
+            bean = "/openelis/openelis.jar/" + bean; 
+            
         try {
             ctx = new InitialContext();
             return ctx.lookup(bean);

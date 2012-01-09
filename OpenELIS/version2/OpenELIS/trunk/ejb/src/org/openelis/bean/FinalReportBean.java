@@ -16,6 +16,7 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
@@ -33,6 +34,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.IdNameVO;
@@ -54,6 +56,7 @@ import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.OrganizationLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleProjectLocal;
@@ -65,7 +68,6 @@ import org.openelis.report.finalreport.OrganizationPrint;
 import org.openelis.report.finalreport.StatsDataSource;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.EJBFactory;
-import org.openelis.utils.PrinterList;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -95,6 +97,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     @EJB
     private OrganizationLocal          organization;
     
+    @EJB
+    private PrinterCacheLocal          printer;
+    
     @Resource
     private SessionContext             ctx;
 
@@ -106,6 +111,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     private static Integer             organizationReportToId, sampleInErrorId, analysisReleasedId;
 
     private static final SampleWebMeta meta = new SampleWebMeta();
+    
+    private static final Logger log = Logger.getLogger(FinalReportBean.class);
 
     @PostConstruct
     public void init() {
@@ -114,7 +121,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             sampleInErrorId = dictionary.fetchBySystemName("sample_error").getId();
             analysisReleasedId = dictionary.fetchBySystemName("analysis_released").getId();
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.error("Failed to lookup constants for dictionary entries", e);
         }
     }
 
@@ -131,7 +138,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             p.add(new Prompt("ACCESSION_NUMBER", Prompt.Type.INTEGER).setPrompt("Accession Number:")
                                                                      .setWidth(75)
                                                                      .setRequired(true));
-            prn = PrinterList.getInstance().getListByType("pdf");
+            prn = printer.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
@@ -140,7 +147,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             throw e;
         }
     }
@@ -155,7 +162,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         try {
             p = new ArrayList<Prompt>();
 
-            prn = PrinterList.getInstance().getListByType("pdf");
+            prn = printer.getListByType("pdf");
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
                                                           .setOptionList(prn)
@@ -163,7 +170,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             throw e;
         }
     }
@@ -192,7 +199,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              .setDatetimeEndCode(Prompt.Datetime.MINUTE)
              .setRequired(true));
 
-            prn = PrinterList.getInstance().getListByType("pdf");
+            prn = printer.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
@@ -201,7 +208,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             throw e;
         }
     }
@@ -245,9 +252,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             data = sample.fetchByAccessionNumber(Integer.parseInt(accession));
         } catch (NotFoundException e) {
             throw new NotFoundException("A sample with accession number " + accession +
-                                        " is not valid or does not exists");
+                                        " is not valid or does not exist");
         } catch (Exception e) {
-            e.printStackTrace();
             throw e;
         }
 
@@ -279,7 +285,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
             throw e;
         }
 
@@ -326,9 +332,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             data = sample.fetchByAccessionNumber(Integer.parseInt(accession));
         } catch (NotFoundException e) {
             throw new NotFoundException("A sample with accession number " + accession +
-                                        " is not valid or does not exists");
+                                        " is not valid or does not exist");
         } catch (Exception e) {
-            e.printStackTrace();
             throw e;
         }
 
@@ -350,7 +355,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             orgPrint.setSampleIds(data.getId());
             orgPrintList.add(orgPrint);
         } catch (Exception e) {
-            e.printStackTrace();
             throw e;
         }
 
@@ -369,6 +373,28 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
      * is inserted between all the reports that have less than 6 pages and the
      * remaining reports to stop the folding process.
      */
+    @Asynchronous
+    @TransactionTimeout(600)
+    public void runReportForBatch() throws Exception {
+        ArrayList<QueryData> list;
+        QueryData field;
+        
+        field = new QueryData();
+        field.key = "PRINTER";
+        field.query = ReportUtil.getSystemVariableValue("final_report_env_printer");        
+        field.type = QueryData.Type.STRING;
+        
+        if (field.query == null) {
+            log.error("No 'final_report_env_printer' system variable defined");
+            return;
+        }
+        
+        list = new ArrayList<QueryData>();
+        list.add(field);
+        
+        runReportForBatch(list);        
+    }       
+    
     @RolesAllowed("r_final-select")
     @TransactionTimeout(600)
     public ReportStatus runReportForBatch(ArrayList<QueryData> paramList) throws Exception {
@@ -412,7 +438,13 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * all the analysis in that sample (skip the sample)
          */
         resultList = sample.fetchSamplesForFinalReportBatch();
-        i = 0;
+        
+        log.debug("Considering "+ resultList.size()+ " cases to run");        
+        if (resultList.size() == 0)
+            return status;
+        
+        log.debug("Locking all samples");   
+        i = 0;        
         while (i < resultList.size()) {
             result = resultList.get(i++);
             samId = (Integer)result[0];
@@ -484,11 +516,13 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 orgPrintList.add(orgPrint);
             }
         }
+        log.debug("Printing the reports"); 
         print(orgPrintList, "R", true, status, printer);
 
         /*
          * unlock all the samples
          */
+        log.debug("Unlocking all samples"); 
         for (Integer id : lockList)
             lock.unlock(ReferenceTable.SAMPLE, id);
 
@@ -957,8 +991,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                      * we check to see if this organization chose not to have 
                      * final report printed for or sent to it  
                      */
-                    if (organization.hasDontPrintFinalReport(o.getOrganizationId()))
-                        continue;
+                    //if (forMailing && organization.hasDontPrintFinalReport(o.getOrganizationId()))
+                        //continue;                                        
                 }
                 sampleIds = new StringBuffer();
                 if (o.getSampleIds() != null && o.getSampleIds().length > 1) {
@@ -980,7 +1014,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             try {
                 con.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e);
             }
             con = null;
 
@@ -1055,7 +1089,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 if (con != null)
                     con.close();
             } catch (Exception e1) {
-                e1.printStackTrace();
+                log.error(e1);
             }
             con = null;
             throw e;

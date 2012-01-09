@@ -87,15 +87,6 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         return data;
     }
 
-    public ArrayList<IdNameVO> fetchByIds(ArrayList<Integer> ids) throws Exception {
-        Query query;
-
-        query = manager.createNamedQuery("Project.FetchByIds");
-        query.setParameter("ids", ids);
-
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-
     @SuppressWarnings("unchecked")
     public ArrayList<ProjectDO> fetchActiveByName(String name, int maxResults) throws Exception {
         Query query;

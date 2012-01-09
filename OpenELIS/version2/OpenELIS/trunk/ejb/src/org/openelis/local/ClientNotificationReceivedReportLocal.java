@@ -23,18 +23,12 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.remote;
-
-import java.util.ArrayList;
+package org.openelis.local;
 
 import javax.ejb.Remote;
 
-import org.openelis.gwt.common.ReportStatus;
-import org.openelis.report.Prompt;
-
 @Remote
-public interface ClientNotificationReceivedReportRemote {
-    public ArrayList<Prompt> getPrompts() throws Exception;
-    public ReportStatus runReport() throws Exception;
+public interface ClientNotificationReceivedReportLocal {
+    public void runReport() throws Exception;
 }
 

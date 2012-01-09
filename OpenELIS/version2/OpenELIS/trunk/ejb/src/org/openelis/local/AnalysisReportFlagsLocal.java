@@ -26,7 +26,6 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.Local;
 
@@ -40,7 +39,7 @@ public interface AnalysisReportFlagsLocal {
 
     public AnalysisReportFlagsDO update(AnalysisReportFlagsDO data) throws Exception;
     
-    public ArrayList<AnalysisReportFlagsDO> fetchForUpdateBySampleAccessionNumbers(List<Integer> id) throws Exception;
+    public ArrayList<AnalysisReportFlagsDO> fetchBySampleAccessionNumbers(ArrayList<Integer> ids) throws Exception;
     
     public AnalysisReportFlagsDO fetchForUpdateByAnalysisId(Integer analysisId) throws Exception;
 

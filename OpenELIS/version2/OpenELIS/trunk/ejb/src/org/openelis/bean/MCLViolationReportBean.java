@@ -1,3 +1,28 @@
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.bean;
 
 import java.math.BigDecimal;
@@ -8,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -91,6 +117,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
     /*
      * Execute the report and email its output to specified addresses
      */
+    @Asynchronous
     @TransactionTimeout(600)
     public void runReport() {
         try {
@@ -245,8 +272,8 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             .append("      Test: ").append(analysis.getTestName()).append("<br>\r\n")
             .append("    Method: ").append(analysis.getMethodName()).append("<br>\r\n")
             .append("      Unit: ").append(analysis.getUnitDescription()).append("<br>\r\n")
-            .append("  Analyzed: ").append(DataBaseUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
-            .append("  Released: ").append(DataBaseUtil.toString(analysis.getAnaReleasedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
+            .append("  Analyzed: ").append(ReportUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
+            .append("  Released: ").append(ReportUtil.toString(analysis.getAnaReleasedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
             .append("<br>\r\n")
             .append("<table border='1' cellpadding='2' cellspacing='0'>\r\n")
             .append("    <tr><td>Compound</td>")
@@ -304,13 +331,13 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
               .append("Sample Type ").append(analysis.getSampleType().substring(0, 2)).append("<br>\r\n")
               .append("PB Sample Type ").append(pbSampleType).append("<br>\r\n")
               .append("Original Sample # ").append(origSampleNumber).append("<br>\r\n")
-              .append("Sample Collection Date ").append(DataBaseUtil.toString(analysis.getCollectionDate(), "MM/dd/yyyy")).append("<br>\r\n")
+              .append("Sample Collection Date ").append(ReportUtil.toString(analysis.getCollectionDate(), "MM/dd/yyyy")).append("<br>\r\n")
               .append("Lab Sample # ").append(analysis.getAccessionNumber()).append("<br>\r\n")
               .append("Contaminant ID ").append(contaminantIds.get(rowResult.getAnalyte())).append("<br>\r\n")
               .append("Contaminant Name ").append(rowResult.getAnalyte()).append("<br>\r\n")
               .append("Method Code ").append(methodCodes.get(analysis.getMethodName())).append("<br>\r\n")
-              .append("Date Analyzed ").append(DataBaseUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
-              .append("Date Released ").append(DataBaseUtil.toString(analysis.getAnaReleasedDate(), "MM/dd/yyyy")).append("<br>\r\n")
+              .append("Date Analyzed ").append(ReportUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
+              .append("Date Released ").append(ReportUtil.toString(analysis.getAnaReleasedDate(), "MM/dd/yyyy")).append("<br>\r\n")
               .append("Result ").append(getAdjustedResult(rowResult, analysis)).append("<br>\r\n");
     }
 

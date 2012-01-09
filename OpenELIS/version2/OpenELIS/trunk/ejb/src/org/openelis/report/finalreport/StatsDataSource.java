@@ -23,10 +23,10 @@ public class StatsDataSource implements JRDataSource {
             iter = stats.iterator();
         
         if (iter.hasNext()) {
-            ci          = (OrganizationPrint) iter.next();
+            ci = (OrganizationPrint) iter.next();               
             organizationName = ci.getOrganizationName();
-            pageCount  = ci.getJprint().getPages().size();
-            organizationId   = ci.getOrganizationId();
+            pageCount = ci.getJprint().getPages().size();
+            organizationId = ci.getOrganizationId();
         } else {
             return false;
         }

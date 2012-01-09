@@ -34,6 +34,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
@@ -63,22 +64,14 @@ import org.openelis.utils.Auditable;
                         "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
                         "o.address.faxPhone)"
                       + " from SampleOrganization so LEFT JOIN so.organization o "
-                      + " where so.sampleId = :id and so.typeId in (select id from Dictionary d where d.systemName = 'org_report_to') "),
-    @NamedQuery( name = "SampleOrganization.FetchBillToBySampleId",
-                query = "select new org.openelis.domain.SampleOrganizationViewDO(so.id, " +
-                        "so.sampleId, so.organizationId, so.organizationAttention, " +
-                        "so.typeId, o.name, o.address.multipleUnit, o.address.streetAddress, " +
-                        "o.address.city, o.address.state, o.address.zipCode, o.address.workPhone, " +
-                        "o.address.faxPhone)"
-                      + " from SampleOrganization so LEFT JOIN so.organization o "
-                      + " where so.sampleId = :id and so.typeId in (select id from Dictionary d where d.systemName = 'org_bill_to') ")})
+                      + " where so.sampleId = :id and so.typeId in (select id from Dictionary d where d.systemName = 'org_report_to') ")})
 @Entity
 @Table(name = "sample_organization")
 @EntityListeners( {AuditUtil.class})
 public class SampleOrganization implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer            id;
 

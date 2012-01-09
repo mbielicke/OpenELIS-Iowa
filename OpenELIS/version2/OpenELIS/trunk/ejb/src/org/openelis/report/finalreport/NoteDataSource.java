@@ -27,7 +27,6 @@ package org.openelis.report.finalreport;
 
 import java.util.ArrayList;
 
-import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JRRewindableDataSource;
@@ -43,6 +42,7 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.NoteLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.TestTrailerLocal;
+import org.openelis.utils.EJBFactory;
 
 public class NoteDataSource implements JRRewindableDataSource {
 
@@ -69,13 +69,20 @@ public class NoteDataSource implements JRRewindableDataSource {
 			javax.naming.InitialContext ctx;
 
 			ctx = new javax.naming.InitialContext();
-            dl = (DictionaryLocal) ctx.lookup("openelis/DictionaryBean/local");
+            /*dl = (DictionaryLocal) ctx.lookup("openelis/DictionaryBean/local");
             sl = (SampleQAEventLocal) ctx.lookup("openelis/SampleQAEventBean/local");
             nl = (NoteLocal) ctx.lookup("openelis/NoteBean/local");
 			if (analysisId != null) {
 	            al = (AnalysisQAEventLocal) ctx.lookup("openelis/AnalysisQAEventBean/local");
 	            tl = (TestTrailerLocal) ctx.lookup("openelis/TestTrailerBean/local");
-			}
+			}*/
+			dl = EJBFactory.getDictionary();
+            sl = EJBFactory.getSampleQAEvent();
+            nl = EJBFactory.getNote();
+            if (analysisId != null) {
+                al = EJBFactory.getAnalysisQAEvent();
+                tl = EJBFactory.getTestTrailer();
+            }
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw e;

@@ -52,6 +52,8 @@ public interface UserCacheLocal {
     public SystemUserVO getSystemUser(String name) throws Exception;
     
     public ArrayList<SystemUserVO> getSystemUsers(String name, int max) throws Exception;
+    
+    public ArrayList<SystemUserVO> getEmployees(String name, int max) throws Exception;
 
     public void applyPermission(String module, ModuleFlags flag) throws Exception;
 

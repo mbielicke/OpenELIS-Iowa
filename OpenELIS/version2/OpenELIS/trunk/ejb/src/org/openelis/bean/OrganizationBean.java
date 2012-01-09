@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -40,6 +39,7 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.entity.Organization;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -89,11 +89,14 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<OrganizationViewDO> fetchByIds(Integer... ids) {
+    public ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
-
+        
+        if (ids.size() == 0)
+            return new ArrayList<OrganizationViewDO>();
+        
         query = manager.createNamedQuery("Organization.FetchByIds");
-        query.setParameter("ids", Arrays.asList(ids));
+        query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
@@ -210,7 +213,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     
     public boolean hasDontPrintFinalReport(Integer id) throws Exception {
         try {
-            organizationParameter.fetchByDictionarySystemName("org_no_finalreport");
+            organizationParameter.fetchByOrgIdAndDictSystemName(id, "org_no_finalreport");
             return true;
         } catch (NotFoundException e) {
             return false;

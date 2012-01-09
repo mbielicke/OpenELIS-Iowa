@@ -42,6 +42,8 @@ public interface UserCacheRemote {
     public void logout();
             
     public ArrayList<SystemUserVO> getSystemUsers(String name, int max) throws Exception;
+    
+    public ArrayList<SystemUserVO> getEmployees(String name, int max) throws Exception;
 
     public SystemUserPermission getPermission() throws Exception;
 }

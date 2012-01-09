@@ -37,6 +37,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.ResultLocal;
+import org.openelis.utils.EJBFactory;
 
 public class ResultDataSource implements JRRewindableDataSource {
 
@@ -57,13 +58,9 @@ public class ResultDataSource implements JRRewindableDataSource {
 		HashMap<String, String> row;
 
 		try {
-			javax.naming.InitialContext ctx;
-
-			ctx = new javax.naming.InitialContext();
-			rl = (ResultLocal) ctx.lookup("openelis/ResultBean/local");
-			dl = (DictionaryLocal) ctx.lookup("openelis/DictionaryBean/local");
+			rl = EJBFactory.getResult();
+			dl = EJBFactory.getDictionary();
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			rows = null;
 			return;
 		}

@@ -40,6 +40,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.AnalysisReportFlags;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.NotFoundException;
@@ -97,9 +98,15 @@ public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
     public AnalysisReportFlagsDO update(AnalysisReportFlagsDO data) throws Exception {
         AnalysisReportFlags entity;
 
-        if ( !data.isChanged())
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
             return data;
+        }
 
+        validate(data);
+        
+        lock.validateLock(ReferenceTable.ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
+        
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(AnalysisReportFlags.class, data.getAnalysisId());
@@ -109,30 +116,21 @@ public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
         entity.setBilledAnalytes(data.getBilledAnalytes());
         entity.setBilledZero(data.getBilledZero());
 
+        lock.unlock(ReferenceTable.ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
+        
         return data;
     }
 
-    public ArrayList<AnalysisReportFlagsDO> fetchForUpdateBySampleAccessionNumbers(List<Integer> ids) throws Exception {
+    public ArrayList<AnalysisReportFlagsDO> fetchBySampleAccessionNumbers(ArrayList<Integer> ids) throws Exception {
         Query query;
-        AnalysisReportFlagsDO data;
-        ArrayList<AnalysisReportFlagsDO> returnList;
-        List list;
 
+        if (ids.size() == 0)
+            return new ArrayList<AnalysisReportFlagsDO>();
+        
         query = manager.createNamedQuery("AnalysisReportFlags.FetchBySampleAccessionNumbers");
         query.setParameter("ids", ids);
 
-        list = query.getResultList();
-        returnList = new ArrayList<AnalysisReportFlagsDO>();
-        for (int i = 0; i < list.size(); i++ ) {
-            data = (AnalysisReportFlagsDO)list.get(i);
-            try {
-                lock.lock(ReferenceTable.ANALYSIS_REPORT_FLAGS, data.getAnalysisId());
-                returnList.add(data);
-            } catch (EntityLockedException e) {
-                // ignore
-            }
-        }
-        return returnList;
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
     
     public AnalysisReportFlagsDO fetchForUpdateByAnalysisId(Integer analysisId) throws Exception {

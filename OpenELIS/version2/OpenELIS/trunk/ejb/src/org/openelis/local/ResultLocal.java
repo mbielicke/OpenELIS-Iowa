@@ -59,7 +59,7 @@ public interface ResultLocal {
 	public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer sampleId,
 			Integer analysisId) throws Exception;
 	
-	public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIds(ArrayList<Integer> analysisIds) throws Exception;
+	public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIds(ArrayList<Integer> ids) throws Exception;
 
 	public ArrayList<ResultViewDO> fetchForDataViewByAnalysisIdAndRowGroup(Integer analysisId, Integer rowGroup) throws Exception;
 	
