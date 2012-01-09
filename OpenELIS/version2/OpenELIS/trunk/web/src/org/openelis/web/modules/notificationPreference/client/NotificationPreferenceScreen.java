@@ -33,6 +33,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.PermissionException;
@@ -352,7 +353,7 @@ public class NotificationPreferenceScreen extends Screen {
         for (int i = 0; i < part.length; i++ ) {            
             field = new QueryData();
             field.key = "ORG_ID";
-            field.query = part[i];
+            field.query = DataBaseUtil.trim(part[i]);
             field.type = QueryData.Type.INTEGER;
             query.setFields(field);
         }

@@ -147,7 +147,7 @@ public class HostedFilter implements Filter {
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
             remotectx = new InitialContext(props);
-            remote = (UserCacheRemote)remotectx.lookup("openelis/UserCacheBean/remote");
+            remote = (UserCacheRemote)remotectx.lookup("openelis/openelis.jar/UserCacheBean!org.openelis.remote.UserCacheRemote");
             perm = remote.login();
             //
             // check to see if she has connect permission
