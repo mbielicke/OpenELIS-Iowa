@@ -32,9 +32,7 @@ import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.AnalyteParameterManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.AnalyteParameterManagerRemote;
-import org.openelis.remote.AnalyteParameterRemote;
+import org.openelis.server.EJBFactory;
 
 public class AnalyteParameterService {
     
@@ -54,7 +52,7 @@ public class AnalyteParameterService {
             refTableId = Integer.parseInt(field.query);
         else
             refTableId = null;
-        return remoteManager().fetchActiveByReferenceIdReferenceTableId(refId, refTableId);
+        return EJBFactory.getAnalyteParameterManager().fetchActiveByReferenceIdReferenceTableId(refId, refTableId);
     }
     
     public ArrayList<AnalyteParameterViewDO> fetchByAnalyteIdReferenceIdReferenceTableId(Query query) throws Exception {
@@ -82,34 +80,26 @@ public class AnalyteParameterService {
             refTableId = null;
         
         
-        return remote().fetchByAnalyteIdReferenceIdReferenceTableId(anaId, refId, refTableId);
+        return EJBFactory.getAnalyteParameter().fetchByAnalyteIdReferenceIdReferenceTableId(anaId, refId, refTableId);
     }
     
     public ArrayList<ReferenceIdTableIdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getAnalyteParameter().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
     
     public AnalyteParameterManager add(AnalyteParameterManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getAnalyteParameterManager().add(man);
     }
     
     public AnalyteParameterManager update(AnalyteParameterManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getAnalyteParameterManager().update(man);
     }
     
     public AnalyteParameterManager fetchForUpdate(AnalyteParameterManager man) throws Exception {
-        return remoteManager().fetchForUpdate(man);
+        return EJBFactory.getAnalyteParameterManager().fetchForUpdate(man);
     }
     
     public AnalyteParameterManager abortUpdate(AnalyteParameterManager man) throws Exception {
-        return remoteManager().abortUpdate(man);
-    }
-    
-    private AnalyteParameterRemote remote() {
-        return (AnalyteParameterRemote)EJBFactory.lookup("openelis/AnalyteParameterBean/remote");
-    }
-    
-    private AnalyteParameterManagerRemote remoteManager() {
-        return (AnalyteParameterManagerRemote)EJBFactory.lookup("openelis/AnalyteParameterManagerBean/remote");        
+        return EJBFactory.getAnalyteParameterManager().abortUpdate(man);
     }
 }

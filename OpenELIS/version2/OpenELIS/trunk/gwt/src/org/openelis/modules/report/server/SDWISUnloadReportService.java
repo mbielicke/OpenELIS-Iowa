@@ -29,30 +29,26 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SDWISUnloadReportRemote;
 import org.openelis.report.Prompt;
+import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 
 public class SDWISUnloadReportService {    
     
     public ArrayList<Prompt> getPrompts() throws Exception{
-        return remote().getPrompts();      
+        return EJBFactory.getSDWISUnloadReport().getPrompts();      
     }
     
     public ReportStatus runReport(Query query) throws Exception { 
         ReportStatus st;
         
-        st = remote().runReport(query.getFields());
+        st = EJBFactory.getSDWISUnloadReport().runReport(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
         return st;
     }
     
-    private SDWISUnloadReportRemote remote() {
-        return (SDWISUnloadReportRemote)EJBFactory.lookup("openelis/SDWISUnloadReportBean/remote");
-    } 
 }
 
 

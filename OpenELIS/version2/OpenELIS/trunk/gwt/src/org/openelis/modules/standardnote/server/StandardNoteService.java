@@ -32,12 +32,11 @@ import org.openelis.domain.StandardNoteDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.meta.StandardNoteMeta;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.StandardNoteRemote;
+import org.openelis.server.EJBFactory;
 
 public class StandardNoteService {
     public StandardNoteDO fetchById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getStandardNote().fetchById(id);
     }
 
     public ArrayList<StandardNoteDO> fetchByNameOrDescription(Query query) throws Exception {
@@ -53,42 +52,38 @@ public class StandardNoteService {
                     description = field.query;
             }
         }
-        return remote().fetchByNameOrDescription(name, description, 1000);
+        return EJBFactory.getStandardNote().fetchByNameOrDescription(name, description, 1000);
     }
     
     public StandardNoteDO fetchBySystemVariableName(String name) throws Exception {        
-        return remote().fetchBySystemVariableName(name);
+        return EJBFactory.getStandardNote().fetchBySystemVariableName(name);
     }
 
     public ArrayList<StandardNoteDO> fetchByType(Integer typeId) throws Exception {
-        return remote().fetchByType(typeId, 1000);
+        return EJBFactory.getStandardNote().fetchByType(typeId, 1000);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getStandardNote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public StandardNoteDO add(StandardNoteDO data) throws Exception {
-        return remote().add(data);
+        return EJBFactory.getStandardNote().add(data);
     }
 
     public StandardNoteDO update(StandardNoteDO data) throws Exception {
-        return remote().update(data);
+        return EJBFactory.getStandardNote().update(data);
     }
 
     public StandardNoteDO fetchForUpdate(Integer id) throws Exception {
-        return remote().fetchForUpdate(id);
+        return EJBFactory.getStandardNote().fetchForUpdate(id);
     }
 
     public void delete(StandardNoteDO data) throws Exception {
-        remote().delete(data);
+        EJBFactory.getStandardNote().delete(data);
     }
 
     public StandardNoteDO abortUpdate(Integer id) throws Exception {
-        return remote().abortUpdate(id);
-    }
-
-    private StandardNoteRemote remote() {
-        return (StandardNoteRemote)EJBFactory.lookup("openelis/StandardNoteBean/remote");
+        return EJBFactory.getStandardNote().abortUpdate(id);
     }
 }

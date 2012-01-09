@@ -30,20 +30,16 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SampleStatusReportRemote;
+import org.openelis.server.EJBFactory;
 
 public class SampleStatusReportService {
     
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(Query query) throws Exception {        
-        return remote().getSampleListForSampleStatusReport(query.getFields());
+        return EJBFactory.getSampleStatusReport().getSampleListForSampleStatusReport(query.getFields());
     }    
     
     public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
-        return remote().getSampleStatusProjectList();
+        return EJBFactory.getSampleStatusReport().getSampleStatusProjectList();
     }
 
-    private SampleStatusReportRemote remote() {
-        return (SampleStatusReportRemote)EJBFactory.lookup("openelis/SampleStatusReportBean/remote");
-    }
 }

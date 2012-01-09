@@ -28,22 +28,12 @@ package org.openelis.modules.scriptlet.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.gwt.common.DatabaseException;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.ScriptletRemote;
+import org.openelis.server.EJBFactory;
 
 public class ScriptletService {
     
     public ArrayList<IdNameVO> fetchByName(String search)throws Exception {
-        try {
-            return remote().fetchByName(search+"%", 10);
-        } catch (RuntimeException e) {
-            throw new DatabaseException(e);
-        }
-    }
-    
-    private ScriptletRemote remote() {
-        return (ScriptletRemote)EJBFactory.lookup("openelis/ScriptletBean/remote");
+        return EJBFactory.getScriptlet().fetchByName(search+"%", 10);       
     }
 
 }

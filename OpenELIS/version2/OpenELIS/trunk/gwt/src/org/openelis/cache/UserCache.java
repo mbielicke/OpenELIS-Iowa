@@ -77,7 +77,11 @@ public class UserCache {
 
     public static ArrayList<SystemUserVO> getSystemUsers(String name) throws Exception {
         return service.callList("getSystemUsers",name);
-    }
+    } 
+    
+    public static ArrayList<SystemUserVO> getEmployees(String name) throws Exception {
+        return service.callList("getEmployees",name);
+    }      
 
     public static SystemUserPermission getPermission() {
         try {

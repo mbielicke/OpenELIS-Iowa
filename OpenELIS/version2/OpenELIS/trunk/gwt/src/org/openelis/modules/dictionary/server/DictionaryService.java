@@ -27,77 +27,60 @@ package org.openelis.modules.dictionary.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.CategoryManagerRemote;
-import org.openelis.remote.CategoryRemote;
-import org.openelis.remote.DictionaryRemote;
+import org.openelis.server.EJBFactory;
 
 public class DictionaryService {
     public CategoryManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getCategoryManager().fetchById(id);
     }
 
     public ArrayList<IdNameVO> fetchByEntry(Query query) throws Exception {
-        return dictRemote().fetchByEntry(query.getFields());
+        return EJBFactory.getDictionary().fetchByEntry(query.getFields());
     }
 
     public ArrayList<IdNameVO> fetchByCategoryName(String name) throws Exception {
-        return remote().fetchByName(name);
+        return EJBFactory.getCategory().fetchByName(name);
     }
 
     public ArrayList<DictionaryViewDO> fetchByEntry(String entry) throws Exception {
-        return dictRemote().fetchByEntry(entry + "%", 10);
+        return EJBFactory.getDictionary().fetchByEntry(entry + "%", 10);
     }
 
     public CategoryManager fetchWithEntries(Integer id) throws Exception {
-        return remoteManager().fetchWithEntries(id);
+        return EJBFactory.getCategoryManager().fetchWithEntries(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getCategory().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public CategoryManager add(CategoryManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getCategoryManager().add(man);
     }
 
     public CategoryManager update(CategoryManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getCategoryManager().update(man);
     }
 
     public CategoryManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getCategoryManager().fetchForUpdate(id);
     }
 
     public CategoryManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getCategoryManager().abortUpdate(id);
     }
 
     public DictionaryManager fetchEntryByCategoryId(Integer id) throws Exception {
-        return remoteManager().fetchEntryByCategoryId(id);
+        return EJBFactory.getCategoryManager().fetchEntryByCategoryId(id);
     }
 
     public DictionaryViewDO validateForDelete(DictionaryViewDO data) throws Exception {
-        dictRemote().validateForDelete(data);
+    	EJBFactory.getDictionary().validateForDelete(data);
         return data;
     }
-
-    private CategoryRemote remote() {
-        return (CategoryRemote)EJBFactory.lookup("openelis/CategoryBean/remote");
-    }
-
-    private DictionaryRemote dictRemote() {
-        return (DictionaryRemote)EJBFactory.lookup("openelis/DictionaryBean/remote");
-    }
-
-    private CategoryManagerRemote remoteManager() {
-        return (CategoryManagerRemote)EJBFactory.lookup("openelis/CategoryManagerBean/remote");
-    }
-
 }

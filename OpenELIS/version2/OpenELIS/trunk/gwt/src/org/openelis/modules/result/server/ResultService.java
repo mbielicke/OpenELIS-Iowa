@@ -33,14 +33,12 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.AnalysisResultManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.AnalyteRemote;
-import org.openelis.remote.ResultManagerRemote;
+import org.openelis.server.EJBFactory;
 
 public class ResultService {
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
         try{
-            return remote().fetchByAnalysisIdForDisplay(analysisId);
+            return EJBFactory.getResultManager().fetchByAnalysisIdForDisplay(analysisId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -48,7 +46,7 @@ public class ResultService {
 
     public AnalysisResultManager fetchByAnalysisId(Integer analysisId) throws Exception {
         try{
-            return remote().fetchForUpdateWithAnalysisId(analysisId);
+            return EJBFactory.getResultManager().fetchForUpdateWithAnalysisId(analysisId);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -56,7 +54,7 @@ public class ResultService {
 
     public AnalysisResultManager fetchByTestId(AnalysisDO anDO) throws Exception {
         try {
-            return remote().fetchForUpdateWithTestId(anDO.getTestId(), anDO.getUnitOfMeasureId());
+            return EJBFactory.getResultManager().fetchForUpdateWithTestId(anDO.getTestId(), anDO.getUnitOfMeasureId());
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -64,7 +62,7 @@ public class ResultService {
     
     public AnalysisResultManager merge(AnalysisResultManager manager) throws Exception {
         try {
-            return remote().merge(manager);
+            return EJBFactory.getResultManager().merge(manager);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -77,14 +75,7 @@ public class ResultService {
         for(int i=0; i<fields.size(); i++)
             ids.add(new Integer(fields.get(i).query));
         
-        return analyteRemote().getAlias(ids);
+        return EJBFactory.getAnalyte().getAlias(ids);
     }
 
-    private ResultManagerRemote remote() {
-        return (ResultManagerRemote)EJBFactory.lookup("openelis/ResultManagerBean/remote");
-    }
-    
-    private AnalyteRemote analyteRemote() {
-        return (AnalyteRemote)EJBFactory.lookup("openelis/AnalyteBean/remote");
-    }
 }

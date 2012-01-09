@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.InventoryReceiptManager;
-import org.openelis.persistence.EJBFactory;
+import org.openelis.server.EJBFactory;
 import org.openelis.remote.InventoryReceiptManagerRemote;
 import org.openelis.remote.InventoryReceiptRemote;
 
@@ -61,10 +61,10 @@ public class InventoryReceiptService {
     }
     
     private InventoryReceiptRemote remote() {
-        return (InventoryReceiptRemote)EJBFactory.lookup("openelis/InventoryReceiptBean/remote");
+        return EJBFactory.getInventoryReceipt();
     }
     
     private InventoryReceiptManagerRemote remoteManager() {
-        return (InventoryReceiptManagerRemote)EJBFactory.lookup("openelis/InventoryReceiptManagerBean/remote");        
+        return EJBFactory.getInventoryReceiptManager();
     }
 }

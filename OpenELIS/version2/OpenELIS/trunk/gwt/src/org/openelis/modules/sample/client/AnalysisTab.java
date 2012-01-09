@@ -827,7 +827,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 ArrayList<TableDataRow> model;
 
                 try {
-                    users = UserCache.getSystemUsers(QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
                     for (SystemUserVO user : users)
                         model.add(new TableDataRow(user.getId(), user.getLoginName()));

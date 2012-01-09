@@ -28,20 +28,15 @@ package org.openelis.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.SectionViewDO;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SectionCacheRemote;
 
 public class SectionCacheService {
     
     public SectionViewDO getById(Integer id) throws Exception {
-        return remote().getById(id);        
+        return EJBFactory.getSectionCache().getById(id);        
     } 
     
     public ArrayList<SectionViewDO> getList(String name) throws Exception {
-        return remote().getList();
+        return EJBFactory.getSectionCache().getList();
     }
     
-    public SectionCacheRemote remote() {
-       return (SectionCacheRemote)EJBFactory.lookup("openelis/SectionCacheBean/remote");
-    }
 }

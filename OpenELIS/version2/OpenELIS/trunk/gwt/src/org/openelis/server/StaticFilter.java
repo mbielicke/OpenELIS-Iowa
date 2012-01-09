@@ -178,16 +178,16 @@ public class StaticFilter implements Filter {
             parts = name + ";" + req.getSession().getId() + ";" + (locale==null?"en":locale);
 
             localctx = new InitialContext();
-            propFile = new File((String)localctx.lookup( ("java:comp/env/openelisJNDI")));
+            propFile = new File((String)localctx.lookup("java:comp/env/openelisJNDI"));
             props = new Properties();
             props.load(new FileInputStream(propFile));
             props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY, "org.jboss.security.jndi.LoginInitialContextFactory");
-            props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
+            props.setProperty(InitialContext.SECURITY_PROTOCOL, "openelis");
             props.setProperty(Context.SECURITY_PRINCIPAL, parts);
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
             remotectx = new InitialContext(props);            
-            remote = (UserCacheRemote)remotectx.lookup("openelis/UserCacheBean/remote");
+            remote = (UserCacheRemote)remotectx.lookup("openelis/openelis.jar/UserCacheBean!org.openelis.remote.UserCacheRemote");
             perm = remote.login();
             //
             // check to see if she has connect permission
@@ -201,6 +201,7 @@ public class StaticFilter implements Filter {
 
             LoginAttempt.success(name, ipAddress);
         } catch (Exception e) {
+        	e.printStackTrace();
             LoginAttempt.fail(name, ipAddress);
             throw e;
         }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.OrderItemViewDO;
@@ -45,6 +46,7 @@ public class ItemTab extends Screen {
 
     private boolean               loaded, hasExtraCols;
     private int                   numColumns;
+    private Integer               statusProcessedId;
 
     protected ScreenService       inventoryService;
 
@@ -77,11 +79,12 @@ public class ItemTab extends Screen {
 
         table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if (state != State.ADD && state != State.UPDATE) {
+                if ((state != State.ADD && state != State.UPDATE) ||
+                                (statusProcessedId.equals(manager.getOrder().getStatusId()))) {
                     event.cancel();
                     return;
                 }
-
+                
                 // store column is not editable -- it is set from inventory item
                 // column
                 if (event.getCol() == 2)
@@ -197,7 +200,8 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
+                addItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
+                                     (!statusProcessedId.equals(manager.getOrder().getStatusId())));
             }
         });
 
@@ -212,8 +216,8 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeItemButton.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                               .contains(event.getState()));
+                removeItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
+                                        (!statusProcessedId.equals(manager.getOrder().getStatusId())));
             }
         });
 
@@ -255,6 +259,12 @@ public class ItemTab extends Screen {
             model.add(row);
         }
         units.setModel(model);
+        try {
+            statusProcessedId = DictionaryCache.getIdBySystemName("order_status_processed");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
     }
 
     private ArrayList<TableDataRow> getTableModel() {
@@ -300,5 +310,4 @@ public class ItemTab extends Screen {
 
         loaded = true;
     }
-
 }

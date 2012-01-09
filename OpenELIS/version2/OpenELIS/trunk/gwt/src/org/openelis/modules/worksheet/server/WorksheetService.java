@@ -34,72 +34,62 @@ import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.WorksheetManagerRemote;
-import org.openelis.remote.WorksheetRemote;
+import org.openelis.server.EJBFactory;
 
 public class WorksheetService {
     public ArrayList<WorksheetViewDO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), 0, 500);
+        return EJBFactory.getWorksheet().query(query.getFields(), 0, 500);
     }
 
     public WorksheetManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getWorksheetManager().fetchById(id);
     }
     
     public ArrayList<WorksheetViewDO> fetchByAnalysisId(Integer id) throws Exception {
-        return remote().fetchByAnalysisId(id);
+        return EJBFactory.getWorksheet().fetchByAnalysisId(id);
     }
 
     public WorksheetManager fetchWithItems(Integer id) throws Exception {
-        return remoteManager().fetchWithItems(id);
+        return EJBFactory.getWorksheetManager().fetchWithItems(id);
     }
 
     public WorksheetManager fetchWithNotes(Integer id) throws Exception {
-        return remoteManager().fetchWithNotes(id);
+        return EJBFactory.getWorksheetManager().fetchWithNotes(id);
     }
 
     public WorksheetManager fetchWithItemsAndNotes(Integer id) throws Exception {
-        return remoteManager().fetchWithItemsAndNotes(id);
+        return EJBFactory.getWorksheetManager().fetchWithItemsAndNotes(id);
     }
 
     public WorksheetManager add(WorksheetManager manager) throws Exception {
-        return remoteManager().add(manager);
+        return EJBFactory.getWorksheetManager().add(manager);
     }
 
     public WorksheetManager update(WorksheetManager manager) throws Exception {
-        return remoteManager().update(manager);
+        return EJBFactory.getWorksheetManager().update(manager);
     }
     
     public WorksheetManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getWorksheetManager().fetchForUpdate(id);
     }
     
     public WorksheetManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getWorksheetManager().abortUpdate(id);
     }
     
     public WorksheetItemManager fetchWorksheetItemByWorksheetId(Integer id) throws Exception {
-        return remoteManager().fetchWorksheetItemByWorksheetId(id);
+        return EJBFactory.getWorksheetManager().fetchWorksheetItemByWorksheetId(id);
     }
 
     public WorksheetAnalysisManager fetchWorksheetAnalysisByWorksheetItemId(Integer id) throws Exception {
-        return remoteManager().fetchWorksheetAnalysisByWorksheetItemId(id);
+        return EJBFactory.getWorksheetManager().fetchWorksheetAnalysisByWorksheetItemId(id);
     }
 
     public WorksheetResultManager fetchWorksheeetResultByWorksheetAnalysisId(Integer id) throws Exception {
-        return remoteManager().fetchWorksheetResultByWorksheetAnalysisId(id);
+        return EJBFactory.getWorksheetManager().fetchWorksheetResultByWorksheetAnalysisId(id);
     }
 
     public WorksheetQcResultManager fetchWorksheeetQcResultByWorksheetAnalysisId(Integer id) throws Exception {
-        return remoteManager().fetchWorksheetQcResultByWorksheetAnalysisId(id);
-    }
-
-    private WorksheetRemote remote() {
-        return (WorksheetRemote)EJBFactory.lookup("openelis/WorksheetBean/remote");
-    }
-
-    private WorksheetManagerRemote remoteManager() {
-        return (WorksheetManagerRemote)EJBFactory.lookup("openelis/WorksheetManagerBean/remote");
+        return EJBFactory.getWorksheetManager().fetchWorksheetQcResultByWorksheetAnalysisId(id);
     }
 }

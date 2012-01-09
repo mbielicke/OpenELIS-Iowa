@@ -31,44 +31,35 @@ import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.InventoryAdjustmentManager;
 import org.openelis.manager.InventoryXAdjustManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.InventoryAdjustmentManagerRemote;
-import org.openelis.remote.InventoryAdjustmentRemote;
+import org.openelis.server.EJBFactory;
 
 public class InventoryAdjustmentService {
     public InventoryAdjustmentManager fetchWithAdjustments (Integer id) throws Exception {
-        return remoteManager().fetchWithAdjustments(id);
+        return EJBFactory.getInventoryAdjustmentManager().fetchWithAdjustments(id);
     }
     
     public ArrayList<InventoryAdjustmentDO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getInventoryAdjustment().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
     
     public InventoryAdjustmentManager add(InventoryAdjustmentManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getInventoryAdjustmentManager().add(man);
     }
     
     public InventoryAdjustmentManager update(InventoryAdjustmentManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getInventoryAdjustmentManager().update(man);
     }
     
     public InventoryAdjustmentManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getInventoryAdjustmentManager().fetchForUpdate(id);
     }
     
     public InventoryAdjustmentManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getInventoryAdjustmentManager().abortUpdate(id);
     }
     
     public InventoryXAdjustManager fetchAdjustmentByInventoryAdjustmentId(Integer id) throws Exception {
-        return remoteManager().fetchAdjustmentByInventoryAdjustmentId(id);
+        return EJBFactory.getInventoryAdjustmentManager().fetchAdjustmentByInventoryAdjustmentId(id);
     }
         
-    private InventoryAdjustmentRemote remote() {
-        return (InventoryAdjustmentRemote)EJBFactory.lookup("openelis/InventoryAdjustmentBean/remote");
-    }
-    
-    private InventoryAdjustmentManagerRemote remoteManager() {
-        return (InventoryAdjustmentManagerRemote)EJBFactory.lookup("openelis/InventoryAdjustmentManagerBean/remote"); 
-    }
 }

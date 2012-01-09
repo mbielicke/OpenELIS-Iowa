@@ -30,40 +30,35 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.MethodRemote;
+import org.openelis.server.EJBFactory;
 
 public class MethodService {
 
     public ArrayList<MethodDO> fetchByName(String search) throws Exception {
-        return remote().fetchActiveByName(search + "%", 10);
+        return EJBFactory.getMethod().fetchActiveByName(search + "%", 10);
     }
 
     public MethodDO fetchById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getMethod().fetchById(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getMethod().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public MethodDO add(MethodDO data) throws Exception {
-        return remote().add(data);
+        return EJBFactory.getMethod().add(data);
     }
 
     public MethodDO update(MethodDO data) throws Exception {
-        return remote().update(data);
+        return EJBFactory.getMethod().update(data);
     }
 
     public MethodDO fetchForUpdate(Integer id) throws Exception {
-        return remote().fetchForUpdate(id);
+        return EJBFactory.getMethod().fetchForUpdate(id);
     }
 
     public MethodDO abortUpdate(Integer id) throws Exception {
-        return remote().abortUpdate(id);
-    }
-
-    private MethodRemote remote() {
-        return (MethodRemote)EJBFactory.lookup("openelis/MethodBean/remote");
+        return EJBFactory.getMethod().abortUpdate(id);
     }
 }

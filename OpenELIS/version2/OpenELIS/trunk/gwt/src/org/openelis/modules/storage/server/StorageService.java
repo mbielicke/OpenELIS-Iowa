@@ -30,39 +30,29 @@ import java.util.ArrayList;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.StorageManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.StorageLocationRemote;
-import org.openelis.remote.StorageManagerRemote;
+import org.openelis.server.EJBFactory;
 
 public class StorageService {
 
     public StorageManager fetchById(Query query) throws Exception {
-        return remoteManager().fetchById(new Integer(query.getFields().get(0).query),
+        return EJBFactory.getStorageManager().fetchById(new Integer(query.getFields().get(0).query),
                                          new Integer(query.getFields().get(1).query));
     }
 
     public StorageManager fetchCurrentByLocationId(Integer id) throws Exception {
-        return remoteManager().fetchCurrentByLocationId(id);
+        return EJBFactory.getStorageManager().fetchCurrentByLocationId(id);
     }
 
     public StorageManager fetchHistoryByLocationId(Query query) throws Exception {        
-        return remoteManager().fetchHistoryByLocationId(new Integer(query.getFields().get(0).query), 
+        return EJBFactory.getStorageManager().fetchHistoryByLocationId(new Integer(query.getFields().get(0).query), 
                                                         query.getPage(),query.getRowsPerPage());
     }
 
     public ArrayList<StorageLocationViewDO> fetchAvailableByName(String search) throws Exception {
-        return storageLocationRemote().fetchAvailableByName(search + "%", 10);
+        return EJBFactory.getStorageLocation().fetchAvailableByName(search + "%", 50);
     }
 
     public StorageManager update(StorageManager man) throws Exception {
-        return remoteManager().update(man);
-    }
-
-    private StorageManagerRemote remoteManager() {
-        return (StorageManagerRemote)EJBFactory.lookup("openelis/StorageManagerBean/remote");
-    }
-
-    private StorageLocationRemote storageLocationRemote() {
-        return (StorageLocationRemote)EJBFactory.lookup("openelis/StorageLocationBean/remote");
+        return EJBFactory.getStorageManager().update(man);
     }
 }

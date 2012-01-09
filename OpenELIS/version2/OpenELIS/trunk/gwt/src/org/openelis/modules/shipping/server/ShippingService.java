@@ -33,61 +33,51 @@ import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.ShippingManagerRemote;
-import org.openelis.remote.ShippingRemote;
+import org.openelis.server.EJBFactory;
 
 public class ShippingService {
     
     public ShippingManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getShippingManager().fetchById(id);
     }    
     
     public ShippingViewDO fetchByOrderId(Integer id) throws Exception {
-        return remote().fetchByOrderId(id);
+        return EJBFactory.getShipping().fetchByOrderId(id);
     }
     
     public ShippingManager fetchWithItemsAndTrackings (Integer id) throws Exception {
-        return remoteManager().fetchWithItemsAndTracking(id);
+        return EJBFactory.getShippingManager().fetchWithItemsAndTracking(id);
     }
     
     public ShippingManager fetchWithNotes(Integer id) throws Exception {
-        return remoteManager().fetchWithNotes(id);
+        return EJBFactory.getShippingManager().fetchWithNotes(id);
     }
     
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getShipping().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
     
     public ShippingManager add(ShippingManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getShippingManager().add(man);
     }
     
     public ShippingManager update(ShippingManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getShippingManager().update(man);
     }
     
     public ShippingManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getShippingManager().fetchForUpdate(id);
     }
     
     public ShippingManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getShippingManager().abortUpdate(id);
     }
     
     public ShippingItemManager fetchItemByShippingId(Integer id) throws Exception {
-        return remoteManager().fetchItemByShippingId(id);
+        return EJBFactory.getShippingManager().fetchItemByShippingId(id);
     }
     
     public ShippingTrackingManager fetchTrackingByShippingId(Integer id) throws Exception {
-        return remoteManager().fetchTrackingByShippingId(id);
-    }
-    
-    private ShippingRemote remote() {
-        return (ShippingRemote)EJBFactory.lookup("openelis/ShippingBean/remote"); 
-    }
-    
-    private ShippingManagerRemote remoteManager() {
-        return (ShippingManagerRemote)EJBFactory.lookup("openelis/ShippingManagerBean/remote"); 
-    }
+        return EJBFactory.getShippingManager().fetchTrackingByShippingId(id);
+    }    
 }

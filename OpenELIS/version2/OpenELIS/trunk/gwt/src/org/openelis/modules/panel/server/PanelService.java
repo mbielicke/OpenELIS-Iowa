@@ -33,72 +33,61 @@ import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.PanelItemManager;
 import org.openelis.manager.PanelManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.PanelManagerRemote;
-import org.openelis.remote.PanelRemote;
+import org.openelis.server.EJBFactory;
 
 public class PanelService {
 
     public PanelManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getPanelManager().fetchById(id);
     }   
 
     public PanelManager fetchWithItems(Integer id) throws Exception {
-        return remoteManager().fetchWithItems(id);
+        return EJBFactory.getPanelManager().fetchWithItems(id);
     }
 
     public ArrayList<TestMethodVO> fetchByNameWithTests(String name) throws Exception {
-        return remote().fetchByNameWithTests(name, 100);
+        return EJBFactory.getPanel().fetchByNameWithTests(name, 100);
     }
     
     public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(Query query) throws Exception {
         if (query.getFields().size() == 2)
-            return remote().fetchByNameSampleTypeWithTests(query.getFields().get(0).query, new Integer(query.getFields().get(1).query), 100);
+            return EJBFactory.getPanel().fetchByNameSampleTypeWithTests(query.getFields().get(0).query, new Integer(query.getFields().get(1).query), 100);
         return null;
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getPanel().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public PanelManager add(PanelManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getPanelManager().add(man);
     }
 
     public PanelManager update(PanelManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getPanelManager().update(man);
     }
 
     public void delete(PanelManager man) throws Exception {
-        remoteManager().delete(man);
+        EJBFactory.getPanelManager().delete(man);
     }
 
     public PanelManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getPanelManager().fetchForUpdate(id);
     }
 
     public PanelManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getPanelManager().abortUpdate(id);
     }
 
     public PanelItemManager fetchItemByPanelId(Integer id) throws Exception {
-        return remoteManager().fetchItemByPanelId(id);
+        return EJBFactory.getPanelManager().fetchItemByPanelId(id);
     }
 
     public ArrayList<IdVO> fetchTestIdsByPanelId(Integer panelId) throws Exception {
-        return remote().fetchTestIdsFromPanel(panelId);
+        return EJBFactory.getPanel().fetchTestIdsFromPanel(panelId);
     }
 
     public ArrayList<IdVO> fetchAuxIdsByPanelId(Integer panelId) throws Exception {
-        return remote().fetchAuxIdsFromPanel(panelId);
+        return EJBFactory.getPanel().fetchAuxIdsFromPanel(panelId);
     }
-
-    private PanelRemote remote() {
-        return (PanelRemote)EJBFactory.lookup("openelis/PanelBean/remote");
-    }
-
-    private PanelManagerRemote remoteManager() {
-        return (PanelManagerRemote)EJBFactory.lookup("openelis/PanelManagerBean/remote");
-    }
-
 }

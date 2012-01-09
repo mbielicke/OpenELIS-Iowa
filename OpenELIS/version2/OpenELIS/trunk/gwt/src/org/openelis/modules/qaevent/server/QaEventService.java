@@ -31,44 +31,39 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.QaEventRemote;
+import org.openelis.server.EJBFactory;
 
 public class QaEventService {
 
     public QaEventViewDO fetchById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getQaEvent().fetchById(id);
     }
 
     public ArrayList<QaEventVO> fetchByTestId(Integer id) throws Exception {
-        return remote().fetchByTestId(id);
+        return EJBFactory.getQaEvent().fetchByTestId(id);
     }
 
     public ArrayList<QaEventVO> fetchByCommon() throws Exception {
-        return remote().fetchByCommon();
+        return EJBFactory.getQaEvent().fetchByCommon();
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getQaEvent().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public QaEventViewDO add(QaEventViewDO data) throws Exception {
-        return remote().add(data);
+        return EJBFactory.getQaEvent().add(data);
     }
 
     public QaEventViewDO update(QaEventViewDO data) throws Exception {
-        return remote().update(data);
+        return EJBFactory.getQaEvent().update(data);
     }
 
     public QaEventViewDO fetchForUpdate(Integer id) throws Exception {
-        return remote().fetchForUpdate(id);
+        return EJBFactory.getQaEvent().fetchForUpdate(id);
     }
 
     public QaEventViewDO abortUpdate(Integer id) throws Exception {
-        return remote().abortUpdate(id);
-    }
-
-    private QaEventRemote remote() {
-        return (QaEventRemote)EJBFactory.lookup("openelis/QaEventBean/remote");
+        return EJBFactory.getQaEvent().abortUpdate(id);
     }
 }

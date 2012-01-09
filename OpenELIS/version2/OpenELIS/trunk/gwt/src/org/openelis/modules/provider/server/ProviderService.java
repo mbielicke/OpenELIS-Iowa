@@ -31,56 +31,46 @@ import org.openelis.domain.IdFirstLastNameVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.ProviderManagerRemote;
-import org.openelis.remote.ProviderRemote;
+import org.openelis.server.EJBFactory;
 
 public class ProviderService {
 
     public ProviderManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getProviderManager().fetchById(id);
     }
 
     public ProviderManager fetchWithLocations(Integer id) throws Exception {
-        return remoteManager().fetchWithLocations(id);
+        return EJBFactory.getProviderManager().fetchWithLocations(id);
     }
 
     public ProviderManager fetchWithNotes(Integer id) throws Exception {
-        return remoteManager().fetchWithNotes(id);
+        return EJBFactory.getProviderManager().fetchWithNotes(id);
     }
 
     public ArrayList<IdFirstLastNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getProvider().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public ProviderManager add(ProviderManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getProviderManager().add(man);
     }
 
     public ProviderManager update(ProviderManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getProviderManager().update(man);
     }
 
     public ProviderManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getProviderManager().fetchForUpdate(id);
     }
 
     public ProviderManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getProviderManager().abortUpdate(id);
     }
 
     //
     // support for ProviderContactManager and ProviderParameterManager
     //
     public ProviderLocationManager fetchLocationByProviderId(Integer id) throws Exception {
-        return remoteManager().fetchLocationByProviderId(id);
-    }
-
-    private ProviderRemote remote() {
-        return (ProviderRemote)EJBFactory.lookup("openelis/ProviderBean/remote");
-    }
-
-    private ProviderManagerRemote remoteManager() {
-        return (ProviderManagerRemote)EJBFactory.lookup("openelis/ProviderManagerBean/remote");
+        return EJBFactory.getProviderManager().fetchLocationByProviderId(id);
     }
 }

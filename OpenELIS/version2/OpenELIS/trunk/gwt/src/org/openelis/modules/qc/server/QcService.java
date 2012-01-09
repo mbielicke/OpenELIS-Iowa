@@ -34,21 +34,19 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.QcManagerRemote;
-import org.openelis.remote.QcRemote;
+import org.openelis.server.EJBFactory;
 
 public class QcService {
 
     public QcManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getQcManager().fetchById(id);
     }
 
     public ArrayList<QcDO> fetchByName(String search) throws Exception {
         ArrayList<QcDO> list;
 
         try {
-            list = remote().fetchByName(search + "%", 10);
+            list = EJBFactory.getQc().fetchByName(search + "%", 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcDO>(0);
         } catch (RuntimeException e) {
@@ -58,14 +56,14 @@ public class QcService {
     }
 
     public ArrayList<QcDO> fetchActiveByName(Query query) throws Exception {
-        return remote().fetchActiveByName(query.getFields());
+        return EJBFactory.getQc().fetchActiveByName(query.getFields());
     }
     
     public ArrayList<QcDO> fetchActiveByName(String search) throws Exception {
         ArrayList<QcDO> list;
 
         try {
-            list = remote().fetchActiveByName(search, 10);
+            list = EJBFactory.getQc().fetchActiveByName(search, 10);
         } catch (NotFoundException e) {
             list = new ArrayList<QcDO>(0);
         } catch (RuntimeException e) {
@@ -75,41 +73,33 @@ public class QcService {
     }
 
     public QcManager fetchWithAnalytes(Integer id) throws Exception {
-        return remoteManager().fetchWithAnalytes(id);
+        return EJBFactory.getQcManager().fetchWithAnalytes(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getQc().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public QcManager add(QcManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getQcManager().add(man);
     }
 
     public QcManager update(QcManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getQcManager().update(man);
     }
 
     public QcManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getQcManager().fetchForUpdate(id);
     }
 
     public QcManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getQcManager().abortUpdate(id);
     }
 
     //
     // support for QcAnalyteManager and QcParameterManager
     //
     public QcAnalyteManager fetchAnalyteByQcId(Integer id) throws Exception {
-        return remoteManager().fetchAnalyteByQcId(id);
-    }
-
-    private QcRemote remote() {
-        return (QcRemote)EJBFactory.lookup("openelis/QcBean/remote");
-    }
-
-    private QcManagerRemote remoteManager() {
-        return (QcManagerRemote)EJBFactory.lookup("openelis/QcManagerBean/remote");
+        return EJBFactory.getQcManager().fetchAnalyteByQcId(id);
     }
 }

@@ -26,16 +26,11 @@
 package org.openelis.modules.inventoryTransfer.server;
 
 import org.openelis.manager.InventoryTransferManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.InventoryTransferManagerRemote;
+import org.openelis.server.EJBFactory;
 
 public class InventoryTransferService {
 
     public InventoryTransferManager add(InventoryTransferManager man) throws Exception {
-        return remoteManager().add(man);
-    }
-    
-    private InventoryTransferManagerRemote remoteManager() {
-        return (InventoryTransferManagerRemote)EJBFactory.lookup("openelis/InventoryTransferManagerBean/remote");        
+        return EJBFactory.getInventoryTransferManager().add(man);
     }
 }   

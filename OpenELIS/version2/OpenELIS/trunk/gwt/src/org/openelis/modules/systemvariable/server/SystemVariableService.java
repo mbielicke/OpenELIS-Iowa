@@ -31,44 +31,39 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SystemVariableRemote;
+import org.openelis.server.EJBFactory;
 
 public class SystemVariableService {
 
     public SystemVariableDO fetchById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getSystemVariable().fetchById(id);
     }
 
     public ArrayList<SystemVariableDO> fetchByName(String name) throws Exception {
-        return remote().fetchByName(name + "%", 10);
+        return EJBFactory.getSystemVariable().fetchByName(name + "%", 10);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getSystemVariable().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public SystemVariableDO add(SystemVariableDO data) throws Exception {
-        return remote().add(data);
+        return EJBFactory.getSystemVariable().add(data);
     }
 
     public SystemVariableDO update(SystemVariableDO data) throws Exception {
-        return remote().update(data);
+        return EJBFactory.getSystemVariable().update(data);
     }
 
     public SystemVariableDO fetchForUpdate(Integer id) throws Exception {
-        return remote().fetchForUpdate(id);
+        return EJBFactory.getSystemVariable().fetchForUpdate(id);
     }
 
     public void delete(SystemVariableDO data) throws Exception {
-        remote().delete(data);
+        EJBFactory.getSystemVariable().delete(data);
     }
 
     public SystemVariableDO abortUpdate(Integer id) throws Exception {
-        return remote().abortUpdate(id);
-    }
-
-    private SystemVariableRemote remote() {
-        return (SystemVariableRemote)EJBFactory.lookup("openelis/SystemVariableBean/remote");
+        return EJBFactory.getSystemVariable().abortUpdate(id);
     }
 }

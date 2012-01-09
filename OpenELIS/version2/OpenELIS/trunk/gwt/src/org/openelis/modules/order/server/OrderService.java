@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
@@ -38,113 +37,90 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestManager;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.OrderManagerRemote;
-import org.openelis.remote.OrderRecurrenceReportRemote;
-import org.openelis.remote.OrderRemote;
 import org.openelis.report.Prompt;
+import org.openelis.server.EJBFactory;
 
 public class OrderService {
     public OrderManager fetchById(Integer id) throws Exception {
-        return remoteManager().fetchById(id);
+        return EJBFactory.getOrderManager().fetchById(id);
     }
     
     public ArrayList<IdNameVO> fetchByDescription(String search) throws Exception {
-        return remote().fetchByDescription(search + "%", 10);
+        return EJBFactory.getOrder().fetchByDescription(search + "%", 10);
     }
     
     public OrderViewDO fetchByShippingItemId(Integer id) throws Exception {
-        return remote().fetchByShippingItemId(id);
+        return EJBFactory.getOrder().fetchByShippingItemId(id);
     }
 
     public OrderManager fetchWithItems(Integer id) throws Exception {
-        return remoteManager().fetchWithItems(id);
+        return EJBFactory.getOrderManager().fetchWithItems(id);
     }
 
     public OrderManager fetchWithFills(Integer id) throws Exception {
-        return remoteManager().fetchWithFills(id);
+        return EJBFactory.getOrderManager().fetchWithFills(id);
     }
 
     public OrderManager fetchWithNotes(Integer id) throws Exception {
-        return remoteManager().fetchWithNotes(id);
+        return EJBFactory.getOrderManager().fetchWithNotes(id);
     }
     
     public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
-        return remoteManager().fetchWithTestsAndContainers(id);
+        return EJBFactory.getOrderManager().fetchWithTestsAndContainers(id);
     } 
     
     public OrderManager fetchWithRecurring(Integer id) throws Exception {
-        return remoteManager().fetchWithRecurring(id);
+        return EJBFactory.getOrderManager().fetchWithRecurring(id);
     }  
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getOrder().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
     
     public ArrayList<OrderViewDO> queryOrderFill(Query query) throws Exception {
-        return remote().queryOrderFill(query.getFields());
-    }
-    
-    public void recurOrders() {
-        remoteRecurReport().recurOrders();
-    }
-    
-    public ArrayList<Prompt> getPrompts() {
-        return remoteRecurReport().getPrompts();
+        return EJBFactory.getOrder().queryOrderFill(query.getFields());
     }
 
     public OrderManager add(OrderManager man) throws Exception {
-        return remoteManager().add(man);
+        return EJBFactory.getOrderManager().add(man);
     }
 
     public OrderManager update(OrderManager man) throws Exception {
-        return remoteManager().update(man);
+        return EJBFactory.getOrderManager().update(man);
     }
 
     public OrderManager fetchForUpdate(Integer id) throws Exception {
-        return remoteManager().fetchForUpdate(id);
+        return EJBFactory.getOrderManager().fetchForUpdate(id);
     }
 
     public OrderManager abortUpdate(Integer id) throws Exception {
-        return remoteManager().abortUpdate(id);
+        return EJBFactory.getOrderManager().abortUpdate(id);
     }
 
     //
     // support for OrderItemManager, OrderFillManager, OrderTestManager, OrderContainerManager
     //
     public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
-        return remoteManager().fetchItemByOrderId(id);
+        return EJBFactory.getOrderManager().fetchItemByOrderId(id);
     }
 
     public OrderFillManager fetchFillByOrderId(Integer id) throws Exception {
-        return remoteManager().fetchFillByOrderId(id);
+        return EJBFactory.getOrderManager().fetchFillByOrderId(id);
     }
     
     public OrderReceiptManager fetchReceiptByOrderId(Integer id) throws Exception {
-        return remoteManager().fetchReceiptByOrderId(id);
+        return EJBFactory.getOrderManager().fetchReceiptByOrderId(id);
     }
     
     public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {
-        return remoteManager().fetchTestByOrderId(id);
+        return EJBFactory.getOrderManager().fetchTestByOrderId(id);
     }
     
     public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {
-        return remoteManager().fetchContainerByOrderId(id);
+        return EJBFactory.getOrderManager().fetchContainerByOrderId(id);
     }
     
     public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
-        return remoteManager().fetchRecurrenceByOrderId(id);
-    }
-
-    private OrderRemote remote() {
-        return (OrderRemote)EJBFactory.lookup("openelis/OrderBean/remote");
-    }
-
-    private OrderManagerRemote remoteManager() {
-        return (OrderManagerRemote)EJBFactory.lookup("openelis/OrderManagerBean/remote");
-    }
-    
-    private OrderRecurrenceReportRemote remoteRecurReport() {
-        return (OrderRecurrenceReportRemote)EJBFactory.lookup("openelis/OrderRecurrenceReportBean/remote");
+        return EJBFactory.getOrderManager().fetchRecurrenceByOrderId(id);
     }
 }

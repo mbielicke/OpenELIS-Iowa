@@ -30,20 +30,16 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.WorksheetCreationRemote;
+import org.openelis.server.EJBFactory;
 
 public class WorksheetCreationService {
 
     public ArrayList<WorksheetCreationVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), 0, 100);
+        return EJBFactory.getWorksheetCreation().query(query.getFields(), 0, 100);
     }
     
     public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
-        return remote().getColumnNames(formatId);
+        return EJBFactory.getWorksheetCreation().getColumnNames(formatId);
     }
 
-    private WorksheetCreationRemote remote() {
-        return (WorksheetCreationRemote)EJBFactory.lookup("openelis/WorksheetCreationBean/remote");
-    }
 }

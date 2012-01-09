@@ -33,29 +33,28 @@ import org.openelis.domain.SamplePrivateWellFinalReportWebVO;
 import org.openelis.domain.SampleSDWISFinalReportWebVO;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
+import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 
 public class FinalReportService {
 
     public ArrayList<Prompt> getPromptsForSingle() throws Exception {
-        return remote().getPromptsForSingle();
+        return EJBFactory.getFinalReport().getPromptsForSingle();
     }
 
     public ArrayList<Prompt> getPromptsForBatch() throws Exception {
-        return remote().getPromptsForBatch();
+        return EJBFactory.getFinalReport().getPromptsForBatch();
     }
 
     public ArrayList<Prompt> getPromptsForBatchReprint() throws Exception {
-        return remote().getPromptsForBatchReprint();
+        return EJBFactory.getFinalReport().getPromptsForBatchReprint();
     }
 
     public ReportStatus runReportForSingle(Query query) throws Exception {
         ReportStatus st;
 
-        st = remote().runReportForSingle(query.getFields());
+        st = EJBFactory.getFinalReport().runReportForSingle(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
@@ -65,7 +64,7 @@ public class FinalReportService {
     public ReportStatus runReportForPreview(Query query) throws Exception {
         ReportStatus st;
 
-        st = remote().runReportForPreview(query.getFields());
+        st = EJBFactory.getFinalReport().runReportForPreview(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
@@ -75,7 +74,7 @@ public class FinalReportService {
     public ReportStatus runReportForBatch(Query query) throws Exception {
         ReportStatus st;
 
-        st = remote().runReportForBatch(query.getFields());
+        st = EJBFactory.getFinalReport().runReportForBatch(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
@@ -85,7 +84,7 @@ public class FinalReportService {
     public ReportStatus runReportForBatchReprint(Query query) throws Exception {
         ReportStatus st;
 
-        st = remote().runReportForBatchReprint(query.getFields());
+        st = EJBFactory.getFinalReport().runReportForBatchReprint(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
@@ -95,7 +94,7 @@ public class FinalReportService {
     public ReportStatus runReportForWeb(Query query) throws Exception {
         ReportStatus st;       
 
-        st = remote().runReportForWeb(query.getFields());
+        st = EJBFactory.getFinalReport().runReportForWeb(query.getFields());
         if (st.getStatus() == ReportStatus.Status.SAVED)
             SessionManager.getSession().setAttribute(st.getMessage(), st);
 
@@ -103,26 +102,22 @@ public class FinalReportService {
     }
 
     public ArrayList<SampleEnvironmentalFinalReportWebVO> getSampleEnvironmentalList(Query query) throws Exception {        
-        return remote().getSampleEnvironmentalList(query.getFields());
+        return EJBFactory.getFinalReport().getSampleEnvironmentalList(query.getFields());
     } 
     
     public ArrayList<SamplePrivateWellFinalReportWebVO> getSamplePrivateWellList(Query query) throws Exception{        
-        return remote().getSamplePrivateWellList(query.getFields());
+        return EJBFactory.getFinalReport().getSamplePrivateWellList(query.getFields());
     }  
     
     public ArrayList<SampleSDWISFinalReportWebVO> getSampleSDWISList(Query query) throws Exception {        
-        return remote().getSampleSDWISList(query.getFields());
+        return EJBFactory.getFinalReport().getSampleSDWISList(query.getFields());
     }     
     
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {        
-        return remote().getEnvironmentalProjectList();
+        return EJBFactory.getFinalReport().getEnvironmentalProjectList();
     }
     
     public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {        
-        return remote().getPrivateWellProjectList();
-    }
-
-    private FinalReportRemote remote() {
-        return (FinalReportRemote)EJBFactory.lookup("openelis/FinalReportBean/remote");
+        return EJBFactory.getFinalReport().getPrivateWellProjectList();
     }
 }

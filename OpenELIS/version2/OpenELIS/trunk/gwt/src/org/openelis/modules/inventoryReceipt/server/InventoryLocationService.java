@@ -29,8 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.InventoryLocationRemote;
+import org.openelis.server.EJBFactory;
 
 public class InventoryLocationService {
 
@@ -40,7 +39,7 @@ public class InventoryLocationService {
         
         search = query.getFields().get(0).query;
         id = new Integer(query.getFields().get(1).query);
-        return invLocRemote().fetchByLocationNameInventoryItemId(search + "%", id,10);
+        return EJBFactory.getInventoryLocation().fetchByLocationNameInventoryItemId(search + "%", id,50);
     }   
     
     public ArrayList<InventoryLocationViewDO> fetchByLocationNameInventoryItemIdStoreId(Query query) throws Exception {
@@ -50,11 +49,11 @@ public class InventoryLocationService {
         search = query.getFields().get(0).query;
         itemId = new Integer(query.getFields().get(1).query);
         storeId = new Integer(query.getFields().get(2).query);
-        return invLocRemote().fetchByLocationNameInventoryItemIdStoreId(search + "%", itemId, storeId, 10);
+        return EJBFactory.getInventoryLocation().fetchByLocationNameInventoryItemIdStoreId(search + "%", itemId, storeId, 50);
     }
     
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemName(String search) throws Exception {
-        return invLocRemote().fetchByInventoryItemName(search + "%", 10);
+        return EJBFactory.getInventoryLocation().fetchByInventoryItemName(search + "%", 50);
     }
     
     public ArrayList<InventoryLocationViewDO> fetchByInventoryItemNameStoreId(Query query) throws Exception {
@@ -63,14 +62,11 @@ public class InventoryLocationService {
         
         search = query.getFields().get(0).query;
         storeId = new Integer(query.getFields().get(1).query);
-        return invLocRemote().fetchByInventoryItemNameStoreId(search + "%", storeId, 10);
+        return EJBFactory.getInventoryLocation().fetchByInventoryItemNameStoreId(search + "%", storeId, 50);
     }
     
     public InventoryLocationViewDO fetchById(Integer id) throws Exception {
-        return invLocRemote().fetchById(id);
+        return EJBFactory.getInventoryLocation().fetchById(id);
     }
     
-    private InventoryLocationRemote invLocRemote() {
-       return (InventoryLocationRemote)EJBFactory.lookup("openelis/InventoryLocationBean/remote");
-    }
 }

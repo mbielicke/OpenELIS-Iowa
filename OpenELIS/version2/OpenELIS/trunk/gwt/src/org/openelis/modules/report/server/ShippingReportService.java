@@ -29,9 +29,9 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
 import org.openelis.remote.ShippingReportRemote;
 import org.openelis.report.Prompt;
+import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 
 public class ShippingReportService {
@@ -61,6 +61,6 @@ public class ShippingReportService {
     }
     
     private ShippingReportRemote remote() {
-        return (ShippingReportRemote)EJBFactory.lookup("openelis/ShippingReportBean/remote");
+        return EJBFactory.getShippingReport();
     }
 }

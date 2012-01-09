@@ -29,31 +29,27 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.SampleLoginLabelReportRemote;
 import org.openelis.report.Prompt;
+import org.openelis.server.EJBFactory;
 
 public class SampleLoginLabelReportService {    
     
     public ArrayList<Prompt> getPrompts() throws Exception{
-        return remote().getPrompts();      
+        return EJBFactory.getSampleLoginLabelReport().getPrompts();      
     }
     
     public ReportStatus runReport(Query query) throws Exception { 
-        return remote().runReport(query.getFields());
+        return EJBFactory.getSampleLoginLabelReport().runReport(query.getFields());
     }
     
     public ArrayList<Prompt> getAdditionalPrompts() throws Exception{
-        return remote().getAdditionalPrompts();      
+        return EJBFactory.getSampleLoginLabelReport().getAdditionalPrompts();      
     }
     
     public ReportStatus runAdditionalReport(Query query) throws Exception { 
-        return remote().runAdditionalReport(query.getFields());
+        return EJBFactory.getSampleLoginLabelReport().runAdditionalReport(query.getFields());
     }
-    
-    private SampleLoginLabelReportRemote remote() {
-        return (SampleLoginLabelReportRemote)EJBFactory.lookup("openelis/SampleLoginLabelReportBean/remote");
-    } 
+   
 }
 
 

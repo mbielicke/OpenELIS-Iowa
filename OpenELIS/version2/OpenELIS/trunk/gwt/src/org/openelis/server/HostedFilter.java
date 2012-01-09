@@ -45,6 +45,7 @@ import org.apache.log4j.Logger;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
+import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.UserCacheRemote;
 import org.openelis.util.SessionManager;
 
@@ -142,19 +143,20 @@ public class HostedFilter implements Filter {
             props.load(new FileInputStream(propFile));
             props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY,
                               "org.jboss.security.jndi.LoginInitialContextFactory");
-            props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
+            props.setProperty(InitialContext.SECURITY_PROTOCOL, "openelis");
             props.setProperty(Context.SECURITY_PRINCIPAL, parts);
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
             remotectx = new InitialContext(props);
-            remote = (UserCacheRemote)remotectx.lookup("openelis/UserCacheBean/remote");
+            remote = (UserCacheRemote)remotectx.lookup("openelis/openelis.jar/UserCacheBean!org.openelis.remote.UserCacheRemote");
+            
             perm = remote.login();
             //
             // check to see if she has connect permission
             //
             if ( !perm.hasConnectPermission())
                 throw new PermissionException("NoPermission.html");
-
+            
             req.getSession().setAttribute("UserPermission", perm);
             req.getSession().setAttribute("jndiProps", props);
             req.getSession().setAttribute("USER_NAME", name);

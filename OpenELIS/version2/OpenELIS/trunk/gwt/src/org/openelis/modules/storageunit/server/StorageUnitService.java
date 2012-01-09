@@ -30,45 +30,40 @@ import java.util.ArrayList;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.StorageUnitDO;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.persistence.EJBFactory;
-import org.openelis.remote.StorageUnitRemote;
+import org.openelis.server.EJBFactory;
 
 public class StorageUnitService {
 
     public StorageUnitDO fetchById(Integer id) throws Exception {
-        return remote().fetchById(id);
+        return EJBFactory.getStorageUnit().fetchById(id);
     }
 
     public ArrayList<IdNameVO> fetchByDescription(String search) throws Exception {
-        return remote().fetchByDescription(search + "%", 10);
+        return EJBFactory.getStorageUnit().fetchByDescription(search + "%", 10);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return remote().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+        return EJBFactory.getStorageUnit().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
     public StorageUnitDO add(StorageUnitDO data) throws Exception {
-        return remote().add(data);
+        return EJBFactory.getStorageUnit().add(data);
     }
 
     public StorageUnitDO update(StorageUnitDO data) throws Exception {
-        return remote().update(data);
+        return EJBFactory.getStorageUnit().update(data);
     }
 
     public StorageUnitDO fetchForUpdate(Integer id) throws Exception {
-        return remote().fetchForUpdate(id);
+        return EJBFactory.getStorageUnit().fetchForUpdate(id);
     }
 
     public void delete(StorageUnitDO data) throws Exception {
-        remote().delete(data);
+        EJBFactory.getStorageUnit().delete(data);
     }
 
     public StorageUnitDO abortUpdate(Integer id) throws Exception {
-        return remote().abortUpdate(id);
-    }
-
-    public StorageUnitRemote remote() {
-        return (StorageUnitRemote)EJBFactory.lookup("openelis/StorageUnitBean/remote");
+        return EJBFactory.getStorageUnit().abortUpdate(id);
     }
 
 }
