@@ -185,14 +185,13 @@ public class SampleBean implements SampleLocal, SampleRemote {
         }
     }
 
-    public ArrayList<SampleDO> fetchSDWISByReleasedAndLocation(Date startDate, Date endDate, String location) throws Exception {
+    public ArrayList<SampleDO> fetchSDWISByReleased(Date startDate, Date endDate) throws Exception {
         List<SampleDO> list;
         Query query;
 
-        query = manager.createNamedQuery("Sample.FetchSDWISByReleasedAndLocation");
+        query = manager.createNamedQuery("Sample.FetchSDWISByReleased");
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
-        query.setParameter("location", "%"+location);
         
         list = query.getResultList();
         if (list.isEmpty())

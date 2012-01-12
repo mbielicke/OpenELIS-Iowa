@@ -99,13 +99,12 @@ import org.openelis.utils.Auditable;
                       + " from Sample s, SampleItem si, Test t, Method m, SampleSDWIS se, Analysis a"
                       + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and se.sampleId = s.id and"
                       + " si.sampleId = s.id  and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
-    @NamedQuery( name = "Sample.FetchSDWISByReleasedAndLocation",
+    @NamedQuery( name = "Sample.FetchSDWISByReleased",
                 query = "select distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain," +
                         "s.accessionNumber, s.revision, s.orderId, s.enteredDate, s.receivedDate," +
                         "s.receivedById, s.collectionDate, s.collectionTime, s.statusId, s.packageId," +
                         "s.clientReference, s.releasedDate)"
-                      + " from Sample s, SampleItem si, Analysis a, Section se" +
-                        " where s.id = si.sampleId and si.id = a.sampleItemId and a.sectionId = se.id and s.domain = 'S' and s.releasedDate between :startDate and :endDate and se.name like :location"),
+                      + " from Sample s where s.domain = 'S' and s.releasedDate between :startDate and :endDate"),
     @NamedQuery( name = "Sample.FetchForCachingByStatusId",
                 query = "select distinct new org.openelis.domain.SampleCacheVO(s.id, s.statusId, s.domain, s.accessionNumber," +
                         "s.receivedDate, s.collectionDate, s.collectionTime, '', '')"

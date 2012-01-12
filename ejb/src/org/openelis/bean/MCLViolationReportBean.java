@@ -390,7 +390,10 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         methodCodes.put("epa 524.2",             "524.2");
         methodCodes.put("epa 524.2 thm",         "524.2");
         methodCodes.put("epa 525.2",             "525.2");
+        methodCodes.put("epa 531.1",             "531.1");
+        methodCodes.put("epa 547",               "547");
         methodCodes.put("epa 548.1",             "548.1");
+        methodCodes.put("epa 549.2",             "549.2");
         methodCodes.put("epa 550",               "550");
         methodCodes.put("epa 551.1 edb, dbcp",   "551.1");
         methodCodes.put("epa 552.2 haa",         "552.2");
@@ -417,6 +420,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         methodCodes.put("sm 4500 p e",           "4500P-E");
         methodCodes.put("sm 4500 si d",          "4500SI-D");
         methodCodes.put("sm 5310 b",             "5310B");
+        methodCodes.put("sm 5910",               "5910B");
         methodCodes.put("sm 7500 i c 19th",      "7500-IC");
     }
     
@@ -448,13 +452,18 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("2,4-D",                                 "2105");
         contaminantIds.put("2,4-Dinitrotoluene",                    "2270");
         contaminantIds.put("2,6-Dinitrotoluene",                    "2266");
+        contaminantIds.put("3-Hydroxycarbofuran",                   "2066");
         contaminantIds.put("4,4'-DDE",                              "2009");
         contaminantIds.put("Acenaphthene",                          "2261");
         contaminantIds.put("Acenaphthylene",                        "2260");
         contaminantIds.put("Acetochlor",                            "2027");
         contaminantIds.put("Alachlor",                              "2051");
+        contaminantIds.put("Aldicarb",                              "2047");
+        contaminantIds.put("Aldicarb sulfone",                      "2044");
+        contaminantIds.put("Aldicarb sulfoxide",                    "2043");
         contaminantIds.put("Aldrin",                                "2356");
         contaminantIds.put("Ammonia Nitrogen as N",                 "1003");
+        contaminantIds.put("AMPA",                                  "2097");
         contaminantIds.put("Anthracene",                            "2280");
         contaminantIds.put("Antimony",                              "1074");
         contaminantIds.put("Aroclor 1016",                          "2388");
@@ -528,6 +537,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Dieldrin",                              "2070");   
         contaminantIds.put("Di-n-butyl phthalate",                  "2290");
         contaminantIds.put("Dinoseb",                               "2041");
+        contaminantIds.put("Diquat",                                "2032");
         contaminantIds.put("Dissolved Organic Carbon",              "2919");
         contaminantIds.put("Disulfoton",                            "2102");
         contaminantIds.put("E.coli",                                "3014");
@@ -541,6 +551,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Fluorene",                              "2264");
         contaminantIds.put("Fluoride",                              "1025");
         contaminantIds.put("Fonofos",                               "2104"); 
+        contaminantIds.put("Glyphosate",                            "2034");
         contaminantIds.put("Gross Alpha excluding Uranium",         "4000");
         contaminantIds.put("Gross Alpha including Uranium",         "4002");
         contaminantIds.put("Gross Beta",                            "4100");
@@ -561,6 +572,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Magnesium",                             "1031");
         contaminantIds.put("Manganese",                             "1032");
         contaminantIds.put("Mercury",                               "1035");  
+        contaminantIds.put("Methomyl",                              "2022");
         contaminantIds.put("Methoxychlor",                          "2015"); 
         contaminantIds.put("Methyl-t-butyl ether (MtBE)",           "2251");
         contaminantIds.put("Metolachlor",                           "2045");
@@ -569,11 +581,12 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Naphthalene",                           "2248");
         contaminantIds.put("n-Butylbenzene",                        "2422");
         contaminantIds.put("Nickel",                                "1036");
-        contaminantIds.put("Nitrate Nitrogen as N",                 "1040");
-        contaminantIds.put("Nitrite Nitrogen as N",                 "1041");
+        contaminantIds.put("Nitrate nitrogen as N",                 "1040");
+        contaminantIds.put("Nitrite nitrogen as N",                 "1041");
         contaminantIds.put("Nitrobenzene",                          "2254");
         contaminantIds.put("n-Propylbenzene",                       "2998");
         contaminantIds.put("Ortho Phosphate as P",                  "1044");
+        contaminantIds.put("Oxamyl",                                "2036");
         contaminantIds.put("o-Xylene",                              "2997");
         contaminantIds.put("PCB Total as DCBP",                     "2383");
         contaminantIds.put("Pentachlorophenol",                     "2326");
@@ -625,6 +638,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Tritium",                               "4102");    
         contaminantIds.put("Turbidity",                             "100");   
         contaminantIds.put("Uranium",                               "4006");
+        contaminantIds.put("UV Absorbance at 254 nm",               "2922");
         contaminantIds.put("Zinc",                                  "1095");  
     }
 }
