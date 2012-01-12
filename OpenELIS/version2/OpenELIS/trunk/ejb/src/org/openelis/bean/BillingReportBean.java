@@ -118,7 +118,10 @@ public class BillingReportBean implements BillingReportLocal {
     @EJB
     private DictionaryLocal          dictionary;
     
-    private static final String      RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT";
+    private static final String      RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
+                                     MISC_BILLING = "billing misc charges",
+                                     RUSH_BILLING = "billing rush charges",
+                                     NO_METHOD = "no method", EOL = "\r\n";
     
     private static Integer           organizationReportToId, organizationBillToId, analysisCancelledId;
     
@@ -139,7 +142,7 @@ public class BillingReportBean implements BillingReportLocal {
      * Execute the report and email its output to specified addresses
      */
 
-    @Asynchronous
+    //@Asynchronous
     @TransactionTimeout(600)
     public void runReport() throws Exception {        
         String poAnalyteName, billDir;
@@ -177,20 +180,21 @@ public class BillingReportBean implements BillingReportLocal {
         currentDate = cal.getTime();                  
         if (lastRunDate.compareTo(currentDate) >= 0) {
             log.error("Start Date should be earlier than End Date");
+            systemVariable.abortUpdate(lastRun.getId());
             return;
         }
             
         resultList = sample.fetchForBillingReport(lastRunDate, currentDate);        
-        log.debug("Considering "+ resultList.size()+ " cases to run");        
-        if (resultList.size() == 0)
+        log.info("Considering "+ resultList.size()+ " cases to run");        
+        if (resultList.size() == 0) {
+            systemVariable.abortUpdate(lastRun.getId());
             return;
-                   
+        }
         out = null;
         tempFile = null;
         try {
             tempFile = File.createTempFile("billingReport", ".txt", new File(billDir));
             out = new FileWriter(tempFile);
-            
             outputBilling(out, currentDate, poAnalyteName, resultList);  
             out.close();
             
@@ -392,7 +396,7 @@ public class BillingReportBean implements BillingReportLocal {
             dtrch.setLength(0);            
             df.applyPattern("yyyyMMddHHmm");
             if (billed != null && (billableAnalytes != billedAnalytes ||
-                !billedZero.equals(anaZeroCharge ? "0" : ""))) {                
+                !billedZero.equals(anaZeroCharge ? "Y" : "N"))) {                
                 dtrcr.append("DTR").append("|")
                      .append(df.format(billed)).append("|")
                      .append(accession).append("|")
@@ -400,18 +404,18 @@ public class BillingReportBean implements BillingReportLocal {
                      .append(procedure).append("|")
                      .append("CR").append("|")
                      .append(billedAnalytes).append("|")
-                     .append(billedZero).append("|")
+                     .append("Y".equals(billedZero) ? "0": "").append("|")
                      .append(labCode.toUpperCase()).append("|")
                      .append(labDept).append("|");                 
             }            
-            /*
-             *  we need to figure out if we charge for this analysis
-             */
+            //
+            //  we need to figure out if we charge for this analysis
+            //
             needCharge = false;
             if (billed == null || billableAnalytes != billedAnalytes ||
                 !billedZero.equals(anaZeroCharge ? "Y" : "N")) {                
                 if (!analysisCancelledId.equals(statusId) && ("Y".equals(anaReportable) ||
-                                "billing misc".equals(testName) || "billing misc1".equals(testName))) 
+                    ((MISC_BILLING.equals(testName) || RUSH_BILLING.equals(testName))&& NO_METHOD.equals(methodName)))) 
                     needCharge = true;
             }
                 
@@ -434,17 +438,17 @@ public class BillingReportBean implements BillingReportLocal {
             if (!samId.equals(prevSamId)) {
                 prevSamId = samId;
                 out.write(hdr.toString());
-                out.write("\n");
+                out.write(EOL);
             }
             
             if (dtrcr.length() > 0) {
                 out.write(dtrcr.toString());
-                out.write("\n");
+                out.write(EOL);
             }
             
             if (dtrch.length() > 0) {
                 out.write(dtrch.toString());
-                out.write("\n");
+                out.write(EOL);
             }
                         
             /*
