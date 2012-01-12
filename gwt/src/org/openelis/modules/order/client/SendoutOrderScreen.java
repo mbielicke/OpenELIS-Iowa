@@ -331,7 +331,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                 userModulePermission.hasAddPermission());
             }
         });
         
@@ -591,7 +592,8 @@ public class SendoutOrderScreen extends Screen {
                 statusId.setSelection(id);
                 
                 shippingInfo.enable(state == State.DISPLAY && statusProcessedId.equals(id));
-                process.enable(state == State.DISPLAY && statusPendingId.equals(id));
+                process.enable(state == State.DISPLAY && statusPendingId.equals(id) && 
+                               userModulePermission.hasUpdatePermission());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1386,13 +1388,6 @@ public class SendoutOrderScreen extends Screen {
             data.setRequestedBy(UserCache.getPermission().getLoginName());
             data.setType(OrderManager.TYPE_SEND_OUT);
 
-            reportToBillToTab.setManager(manager);
-            auxDataTab.setManager(manager);
-            containerTab.setManager(manager);
-            itemTab.setManager(manager);
-            shipNoteTab.setManager(manager);
-            custNoteTab.setManager(manager);
-
             manager.getAuxData();
             manager.getTests();
             manager.getContainers();
@@ -1401,6 +1396,13 @@ public class SendoutOrderScreen extends Screen {
             manager.getCustomerNotes();
 
             clearKeys();
+            
+            reportToBillToTab.setManager(manager);
+            auxDataTab.setManager(manager);
+            containerTab.setManager(manager);
+            itemTab.setManager(manager);
+            shipNoteTab.setManager(manager);
+            custNoteTab.setManager(manager);
 
             reportToBillToTab.draw();
             auxDataTab.draw();

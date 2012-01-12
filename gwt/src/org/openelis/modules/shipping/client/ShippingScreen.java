@@ -76,11 +76,8 @@ import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.meta.ShippingMeta;
-import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
-import org.openelis.modules.dictionary.client.DictionaryLookupScreen.Action;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.note.client.NotesTab;
-import org.openelis.modules.order.client.OrderRequestFormReportScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -295,7 +292,8 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                processShipping.enable(EnumSet.of(State.DISPLAY, State.DEFAULT).contains(event.getState()));
+                processShipping.enable(EnumSet.of(State.DISPLAY, State.DEFAULT).contains(event.getState())
+                                       && userPermission.hasUpdatePermission());
             }
         });
         
