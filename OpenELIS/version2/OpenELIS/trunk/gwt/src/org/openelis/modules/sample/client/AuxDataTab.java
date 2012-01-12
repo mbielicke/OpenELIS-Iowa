@@ -117,11 +117,9 @@ public class AuxDataTab extends Screen {
 
         auxValsTable.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
-                TableRow row;
                 AuxFieldViewDO fieldDO;
 
-                row = event.getSelectedItem();
-                fieldDO = manager.getAuxFieldAt(row.index);
+                fieldDO = manager.getAuxFieldAt(auxValsTable.getSelectedRow());
                 if (fieldDO != null) {
                     auxMethod.setValue(fieldDO.getMethodName());
                     auxDesc.setValue(fieldDO.getDescription());

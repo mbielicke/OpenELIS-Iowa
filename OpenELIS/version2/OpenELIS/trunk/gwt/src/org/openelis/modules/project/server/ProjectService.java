@@ -59,7 +59,7 @@ public class ProjectService {
         ArrayList<ProjectDO> list;
 
         try {
-            list = EJBFactory.getProject().fetchActiveByName(search + "%", 10);
+            list = EJBFactory.getProject().fetchActiveByName(search + "%", 50);
         } catch (NotFoundException e) {
             list = new ArrayList<ProjectDO>(0);
         } catch (RuntimeException e) {

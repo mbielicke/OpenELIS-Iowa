@@ -232,7 +232,8 @@ public class QaEventScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                duplicate.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                 userPermission.hasAddPermission());
             }
         });
         
