@@ -28,6 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -35,11 +37,11 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.entity.AuxData;
@@ -47,7 +49,10 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AuxDataLocal;
+import org.openelis.local.DictionaryCacheLocal;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.remote.AuxDataRemote;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -56,35 +61,43 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
+    
+    @EJB
+    private DictionaryLocal dictionary;
+    
+    private static Integer dictionaryTypeId;
+    
+    private static final Logger      log  = Logger.getLogger(AuxDataBean.class);
+    
+    @PostConstruct
+    public void init() {
+        if (dictionaryTypeId == null) {
+            try {
+                dictionaryTypeId = dictionary.fetchBySystemName("aux_dictionary").getId(); 
+            } catch (Throwable e) {
+                log.error("Failed to lookup constants for dictionary entries", e);
+            }
+        }
+    }
 
     public ArrayList<AuxDataViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
         Query query;
         ArrayList<AuxDataViewDO> data;
         AuxDataViewDO dataDO;
-        Integer dictionaryTypeId;
         DictionaryDO dictDO;
+        DictionaryCacheLocal dcl;
 
         query = manager.createNamedQuery("AuxData.FetchById");
         query.setParameter("id", referenceId);
         query.setParameter("tableId", referenceTableId);
         try {
             data = DataBaseUtil.toArrayList(query.getResultList());
-
-            if (data.size() > 0) {
-                query = manager.createNamedQuery("Dictionary.FetchBySystemName");
-                query.setParameter("name", "aux_dictionary");
-                dictDO = (DictionaryDO)query.getResultList().get(0);
-                dictionaryTypeId = dictDO.getId();
-
-                for (int i = 0; i < data.size(); i++ ) {
-                    dataDO = data.get(i);
-
-                    if (dictionaryTypeId.equals(dataDO.getTypeId()) && dataDO.getValue() != null) {
-                        query = manager.createNamedQuery("Dictionary.FetchById");
-                        query.setParameter("id", new Integer(dataDO.getValue()));
-                        dictDO = (DictionaryViewDO)query.getResultList().get(0);
-                        dataDO.setDictionary(dictDO.getEntry());
-                    }
+            dcl = EJBFactory.getDictionaryCache();
+            for (int i = 0; i < data.size(); i++ ) {
+                dataDO = data.get(i);
+                if (dictionaryTypeId.equals(dataDO.getTypeId()) && dataDO.getValue() != null) {
+                    dictDO = dcl.getById(new Integer(dataDO.getValue()));
+                    dataDO.setDictionary(dictDO.getEntry());
                 }
             }
         } catch (NoResultException e) {

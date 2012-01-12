@@ -26,9 +26,6 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import javax.xml.crypto.Data;
 
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
@@ -36,6 +33,8 @@ import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AuxDataLocal;
+import org.openelis.local.AuxFieldLocal;
+import org.openelis.local.AuxFieldValueLocal;
 import org.openelis.utils.EJBFactory;
 
 public class AuxDataManagerProxy {
@@ -46,11 +45,15 @@ public class AuxDataManagerProxy {
         ArrayList<AuxFieldValueViewDO> values;
         AuxDataManager                 man;
         AuxDataViewDO                  dataDO;
-        AuxFieldViewDO                 fieldDO;
+        AuxFieldViewDO                 fieldDO;       
+        AuxFieldLocal                  fl;
+        AuxFieldValueLocal             vl;
 
         man = AuxDataManager.getInstance();
         
-        data = EJBFactory.getAuxData().fetchById(referenceId, referenceTableId);
+        data = EJBFactory.getAuxData().fetchById(referenceId, referenceTableId);        
+        fl = EJBFactory.getAuxField();
+        vl = EJBFactory.getAuxFieldValue();
         for (i = 0; i < data.size(); i++) {
             dataDO = data.get(i);
             try {
@@ -60,8 +63,8 @@ public class AuxDataManagerProxy {
                  * removed from the aux field group, we still want to show 
                  * aux data linked to existing aux fields     
                  */
-                fieldDO = EJBFactory.getAuxField().fetchById(dataDO.getAuxFieldId());
-                values = EJBFactory.getAuxFieldValue().fetchByFieldId(fieldDO.getId());
+                fieldDO = fl.fetchById(dataDO.getAuxFieldId());
+                values = vl.fetchByFieldId(fieldDO.getId());
                 man.addAuxDataFieldAndValues(dataDO, fieldDO, values);
             } catch (NotFoundException ignE) {
                 // ignore

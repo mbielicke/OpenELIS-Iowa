@@ -828,6 +828,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         methodCodes.put("sm 4500 si d",          "4500SI-D");
         methodCodes.put("sm 5310 b",             "5310B");
         methodCodes.put("sm 7500 i c 19th",      "7500-IC");
+        methodCodes.put("epa 547",               "547");
+        methodCodes.put("epa 531.1",             "531.1");
+        methodCodes.put("epa 549.2",             "549.2");
+        methodCodes.put("sm 5910",               "5910B");
     }
     
     private void initContaminantIds() {
@@ -1036,6 +1040,16 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("Turbidity",                             "100");   
         contaminantIds.put("Uranium",                               "4006");
         contaminantIds.put("Zinc",                                  "1095");  
+        contaminantIds.put("AMPA",                                  "2097");
+        contaminantIds.put("Glyphosate",                            "2034");
+        contaminantIds.put("Diquat",                                "2032");
+        contaminantIds.put("UV Absorbance at 254 nm",               "2922");
+        contaminantIds.put("Aldicarb",                              "2047");
+        contaminantIds.put("Aldicarb sulfone",                      "2044");
+        contaminantIds.put("Aldicarb sulfoxide",                    "2043");
+        contaminantIds.put("Oxamyl",                                "2036");
+        contaminantIds.put("Methomyl",                              "2022");
+        contaminantIds.put("3-Hydroxycarbofuran",                   "2066");
     }
     
     public boolean next() throws JRException {
