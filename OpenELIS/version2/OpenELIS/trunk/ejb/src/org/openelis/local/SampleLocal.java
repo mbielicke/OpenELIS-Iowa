@@ -15,7 +15,7 @@ public interface SampleLocal {
 
 	public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception;
 
-    public ArrayList<SampleDO> fetchSDWISByReleasedAndLocation(Date startDate, Date endDate, String location) throws Exception;
+    public ArrayList<SampleDO> fetchSDWISByReleased(Date startDate, Date endDate) throws Exception;
 
     public ArrayList<Object[]> fetchSamplesForFinalReportBatch() throws Exception;
 

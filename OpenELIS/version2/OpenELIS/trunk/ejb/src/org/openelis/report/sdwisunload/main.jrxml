@@ -4,12 +4,15 @@
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="ireport.callouts" value="##Tue Sep 21 15:30:40 CDT 2010"/>
+	<import value="org.openelis.utils.Counter"/>
 	<parameter name="LOGIN_NAME" class="java.lang.String">
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<parameter name="BEGIN_RELEASED" class="java.lang.String"/>
 	<parameter name="END_RELEASED" class="java.lang.String"/>
-	<parameter name="COUNT" class="java.lang.Integer"/>
+	<parameter name="SAMPLE_COUNTS" class="org.openelis.utils.Counter" isForPrompting="false">
+		<defaultValueExpression><![CDATA[new org.openelis.utils.Counter()]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -18,6 +21,10 @@
 	<field name="status" class="java.lang.String"/>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<variable name="SAMPLE_COUNT" class="org.openelis.utils.Counter">
+		<variableExpression><![CDATA[$V{SAMPLE_COUNT}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Counter()]]></initialValueExpression>
 	</variable>
 	<pageHeader>
 		<band height="36" splitType="Stretch">
@@ -162,9 +169,16 @@
 		</band>
 	</detail>
 	<summary>
-		<band height="24">
-			<textField>
-				<reportElement key="countOfSamples" isPrintRepeatedValues="false" x="0" y="12" width="225" height="12"/>
+		<band height="168">
+			<staticText>
+				<reportElement key="ankeny.header" mode="Opaque" x="0" y="12" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Ankeny Samples]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="ankenyBacterial" isPrintRepeatedValues="false" x="55" y="24" width="55" height="12"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineColor="#C0C0C0"/>
@@ -175,8 +189,155 @@
 				<textElement>
 					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{COUNT}+" Sample(s) generated"]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$P{SAMPLE_COUNTS}.get("TC-ank") != null ? $P{SAMPLE_COUNTS}.get("TC-ank") : 0]]></textFieldExpression>
 			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="countOfAnkenyChemical" isPrintRepeatedValues="false" x="55" y="36" width="55" height="12"/>
+				<box>
+					<pen lineColor="#C0C0C0"/>
+					<topPen lineColor="#C0C0C0"/>
+					<leftPen lineColor="#C0C0C0"/>
+					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
+					<rightPen lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[($P{SAMPLE_COUNTS}.get("CH-ank") != null ? $P{SAMPLE_COUNTS}.get("CH-ank") : 0)+($P{SAMPLE_COUNTS}.get("PB-ank") != null ? $P{SAMPLE_COUNTS}.get("PB-ank") : 0)+($P{SAMPLE_COUNTS}.get("RA-ank") != null ? $P{SAMPLE_COUNTS}.get("RA-ank") : 0)]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="iowaCity.header" mode="Opaque" x="0" y="60" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Iowa City Samples]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="countOfIowaCityBacterial" isPrintRepeatedValues="false" x="55" y="72" width="55" height="12"/>
+				<box>
+					<pen lineColor="#C0C0C0"/>
+					<topPen lineColor="#C0C0C0"/>
+					<leftPen lineColor="#C0C0C0"/>
+					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
+					<rightPen lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$P{SAMPLE_COUNTS}.get("TC-ic") != null ? $P{SAMPLE_COUNTS}.get("TC-ic") : 0]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="countOfIowaCityChemical" isPrintRepeatedValues="false" x="55" y="84" width="55" height="12"/>
+				<box>
+					<pen lineColor="#C0C0C0"/>
+					<topPen lineColor="#C0C0C0"/>
+					<leftPen lineColor="#C0C0C0"/>
+					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
+					<rightPen lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[($P{SAMPLE_COUNTS}.get("CH-ic") != null ? $P{SAMPLE_COUNTS}.get("CH-ic") : 0)+($P{SAMPLE_COUNTS}.get("PB-ic") != null ? $P{SAMPLE_COUNTS}.get("PB-ic") : 0)+($P{SAMPLE_COUNTS}.get("RA-ic") != null ? $P{SAMPLE_COUNTS}.get("RA-ic") : 0)]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="lakeside.header" mode="Opaque" x="0" y="108" width="110" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Lakeside Samples]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="countOfLakesideBacterial" isPrintRepeatedValues="false" x="55" y="120" width="55" height="12"/>
+				<box>
+					<pen lineColor="#C0C0C0"/>
+					<topPen lineColor="#C0C0C0"/>
+					<leftPen lineColor="#C0C0C0"/>
+					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
+					<rightPen lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$P{SAMPLE_COUNTS}.get("TC-lk") != null ? $P{SAMPLE_COUNTS}.get("TC-lk") : 0]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="countOfLakesideChemical" isPrintRepeatedValues="false" x="55" y="132" width="55" height="12"/>
+				<box>
+					<pen lineColor="#C0C0C0"/>
+					<topPen lineColor="#C0C0C0"/>
+					<leftPen lineColor="#C0C0C0"/>
+					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
+					<rightPen lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[($P{SAMPLE_COUNTS}.get("CH-lk") != null ? $P{SAMPLE_COUNTS}.get("CH-lk") : 0)+($P{SAMPLE_COUNTS}.get("PB-lk") != null ? $P{SAMPLE_COUNTS}.get("PB-lk") : 0)+($P{SAMPLE_COUNTS}.get("RA-lk") != null ? $P{SAMPLE_COUNTS}.get("RA-lk") : 0)]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="totalCount" isPrintRepeatedValues="false" x="55" y="156" width="55" height="12"/>
+				<box>
+					<pen lineColor="#C0C0C0"/>
+					<topPen lineColor="#C0C0C0"/>
+					<leftPen lineColor="#C0C0C0"/>
+					<bottomPen lineWidth="0.0" lineColor="#C0C0C0"/>
+					<rightPen lineColor="#C0C0C0"/>
+				</box>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$P{SAMPLE_COUNTS}.getTotal()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="ankenyBacterial.label" mode="Transparent" x="0" y="24" width="50" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Bacterial:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="iowaCityBacterial.label" mode="Transparent" x="0" y="72" width="50" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Bacterial:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="lakesideBacterial.label" mode="Transparent" x="0" y="120" width="50" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Bacterial:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="ankenyChemical.label" mode="Transparent" x="0" y="36" width="50" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Chemical:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="iowaCityChemical.label" mode="Transparent" x="0" y="84" width="50" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Chemical:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="lakesideChemical.label" mode="Transparent" x="0" y="132" width="50" height="12" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Chemical:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="total.label" mode="Opaque" x="0" y="156" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Total:]]></text>
+			</staticText>
 		</band>
 	</summary>
 </jasperReport>

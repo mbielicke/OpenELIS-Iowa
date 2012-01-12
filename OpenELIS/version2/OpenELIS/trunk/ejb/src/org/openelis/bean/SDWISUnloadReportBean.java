@@ -46,6 +46,7 @@ import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
@@ -62,6 +63,7 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
+import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.AnalyteLocal;
 import org.openelis.local.AuxDataLocal;
 import org.openelis.local.DictionaryCacheLocal;
@@ -75,6 +77,7 @@ import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.SDWISUnloadReportRemote;
 import org.openelis.report.Prompt;
+import org.openelis.utils.Counter;
 import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
@@ -107,6 +110,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
     @EJB
     AnalysisLocal        analysis;
     @EJB
+    AnalysisQAEventLocal analysisQA;
+    @EJB
     AnalyteLocal         analyte;
     @EJB
     AuxDataLocal         auxData;
@@ -125,7 +130,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
     @EJB
     UserCacheLocal       userCache;
 
-    private static Integer releasedStatusId, typeDictionaryId;
+    private static Integer releasedStatusId, sdwisBacterialId, typeDictionaryId;
     private static HashMap<String, String> methodCodes, contaminantIds;
     
     private int                                statusIndex;
@@ -137,6 +142,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         initContaminantIds();
         try {
             releasedStatusId = dictionaryCache.getBySystemName("analysis_released").getId();
+            sdwisBacterialId = dictionaryCache.getBySystemName("sdwis_category_bacterial").getId();
             typeDictionaryId = dictionaryCache.getBySystemName("test_res_type_dictionary").getId();
         } catch (Throwable e) {
             e.printStackTrace();
@@ -147,12 +153,9 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
      * Returns the prompt for a single re-print
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<OptionListItem> loc, prn;
+        ArrayList<OptionListItem> /*loc,*/ prn;
         ArrayList<Prompt>         p;
         Calendar                  fromDate, toDate;
-        SimpleDateFormat          format;
-
-        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         fromDate = Calendar.getInstance();
         fromDate.set(Calendar.HOUR_OF_DAY, 13);
@@ -174,7 +177,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     .setWidth(130)
                     .setDatetimeStartCode(Prompt.Datetime.YEAR)
                     .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                    .setDefaultValue(format.format(fromDate.getTime()))
+                    .setDefaultValue(ReportUtil.toString(fromDate.getTime(), "yyyy-MM-dd HH:mm"))
                     .setRequired(true));
 
             p.add(new Prompt("END_RELEASED", Prompt.Type.DATETIME)
@@ -182,20 +185,20 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     .setWidth(130)
                     .setDatetimeStartCode(Prompt.Datetime.YEAR)
                     .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-                    .setDefaultValue(format.format(toDate.getTime()))
+                    .setDefaultValue(ReportUtil.toString(toDate.getTime(), "yyyy-MM-dd HH:mm"))
                     .setRequired(true));
 
-            loc = new ArrayList<OptionListItem>();
-            loc.add(new OptionListItem("-ank", "Ankeny"));
-            loc.add(new OptionListItem("-ic", "Iowa City"));
-            loc.add(new OptionListItem("-lk", "Lakeside"));
-
-            p.add(new Prompt("LOCATION", Prompt.Type.ARRAY).setPrompt("Location:")
-                                                           .setWidth(100)
-                                                           .setOptionList(loc)
-                                                           .setMutiSelect(false)
-                                                           .setRequired(true));
-            
+//            loc = new ArrayList<OptionListItem>();
+//            loc.add(new OptionListItem("-ank", "Ankeny"));
+//            loc.add(new OptionListItem("-ic", "Iowa City"));
+//            loc.add(new OptionListItem("-lk", "Lakeside"));
+//
+//            p.add(new Prompt("LOCATION", Prompt.Type.ARRAY).setPrompt("Location:")
+//                                                           .setWidth(100)
+//                                                           .setOptionList(loc)
+//                                                           .setMutiSelect(false)
+//                                                           .setRequired(true));
+//            
             prn = printers.getListByType("pdf");
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
@@ -213,17 +216,19 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
     /*
      * Execute the report and send its output to specified location
      */
-    @SuppressWarnings("unchecked")
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
-        boolean reject;
-        int sampleCount;
+        boolean sampleOverride;
+        int progressCount;
         AnalysisViewDO aVDO;
-        ArrayList<SampleDO> samples;
         ArrayList<AnalysisViewDO> analyses;
+        ArrayList<SampleDO> samples;
+        ArrayList<AnalysisQaEventDO> analysisQaList;
+        ArrayList<SampleQaEventDO> sampleQaList;
+        Counter sampleCounts;
         Date beginReleased, endReleased;
         File tempFile, statFile;
         FileOutputStream out;
-        HashMap<String, Object> jparam, statRow;
+        HashMap<String, Object> jparam;
         HashMap<String, QueryData> param;
         Iterator<SampleDO> sIter;
         Iterator<AnalysisViewDO> aIter;
@@ -254,7 +259,6 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         beginReleased = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_RELEASED"));
         endReleased = format.parse(ReportUtil.getSingleParameter(param, "END_RELEASED"));
-        location = ReportUtil.getSingleParameter(param, "LOCATION");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
         
         try {
@@ -276,60 +280,109 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
 
             status.setMessage("Outputing report").setPercentComplete(10);
 
-            writeHeaderRow(writer, location);
+            writeHeaderRow(writer);
 
-            sampleCount = 0;
+            progressCount = 0;
+            sampleCounts = new Counter();
             
             statusList = new ArrayList<HashMap<String, Object>>();
             statusIndex = -1;
             
-            samples = sample.fetchSDWISByReleasedAndLocation(beginReleased, endReleased, location);
+            samples = sample.fetchSDWISByReleased(beginReleased, endReleased);
             sIter = samples.iterator();
             while (sIter.hasNext()) {
                 sDO = sIter.next();
                 ssVDO = sampleSdwis.fetchBySampleId(sDO.getId());
                 
                 if (sDO.getCollectionDate() == null) {                    
-                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: Sample has no collection date. Sample Skipped");
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                 "Error: Sample has no collection date. Sample Skipped");
                 } else if (sDO.getCollectionTime() == null) {
-                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: Sample has no collection time. Sample Skipped");
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                 "Error: Sample has no collection time. Sample Skipped");
                 } else if (ssVDO.getLocation() == null) {
-                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: Sample has no location. Sample Skipped");
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                 "Error: Sample has no location. Sample Skipped");
                 } else if (ssVDO.getFacilityId() == null) {
-                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: SDWIS Facility Id is blank");
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                 "Error: SDWIS Facility Id is blank");
                 } else if (ssVDO.getSamplePointId() == null) {
-                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: SDWIS Sampling Point is blank");
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                 "Error: SDWIS Sampling Point is blank");
                 } else if (ssVDO.getSampleTypeId() == null) {
-                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Error: SDWIS Sample Type is blank");
+                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                 "Error: SDWIS Sample Type is blank");
                 } else {
                     if (sDO.getRevision() > 0) {
-                        addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Warning: Sample has revision > 0. Please check for previous entry!");
+                        addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                     "Warning: Sample has revision > 0. Please check for previous entry!");
                     }
                     
-                    reject = writeSampleRow(writer, sDO, ssVDO, location);
-                    if (!reject) {
-                        analyses = analysis.fetchBySampleId(sDO.getId());
-                        aIter = analyses.iterator();
-                        while (aIter.hasNext()) {
-                            aVDO = aIter.next();
-                            if (releasedStatusId.equals(aVDO.getStatusId())) {
-                                secVDO = sectionCache.getById(aVDO.getSectionId());
-                                if (secVDO != null && secVDO.getName().endsWith(location))
+                    sampleOverride = false;
+                    try {
+                        sampleQaList = sampleQA.fetchResultOverrideBySampleId(sDO.getId());
+                        if (sampleQaList.size() > 0)
+                            sampleOverride = true;
+                    } catch (NotFoundException nfE) {
+                        // no qa events found means sample is not overridden
+                    } catch (Exception anyE) {
+                        throw new Exception("Error looking up result override Sample QAEvents; "+anyE.getMessage());
+                    }
+
+                    if (sampleOverride) {
+                        if (!sdwisBacterialId.equals(ssVDO.getSampleCategoryId())) {
+                            addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                         "Warning: Sample has a Result Override QAEvent and will be Skipped!");
+                            continue;
+                        } else {
+                            addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                         "Warning: Sample has a Result Override QAEvent!");
+                        }
+                    }
+                    
+                    location = "NONE";
+                    analyses = analysis.fetchBySampleIdOrderedBySection(sDO.getId());
+                    aIter = analyses.iterator();
+                    while (aIter.hasNext()) {
+                        aVDO = aIter.next();
+                        if (releasedStatusId.equals(aVDO.getStatusId())) {
+                            try {
+                                analysisQaList = analysisQA.fetchResultOverrideByAnalysisId(aVDO.getId());
+                                if (analysisQaList.size() > 0) {
+                                    addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                                 "Warning: Test '"+aVDO.getTestName()+
+                                                 ", "+aVDO.getMethodName()+"' has a Result Override QAEvent");
+                                    continue;
+                                }
+                            } catch (NotFoundException nfE) {
+                                // no qa events found means analysis is not overridden
+                            } catch (Exception anyE) {
+                                throw new Exception("Error looking up result override Analysis QAEvents; "+anyE.getMessage());
+                            }
+                            
+                            secVDO = sectionCache.getById(aVDO.getSectionId());
+                            if (secVDO != null) {
+                                if (!secVDO.getName().endsWith(location)) {
+                                    location = secVDO.getName().substring(secVDO.getName().indexOf("-"));
+                                    
+                                    writeSampleRow(writer, sDO, ssVDO, location, sampleOverride, sampleCounts);
+                                    if (!sampleOverride)
+                                        addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
+                                                     "Generated");
+                                }
+                                if (!sampleOverride)
                                     writeResultRows(writer, sDO, ssVDO, aVDO);
                             }
                         }
-                        addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Generated");
-                    } else {
-                        addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(), "Warning: Sample has a Result Override QAEvent!");
                     }
-
-                    sampleCount++;
+                    
                 }
                 
-                status.setPercentComplete((sampleCount / samples.size()) * 80 + 10);
+                progressCount++;
+                status.setPercentComplete((progressCount / samples.size()) * 80 + 10);
             }
             
-            writeTrailerRow(writer, sampleCount);
+            writeTrailerRow(writer, progressCount);
             
             writer.close();
             out.close();
@@ -339,9 +392,9 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
              */
             jparam = new HashMap<String, Object>();
             jparam.put("LOGIN_NAME", EJBFactory.getUserCache().getName());
-            jparam.put("BEGIN_RELEASED", format.format(beginReleased));
-            jparam.put("END_RELEASED", format.format(endReleased));
-            jparam.put("COUNT", sampleCount);
+            jparam.put("BEGIN_RELEASED", ReportUtil.toString(beginReleased, "yyyy-MM-dd HH:mm"));
+            jparam.put("END_RELEASED", ReportUtil.toString(endReleased, "yyyy-MM-dd HH:mm"));
+            jparam.put("SAMPLE_COUNTS", sampleCounts);
 
             url = ReportUtil.getResourceURL("org/openelis/report/sdwisunload/main.jasper");
             jreport = (JasperReport)JRLoader.loadObject(url);
@@ -377,60 +430,56 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         return status;
     }
     
-    protected void writeHeaderRow(PrintWriter writer, String location) {
-        Datetime         today;
-        SimpleDateFormat format;
-        StringBuilder    row;
+    protected void writeHeaderRow(PrintWriter writer) {
+        Datetime      today;
+        StringBuilder row;
         
         today = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
-        format = new SimpleDateFormat("MM/dd/yyyy");
         
         row = new StringBuilder();
-        row.append("#HDR")                              // col 1-4
-           .append(" ")                                 // col 5
-           .append("CREATED")                           // col 6-12
-           .append(" ")                                 // col 13
-           .append(format.format(today.getDate()))      // col 14-23
-           .append(" ")                                 // col 24
-           .append("LAB-ID")                            // col 25-30
-           .append(" ")                                 // col 31
-           .append("     ")                             // col 32-36
-           .append(" ")                                 // col 37
-           .append("AGENCY")                            // col 38-43
-           .append(" ")                                 // col 44
-           .append("IA")                                // col 45-46
-           .append(" ")                                 // col 47
-           .append("PURPOSE")                           // col 48-54
-           .append(" ")                                 // col 55
-           .append("NEW")                               // col 56-58
-           .append(" ")                                 // col 59
-           .append("TYPE")                              // col 60-63
-           .append(" ")                                 // col 64
-           .append("RT")                                // col 65-66
-           .append(" ")                                 // col 67
-           .append("REFERENCE")                         // col 68-76
-           .append(" ")                                 // col 77
-           .append("                              ");   // col 78-107 TODO: transaction reference number
+        row.append("#HDR")                                                          // col 1-4
+           .append(" ")                                                             // col 5
+           .append("CREATED")                                                       // col 6-12
+           .append(" ")                                                             // col 13
+           .append(getPaddedString(ReportUtil.toString(today.getDate(),
+                                                       "MM/dd/yyyy"), 10))          // col 14-23
+           .append(" ")                                                             // col 24
+           .append("LAB-ID")                                                        // col 25-30
+           .append(" ")                                                             // col 31
+           .append("     ")                                                         // col 32-36
+           .append(" ")                                                             // col 37
+           .append("AGENCY")                                                        // col 38-43
+           .append(" ")                                                             // col 44
+           .append("IA")                                                            // col 45-46
+           .append(" ")                                                             // col 47
+           .append("PURPOSE")                                                       // col 48-54
+           .append(" ")                                                             // col 55
+           .append("NEW")                                                           // col 56-58
+           .append(" ")                                                             // col 59
+           .append("TYPE")                                                          // col 60-63
+           .append(" ")                                                             // col 64
+           .append("RT")                                                            // col 65-66
+           .append(" ")                                                             // col 67
+           .append("REFERENCE")                                                     // col 68-76
+           .append(" ")                                                             // col 77
+           .append("                              ");                               // col 78-107 TODO: transaction reference number
         
         writer.println(row.toString());
     }
 
-    protected boolean writeSampleRow(PrintWriter writer, SampleDO sVDO, SampleSDWISViewDO ssVDO, String location) throws Exception {
+    protected void writeSampleRow(PrintWriter writer, SampleDO sVDO, SampleSDWISViewDO ssVDO,
+                                     String location, boolean sampleOverride, Counter sampleCounts) throws Exception {
         ArrayList<AuxDataViewDO>   adList;
-        ArrayList<Integer>         sampleIds;
-        ArrayList<SampleQaEventDO> sampleQaList;
         AuxDataViewDO              adVDO;
         DictionaryDO               sampCatDO, sampTypeDO;
         Iterator<AuxDataViewDO>    adIter;
-        SimpleDateFormat           dateFormat, dateSlashFormat, timeFormat;
+        SimpleDateFormat           dateDashFormat;
         String                     compDateString, compIndicator, compLabNumber,
                                    compQuarter, freeChlorine, pbType, repeatCode,
-                                   totalChlorine, origSampleNumber, sampleOverride;
+                                   totalChlorine, origSampleNumber, sampleOverrideString;
         StringBuilder              row;
         
-        dateFormat = new SimpleDateFormat("yyyyMMdd");
-        dateSlashFormat = new SimpleDateFormat("yyyy/MM/dd");
-        timeFormat = new SimpleDateFormat("HHmm");
+        dateDashFormat = new SimpleDateFormat("yyyy-MM-dd");
         
         pbType = "";
         repeatCode = "";
@@ -441,7 +490,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         compDateString = "";
         compQuarter = "";
         origSampleNumber = "";
-        sampleOverride = "";
+        sampleOverrideString = "";
         
         try {
             sampCatDO = dictionaryCache.getById(ssVDO.getSampleCategoryId());
@@ -450,17 +499,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
             throw new Exception("Error looking up dictionary entry for Sample Category or Sample Type; "+anyE.getMessage());
         }
         
-        try {
-            sampleIds = new ArrayList<Integer>();
-            sampleIds.add(sVDO.getId());
-            sampleQaList = sampleQA.fetchResultOverrideBySampleIds(sampleIds);
-            if (sampleQaList.size() > 0)
-                sampleOverride = "S";
-        } catch (NotFoundException nfE) {
-            // no qa events found means sample is not overridden
-        } catch (Exception anyE) {
-            throw new Exception("Error looking up result override Sample QAEvents; "+anyE.getMessage());
-        }
+        if (sampleOverride)
+            sampleOverrideString = "S";
         
         try {
             adList = auxData.fetchById(sVDO.getId(), ReferenceTable.SAMPLE);
@@ -518,10 +558,13 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
            .append(getPaddedString(ssVDO.getFacilityId(), 12))                      // col 21-32
            .append(getPaddedString(ssVDO.getSamplePointId(), 11))                   // col 33-43
            .append(getPaddedString(ssVDO.getLocation(), 20))                        // col 44-63
-           .append(dateFormat.format(sVDO.getCollectionDate().getDate()))           // col 64-71
-           .append(timeFormat.format(sVDO.getCollectionTime().getDate()))           // col 72-75
+           .append(getPaddedString(ReportUtil.toString(sVDO.getCollectionDate(),
+                                                       "yyyyMMdd"), 8))             // col 64-71
+           .append(getPaddedString(ReportUtil.toString(sVDO.getCollectionTime(),
+                                                       "HHmm"), 4))                 // col 72-75
            .append(getPaddedString(ssVDO.getCollector(), 20))                       // col 76-95
-           .append(dateFormat.format(sVDO.getReceivedDate().getDate()))             // col 96-103
+           .append(getPaddedString(ReportUtil.toString(sVDO.getReceivedDate(),
+                                                       "yyyyMMdd"), 8))             // col 96-103
            .append(getPaddedString("OE"+sVDO.getAccessionNumber().toString(), 20)); // col 104-123
         
         if (origSampleNumber != null && origSampleNumber.length() > 0)              // col 124-143
@@ -537,8 +580,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         
         if (compDateString != null && compDateString.length() > 0) {                // col 177-184
             try {
-                compDateString = dateFormat.format(dateSlashFormat.parse(compDateString));
-                row.append(compDateString);
+                row.append(getPaddedString(ReportUtil.toString(dateDashFormat.parse(compDateString),
+                                                               "yyyyMMdd"), 8));
             } catch (ParseException parE) {
                 throw new Exception("Invalid Composite Date; "+parE.getMessage());
             }
@@ -547,7 +590,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         }
         
         row.append(getPaddedString(compQuarter, 1));                                // col 185
-        row.append(getPaddedString(sampleOverride, 1));                             // col 186
+        row.append(getPaddedString(sampleOverrideString, 1));                             // col 186
         
         if ("-ank".equals(location))                                                // col 187-191
             row.append("397  ");                                                    // Ankeny DNR ID
@@ -560,7 +603,9 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
 
         writer.println(row.toString());
         
-        return sampleOverride.length() > 0;
+        sampleCounts.set(sampCatDO.getLocalAbbrev()+location, true);
+        
+        return;
     }
 
     protected void writeResultRows(PrintWriter writer, SampleDO sample,
@@ -575,13 +620,9 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         Iterator<ArrayList<ResultViewDO>> rowIter;
         Iterator<ResultViewDO> colIter;
         ResultViewDO rVDO, crVDO;
-        SimpleDateFormat dateFormat, timeFormat;
         String           methodCode;
         StringBuilder    row;
         
-        dateFormat = new SimpleDateFormat("yyyyMMdd");
-        timeFormat = new SimpleDateFormat("HHmm");
-
         try {
             sampCatDO = dictionaryCache.getById(sampleSDWIS.getSampleCategoryId());
         } catch (Exception anyE) {
@@ -595,7 +636,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         //
         if (methodCode == null) {
             addStatusRow(sampleSDWIS.getPwsNumber0(), sample.getAccessionNumber(),
-                         "Warning: No method code for test '"+analysis.getTestName()+", "+analysis.getMethodName()+"'");
+                         "Warning: No method code for test '"+analysis.getTestName()+
+                         ", "+analysis.getMethodName()+"'");
             return;
         }
         
@@ -616,6 +658,9 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         while (rowIter.hasNext()) {
             resultRow = rowIter.next();
             rVDO = resultRow.get(0);
+            if (!"Y".equals(rVDO.getIsReportable()))
+                continue;
+            
             if (contaminantIds.get(rVDO.getAnalyte()) == null) {
                 addStatusRow(sampleSDWIS.getPwsNumber0(), sample.getAccessionNumber(),
                              "Error: Compound id not found for '"+rVDO.getAnalyte()+"'");
@@ -671,7 +716,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                 if (rVDO.getValue() != null && rVDO.getValue().startsWith("<"))
                     rowData.put("ltIndicator", "Y");
                 else
-                    rowData.put("ltIndicator", "N");
+                    rowData.put("ltIndicator", "");
                 rowData.put("concentration", rVDO.getValue());
                 rowData.put("concentrationUnit", unitDO.getEntry());
                 
@@ -699,33 +744,23 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
             rowData = resultData.get(i);
             
             row = new StringBuilder();
-            row.append("#RES")                                                      // col 1-4
-               .append(getPaddedString(rowData.get("contaminantId"), 4))            // col 5-8
-               .append(getPaddedString(methodCode, 12));                            // col 9-20
-            
-            if (analysis.getStartedDate() != null)
-                row.append(dateFormat.format(analysis.getStartedDate().getDate()))  // col 21-28
-                   .append(timeFormat.format(analysis.getStartedDate().getDate())); // col 29-32
-            else
-                row.append(getPaddedString("", 8))                                  // col 21-28
-                   .append(getPaddedString("", 4));                                 // col 29-32
-
-            if (analysis.getCompletedDate() != null)                                // col 33-40
-                row.append(dateFormat.format(analysis.getCompletedDate().getDate()));
-            else
-                row.append(getPaddedString("", 8));
-            
-            row.append(getPaddedString(rowData.get("microbe"), 1))                  // col 41
-               .append(getPaddedNumber(rowData.get("count"), 5))                    // col 42-46
-               .append(getPaddedString(rowData.get("countType"), 10))               // col 47-56
-               .append(getPaddedString(rowData.get("countUnits"), 9))               // col 57-65
-               .append(getPaddedString(rowData.get("ltIndicator"), 1))              // col 66
-               .append("MRL")                                                       // col 67-69
-               .append(getPaddedNumber(rowData.get("concentration"), 14))           // col 70-83
-               .append(getPaddedString(rowData.get("concentrationUnit"), 9))        // col 84-92
-               .append(getPaddedNumber(rowData.get("detection"), 16))               // col 93-108
-               .append(getPaddedString(rowData.get("detectionUnit"), 9))            // col 109-117
-               .append(getPaddedString(rowData.get("radMeasureError"), 9));         // col 118-126
+            row.append("#RES")                                                                              // col 1-4
+               .append(getPaddedString(rowData.get("contaminantId"), 4))                                    // col 5-8
+               .append(getPaddedString(methodCode, 12))                                                     // col 9-20
+               .append(getPaddedString(ReportUtil.toString(analysis.getStartedDate(), "yyyyMMdd"), 8))      // col 21-28
+               .append(getPaddedString(ReportUtil.toString(analysis.getStartedDate(), "HHmm"), 4))          // col 29-32
+               .append(getPaddedString(ReportUtil.toString(analysis.getCompletedDate(), "yyyyMMdd"), 8))    // col 33-40
+               .append(getPaddedString(rowData.get("microbe"), 1))                                          // col 41
+               .append(getPaddedNumber(rowData.get("count"), 5))                                            // col 42-46
+               .append(getPaddedString(rowData.get("countType"), 10))                                       // col 47-56
+               .append(getPaddedString(rowData.get("countUnits"), 9))                                       // col 57-65
+               .append(getPaddedString(rowData.get("ltIndicator"), 1))                                      // col 66
+               .append("MRL")                                                                               // col 67-69
+               .append(getPaddedString(rowData.get("concentration"), 14))                                   // col 70-83
+               .append(getPaddedString(rowData.get("concentrationUnit"), 9))                                // col 84-92
+               .append(getPaddedString(rowData.get("detection"), 16))                                       // col 93-108
+               .append(getPaddedString(rowData.get("detectionUnit"), 9))                                    // col 109-117
+               .append(getPaddedString(rowData.get("radMeasureError"), 9));                                 // col 118-126
             
             writer.println(row.toString());
         }
@@ -770,6 +805,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         statusRow.put("pws_id", pwsId);
         statusRow.put("accession_number", accessionNumber);
         statusRow.put("status", message);
+        
         statusList.add(statusRow);
     }
 
@@ -800,7 +836,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         methodCodes.put("epa 524.2",             "524.2");
         methodCodes.put("epa 524.2 thm",         "524.2");
         methodCodes.put("epa 525.2",             "525.2");
+        methodCodes.put("epa 531.1",             "531.1");
+        methodCodes.put("epa 547",               "547");
         methodCodes.put("epa 548.1",             "548.1");
+        methodCodes.put("epa 549.2",             "549.2");
         methodCodes.put("epa 550",               "550");
         methodCodes.put("epa 551.1 edb, dbcp",   "551.1");
         methodCodes.put("epa 552.2 haa",         "552.2");
@@ -827,11 +866,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         methodCodes.put("sm 4500 p e",           "4500P-E");
         methodCodes.put("sm 4500 si d",          "4500SI-D");
         methodCodes.put("sm 5310 b",             "5310B");
-        methodCodes.put("sm 7500 i c 19th",      "7500-IC");
-        methodCodes.put("epa 547",               "547");
-        methodCodes.put("epa 531.1",             "531.1");
-        methodCodes.put("epa 549.2",             "549.2");
         methodCodes.put("sm 5910",               "5910B");
+        methodCodes.put("sm 7500 i c 19th",      "7500-IC");
     }
     
     private void initContaminantIds() {
@@ -862,13 +898,18 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("2,4-D",                                 "2105");
         contaminantIds.put("2,4-Dinitrotoluene",                    "2270");
         contaminantIds.put("2,6-Dinitrotoluene",                    "2266");
+        contaminantIds.put("3-Hydroxycarbofuran",                   "2066");
         contaminantIds.put("4,4'-DDE",                              "2009");
         contaminantIds.put("Acenaphthene",                          "2261");
         contaminantIds.put("Acenaphthylene",                        "2260");
         contaminantIds.put("Acetochlor",                            "2027");
         contaminantIds.put("Alachlor",                              "2051");
+        contaminantIds.put("Aldicarb",                              "2047");
+        contaminantIds.put("Aldicarb sulfone",                      "2044");
+        contaminantIds.put("Aldicarb sulfoxide",                    "2043");
         contaminantIds.put("Aldrin",                                "2356");
         contaminantIds.put("Ammonia Nitrogen as N",                 "1003");
+        contaminantIds.put("AMPA",                                  "2097");
         contaminantIds.put("Anthracene",                            "2280");
         contaminantIds.put("Antimony",                              "1074");
         contaminantIds.put("Aroclor 1016",                          "2388");
@@ -942,6 +983,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("Dieldrin",                              "2070");   
         contaminantIds.put("Di-n-butyl phthalate",                  "2290");
         contaminantIds.put("Dinoseb",                               "2041");
+        contaminantIds.put("Diquat",                                "2032");
         contaminantIds.put("Dissolved Organic Carbon",              "2919");
         contaminantIds.put("Disulfoton",                            "2102");
         contaminantIds.put("E.coli",                                "3014");
@@ -955,6 +997,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("Fluorene",                              "2264");
         contaminantIds.put("Fluoride",                              "1025");
         contaminantIds.put("Fonofos",                               "2104"); 
+        contaminantIds.put("Glyphosate",                            "2034");
         contaminantIds.put("Gross Alpha excluding Uranium",         "4000");
         contaminantIds.put("Gross Alpha including Uranium",         "4002");
         contaminantIds.put("Gross Beta",                            "4100");
@@ -975,6 +1018,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("Magnesium",                             "1031");
         contaminantIds.put("Manganese",                             "1032");
         contaminantIds.put("Mercury",                               "1035");  
+        contaminantIds.put("Methomyl",                              "2022");
         contaminantIds.put("Methoxychlor",                          "2015"); 
         contaminantIds.put("Methyl-t-butyl ether (MtBE)",           "2251");
         contaminantIds.put("Metolachlor",                           "2045");
@@ -983,11 +1027,12 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("Naphthalene",                           "2248");
         contaminantIds.put("n-Butylbenzene",                        "2422");
         contaminantIds.put("Nickel",                                "1036");
-        contaminantIds.put("Nitrate Nitrogen as N",                 "1040");
-        contaminantIds.put("Nitrite Nitrogen as N",                 "1041");
+        contaminantIds.put("Nitrate nitrogen as N",                 "1040");
+        contaminantIds.put("Nitrite nitrogen as N",                 "1041");
         contaminantIds.put("Nitrobenzene",                          "2254");
         contaminantIds.put("n-Propylbenzene",                       "2998");
         contaminantIds.put("Ortho Phosphate as P",                  "1044");
+        contaminantIds.put("Oxamyl",                                "2036");
         contaminantIds.put("o-Xylene",                              "2997");
         contaminantIds.put("PCB Total as DCBP",                     "2383");
         contaminantIds.put("Pentachlorophenol",                     "2326");
@@ -1039,17 +1084,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("Tritium",                               "4102");    
         contaminantIds.put("Turbidity",                             "100");   
         contaminantIds.put("Uranium",                               "4006");
-        contaminantIds.put("Zinc",                                  "1095");  
-        contaminantIds.put("AMPA",                                  "2097");
-        contaminantIds.put("Glyphosate",                            "2034");
-        contaminantIds.put("Diquat",                                "2032");
         contaminantIds.put("UV Absorbance at 254 nm",               "2922");
-        contaminantIds.put("Aldicarb",                              "2047");
-        contaminantIds.put("Aldicarb sulfone",                      "2044");
-        contaminantIds.put("Aldicarb sulfoxide",                    "2043");
-        contaminantIds.put("Oxamyl",                                "2036");
-        contaminantIds.put("Methomyl",                              "2022");
-        contaminantIds.put("3-Hydroxycarbofuran",                   "2066");
+        contaminantIds.put("Zinc",                                  "1095");  
     }
     
     public boolean next() throws JRException {

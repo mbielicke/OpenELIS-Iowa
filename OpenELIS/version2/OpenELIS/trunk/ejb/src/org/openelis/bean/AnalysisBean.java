@@ -69,6 +69,20 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
         return DataBaseUtil.toArrayList(returnList);
     }
     
+    public ArrayList<AnalysisViewDO> fetchBySampleIdOrderedBySection(Integer sampleId) throws Exception {
+        List returnList;
+        Query query;
+        
+        query = manager.createNamedQuery("Analysis.FetchBySampleIdOrderedBySection");
+        query.setParameter("id", sampleId);
+        
+        returnList = query.getResultList();
+        if(returnList.size() == 0)
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(returnList);
+    }
+    
     public ArrayList<AnalysisViewDO> fetchBySampleItemId(Integer sampleItemId) throws Exception{
         List returnList;
         Query query;
