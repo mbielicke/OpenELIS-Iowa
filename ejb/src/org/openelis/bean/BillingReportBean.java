@@ -142,7 +142,7 @@ public class BillingReportBean implements BillingReportLocal {
      * Execute the report and email its output to specified addresses
      */
 
-    //@Asynchronous
+    @Asynchronous
     @TransactionTimeout(600)
     public void runReport() throws Exception {        
         String poAnalyteName, billDir;
