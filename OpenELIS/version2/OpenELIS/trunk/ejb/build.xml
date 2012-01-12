@@ -84,7 +84,7 @@
 	</target>
 
 	<target name="deploy-openelis-ejb" depends="ejbjar">
-		<copy file="build/openelis.ear" todir="/usr/local/java/jboss-6.1.0.Final/server/shl/deploy" />
+		<copy file="build/openelis.ear" todir="/usr/local/java/jboss/server/shl/deploy" />
 	</target>
 
 </project>
