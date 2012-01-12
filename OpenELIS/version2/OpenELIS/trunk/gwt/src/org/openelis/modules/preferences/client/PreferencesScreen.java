@@ -7,13 +7,17 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.gwt.event.BeforeCloseEvent;
+import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -132,6 +136,15 @@ public class PreferencesScreen extends Screen {
         	public void onValueChange(ValueChangeEvent<Integer> event) {
         		prefs.putInt("location", event.getValue());
         	}
+        });
+        
+        window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+                if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
+                    event.cancel();
+                    window.setError(consts.get("mustCommitOrAbort"));
+                }
+            }
         });
 	}
 	
