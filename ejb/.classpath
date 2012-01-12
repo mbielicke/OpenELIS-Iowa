@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/usr/local/java/jboss/client/jbossall-client.jar"/>
 	<classpathentry kind="lib" path="/usr/local/java/jboss/client/jboss-ejb3-ext-api.jar"/>
+	<classpathentry kind="lib" path="/usr/local/java/jboss/lib/jbosssx.jar"/>
+	<classpathentry kind="lib" path="lib/ehcache-1.2.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
-	<classpathentry kind="lib" path="lib/poi-3.6-20091214.jar"/>
-	<classpathentry kind="lib" path="lib/jasperreports-4.0.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/Security-Common"/>
+	<classpathentry kind="lib" path="lib/poi-3.6-20091214.jar" sourcepath="/usr/pub/mbielick/src/poi-3.6/src/java"/>
+	<classpathentry kind="lib" path="lib/jasperreports-4.0.1.jar" sourcepath="/usr/pub/mbielick/src/jasperreports-4.0.1/src"/>
 	<classpathentry kind="lib" path="lib/jfreechart-1.0.12.jar"/>
 	<classpathentry kind="lib" path="lib/jcommon-1.0.15.jar"/>
 	<classpathentry kind="lib" path="lib/javamail.jar"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="lib/ehcache-1.2.jar"/>
-	<classpathentry kind="lib" path="/usr/local/java/jboss-6.1.0.Final/client/jbossall-client.jar"/>
-	<classpathentry kind="lib" path="/usr/local/java/jboss-6.1.0.Final/lib/jbosssx.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/Security-Common"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -85,7 +85,7 @@ public class CronSchedulerBean {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e);
         }
     }
 
