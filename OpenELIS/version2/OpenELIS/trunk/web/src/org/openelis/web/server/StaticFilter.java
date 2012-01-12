@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -42,7 +43,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
@@ -60,7 +60,7 @@ import org.w3c.dom.Element;
 public class StaticFilter implements Filter {
 
     private static final long    serialVersionUID = 1L;
-    private static Logger        authLog          = Logger.getLogger("org.openelis.auth");
+    private static Logger        log              = Logger.getLogger("org.openelis.auth");
     private static String        AppRoot;
     private static int           LOGIN_LOCK_TIME  = 1000 * 60 * 10,     // minutes to lock user out
                                  LOGIN_TRY_IP_CNT = 7,                  // max # of bad ip counts before being locked out
@@ -182,7 +182,7 @@ public class StaticFilter implements Filter {
             props = new Properties();
             props.load(new FileInputStream(propFile));
             props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY, "org.jboss.security.jndi.LoginInitialContextFactory");
-            props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
+            props.setProperty(InitialContext.SECURITY_PROTOCOL, "jboss-standard");
             props.setProperty(Context.SECURITY_PRINCIPAL, parts);
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
@@ -241,12 +241,10 @@ public class StaticFilter implements Filter {
          * TODO: need a sliding window remove for clearing the ip address for better security.
          */
         public static void success(String name, String ipAddress) {
-            long now;
-            
             failed.remove(ipAddress);
             failed.remove(name);
 
-            authLog.info("Login attempt for "+ name +" - "+ ipAddress + " succeeded");
+            log.info("Login attempt for "+ name +" - "+ ipAddress + " succeeded");
         }
 
         /**
@@ -274,7 +272,7 @@ public class StaticFilter implements Filter {
             ln.lastTime = now;
             ln.tries = Math.min(ln.tries+1, 9999);
 
-            authLog.info("Login attempt for "+ name +" ["+ ln.tries +"]"+" - "+ ipAddress +" ["+ li.tries +"] failed ");
+            log.info("Login attempt for "+ name +" ["+ ln.tries +"]"+" - "+ ipAddress +" ["+ li.tries +"] failed ");
         }
     }
 }
