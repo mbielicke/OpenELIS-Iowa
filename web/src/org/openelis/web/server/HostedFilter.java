@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -41,7 +42,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.server.ServiceUtils;
@@ -55,15 +55,11 @@ public class HostedFilter implements Filter {
     private static Logger     log = Logger.getLogger(HostedFilter.class.getName());
 
     public void init(FilterConfig config) throws ServletException {
-        log.debug("Initializing the Application.");
-
         ServiceUtils.props = "org.openelis.constants.OpenELISConstants";
 
         locale = config.getInitParameter("Locale");
         user = config.getInitParameter("User");
         password = config.getInitParameter("Pass");
-
-        log.debug("getting out");
     }
 
     public void doFilter(ServletRequest req, ServletResponse response, FilterChain chain) throws IOException {
@@ -142,7 +138,7 @@ public class HostedFilter implements Filter {
             props.load(new FileInputStream(propFile));
             props.setProperty(InitialContext.INITIAL_CONTEXT_FACTORY,
                               "org.jboss.security.jndi.LoginInitialContextFactory");
-            props.setProperty(InitialContext.SECURITY_PROTOCOL, "other");
+            props.setProperty(InitialContext.SECURITY_PROTOCOL, "jboss-standard");
             props.setProperty(Context.SECURITY_PRINCIPAL, parts);
             props.setProperty(InitialContext.SECURITY_CREDENTIALS, password);
 
