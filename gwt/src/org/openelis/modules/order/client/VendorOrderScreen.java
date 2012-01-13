@@ -971,13 +971,13 @@ public class VendorOrderScreen extends Screen {
             data.setRequestedBy(UserCache.getPermission().getLoginName());
             data.setType(OrderManager.TYPE_VENDOR);
 
-            itemTab.setManager(manager);
-            shipNoteTab.setManager(manager);
-
             manager.getItems();
             manager.getShippingNotes();
 
             clearKeys();
+            
+            itemTab.setManager(manager);
+            shipNoteTab.setManager(manager);
 
             itemTab.draw();
             shipNoteTab.draw();
