@@ -32,7 +32,6 @@ import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.SessionContext;
-import javax.ejb.Singleton;
 import javax.ejb.Timer;
 
 import org.apache.log4j.Logger;
@@ -42,19 +41,15 @@ import org.openelis.entity.Cron;
 import org.openelis.local.CronLocal;
 import org.openelis.utils.FixedPeriodCron;
 
-@Singleton
 @SecurityDomain("openelis")
 public class CronSchedulerBean {
 
     @Resource
-    SessionContext ctx;
+    private SessionContext ctx;
 
     @EJB
-    CronLocal      cronLocal;
+    private CronLocal      cron;
 
-    Calendar       now;
-    int            month, day, hour, minute, dayOfWeek;
-    
     private static final Logger log = Logger.getLogger(CronSchedulerBean.class);
 
     /**
@@ -66,6 +61,8 @@ public class CronSchedulerBean {
     @Schedule(hour = "*", minute = "*", second = "0", persistent = false)
     @TransactionTimeout(600)
     public void timer(Timer timer) {
+        Calendar   now;
+        int        month, day, hour, minute, dayOfWeek;
         List<Cron> cronTabs;
 
         try {
@@ -77,13 +74,11 @@ public class CronSchedulerBean {
             minute = now.get(Calendar.MINUTE);
             dayOfWeek = now.get(Calendar.DAY_OF_WEEK) - 1;
             
-            cronTabs = cronLocal.fetchActive();
+            cronTabs = cron.fetchActive();
             log.debug("Evaluating "+ cronTabs.size()+ " entries");
 
-            for (Cron cron : cronTabs) {
-                checkForRun(cron);
-            }
-
+            for (Cron cronTab : cronTabs)
+                checkForRun(cronTab, month, day, hour, minute, dayOfWeek);
         } catch (Exception e) {
             log.error(e);
         }
@@ -94,18 +89,18 @@ public class CronSchedulerBean {
      * run date based on the last run date stored in the cron entry. If next run
      * date is equal to or before now date then the cron job will execute.
      * 
-     * @param cron
+     * @param cronTab
      * @throws Exception
      */
-    private void checkForRun(Cron cron) throws Exception {
+    private void checkForRun(Cron cronTab, int month, int day, int hour, int minute, int dayOfWeek) throws Exception {
         FixedPeriodCron cronUtil;
 
-        cronUtil = new FixedPeriodCron(cron.getCronTab());
+        cronUtil = new FixedPeriodCron(cronTab.getCronTab());
 
         if (cronUtil.getMonths().contains(month) && cronUtil.getDays().contains(day) &&
             cronUtil.getHours().contains(hour) && cronUtil.getMinutes().contains(minute) &&
             cronUtil.getDaysOfWeek().contains(dayOfWeek)) {
-            run(cron);
+            run(cronTab);
         }
     }
 
@@ -113,18 +108,18 @@ public class CronSchedulerBean {
      * This method uses reflection to call the bean and method specified in the
      * cron entry
      * 
-     * @param cron
+     * @param cronTab
      * @throws Exception
      */
-    private void run(Cron cron) throws Exception {
+    private void run(Cron cronTab) throws Exception {
         Object beanInst;
         Object[] params;
         Class[] classes;
         
-        beanInst = ctx.lookup(cron.getBean());
+        beanInst = ctx.lookup(cronTab.getBean());
 
-        if (cron.getParameters() != null) {
-            params = cron.getParameters().split(";");
+        if (cronTab.getParameters() != null) {
+            params = cronTab.getParameters().split(";");
             classes = new Class[params.length];
             for (int i = 0; i < params.length; i++ ) {
                 classes[i] = String.class;
@@ -134,11 +129,11 @@ public class CronSchedulerBean {
             params = new String[] {};
         }
 
-        log.info("Starting job: "+cron.getName());        
+        log.info("Starting job: "+cronTab.getName());        
         try {
-            beanInst.getClass().getMethod(cron.getMethod(), classes).invoke(beanInst, params);
+            beanInst.getClass().getMethod(cronTab.getMethod(), classes).invoke(beanInst, params);
         } catch (Exception e) {
-            log.error("Job: "+ cron.getName(), e);
+            log.error("Job: "+ cronTab.getName(), e);
         }
     }
 }
