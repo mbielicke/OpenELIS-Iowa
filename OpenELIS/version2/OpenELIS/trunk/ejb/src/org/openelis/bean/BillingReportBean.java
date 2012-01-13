@@ -131,7 +131,7 @@ public class BillingReportBean implements BillingReportLocal {
     public void init() {
         try {
             organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
-            organizationBillToId = dictionary.fetchBySystemName("sample_error").getId();
+            organizationBillToId = dictionary.fetchBySystemName("org_bill_to").getId();
             analysisCancelledId = dictionary.fetchBySystemName("analysis_cancelled").getId();
         } catch (Throwable e) {
             log.error("Failed to lookup constants for dictionary entries", e);

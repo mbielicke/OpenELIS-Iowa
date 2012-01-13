@@ -1947,7 +1947,6 @@ public class TestScreen extends Screen {
         data = manager.getTest();
         data.setId(null);
         data.setIsActive("N");
-        data.setIsReportable("N");
         data.setActiveBegin(null);
         data.setActiveEnd(null);
 
