@@ -728,10 +728,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up result column analyte; "+anyE.getMessage());
                     }
-                    if ("mcl".equals(alVDO.getExternalId())) {
+                    if ("quant_limit".equals(alVDO.getExternalId())) {
                         rowData.put("detection", crVDO.getValue());
                         rowData.put("detectionUnit", unitDO.getEntry());
-                    } else if ("rad_measure_error".equals(alVDO.getExternalId())) {
+                    } else if ("uncertainty".equals(alVDO.getExternalId())) {
                         rowData.put("radMeasureError", crVDO.getValue());
                     }
                 }
