@@ -713,11 +713,13 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                 }
                 resultData.add(rowData);
             } else {
-                if (rVDO.getValue() != null && rVDO.getValue().startsWith("<"))
+                if (rVDO.getValue() != null && rVDO.getValue().startsWith("<")) {
                     rowData.put("ltIndicator", "Y");
-                else
+                    rowData.put("concentration", rVDO.getValue().substring(1));
+                } else {
                     rowData.put("ltIndicator", "");
-                rowData.put("concentration", rVDO.getValue());
+                    rowData.put("concentration", rVDO.getValue());
+                }
                 rowData.put("concentrationUnit", unitDO.getEntry());
                 
                 colIter = resultRow.iterator();
@@ -1073,6 +1075,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("Total Hardness",                        "1915");  
         contaminantIds.put("Total Organic Carbon",                  "2920");
         contaminantIds.put("Total Trihalomethanes",                 "2950");
+        contaminantIds.put("Total Xylenes",                         "2955");
         contaminantIds.put("Toxaphene",                             "2020");
         contaminantIds.put("trans-1,2-Dichloroethene",              "2979");
         contaminantIds.put("trans-1,3-Dichloropropene",             "2224");
