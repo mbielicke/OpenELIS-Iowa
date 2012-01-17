@@ -627,6 +627,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Total Hardness",                        "1915");  
         contaminantIds.put("Total Organic Carbon",                  "2920");
         contaminantIds.put("Total Trihalomethanes",                 "2950");
+        contaminantIds.put("Total Xylenes",                         "2955");
         contaminantIds.put("Toxaphene",                             "2020");
         contaminantIds.put("trans-1,2-Dichloroethene",              "2979");
         contaminantIds.put("trans-1,3-Dichloropropene",             "2224");
