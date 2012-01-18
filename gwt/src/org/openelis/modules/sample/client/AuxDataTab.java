@@ -373,7 +373,7 @@ public class AuxDataTab extends Screen {
     }
 
     private void groupsSelectedFromLookup(ArrayList<AuxFieldManager> fields) {
-        int                            i, j, k;
+        int                            i, j, k, count;
         ArrayList<AuxFieldValueViewDO> values;
         AuxDataViewDO                  dataDO;
         AuxFieldManager                man;
@@ -386,9 +386,18 @@ public class AuxDataTab extends Screen {
         try {
             auxValsTable.fireEvents(false);
             for (i = 0; i < fields.size(); i++ ) {
-                man = fields.get(i);
-                for (j = 0; j < man.count(); j++ ) {
+                man = fields.get(i);          
+                count = man.count();
+                if (count > 0) {
+                    fieldDO = man.getAuxFieldAt(0);
+                    if (groupAddedToParent(fieldDO.getAuxFieldGroupId())) {
+                        Window.alert(consts.get("auxGrpAlreadyAddedException")+" '"+fieldDO.getAuxFieldGroupName()+"'");
+                        continue;
+                    }                                       
+                }
+                for (j = 0; j < count; j++ ) {                    
                     fieldDO = man.getAuxFieldAt(j);
+                        
                     if ("Y".equals(fieldDO.getIsActive())) {
                         values = man.getValuesAt(j).getValues();
                         defaultDO = man.getValuesAt(j).getDefaultValue();
@@ -467,6 +476,18 @@ public class AuxDataTab extends Screen {
         }
                 
         return rv;
+    }
+    
+    private boolean groupAddedToParent(Integer groupId) {
+        AuxFieldViewDO data;
+        
+        for (int i = 0; i < manager.count(); i++) {
+            data = manager.getAuxFieldAt(i);
+            if (data.getAuxFieldGroupId().equals(groupId)) 
+                return true;            
+        }
+        
+        return false;
     }
 
     public ArrayList<QueryData> getQueryFields() {

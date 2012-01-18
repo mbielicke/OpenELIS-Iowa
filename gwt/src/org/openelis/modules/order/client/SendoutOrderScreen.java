@@ -1369,40 +1369,18 @@ public class SendoutOrderScreen extends Screen {
     }
 
     protected void duplicate() {
-        Datetime now;
-        OrderViewDO data;
-
         try {
-            manager = OrderManager.fetchById(manager.getOrder().getId());
-
-            try {
-                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
-            } catch (Exception e) {
-                Window.alert("OrderAdd Datetime: " + e.getMessage());
-                return;
-            }
-
-            data = manager.getOrder();
-            data.setStatusId(statusPendingId);
-            data.setOrderedDate(now);
-            data.setRequestedBy(UserCache.getPermission().getLoginName());
-            data.setType(OrderManager.TYPE_SEND_OUT);
-
-            manager.getAuxData();
-            manager.getTests();
-            manager.getContainers();
-            manager.getItems();
-            manager.getShippingNotes();
-            manager.getCustomerNotes();
-
-            clearKeys();
+            window.setBusy(consts.get("fetching"));
             
+            manager = service.call("duplicate", manager.getOrder().getId());
+
             reportToBillToTab.setManager(manager);
             auxDataTab.setManager(manager);
             containerTab.setManager(manager);
             itemTab.setManager(manager);
             shipNoteTab.setManager(manager);
             custNoteTab.setManager(manager);
+            recurrenceTab.setManager(manager);
 
             reportToBillToTab.draw();
             auxDataTab.draw();
@@ -1410,6 +1388,7 @@ public class SendoutOrderScreen extends Screen {
             itemTab.draw();
             shipNoteTab.draw();
             custNoteTab.draw();
+            recurrenceTab.draw();
 
             setState(State.ADD);
             DataChangeEvent.fire(this);
@@ -1417,7 +1396,9 @@ public class SendoutOrderScreen extends Screen {
             setFocus(neededInDays);
             window.setDone(consts.get("enterInformationPressCommit"));
         } catch (Exception e) {
+            e.printStackTrace();
             Window.alert(e.getMessage());
+            window.clearStatus();
         }
     }
     
@@ -1716,73 +1697,6 @@ public class SendoutOrderScreen extends Screen {
         }
     }
 
-    private void clearKeys() {
-        int i;
-        OrderItemManager iman;
-        NoteManager nman;
-        OrderTestManager otman;
-        OrderContainerManager ocman;
-        AuxDataManager adman;
-        OrderItemViewDO item;
-        NoteViewDO note;
-        OrderTestViewDO test;
-        OrderContainerDO container;
-        AuxDataViewDO aux;
-
-        manager.getOrder().setId(null);
-        manager.getOrder().setParentOrderId(null);
-
-        try {
-            iman = manager.getItems();
-            for (i = 0; i < iman.count(); i++ ) {
-                item = iman.getItemAt(i);
-                item.setId(null);
-                item.setOrderId(null);
-            }
-
-            nman = manager.getShippingNotes();
-            for (i = 0; i < nman.count(); i++ ) {
-                note = nman.getNoteAt(i);
-                note.setId(null);
-                note.setReferenceId(null);
-                note.setReferenceTableId(null);
-            }
-
-            nman = manager.getCustomerNotes();
-            for (i = 0; i < nman.count(); i++ ) {
-                note = nman.getNoteAt(i);
-                note.setId(null);
-                note.setReferenceId(null);
-                note.setReferenceTableId(null);
-            }                        
-
-            otman = manager.getTests();
-            for (i = 0; i < otman.count(); i++ ) {
-                test = otman.getTestAt(i);
-                test.setId(null);
-                test.setOrderId(null);
-            }
-
-            ocman = manager.getContainers();
-            for (i = 0; i < ocman.count(); i++ ) {
-                container = ocman.getContainerAt(i);
-                container.setId(null);
-                container.setOrderId(null);
-            }
-
-            adman = manager.getAuxData();
-            for (i = 0; i < adman.count(); i++ ) {
-                aux = adman.getAuxDataAt(i);
-                aux.setId(null);
-                aux.setReferenceId(null);
-                aux.setReferenceTableId(null);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-        }
-    }
-    
     private void addAuxGroupsFromPanel(Integer panelId) {
         int                            i, j, k;
         ArrayList<AuxFieldValueViewDO> values;
