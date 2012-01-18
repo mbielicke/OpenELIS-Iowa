@@ -865,6 +865,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         methodCodes.put("sm 4500 h+ b",          "4500H-B");
         methodCodes.put("sm 4500 h+ b ph & alk", "4500H-B");
         methodCodes.put("sm 4500 no2 b",         "4500NO2-B");
+        methodCodes.put("sm 4500 no3 d",         "4500NO3-D");
         methodCodes.put("sm 4500 p e",           "4500P-E");
         methodCodes.put("sm 4500 si d",          "4500SI-D");
         methodCodes.put("sm 5310 b",             "5310B");

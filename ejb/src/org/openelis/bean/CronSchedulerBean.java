@@ -32,7 +32,7 @@ import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.SessionContext;
-import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 import javax.ejb.Timer;
 
 import org.apache.log4j.Logger;
@@ -42,7 +42,7 @@ import org.openelis.entity.Cron;
 import org.openelis.local.CronLocal;
 import org.openelis.utils.FixedPeriodCron;
 
-@Singleton
+@Stateless
 @SecurityDomain("openelis")
 public class CronSchedulerBean {
 
