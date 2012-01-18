@@ -25,6 +25,9 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
@@ -33,11 +36,25 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.transaction.UserTransaction;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.AuxFieldValueViewDO;
+import org.openelis.domain.AuxFieldViewDO;
+import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.OrderContainerDO;
+import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderRecurrenceDO;
+import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.OrderManagerLocal;
+import org.openelis.manager.AuxDataManager;
+import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
@@ -49,16 +66,33 @@ import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class OrderManagerBean implements OrderManagerRemote {
+public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
 
     @Resource
-    private SessionContext ctx;
+    private SessionContext      ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockLocal           lock;
+
+    @EJB
+    private DictionaryLocal     dictionary;
+
+    private static final Logger log = Logger.getLogger(OrderManagerBean.class);
+
+    private static Integer      pendingId;
+    
+    @PostConstruct
+    public void init() {
+        if (pendingId == null) {
+            try {
+                pendingId = dictionary.fetchBySystemName("order_status_pending").getId();
+            } catch (Throwable e) {
+                log.error("Failed to lookup constants for dictionary entries", e);
+            }
+        }
+    }
 
     public OrderManager fetchById(Integer id) throws Exception {
         return OrderManager.fetchById(id);
@@ -83,7 +117,7 @@ public class OrderManagerBean implements OrderManagerRemote {
     public OrderManager fetchWithRecurring(Integer id) throws Exception {
         return OrderManager.fetchWithRecurrence(id);
     }
-
+    
     public OrderManager add(OrderManager man) throws Exception {
         UserTransaction ut;
 
@@ -114,9 +148,9 @@ public class OrderManagerBean implements OrderManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.validateLock(ReferenceTable.ORDER, man.getOrder().getId());        
+            lock.validateLock(ReferenceTable.ORDER, man.getOrder().getId());        
             man.update();
-            lockBean.unlock(ReferenceTable.ORDER, man.getOrder().getId());
+            lock.unlock(ReferenceTable.ORDER, man.getOrder().getId());
             ut.commit();
         } catch (Exception e) {
             ut.rollback();
@@ -133,7 +167,7 @@ public class OrderManagerBean implements OrderManagerRemote {
         ut = ctx.getUserTransaction();
         try {
             ut.begin();
-            lockBean.lock(ReferenceTable.ORDER, id);
+            lock.lock(ReferenceTable.ORDER, id);
             man = fetchById(id);
             man.getRecurrence();
             ut.commit();
@@ -145,8 +179,31 @@ public class OrderManagerBean implements OrderManagerRemote {
     }
 
     public OrderManager abortUpdate(Integer id) throws Exception {
-        lockBean.unlock(ReferenceTable.ORDER, id);
+        lock.unlock(ReferenceTable.ORDER, id);
         return fetchById(id);
+    }
+    
+    public OrderManager duplicate(Integer id) throws Exception {
+        OrderManager newMan;
+        OrderManager oldMan;
+        
+        oldMan = fetchById(id);
+        newMan = OrderManager.getInstance();      
+        duplicateOrder(oldMan, newMan, false);
+        
+        return newMan;
+    }
+    
+    public OrderManager duplicateForRecurrence(Integer id) throws Exception {
+        OrderManager newMan;
+        OrderManager oldMan;
+        
+        
+        oldMan = fetchById(id);
+        newMan = OrderManager.getInstance();      
+        duplicateOrder(oldMan, newMan, true);
+        
+        return newMan;
     }
 
     public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
@@ -175,5 +232,126 @@ public class OrderManagerBean implements OrderManagerRemote {
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
         EJBFactory.getUserCache().applyPermission("order", flag);
+    }
+    
+    private void duplicateOrder(OrderManager oldMan, OrderManager newMan, boolean forRecur) throws Exception {
+        Datetime now;
+        OrderViewDO oldData, newData;
+        
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
+        
+        oldData = oldMan.getOrder();
+        newData = newMan.getOrder();
+        
+        if (forRecur)
+            newData.setParentOrderId(oldData.getId());
+        newData.setDescription(oldData.getDescription());
+        newData.setStatusId(pendingId);
+        newData.setOrderedDate(now);
+        newData.setNeededInDays(oldData.getNeededInDays());
+        newData.setRequestedBy(oldData.getRequestedBy());
+        newData.setCostCenterId(oldData.getCostCenterId());
+        newData.setType(oldData.getType());
+        newData.setExternalOrderNumber(oldData.getExternalOrderNumber());
+        newData.setOrganization(oldData.getOrganization());
+        newData.setOrganizationAttention(oldData.getOrganizationAttention());
+        newData.setOrganizationId(oldData.getOrganizationId());        
+        newData.setReportTo(oldData.getReportTo());
+        newData.setReportToAttention(oldData.getReportToAttention());
+        newData.setReportToId(oldData.getReportToId());        
+        newData.setBillTo(oldData.getBillTo());
+        newData.setBillToAttention(oldData.getBillToAttention());
+        newData.setBillToId(oldData.getBillToId());
+        newData.setShipFromId(oldData.getShipFromId());   
+        newData.setNumberOfForms(oldData.getNumberOfForms());               
+        
+        duplicateItems(oldMan.getItems(), newMan.getItems());        
+        duplicateNotes(oldMan.getShippingNotes(), newMan.getShippingNotes());
+        duplicateNotes(oldMan.getCustomerNotes(), newMan.getCustomerNotes());
+        duplicateTests(oldMan.getTests(), newMan.getTests());
+        duplicateContainers(oldMan.getContainers(), newMan.getContainers());
+        duplicateAuxData(oldMan.getAuxData(), newMan.getAuxData(), forRecur);
+    }
+
+    private void duplicateItems(OrderItemManager oldMan, OrderItemManager newMan)  {        
+        OrderItemViewDO oldData, newData;
+        
+        for (int i = 0; i < oldMan.count(); i++) {
+            oldData = oldMan.getItemAt(i);
+            newData = new OrderItemViewDO();
+            newData.setInventoryItemId(oldData.getInventoryItemId());
+            newData.setInventoryItemName(oldData.getInventoryItemName());            
+            newData.setQuantity(oldData.getQuantity());
+            newData.setStoreId(oldData.getStoreId());
+            newData.setCatalogNumber(oldData.getCatalogNumber());
+            newData.setUnitCost(oldData.getUnitCost());
+            newMan.addItem(newData);
+        }
+    }
+    
+    private void duplicateNotes(NoteManager oldMan, NoteManager newMan) throws Exception {
+        NoteViewDO oldData, newData;
+        
+        for (int i = 0; i < oldMan.count(); i++) {
+            oldData = oldMan.getNoteAt(i);
+            newData = new NoteViewDO();
+            newData.setIsExternal(oldData.getIsExternal());
+            newData.setSystemUserId(oldData.getSystemUserId());
+            newData.setSubject(oldData.getSubject());
+            newData.setText(oldData.getText());            
+            newMan.addNote(newData);
+        }
+    }
+    
+    private void duplicateTests(OrderTestManager oldMan, OrderTestManager newMan) {
+        OrderTestViewDO oldData, newData;
+        
+        for (int i = 0; i < oldMan.count(); i++) {
+            oldData = oldMan.getTestAt(i);
+            newData = new OrderTestViewDO();
+            newData.setSortOrder(oldData.getSortOrder());
+            newData.setTestId(oldData.getTestId());
+            newData.setTestName(oldData.getTestName());
+            newData.setMethodName(oldData.getMethodName());
+            newData.setDescription(oldData.getDescription());
+            newMan.addTest(newData);
+        }
+    }
+    
+    private void duplicateContainers(OrderContainerManager oldMan, OrderContainerManager newMan) {
+        OrderContainerDO oldData, newData;
+        
+        for (int i = 0; i < oldMan.count(); i++) {
+            oldData = oldMan.getContainerAt(i);
+            newData = new OrderContainerDO();
+            newData.setContainerId(oldData.getContainerId());
+            newData.setNumberOfContainers(oldData.getNumberOfContainers());
+            newData.setTypeOfSampleId(oldData.getTypeOfSampleId());            
+            newMan.addContainer(newData);
+        }
+    }
+    
+    private void duplicateAuxData(AuxDataManager oldMan, AuxDataManager newMan,
+                                  boolean forRecur) {
+        AuxDataViewDO oldData, newData;   
+        ArrayList<AuxFieldValueViewDO> values;
+        AuxFieldViewDO fieldDO;
+        
+        for (int i = 0; i < oldMan.count(); i++) {
+            oldData = oldMan.getAuxDataAt(i);
+            newData = new AuxDataViewDO();
+            newData.setSortOrder(oldData.getSortOrder());
+            newData.setAuxFieldId(oldData.getAuxFieldId());
+            newData.setIsReportable(oldData.getIsReportable());
+            newData.setTypeId(oldData.getTypeId());
+            newData.setValue(oldData.getValue());
+            if (!forRecur) {
+                fieldDO = oldMan.getAuxFieldAt(i);
+                values = oldMan.getAuxValuesAt(i);
+                newMan.addAuxDataFieldAndValues(newData, fieldDO, values);
+            } else {
+                newMan.addAuxData(newData);
+            }
+        }
     }
 }

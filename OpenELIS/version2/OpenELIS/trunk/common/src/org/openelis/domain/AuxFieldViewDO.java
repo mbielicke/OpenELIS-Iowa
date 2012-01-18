@@ -5,8 +5,9 @@ import org.openelis.gwt.common.DataBaseUtil;
 public class AuxFieldViewDO extends AuxFieldDO {
 
     private static final long serialVersionUID = 1L;
-    
-    protected String analyteName, methodName, scriptletName, unitOfMeasureName;
+
+    protected String          auxFieldGroupName, analyteName, methodName, scriptletName,
+                              unitOfMeasureName;
     
     public AuxFieldViewDO(){
         
@@ -15,14 +16,23 @@ public class AuxFieldViewDO extends AuxFieldDO {
     public AuxFieldViewDO(Integer id, Integer auxFieldGroupId, Integer sortOrder, Integer analyteId,
                           String description, Integer methodId, Integer unitOfMeasureId,
                           String isRequired, String isActive, String isReportable, Integer scriptletId,
-                          String analyteName, String methodName, String scriptletName, String unitOfMeasureName){
+                          String auxFieldGroupName, String analyteName, String methodName,
+                          String scriptletName, String unitOfMeasureName){
         
         super(id, auxFieldGroupId, sortOrder, analyteId, description, methodId, unitOfMeasureId, isRequired, isActive, isReportable, scriptletId);
-        
+        setAuxFieldGroupName(auxFieldGroupName);
         setAnalyteName(analyteName);
         setMethodName(methodName);
         setScriptletName(scriptletName);
         setUnitOfMeasureName(unitOfMeasureName);
+    }
+    
+    public String getAuxFieldGroupName() {
+        return auxFieldGroupName;        
+    }
+
+    public void setAuxFieldGroupName(String auxFieldGroupName) {
+        this.auxFieldGroupName = DataBaseUtil.trim(auxFieldGroupName);
     }
 
     public String getAnalyteName() {

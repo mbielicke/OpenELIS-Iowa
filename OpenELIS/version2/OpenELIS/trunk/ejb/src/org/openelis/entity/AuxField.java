@@ -58,24 +58,21 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "AuxField.FetchById",
                 query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder," +
                         "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired," +
-                        "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry)"
-                      + " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where af.id = :id"),
+                        "af.isActive,af.isReportable, s.id, afg.name, a.name, m.name,s.name, d.entry)"
+                      + " from AuxField af left join af.auxFieldGroup afg left join af.scriptlet s left join af.analyte a"
+                      +	" left join af.method m left join af.unitOfMeasure d where af.id = :id"),
     @NamedQuery( name = "AuxField.FetchAllByGroupId",
                 query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder," + 
                         "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired," +
-                        "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry)"
-                      + " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),
-    @NamedQuery( name = "AuxField.FetchByDataRefId", query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder, " +
-                        "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired," +
-                        "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry)"
-                      + " from AuxData ad, IN (ad.auxField) af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where"
-                      + " ad.referenceId = :id and ad.referenceTableId = :tableId order by af.auxFieldGroupId, af.sortOrder "),
+                        "af.isActive,af.isReportable, s.id, afg.name, a.name,m.name,s.name, d.entry)"
+                      + " from AuxField af left join af.auxFieldGroup afg left join af.scriptlet s left join af.analyte a"
+                      +	" left join af.method m left join af.unitOfMeasure d where af.auxFieldGroupId = :auxFieldGroupId order by af.sortOrder "),    
     @NamedQuery( name = "AuxField.FetchAllActiveByGroupId",
                 query = "select distinct new org.openelis.domain.AuxFieldViewDO(af.id, af.auxFieldGroupId, af.sortOrder," +
                         "af.analyteId,af.description,af.methodId,af.unitOfMeasureId,af.isRequired," +
-                        "af.isActive,af.isReportable,s.id,a.name,m.name,s.name, d.entry)"
-                      + " from AuxField af left join af.scriptlet s left join af.analyte a left join af.method m LEFT JOIN af.unitOfMeasure d where "
-                      + " af.auxFieldGroupId = :auxFieldGroupId and af.isActive = 'Y' order by af.sortOrder ")})
+                        "af.isActive,af.isReportable, s.id, afg.name, a.name, m.name, s.name, d.entry)"
+                      + " from AuxField af left join af.auxFieldGroup afg left join af.scriptlet s left join af.analyte a"
+                      +	" left join af.method m left join af.unitOfMeasure d where af.auxFieldGroupId = :auxFieldGroupId and af.isActive = 'Y' order by af.sortOrder ")})
     
 @Entity
 @Table(name = "aux_field")

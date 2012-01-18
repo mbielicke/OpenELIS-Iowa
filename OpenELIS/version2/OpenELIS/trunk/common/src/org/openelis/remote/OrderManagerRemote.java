@@ -24,6 +24,8 @@ public interface OrderManagerRemote {
     public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception;
 
     public OrderManager fetchWithRecurring(Integer id) throws Exception;
+    
+    public OrderManager duplicate(Integer id) throws Exception;
 
     public OrderManager add(OrderManager man) throws Exception;
 
