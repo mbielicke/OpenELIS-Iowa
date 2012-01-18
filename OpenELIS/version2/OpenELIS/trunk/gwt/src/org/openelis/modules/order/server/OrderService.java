@@ -96,6 +96,10 @@ public class OrderService {
     public OrderManager abortUpdate(Integer id) throws Exception {
         return EJBFactory.getOrderManager().abortUpdate(id);
     }
+    
+    public OrderManager duplicate(Integer id) throws Exception {
+        return EJBFactory.getOrderManager().duplicate(id);
+    }
 
     //
     // support for OrderItemManager, OrderFillManager, OrderTestManager, OrderContainerManager

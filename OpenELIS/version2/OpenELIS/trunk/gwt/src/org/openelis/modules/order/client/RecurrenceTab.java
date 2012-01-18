@@ -40,6 +40,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
@@ -90,8 +91,7 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceIsActive.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) && 
-                                          (!statusProcessedId.equals(manager.getOrder().getStatusId())));
+                recurrenceIsActive.enable(canEdit(event.getState()));
                 recurrenceIsActive.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -108,8 +108,7 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceActiveBegin.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) &&
-                                             (!statusProcessedId.equals(manager.getOrder().getStatusId())));
+                recurrenceActiveBegin.enable(canEdit(event.getState()));
                 recurrenceActiveBegin.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -126,8 +125,7 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceActiveEnd.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) &&
-                                           (!statusProcessedId.equals(manager.getOrder().getStatusId())));
+                recurrenceActiveEnd.enable(canEdit(event.getState()));
                 recurrenceActiveEnd.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -143,8 +141,7 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceFrequency.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) &&
-                                           (!statusProcessedId.equals(manager.getOrder().getStatusId())));
+                recurrenceFrequency.enable(canEdit(event.getState()));
                 recurrenceFrequency.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -160,8 +157,7 @@ public class RecurrenceTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                recurrenceUnitId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()) &&
-                                        (!statusProcessedId.equals(manager.getOrder().getStatusId())));
+                recurrenceUnitId.enable(canEdit(event.getState()));
                 recurrenceUnitId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -515,5 +511,10 @@ public class RecurrenceTab extends Screen {
         }
         
         return true;
+    }
+    
+    private boolean canEdit(State state) {
+        return EnumSet.of(State.QUERY, State.ADD).contains(state)  ||
+              (state == State.UPDATE && !statusProcessedId.equals(manager.getOrder().getStatusId()));
     }
 }

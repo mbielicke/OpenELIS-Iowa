@@ -45,7 +45,6 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
-import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
@@ -147,7 +146,6 @@ public class SampleDuplicateUtil {
             newData = new SampleOrganizationViewDO();
             oldData = oldMan.getOrganizationAt(i);
             
-            newData.setSampleId(oldData.getSampleId());
             newData.setOrganizationId(oldData.getOrganizationId());
             newData.setOrganizationAttention(oldData.getOrganizationAttention());
             newData.setTypeId(oldData.getTypeId());
@@ -170,7 +168,6 @@ public class SampleDuplicateUtil {
             newData = new SampleProjectViewDO();            
             oldData = oldMan.getProjectAt(i);
             
-            newData.setSampleId(oldData.getSampleId());
             newData.setProjectId(oldData.getProjectId());
             newData.setIsPermanent(oldData.getIsPermanent());
             newData.setProjectName(oldData.getProjectName());
@@ -259,7 +256,7 @@ public class SampleDuplicateUtil {
             duplicateResults(newRM, oldRM);
             /*
              * the test's id is set after duplicating the results to prevent them
-             * being fetched
+             * from being fetched
              */
             newData.setTestId(oldData.getTestId());
             
@@ -322,23 +319,23 @@ public class SampleDuplicateUtil {
     
     private static void duplicateEnvironmental(SampleEnvironmentalManager newMan,
                                                SampleEnvironmentalManager oldMan) {
-        SampleEnvironmentalDO entity, data;
+        SampleEnvironmentalDO newData, oldData;
         AddressDO oldLoc;
                 
-        entity = newMan.getEnvironmental();
-        data = oldMan.getEnvironmental();
+        newData = newMan.getEnvironmental();
+        oldData = oldMan.getEnvironmental();
         
-        oldLoc = data.getLocationAddress();   
+        oldLoc = oldData.getLocationAddress();   
         if (oldLoc.getId() != null)
-            duplicateAddress(entity.getLocationAddress(), oldLoc);  
+            duplicateAddress(newData.getLocationAddress(), oldLoc);  
         
-        entity.setCollector(data.getCollector());
-        entity.setCollectorPhone(data.getCollectorPhone());
-        entity.setDescription(data.getDescription());
-        entity.setIsHazardous(data.getIsHazardous());
-        entity.setPriority(data.getPriority());
-        entity.setSampleId(data.getSampleId());
-        entity.setLocation(data.getLocation());
+        newData.setCollector(oldData.getCollector());
+        newData.setCollectorPhone(oldData.getCollectorPhone());
+        newData.setDescription(oldData.getDescription());
+        newData.setIsHazardous(oldData.getIsHazardous());
+        newData.setPriority(oldData.getPriority());
+        newData.setSampleId(oldData.getSampleId());
+        newData.setLocation(oldData.getLocation());
     }
     
     private static void duplicatePrivateWell(SamplePrivateWellManager newMan, SamplePrivateWellManager oldMan) {

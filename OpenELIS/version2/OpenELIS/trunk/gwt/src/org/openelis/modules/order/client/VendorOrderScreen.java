@@ -33,17 +33,16 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.NotFoundException;
-import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.ModulePermission;
+import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -60,6 +59,7 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
 import org.openelis.gwt.widget.CalendarLookUp;
@@ -69,9 +69,7 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
-import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.OrderMeta;
@@ -950,32 +948,13 @@ public class VendorOrderScreen extends Screen {
             window.clearStatus();
         }
     }
-
+    
     protected void duplicate() {
-        Datetime now;
-        OrderViewDO data;
-
         try {
-            manager = OrderManager.fetchById(manager.getOrder().getId());
-
-            try {
-                now = Calendar.getCurrentDatetime(Datetime.YEAR, Datetime.DAY);
-            } catch (Exception e) {
-                Window.alert("OrderAdd Datetime: " + e.getMessage());
-                return;
-            }
-
-            data = manager.getOrder();
-            data.setStatusId(status_pending);
-            data.setOrderedDate(now);
-            data.setRequestedBy(UserCache.getPermission().getLoginName());
-            data.setType(OrderManager.TYPE_VENDOR);
-
-            manager.getItems();
-            manager.getShippingNotes();
-
-            clearKeys();
+            window.setBusy(consts.get("fetching"));
             
+            manager = service.call("duplicate", manager.getOrder().getId());
+
             itemTab.setManager(manager);
             shipNoteTab.setManager(manager);
 
@@ -988,7 +967,9 @@ public class VendorOrderScreen extends Screen {
             setFocus(neededInDays);
             window.setDone(consts.get("enterInformationPressCommit"));
         } catch (Exception e) {
+            e.printStackTrace();
             Window.alert(e.getMessage());
+            window.clearStatus();
         }
     }
 
@@ -1074,37 +1055,4 @@ public class VendorOrderScreen extends Screen {
         }
     }
 
-    private void clearKeys() {
-        OrderItemManager iman;
-        OrderItemViewDO item;
-        NoteViewDO note;
-        NoteManager nman;
-        int i, count;
-
-        manager.getOrder().setId(null);
-
-        try {
-            iman = manager.getItems();
-            count = iman.count();
-
-            for (i = 0; i < count; i++ ) {
-                item = iman.getItemAt(i);
-                item.setId(null);
-                item.setOrderId(null);
-            }
-
-            nman = manager.getShippingNotes();
-            count = nman.count();
-
-            for (i = 0; i < count; i++ ) {
-                note = nman.getNoteAt(i);
-                note.setId(null);
-                note.setReferenceId(null);
-                note.setReferenceTableId(null);
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-        }
-    }
 }

@@ -15,6 +15,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -200,8 +201,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                addItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
-                                     (!statusProcessedId.equals(manager.getOrder().getStatusId())));
+                addItemButton.enable(canEdit(event.getState()));
             }
         });
 
@@ -216,8 +216,7 @@ public class ItemTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                removeItemButton.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
-                                        (!statusProcessedId.equals(manager.getOrder().getStatusId())));
+                removeItemButton.enable(canEdit(event.getState()));
             }
         });
 
@@ -309,5 +308,10 @@ public class ItemTab extends Screen {
             DataChangeEvent.fire(this);
 
         loaded = true;
+    }
+    
+    private boolean canEdit(State state) {
+        return EnumSet.of(State.ADD).contains(state) ||
+               (state == State.UPDATE && !statusProcessedId.equals(manager.getOrder().getStatusId()));
     }
 }

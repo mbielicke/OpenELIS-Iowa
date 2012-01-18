@@ -116,15 +116,19 @@ public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<Au
         });
     }
     
-    private void ok(){
-        ArrayList<TableDataRow> selections = auxGroupsTable.getSelections();
+    private void ok() {
+        ArrayList<TableDataRow> selections;
         ArrayList<AuxFieldManager> returnList;
+        AuxFieldGroupDO data;
 
         returnList = new ArrayList<AuxFieldManager>();
+        selections = auxGroupsTable.getSelections();
         try{
-            for(int i=0; i<selections.size(); i++)
-                returnList.add(AuxFieldManager.fetchByGroupIdWithValues((Integer)selections.get(i).key));
-        }catch(Exception e){
+            for(int i = 0; i < selections.size(); i++) {
+                data = (AuxFieldGroupDO)selections.get(i).data;
+                returnList.add(AuxFieldManager.fetchByGroupIdWithValues(data.getId()));
+            }
+        } catch(Exception e){
             Window.alert(e.getMessage());
         }
             
@@ -140,30 +144,32 @@ public class AuxGroupLookupScreen extends Screen implements HasActionHandlers<Au
     
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<AuxFieldGroupDO> groups;
-        AuxFieldGroupDO groupDO;
-        if(groupsModel != null)
-            return groupsModel;
+        AuxFieldGroupDO data;
+        TableDataRow row;
         
+        if (groupsModel != null)
+            return groupsModel;
+
         groupsModel = new ArrayList<TableDataRow>();
-        try{
+        try {
             groups = service.callList("fetchActive");
-        }catch(Exception e){
+        } catch (Exception e) {
             Window.alert(e.getMessage());
             return groupsModel;
         }
-        
-        for(int i=0; i<groups.size(); i++) {
-            groupDO = groups.get(i);
-            
-           TableDataRow row = new TableDataRow(2);
-           row.key = groupDO.getId();
 
-           row.cells.get(0).value = groupDO.getName();
-           row.cells.get(1).value = groupDO.getDescription();
-           
-          groupsModel.add(row);
+        for (int i = 0; i < groups.size(); i++ ) {
+            data = groups.get(i);
+
+            row = new TableDataRow(2);
+            row.key = data.getId();
+            row.data = data;
+            row.cells.get(0).value = data.getName();
+            row.cells.get(1).value = data.getDescription();
+
+            groupsModel.add(row);
         }
-            
+
         return groupsModel;
     }
     
