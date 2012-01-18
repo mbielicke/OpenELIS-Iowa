@@ -248,6 +248,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             if (!lastAnalysisId.equals(-1)) {
                 body.append(footer.toString());
                 sendEmail(toEmail, body.toString());
+                log.info("MCL Violation email sent for Accession #"+analysis.getAccessionNumber());
                 body.setLength(0);
                 footer.setLength(0);
             }
