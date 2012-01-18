@@ -31,7 +31,7 @@ public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote{
      * Constructor
      */
     public PrinterCacheBean() {
-        CACHE_TIME = 60 * 60 * 1000;
+        CACHE_TIME = 15 * 60 * 1000;
         lastPolled = 0;
     }
 
