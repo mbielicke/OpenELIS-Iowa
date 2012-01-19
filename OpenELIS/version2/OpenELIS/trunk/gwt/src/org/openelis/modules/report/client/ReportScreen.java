@@ -222,6 +222,7 @@ public class ReportScreen extends Screen {
 				f = new StringField();
 				w = createTextBox(f, p);
 				((TextBox) w).enable(true);
+				break;
 			case SHORT:
 			case INTEGER:
 				f = new IntegerField();
