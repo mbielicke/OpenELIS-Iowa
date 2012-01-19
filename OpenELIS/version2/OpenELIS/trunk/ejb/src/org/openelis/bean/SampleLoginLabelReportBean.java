@@ -131,10 +131,10 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         	samples = Integer.parseInt(ReportUtil.getSingleParameter(param, "SAMPLES"));
         	containers = Integer.parseInt(ReportUtil.getSingleParameter(param, "CONTAINERS"));
         } catch (Exception e) {
-			throw new InconsistencyException("You must specify valid number for samples (<= 300) and continers (<= 10)");
+			throw new InconsistencyException("You must specify valid number for samples (<= 300) and continers (<= 50)");
         } finally {
-    		if (samples > 300 || containers > 10)
-        		throw new InconsistencyException("Number of sample labels or container labels\ncan not exceed 300 and 10 respectively");
+    		if (samples > 300 || containers > 50)
+        		throw new InconsistencyException("Number of sample labels or container labels\ncan not exceed 300 and 50 respectively");
         }
         received = ReportUtil.getSingleParameter(param, "RECEIVED");
         location = ReportUtil.getSingleParameter(param, "LOCATION");

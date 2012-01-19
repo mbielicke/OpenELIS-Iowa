@@ -178,7 +178,7 @@ Phone # 319-335-4500 or
 					<subreportParameterExpression><![CDATA[($F{report_to_id}==null)?$F{organization_id}:$F{report_to_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ATTENTION">
-					<subreportParameterExpression><![CDATA[($F{report_to_attention}==null)?$F{organization_attention}:$F{report_to_attention}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[($F{report_to_id}==null)?$F{organization_attention}:$F{report_to_attention}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "organization.jasper"]]></subreportExpression>
@@ -199,7 +199,7 @@ Phone # 319-335-4500 or
 					<subreportParameterExpression><![CDATA[($F{bill_to_id}==null)?$F{organization_id}:$F{bill_to_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ATTENTION">
-					<subreportParameterExpression><![CDATA[($F{bill_to_attention}==null)?$F{report_to_attention}:$F{bill_to_attention}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[($F{bill_to_id}==null)?$F{organization_attention}:$F{bill_to_attention}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "organization.jasper"]]></subreportExpression>
