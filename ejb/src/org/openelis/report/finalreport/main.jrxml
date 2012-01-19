@@ -321,7 +321,7 @@ WHERE
 				<text><![CDATA[University of Iowa Research Park]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="20" width="140" height="10"/>
+				<reportElement x="262" y="20" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -349,49 +349,28 @@ WHERE
 				<text><![CDATA[Associate Directors]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="30" width="142" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[2490 Crosspark Road, Coralville, IA 52241]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="120" y="40" width="142" height="10"/>
+				<reportElement x="120" y="50" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[319/335-4500   Fax:  319/335-4555]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="402" y="30" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[2220 S. Ankeny Blvd, Ankeny, IA  50023 ]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="402" y="20" width="150" height="10"/>
+				<reportElement x="412" y="20" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Iowa Laboratories Complex]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="402" y="40" width="150" height="10"/>
+				<reportElement x="412" y="50" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[515/725-1600   Fax:  515/725-1642]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="30" width="140" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[1838 Highway 86, Milford, IA 51351]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="262" y="40" width="140" height="10"/>
+				<reportElement x="262" y="50" width="170" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -409,6 +388,48 @@ WHERE
 				</reportElement>
 				<imageExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "omrmiddle.gif"]]></imageExpression>
 			</image>
+			<staticText>
+				<reportElement x="120" y="30" width="150" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[2490 Crosspark Road]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="40" width="150" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Milford, IA 51351]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="120" y="40" width="150" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Coralville, IA 52241]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="30" width="150" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[1838 Highway 86]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="412" y="40" width="150" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Ankeny, IA  50023 ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="412" y="30" width="150" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[2220 S. Ankeny Blvd]]></text>
+			</staticText>
 		</band>
 	</pageFooter>
 	<lastPageFooter>
@@ -445,7 +466,7 @@ WHERE
 				<text><![CDATA[University of Iowa Research Park]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="18" width="140" height="10"/>
+				<reportElement x="262" y="18" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -473,49 +494,49 @@ WHERE
 				<text><![CDATA[Associate Directors]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="28" width="142" height="10"/>
+				<reportElement x="120" y="28" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<text><![CDATA[2490 Crosspark Road, Coralville, IA 52241]]></text>
+				<text><![CDATA[2490 Crosspark Road]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="120" y="38" width="142" height="10"/>
+				<reportElement x="120" y="48" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[319/335-4500   Fax:  319/335-4555]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="402" y="28" width="150" height="10"/>
+				<reportElement x="412" y="28" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<text><![CDATA[2220 S. Ankeny Blvd, Ankeny, IA  50023 ]]></text>
+				<text><![CDATA[2220 S. Ankeny Blvd]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="402" y="18" width="150" height="10"/>
+				<reportElement x="412" y="18" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Iowa Laboratories Complex]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="402" y="38" width="150" height="10"/>
+				<reportElement x="412" y="48" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[515/725-1600   Fax:  515/725-1642]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="28" width="140" height="10"/>
+				<reportElement x="262" y="28" width="150" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
-				<text><![CDATA[1838 Highway 86, Milford, IA 51351]]></text>
+				<text><![CDATA[1838 Highway 86]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="262" y="38" width="140" height="10"/>
+				<reportElement x="262" y="48" width="170" height="10"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
@@ -533,6 +554,27 @@ WHERE
 				</reportElement>
 				<imageExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "omrfirstlast.gif"]]></imageExpression>
 			</image>
+			<staticText>
+				<reportElement x="120" y="38" width="150" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Coralville, IA 52241]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="38" width="150" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Milford, IA 51351]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="412" y="38" width="150" height="10"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Ankeny, IA  50023 ]]></text>
+			</staticText>
 		</band>
 	</lastPageFooter>
 </jasperReport>

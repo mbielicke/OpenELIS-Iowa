@@ -40,7 +40,7 @@ WHERE sa.domain ='E' and sa.entered_date BETWEEN $P{FROM} AND $P{TO} and
       se.sample_id = sa.id and d.id = a.status_id and a.status_id $P!{STATUS}
       $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
 UNION
-SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain,0,
+SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain, -1,
        t.description t_description, t.time_ta_average, t.time_holding, m.name m_name, d.entry as status, a.id as a_id
 FROM sample sa, sample_item si, test t, section s, test_section ts,
      analysis a, method m, dictionary d, sample_organization sd
@@ -52,7 +52,7 @@ WHERE sa.domain !='E' and sa.entered_date BETWEEN $P{FROM} AND $P{TO} and
       d.id = a.status_id and a.status_id $P!{STATUS}
       $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
 UNION
-SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain, 0,
+SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain, -1,
        t.description t_description, t.time_ta_average, t.time_holding, m.name m_name, d.entry as status, a.id as a_id
 FROM sample sa, sample_item si, test t, section s, test_section ts,
      analysis a,method m, dictionary d, sample_private_well sd
@@ -218,7 +218,7 @@ ORDER BY sa.accession_number]]>
 			</textField>
 			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
 				<reportElement x="571" y="0" width="86" height="12">
-					<printWhenExpression><![CDATA[$F{priority} != null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{priority} >= 0]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="9" pdfFontName="Times-Roman"/>
@@ -227,7 +227,7 @@ ORDER BY sa.accession_number]]>
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
 				<reportElement x="571" y="0" width="86" height="12">
-					<printWhenExpression><![CDATA[$F{priority} == null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{priority} < 0]]></printWhenExpression>
 				</reportElement>
 				<textElement>
 					<font size="9" pdfFontName="Times-Roman"/>
