@@ -1177,76 +1177,76 @@ public class OrderFillScreen extends Screen {
     }
 
     private void showShippingScreen(ShippingManager manager, State state) throws Exception {
-        ScreenWindow modal;      
+        ScreenWindow modal;
         Preferences preferences;
-        
+
         if (manager != null) {
-            preferences =  Preferences.userRoot();
+            preferences = Preferences.userRoot();
             if (preferences != null) {
                 defaultPrinter = preferences.get("default_printer", null);
                 defaultBarcodePrinter = preferences.get("default_bar_code_printer", null);
             }
-            
+
             if (DataBaseUtil.isEmpty(defaultPrinter) || DataBaseUtil.isEmpty(defaultBarcodePrinter)) {
                 Window.alert(consts.get("mustSpecifyDefPrinters"));
                 return;
             }
-            
+
             modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(consts.get("shipping"));            
-            if (shippingScreen == null)
+            modal.setName(consts.get("shipping"));
+            if (shippingScreen == null) {
                 shippingScreen = new ShippingScreen(modal);
 
-            shippingScreen.addActionHandler(new ActionHandler<ShippingScreen.Action>() {
-                public void onAction(ActionEvent<Action> event) {
-                    Integer id; 
-                    Query query;
-                    QueryData field;
-                    
-                    if (event.getAction() == ShippingScreen.Action.COMMIT) {                        
-                        id = (Integer)event.getData();
-                        if (id == null)
-                            return;                        
-                        
-                        query = new Query();
-                        field = new QueryData();
-                        field.key = "SHIPPING_ID";
-                        field.query = id.toString();
-                        field.type = QueryData.Type.INTEGER;
-                        query.setFields(field);
+                shippingScreen.addActionHandler(new ActionHandler<ShippingScreen.Action>() {
+                    public void onAction(ActionEvent<Action> event) {
+                        Integer id;
+                        Query query;
+                        QueryData field;
 
-                        try {
+                        if (event.getAction() == ShippingScreen.Action.COMMIT) {
+                            id = (Integer)event.getData();
+                            if (id == null)
+                                return;
+
+                            query = new Query();
                             field = new QueryData();
-                            field.key = "PRINTER";
-                            field.query = defaultPrinter;
-                            field.type = QueryData.Type.STRING;
+                            field.key = "SHIPPING_ID";
+                            field.query = id.toString();
+                            field.type = QueryData.Type.INTEGER;
                             query.setFields(field);
-                            
-                            field = new QueryData();
-                            field.key = "BARCODE";
-                            field.query = defaultBarcodePrinter;
-                            field.type = QueryData.Type.STRING;
-                            query.setFields(field);
-                            
-                            if (shippingReportScreen == null) {
-                                shippingReportScreen = new ShippingReportScreen(window);
-                                shippingReportScreen.setRunReportInterface("runReportForProcessing");
-                            } else {
-                                shippingReportScreen.setWindow(window);
+
+                            try {
+                                field = new QueryData();
+                                field.key = "PRINTER";
+                                field.query = defaultPrinter;
+                                field.type = QueryData.Type.STRING;
+                                query.setFields(field);
+
+                                field = new QueryData();
+                                field.key = "BARCODE";
+                                field.query = defaultBarcodePrinter;
+                                field.type = QueryData.Type.STRING;
+                                query.setFields(field);
+
+                                if (shippingReportScreen == null) {
+                                    shippingReportScreen = new ShippingReportScreen(window);
+                                    shippingReportScreen.setRunReportInterface("runReportForProcessing");
+                                } else {
+                                    shippingReportScreen.setWindow(window);
+                                }
+
+                                shippingReportScreen.runReport(query);
+                            } catch (Exception e) {
+                                Window.alert(e.getMessage());
+                                e.printStackTrace();
                             }
-                            
-                            shippingReportScreen.runReport(query);
-                        } catch (Exception e) {
-                            Window.alert(e.getMessage());
-                            e.printStackTrace();
                         }
-                    }                                               
-                }                
-            });
+                    }
+                });
+            }
             modal.setContent(shippingScreen);
             shippingScreen.loadShippingData(manager, state);
             window.clearStatus();
         }
     }
-
 }
