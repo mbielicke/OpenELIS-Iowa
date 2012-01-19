@@ -53,6 +53,7 @@ import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.OrderManagerLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderContainerManager;
@@ -78,6 +79,9 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
 
     @EJB
     private DictionaryLocal     dictionary;
+    
+    @EJB
+    private UserCacheLocal      userCache;
 
     private static final Logger log = Logger.getLogger(OrderManagerBean.class);
 
@@ -249,7 +253,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
         newData.setStatusId(pendingId);
         newData.setOrderedDate(now);
         newData.setNeededInDays(oldData.getNeededInDays());
-        newData.setRequestedBy(oldData.getRequestedBy());
+        newData.setRequestedBy(forRecur ? oldData.getRequestedBy() : userCache.getName());
         newData.setCostCenterId(oldData.getCostCenterId());
         newData.setType(oldData.getType());
         newData.setExternalOrderNumber(oldData.getExternalOrderNumber());
@@ -280,11 +284,11 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
             oldData = oldMan.getItemAt(i);
             newData = new OrderItemViewDO();
             newData.setInventoryItemId(oldData.getInventoryItemId());
-            newData.setInventoryItemName(oldData.getInventoryItemName());            
             newData.setQuantity(oldData.getQuantity());
-            newData.setStoreId(oldData.getStoreId());
             newData.setCatalogNumber(oldData.getCatalogNumber());
             newData.setUnitCost(oldData.getUnitCost());
+            newData.setInventoryItemName(oldData.getInventoryItemName());
+            newData.setStoreId(oldData.getStoreId());
             newMan.addItem(newData);
         }
     }
@@ -298,7 +302,8 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
             newData.setIsExternal(oldData.getIsExternal());
             newData.setSystemUserId(oldData.getSystemUserId());
             newData.setSubject(oldData.getSubject());
-            newData.setText(oldData.getText());            
+            newData.setText(oldData.getText()); 
+            newData.setSystemUser(oldData.getSystemUser());
             newMan.addNote(newData);
         }
     }
@@ -345,6 +350,11 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
             newData.setIsReportable(oldData.getIsReportable());
             newData.setTypeId(oldData.getTypeId());
             newData.setValue(oldData.getValue());
+            newData.setDictionary(oldData.getDictionary());
+            newData.setGroupId(oldData.getGroupId());
+            newData.setAnalyteName(oldData.getAnalyteName());
+            newData.setAnalyteId(oldData.getAnalyteId());
+            newData.setAnalyteExternalId(oldData.getAnalyteExternalId());
             if (!forRecur) {
                 fieldDO = oldMan.getAuxFieldAt(i);
                 values = oldMan.getAuxValuesAt(i);
