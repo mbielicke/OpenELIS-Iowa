@@ -100,7 +100,7 @@ public class LocationTab extends Screen {
                 locationName = StorageLocationManager.getLocationForDisplay(data.getStorageLocationName(),
                                                                             data.getStorageLocationUnitDescription(),
                                                                             data.getStorageLocationLocation());
-                model.add(new TableDataRow(null, locationName, data.getLotNumber(),
+                model.add(new TableDataRow(null, data.getId(), locationName, data.getLotNumber(),
                                            (isSerial ? data.getId() : null),
                                            data.getExpirationDate(),
                                            data.getQuantityOnhand()));
