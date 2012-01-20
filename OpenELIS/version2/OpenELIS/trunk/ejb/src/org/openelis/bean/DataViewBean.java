@@ -79,6 +79,7 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.TestAnalyteDataViewVO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
@@ -102,7 +103,6 @@ import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SessionCacheLocal;
-import org.openelis.meta.SampleMeta;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.DataViewRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -165,6 +165,9 @@ public class DataViewBean implements DataViewRemote {
     
     @EJB
     private PWSLocal                        pws;
+    
+    @EJB
+    private DictionaryCacheLocal            dictionaryCache; 
     
     private static Integer                  organizationReportToId, sampleInErrorId, 
                                             resultDictId, auxFieldValueDictId, 
@@ -732,7 +735,6 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<SampleOrganizationViewDO> orgList;
         ArrayList<AnalysisQaEventViewDO> aqeList;
         ArrayList<AnalysisUserViewDO> anaCompList, anaRelList;    
-        DictionaryCacheLocal dcl;
         ArrayList<ResultViewDO> rowGrpResList;  
         
         allCols = new ArrayList<String>();        
@@ -838,7 +840,6 @@ public class DataViewBean implements DataViewRemote {
         aqeList = null;
         anaCompList = null;
         anaRelList = null;  
-        dcl = EJBFactory.getDictionaryCache();
         sampleOverriden = false;
         anaOverriden = false;
         groupResMap = null;
@@ -940,7 +941,7 @@ public class DataViewBean implements DataViewRemote {
                  * the user to be shown in the sheet and if it was add a row 
                  * for it to the sheet otherwise don't
                  */
-                resultVal = getResultValue(analyteResultMap, res, dcl);
+                resultVal = getResultValue(analyteResultMap, res);
                 if (resultVal != null)
                     resRow = sheet.createRow(rowIndex++);
                 else
@@ -953,7 +954,7 @@ public class DataViewBean implements DataViewRemote {
                  * user to be shown in the sheet and if it was add a row for it
                  * to the sheet otherwise don't
                  */
-                auxDataVal = getAuxDataValue(auxFieldValueMap, aux, dcl);
+                auxDataVal = getAuxDataValue(auxFieldValueMap, aux);
                 if (auxDataVal != null) 
                     auxRow = sheet.createRow(rowIndex++);
                 else 
@@ -1108,10 +1109,10 @@ public class DataViewBean implements DataViewRemote {
                         item = sampleItem.fetchById(itemId);
                         prevItemId = itemId;
                     }
-                    addSampleItemCells(resRow, resRow.getPhysicalNumberOfCells(), data, item, dcl);
+                    addSampleItemCells(resRow, resRow.getPhysicalNumberOfCells(), data, item);
                 } 
                 if (addAuxDataRow)
-                    addSampleItemCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, null, dcl);                                 
+                    addSampleItemCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, null);                                 
             }
             
             if (addAnalysisCells) {
@@ -1316,7 +1317,7 @@ public class DataViewBean implements DataViewRemote {
                             cell.setCellValue(anaName);    
                             cell.setCellStyle(headerStyle);
                             
-                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId(), dcl);
+                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId());
                             cell = resRow.createCell(anaIndex);
                             cell.setCellValue(resultVal);    
                         } else if (anaIndex == currColumn) {   
@@ -1324,7 +1325,7 @@ public class DataViewBean implements DataViewRemote {
                              * we set the value in this cell if this result's analyte
                              * is shown in this column
                              */
-                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId(), dcl);
+                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId());
                             cell = resRow.createCell(currColumn++);
                             cell.setCellValue(resultVal);
                         } else {
@@ -1332,7 +1333,7 @@ public class DataViewBean implements DataViewRemote {
                              * if this result's analyte is not shown in this column
                              * then we set the value in the appropriate column 
                              */
-                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId(), dcl);
+                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId());
                             cell = resRow.createCell(anaIndex);
                             cell.setCellValue(resultVal);                            
                         }
@@ -1827,7 +1828,7 @@ public class DataViewBean implements DataViewRemote {
         }         
     }
     
-    private void addSampleItemCells(Row row, int startCol, DataViewVO data, SampleItemViewDO item, DictionaryCacheLocal dcl) {
+    private void addSampleItemCells(Row row, int startCol, DataViewVO data, SampleItemViewDO item) {
         Integer id;
         Cell cell;
         DictionaryDO dict;
@@ -1838,7 +1839,7 @@ public class DataViewBean implements DataViewRemote {
                 id = item.getTypeOfSampleId();
                 if (id != null) {
                     try {
-                        dict = dcl.getById(id);
+                        dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
                         log.error("Failed to lookup constants for dictionary entry: " + id, e);
@@ -1852,7 +1853,7 @@ public class DataViewBean implements DataViewRemote {
                 id = item.getSourceOfSampleId();
                 if (id != null) {
                     try {
-                        dict = dcl.getById(id);
+                        dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
                         log.error("Failed to lookup constants for dictionary entry: " + id, e);
@@ -1871,7 +1872,7 @@ public class DataViewBean implements DataViewRemote {
                 id = item.getContainerId();
                 if (id != null) {
                     try {
-                        dict = dcl.getById(id);
+                        dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
                         log.error("Failed to lookup constants for dictionary entry: " + id, e);
@@ -2148,12 +2149,12 @@ public class DataViewBean implements DataViewRemote {
     }
     
     private String getResultValue(HashMap<Integer, HashMap<String, String>> analyteResultMap,
-                                  Object res[], DictionaryCacheLocal dcl) throws Exception {
+                                  Object res[]) throws Exception {
         String value;
         HashMap<String, String> valMap;        
         
         valMap = analyteResultMap.get(res[7]);
-        value = getValue((String)res[9], resultDictId, (Integer)res[8], dcl);
+        value = getValue((String)res[9], resultDictId, (Integer)res[8]);
         if (valMap == null || valMap.get(value) == null)
             return null;
                 
@@ -2161,25 +2162,26 @@ public class DataViewBean implements DataViewRemote {
     }
     
     private String getAuxDataValue(HashMap<Integer, HashMap<String, String>> auxFieldValueMap,
-                                   Object aux[], DictionaryCacheLocal dcl) throws Exception {
+                                   Object aux[]) throws Exception {
         HashMap<String, String> valMap;
         String value;
         
         valMap = auxFieldValueMap.get(aux[4]);
-        value = getValue((String)aux[6], auxFieldValueDictId, (Integer)aux[5], dcl);
+        value = getValue((String)aux[6], auxFieldValueDictId, (Integer)aux[5]);
         if (valMap == null || valMap.get(value) == null)
             return null;                
                 
         return value;
     }
     
-    private String getValue(String value, Integer dictionaryId, Integer typeId,
-                                      DictionaryCacheLocal dcl) throws Exception {        
+    private String getValue(String value, Integer dictionaryId, Integer typeId) throws Exception {        
         Integer id;
         
+        if (DataBaseUtil.isEmpty(value))
+            return "";
         if (dictionaryId.equals(typeId)) {
             id = Integer.parseInt(value);
-            value = dcl.getById(id).getEntry();                
+            value = dictionaryCache.getById(id).getEntry();                
         }
         
         return value;

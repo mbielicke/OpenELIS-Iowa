@@ -310,19 +310,22 @@ UIRF Software License are applicable instead of those above.
                 <tab key="locationTab" text="{resource:getString($constants,'locationQuantity')}">
                   <VerticalPanel padding="0" spacing="0">
                     <table key="locationTable" width="auto" maxRows="11" showScroll="ALWAYS">
-                      <col key="{meta:getLocationStorageLocationName()}" width="172" sort="true" header="{resource:getString($constants,'location')}">
+                      <col key="{meta:getLocationId()}" width="52" header="{resource:getString($constants,'locationNum')}">
+                        <textbox field="Integer" />
+                      </col>
+                      <col key="{meta:getLocationStorageLocationName()}" width="185" sort="true" header="{resource:getString($constants,'location')}">
                         <textbox field="String" />
                       </col>
                       <col key="{meta:getLocationLotNumber()}" width="110" sort="true" header="{resource:getString($constants,'lotNum')}">
                         <textbox field="String" />
                       </col>
-                      <col key="{meta:getLocationId()}" width="70" header="{resource:getString($constants,'serialNum')}">
-                        <textbox field="String" />
+                      <col key="{meta:getLocationId()}" width="52" header="{resource:getString($constants,'serialNum')}">
+                        <textbox field="Integer" />
                       </col>
                       <col key="{meta:getLocationExpirationDate()}" width="105" sort="true" header="{resource:getString($constants,'expirationDate')}">
                         <calendar begin="0" end="2" pattern="{resource:getString($constants,'datePattern')}" />
                       </col>
-                      <col key="{meta:getLocationQuantityOnhand()}" width="115" sort="true" header="{resource:getString($constants,'quantityOnHand')}">
+                      <col key="{meta:getLocationQuantityOnhand()}" width="65" sort="true" header="{resource:getString($constants,'qty')}">
                         <textbox field="Integer" required="true" />
                       </col>
                     </table>

@@ -62,18 +62,34 @@ import org.openelis.manager.SampleSDWISManager;
 
 public class SampleDuplicateUtil {
 
-    private static Integer anaCancelledId, anaInPrepId;  
+    private static Integer anaCancelledId, anaInPrepId, anaLoggedInId, anaErrorLoggedInId;  
     
-    public static SampleManager duplicate (SampleManager oldMan) throws Exception {        
+    public static SampleManager duplicate(SampleManager oldMan) throws Exception {
+        Integer statusId;
         SampleManager newMan;
-        
+        SampleItemManager siMan;
+        AnalysisManager anMan;
+
         if (anaCancelledId == null) {
             anaCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
             anaInPrepId = DictionaryCache.getIdBySystemName("analysis_inprep");
+            anaLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
+            anaErrorLoggedInId = DictionaryCache.getIdBySystemName("analysis_error_logged_in");
+        }
+
+        siMan = oldMan.getSampleItems();
+        for (int i = 0; i < siMan.count(); i++ ) {
+            anMan = siMan.getAnalysisAt(i);
+            for (int j = 0; j < anMan.count(); j++ ) {
+                statusId = anMan.getAnalysisAt(j).getStatusId();
+                if ( !anaCancelledId.equals(statusId) && !anaInPrepId.equals(statusId) &&
+                    !anaLoggedInId.equals(statusId) && !anaErrorLoggedInId.equals(statusId))
+                    throw new LocalizedException("analysisHasAdvancedStatusException");
+            }
         }
         newMan = SampleManager.getInstance();
         duplicate(newMan, oldMan);
-        
+
         return newMan;
     }
     
