@@ -42,6 +42,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFName;
@@ -61,6 +62,7 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.jfree.util.Log;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteParameterViewDO;
@@ -134,6 +136,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     SystemVariableLocal systemVariableLocal;
     @EJB
     WorksheetAnalysisLocal worksheetAnalysisLocal;
+
+    private static final Logger          log  = Logger.getLogger(WorksheetCompletionBean.class);
 
     private HashMap<String,CellStyle>    styles;
 
@@ -1036,8 +1040,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                 apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wrVDO.getAnalyteId(),
                                                                                                                 testId,
                                                                                                                 ReferenceTable.TEST);
+                            } catch (NotFoundException nfE) {
                             } catch (Exception anyE) {
-                                // TODO: Code proper exception handling
+                                log.error("Error retrieving analyte parameters for an analysis on worksheet.");
                                 anyE.printStackTrace();
                                 continue;
                             }
@@ -1148,8 +1153,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                 apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wqrVDO.getAnalyteId(),
                                                                                                                 qcId,
                                                                                                                 ReferenceTable.QC);
+                            } catch (NotFoundException nfE) {
                             } catch (Exception anyE) {
-                                // TODO: Code proper exception handling
+                                log.error("Error retrieving analyte parameters for a qc on worksheet.");
                                 anyE.printStackTrace();
                                 continue;
                             }

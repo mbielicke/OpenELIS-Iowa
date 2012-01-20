@@ -267,14 +267,14 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             .append("The following compound(s) exceed MC/Regulatory level specified by it's test.<br>\r\n")
             .append("Also note that sample has a SDWA PWS id which will require IDNR reporting.<br>\r\n")
             .append("<br>\r\n")
-            .append("Lab Number: ").append(analysis.getAccessionNumber()).append("<br>\r\n")
-            .append("    PWS ID: ").append(analysis.getPwsId()).append("<br>\r\n")
-            .append("    Client: ").append(analysis.getOrganizationName()).append("<br>\r\n")
-            .append("      Test: ").append(analysis.getTestName()).append("<br>\r\n")
-            .append("    Method: ").append(analysis.getMethodName()).append("<br>\r\n")
-            .append("      Unit: ").append(analysis.getUnitDescription()).append("<br>\r\n")
-            .append("  Analyzed: ").append(ReportUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
-            .append("  Released: ").append(ReportUtil.toString(analysis.getAnaReleasedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
+            .append("Accession Number: ").append("OE").append(analysis.getAccessionNumber()).append("<br>\r\n")
+            .append("PWS ID: ").append(analysis.getPwsId()).append("<br>\r\n")
+            .append("Client: ").append(analysis.getOrganizationName()).append("<br>\r\n")
+            .append("Test: ").append(analysis.getTestName()).append("<br>\r\n")
+            .append("Method: ").append(analysis.getMethodName()).append("<br>\r\n")
+            .append("Unit: ").append(analysis.getUnitDescription()).append("<br>\r\n")
+            .append("Analyzed: ").append(ReportUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
+            .append("Released: ").append(ReportUtil.toString(analysis.getAnaReleasedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
             .append("<br>\r\n")
             .append("<table border='1' cellpadding='2' cellspacing='0'>\r\n")
             .append("    <tr><td>Compound</td>")
@@ -326,9 +326,19 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
               .append("PWSID ").append(analysis.getPwsId()).append("<br>\r\n")
               .append("PWSID Name ").append(analysis.getPwsName()).append("<br>\r\n")
               .append("Lab ID ").append(analysis.getStateLabId()).append("<br>\r\n")
-              .append("Facility ID ").append(analysis.getFacilityId()).append("<br>\r\n")
+              .append("Facility ID ");
+        
+        if (analysis.getFacilityId() != null)
+            footer.append(analysis.getFacilityId());
+        
+        footer.append("<br>\r\n")
               .append("Sample Point ID ").append(analysis.getSamplePointId()).append("<br>\r\n")
-              .append("Sample Point Description ").append(analysis.getLocation()).append("<br>\r\n")
+              .append("Sample Point Description ");
+        
+        if (analysis.getLocation() != null)
+            footer.append(analysis.getLocation());
+        
+        footer.append("<br>\r\n")
               .append("Sample Type ").append(analysis.getSampleType().substring(0, 2)).append("<br>\r\n")
               .append("PB Sample Type ").append(pbSampleType).append("<br>\r\n")
               .append("Original Sample # ").append(origSampleNumber).append("<br>\r\n")
