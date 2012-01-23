@@ -958,6 +958,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                            HashMap<String,String> cellNames, Integer testId,
                                            AnalysisResultManager arManager, WorksheetResultManager wrManager,
                                            boolean isEditable) {
+        boolean                queriedAP;
         int                    c, i, r;
         Integer                resultTypeDictionary;
         String                 cellNameIndex, name;
@@ -1010,6 +1011,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                         "$"+(row.getRowNum()+1));
             
             apVDO = null;
+            queriedAP = false;
             for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
                 
@@ -1035,24 +1037,26 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 }
                 if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wrVDO.getValueAt(c-9) == null) {
-                        if (apVDO == null) {
+                        if (!queriedAP) {
                             try {
                                 apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wrVDO.getAnalyteId(),
                                                                                                                 testId,
                                                                                                                 ReferenceTable.TEST);
                             } catch (NotFoundException nfE) {
-                            } catch (Exception anyE) {
-                                log.error("Error retrieving analyte parameters for an analysis on worksheet.");
-                                anyE.printStackTrace();
                                 continue;
+                            } catch (Exception anyE) {
+                                log.error("Error retrieving analyte parameters for an analysis on worksheet.", anyE);
+                                continue;
+                            } finally {
+                                queriedAP = true;
                             }
                         }
                         
-                        if ("p_1".equals(name)) {
+                        if (apVDO != null && "p_1".equals(name)) {
                             setCellValue(cell, String.valueOf(apVDO.getP1()));
-                        } else if ("p_2".equals(name)) {
+                        } else if (apVDO != null && "p_2".equals(name)) {
                             setCellValue(cell, String.valueOf(apVDO.getP2()));
-                        } else if ("p_3".equals(name)) {
+                        } else if (apVDO != null && "p_3".equals(name)) {
                             setCellValue(cell, String.valueOf(apVDO.getP3()));
                         }
                     }
@@ -1092,6 +1096,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     private int createQcResultCellsForFormat(HSSFSheet sheet, Row row, Row tRow,
                                              String nameIndexPrefix, HashMap<String,String> cellNames,
                                              Integer qcId, WorksheetQcResultManager wqrManager) {
+        boolean                 queriedAP;
         int                     c, i, r;
         Object                  value;
         String                  cellNameIndex, name;
@@ -1126,6 +1131,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             cell.setCellValue("N");
             
             apVDO = null;
+            queriedAP = false;
             for (c = 9; c < tRow.getLastCellNum() && c < 39; c++) {
                 tCell = tRow.getCell(c);
                 
@@ -1148,24 +1154,26 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                 }
                 if ("p_1".equals(name) || "p_2".equals(name) || "p_3".equals(name)) {
                     if (wqrVDO.getValueAt(c-9) == null) {
-                        if (apVDO == null) {
+                        if (!queriedAP) {
                             try {
                                 apVDO = analyteParameterLocal.fetchActiveByAnalyteIdReferenceIdReferenceTableId(wqrVDO.getAnalyteId(),
                                                                                                                 qcId,
                                                                                                                 ReferenceTable.QC);
                             } catch (NotFoundException nfE) {
-                            } catch (Exception anyE) {
-                                log.error("Error retrieving analyte parameters for a qc on worksheet.");
-                                anyE.printStackTrace();
                                 continue;
+                            } catch (Exception anyE) {
+                                log.error("Error retrieving analyte parameters for a qc on worksheet.", anyE);
+                                continue;
+                            } finally {
+                                queriedAP = true;
                             }
                         }
                         
-                        if ("p_1".equals(name)) {
+                        if (apVDO != null && "p_1".equals(name)) {
                             setCellValue(cell, String.valueOf(apVDO.getP1()));
-                        } else if ("p_2".equals(name)) {
+                        } else if (apVDO != null && "p_2".equals(name)) {
                             setCellValue(cell, String.valueOf(apVDO.getP2()));
-                        } else if ("p_3".equals(name)) {
+                        } else if (apVDO != null && "p_3".equals(name)) {
                             setCellValue(cell, String.valueOf(apVDO.getP3()));
                         }
                     }
