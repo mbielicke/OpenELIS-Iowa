@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.openelis.cache.UserCache;
+import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.WorksheetCacheVO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -47,6 +48,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class WorksheetTab extends Screen {
             
@@ -66,7 +68,7 @@ public class WorksheetTab extends Screen {
         table = (TableWidget)def.getWidget("worksheetTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                table.load(getTableModel());
+                loadTableModel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -83,45 +85,66 @@ public class WorksheetTab extends Screen {
         loadBySection = "N";
     }
     
+    private void loadTableModel() {
+        ArrayList<TableDataRow> model;
+        
+        if (loadedFromCache) {
+            model = getTableModel();
+            Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+            table.load(model);
+        } else {
+            window.setBusy(consts.get("fetching"));
+            service.callList("getWorksheet", new AsyncCallback<ArrayList<WorksheetCacheVO>>() {
+                public void onSuccess(ArrayList<WorksheetCacheVO> result) {
+                    ArrayList<TableDataRow> model;         
+                    
+                    fullList = result;
+                    model = getTableModel();
+                    Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+                    table.load(model);
+                    window.clearStatus();
+                }
+
+                public void onFailure(Throwable error) {
+                    if (error instanceof NotFoundException) {
+                        window.setDone(consts.get("noRecordsFound"));
+                    } else {
+                        Window.alert(error.getMessage());
+                        error.printStackTrace();
+                        window.clearStatus();
+                    }
+
+                }
+            });
+        }
+    }
+    
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
         String sectName;
         TableDataRow row;
         ArrayList<TableDataRow> model;
         SystemUserPermission perm;
-        
-        model = new ArrayList<TableDataRow>();
 
-        try {            
-            perm = UserCache.getPermission(); 
-            if (!loadedFromCache) {
-                window.setBusy(consts.get("fetching"));
-                fullList = service.callList("getWorksheet");
-                window.clearStatus();
-            }
-            sectOnly = "Y".equals(loadBySection);
-            for (WorksheetCacheVO data: fullList) {
-                sectName = data.getSectionName();                
-                if (sectOnly && perm.getSection(sectName) == null)
-                    continue;                
-                row = new TableDataRow(6);                
-                row.cells.get(0).setValue(data.getId());
-                row.cells.get(1).setValue(data.getSystemUserName());
-                row.cells.get(2).setValue(sectName);
-                row.cells.get(3).setValue(data.getTestName());
-                row.cells.get(4).setValue(data.getTestMethodName());               
-                row.cells.get(5).setValue(data.getCreatedDate());                
-                row.data = data;
-                model.add(row);
-            }
-            Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
-        } catch (NotFoundException e) {
-            window.clearStatus();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
-        }        
+        model = new ArrayList<TableDataRow>();
+        perm = UserCache.getPermission();
+        sectOnly = "Y".equals(loadBySection);
+        
+        for (WorksheetCacheVO data : fullList) {
+            sectName = data.getSectionName();
+            if (sectOnly && perm.getSection(sectName) == null)
+                continue;
+            row = new TableDataRow(6);
+            row.cells.get(0).setValue(data.getId());
+            row.cells.get(1).setValue(data.getSystemUserName());
+            row.cells.get(2).setValue(sectName);
+            row.cells.get(3).setValue(data.getTestName());
+            row.cells.get(4).setValue(data.getTestMethodName());
+            row.cells.get(5).setValue(data.getCreatedDate());
+            row.data = data;
+            model.add(row);
+        }
+
         return model;
     }
     

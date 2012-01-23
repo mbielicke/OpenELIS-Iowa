@@ -52,6 +52,7 @@ import org.openelis.gwt.widget.table.event.FilterHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.LegendPosition;
@@ -83,8 +84,7 @@ public class InitiatedTab extends Screen {
         table = (TableWidget)def.getWidget("initiatedTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                table.load(getTableModel());
-                refreshChart();
+                loadTableModel(true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -118,129 +118,155 @@ public class InitiatedTab extends Screen {
         ranges.add(consts.get("moreThanThrtyDays"));
     }
     
+    private void loadTableModel(final boolean refreshChart) {
+        ArrayList<TableDataRow> model;
+        
+        if (loadedFromCache) {
+            model = getTableModel();
+            Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+            table.load(model);
+            if (refreshChart)
+                refreshChart();
+        } else {
+            window.setBusy(consts.get("fetching"));
+            service.callList("getInitiated", new AsyncCallback<ArrayList<AnalysisCacheVO>>() {
+                public void onSuccess(ArrayList<AnalysisCacheVO> result) {
+                    ArrayList<TableDataRow> model;         
+                    
+                    fullList = result;
+                    model = getTableModel();
+                    Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+                    table.load(model);
+                    if (refreshChart)
+                        refreshChart();
+                    window.clearStatus();
+                }
+
+                public void onFailure(Throwable error) {
+                    if (error instanceof NotFoundException) {
+                        window.setDone(consts.get("noRecordsFound"));
+                    } else {
+                        Window.alert(error.getMessage());
+                        error.printStackTrace();
+                        window.clearStatus();
+                    }
+
+                }
+            });
+        }
+    }
+    
     private ArrayList<TableDataRow> getTableModel() {
         Long day, hour, diff;
         Double percent, units, ceil;
         boolean sectOnly;
         Integer priority;
-        String domain, sectName, project;        
+        String domain, sectName, project;
         TableDataRow row;
         ArrayList<TableDataRow> model;
         Datetime now, stdt, scd, sct, srd;
-        Date temp;        
+        Date temp;
         SystemUserPermission perm;
-        
+
         model = new ArrayList<TableDataRow>();
         hour = 3600000L;
         day = 24 * hour;
+
+        perm = UserCache.getPermission();
+        sectOnly = "Y".equals(loadBySection);
+        now = Datetime.getInstance();
         
-        try {            
-            perm = UserCache.getPermission();             
-            if (!loadedFromCache) {
-                window.setBusy(consts.get("fetching"));
-                fullList = service.callList("getInitiated");
-                window.clearStatus();
-            }
-            sectOnly = "Y".equals(loadBySection);
-            now = Datetime.getInstance();            
-            for (AnalysisCacheVO data: fullList) {
-                sectName = data.getSectionName();          
-                if (sectOnly && perm.getSection(sectName) == null)
-                    continue;                
-                row = new TableDataRow(10);                
-                row.cells.get(0).setValue(data.getSampleAccessionNumber());
-                row.cells.get(1).setValue(data.getSampleDomain());
-                row.cells.get(2).setValue(sectName);
-                row.cells.get(3).setValue(data.getTestName());
-                row.cells.get(4).setValue(data.getTestMethodName());
-                stdt = data.getStartedDate();
-                if (stdt == null)
-                    stdt = now;
-                scd = data.getSampleCollectionDate();
-                sct = data.getSampleCollectionTime();                
-                if (scd != null) {
-                    //
-                    // holding % is calculated based on sample collection date 
-                    //
-                    temp = scd.getDate();
-                    if (sct == null) {
-                        temp.setHours(0);
-                        temp.setMinutes(0);
-                    } else {
-                        temp.setHours(sct.getDate().getHours());
-                        temp.setMinutes(sct.getDate().getMinutes());
-                    }
-                    diff = (stdt.getDate().getTime() - temp.getTime());
-                    units = diff.doubleValue() / hour.doubleValue();
-                    percent = (units / data.getTestTimeHolding().doubleValue() * 100);
-                    row.cells.get(5).setValue(percent);
-                    
-                    /*
-                     * average turnaround % is calculated based on sample collection
-                     * date if present  
-                     */
-                    diff = now.getDate().getTime() - temp.getTime();
-                    units = diff.doubleValue() / day.doubleValue();
-                    percent = (units / data.getTestTimeTaAverage().doubleValue()) * 100;
-                    row.cells.get(6).setValue(percent);
+        for (AnalysisCacheVO data : fullList) {
+            sectName = data.getSectionName();
+            if (sectOnly && perm.getSection(sectName) == null)
+                continue;
+            row = new TableDataRow(10);
+            row.cells.get(0).setValue(data.getSampleAccessionNumber());
+            row.cells.get(1).setValue(data.getSampleDomain());
+            row.cells.get(2).setValue(sectName);
+            row.cells.get(3).setValue(data.getTestName());
+            row.cells.get(4).setValue(data.getTestMethodName());
+            stdt = data.getStartedDate();
+            if (stdt == null)
+                stdt = now;
+            scd = data.getSampleCollectionDate();
+            sct = data.getSampleCollectionTime();
+            if (scd != null) {
+                //
+                // holding % is calculated based on sample collection date
+                //
+                temp = scd.getDate();
+                if (sct == null) {
+                    temp.setHours(0);
+                    temp.setMinutes(0);
                 } else {
-                    row.cells.get(5).setValue(0.0);
-                    
-                    /*
-                     * average turnaround % is calculated based on sample received
-                     * date if sample collection date isn't present  
-                     */
-                    srd = data.getSampleReceivedDate();
-                    if (srd == null)
-                        srd = now;
-                    diff = now.getDate().getTime() - srd.getDate().getTime();                    
-                    units = diff.doubleValue() / day.doubleValue();
-                    percent = (units / data.getTestTimeTaAverage().doubleValue()) * 100;
-                    row.cells.get(6).setValue(percent);
-                }                
-                
-                /*
-                 * Days in initiated are calculated based on started date. 
-                 * Math.ceil() returns the value closest to an integer that's greater 
-                 * than or equal to the argument("units" here). For example 3.4
-                 * is converted to 4.0 and 5.0 stays the same.       
-                 */
-                diff = now.getDate().getTime() - stdt.getDate().getTime();
-                units = diff.doubleValue() / day.doubleValue();                                                
-                ceil = Math.ceil(units);                
-                row.cells.get(7).setValue(ceil.intValue());
-                
-                domain = data.getSampleDomain();                
-                if ("E".equals(domain)) {
-                    priority = data.getSampleEnvironmentalPriority();
-                    project = data.getSampleProjectName();
-                    if (priority == null)  {
-                        if (project != null)
-                            row.cells.get(8).setValue(project);
-                    } else {
-                        if (project == null)
-                            row.cells.get(8).setValue(priority);
-                        else 
-                            row.cells.get(8).setValue(priority +", "+ project);
-                    }                    
-                } else if ("W".equals(domain)) {
-                    row.cells.get(8).setValue(data.getSamplePrivateWellOwner());
-                } else if ("S".equals(domain)) {
-                    row.cells.get(8).setValue(data.getSampleSDWISPWSName());
+                    temp.setHours(sct.getDate().getHours());
+                    temp.setMinutes(sct.getDate().getMinutes());
                 }
-                
-                row.cells.get(9).setValue(data.getSampleReportToName());
-                row.data = data;
-                model.add(row);
+                diff = (stdt.getDate().getTime() - temp.getTime());
+                units = diff.doubleValue() / hour.doubleValue();
+                percent = (units / data.getTestTimeHolding().doubleValue() * 100);
+                row.cells.get(5).setValue(percent);
+
+                /*
+                 * average turnaround % is calculated based on sample collection
+                 * date if present
+                 */
+                diff = now.getDate().getTime() - temp.getTime();
+                units = diff.doubleValue() / day.doubleValue();
+                percent = (units / data.getTestTimeTaAverage().doubleValue()) * 100;
+                row.cells.get(6).setValue(percent);
+            } else {
+                row.cells.get(5).setValue(0.0);
+
+                /*
+                 * average turnaround % is calculated based on sample received
+                 * date if sample collection date isn't present
+                 */
+                srd = data.getSampleReceivedDate();
+                if (srd == null)
+                    srd = now;
+                diff = now.getDate().getTime() - srd.getDate().getTime();
+                units = diff.doubleValue() / day.doubleValue();
+                percent = (units / data.getTestTimeTaAverage().doubleValue()) * 100;
+                row.cells.get(6).setValue(percent);
             }
-            Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
-        } catch (NotFoundException e) {
-            window.setDone(consts.get("noRecordsFound"));
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
+
+            /*
+             * Days in initiated are calculated based on started date.
+             * Math.ceil() returns the value closest to an integer that's
+             * greater than or equal to the argument("units" here). For example
+             * 3.4 is converted to 4.0 and 5.0 stays the same.
+             */
+            diff = now.getDate().getTime() - stdt.getDate().getTime();
+            units = diff.doubleValue() / day.doubleValue();
+            ceil = Math.ceil(units);
+            row.cells.get(7).setValue(ceil.intValue());
+
+            domain = data.getSampleDomain();
+            if ("E".equals(domain)) {
+                priority = data.getSampleEnvironmentalPriority();
+                project = data.getSampleProjectName();
+                if (priority == null) {
+                    if (project != null)
+                        row.cells.get(8).setValue(project);
+                } else {
+                    if (project == null)
+                        row.cells.get(8).setValue(priority);
+                    else
+                        row.cells.get(8).setValue(priority + ", " + project);
+                }
+            } else if ("W".equals(domain)) {
+                row.cells.get(8).setValue(data.getSamplePrivateWellOwner());
+            } else if ("S".equals(domain)) {
+                row.cells.get(8).setValue(data.getSampleSDWISPWSName());
+            }
+
+            row.cells.get(9).setValue(data.getSampleReportToName());
+            row.data = data;
+            model.add(row);
         }
+
         return model;
     }
     
