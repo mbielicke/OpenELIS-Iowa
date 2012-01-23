@@ -33,6 +33,7 @@ import java.util.HashMap;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -40,6 +41,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
@@ -52,6 +54,7 @@ import org.openelis.gwt.widget.table.event.FilterHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
@@ -83,8 +86,7 @@ public class LoggedInTab extends Screen {
         table = (TableWidget)def.getWidget("loggedInTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                table.load(getTableModel());
-                refreshChart();
+                loadTableModel(true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -117,88 +119,42 @@ public class LoggedInTab extends Screen {
         ranges.add(consts.get("moreThenTenDays"));      
     }
     
-    private ArrayList<TableDataRow> getTableModel() {
-        boolean sectOnly;
-        Integer priority;
-        String domain, sectName, project;        
-        TableDataRow row;
+    private void loadTableModel(final boolean refreshChart) {
         ArrayList<TableDataRow> model;
-        Datetime scd, sct;
-        Date temp;        
-        SystemUserPermission perm;
         
-        model = new ArrayList<TableDataRow>();
+        if (loadedFromCache) {
+            model = getTableModel();
+            Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+            table.load(model);
+            if (refreshChart)
+                refreshChart();
+        } else {
+            window.setBusy(consts.get("fetching"));
+            service.callList("getLoggedIn", new AsyncCallback<ArrayList<AnalysisCacheVO>>() {
+                public void onSuccess(ArrayList<AnalysisCacheVO> result) {
+                    ArrayList<TableDataRow> model;         
+                    
+                    fullList = result;
+                    model = getTableModel();
+                    Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+                    table.load(model);
+                    if (refreshChart)
+                        refreshChart();
+                    window.clearStatus();
+                }
 
-        try {            
-            perm = UserCache.getPermission(); 
-            if (!loadedFromCache) {
-                window.setBusy(consts.get("fetching"));
-                fullList = service.callList("getLoggedIn");
-                window.clearStatus();
-            }
-            sectOnly = "Y".equals(loadBySection);
-            for (AnalysisCacheVO data: fullList) {
-                sectName = data.getSectionName();                
-                if (sectOnly && perm.getSection(sectName) == null)
-                    continue;                
-                row = new TableDataRow(10);                
-                row.cells.get(0).setValue(data.getSampleAccessionNumber());
-                row.cells.get(1).setValue(data.getSampleDomain());
-                row.cells.get(2).setValue(sectName);
-                row.cells.get(3).setValue(data.getTestName());
-                row.cells.get(4).setValue(data.getTestMethodName());
-                
-                scd = data.getSampleCollectionDate();
-                sct = data.getSampleCollectionTime();
-                if (scd != null) {
-                    temp = scd.getDate();
-                    if (sct == null) {
-                        temp.setHours(0);
-                        temp.setMinutes(0);
+                public void onFailure(Throwable error) {
+                    if (error instanceof NotFoundException) {
+                        window.setDone(consts.get("noRecordsFound"));
                     } else {
-                        temp.setHours(sct.getDate().getHours());
-                        temp.setMinutes(sct.getDate().getMinutes());
+                        Window.alert(error.getMessage());
+                        error.printStackTrace();
+                        window.clearStatus();
                     }
 
-                    row.cells.get(5).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE,temp));
                 }
-                row.cells.get(6).setValue(data.getSampleReceivedDate());    
-                if ("Y".equals(data.getAnalysisQaeventResultOverride()) || "Y".equals(data.getSampleQaeventResultOverride()))
-                    row.cells.get(7).setValue("Y");
-                else
-                    row.cells.get(7).setValue("N");
-                domain = data.getSampleDomain();                
-                if ("E".equals(domain)) {
-                    priority = data.getSampleEnvironmentalPriority();
-                    project = data.getSampleProjectName();
-                    if (priority == null)  {
-                        if (project != null)
-                            row.cells.get(8).setValue(project);
-                    } else {
-                        if (project == null)
-                            row.cells.get(8).setValue(priority);
-                        else 
-                            row.cells.get(8).setValue(priority +", "+ project);
-                    }                    
-                } else if ("W".equals(domain)) {
-                    row.cells.get(8).setValue(data.getSamplePrivateWellOwner());
-                } else if ("S".equals(domain)) {
-                    row.cells.get(8).setValue(data.getSampleSDWISPWSName());
-                }
-                
-                row.cells.get(9).setValue(data.getSampleReportToName());
-                row.data = data;
-                model.add(row);
-            }
-            Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
-        } catch (NotFoundException e) {
-            window.clearStatus();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
-        }        
-        return model;
+            });
+        }
     }
     
     public void reloadFromCache() {
@@ -231,6 +187,79 @@ public class LoggedInTab extends Screen {
             reattachChart = false;            
         }
         loadedFromCache = true;
+    }
+    
+    private ArrayList<TableDataRow> getTableModel() {
+        boolean sectOnly;
+        ArrayList<TableDataRow> model;
+        Integer priority;
+        String domain, sectName, project;
+        TableDataRow row;
+        Datetime scd, sct;
+        Date temp;
+        SystemUserPermission perm;        
+
+        model = new ArrayList<TableDataRow>();
+        perm = UserCache.getPermission();
+        sectOnly = "Y".equals(loadBySection);
+        
+        for (AnalysisCacheVO data : fullList) {
+            sectName = data.getSectionName();
+            if (sectOnly && perm.getSection(sectName) == null)
+                continue;
+            row = new TableDataRow(10);
+            row.cells.get(0).setValue(data.getSampleAccessionNumber());
+            row.cells.get(1).setValue(data.getSampleDomain());
+            row.cells.get(2).setValue(sectName);
+            row.cells.get(3).setValue(data.getTestName());
+            row.cells.get(4).setValue(data.getTestMethodName());
+
+            scd = data.getSampleCollectionDate();
+            sct = data.getSampleCollectionTime();
+            if (scd != null) {
+                temp = scd.getDate();
+                if (sct == null) {
+                    temp.setHours(0);
+                    temp.setMinutes(0);
+                } else {
+                    temp.setHours(sct.getDate().getHours());
+                    temp.setMinutes(sct.getDate().getMinutes());
+                }
+
+                row.cells.get(5).setValue(Datetime.getInstance(Datetime.YEAR,
+                                                               Datetime.MINUTE, temp));
+            }
+            row.cells.get(6).setValue(data.getSampleReceivedDate());
+            if ("Y".equals(data.getAnalysisQaeventResultOverride()) ||
+                "Y".equals(data.getSampleQaeventResultOverride()))
+                row.cells.get(7).setValue("Y");
+            else
+                row.cells.get(7).setValue("N");
+            domain = data.getSampleDomain();
+            if ("E".equals(domain)) {
+                priority = data.getSampleEnvironmentalPriority();
+                project = data.getSampleProjectName();
+                if (priority == null) {
+                    if (project != null)
+                        row.cells.get(8).setValue(project);
+                } else {
+                    if (project == null)
+                        row.cells.get(8).setValue(priority);
+                    else
+                        row.cells.get(8).setValue(priority + ", " + project);
+                }
+            } else if ("W".equals(domain)) {
+                row.cells.get(8).setValue(data.getSamplePrivateWellOwner());
+            } else if ("S".equals(domain)) {
+                row.cells.get(8).setValue(data.getSampleSDWISPWSName());
+            }
+
+            row.cells.get(9).setValue(data.getSampleReportToName());
+            row.data = data;
+            model.add(row);
+        }
+        
+        return model;
     }
     
     private void refreshChart() {

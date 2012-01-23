@@ -50,6 +50,7 @@ import org.openelis.gwt.widget.table.event.FilterHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
@@ -81,8 +82,7 @@ public class ToBeVerifiedTab extends Screen {
         table = (TableWidget)def.getWidget("toBeVerifiedTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                table.load(getTableModel());         
-                refreshChart();
+                loadTableModel(true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -115,73 +115,100 @@ public class ToBeVerifiedTab extends Screen {
         ranges.add(consts.get("moreThenTenDays"));
     }
     
+    private void loadTableModel(final boolean refreshChart) {
+        ArrayList<TableDataRow> model;
+        
+        if (loadedFromCache) {
+            model = getTableModel();
+            Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+            table.load(model);
+            if (refreshChart)
+                refreshChart();
+        } else {
+            window.setBusy(consts.get("fetching"));
+            service.callList("getToBeVerified", new AsyncCallback<ArrayList<SampleCacheVO>>() {
+                public void onSuccess(ArrayList<SampleCacheVO> result) {
+                    ArrayList<TableDataRow> model;         
+                    
+                    fullList = result;
+                    model = getTableModel();
+                    Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+                    table.load(model);
+                    if (refreshChart)
+                        refreshChart();
+                    window.clearStatus();
+                }
+
+                public void onFailure(Throwable error) {
+                    if (error instanceof NotFoundException) {
+                        window.setDone(consts.get("noRecordsFound"));
+                    } else {
+                        Window.alert(error.getMessage());
+                        error.printStackTrace();
+                        window.clearStatus();
+                    }
+
+                }
+            });
+        }
+    }
+    
     private ArrayList<TableDataRow> getTableModel() {
         Integer priority;
         String domain, project;
         TableDataRow row;
         ArrayList<TableDataRow> model;
         Datetime scd, sct;
-        Date temp;           
-        
-        model = new ArrayList<TableDataRow>();
-        try {            
-            if (!loadedFromCache) {
-                window.setBusy(consts.get("fetching"));
-                fullList = service.callList("getToBeVerified");
-                window.clearStatus();
-            }
-            for (SampleCacheVO data: fullList) {
-                row = new TableDataRow(10);                
-                row.cells.get(0).setValue(data.getAccessionNumber());
-                row.cells.get(1).setValue(data.getDomain());               
-                scd = data.getCollectionDate();
-                sct = data.getCollectionTime();
-                if (scd != null) {
-                    temp = scd.getDate();
-                    if (sct == null) {
-                        temp.setHours(0);
-                        temp.setMinutes(0);
-                    } else {
-                        temp.setHours(sct.getDate().getHours());
-                        temp.setMinutes(sct.getDate().getMinutes());
-                    }
+        Date temp;
 
-                    row.cells.get(2).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE,temp));
+        model = new ArrayList<TableDataRow>();
+
+        for (SampleCacheVO data : fullList) {
+            row = new TableDataRow(10);
+            row.cells.get(0).setValue(data.getAccessionNumber());
+            row.cells.get(1).setValue(data.getDomain());
+            scd = data.getCollectionDate();
+            sct = data.getCollectionTime();
+            if (scd != null) {
+                temp = scd.getDate();
+                if (sct == null) {
+                    temp.setHours(0);
+                    temp.setMinutes(0);
+                } else {
+                    temp.setHours(sct.getDate().getHours());
+                    temp.setMinutes(sct.getDate().getMinutes());
                 }
-                row.cells.get(3).setValue(data.getReceivedDate());                
-                row.cells.get(4).setValue(data.getQaeventResultOverride());
-                
-                domain = data.getDomain();                
-                if ("E".equals(domain)) {
-                    priority = data.getSampleEnvironmentalPriority();
-                    project = data.getSampleProjectName();
-                    if (priority == null)  {
-                        if (project != null)
-                            row.cells.get(5).setValue(project);
-                    } else {
-                        if (project == null)
-                            row.cells.get(5).setValue(priority);
-                        else 
-                            row.cells.get(5).setValue(priority +", "+ project);
-                    }                    
-                } else if ("W".equals(domain)) {
-                    row.cells.get(5).setValue(data.getSamplePrivateWellOwner());
-                } else if ("S".equals(domain)) {
-                    row.cells.get(5).setValue(data.getSampleSDWISPWSName());
-                }
-                
-                row.cells.get(6).setValue(data.getReportToName());
-                row.data = data;
-                model.add(row);
+
+                row.cells.get(2)
+                         .setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp));
             }
-            Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
-        } catch (NotFoundException e) {
-            window.setDone(consts.get("noRecordsFound"));
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
+            row.cells.get(3).setValue(data.getReceivedDate());
+            row.cells.get(4).setValue(data.getQaeventResultOverride());
+
+            domain = data.getDomain();
+            if ("E".equals(domain)) {
+                priority = data.getSampleEnvironmentalPriority();
+                project = data.getSampleProjectName();
+                if (priority == null) {
+                    if (project != null)
+                        row.cells.get(5).setValue(project);
+                } else {
+                    if (project == null)
+                        row.cells.get(5).setValue(priority);
+                    else
+                        row.cells.get(5).setValue(priority + ", " + project);
+                }
+            } else if ("W".equals(domain)) {
+                row.cells.get(5).setValue(data.getSamplePrivateWellOwner());
+            } else if ("S".equals(domain)) {
+                row.cells.get(5).setValue(data.getSampleSDWISPWSName());
+            }
+
+            row.cells.get(6).setValue(data.getReportToName());
+            row.data = data;
+            model.add(row);
         }
+
         return model;
     }
     

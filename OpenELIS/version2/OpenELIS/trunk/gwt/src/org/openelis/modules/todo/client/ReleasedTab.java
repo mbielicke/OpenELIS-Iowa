@@ -49,6 +49,7 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class ReleasedTab extends Screen {
             
@@ -68,7 +69,7 @@ public class ReleasedTab extends Screen {
         table = (TableWidget)def.getWidget("releasedTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                table.load(getTableModel());
+                loadTableModel();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -85,88 +86,111 @@ public class ReleasedTab extends Screen {
         loadBySection = "N";
     }
     
+    private void loadTableModel() {
+        ArrayList<TableDataRow> model;
+        
+        if (loadedFromCache) {
+            model = getTableModel();
+            Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+            table.load(model);
+        } else {
+            window.setBusy(consts.get("fetching"));
+            service.callList("getReleased", new AsyncCallback<ArrayList<AnalysisCacheVO>>() {
+                public void onSuccess(ArrayList<AnalysisCacheVO> result) {
+                    ArrayList<TableDataRow> model;         
+                    
+                    fullList = result;
+                    model = getTableModel();
+                    Collections.sort(model, new ColumnComparator(0, SortDirection.ASCENDING));
+                    table.load(model);
+                    window.clearStatus();
+                }
+
+                public void onFailure(Throwable error) {
+                    if (error instanceof NotFoundException) {
+                        window.setDone(consts.get("noRecordsFound"));
+                    } else {
+                        Window.alert(error.getMessage());
+                        error.printStackTrace();
+                        window.clearStatus();
+                    }
+
+                }
+            });
+        }
+    }
+    
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
         Integer priority;
-        String domain, sectName, project;      
+        String domain, sectName, project;
         TableDataRow row;
         ArrayList<TableDataRow> model;
         Datetime scd, sct;
-        Date temp;        
+        Date temp;
         SystemUserPermission perm;
-        
+
         model = new ArrayList<TableDataRow>();
+        perm = UserCache.getPermission();
+        sectOnly = "Y".equals(loadBySection);
+        
+        for (AnalysisCacheVO data : fullList) {
+            sectName = data.getSectionName();
+            if (sectOnly && perm.getSection(sectName) == null)
+                continue;
+            row = new TableDataRow(10);
+            row.cells.get(0).setValue(data.getSampleAccessionNumber());
+            row.cells.get(1).setValue(data.getSampleDomain());
+            row.cells.get(2).setValue(sectName);
+            row.cells.get(3).setValue(data.getTestName());
+            row.cells.get(4).setValue(data.getTestMethodName());
 
-        try {            
-            perm = UserCache.getPermission(); 
-            if (!loadedFromCache) {
-                window.setBusy(consts.get("fetching"));
-                fullList = service.callList("getReleased");
-                window.clearStatus();
-            }
-            sectOnly = "Y".equals(loadBySection);
-            for (AnalysisCacheVO data: fullList) {
-                sectName = data.getSectionName();                
-                if (sectOnly && perm.getSection(sectName) == null)
-                    continue;                
-                row = new TableDataRow(10);                
-                row.cells.get(0).setValue(data.getSampleAccessionNumber());
-                row.cells.get(1).setValue(data.getSampleDomain());
-                row.cells.get(2).setValue(sectName);
-                row.cells.get(3).setValue(data.getTestName());
-                row.cells.get(4).setValue(data.getTestMethodName());
-                
-                scd = data.getSampleCollectionDate();
-                sct = data.getSampleCollectionTime();
-                if (scd != null) {
-                    temp = scd.getDate();
-                    if (sct == null) {
-                        temp.setHours(0);
-                        temp.setMinutes(0);
-                    } else {
-                        temp.setHours(sct.getDate().getHours());
-                        temp.setMinutes(sct.getDate().getMinutes());
-                    }
+            scd = data.getSampleCollectionDate();
+            sct = data.getSampleCollectionTime();
+            if (scd != null) {
+                temp = scd.getDate();
+                if (sct == null) {
+                    temp.setHours(0);
+                    temp.setMinutes(0);
+                } else {
+                    temp.setHours(sct.getDate().getHours());
+                    temp.setMinutes(sct.getDate().getMinutes());
+                }
 
-                    row.cells.get(5).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE,temp));
-                }
-                row.cells.get(6).setValue(data.getReleasedDate());                
-                if ("Y".equals(data.getAnalysisQaeventResultOverride()) || "Y".equals(data.getSampleQaeventResultOverride()))
-                    row.cells.get(7).setValue("Y");
-                else
-                    row.cells.get(7).setValue("N");
-                
-                domain = data.getSampleDomain();                
-                if ("E".equals(domain)) {
-                    priority = data.getSampleEnvironmentalPriority();
-                    project = data.getSampleProjectName();
-                    if (priority == null)  {
-                        if (project != null)
-                            row.cells.get(8).setValue(project);
-                    } else {
-                        if (project == null)
-                            row.cells.get(8).setValue(priority);
-                        else 
-                            row.cells.get(8).setValue(priority +", "+ project);
-                    }                    
-                } else if ("W".equals(domain)) {
-                    row.cells.get(8).setValue(data.getSamplePrivateWellOwner());
-                } else if ("S".equals(domain)) {
-                    row.cells.get(8).setValue(data.getSampleSDWISPWSName());
-                }
-                
-                row.cells.get(9).setValue(data.getSampleReportToName());
-                row.data = data;
-                model.add(row);
+                row.cells.get(5)
+                         .setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp));
             }
-            Collections.sort(model,new ColumnComparator(0, SortDirection.ASCENDING));
-        } catch (NotFoundException e) {
-            window.setDone(consts.get("noRecordsFound"));
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
+            row.cells.get(6).setValue(data.getReleasedDate());
+            if ("Y".equals(data.getAnalysisQaeventResultOverride()) ||
+                "Y".equals(data.getSampleQaeventResultOverride()))
+                row.cells.get(7).setValue("Y");
+            else
+                row.cells.get(7).setValue("N");
+
+            domain = data.getSampleDomain();
+            if ("E".equals(domain)) {
+                priority = data.getSampleEnvironmentalPriority();
+                project = data.getSampleProjectName();
+                if (priority == null) {
+                    if (project != null)
+                        row.cells.get(8).setValue(project);
+                } else {
+                    if (project == null)
+                        row.cells.get(8).setValue(priority);
+                    else
+                        row.cells.get(8).setValue(priority + ", " + project);
+                }
+            } else if ("W".equals(domain)) {
+                row.cells.get(8).setValue(data.getSamplePrivateWellOwner());
+            } else if ("S".equals(domain)) {
+                row.cells.get(8).setValue(data.getSampleSDWISPWSName());
+            }
+
+            row.cells.get(9).setValue(data.getSampleReportToName());
+            row.data = data;
+            model.add(row);
         }
+
         return model;
     }
     
