@@ -48,7 +48,7 @@ import org.openelis.utils.Auditable;
                query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
                        "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId,ta.resultGroup)"
                      + " from Result r, Analysis an, Test t, Analyte a, TestAnalyte ta "
-                     + " where r.analysisId = :id and ta.rowGroup = :rowGroup and r.isColumn = 'Y' and r.value != null"
+                     + " where r.analysisId = :id and ta.rowGroup = :rowGroup and r.isColumn = 'Y' "
                      + " and an.id = r.analysisId and t.id = an.testId and ta.id = r.testAnalyteId and a.id = r.analyteId order by r.sortOrder"),  
   @NamedQuery( name = "Result.FetchForBillingByAnalysisId",
               query = "select new org.openelis.domain.ResultDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +

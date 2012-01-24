@@ -119,9 +119,9 @@ public class BillingReportBean implements BillingReportLocal {
     private DictionaryLocal          dictionary;
     
     private static final String      RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
-                                     MISC_BILLING = "billing misc charges",
-                                     RUSH_BILLING = "billing rush charges",
-                                     NO_METHOD = "no method", EOL = "\r\n";
+                                     MISC_BILLING = "billing misc charges by no method",
+                                     RUSH_BILLING = "billing rush charges by no method",
+                                     EOL = "\r\n";
     
     private static Integer           organizationReportToId, organizationBillToId, analysisCancelledId;
     
@@ -217,7 +217,7 @@ public class BillingReportBean implements BillingReportLocal {
     private void outputBilling(FileWriter out, Date currentDate, String poAnalyteName,
                               ArrayList<Object[]> resultList) throws Exception {
         int i, billableAnalytes;
-        boolean sampleZeroCharge, anaZeroCharge, needCharge;
+        boolean sampleZeroCharge, anaZeroCharge, needCharge, needCredit;
         Integer billedAnalytes, samId, prevSamId, accession, anaId, statusId, testId;
         String billedZero, clientCode;
         Object[] row;
@@ -395,19 +395,20 @@ public class BillingReportBean implements BillingReportLocal {
             dtrcr.setLength(0);
             dtrch.setLength(0);            
             df.applyPattern("yyyyMMddHHmm");
-            if (billed != null && (billableAnalytes != billedAnalytes ||
-                !billedZero.equals(anaZeroCharge ? "Y" : "N"))) {                
-                dtrcr.append("DTR").append("|")
-                     .append(df.format(billed)).append("|")
-                     .append(accession).append("|")
-                     .append(testId).append("|")
-                     .append(procedure).append("|")
-                     .append("CR").append("|")
-                     .append(billedAnalytes).append("|")
-                     .append("Y".equals(billedZero) ? "0": "").append("|")
-                     .append(labCode.toUpperCase()).append("|")
-                     .append(labDept).append("|");                 
-            }            
+            
+            needCredit = false;
+            if (billed != null) {
+                if (billableAnalytes != billedAnalytes)  
+                    needCredit = true;
+                else if (!billedZero.equals(anaZeroCharge ? "Y" : "N")) 
+                    needCredit = true;
+                else if ("N".equals(anaReportable) && !MISC_BILLING.equals(procedure) &&
+                                !RUSH_BILLING.equals(procedure)) 
+                    needCredit = true;
+                else if (analysisCancelledId.equals(statusId))
+                    needCredit = true;
+            }
+                        
             //
             //  we need to figure out if we charge for this analysis
             //
@@ -415,10 +416,23 @@ public class BillingReportBean implements BillingReportLocal {
             if (billed == null || billableAnalytes != billedAnalytes ||
                 !billedZero.equals(anaZeroCharge ? "Y" : "N")) {                
                 if (!analysisCancelledId.equals(statusId) && ("Y".equals(anaReportable) ||
-                    ((MISC_BILLING.equals(testName) || RUSH_BILLING.equals(testName))&& NO_METHOD.equals(methodName)))) 
+                    MISC_BILLING.equals(procedure) || RUSH_BILLING.equals(procedure))) 
                     needCharge = true;
-            }
+            }            
                 
+            if (needCredit) {
+                dtrcr.append("DTR").append("|")
+                .append(df.format(billed)).append("|")
+                .append(accession).append("|")
+                .append(testId).append("|")
+                .append(procedure).append("|")
+                .append("CR").append("|")
+                .append(billedAnalytes).append("|")
+                .append("Y".equals(billedZero) ? "0": "").append("|")
+                .append(labCode.toUpperCase()).append("|")
+                .append(labDept).append("|");  
+            }
+            
             if (needCharge) {            
                 dtrch.append("DTR").append("|")
                      .append(currentDateStr).append("|")
@@ -456,9 +470,9 @@ public class BillingReportBean implements BillingReportLocal {
              * lock the record in AnalysisReportFlags for this analysis
              * and set its billed_date to the current date
              */
-            try {
+            try {                
                 anaRepFlags = analysisReportFlags.fetchForUpdateByAnalysisId(anaId);
-                anaRepFlags.setBilledDate(currDateTime);
+                anaRepFlags.setBilledDate(needCharge ? currDateTime : null);
                 anaRepFlags.setBilledAnalytes(billableAnalytes);
                 anaRepFlags.setBilledZero(anaZeroCharge ? "Y" : "N");
                 analysisReportFlags.update(anaRepFlags);
