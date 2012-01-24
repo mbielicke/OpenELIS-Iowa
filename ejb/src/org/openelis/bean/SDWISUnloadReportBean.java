@@ -218,7 +218,6 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         boolean sampleOverride;
-        int progressCount;
         AnalysisViewDO aVDO;
         ArrayList<AnalysisViewDO> analyses;
         ArrayList<SampleDO> samples;
@@ -282,7 +281,6 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
 
             writeHeaderRow(writer);
 
-            progressCount = 0;
             sampleCounts = new Counter();
             
             statusList = new ArrayList<HashMap<String, Object>>();
@@ -345,7 +343,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     aIter = analyses.iterator();
                     while (aIter.hasNext()) {
                         aVDO = aIter.next();
-                        if (releasedStatusId.equals(aVDO.getStatusId())) {
+                        if (releasedStatusId.equals(aVDO.getStatusId()) && "Y".equals(aVDO.getIsReportable())) {
                             try {
                                 analysisQaList = analysisQA.fetchResultOverrideByAnalysisId(aVDO.getId());
                                 if (analysisQaList.size() > 0) {
@@ -378,11 +376,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     
                 }
                 
-                progressCount++;
-                status.setPercentComplete((progressCount / samples.size()) * 80 + 10);
+                status.setPercentComplete((sampleCounts.getTotal() / samples.size()) * 80 + 10);
             }
             
-            writeTrailerRow(writer, progressCount);
+            writeTrailerRow(writer, sampleCounts.getTotal());
             
             writer.close();
             out.close();
