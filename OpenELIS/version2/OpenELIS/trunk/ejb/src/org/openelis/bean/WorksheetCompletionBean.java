@@ -1385,14 +1385,14 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             } else {
                                 cell.setCellType(Cell.CELL_TYPE_STRING);
                                 value = cell.getStringCellValue();
-                                if (((String)value).length() == 0)
+                                if (((String)value).trim().length() == 0)
                                     value = null;
                             }
                             break;
                             
                         case Cell.CELL_TYPE_STRING:
                             value = cell.getStringCellValue();
-                            if (((String)value).length() == 0)
+                            if (((String)value).trim().length() == 0)
                                 value = null;
                             break;
                     }
@@ -1404,14 +1404,14 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     } else {
                         cell.setCellType(Cell.CELL_TYPE_STRING);
                         value = cell.getStringCellValue();
-                        if (((String)value).length() == 0)
+                        if (((String)value).trim().length() == 0)
                             value = null;
                     }
                     break;
                     
                 case Cell.CELL_TYPE_STRING:
                     value = cell.getStringCellValue();
-                    if (((String)value).length() == 0)
+                    if (((String)value).trim().length() == 0)
                         value = null;
                     break;
             }
