@@ -103,6 +103,7 @@ import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.SessionCacheLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.DataViewRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -168,6 +169,9 @@ public class DataViewBean implements DataViewRemote {
     
     @EJB
     private DictionaryCacheLocal            dictionaryCache; 
+    
+    @EJB
+    private UserCacheLocal                  userCache; 
     
     private static Integer                  organizationReportToId, sampleInErrorId, 
                                             resultDictId, auxFieldValueDictId, 
@@ -2192,7 +2196,7 @@ public class DataViewBean implements DataViewRemote {
          * retrieving the organization Ids to which the user belongs from the
          * security clause in the userPermission
          */
-        return EJBFactory.getUserCache().getPermission().getModule(moduleName).getClause();        
+        return userCache.getPermission().getModule(moduleName).getClause();        
     }
     
     private CellStyle createStyle(HSSFWorkbook wb) {

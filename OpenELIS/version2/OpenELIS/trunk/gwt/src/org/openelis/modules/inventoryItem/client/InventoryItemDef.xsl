@@ -266,18 +266,18 @@ UIRF Software License are applicable instead of those above.
             </HorizontalPanel>
             <VerticalPanel>
 <!-- TAB PANEL -->
-              <TabPanel key="tabPanel" width="605" height="285">
+              <TabPanel key="tabPanel" width="623" height="285">
 <!-- TAB 1  -->
                 <tab key="componentTab" text="{resource:getString($constants,'components')}">
                   <VerticalPanel padding="0" spacing="0">
                     <table key="componentTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="{meta:getName()},{meta:getIsNotInventoried()}">
-                      <col key="{meta:getComponentName()}" width="138" header="{resource:getString($constants,'component')}">
+                      <col key="{meta:getComponentName()}" width="150" header="{resource:getString($constants,'component')}">
                         <autoComplete width="137" case="LOWER" field="Integer" required="true">
                           <col width="135" header="{resource:getString($constants,'name')}" />
                           <col width="300" header="{resource:getString($constants,'description')}" />
                         </autoComplete>
                       </col>
-                      <col key="{meta:getComponentDescription()}" width="370" header="{resource:getString($constants,'description')}">
+                      <col key="{meta:getComponentDescription()}" width="376" header="{resource:getString($constants,'description')}">
                         <label field = "String"/>
                       </col>
                       <col key="{meta:getComponentQuantity()}" width="70" header="{resource:getString($constants,'quantity')}">
@@ -313,7 +313,7 @@ UIRF Software License are applicable instead of those above.
                       <col key="{meta:getLocationId()}" width="52" header="{resource:getString($constants,'locationNum')}">
                         <textbox field="Integer" />
                       </col>
-                      <col key="{meta:getLocationStorageLocationName()}" width="185" sort="true" header="{resource:getString($constants,'location')}">
+                      <col key="{meta:getLocationStorageLocationName()}" width="203" sort="true" header="{resource:getString($constants,'location')}">
                         <textbox field="String" />
                       </col>
                       <col key="{meta:getLocationLotNumber()}" width="110" sort="true" header="{resource:getString($constants,'lotNum')}">
@@ -378,7 +378,7 @@ UIRF Software License are applicable instead of those above.
 <!-- start TAB 4 -->
                 <tab key="manufacturingTab" text="{resource:getString($constants,'manufacturing')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <ScrollPanel width="604" height="247" style="ScreenTable">
+                    <ScrollPanel width="622" height="247" style="ScreenTable">
                       <html key="manufacturingPanel" width="100%" height="100%" />
                     </ScrollPanel>
                     <appButton key="editManufacturingButton" style="Button">
@@ -394,7 +394,7 @@ UIRF Software License are applicable instead of those above.
 <!-- start TAB 5 -->
                 <tab key="noteTab" text="{resource:getString($constants,'note')}">
                   <VerticalPanel padding="0" spacing="0">
-                    <notes key="notesPanel" width="604" height="247" />
+                    <notes key="notesPanel" width="622" height="247" />
                     <appButton key="standardNoteButton" style="Button">
                       <HorizontalPanel>
                         <AbsolutePanel style="StandardNoteButtonImage" />
