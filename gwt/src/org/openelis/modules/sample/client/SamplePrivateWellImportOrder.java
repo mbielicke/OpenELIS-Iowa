@@ -88,8 +88,11 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                 }
                 analyteId = data.getAnalyteExternalId();
                 if ("smpl_collected_date".equals(analyteId)) {
-                    sample.setCollectionDate(Calendar.getCurrentDatetime(Datetime.YEAR,
-                                                                         Datetime.DAY));
+                    df = new DateField();
+                    df.setBegin(Datetime.YEAR);
+                    df.setEnd(Datetime.DAY);
+                    df.setStringValue(data.getValue());
+                    sample.setCollectionDate(df.getValue());
                 } else if ("smpl_collected_time".equals(analyteId)) {
                     df = new DateField();
                     df.setBegin(Datetime.HOUR);
