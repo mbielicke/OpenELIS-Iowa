@@ -104,8 +104,7 @@ public class SampleNotesTab extends NotesTab {
                 boolean enable;
                 
                 try {
-                    enable = !sampleManager.hasReleasedAnalysis() && canEdit() &&
-                             EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
+                    enable = canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
                 } catch (Exception anyE) {
                     enable = false;
                 }
