@@ -76,6 +76,12 @@ public class StaticFilter implements Filter {
         HttpServletRequest hreq = (HttpServletRequest)req;
 
         //
+        // register this session with SessionManager so we can access it
+        // statically in gwt code
+        //
+        SessionManager.setSession(hreq.getSession());
+
+        //
         // pass-through for images and if we are logged-in
         //
         if (hreq.getRequestURI().endsWith(".jpg") || hreq.getRequestURI().endsWith(".gif") ||
@@ -93,12 +99,6 @@ public class StaticFilter implements Filter {
         //
         if (hreq.getParameter("locale") != null)
             hreq.getSession().setAttribute("locale", req.getParameter("locale"));
-
-        //
-        // register this session with SessionManager so we can access it
-        // statically in gwt code
-        //
-        SessionManager.setSession(hreq.getSession());
 
         //
         // check to see if we are coming from login screen
