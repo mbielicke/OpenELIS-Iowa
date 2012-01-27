@@ -825,7 +825,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         methodCodes.put("epa 245.2 mercury dw",  "245.2");
         methodCodes.put("epa 300.0",             "300.0");
         methodCodes.put("epa 300.1",             "300.1");
-        methodCodes.put("epa 314.0",             "314");
+        methodCodes.put("epa 314.0",             "314.0");
         methodCodes.put("epa 350.1",             "350.1");
         methodCodes.put("epa 353.2 as n",        "353.2");
         methodCodes.put("epa 365.1",             "365.1");
