@@ -514,6 +514,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Calcium",                               "1919");  
         contaminantIds.put("Carbaryl",                              "2021");
         contaminantIds.put("Carbofuran",                            "2046");
+        contaminantIds.put("Carbon tetrachloride",                  "2982");  
         contaminantIds.put("Cesium-134",                            "4270");
         contaminantIds.put("Chloramben",                            "2620");
         contaminantIds.put("Chlordane",                             "2959"); 
@@ -529,6 +530,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Chromium",                              "1020");
         contaminantIds.put("Chrysene",                              "2296");
         contaminantIds.put("cis-1,2-Dichloroethene",                "2380");
+        contaminantIds.put("cis-1,2-Dichloroethylene",              "2380");  
         contaminantIds.put("cis-1,3-Dichloropropene",               "2228");
         contaminantIds.put("Combined Radiums",                      "4010");
         contaminantIds.put("Copper",                                "1022");
@@ -586,6 +588,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Mercury",                               "1035");  
         contaminantIds.put("Methomyl",                              "2022");
         contaminantIds.put("Methoxychlor",                          "2015"); 
+        contaminantIds.put("Methylene chloride",                    "2964");  
         contaminantIds.put("Methyl-t-butyl ether (MtBE)",           "2251");
         contaminantIds.put("Metolachlor",                           "2045");
         contaminantIds.put("Metribuzin",                            "2595"); 
@@ -599,6 +602,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("n-Propylbenzene",                       "2998");
         contaminantIds.put("Ortho Phosphate as P",                  "1044");
         contaminantIds.put("Oxamyl",                                "2036");
+        contaminantIds.put("o-Dichlorobenzene",                     "2968");  
         contaminantIds.put("o-Xylene",                              "2997");
         contaminantIds.put("PCB Total as DCBP",                     "2383");
         contaminantIds.put("Pentachlorophenol",                     "2326");
@@ -606,6 +610,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Phenanthrene",                          "2278");
         contaminantIds.put("Phenolphthalein Alkalinity",            "1931");
         contaminantIds.put("Picloram",                              "2040");
+        contaminantIds.put("p-Dichlorobenzene",                     "2969");  
         contaminantIds.put("p-Isopropyltoluene",                    "2030");
         contaminantIds.put("Potassium",                             "1042");
         contaminantIds.put("Prometon",                              "2029"); 
@@ -623,11 +628,13 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Specific Conductance",                  "1064");
         contaminantIds.put("Strontium-89",                          "4172");
         contaminantIds.put("Strontium-90",                          "4174");
+        contaminantIds.put("Styrene",                               "2996");  
         contaminantIds.put("Sulfate",                               "1055");
         contaminantIds.put("Terbacil",                              "2272");
         contaminantIds.put("Terbufos",                              "2545");  
         contaminantIds.put("tert-Butylbenzene",                     "2426");
         contaminantIds.put("Tetrachloroethene",                     "2987"); 
+        contaminantIds.put("Tetrachloroethylene",                   "2987");  
         contaminantIds.put("Thallium",                              "1085");
         contaminantIds.put("Toluene",                               "2991");
         contaminantIds.put("Total 1,3-Dichloropropene",             "2413");
@@ -642,6 +649,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Total Xylenes",                         "2955");
         contaminantIds.put("Toxaphene",                             "2020");
         contaminantIds.put("trans-1,2-Dichloroethene",              "2979");
+        contaminantIds.put("trans-1,2-Dichloroethylene",            "2979");  
         contaminantIds.put("trans-1,3-Dichloropropene",             "2224");
         contaminantIds.put("Trichloroacetic acid",                  "2452");
         contaminantIds.put("Trichloroethene",                       "2984");
@@ -652,6 +660,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Turbidity",                             "100");   
         contaminantIds.put("Uranium",                               "4006");
         contaminantIds.put("UV Absorbance at 254 nm",               "2922");
+        contaminantIds.put("Vinyl chloride",                        "2976");  
         contaminantIds.put("Zinc",                                  "1095");  
     }
 }
