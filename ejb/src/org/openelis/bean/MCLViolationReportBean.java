@@ -537,8 +537,8 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Cyanazine",                             "2054");
         contaminantIds.put("Cyanide",                               "1024");  
         contaminantIds.put("Dalapon",                               "2031");   
-        contaminantIds.put("Desethyl Atrazine",                     "2006");
-        contaminantIds.put("Desisopropyl Atrazine",                 "2007");
+        contaminantIds.put("Desethyl atrazine",                     "2006");
+        contaminantIds.put("Desisopropyl atrazine",                 "2007");
         contaminantIds.put("Diazinon",                              "2056");
         contaminantIds.put("Dibenzo(a,h)anthracene",                "2310");
         contaminantIds.put("Dibromoacetic acid",                    "2454");
