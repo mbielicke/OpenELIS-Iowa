@@ -1013,10 +1013,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
             try {
                 con.close();
+                con = null;
             } catch (Exception e) {
                 log.error(e);
             }
-            con = null;
 
             /*
              * Sort the print by # of pages.
@@ -1085,14 +1085,14 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                       .setStatus(ReportStatus.Status.SAVED);
             }
         } catch (Exception e) {
+            throw e;
+        } finally {
             try {
                 if (con != null)
                     con.close();
             } catch (Exception e1) {
                 log.error(e1);
             }
-            con = null;
-            throw e;
         }
     }
 

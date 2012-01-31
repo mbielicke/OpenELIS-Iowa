@@ -145,11 +145,11 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             lock.lock(ReferenceTable.SAMPLE, id);
             man = fetchWithAllData(id);
             ut.commit();
-            return man;
         } catch (Exception e) {
             ut.rollback();
             throw e;
         }
+        return man;
     }
 
     public SampleManager abortUpdate(Integer id) throws Exception {

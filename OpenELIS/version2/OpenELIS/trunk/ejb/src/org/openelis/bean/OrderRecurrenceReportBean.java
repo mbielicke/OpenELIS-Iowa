@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -54,7 +53,6 @@ import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderTestManager;
-import org.openelis.report.Prompt;
 import org.openelis.utils.EJBFactory;
 
 @Stateless
