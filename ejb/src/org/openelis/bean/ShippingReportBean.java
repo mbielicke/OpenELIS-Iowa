@@ -109,8 +109,17 @@ public class ShippingReportBean implements ShippingReportRemote {
             p = new ArrayList<Prompt>();
 
             p.add(new Prompt("SHIPPING_ID", Prompt.Type.INTEGER).setPrompt("Shipping Id:")
+                                                                .setHidden(true)
                                                                 .setWidth(75)
                                                                 .setRequired(true));
+            p.add(new Prompt("MANIFEST", Prompt.Type.CHECK).setPrompt("Print Manifest:")
+                                                           .setDefaultValue("Y"));
+            p.add(new Prompt("SHIPPING_LABEL", Prompt.Type.CHECK).setPrompt("Print Labels:")
+                                                           .setDefaultValue("Y"));
+            p.add(new Prompt("INSTRUCTION", Prompt.Type.CHECK).setPrompt("Print Instructions:")
+                                                              .setDefaultValue("Y"));
+            p.add(new Prompt("REQUESTFORM", Prompt.Type.CHECK).setPrompt("Print Request Form:")
+                                                              .setDefaultValue("Y"));
             prn = printer.getListByType("pdf");
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
@@ -161,8 +170,7 @@ public class ShippingReportBean implements ShippingReportRemote {
         shippingIdStr = ReportUtil.getSingleParameter(param, "SHIPPING_ID");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
         if (DataBaseUtil.isEmpty(shippingIdStr) || DataBaseUtil.isEmpty(printer))
-            throw new InconsistencyException(
-                                             "You must specify the shipping id and printer for this report");
+            throw new InconsistencyException("You must specify the shipping id and printer for this report");
         /*
          * find the shipping record
          */
