@@ -25,7 +25,10 @@
 */
 package org.openelis.modules.todo.client;
 
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -33,7 +36,8 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.ScreenWindow;
-import org.openelis.manager.SampleManager;
+import org.openelis.gwt.widget.WindowBrowser;
+import org.openelis.modules.main.client.OpenELIS;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 
@@ -42,12 +46,13 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class ToDoScreen extends Screen {
+public class ToDoScreen extends Screen implements HasActionHandlers<ToDoScreen.Action> {
 
     private ToDoScreen                screen;
     private CheckBox                  mySection;
@@ -61,7 +66,10 @@ public class ToDoScreen extends Screen {
     private ToBeVerifiedTab           toBeVerifiedTab;
     private OtherTab                  otherTab;
     private WorksheetTab              worksheetTab;
-    private SampleTrackingScreen      sampleTrackingScreen;
+    
+    public enum Action {
+        SHOW_SAMPLE
+    };
     
     private enum Tabs {
         LOGGED_IN, INITIATED, WORKSHEET, COMPLETED, RELEASED, TO_BE_VERIFIED, OTHER, INSTRUMENT;
@@ -281,6 +289,10 @@ public class ToDoScreen extends Screen {
         });             
     }
     
+    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    }
+    
     protected void onAttach() {
         /*
          * When the screen is dragged around, the charts showing on the different
@@ -338,23 +350,30 @@ public class ToDoScreen extends Screen {
                 otherTab.draw(val);
                 break;      
         }
-    }   
-
-    private void showTrackingScreen(Integer id) throws Exception {
-        SampleManager man;
-        ScreenWindow modal;
-
-        man = SampleManager.fetchById(id);
-        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-        modal.setName(consts.get("sampleTracking"));
-        if (sampleTrackingScreen == null)
-            sampleTrackingScreen = new SampleTrackingScreen(modal);
-
-        modal.setContent(sampleTrackingScreen);
-        sampleTrackingScreen.loadSample(man);
-        window.clearStatus();
-    }
+    }  
     
+    private void showTrackingScreen(final Integer id) throws Exception {
+        WindowBrowser browser;
+        ScreenWindow window;
+        final SampleTrackingScreen trackingScreen;
+
+        browser = OpenELIS.getBrowser();
+        window = browser.getScreenByKey("tracking");
+
+        if (window == null) {
+            trackingScreen = new SampleTrackingScreen();
+            browser.addScreen(trackingScreen, "tracking");
+            DeferredCommand.addCommand(new Command() {
+                public void execute() {
+                    trackingScreen.query(id);
+                }
+            });
+        } else {
+            trackingScreen = (SampleTrackingScreen)window.content;
+            trackingScreen.query(id);
+        }        
+    }
+        
     private void showCompletionScreen(Integer id) throws Exception {
         ScreenWindow modal;    
         WorksheetCompletionScreen wcScreen;
@@ -364,5 +383,5 @@ public class ToDoScreen extends Screen {
         wcScreen = new WorksheetCompletionScreen(id);
         modal.setContent(wcScreen);
         window.clearStatus();
-    }
+    }       
 }

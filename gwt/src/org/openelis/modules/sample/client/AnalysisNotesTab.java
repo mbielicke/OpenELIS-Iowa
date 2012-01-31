@@ -57,21 +57,21 @@ import com.google.gwt.user.client.Window;
 
 public class AnalysisNotesTab extends NotesTab {
 
-    protected AnalysisViewDO  analysis;
-    protected AnalysisManager anMan;
+    protected AnalysisViewDO   analysis, emptyAnalysis;
+    protected AnalysisManager  analysisMan;
     protected SampleDataBundle bundle;
 
-    protected String          internalNotesPanelKey;
-    protected String          internalEditButtonKey;
+    protected String           internalNotesPanelKey;
+    protected String           internalEditButtonKey;
 
-    protected NoteManager     internalManager;
+    protected NoteManager      internalManager;
 
-    protected NotesPanel      internalNotesPanel;
-    protected AppButton       standardNote, internalEditButton;
-    protected EditNoteScreen  internalEditNote;
-    protected NoteViewDO      internalNote;
+    protected NotesPanel       internalNotesPanel;
+    protected AppButton        standardNote, internalEditButton;
+    protected EditNoteScreen   internalEditNote;
+    protected NoteViewDO       internalNote;
 
-    private Integer           analysisCancelledId, analysisReleasedId;
+    private Integer            analysisCancelledId, analysisReleasedId;
 
     public AnalysisNotesTab(ScreenDefInt def, ScreenWindowInt window, String notesPanelKey,
                             String editButtonKey) {
@@ -86,7 +86,7 @@ public class AnalysisNotesTab extends NotesTab {
 
         this.internalNotesPanelKey = internalNotesPanelKey;
         this.internalEditButtonKey = internalEditButtonKey;
-        
+
         initialize();
         initializeDropdowns();
     }
@@ -96,6 +96,8 @@ public class AnalysisNotesTab extends NotesTab {
         // we dont have all the info set yet, dont run through this method
         if (internalNotesPanelKey == null)
             return;
+
+        emptyAnalysis = new AnalysisViewDO();
 
         notesPanel = (NotesPanel)def.getWidget(notesPanelKey);
         addScreenHandler(notesPanel, new ScreenEventHandler<String>() {
@@ -116,7 +118,7 @@ public class AnalysisNotesTab extends NotesTab {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                standardNote.enable(!isReleased() && canEdit() &&
+                standardNote.enable( !isReleased() && canEdit() &&
                                     EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
@@ -177,8 +179,9 @@ public class AnalysisNotesTab extends NotesTab {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                internalEditButton.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
-                                                              .contains(event.getState()));
+                internalEditButton.enable(canEdit() &&
+                                          EnumSet.of(State.ADD, State.UPDATE)
+                                                 .contains(event.getState()));
             }
         });
     }
@@ -195,14 +198,14 @@ public class AnalysisNotesTab extends NotesTab {
     public void draw() {
         if ( !loaded) {
             try {
-                if (anMan == null || bundle == null) {
+                if (analysisMan == null || bundle == null) {
                     internalManager = NoteManager.getInstance();
                     internalManager.setIsExternal(false);
                     manager = NoteManager.getInstance();
                     manager.setIsExternal(true);
                 } else {
-                    internalManager = anMan.getInternalNotesAt(bundle.getAnalysisIndex());
-                    manager = anMan.getExternalNoteAt(bundle.getAnalysisIndex());
+                    internalManager = analysisMan.getInternalNotesAt(bundle.getAnalysisIndex());
+                    manager = analysisMan.getExternalNoteAt(bundle.getAnalysisIndex());
                 }
 
                 DataChangeEvent.fire(this);
@@ -219,14 +222,13 @@ public class AnalysisNotesTab extends NotesTab {
 
     private boolean canEdit() {
         SectionPermission perm;
-        SectionViewDO     sectionVDO;
-        
+        SectionViewDO sectionVDO;
+
         if (analysis != null && analysis.getSectionId() != null) {
             try {
                 sectionVDO = SectionCache.getById(analysis.getSectionId());
                 perm = UserCache.getPermission().getSection(sectionVDO.getName());
-                return !analysisCancelledId.equals(analysis.getStatusId()) &&
-                       perm != null &&
+                return !analysisCancelledId.equals(analysis.getStatusId()) && perm != null &&
                        (perm.hasAssignPermission() || perm.hasCompletePermission());
             } catch (Exception anyE) {
                 Window.alert("canEdit:" + anyE.getMessage());
@@ -234,7 +236,7 @@ public class AnalysisNotesTab extends NotesTab {
         }
         return false;
     }
-    
+
     private void initializeDropdowns() {
         try {
             analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
@@ -246,23 +248,26 @@ public class AnalysisNotesTab extends NotesTab {
     }
 
     public void setData(SampleDataBundle data) {
-        if (data == null || data.getSampleManager() == null || 
-                            SampleDataBundle.Type.SAMPLE_ITEM.equals(data.getType())) {
-            analysis = new AnalysisViewDO();
-            anMan = null;
-            StateChangeEvent.fire(this, State.DEFAULT);
-        } else {
-            try{
-                anMan = data.getSampleManager().getSampleItems().getAnalysisAt(data.getSampleItemIndex());
-                analysis = anMan.getAnalysisAt(data.getAnalysisIndex());
+        if (data != null && data.getSampleManager() != null &&
+            SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
+
+            try {
+                analysisMan = data.getSampleManager()
+                                  .getSampleItems()
+                                  .getAnalysisAt(data.getSampleItemIndex());
+                analysis = analysisMan.getAnalysisAt(data.getAnalysisIndex());
                 this.bundle = data;
-    
+
                 if (state == State.ADD || state == State.UPDATE)
                     StateChangeEvent.fire(this, State.UPDATE);
-            
-            }catch(Exception e){
-                Window.alert("AnalysisNotesTab.setData: "+e.getMessage());
+
+            } catch (Exception e) {
+                Window.alert("AnalysisNotesTab.setData: " + e.getMessage());
             }
+        } else {
+            analysisMan = null;
+            analysis = emptyAnalysis;
+            StateChangeEvent.fire(this, State.DEFAULT);
         }
 
         loaded = false;

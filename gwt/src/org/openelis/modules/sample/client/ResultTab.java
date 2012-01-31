@@ -106,7 +106,7 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     private TestAnalyteDisplayManager<ResultViewDO> displayManager;
     protected GetMatchesHandler                     resultMatchesHandler;
     protected AnalysisManager                       analysisMan;
-    protected AnalysisViewDO                        analysis;
+    protected AnalysisViewDO                        analysis, emptyAnalysis;
     protected SampleDataBundle                      bundle;
     private Screen                                  parentScreen;
 
@@ -141,6 +141,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 
     private void initialize() {
         final ResultTab resultTab = this;
+        
+        emptyAnalysis = new AnalysisViewDO();
 
         testResultsTable = (TableWidget)def.getWidget("testResultsTable");
         addScreenHandler(testResultsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
@@ -582,6 +584,8 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
     }
     
     public void setData(SampleDataBundle data) {
+        boolean dirty; 
+        
         try {
             bundle = data;
             if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
@@ -594,8 +598,22 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
                     StateChangeEvent.fire(this, State.UPDATE);
             } else {
                 analysisMan = null;
-                analysis = new AnalysisViewDO();
+                dirty = (analysis == emptyAnalysis);
+                analysis = emptyAnalysis;
                 StateChangeEvent.fire(this, State.DEFAULT);
+                /*
+                 * We need to clear the tab in states like query in order to make
+                 * sure that all the previous data and its associated errors get
+                 * cleared before committing because otherwise validate() for the
+                 * main screen may return false if there were errors before aborting
+                 * the last time. We also don't want to clear the tab over and 
+                 * over if it didn't get loaded and we don't want to incur the
+                 * cost of creating empty DO every time we have to do so. This 
+                 * comparison (analysis == emptyAnalysis), along with having an 
+                 * empty global DO (emptyAnalysis) allows us to do all of this   
+                 */
+                if (dirty)
+                    DataChangeEvent.fire(this);
             }
             loaded = false;
         } catch (Exception e) {

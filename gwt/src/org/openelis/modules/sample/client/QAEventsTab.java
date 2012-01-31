@@ -88,7 +88,7 @@ public class QAEventsTab extends Screen {
     protected AnalysisQaEventManager analysisQAManager;
     protected SampleManager          sampleManager;
     protected AnalysisManager        analysisManager;
-    protected AnalysisViewDO         anDO;
+    protected AnalysisViewDO         analysis, emptyAnalysis;
     protected Integer                analysisCancelledId, analysisReleasedId, sampleReleasedId;
 	protected Integer				 qaInternal, qaWarning, qaOverride;
 
@@ -232,7 +232,7 @@ public class QAEventsTab extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisQATable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
                                        SampleDataBundle.Type.ANALYSIS == type &&
-                                       anDO.getTestId() != null); 
+                                       analysis.getTestId() != null); 
                 analysisQATable.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -329,14 +329,14 @@ public class QAEventsTab extends Screen {
             public void onClick(ClickEvent event) {
             	createQaEventPickerScreen();
                 qaEventScreen.setType(QaeventLookupScreen.Type.ANALYSIS);
-                qaEventScreen.setTestId(anDO.getTestId());
+                qaEventScreen.setTestId(analysis.getTestId());
                 qaEventScreen.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisQAPicker.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()) &&
                                         SampleDataBundle.Type.ANALYSIS == type &&
-                                        anDO.getTestId() != null);
+                                        analysis.getTestId() != null);
             }
         });
     }
@@ -495,12 +495,12 @@ public class QAEventsTab extends Screen {
         SectionPermission perm;
         SectionViewDO     sectionVDO;
         
-        if (anDO != null && anDO.getSectionId() != null) {
+        if (analysis != null && analysis.getSectionId() != null) {
             try {
-                sectionVDO = SectionCache.getById(anDO.getSectionId());
+                sectionVDO = SectionCache.getById(analysis.getSectionId());
                 perm = UserCache.getPermission().getSection(sectionVDO.getName());
-                return !analysisCancelledId.equals(anDO.getStatusId()) &&
-                       !analysisReleasedId.equals(anDO.getStatusId()) &&
+                return !analysisCancelledId.equals(analysis.getStatusId()) &&
+                       !analysisReleasedId.equals(analysis.getStatusId()) &&
                        perm != null &&
                        (perm.hasAssignPermission() || perm.hasCompletePermission());
             } catch (Exception anyE) {
@@ -511,17 +511,21 @@ public class QAEventsTab extends Screen {
     }
 
     public void setData(SampleDataBundle data) {
+        boolean dirty;
+        
         try {
-            if (data == null || SampleDataBundle.Type.SAMPLE_ITEM.equals(data.getType())) {
-                anDO = new AnalysisViewDO();
-                analysisManager = null;
-                type = SampleDataBundle.Type.SAMPLE_ITEM;
+            if (data != null && SampleDataBundle.Type.ANALYSIS.equals(data.getType())) {
+                analysisManager = data.getSampleManager().getSampleItems().getAnalysisAt(data.getSampleItemIndex());
+                analysis = analysisManager.getAnalysisAt(data.getAnalysisIndex());
+                type = data.getType();                  
             } else {
-                analysisManager = data.getSampleManager()
-                            .getSampleItems()
-                            .getAnalysisAt(data.getSampleItemIndex());
-                anDO = analysisManager.getAnalysisAt(data.getAnalysisIndex());
-                type = data.getType();
+                analysisManager = null;
+                dirty = (analysis == emptyAnalysis);
+                analysis = emptyAnalysis;
+                type = SampleDataBundle.Type.SAMPLE_ITEM;
+
+                if (dirty)
+                    DataChangeEvent.fire(this);
             }
             bundle = data;
             loaded = false;

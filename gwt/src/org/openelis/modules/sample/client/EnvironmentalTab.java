@@ -253,7 +253,6 @@ public class EnvironmentalTab extends Screen {
                         data = manager.getProjects().getFirstPermanentProject();
                         if (data != null) {
                             manager.getProjects().setProjectAt(data, 0);
-                            
                             project.setSelection(new TableDataRow(data.getProjectId(), data.getProjectName(), data.getProjectDescription()));
                         } else {
                             project.setSelection(new TableDataRow(null, "", ""));                            

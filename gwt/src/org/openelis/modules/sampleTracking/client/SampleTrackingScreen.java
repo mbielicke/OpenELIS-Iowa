@@ -83,7 +83,6 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
-import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
 import org.openelis.modules.sample.client.AnalysisNotesTab;
@@ -173,45 +172,34 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
     public SampleTrackingScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
-        SampleTrackingScreenImpl();   
-    }
-    
-    public SampleTrackingScreen(ScreenWindow window) throws Exception {
-        super((ScreenDefInt)GWT.create(SampleTrackingDef.class));
-        this.window = window;
-        SampleTrackingScreenImpl();
-    }
-
-    private void SampleTrackingScreenImpl() throws Exception {
+        
         service = new ScreenService("controller?service=org.openelis.modules.sampleTracking.server.SampleTrackingService");
         finalReportService = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");
 
         userPermission = UserCache.getPermission().getModule("sampletracking");
-        unreleasePermission = UserCache.getPermission().getModule("sampleunrelease");
         if (userPermission == null)
             throw new PermissionException("screenPermException", "Sample Tracking Screen");
+        
+        unreleasePermission = UserCache.getPermission().getModule("sampleunrelease");
         if (unreleasePermission == null)
             unreleasePermission = new ModulePermission();
-        
+
         changeDomainPermission = UserCache.getPermission().getModule("sampledomainchange");
         if (changeDomainPermission == null)
             changeDomainPermission = new ModulePermission();
         /*
          * this is done here in order to make sure that if the screen is brought
-         * up from some other screen (i.e. window != null) then its widgets are 
+         * up from some other screen (i.e. window != null) then its widgets are
          * initialized before the constructor ends execution
          */
-        if (window != null) {
-            postConstructor();
-        } else {
-            DeferredCommand.addCommand(new Command() {
-                public void execute() {
-                    postConstructor();
-                }
-            });
-        }
-    }
-    
+
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                postConstructor();
+            }
+        });
+    }   
+
     public void postConstructor() {
         tab = Tabs.BLANK;
         manager = SampleManager.getInstance();
@@ -298,7 +286,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
             
             public void onClick(ClickEvent event) {
-            	query(null);
+            	query();
             }
         });
  
@@ -926,11 +914,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
+                    environmentalTab.draw();
                 } else {
                     environmentalTab.setData(null);
                 }
-                
-                environmentalTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -960,10 +947,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
+                    wellTab.draw();
                 } else {
                     wellTab.setData(null);
                 }
-                wellTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1002,10 +989,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
+                    sdwisTab.draw();
                 } else {
                     sdwisTab.setData(null);
                 }
-                sdwisTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1026,10 +1013,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
+                    quickEntryTab.draw();
                 } else {
                     quickEntryTab.setData(null);
                 }
-                quickEntryTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1051,11 +1038,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showTabs(Tabs.SAMPLE_ITEM);
                     addTestButton.enable(state == State.UPDATE && canEdit());
                     cancelTestButton.enable(false);
+                    sampleItemTab.draw();
                 } else {
                     sampleItemTab.setData(null);
                 }
-                sampleItemTab.draw();
-
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1078,10 +1064,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showTabs(Tabs.ANALYSIS);
                     addTestButton.enable(state == State.UPDATE && canEdit());
                     cancelTestButton.enable(state == State.UPDATE && canEdit());
+                    analysisTab.draw();
                 } else {
                     analysisTab.setData(null);
                 }
-                analysisTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1140,14 +1126,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showTabs(Tabs.TEST_RESULT);
                     addTestButton.enable(state == State.UPDATE && canEdit());
                     cancelTestButton.enable(state == State.UPDATE && canEdit());
+                    testResultsTab.draw();
                 } else {
                     testResultsTab.setData(null);
                 }
-                testResultsTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                testResultsTab.setState(event.getState());
+                testResultsTab.setState(event.getState());                
             }
         });
         
@@ -1189,10 +1175,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showTabs(Tabs.ANALYSIS_NOTES);
                     addTestButton.enable(state == State.UPDATE && canEdit());
                     cancelTestButton.enable(state == State.UPDATE && canEdit());
+                    analysisNotesTab.draw();
                 } else {
                     analysisNotesTab.setData(null);
                 }
-                analysisNotesTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1220,10 +1206,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showTabs(Tabs.SAMPLE_NOTES);
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
+                    sampleNotesTab.draw();
                 } else {
                     sampleNotesTab.setManager(manager);
                 }
-                sampleNotesTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1251,10 +1237,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     cancelTestButton.enable(state == State.UPDATE &&
                                             "analysis".equals(selectedRow.parent.leafType) &&
                                             canEdit());
+                    storageTab.draw();
                 } else {
                     storageTab.setData(null);
                 }
-                storageTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1291,11 +1277,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     cancelTestButton.enable(state == State.UPDATE &&
                                             "analysis".equals(selectedRow.parent.leafType) &&
                                             canEdit());
+                    qaEventsTab.draw();
                 } else {
                     qaEventsTab.setData(null);
                     qaEventsTab.setManager(manager);                    
                 }
-                qaEventsTab.draw();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1315,10 +1301,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     showTabs(Tabs.AUX_DATA);
                     addTestButton.enable(false);
                     cancelTestButton.enable(false);
+                    auxDataTab.draw();
                 } else {
                     auxDataTab.setManager(manager);
                 }
-                auxDataTab.draw();
             } 
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1390,7 +1376,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         });
 
-
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
@@ -1399,20 +1384,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 }
             }
         });
-    }
-    
-    public void loadSample(SampleManager manager) { 
-        ArrayList<SampleManager> result;
-        
-        result = new ArrayList<SampleManager>();
-        result.add(manager);
-        
-        setState(State.DEFAULT);        
-        trackingTree.load(getModel(result));        
-        trackingTree.select(0);
-        trackingTree.toggle(0);
-
-        window.clearStatus();
     }
 
     private void initializeDropdowns() {
@@ -1451,7 +1422,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         ((Dropdown<Integer>)trackingTree.getColumns().get("analysis").get(1).colWidget).setModel(model);
     }
 
-    protected void query(String domain) {
+    protected void query() {
         manager = SampleManager.getInstance();
         trackingTree.clear();
         
@@ -1472,6 +1443,25 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         setFocus(accessionNumber);
         window.setDone(consts.get("enterFieldsToQuery"));
+    }
+
+    public void query(Integer id) {
+        Query query;
+        QueryData field;
+    
+        if (id != null) {
+            if (state == State.DISPLAY || state == State.DEFAULT) {
+                query = new Query();
+                field = new QueryData();
+                field.key = SampleMeta.getId();
+                field.query = id.toString();
+                field.type = QueryData.Type.INTEGER;
+                query.setFields(field);
+                executeQuery(query);
+            } else {
+                window.setStatus(consts.get("notProperState"), "");
+            }
+        }
     }
 
     protected void update(boolean withUnrelease) {
@@ -1639,6 +1629,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             window.clearStatus();
         }
     }
+    
+    public HandlerRegistration addActionHandler(ActionHandler handler) {
+        return addHandler(handler, ActionEvent.getType());
+    } 
     
     public ArrayList<QueryData> getQueryFields() {
         int                  i;
@@ -2369,10 +2363,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         changeDomainScreen.setDomain(domainMap.get(domain));
     }
 
-    public HandlerRegistration addActionHandler(ActionHandler handler) {
-        return addHandler(handler, ActionEvent.getType());
-    }
-    
     /**
      * We need to add additional fields to the list of queried fields if it
      * contains any field belonging to private well water's report to/organization.
@@ -2519,5 +2509,5 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             addr.setWorkPhone(sorg.getOrganizationWorkPhone());
             addr.setZipCode(sorg.getOrganizationZipCode());                                           
         }
-    } 
+    }
 }

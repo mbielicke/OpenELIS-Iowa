@@ -356,7 +356,7 @@ public class SampleHistoryUtility {
             }
             
             HistoryScreen.showHistory(OpenELIS.consts.get("historySampleQA"),
-                                      ReferenceTable.SAMPLE_ITEM, refVoList);
+                                      ReferenceTable.SAMPLE_QAEVENT, refVoList);
             window.clearStatus();
         } catch (Exception e) {
             window.clearStatus();
