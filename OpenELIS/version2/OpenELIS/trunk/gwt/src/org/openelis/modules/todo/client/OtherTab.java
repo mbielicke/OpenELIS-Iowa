@@ -121,7 +121,7 @@ public class OtherTab extends Screen {
             table.load(model);
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getLoggedIn", new AsyncCallback<ArrayList<AnalysisCacheVO>>() {
+            service.callList("getOther", new AsyncCallback<ArrayList<AnalysisCacheVO>>() {
                 public void onSuccess(ArrayList<AnalysisCacheVO> result) {
                     ArrayList<TableDataRow> model;         
                     

@@ -131,10 +131,12 @@ public class SampleDuplicateUtil {
     }
     
     private static void duplicateSampleItems(SampleItemManager newMan, SampleItemManager oldMan) throws Exception {
-        int index;
+        int i,j,index;
         SampleItemViewDO newData, oldData;
+        HashMap<Integer, AnalysisViewDO> oldNewAnaMap;
         
-        for (int i = 0; i < oldMan.count(); i++) {
+        oldNewAnaMap = new HashMap<Integer, AnalysisViewDO>();
+        for (i = 0; i < oldMan.count(); i++) {
             oldData = oldMan.getSampleItemAt(i);
             index = newMan.addSampleItem();
             newData = newMan.getSampleItemAt(index);
@@ -150,8 +152,10 @@ public class SampleDuplicateUtil {
             newData.setSourceOfSample(oldData.getSourceOfSample());
             newData.setContainer(oldData.getContainer());
             
-            duplicateAnalyses (newMan.getAnalysisAt(index), oldMan.getAnalysisAt(i)); 
+            duplicateAnalyses (newMan.getAnalysisAt(index), oldMan.getAnalysisAt(i), oldNewAnaMap); 
         }
+        
+        setPrepAnalyses (newMan, oldMan, oldNewAnaMap);
     }
     
     private static void duplicateOrganizations(SampleOrganizationManager newMan,
@@ -209,15 +213,14 @@ public class SampleDuplicateUtil {
         }
     }
         
-    private static void duplicateAnalyses(AnalysisManager newMan, AnalysisManager oldMan) throws Exception {
+    private static void duplicateAnalyses(AnalysisManager newMan, AnalysisManager oldMan,
+                                          HashMap<Integer, AnalysisViewDO> newOldAnaIdMap) throws Exception {
         int index;
-        Integer statusId, prepIndex;
+        Integer statusId;
         String tname, mname;
-        AnalysisViewDO newData, oldData, prepData;
-        HashMap<Integer, Integer> prepIdMap;
+        AnalysisViewDO newData, oldData;
         AnalysisResultManager newRM, oldRM;        
         
-        prepIdMap = new HashMap<Integer, Integer>();
         for (int i = 0; i < oldMan.count(); i++) {
             oldData = oldMan.getAnalysisAt(i);
             statusId = oldData.getStatusId();
@@ -235,30 +238,7 @@ public class SampleDuplicateUtil {
                 throw new LocalizedException("analysisHasReflexAnalysesException", oldData.getTestName()+ ":"+oldData.getMethodName());
             index = newMan.addAnalysis();
             newData = newMan.getAnalysisAt(index);
-            
-            if (anaInPrepId.equals(statusId)) {
-                /*
-                 * if the old analysis was in prep then we create an analysis in
-                 * the new manager and put its id in the hash map as the value where
-                 * the key is the old analysis' id so that when we find the analysis 
-                 * in the old manager later which this one has as its prep, we will
-                 * be able to set this analysis' prep analysis id 
-                 */
-                newData.setStatusId(anaInPrepId);
-                prepIdMap.put(oldData.getPreAnalysisId(), index);                          
-            }             
-            prepIndex = prepIdMap.get(oldData.getId());            
-            if (prepIndex != null) {         
-                /*
-                 * if this analysis is a prep test for another then we find it in
-                 * the new manager and set the various fields
-                 */
-                prepData = newMan.getAnalysisAt(prepIndex);
-                prepData.setPreAnalysisId(newData.getId());
-                prepData.setAvailableDate(null);
-                prepData.setPreAnalysisTest(tname);
-                prepData.setPreAnalysisMethod(mname);
-            }
+            newOldAnaIdMap.put(oldData.getId(), newData);
             
             newData.setTestName(tname);
             newData.setMethodName(mname);
@@ -332,6 +312,41 @@ public class SampleDuplicateUtil {
             newMan.addAnalysisQA(newData);
         }               
     }   
+    
+    private static void setPrepAnalyses(SampleItemManager newMan, SampleItemManager oldMan,
+                                           HashMap<Integer, AnalysisViewDO> oldNewAnaMap) throws Exception {
+        Integer oldId, oldPrepId;
+        AnalysisViewDO newData, oldData, newPrepData;
+        AnalysisManager oldAnaMan;
+        
+        /*
+         * we go through all the sample items and analyses and connect the new
+         * in-prep analyses with their prep analyses
+         */
+        for (int i = 0; i < oldMan.count(); i++) {    
+            oldAnaMan = oldMan.getAnalysisAt(i);
+            for (int j = 0; j < oldAnaMan.count(); j++) {
+                oldData = oldAnaMan.getAnalysisAt(j);
+                oldId = oldData.getId();
+                oldPrepId = oldData.getPreAnalysisId();
+                /*
+                 * if the old analysis, say 'O', corresponding to the new analysis,
+                 * say 'A', was in-prep then we find the new analysis, say 'P',
+                 * corresponding to O's prep analysis and set P's id as A's 
+                 * pre analysis id   
+                 */
+                if (oldPrepId != null) {
+                    newData = oldNewAnaMap.get(oldId);
+                    newPrepData = oldNewAnaMap.get(oldPrepId);
+                    newData.setStatusId(anaInPrepId);
+                    newData.setPreAnalysisId(newPrepData.getId());
+                    newData.setAvailableDate(null);
+                    newData.setPreAnalysisTest(newPrepData.getTestName());
+                    newData.setPreAnalysisMethod(newPrepData.getMethodName());
+                }
+            }
+        }               
+    }
     
     private static void duplicateEnvironmental(SampleEnvironmentalManager newMan,
                                                SampleEnvironmentalManager oldMan) {
