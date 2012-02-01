@@ -44,11 +44,8 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
-import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporter;
 import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JRField;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
@@ -87,6 +84,7 @@ import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.SDWISUnloadReportRemote;
 import org.openelis.report.Prompt;
+import org.openelis.report.sdwisunload.StatusDataSource;
 import org.openelis.utils.Counter;
 import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
@@ -95,7 +93,7 @@ import org.openelis.utils.ReportUtil;
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
 
-public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRemote {
+public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
 
     @EJB
     private SessionCacheLocal session;    
@@ -129,7 +127,6 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
     private static Integer releasedStatusId, sdwisBacterialId, typeDictionaryId;
     private static HashMap<String, String> methodCodes, contaminantIds;
     
-    private int                                statusIndex;
     private ArrayList<HashMap<String, Object>> statusList;
     
     @PostConstruct
@@ -149,7 +146,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
      * Returns the prompt for a single re-print
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<OptionListItem> /*loc,*/ prn;
+        ArrayList<OptionListItem> prn;
         ArrayList<Prompt>         p;
         Calendar                  fromDate, toDate;
 
@@ -184,17 +181,6 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     .setDefaultValue(ReportUtil.toString(toDate.getTime(), "yyyy-MM-dd HH:mm"))
                     .setRequired(true));
 
-//            loc = new ArrayList<OptionListItem>();
-//            loc.add(new OptionListItem("-ank", "Ankeny"));
-//            loc.add(new OptionListItem("-ic", "Iowa City"));
-//            loc.add(new OptionListItem("-lk", "Lakeside"));
-//
-//            p.add(new Prompt("LOCATION", Prompt.Type.ARRAY).setPrompt("Location:")
-//                                                           .setWidth(100)
-//                                                           .setOptionList(loc)
-//                                                           .setMutiSelect(false)
-//                                                           .setRequired(true));
-//            
             prn = printers.getListByType("pdf");
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
                                                           .setWidth(200)
@@ -236,6 +222,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         SampleSDWISViewDO ssVDO;
         SectionViewDO secVDO;
         SimpleDateFormat format;
+        StatusDataSource sds;
         String location, printer;
         URL url;
 
@@ -280,7 +267,6 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
             sampleCounts = new Counter();
             
             statusList = new ArrayList<HashMap<String, Object>>();
-            statusIndex = -1;
             
             samples = sample.fetchSDWISByReleased(beginReleased, endReleased);
             sIter = samples.iterator();
@@ -320,7 +306,8 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     } catch (NotFoundException nfE) {
                         // no qa events found means sample is not overridden
                     } catch (Exception anyE) {
-                        throw new Exception("Error looking up result override Sample QAEvents; "+anyE.getMessage());
+                        throw new Exception("Error looking up result override Sample QAEvents for accession #"+
+                                            sDO.getAccessionNumber()+"; "+anyE.getMessage());
                     }
 
                     if (sampleOverride) {
@@ -351,7 +338,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                             } catch (NotFoundException nfE) {
                                 // no qa events found means analysis is not overridden
                             } catch (Exception anyE) {
-                                throw new Exception("Error looking up result override Analysis QAEvents; "+anyE.getMessage());
+                                throw new Exception("Error looking up result override Analysis QAEvents for '"+
+                                                    aVDO.getTestName()+", "+aVDO.getMethodName()+
+                                                    "' on accession #"+sDO.getAccessionNumber()+
+                                                    "; "+anyE.getMessage());
                             }
                             
                             secVDO = sectionCache.getById(aVDO.getSectionId());
@@ -389,9 +379,12 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
             jparam.put("END_RELEASED", ReportUtil.toString(endReleased, "yyyy-MM-dd HH:mm"));
             jparam.put("SAMPLE_COUNTS", sampleCounts);
 
+            sds = new StatusDataSource();
+            sds.setStatusList(statusList);
+            
             url = ReportUtil.getResourceURL("org/openelis/report/sdwisunload/main.jasper");
             jreport = (JasperReport)JRLoader.loadObject(url);
-            jprint = JasperFillManager.fillReport(jreport, jparam, this);
+            jprint = JasperFillManager.fillReport(jreport, jparam, sds);
             jexport = new JRPdfExporter();
             jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(statFile));
             jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
@@ -461,7 +454,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
     }
 
     protected void writeSampleRow(PrintWriter writer, SampleDO sVDO, SampleSDWISViewDO ssVDO,
-                                     String location, boolean sampleOverride, Counter sampleCounts) throws Exception {
+                                  String location, boolean sampleOverride, Counter sampleCounts) throws Exception {
         ArrayList<AuxDataViewDO>   adList;
         AuxDataViewDO              adVDO;
         DictionaryDO               sampCatDO, sampTypeDO;
@@ -576,7 +569,7 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                 row.append(getPaddedString(ReportUtil.toString(dateDashFormat.parse(compDateString),
                                                                "yyyyMMdd"), 8));
             } catch (ParseException parE) {
-                throw new Exception("Invalid Composite Date; "+parE.getMessage());
+                throw new Exception("Invalid Composite Date for accession #"+sVDO.getAccessionNumber()+"; "+parE.getMessage());
             }
         } else {
             row.append(getPaddedString(compDateString, 8));
@@ -637,7 +630,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         try {
             unitDO = dictionaryCache.getById(analysis.getUnitOfMeasureId());
         } catch (Exception anyE) {
-            throw new Exception("Error looking up units from dictionary; "+anyE.getMessage());
+            throw new Exception("Error looking up units from dictionary for '"+
+                                analysis.getTestName()+", "+analysis.getMethodName()+
+                                "' on accession #"+sample.getAccessionNumber()+
+                                "; "+anyE.getMessage());
         }
         
         resultData = new ArrayList<HashMap<String,String>>();
@@ -645,7 +641,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         try {
             result.fetchByAnalysisIdForDisplay(analysis.getId(), results);
         } catch (Exception anyE) {
-            throw new Exception("Error retrieving result records; "+anyE.getMessage());
+            throw new Exception("Error retrieving result records for '"+
+                                analysis.getTestName()+", "+analysis.getMethodName()+
+                                "' on accession #"+sample.getAccessionNumber()+
+                                "; "+anyE.getMessage());
         }
         rowIter = results.iterator();
         while (rowIter.hasNext()) {
@@ -667,7 +666,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     try {
                         rowData.put("microbe", dictionaryCache.getById(Integer.valueOf(rVDO.getValue())).getEntry());
                     } catch (Exception anyE) {
-                        throw new Exception("Error looking up dictionary result; "+anyE.getMessage());
+                        throw new Exception("Error looking up dictionary result for '"+
+                                            analysis.getTestName()+", "+analysis.getMethodName()+
+                                            "' on accession #"+sample.getAccessionNumber()+
+                                            "; "+anyE.getMessage());
                     }
                 } else {
                     if (rVDO.getValue() != null) {
@@ -721,7 +723,10 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
                     try {
                         alVDO = analyte.fetchById(crVDO.getAnalyteId());
                     } catch (Exception anyE) {
-                        throw new Exception("Error looking up result column analyte; "+anyE.getMessage());
+                        throw new Exception("Error looking up result column analyte '"+
+                                            crVDO.getAnalyte()+"' for '"+analysis.getTestName()+
+                                            ", "+analysis.getMethodName()+"' on accession #"+
+                                            sample.getAccessionNumber()+"; "+anyE.getMessage());
                     }
                     if ("quant_limit".equals(alVDO.getExternalId())) {
                         rowData.put("detection", crVDO.getValue());
@@ -1092,30 +1097,5 @@ public class SDWISUnloadReportBean implements JRDataSource, SDWISUnloadReportRem
         contaminantIds.put("UV Absorbance at 254 nm",               "2922");
         contaminantIds.put("Vinyl chloride",                        "2976");
         contaminantIds.put("Zinc",                                  "1095");
-    }
-    
-    public boolean next() throws JRException {
-        boolean hasNext = false;
-        
-        if (statusList != null) {
-            statusIndex++;
-            hasNext = statusIndex < statusList.size();
-        }
-        
-        return hasNext;
-    }
-    
-    public Object getFieldValue(JRField field) throws JRException {
-        Object                  objValue = null;
-        HashMap<String, Object> statRow;
-
-        if (field != null && statusList != null) {
-            statRow = (HashMap<String, Object>) statusList.get(statusIndex);
-            if (!statRow.containsKey(field.getName()))
-                throw new JRException("Unable to get value for field '" + field.getName());
-            objValue = statRow.get(field.getName());
-        }
-        
-        return objValue;
     }
 }
