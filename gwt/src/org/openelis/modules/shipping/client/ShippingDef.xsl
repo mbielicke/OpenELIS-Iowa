@@ -101,7 +101,7 @@ UIRF Software License are applicable instead of those above.
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
                     <menuItem key="processShipping" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'processShipping')}" />
-                    <menuItem key="showManifest" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'showManifest')}" />
+                    <menuItem key="print" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'print')}" />
                     <html>&lt;hr/&gt;</html>
                     <menuItem key="shippingHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'shippingHistory')}" />
                     <menuItem key="itemHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'shippingItemHistory')}" />

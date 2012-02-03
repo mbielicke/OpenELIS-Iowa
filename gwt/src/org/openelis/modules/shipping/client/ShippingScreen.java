@@ -46,7 +46,6 @@ import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -78,6 +77,8 @@ import org.openelis.manager.ShippingTrackingManager;
 import org.openelis.meta.ShippingMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.note.client.NotesTab;
+import org.openelis.modules.report.client.ShippingReportScreen;
+import org.openelis.report.Prompt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -89,6 +90,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -105,7 +107,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
 
     private AppButton                      queryButton, previousButton, nextButton, addButton,
                                            updateButton, commitButton, abortButton;
-    protected MenuItem                     processShipping, showManifest, shippingHistory, shippingItemHistory,
+    protected MenuItem                     processShipping, print, shippingHistory, shippingItemHistory,
                                            shippingTrackingHistory;
     private TextBox                        id, numberOfPackages, cost, shippedToAddressMultipleUnit,
                                            processedById, shippedToAddressStreetAddress, shippedToAddressCity,
@@ -118,7 +120,6 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
     private ShippingScreen                 screen;
     private ProcessShippingScreen          processShippingScreen;
     private ShippingReportScreen           shippingReportScreen;
-        
     private boolean                        openedFromMenu;
     
     protected ScreenService                organizationService;    
@@ -297,14 +298,14 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             }
         });
         
-        showManifest = (MenuItem)def.getWidget("showManifest");
-        addScreenHandler(showManifest, new ScreenEventHandler<Object>() {
+        print = (MenuItem)def.getWidget("print");
+        addScreenHandler(print, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {                
-                showManifest();
+                print();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                showManifest.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+                print.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -1145,32 +1146,29 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         });
     }
     
-    protected void showManifest() {        
-        Query query;
-        QueryData field;
-        
-        query = new Query();        
-        field = new QueryData();
-        field.key = "SHIPPING_ID";
-        field.query = manager.getShipping().getId().toString();
-        field.type = QueryData.Type.INTEGER;
-        query.setFields(field);
-        
-        field = new QueryData();
-        field.key = "PRINTER";
-        field.query = "-view-";
-        field.type = QueryData.Type.INTEGER;
-        query.setFields(field);
+    protected void print() {
+        ScreenWindow modal;
         
         try {
             if (shippingReportScreen == null) {
-                shippingReportScreen = new ShippingReportScreen(window);  
-                shippingReportScreen.setRunReportInterface("runReportForManifest");
-            } else {
-                shippingReportScreen.setWindow(window);
+                shippingReportScreen = new ShippingReportScreen();               
+                
+                /*
+                 * we need to make sure that the value of SHIPPING_ID gets set
+                 * the first time the screen is brought up 
+                 */
+                DeferredCommand.addCommand(new Command() {
+                    public void execute() {
+                        shippingReportScreen.setFieldValue("SHIPPING_ID", manager.getShipping().getId());
+                    }
+                });
+            } else {           
+                shippingReportScreen.reset();
+                shippingReportScreen.setFieldValue("SHIPPING_ID", manager.getShipping().getId());
             }
-            
-            shippingReportScreen.runReport(query);
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(consts.get("print"));       
+            modal.setContent(shippingReportScreen);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();

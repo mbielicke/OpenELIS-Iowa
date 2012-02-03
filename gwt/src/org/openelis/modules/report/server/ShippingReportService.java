@@ -38,17 +38,7 @@ public class ShippingReportService {
 
     public ArrayList<Prompt> getPrompts() throws Exception {
         return remote().getPrompts();
-    }
-    
-    public ReportStatus runReportForManifest(Query query) throws Exception {
-        ReportStatus st;
-        
-        st = remote().runReportForManifest(query.getFields());
-        if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
-
-        return st;
-    }
+    }      
     
     public ReportStatus runReportForProcessing(Query query) throws Exception {
         ReportStatus st;
