@@ -38,7 +38,5 @@ public interface ShippingReportRemote {
 
     public ArrayList<Prompt> getPrompts() throws Exception;
     
-    public ReportStatus runReportForManifest(ArrayList<QueryData> paramList) throws Exception;
-    
     public ReportStatus runReportForProcessing(ArrayList<QueryData> paramList) throws Exception;
 }

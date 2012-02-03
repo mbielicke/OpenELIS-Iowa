@@ -67,25 +67,25 @@ public class ShippingReportBean implements ShippingReportRemote {
 
     @EJB
     private InventoryItemCacheLocal inventoryItemCache;
-    
-    @EJB
-    private LabelReportLocal         labelReport;  
-    
-    @EJB
-    private DictionaryCacheLocal     dictionaryCache;
-    
-    @EJB
-    private PrinterCacheLocal        printer;
 
-    private final static String      PRN_PREFIX = "print://";
-    
-    private static Integer           shipFromICId, shipFromAnkId;
-    
-    private static final Logger log  = Logger.getLogger(ShippingReportBean.class);
+    @EJB
+    private LabelReportLocal        labelReport;
+
+    @EJB
+    private DictionaryCacheLocal    dictionaryCache;
+
+    @EJB
+    private PrinterCacheLocal       printer;
+
+    private final static String     PRN_PREFIX = "print://";
+
+    private static Integer          shipFromICId, shipFromAnkId;
+
+    private static final Logger     log        = Logger.getLogger(ShippingReportBean.class);
 
     @Resource
     private SessionContext          ctx;
-    
+
     @PostConstruct
     public void init() {
         try {
@@ -93,7 +93,7 @@ public class ShippingReportBean implements ShippingReportRemote {
                 shipFromICId = dictionaryCache.getIdBySystemName("order_ship_from_ic");
                 shipFromAnkId = dictionaryCache.getIdBySystemName("order_ship_from_ank");
             }
-        }  catch (Exception e) {
+        } catch (Exception e) {
             log.error("Failed to lookup constants for dictionary entries", e);
         }
     }
@@ -110,8 +110,7 @@ public class ShippingReportBean implements ShippingReportRemote {
 
             p.add(new Prompt("SHIPPING_ID", Prompt.Type.INTEGER).setPrompt("Shipping Id:")
                                                                 .setHidden(true)
-                                                                .setWidth(75)
-                                                                .setRequired(true));
+                                                                .setWidth(75));
             p.add(new Prompt("MANIFEST", Prompt.Type.CHECK).setPrompt("Print Manifest:")
                                                            .setDefaultValue("Y"));
             p.add(new Prompt("SHIPPING_LABEL", Prompt.Type.CHECK).setPrompt("Print Labels:")
@@ -140,118 +139,14 @@ public class ShippingReportBean implements ShippingReportRemote {
     }
 
     /**
-     * Just prints the manifest report
-     */
-    public ReportStatus runReportForManifest(ArrayList<QueryData> paramList) throws Exception {
-        Integer shippingId;
-        String shippingIdStr, printer, dir, printstat;
-        URL url;
-        File tempFile;
-        HashMap<String, Object> jparam;
-        Connection con;
-        ReportStatus status;
-        HashMap<String, QueryData> param;
-        JasperReport jreport;
-        JasperPrint jprint;
-        JRExporter jexport;
-
-        /*
-         * push status into session so we can query it while the report is
-         * running
-         */
-        status = new ReportStatus();
-        session.setAttribute("ManifestReport", status);
-
-        /*
-         * Recover all the parameters and build a specific where clause
-         */
-        param = ReportUtil.getMapParameter(paramList);
-
-        shippingIdStr = ReportUtil.getSingleParameter(param, "SHIPPING_ID");
-        printer = ReportUtil.getSingleParameter(param, "PRINTER");
-        if (DataBaseUtil.isEmpty(shippingIdStr) || DataBaseUtil.isEmpty(printer))
-            throw new InconsistencyException("You must specify the shipping id and printer for this report");
-        /*
-         * find the shipping record
-         */
-        try {
-            shippingId = Integer.parseInt(shippingIdStr);
-            shipping.fetchById(shippingId);
-        } catch (NotFoundException e) {
-            throw new NotFoundException("A shipping record with id " + shippingIdStr +
-                                        " does not exists");
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-
-        /*
-         * start the report
-         */
-        con = null;
-        try {
-            status.setMessage("Initializing report");
-
-            con = ReportUtil.getConnection(ctx);
-            url = ReportUtil.getResourceURL("org/openelis/report/shipping/main.jasper");
-            dir = ReportUtil.getResourcePath(url);
-
-            tempFile = File.createTempFile("shippingManifest", ".pdf", new File("/tmp"));
-
-            jparam = new HashMap<String, Object>();
-            jparam.put("SHIPPING_ID", shippingIdStr);
-            jparam.put("SUBREPORT_DIR", dir);
-
-            status.setMessage("Loading report");
-
-            jreport = (JasperReport)JRLoader.loadObject(url);
-            jprint = JasperFillManager.fillReport(jreport, jparam, con);
-            jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
-            jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
-
-            status.setMessage("Outputing report").setPercentComplete(20);
-
-            jexport.exportReport();
-
-            status.setPercentComplete(100);
-
-            //
-            // print the manifest
-            //
-            if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
-                status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
-            } else {
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
-                      .setStatus(ReportStatus.Status.SAVED);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        } finally {
-            try {
-                if (con != null)
-                    con.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return status;
-    }
-
-    /**
-     * Prints the manifest report as well as all the other forms related to the 
+     * Prints the manifest report as well as all the other forms related to the
      * shipping record, like order request forms and instructions
      */
     public ReportStatus runReportForProcessing(ArrayList<QueryData> paramList) throws Exception {
         int numpkg;
+        boolean printManifest, printLabel, printReqform, printInstr;
         Integer shippingId, orderId, prevOrderId, itemId, methodId;
-        String shippingIdStr, printer, barcodePrinter, dir, printstat, itemUri, uriPath, 
-               name, method, fromStreetAddress1, fromStreetAddress2, fromCity, fromState,
-               fromZip, attention, toStreetAddress1, toAptSuite, toStreetAddress2, toCity, toState, toZip;
+        String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel, requestForm, instruction, dir, printstat, itemUri, uriPath, name, method, fromStreetAddress1, fromStreetAddress2, fromCity, fromState, fromZip, attention, toStreetAddress1, toAptSuite, toStreetAddress2, toCity, toState, toZip;
         URL url;
         File tempFile;
         HashMap<String, Object> jparam;
@@ -284,9 +179,19 @@ public class ShippingReportBean implements ShippingReportRemote {
         shippingIdStr = ReportUtil.getSingleParameter(param, "SHIPPING_ID");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
         barcodePrinter = ReportUtil.getSingleParameter(param, "BARCODE");
+        manifest = ReportUtil.getSingleParameter(param, "MANIFEST");
+        shippingLabel = ReportUtil.getSingleParameter(param, "SHIPPING_LABEL");
+        requestForm = ReportUtil.getSingleParameter(param, "REQUESTFORM");
+        instruction = ReportUtil.getSingleParameter(param, "INSTRUCTION");
+
         if (DataBaseUtil.isEmpty(shippingIdStr) || DataBaseUtil.isEmpty(printer) ||
             DataBaseUtil.isEmpty(barcodePrinter))
             throw new InconsistencyException("You must specify the shipping id, printer and barcode printer for this report");
+
+        printManifest = printOption(manifest);
+        printLabel = printOption(shippingLabel);
+        printReqform = printOption(requestForm);
+        printInstr = printOption(instruction);
 
         //
         // find the shipping record
@@ -307,42 +212,53 @@ public class ShippingReportBean implements ShippingReportRemote {
          */
         con = null;
         try {
-            status.setMessage("Initializing report");
+            if (printManifest) {
+                status.setMessage("Initializing report");
 
-            con = ReportUtil.getConnection(ctx);
-            url = ReportUtil.getResourceURL("org/openelis/report/shipping/main.jasper");
-            dir = ReportUtil.getResourcePath(url);
+                con = ReportUtil.getConnection(ctx);
+                url = ReportUtil.getResourceURL("org/openelis/report/shipping/main.jasper");
+                dir = ReportUtil.getResourcePath(url);
 
-            tempFile = File.createTempFile("shippingManifest", ".pdf", new File("/tmp"));
+                tempFile = File.createTempFile("shippingManifest", ".pdf", new File("/tmp"));
 
-            jparam = new HashMap<String, Object>();
-            jparam.put("SHIPPING_ID", shippingIdStr);
-            jparam.put("SUBREPORT_DIR", dir);
+                jparam = new HashMap<String, Object>();
+                jparam.put("SHIPPING_ID", shippingIdStr);
+                jparam.put("SUBREPORT_DIR", dir);
 
-            status.setMessage("Loading report");
+                status.setMessage("Loading report");
 
-            jreport = (JasperReport)JRLoader.loadObject(url);
-            jprint = JasperFillManager.fillReport(jreport, jparam, con);
-            jexport = new JRPdfExporter();
-            jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
-            jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
+                jreport = (JasperReport)JRLoader.loadObject(url);
+                jprint = JasperFillManager.fillReport(jreport, jparam, con);
+                jexport = new JRPdfExporter();
+                jexport.setParameter(JRExporterParameter.OUTPUT_STREAM,
+                                     new FileOutputStream(tempFile));
+                jexport.setParameter(JRExporterParameter.JASPER_PRINT, jprint);
 
-            status.setMessage("Outputing report").setPercentComplete(20);
+                status.setMessage("Outputing report").setPercentComplete(20);
 
-            jexport.exportReport();
+                jexport.exportReport();
 
-            status.setPercentComplete(100);
-            
-            if (ReportUtil.isPrinter(printer)) {
-                //
-                // print the manifest
-                //
-                printstat = ReportUtil.print(tempFile, printer, 1);
-                status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
+                status.setPercentComplete(100);
 
+                if (ReportUtil.isPrinter(printer)) {
+                    //
+                    // print the manifest
+                    //
+                    printstat = ReportUtil.print(tempFile, printer, 1);
+                    status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
+                } else {
+                    tempFile = ReportUtil.saveForUpload(tempFile);
+                    status.setMessage(tempFile.getName())
+                          .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                          .setStatus(ReportStatus.Status.SAVED);
+                }
+            }
+
+            if (printLabel) {
                 numpkg = shipData.getNumberOfPackages();
                 //
-                // initialize all parts of the text to be printed on barcode labels
+                // initialize all parts of the text to be printed on barcode
+                // labels
                 //
                 name = "State Hygienic Laboratory";
                 method = "";
@@ -353,33 +269,33 @@ public class ShippingReportBean implements ShippingReportRemote {
                 fromStreetAddress2 = null;
                 fromCity = null;
                 fromZip = null;
-                
+
                 if (shipFromICId.equals(shipData.getShippedFromId())) {
                     fromStreetAddress1 = "University of Iowa Research Park";
                     fromStreetAddress2 = "2490 Crosspark Rd";
                     fromCity = "Coralville";
                     fromZip = "52241-4721";
-                } else if (shipFromAnkId.equals(shipData.getShippedFromId())) { 
+                } else if (shipFromAnkId.equals(shipData.getShippedFromId())) {
                     fromStreetAddress1 = "Iowa Laboratories Complex";
                     fromStreetAddress2 = "2220 S. Ankeny Blvd";
                     fromCity = "Ankeny";
                     fromZip = "50023";
                 }
-                
+
                 fromState = "IA";
                 shipTo = shipData.getShippedTo();
                 address = shipTo.getAddress();
                 attention = toStreetAddress1 = shipTo.getName();
                 toAptSuite = address.getMultipleUnit();
-                toStreetAddress2 =  address.getStreetAddress();
+                toStreetAddress2 = address.getStreetAddress();
                 if (toAptSuite != null)
-                    toStreetAddress2 = toAptSuite+" "+toStreetAddress2;
+                    toStreetAddress2 = toAptSuite + " " + toStreetAddress2;
                 toCity = address.getCity();
                 toState = address.getState();
-                toZip = address.getZipCode(); 
-                
+                toZip = address.getZipCode();
+
                 //
-                // print the barcode labels                
+                // print the barcode labels
                 //
                 if (numpkg > 0) {
                     tempFile = File.createTempFile("shippingAddresslabel", ".txt", new File("/tmp"));
@@ -395,41 +311,43 @@ public class ShippingReportBean implements ShippingReportRemote {
                     printstat = ReportUtil.print(tempFile, barcodePrinter, 1);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
                 }
-            } else {
-                tempFile = ReportUtil.saveForUpload(tempFile);
-                status.setMessage(tempFile.getName())
-                      .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
-                      .setStatus(ReportStatus.Status.SAVED);
             }
 
-            orderItems = null;
-            itemMap = new HashMap<Integer, InventoryItemDO>();
-            orderItems = orderItem.fetchByShippingId(shippingId);
-            prevOrderId = null;
-            uriPath = ReportUtil.getSystemVariableValue("inventory_uri_directory");
-            for (OrderItemDO data : orderItems) {
-                orderId = data.getOrderId();
-                if ( !orderId.equals(prevOrderId))
-                    //
-                    // print the order request form
-                    //
-                    runRequestFormReport(orderId, printer);
-                itemId = data.getInventoryItemId();
-                item = itemMap.get(itemId);
-                if (item == null) {
-                    item = inventoryItemCache.getById(itemId);
-                    itemMap.put(itemId, item);
+            if (printReqform || printInstr) {
+                orderItems = null;
+                itemMap = new HashMap<Integer, InventoryItemDO>();
+                orderItems = orderItem.fetchByShippingId(shippingId);
+                prevOrderId = null;
+                uriPath = ReportUtil.getSystemVariableValue("inventory_uri_directory");
+                for (OrderItemDO data : orderItems) {
+                    orderId = data.getOrderId();
+                    if ( !orderId.equals(prevOrderId) && printReqform)
+                        //
+                        // print the order request form
+                        //
+                        runRequestFormReport(orderId, printer);
+
+                    if (printInstr) {
+                        itemId = data.getInventoryItemId();
+                        item = itemMap.get(itemId);
+                        if (item == null) {
+                            item = inventoryItemCache.getById(itemId);
+                            itemMap.put(itemId, item);
+                        }
+                        //
+                        // print the file linked to this item if any
+                        //
+
+                        itemUri = item.getProductUri();
+                        if (itemUri != null && itemUri.startsWith(PRN_PREFIX) &&
+                            data.getQuantity() > 0) {
+                            itemUri = itemUri.replaceAll(PRN_PREFIX, "");
+                            tempFile = new File(uriPath, itemUri);
+                            ReportUtil.printWithoutDelete(tempFile, printer, data.getQuantity());
+                        }
+                    }
+                    prevOrderId = orderId;
                 }
-                //
-                // print the file linked to this item if any
-                //
-                itemUri = item.getProductUri();
-                if (itemUri != null && itemUri.startsWith(PRN_PREFIX) && data.getQuantity() > 0) {
-                    itemUri = itemUri.replaceAll(PRN_PREFIX, "");
-                    tempFile = new File(uriPath, itemUri);
-                    ReportUtil.printWithoutDelete(tempFile, printer, data.getQuantity());
-                }
-                prevOrderId = orderId;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -461,18 +379,23 @@ public class ShippingReportBean implements ShippingReportRemote {
         field.query = printer;
         field.type = QueryData.Type.STRING;
         list.add(field);
-        
+
         field = new QueryData();
         field.key = "USE_NUM_FORMS";
         field.type = QueryData.Type.STRING;
         /*
          * query needs to be specified even if it's redundant because otherwise
          * ReportUtil.getSingleParameter() for this parameter in the other bean
-         * will return null and this parameter won't have any effect on the report 
+         * will return null and this parameter won't have any effect on the
+         * report
          */
         field.query = "USE_NUM_FORMS";
         list.add(field);
 
         requestFormReport.runReport(list);
+    }
+
+    private boolean printOption(String option) {
+        return DataBaseUtil.trim(option) != null && "Y".equals(option);
     }
 }
