@@ -57,7 +57,6 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.OrganizationLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SessionCacheLocal;
@@ -92,10 +91,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     private DictionaryLocal            dictionary;
 
     @EJB
-    private SampleProjectLocal         sampleProject;
-    
-    @EJB
-    private OrganizationLocal          organization;
+    private SampleProjectLocal         sampleProject;   
     
     @EJB
     private PrinterCacheLocal          printer;
