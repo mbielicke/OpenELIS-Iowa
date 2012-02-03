@@ -395,8 +395,8 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 for (i = 0; i < model.size(); i++) {
                     r = model.get(i);
                     if (!analysisInitiatedId.equals(r.key) && !analysisOnHoldId.equals(r.key) && 
-                        !analysisRequeueId.equals(r.key) && !analysisCompletedId.equals(r.key) && 
-                        !analysisLoggedInId.equals(r.key) && !State.QUERY.equals(event.getState())) 
+                        !analysisRequeueId.equals(r.key) && !analysisLoggedInId.equals(r.key) &&
+                        !State.QUERY.equals(event.getState())) 
                         r.enabled = false;
                     else
                         r.enabled = true;

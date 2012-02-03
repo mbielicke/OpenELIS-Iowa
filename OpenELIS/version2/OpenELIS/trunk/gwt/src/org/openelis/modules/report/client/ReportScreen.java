@@ -45,6 +45,7 @@ import org.openelis.gwt.widget.DateField;
 import org.openelis.gwt.widget.DoubleField;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.Field;
+import org.openelis.gwt.widget.HasField;
 import org.openelis.gwt.widget.IntegerField;
 import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.StringField;
@@ -83,6 +84,8 @@ public class ReportScreen extends Screen {
                                 promptsInterface;
 
     protected Preferences       preferences;
+    
+    protected boolean           isScreenInitialized;
 
 	protected ReportScreen() throws Exception {
 		name = null;
@@ -92,10 +95,10 @@ public class ReportScreen extends Screen {
 		reportParameters = new ArrayList<Prompt>();
 		
 		DeferredCommand.addCommand(new Command() {
-			public void execute() {
-				initialize();
-			}
-		});
+            public void execute() {
+                initialize();
+            }
+        });
 	}
 
 	protected void initialize() {
@@ -154,30 +157,43 @@ public class ReportScreen extends Screen {
 	public void setRunReportInterface(String runReportInterface) {
 		this.runReportInterface = runReportInterface;
 	}
+	
+	public void setFieldValue(String key, Object value) {
+	    Widget w;
+	    
+	     w = def.getWidget(key);
+	     if (w != null && w instanceof HasField)
+	         ((HasField)w).setFieldValue(value);	     
+	}
 
+    public Object getFieldValue(String key) {
+        Widget w;
+
+        w = def.getWidget(key);
+        if (w != null && w instanceof HasField)
+            return ((HasField)w).getFieldValue();
+
+        return null;
+    }
+    
+    public boolean isScreenInitialized() {
+        return isScreenInitialized;
+    }
+        	
 	/**
 	 * Gets the prompts from the report
 	 */
 	protected void getReportParameters() {
 		window.setBusy(consts.get("gettingReportParam"));
 
-		service.callList(promptsInterface,
-				new AsyncCallback<ArrayList<Prompt>>() {
-					public void onSuccess(ArrayList<Prompt> result) {
-						reportParameters = result;
-						try {
-						    createReportWindow();
-						    window.setDone(consts.get("loadCompleteMessage"));
-						} catch (Exception e) {
-                            Window.alert(e.getMessage());
-                            window.close();                        
-                        }
-					}
-					public void onFailure(Throwable caught) {
-						window.close();
-						Window.alert("Failed to get parameters for " + name);
-					}
-				});
+		try {
+		    reportParameters = service.callList(promptsInterface);
+		    createReportWindow();
+            window.setDone(consts.get("loadCompleteMessage"));
+		} catch (Exception e) {
+		    window.close();
+            Window.alert("Failed to get parameters for " + name);
+        }		
 	}
 
 	/**
@@ -205,45 +221,42 @@ public class ReportScreen extends Screen {
 			//
 			// decode and create component objects
 			//
-			if (p.isHidden())
-				continue;
 
-			switch (p.getType()) {
-			case ARRAY:
-			case ARRAYMULTI:
-				w = createDropdown(p);
-				((Dropdown<String>) w).enable(true);
-				break;
-			case CHECK:
-				w = createCheckBox(p);
-				((CheckBox) w).enable(true);
-				break;
-			case STRING:
-				f = new StringField();
-				w = createTextBox(f, p);
-				((TextBox) w).enable(true);
-				break;
-			case SHORT:
-			case INTEGER:
-				f = new IntegerField();
-				w = createTextBox(f, p);
-				((TextBox) w).enable(true);
-				break;
-			case FLOAT:
-			case DOUBLE:
-				f = new DoubleField();
-				w = createTextBox(f, p);
-				((TextBox) w).enable(true);
-				break;
-			case DATETIME:
-				w = createCalendar(p);
-				((CalendarLookUp) w).enable(true);
-				break;
-			default:
-				w = null;
-				Window.alert("Error: Type " + p.getType()
-						+ " not supported; Please notify IT");
-			}
+            switch (p.getType()) {
+                case ARRAY:
+                case ARRAYMULTI:
+                    w = createDropdown(p);
+                    ((Dropdown<String>)w).enable(true);
+                    break;
+                case CHECK:
+                    w = createCheckBox(p);
+                    ((CheckBox)w).enable(true);
+                    break;
+                case STRING:
+                    f = new StringField();
+                    w = createTextBox(f, p);
+                    ((TextBox)w).enable(true);
+                    break;
+                case SHORT:
+                case INTEGER:
+                    f = new IntegerField();
+                    w = createTextBox(f, p);
+                    ((TextBox)w).enable(true);
+                    break;
+                case FLOAT:
+                case DOUBLE:
+                    f = new DoubleField();
+                    w = createTextBox(f, p);
+                    ((TextBox)w).enable(true);
+                    break;
+                case DATETIME:
+                    w = createCalendar(p);
+                    ((CalendarLookUp)w).enable(true);
+                    break;
+                default:
+                    w = null;
+                    Window.alert("Error: Type " + p.getType() + " not supported; Please notify IT");
+            }
 
 			if (w != null) {
 				def.setWidget(w, p.getName());
@@ -294,9 +307,10 @@ public class ReportScreen extends Screen {
 			main.setWidth("335px");
 
 		main.setCellHorizontalAlignment(hp, HasAlignment.ALIGN_CENTER);
+		isScreenInitialized = true;
 	}
 
-	/**
+    /**
 	 * Builds a query array from the specified parameters and calls the report's
 	 * run method.
 	 */
@@ -346,37 +360,73 @@ public class ReportScreen extends Screen {
 	/**
 	 * Resets all the fields to their original report specified values
 	 */
-	protected void reset() throws Exception {
-		Dropdown<String> dd;
-		TextBox tb;
-		CalendarLookUp cl;
-		ArrayList<TableDataRow> data;
+    public void reset() throws Exception {
+        byte s, e;
+        Dropdown<String> dd;
+        TextBox tb;
+        CalendarLookUp cl;
+        CheckBox cb;
+        ArrayList<TableDataRow> data;
+        DateTimeFormat format;
 
-		for (String key : def.getWidgets().keySet()) {
-			if (def.getWidget(key) instanceof Dropdown) {
-				dd = ((Dropdown<String>) def.getWidget(key));
-				dd.clearExceptions();
-				data = dd.getData();
-				for (Prompt p : reportParameters) {
-					if (key.equals(p.getName())) {					    
-						resetDropdown(p, data, dd);
-						break;
-					}
-				}
-			} else if (def.getWidget(key) instanceof TextBox) {
-				tb = ((TextBox) def.getWidget(key));
-				tb.setFieldValue("");
-				tb.clearExceptions();
-			} else if (def.getWidget(key) instanceof CalendarLookUp) {
-				cl = ((CalendarLookUp) def.getWidget(key));
-				cl.setValue(null);
-				cl.clearExceptions();
-			}
-			
-		}
+        for (String key : def.getWidgets().keySet()) {
+            if (def.getWidget(key) instanceof Dropdown) {
+                dd = ((Dropdown<String>)def.getWidget(key));
+                dd.clearExceptions();
+                data = dd.getData();
+                for (Prompt p : reportParameters) {
+                    if (key.equals(p.getName())) {
+                        resetDropdown(p, data, dd);
+                        break;
+                    }
+                }
+            } else if (def.getWidget(key) instanceof TextBox) {
+                tb = ((TextBox)def.getWidget(key));
+                tb.clearExceptions();
+                for (Prompt p : reportParameters) {
+                    if (key.equals(p.getName())) {
+                        tb.setValue(p.getDefaultValue());
+                        break;
+                    }
+                }
+            } else if (def.getWidget(key) instanceof CalendarLookUp) {
+                cl = ((CalendarLookUp)def.getWidget(key));
+                cl.clearExceptions();
+                for (Prompt p : reportParameters) {
+                    if (key.equals(p.getName())) {
+                        if (p.getDefaultValue() != null) {
+                            s = getDatetimeCode(p.getDatetimeStartCode());
+                            e = getDatetimeCode(p.getDatetimeEndCode());
+                            if (e > Datetime.DAY)
+                                format = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm");
+                            else
+                                format = DateTimeFormat.getFormat("yyyy-MM-dd");
 
-		window.clearStatus();
-	}
+                            try {
+                                cl.setValue(Datetime.getInstance(s, e,
+                                                                 format.parse(p.getDefaultValue())));
+                            } catch (IllegalArgumentException iargE) {
+                                // we don't set a default if we cannot parse it
+                            }
+                        }
+                        break;
+                    }
+                }
+            } else if (def.getWidget(key) instanceof CheckBox) {
+                cb = ((CheckBox)def.getWidget(key));
+                cb.clearExceptions();
+                for (Prompt p : reportParameters) {
+                    if (key.equals(p.getName())) {
+                        cb.setValue(p.getDefaultValue());
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        window.clearStatus();
+    }
 
 	/**
 	 * Resets the dropdown to prompt specified value
@@ -419,6 +469,8 @@ public class ReportScreen extends Screen {
 				field = getQuery((TextBox) def.getWidget(key), key);
 			else if (def.getWidget(key) instanceof CalendarLookUp)
 				field = getQuery((CalendarLookUp) def.getWidget(key), key);
+	        else if (def.getWidget(key) instanceof CheckBox)
+	            field = getQuery((CheckBox) def.getWidget(key), key);
 			else
 				continue;
 			if (field != null)
@@ -427,7 +479,7 @@ public class ReportScreen extends Screen {
 		return list;
 	}
 
-	/*
+    /*
 	 * Returns the field specific query object
 	 */
 	protected QueryData getQuery(Dropdown<String> dd, String key) {
@@ -496,6 +548,23 @@ public class ReportScreen extends Screen {
 
 		return qd;
 	}
+	
+	private QueryData getQuery(CheckBox c, String key) {
+	    QueryData qd;
+        CheckField field;
+
+        field = (CheckField) c.getField();
+
+        if (field.getValue() == null)
+            return null;
+
+        qd = new QueryData();
+        qd.query = field.formatQuery();
+        qd.key = key;
+        qd.type = QueryData.Type.STRING;
+
+        return qd;
+	}
 
 	protected Dropdown<String> createDropdown(Prompt p) throws Exception {
 		Dropdown<String> d;
@@ -547,6 +616,8 @@ public class ReportScreen extends Screen {
 		f = new CheckField();
 		f.required = p.isRequired();
 		cb.setField(f);
+		if (p.getDefaultValue() != null)
+		    cb.setValue(p.getDefaultValue());
 		if (p.getWidth() != null && p.getWidth() > 0)
 			cb.setWidth(p.getWidth() + "px");
 
@@ -623,7 +694,7 @@ public class ReportScreen extends Screen {
                 format = DateTimeFormat.getFormat("yyyy-MM-dd");
             
             try {
-                c.setFieldValue(Datetime.getInstance(s, e, format.parse(p.getDefaultValue())));
+                c.setValue(Datetime.getInstance(s, e, format.parse(p.getDefaultValue())));
             } catch (IllegalArgumentException iargE) {
                 // we don't set a default if we cannot parse it
             }
@@ -645,11 +716,14 @@ public class ReportScreen extends Screen {
 		//
 		if (!DataBaseUtil.isEmpty(p.getPrompt())) {
 			pr = new Label(p.getPrompt());
-			pr.setStyleName("Prompt");
-			tp.setWidget(row, 0, pr);
+			pr.setStyleName("Prompt");	
+			pr.setWordWrap(false);
 			hp = new HorizontalPanel();
 			hp.add(w);
-			tp.setWidget(row, 1, hp);
+			if (!p.isHidden()) {
+			    tp.setWidget(row, 0, pr);
+			    tp.setWidget(row, 1, hp);
+			}
 		} else if (row > 0) {
 			//
 			// add the widget to the previous row's list of widgets

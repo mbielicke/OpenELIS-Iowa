@@ -92,7 +92,7 @@ import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.order.client.CustomerNoteTab;
 import org.openelis.modules.order.client.ShipNoteTab;
-import org.openelis.modules.shipping.client.ShippingReportScreen;
+import org.openelis.modules.report.client.ShippingReportScreen;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.modules.shipping.client.ShippingScreen.Action;
 
@@ -102,6 +102,7 @@ import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
+import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.SyncCallback;
@@ -123,7 +124,7 @@ public class OrderFillScreen extends Screen {
 
     private ShippingManager                    shippingManager;
     private ShippingScreen                     shippingScreen;
-    private ShippingReportScreen               shippingReportScreen;  
+    private org.openelis.modules.report.client.ShippingReportScreen shippingReportScreen;  
 
     private boolean                            treeValid;
     private Integer                            status_pending, status_processed;
@@ -1199,43 +1200,33 @@ public class OrderFillScreen extends Screen {
 
                 shippingScreen.addActionHandler(new ActionHandler<ShippingScreen.Action>() {
                     public void onAction(ActionEvent<Action> event) {
-                        Integer id;
-                        Query query;
-                        QueryData field;
+                        final Integer id;         
+                        ScreenWindow modal;
 
                         if (event.getAction() == ShippingScreen.Action.COMMIT) {
                             id = (Integer)event.getData();
                             if (id == null)
                                 return;
-
-                            query = new Query();
-                            field = new QueryData();
-                            field.key = "SHIPPING_ID";
-                            field.query = id.toString();
-                            field.type = QueryData.Type.INTEGER;
-                            query.setFields(field);
-
+                            
                             try {
-                                field = new QueryData();
-                                field.key = "PRINTER";
-                                field.query = defaultPrinter;
-                                field.type = QueryData.Type.STRING;
-                                query.setFields(field);
-
-                                field = new QueryData();
-                                field.key = "BARCODE";
-                                field.query = defaultBarcodePrinter;
-                                field.type = QueryData.Type.STRING;
-                                query.setFields(field);
-
                                 if (shippingReportScreen == null) {
-                                    shippingReportScreen = new ShippingReportScreen(window);
-                                    shippingReportScreen.setRunReportInterface("runReportForProcessing");
+                                    shippingReportScreen = new ShippingReportScreen();
+                                    
+                                    /*
+                                     * we need to make sure that the value of SHIPPING_ID gets set
+                                     * the first time the screen is brought up 
+                                     */
+                                    DeferredCommand.addCommand(new Command() {
+                                        public void execute() {
+                                            shippingReportScreen.setFieldValue("SHIPPING_ID", id);
+                                        }
+                                    });
                                 } else {
-                                    shippingReportScreen.setWindow(window);
-                                }
-
-                                shippingReportScreen.runReport(query);
+                                    shippingReportScreen.reset();
+                                    shippingReportScreen.setFieldValue("SHIPPING_ID", id);
+                                }                                
+                                modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+                                modal.setContent(shippingReportScreen);
                             } catch (Exception e) {
                                 Window.alert(e.getMessage());
                                 e.printStackTrace();
