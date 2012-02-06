@@ -42,7 +42,7 @@ public class MCLViolationReportVO implements RPC {
 
     protected Integer         sampleId, accessionNumber, stateLabId, analysisId,
                               unitOfMeasureId;
-    protected Datetime        collectionDate, anaCompletedDate, anaReleasedDate;
+    protected Datetime        collectionDate, collectionTime, anaStartedDate, anaReleasedDate;
     protected String          facilityId, sampleType, samplePointId, location, pwsId,
                               pwsName, fieldOffice, organizationName, testName, 
                               methodName, unitDescription;
@@ -51,15 +51,16 @@ public class MCLViolationReportVO implements RPC {
     }
     
     public MCLViolationReportVO(Integer sampleId, Integer accessionNumber, Date collectionDate,
-                                Integer stateLabId, String facilityId, String sampleType,
-                                String samplePointId, String location, String pwsId,
-                                String pwsName, String fieldOffice, String organizationName,
-                                Integer analysisId, Integer unitOfMeasureId, Date anaCompletedDate,
-                                Date anaReleasedDate, String unitDescription, String testName,
-                                String methodName) {
+                                Date collectionTime, Integer stateLabId, String facilityId,
+                                String sampleType, String samplePointId, String location,
+                                String pwsId, String pwsName, String fieldOffice,
+                                String organizationName, Integer analysisId, Integer unitOfMeasureId,
+                                Date anaStartedDate, Date anaReleasedDate, String unitDescription,
+                                String testName, String methodName) {
         setSampleId(sampleId);
         setAccessionNumber(accessionNumber);
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
+        setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setStateLabId(stateLabId);
         setFacilityId(DataBaseUtil.trim(facilityId));
         setSampleType(DataBaseUtil.trim(sampleType));
@@ -71,7 +72,7 @@ public class MCLViolationReportVO implements RPC {
         setOrganizationName(organizationName);
         setAnalysisId(analysisId);
         setUnitOfMeasureId(unitOfMeasureId);
-        setAnaCompletedDate(DataBaseUtil.toYM(anaCompletedDate));        
+        setAnaStartedDate(DataBaseUtil.toYM(anaStartedDate));        
         setAnaReleasedDate(DataBaseUtil.toYM(anaReleasedDate));
         setUnitDescription(unitDescription);
         setTestName(testName);
@@ -100,6 +101,14 @@ public class MCLViolationReportVO implements RPC {
 
     public void setCollectionDate(Datetime collectionDate) {
         this.collectionDate = DataBaseUtil.toYD(collectionDate);
+    }
+
+    public Datetime getCollectionTime() {
+        return collectionTime;
+    }
+
+    public void setCollectionTime(Datetime collectionTime) {
+        this.collectionTime = DataBaseUtil.toHM(collectionTime);
     }
 
     public Integer getStateLabId() {
@@ -190,12 +199,12 @@ public class MCLViolationReportVO implements RPC {
         this.unitOfMeasureId = unitOfMeasureId;
     }
 
-    public Datetime getAnaCompletedDate() {
-        return anaCompletedDate;
+    public Datetime getAnaStartedDate() {
+        return anaStartedDate;
     }
 
-    public void setAnaCompletedDate(Datetime anaCompletedDate) {
-        this.anaCompletedDate = DataBaseUtil.toYM(anaCompletedDate);
+    public void setAnaStartedDate(Datetime anaStartedDate) {
+        this.anaStartedDate = DataBaseUtil.toYM(anaStartedDate);
     }
 
     public Datetime getAnaReleasedDate() {
