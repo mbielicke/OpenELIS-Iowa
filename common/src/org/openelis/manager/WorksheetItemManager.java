@@ -30,6 +30,7 @@ import java.util.HashMap;
 
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -37,7 +38,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 public class WorksheetItemManager implements RPC {
     
     private static final long                  serialVersionUID = 1L;
-    protected Integer                          worksheetId;
+    protected WorksheetViewDO                  worksheet;
     protected ArrayList<WorksheetItemListItem> items, deleted;
     protected HashMap<Integer,SampleManager>   sampleManagers, lockedManagers;
     protected HashMap<Integer,SectionViewDO>   analysisSections;
@@ -109,6 +110,7 @@ public class WorksheetItemManager implements RPC {
             if (item.analysis == null)
                 item.analysis = WorksheetAnalysisManager.getInstance();
         
+            item.analysis.setWorksheet(worksheet);
             item.analysis.setSampleManagers(sampleManagers);
             item.analysis.setLockedManagers(lockedManagers);
         }
@@ -142,12 +144,12 @@ public class WorksheetItemManager implements RPC {
     }
        
     // friendly methods used by managers and proxies
-    Integer getWorksheetId() {
-        return worksheetId;
+    WorksheetViewDO getWorksheet() {
+        return worksheet;
     }
 
-    void setWorksheetId(Integer id) {
-        worksheetId = id;
+    void setWorksheet(WorksheetViewDO wVDO) {
+        worksheet = wVDO;
     }
     
     void setSampleManagers(HashMap<Integer,SampleManager> managers) {

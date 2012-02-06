@@ -440,6 +440,47 @@ public class AnalysisManager implements RPC {
             man.unrelease(false);
     }
 
+    public void unInitiateAnalysisAt(int index, boolean clearStartedDate) throws Exception {
+        AnalysisViewDO data;
+        SampleDataBundle bundle;
+        SectionViewDO section;
+        SystemUserPermission perm;
+        TestManager testMan;
+        ValidationErrorsList errorsList;
+        
+        data = items.get(index).analysis;
+        assert data.getSectionId() != null : "section id is null";
+
+        // make sure the status is initiated
+        if (!proxy().anInitiatedId.equals(data.getStatusId()) &&
+            !proxy().anErrorInitiatedId.equals(data.getStatusId()))
+            return;
+
+        // make sure the user has complete permission for the section
+        section = proxy().getSectionFromId(data.getSectionId());
+        perm = proxy().getSystemUserPermission();
+        if (perm.getSection(section.getName()) == null ||
+            !perm.getSection(section.getName()).hasCompletePermission()) {
+            errorsList = new ValidationErrorsList();
+            errorsList.add(new FormErrorException("insufficientPrivilegesUnInitiateAnalysis",
+                                                  data.getTestName(),
+                                                  data.getMethodName()));
+            throw errorsList;
+        }
+
+        // validate the sample type and set the status
+        testMan = getTestAt(index);
+        bundle = getBundleAt(index);
+        if (!testMan.getSampleTypes().hasType(sampleItemManager.getSampleItemAt(bundle.getSampleItemIndex())
+                                                               .getTypeOfSampleId()))
+            data.setStatusId(proxy().anErrorLoggedInId);
+        else
+            data.setStatusId(proxy().anLoggedInId);
+        
+        if (clearStartedDate)
+            data.setStartedDate(null);
+    }
+    
     public int count() {
         if (items == null)
             return 0;
