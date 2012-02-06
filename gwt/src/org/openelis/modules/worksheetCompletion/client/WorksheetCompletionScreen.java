@@ -109,7 +109,6 @@ public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup, successfulLoad;
     private Integer              statusWorking, statusFailedRun, origStatus;
-    private String               headerLabels[];
     private ScreenService        instrumentService, sysVarService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
@@ -540,16 +539,6 @@ public class WorksheetCompletionScreen extends Screen {
         for (DictionaryDO resultDO : dictList)
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         ((Dropdown<Integer>)instrumentId.getColumns().get(2).getColumnWidget()).setModel(model);
-
-        //
-        // load analysis status dropdown model
-        //
-//        dictList  = DictionaryCache.getListByCategorySystemName("analysis_status");
-//        model = new ArrayList<TableDataRow>();
-//        model.add(new TableDataRow(null, ""));
-//        for (DictionaryDO resultDO : dictList)
-//            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
-//        ((Dropdown<Integer>)table.getColumns().get(6).getColumnWidget()).setModel(model);
     }
     
     protected boolean fetchById(Integer id) {
@@ -969,11 +958,6 @@ public class WorksheetCompletionScreen extends Screen {
             headerLabels[i] = headers.get(i).getName();
         table.view.header.setHeaders(headerLabels);
         
-//        row = new TableDataRow(39);
-//        for (i = 0; i < headers.size(); i++)
-//            row.cells.get(i).value = headers.get(i).getName();
-//        model.add(row);
-
         qcLinkMap = new HashMap<Integer,String>();
         try {
             for (i = 0; i < manager.getItems().count(); i++) {

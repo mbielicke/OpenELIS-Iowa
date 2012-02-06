@@ -175,7 +175,7 @@ UIRF Software License are applicable instead of those above.
 <!-- TAB PANEL -->
             <TabPanel key="tabPanel" width="605">
 <!-- TAB 1 -->
-              <tab key="locationTab" text="{resource:getString($constants,'locations')}">
+              <tab key="locationTab" tab="locationTable,locationTable" text="{resource:getString($constants,'locations')}">
                 <VerticalPanel width="605">
                   <widget valign="top">
                     <table key="locationTable" width="587" maxRows="10" showScroll="ALWAYS">
