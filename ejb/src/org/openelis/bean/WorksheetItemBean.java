@@ -31,6 +31,7 @@ import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -38,6 +39,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.entity.WorksheetItem;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -51,6 +53,22 @@ public class WorksheetItemBean implements WorksheetItemLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
+
+    public WorksheetItemDO fetchById(Integer id) throws Exception {
+        Query query;
+        WorksheetItemDO data;
+
+        query = manager.createNamedQuery("WorksheetItem.FetchById");
+        query.setParameter("id", id);
+        try {
+            data = (WorksheetItemDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
 
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetItemDO> fetchByWorksheetId(Integer id) throws Exception {

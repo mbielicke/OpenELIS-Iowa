@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.domain.WorksheetItemDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.WorksheetItemLocal;
@@ -43,10 +44,12 @@ public class WorksheetItemManagerProxy {
         int                        i;
         WorksheetItemManager       manager;
         ArrayList<WorksheetItemDO> items;
+        WorksheetViewDO            worksheet;
         
+        worksheet = EJBFactory.getWorksheet().fetchById(id);
         items = EJBFactory.getWorksheetItem().fetchByWorksheetId(id);
         manager = WorksheetItemManager.getInstance();
-        manager.setWorksheetId(id);
+        manager.setWorksheet(worksheet);
         for (i = 0; i < items.size(); i++)
             manager.addWorksheetItem(items.get(i));
         
@@ -63,7 +66,7 @@ public class WorksheetItemManagerProxy {
         local = EJBFactory.getWorksheetItem();
         for (i = 0; i < manager.count(); i++) {
             item = manager.getWorksheetItemAt(i);
-            item.setWorksheetId(manager.getWorksheetId());
+            item.setWorksheetId(manager.getWorksheet().getId());
             local.add(item);
         }
         
@@ -72,7 +75,7 @@ public class WorksheetItemManagerProxy {
             notDone = false;
             for (i = 0; i < manager.count(); i++) {
                 item = manager.getWorksheetItemAt(i);
-                manager.getWorksheetAnalysisAt(i).setWorksheetId(manager.getWorksheetId());
+                manager.getWorksheetAnalysisAt(i).setWorksheet(manager.getWorksheet());
                 manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
                 manager.getWorksheetAnalysisAt(i).add(idHash);
                 if (manager.getWorksheetAnalysisAt(i).getNotDone())
@@ -97,7 +100,7 @@ public class WorksheetItemManagerProxy {
         for (i = 0; i < manager.count(); i++) {
             item = manager.getWorksheetItemAt(i);
             if (item.getId() == null) {
-                item.setWorksheetId(manager.getWorksheetId());
+                item.setWorksheetId(manager.getWorksheet().getId());
                 local.add(item);
             } else {
                 local.update(item);
@@ -109,7 +112,7 @@ public class WorksheetItemManagerProxy {
             notDone = false;
             for (i = 0; i < manager.count(); i++) {
                 item = manager.getWorksheetItemAt(i);
-                manager.getWorksheetAnalysisAt(i).setWorksheetId(manager.getWorksheetId());
+                manager.getWorksheetAnalysisAt(i).setWorksheet(manager.getWorksheet());
                 manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
                 manager.getWorksheetAnalysisAt(i).update(idHash);
                 if (manager.getWorksheetAnalysisAt(i).getNotDone())

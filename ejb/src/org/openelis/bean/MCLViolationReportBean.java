@@ -263,9 +263,8 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
     
     protected void printHeader(StringBuilder body, MCLViolationReportVO analysis) {
         body.append("\r\n")
-            .append("This is an automatic notification for possible MCL/Regulatory violation.<br>\r\n")
-            .append("The following compound(s) exceed MC/Regulatory level specified by it's test.<br>\r\n")
-            .append("Also note that sample has a SDWA PWS id which will require IDNR reporting.<br>\r\n")
+            .append("This is an automatic notification for MCL violation.<br>\r\n")
+            .append("The following analyte(s) exceed the MCL specified by the test.<br>\r\n")
             .append("<br>\r\n")
             .append("Accession Number: ").append("OE").append(analysis.getAccessionNumber()).append("<br>\r\n")
             .append("PWS ID: ").append(analysis.getPwsId()).append("<br>\r\n")
@@ -273,11 +272,11 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             .append("Test: ").append(analysis.getTestName()).append("<br>\r\n")
             .append("Method: ").append(analysis.getMethodName()).append("<br>\r\n")
             .append("Unit: ").append(analysis.getUnitDescription()).append("<br>\r\n")
-            .append("Analyzed: ").append(ReportUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
-            .append("Released: ").append(ReportUtil.toString(analysis.getAnaReleasedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
+            .append("Start of Analysis: ").append(ReportUtil.toString(analysis.getAnaStartedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
+            .append("Analysis Released: ").append(ReportUtil.toString(analysis.getAnaReleasedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
             .append("<br>\r\n")
             .append("<table border='1' cellpadding='2' cellspacing='0'>\r\n")
-            .append("    <tr><td>Compound</td>")
+            .append("    <tr><td>Analyte</td>")
             .append("<td>Result</td>")
             .append("<td>Result in mg/L*</td>")
             .append("<td>MCL</td></tr>\r\n");
@@ -316,10 +315,11 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                   .append("<br>\r\n")
                   .append("* Result values are changed to mg/L if required.<br>\r\n")
                   .append("<br>\r\n")
-                  .append("If you are sending the information to DNR, you MUST use the provided subject line for your email (cut and paste it to your email subject line).<br>\r\n")
+                  .append("This notice must be forwarded to IDNR by SHL staff. The forwarded e-mail notice MUST be sent to the<br>\r\n")
+                  .append("e-mail address specified below with the following subject line (cut and paste it to your email subject line).<br>\r\n")
                   .append("=============================================================================<br>\r\n")
                   .append("Subject: Chemical Exceedance Report for ").append(analysis.getFieldOffice()).append("<br>\r\n")
-                  .append("======================= TRANSMISSION (cut from here) ========================<br>\r\n");
+                  .append("======= E-MAIL to: mclviolation (labfax@dnr.iowa.gov) (cut from here) =======<br>\r\n");
         }
 
         footer.append("<br>\r\n")
@@ -342,13 +342,18 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
               .append("Sample Type ").append(analysis.getSampleType().substring(0, 2)).append("<br>\r\n")
               .append("PB Sample Type ").append(pbSampleType).append("<br>\r\n")
               .append("Original Sample # ").append(origSampleNumber).append("<br>\r\n")
-              .append("Sample Collection Date ").append(ReportUtil.toString(analysis.getCollectionDate(), "MM/dd/yyyy")).append("<br>\r\n")
-              .append("Lab Sample # ").append(analysis.getAccessionNumber()).append("<br>\r\n")
+              .append("Sample Collection Date ").append(ReportUtil.toString(analysis.getCollectionDate(), "yyyy-MM-dd"));
+        
+        if (analysis.getCollectionTime() != null)
+            footer.append(" ").append(ReportUtil.toString(analysis.getCollectionTime(), "HH:mm"));
+
+        footer.append("<br>\r\n")
+              .append("Lab Sample # ").append("OE").append(analysis.getAccessionNumber()).append("<br>\r\n")
               .append("Contaminant ID ").append(contaminantIds.get(rowResult.getAnalyte())).append("<br>\r\n")
               .append("Contaminant Name ").append(rowResult.getAnalyte()).append("<br>\r\n")
               .append("Method Code ").append(methodCodes.get(analysis.getMethodName())).append("<br>\r\n")
-              .append("Date Analyzed ").append(ReportUtil.toString(analysis.getAnaCompletedDate(), "yyyy-MM-dd")).append("<br>\r\n")
-              .append("Date Released ").append(ReportUtil.toString(analysis.getAnaReleasedDate(), "MM/dd/yyyy")).append("<br>\r\n")
+              .append("Start of Analysis ").append(ReportUtil.toString(analysis.getAnaStartedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
+              .append("Analysis Released ").append(ReportUtil.toString(analysis.getAnaReleasedDate(), "yyyy-MM-dd HH:mm")).append("<br>\r\n")
               .append("Result ").append(getAdjustedResult(rowResult, analysis)).append("<br>\r\n");
     }
 
