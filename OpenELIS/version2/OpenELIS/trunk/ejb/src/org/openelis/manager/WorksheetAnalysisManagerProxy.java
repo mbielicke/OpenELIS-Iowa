@@ -27,6 +27,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 import org.openelis.domain.AnalysisViewDO;
@@ -36,9 +37,12 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
+import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetQcResultViewDO;
 import org.openelis.domain.WorksheetResultViewDO;
+import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
@@ -49,7 +53,8 @@ import org.openelis.utils.EJBFactory;
 
 public class WorksheetAnalysisManagerProxy {
     
-    protected static Integer anLoggedInId, anInitiatedId, anCompletedId;
+    protected static Integer anLoggedInId, anInitiatedId, anCompletedId, anRequeueId,
+                             anErrorInitiatedId, wsFailedRunId, wsVoidId;
 
     public WorksheetAnalysisManagerProxy() {
         DictionaryLocal l;
@@ -61,6 +66,10 @@ public class WorksheetAnalysisManagerProxy {
                 anLoggedInId = l.fetchBySystemName("analysis_logged_in").getId();
                 anInitiatedId = l.fetchBySystemName("analysis_initiated").getId();
                 anCompletedId = l.fetchBySystemName("analysis_completed").getId();
+                anRequeueId = l.fetchBySystemName("analysis_requeue").getId();
+                anErrorInitiatedId = l.fetchBySystemName("analysis_error_initiated").getId();
+                wsFailedRunId = l.fetchBySystemName("worksheet_failed").getId();
+                wsVoidId = l.fetchBySystemName("worksheet_void").getId();
             } catch (Exception e) {
                 e.printStackTrace();
                 anLoggedInId = null;
@@ -74,12 +83,17 @@ public class WorksheetAnalysisManagerProxy {
         AnalysisViewDO                 aVDO;
         HashMap<Integer,SectionViewDO> sections;
         SectionViewDO                  sectionVDO;
+        WorksheetViewDO                wVDO;
         WorksheetAnalysisDO            waDO;
         WorksheetAnalysisManager       waManager;
+        WorksheetItemDO                wiDO;
         
+        wiDO = EJBFactory.getWorksheetItem().fetchById(id);
+        wVDO = EJBFactory.getWorksheet().fetchById(wiDO.getWorksheetId());
         analyses = EJBFactory.getWorksheetAnalysis().fetchByWorksheetItemId(id);
         sections = new HashMap<Integer,SectionViewDO>();
         waManager = WorksheetAnalysisManager.getInstance();
+        waManager.setWorksheet(wVDO);
         waManager.setWorksheetItemId(id);
         for (i = 0; i < analyses.size(); i++) {
             waDO = analyses.get(i);
@@ -214,7 +228,7 @@ public class WorksheetAnalysisManagerProxy {
             //
             accessionNumber = analysis.getAccessionNumber();
             if (accessionNumber.startsWith("X."))
-                analysis.setAccessionNumber(accessionNumber.replaceFirst("X", manager.getWorksheetId().toString()));
+                analysis.setAccessionNumber(accessionNumber.replaceFirst("X", manager.getWorksheet().getId().toString()));
             
             //
             // We are only initiating records that were not added from another
@@ -299,8 +313,9 @@ public class WorksheetAnalysisManagerProxy {
     }
 
     public void update(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
-        boolean                   doBreak;
+        boolean                   doBreak, clearDate;
         int                       k, l;
+        Datetime                  createdDate, startedDate;
         String                    accessionNumber;
         AnalysisViewDO            aVDO;
         AnalysisManager           aManager;
@@ -349,15 +364,38 @@ public class WorksheetAnalysisManagerProxy {
                     for (l = 0; l < aManager.count(); l++) {
                         aVDO = aManager.getAnalysisAt(l);
                         if (analysis.getAnalysisId().equals(aVDO.getId())) {
-                            try {
+                            if (wsFailedRunId.equals(manager.getWorksheet().getStatusId())) {
+                                if (anInitiatedId.equals(aVDO.getStatusId()) || anErrorInitiatedId.equals(aVDO.getStatusId()))
+                                    aVDO.setStatusId(anRequeueId);
+                            } else if (wsVoidId.equals(manager.getWorksheet().getStatusId())) {
+                                if (anInitiatedId.equals(aVDO.getStatusId()) || anErrorInitiatedId.equals(aVDO.getStatusId())) {
+                                    createdDate = manager.getWorksheet().getCreatedDate();
+                                    startedDate = aVDO.getStartedDate();
+                                    //
+                                    // only clear the started date if it was set
+                                    // when this worksheet was created
+                                    //
+                                    if (startedDate != null &&
+                                        (startedDate.equals(createdDate) || 
+                                         (startedDate.after(createdDate) &&
+                                          startedDate.before(new Date(manager.getWorksheet().getCreatedDate().getDate().getTime() + 60000)))))
+                                        clearDate = true;
+                                    else
+                                        clearDate = false;
+                                    aManager.unInitiateAnalysisAt(l, clearDate);
+                                }
+                            } else {
                                 if (anLoggedInId.equals(aVDO.getStatusId()) ||
-                                    anInitiatedId.equals(aVDO.getStatusId()) ||            
-                                    anCompletedId.equals(aVDO.getStatusId()))
-                                    aManager.completeAnalysisAt(l);
-                            } catch (Exception ignE) {
-                                // ignoring errors cause by trying to complete
-                                // the analysis because they should not prevent
-                                // us from saving the record properly
+                                    anInitiatedId.equals(aVDO.getStatusId()) ||          
+                                    anCompletedId.equals(aVDO.getStatusId())) {
+                                    try {
+                                        aManager.completeAnalysisAt(l);
+                                    } catch (Exception ignE) {
+                                        // ignoring errors cause by trying to complete
+                                        // the analysis because they should not prevent
+                                        // us from saving the record properly
+                                    }
+                                }
                             }
                             doBreak = true;
                             break;

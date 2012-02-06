@@ -1368,17 +1368,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         value = null;
         if (cell != null) {
             switch (cell.getCellType()) {
-                case Cell.CELL_TYPE_ERROR:
-                    value = null;
-                    break;
-                    
                 case Cell.CELL_TYPE_FORMULA:
                     eval = cell.getSheet().getWorkbook().getCreationHelper().createFormulaEvaluator();
                     switch (eval.evaluateFormulaCell(cell)) {
-                        case Cell.CELL_TYPE_ERROR:
-                            value = null;
-                            break;
-                            
                         case Cell.CELL_TYPE_NUMERIC:
                             if (DateUtil.isCellDateFormatted(cell)) {
                                 value = new Datetime(Datetime.YEAR, Datetime.MINUTE, cell.getDateCellValue());

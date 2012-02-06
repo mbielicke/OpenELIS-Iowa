@@ -33,6 +33,8 @@ import org.openelis.domain.WorksheetItemDO;
 
 @Local
 public interface WorksheetItemLocal {
+    public WorksheetItemDO fetchById(Integer id) throws Exception;
+
     public ArrayList<WorksheetItemDO> fetchByWorksheetId(Integer id) throws Exception;
 
     public WorksheetItemDO add(WorksheetItemDO data) throws Exception;

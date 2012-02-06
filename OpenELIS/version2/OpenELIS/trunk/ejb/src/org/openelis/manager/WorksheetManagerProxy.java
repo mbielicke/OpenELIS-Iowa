@@ -106,7 +106,7 @@ public class WorksheetManagerProxy {
 
         lock = EJBFactory.getLock();
         if (manager.items != null) {
-            manager.getItems().setWorksheetId(id);
+            manager.getItems().setWorksheet(manager.getWorksheet());
             manager.getItems().add();
             
             iter = manager.getSampleManagers().values().iterator();
@@ -142,7 +142,7 @@ public class WorksheetManagerProxy {
         
         lock = EJBFactory.getLock();
         if (manager.items != null) {
-            manager.getItems().setWorksheetId(id);
+            manager.getItems().setWorksheet(manager.getWorksheet());
             manager.getItems().update();
             
             iter = manager.getSampleManagers().values().iterator();
