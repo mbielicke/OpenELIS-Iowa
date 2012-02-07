@@ -721,6 +721,11 @@ public class WorksheetCreationScreen extends Screen {
             waDO = new WorksheetAnalysisDO();
             waDO.setId((Integer)row.key);
             waDO.setAccessionNumber((String)row.cells.get(1).value);
+            
+            //
+            // Set either the qc id or the analysis id depending on what type
+            // of row we have
+            //
             if (row.data instanceof ArrayList) {
                 if (((ArrayList<Object>)row.data).size() == 3)
                     waDO.setAnalysisId(((AnalysisViewDO)((ArrayList<Object>)row.data).get(0)).getId());
@@ -729,11 +734,19 @@ public class WorksheetCreationScreen extends Screen {
             } else {
                 waDO.setAnalysisId(((WorksheetCreationVO)row.data).getAnalysisId());
             }
+            
+            //
+            // Pull out the analysis id for the qc link column
+            //
             if (row.cells.get(3).getValue() != null) {
-                if (row.cells.get(3).getValue() instanceof ArrayList)
+System.out.println("QC Link Value = "+row.cells.get(3).getValue()+" <<<<<<<<<<<");
+                if (row.cells.get(3).getValue() instanceof ArrayList) {
+System.out.println("QC Link Value (ArrayList) = "+((ArrayList<Object>)row.cells.get(3).getValue()).get(0)+" <<<<<<<<<<<");
                     waDO.setWorksheetAnalysisId((Integer)((ArrayList<Object>)row.cells.get(3).getValue()).get(0));
-                else
+                } else {
+System.out.println("QC Link Value (Value) = "+row.cells.get(3).getValue()+" <<<<<<<<<<<");
                     waDO.setWorksheetAnalysisId((Integer)row.cells.get(3).getValue());
+                }
             }
             waDO.setIsFromOther("N");
             try {
