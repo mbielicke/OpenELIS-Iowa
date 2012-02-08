@@ -119,85 +119,23 @@ public class WorksheetAnalysisManagerProxy {
         for (i = 0; i < manager.count(); i++) {
             analysis = manager.getWorksheetAnalysisAt(i);
             
-            if (analysis.getWorksheetAnalysisId() == null) {
-                if (!idHash.containsKey(analysis.getId())) {
-                    oldId = analysis.getId();
-                    add(manager, analysis, i);
-                    
-                    idHash.put(oldId, analysis.getId());
-                    idHash.put(analysis.getId(), null);
-                }
-            } else if (analysis.getWorksheetAnalysisId() < 0) {
-                qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
+            if (analysis.getId() < 0) {
+                oldId = analysis.getId();
                 
-                if (qcLinkId != null) {
-                    oldId = analysis.getId();
-                    analysis.setWorksheetAnalysisId(qcLinkId);
-                    add(manager, analysis, i);
-                    
-                    idHash.put(oldId, analysis.getId());
-                    idHash.put(analysis.getId(), null);
-                } else {
-                    manager.setNotDone(true);
+                if (analysis.getWorksheetAnalysisId() != null) {
+                    if (analysis.getWorksheetAnalysisId() < 0) {
+                        qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
+                        if (qcLinkId != null) {
+                            analysis.setWorksheetAnalysisId(qcLinkId);
+                        } else {
+                            manager.setNotDone(true);
+                            continue;
+                        }
+                    }
                 }
-            } else if (!idHash.containsKey(analysis.getId())) {
-                qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
-                
-                if (qcLinkId == null) {
-                    oldId = analysis.getId();
-                    add(manager, analysis, i);
-                    
-                    idHash.put(oldId, analysis.getId());
-                    if (!oldId.equals(analysis.getId()))
-                        idHash.put(analysis.getId(), null);
-                }
-            }
-        }
-        
-        return manager;
-    }
 
-    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
-        int                 i;
-        Integer             oldId, qcLinkId;
-        WorksheetAnalysisDO analysis;
-        
-        manager.setNotDone(false);
-        for (i = 0; i < manager.count(); i++) {
-            analysis = manager.getWorksheetAnalysisAt(i);
-            
-            if (analysis.getWorksheetAnalysisId() == null) {
-                if (!idHash.containsKey(analysis.getId())) {
-                    oldId = analysis.getId();
-                    update(manager, analysis, i);
-                    
-                    idHash.put(oldId, analysis.getId());
-                    idHash.put(analysis.getId(), null);
-                }
-            } else if (analysis.getWorksheetAnalysisId() < 0) {
-                qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
-                
-                if (qcLinkId != null) {
-                    oldId = analysis.getId();
-                    analysis.setWorksheetAnalysisId(qcLinkId);
-                    update(manager, analysis, i);
-                    
-                    idHash.put(oldId, analysis.getId());
-                    idHash.put(analysis.getId(), null);
-                } else {
-                    manager.setNotDone(true);
-                }
-            } else if (!idHash.containsKey(analysis.getId())) {
-                qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
-                
-                if (qcLinkId == null) {
-                    oldId = analysis.getId();
-                    update(manager, analysis, i);
-                    
-                    idHash.put(oldId, analysis.getId());
-                    if (!oldId.equals(analysis.getId()))
-                        idHash.put(analysis.getId(), null);
-                }
+                add(manager, analysis, i);
+                idHash.put(oldId, analysis.getId());
             }
         }
         
@@ -312,9 +250,9 @@ public class WorksheetAnalysisManagerProxy {
         }
     }
 
-    public void update(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {
+    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager) throws Exception {
         boolean                   doBreak, clearDate;
-        int                       k, l;
+        int                       i, k, l;
         Datetime                  createdDate, startedDate;
         String                    accessionNumber;
         AnalysisViewDO            aVDO;
@@ -322,101 +260,107 @@ public class WorksheetAnalysisManagerProxy {
         SampleDO                  sample;
         SampleItemManager         siManager;
         SampleManager             sManager;
+        WorksheetAnalysisDO       analysis;
         WorksheetAnalysisListItem listItem;
         WorksheetAnalysisLocal    local;
         
         local = EJBFactory.getWorksheetAnalysis();
-        
-        if (analysis.getId() == null) {
-            assert false : "not supported";
-        } else {
-            if (analysis.getAnalysisId() != null) {
-                //
-                // We are only updating records that were not added from another
-                // worksheet
-                //
-                if ("Y".equals(analysis.getIsFromOther()))
-                    return;
-                
-                doBreak = false;
-                //
-                // Trim the 'D' off the front of the accession number for analyses
-                // in a duplicate position on the worksheet
-                //
-                accessionNumber = analysis.getAccessionNumber();
-                if (accessionNumber.startsWith("D"))
-                    accessionNumber = accessionNumber.substring(1);
-                //
-                // Keep a hash map of sample managers so we only allocate one per
-                // sample to avoid update collisions for multiple analyses on the
-                // same sample
-                //
-                sManager = manager.getLockedManagers().get(Integer.valueOf(accessionNumber));
-                if (sManager == null) {
-                    sample = EJBFactory.getSample().fetchByAccessionNumber(Integer.valueOf(accessionNumber));
-                    sManager = EJBFactory.getSampleManager().fetchForUpdate(sample.getId());
-                    manager.getLockedManagers().put(sample.getAccessionNumber(), sManager);
-                    manager.getSampleManagers().put(sample.getAccessionNumber(), sManager);
-                }
-                siManager = sManager.getSampleItems();
-                for (k = 0; k < siManager.count(); k++) {
-                    aManager = siManager.getAnalysisAt(k);
-                    for (l = 0; l < aManager.count(); l++) {
-                        aVDO = aManager.getAnalysisAt(l);
-                        if (analysis.getAnalysisId().equals(aVDO.getId())) {
-                            if (wsFailedRunId.equals(manager.getWorksheet().getStatusId())) {
-                                if (anInitiatedId.equals(aVDO.getStatusId()) || anErrorInitiatedId.equals(aVDO.getStatusId()))
-                                    aVDO.setStatusId(anRequeueId);
-                            } else if (wsVoidId.equals(manager.getWorksheet().getStatusId())) {
-                                if (anInitiatedId.equals(aVDO.getStatusId()) || anErrorInitiatedId.equals(aVDO.getStatusId())) {
-                                    createdDate = manager.getWorksheet().getCreatedDate();
-                                    startedDate = aVDO.getStartedDate();
-                                    //
-                                    // only clear the started date if it was set
-                                    // when this worksheet was created
-                                    //
-                                    if (startedDate != null &&
-                                        (startedDate.equals(createdDate) || 
-                                         (startedDate.after(createdDate) &&
-                                          startedDate.before(new Date(manager.getWorksheet().getCreatedDate().getDate().getTime() + 60000)))))
-                                        clearDate = true;
-                                    else
-                                        clearDate = false;
-                                    aManager.unInitiateAnalysisAt(l, clearDate);
-                                }
-                            } else {
-                                if (anLoggedInId.equals(aVDO.getStatusId()) ||
-                                    anInitiatedId.equals(aVDO.getStatusId()) ||          
-                                    anCompletedId.equals(aVDO.getStatusId())) {
-                                    try {
-                                        aManager.completeAnalysisAt(l);
-                                    } catch (Exception ignE) {
-                                        // ignoring errors cause by trying to complete
-                                        // the analysis because they should not prevent
-                                        // us from saving the record properly
+        for (i = 0; i < manager.count(); i++) {
+            analysis = manager.getWorksheetAnalysisAt(i);
+
+            if (analysis.getId() == null) {
+                assert false : "not supported";
+            } else {
+                if (analysis.getAnalysisId() != null) {
+                    //
+                    // We are only updating records that were not added from another
+                    // worksheet
+                    //
+                    if ("Y".equals(analysis.getIsFromOther()))
+                        continue;
+                    
+                    doBreak = false;
+                    //
+                    // Trim the 'D' off the front of the accession number for analyses
+                    // in a duplicate position on the worksheet
+                    //
+                    accessionNumber = analysis.getAccessionNumber();
+                    if (accessionNumber.startsWith("D"))
+                        accessionNumber = accessionNumber.substring(1);
+                    //
+                    // Keep a hash map of sample managers so we only allocate one per
+                    // sample to avoid update collisions for multiple analyses on the
+                    // same sample
+                    //
+                    sManager = manager.getLockedManagers().get(Integer.valueOf(accessionNumber));
+                    if (sManager == null) {
+                        sample = EJBFactory.getSample().fetchByAccessionNumber(Integer.valueOf(accessionNumber));
+                        sManager = EJBFactory.getSampleManager().fetchForUpdate(sample.getId());
+                        manager.getLockedManagers().put(sample.getAccessionNumber(), sManager);
+                        manager.getSampleManagers().put(sample.getAccessionNumber(), sManager);
+                    }
+                    siManager = sManager.getSampleItems();
+                    for (k = 0; k < siManager.count(); k++) {
+                        aManager = siManager.getAnalysisAt(k);
+                        for (l = 0; l < aManager.count(); l++) {
+                            aVDO = aManager.getAnalysisAt(l);
+                            if (analysis.getAnalysisId().equals(aVDO.getId())) {
+                                if (wsFailedRunId.equals(manager.getWorksheet().getStatusId())) {
+                                    if (anInitiatedId.equals(aVDO.getStatusId()) || anErrorInitiatedId.equals(aVDO.getStatusId()))
+                                        aVDO.setStatusId(anRequeueId);
+                                } else if (wsVoidId.equals(manager.getWorksheet().getStatusId())) {
+                                    if (anInitiatedId.equals(aVDO.getStatusId()) || anErrorInitiatedId.equals(aVDO.getStatusId())) {
+                                        createdDate = manager.getWorksheet().getCreatedDate();
+                                        startedDate = aVDO.getStartedDate();
+                                        //
+                                        // only clear the started date if it was set
+                                        // when this worksheet was created
+                                        //
+                                        if (startedDate != null &&
+                                            (startedDate.equals(createdDate) || 
+                                             (startedDate.after(createdDate) &&
+                                              startedDate.before(new Date(manager.getWorksheet().getCreatedDate().getDate().getTime() + 60000)))))
+                                            clearDate = true;
+                                        else
+                                            clearDate = false;
+                                        aManager.unInitiateAnalysisAt(l, clearDate);
+                                    }
+                                } else {
+                                    if (anLoggedInId.equals(aVDO.getStatusId()) ||
+                                        anInitiatedId.equals(aVDO.getStatusId()) ||          
+                                        anCompletedId.equals(aVDO.getStatusId())) {
+                                        try {
+                                            aManager.completeAnalysisAt(l);
+                                        } catch (Exception ignE) {
+                                            // ignoring errors cause by trying to complete
+                                            // the analysis because they should not prevent
+                                            // us from saving the record properly
+                                        }
                                     }
                                 }
+                                doBreak = true;
+                                break;
                             }
-                            doBreak = true;
-                            break;
                         }
+                        if (doBreak)
+                            break;
                     }
-                    if (doBreak)
-                        break;
                 }
+                    
+                local.update(analysis);
             }
-                
-            local.update(analysis);
+        
+            listItem = manager.getItemAt(i);
+            if (analysis.getAnalysisId() != null && listItem.worksheetResult != null) {
+                manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
+                manager.getWorksheetResultAt(i).update();
+            } else if (analysis.getQcId() != null && listItem.worksheetQcResult != null) {
+                manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
+                manager.getWorksheetQcResultAt(i).update();
+            }
         }
-    
-        listItem = manager.getItemAt(i);
-        if (analysis.getAnalysisId() != null && listItem.worksheetResult != null) {
-            manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
-            manager.getWorksheetResultAt(i).update();
-        } else if (analysis.getQcId() != null && listItem.worksheetQcResult != null) {
-            manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
-            manager.getWorksheetQcResultAt(i).update();
-        }
+        
+        return manager;
     }
 
     public void validate(WorksheetAnalysisManager manager, ValidationErrorsList errorList) throws Exception {
