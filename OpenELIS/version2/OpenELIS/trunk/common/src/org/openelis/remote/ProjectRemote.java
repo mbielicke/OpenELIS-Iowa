@@ -36,8 +36,11 @@ import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface ProjectRemote {
-    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
-
     public ProjectViewDO fetchById(Integer id) throws Exception;
+
+    public ArrayList<ProjectDO> fetchByName(String name, int max) throws Exception;
+
     public ArrayList<ProjectDO> fetchActiveByName(String name, int max) throws Exception;
+
+    public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }

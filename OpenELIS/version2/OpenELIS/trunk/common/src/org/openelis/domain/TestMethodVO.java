@@ -48,16 +48,6 @@ public class TestMethodVO implements RPC {
     }
 
     public TestMethodVO(Integer testId, String testName, String testDescription,
-                            Integer methodId, String methodName, String methodDescription) {
-        setTestId(testId);
-        setTestName(testName);
-        setTestDescription(testDescription);
-        setMethodId(methodId);
-        setMethodName(methodName);
-        setMethodDescription(methodDescription);
-    }
-
-    public TestMethodVO(Integer testId, String testName, String testDescription,
                             Integer methodId, String methodName, String methodDescription,
                             String isActive, Date activeBegin, Date activeEnd) {
         setTestId(testId);
