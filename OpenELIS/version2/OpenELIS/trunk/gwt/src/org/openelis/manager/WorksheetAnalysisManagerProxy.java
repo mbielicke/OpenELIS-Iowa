@@ -47,7 +47,7 @@ public class WorksheetAnalysisManagerProxy {
         return null;
     }
 
-    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
+    public WorksheetAnalysisManager update(WorksheetAnalysisManager manager) throws Exception {
         assert false : "not supported";
         return null;
     }

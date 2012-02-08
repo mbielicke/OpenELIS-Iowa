@@ -91,7 +91,6 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
-import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
@@ -558,7 +557,7 @@ public class WorksheetCreationScreen extends Screen {
         for (DictionaryDO resultDO : dictList)
             model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
         ((Dropdown<Integer>)worksheetItemTable.getColumns().get(6).getColumnWidget()).setModel(model);
-}
+    }
     
     protected void openLookupWindow() {
         if (wcLookupScreen == null) {
@@ -739,12 +738,9 @@ public class WorksheetCreationScreen extends Screen {
             // Pull out the analysis id for the qc link column
             //
             if (row.cells.get(3).getValue() != null) {
-System.out.println("QC Link Value = "+row.cells.get(3).getValue()+" <<<<<<<<<<<");
                 if (row.cells.get(3).getValue() instanceof ArrayList) {
-System.out.println("QC Link Value (ArrayList) = "+((ArrayList<Object>)row.cells.get(3).getValue()).get(0)+" <<<<<<<<<<<");
                     waDO.setWorksheetAnalysisId((Integer)((ArrayList<Object>)row.cells.get(3).getValue()).get(0));
                 } else {
-System.out.println("QC Link Value (Value) = "+row.cells.get(3).getValue()+" <<<<<<<<<<<");
                     waDO.setWorksheetAnalysisId((Integer)row.cells.get(3).getValue());
                 }
             }
