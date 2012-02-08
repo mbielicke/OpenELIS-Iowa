@@ -60,7 +60,7 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.ProjectLocal;
-import org.openelis.local.SectionLocal;
+import org.openelis.local.SectionCacheLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.TestLocal;
 import org.openelis.remote.SampleInhouseReportRemote;
@@ -81,16 +81,16 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
     private SessionCacheLocal session;
 
     @EJB
-    private SectionLocal    section;
-
-    @EJB
     private TestLocal       test;
 
     @EJB
-    private DictionaryLocal dict;
+    private SectionCacheLocal section;
 
     @EJB
-    private ProjectLocal    proj;
+    private DictionaryLocal dictionary;
+
+    @EJB
+    private ProjectLocal    project;
     
     @EJB
     private PrinterCacheLocal printers;
@@ -99,7 +99,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
      * Returns the prompt for a single re-print
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<OptionListItem> prn;
+        ArrayList<OptionListItem> prn, orderBy;
         ArrayList<Prompt> p;
 
         try {
@@ -124,33 +124,44 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
                                                         .setRequired(true));
 
             p.add(new Prompt("SECTION", Prompt.Type.ARRAY).setPrompt("Section Name:")
-                                                          .setWidth(200)
+                                                          .setWidth(250)
                                                           .setOptionList(getSections())
                                                           .setMutiSelect(true));
 
             p.add(new Prompt("TEST", Prompt.Type.ARRAY).setPrompt("Test Name:")
-                                                       .setWidth(200)
+                                                       .setWidth(250)
                                                        .setOptionList(getTests())
                                                        .setMutiSelect(true));
 
             p.add(new Prompt("STATUS", Prompt.Type.ARRAY).setPrompt("Analysis Status:")
-                                                         .setWidth(200)
+                                                         .setWidth(250)
                                                          .setOptionList(getStatus())
-                                                         .setMutiSelect(true)
-                                                         .setRequired(true));
+                                                         .setMutiSelect(true));
 
             p.add(new Prompt("PROJECT", Prompt.Type.ARRAY).setPrompt("Project:")
-                                                          .setWidth(200)
+                                                          .setWidth(250)
                                                           .setOptionList(getProjects())
                                                           .setMutiSelect(true));
 
             p.add(new Prompt("ORGANIZATION_ID", Prompt.Type.INTEGER).setPrompt("Organization Id:")
-                                                                    .setWidth(200));
+                                                          .setWidth(150));
+
+            orderBy = new ArrayList<OptionListItem>();
+            orderBy.add(0, new OptionListItem("accession_number", "Accession Number"));
+            orderBy.add(1, new OptionListItem("collection_date,collection_time", "Collection Date"));
+            orderBy.add(2, new OptionListItem("received_date", "Date Received"));
+            orderBy.add(3, new OptionListItem("t_name,m_name", "Test & Method"));
+            orderBy.add(4, new OptionListItem("status", "Analysis Status"));
+            
+            p.add(new Prompt("ORDER_BY", Prompt.Type.ARRAY).setPrompt("Sort By:")
+                                                           .setWidth(250)
+                                                           .setOptionList(orderBy)
+                                                           .setMutiSelect(true));
 
             prn = printers.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View in PDF"));
             p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
-                                                          .setWidth(200)
+                                                          .setWidth(250)
                                                           .setOptionList(prn)
                                                           .setMutiSelect(false)
                                                           .setRequired(true));
@@ -174,7 +185,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String fromDate, toDate, section, test, aStatus, project, orgId, loginName, printer, dir, printstat;
+        String fromDate, toDate, section, test, aStatus, project, orgId, loginName, orderBy, printer, printstat;
 
         /*
          * push status into session so we can query it while the report is
@@ -194,11 +205,12 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         aStatus = ReportUtil.getListParameter(param, "STATUS");
         project = ReportUtil.getListParameter(param, "PROJECT");
         orgId = ReportUtil.getSingleParameter(param, "ORGANIZATION_ID");
+        orderBy = ReportUtil.getSingleParameter(param, "ORDER_BY");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
 
         if (DataBaseUtil.isEmpty(fromDate) || DataBaseUtil.isEmpty(toDate) ||
-            DataBaseUtil.isEmpty(aStatus) || DataBaseUtil.isEmpty(printer))
-            throw new InconsistencyException("You must specify From Date, To Date, Status and printer for this report");
+            DataBaseUtil.isEmpty(orderBy) || DataBaseUtil.isEmpty(printer))
+            throw new InconsistencyException("You must specify From Date, To Date, Order By, and Printer for this report");
 
         if (fromDate != null && fromDate.length() > 0)
             fromDate += ":00";
@@ -207,9 +219,14 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
             toDate += ":59";
 
         if ( !DataBaseUtil.isEmpty(section))
-            section = " and s.id " + section;
+            section = " and sec.id " + section;
         else
             section = "";
+
+        if ( !DataBaseUtil.isEmpty(aStatus))
+            aStatus = " and a.status_id " + aStatus;
+        else
+            aStatus = "";
 
         if ( !DataBaseUtil.isEmpty(test))
             test = " and t.id " + test;
@@ -217,13 +234,13 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
             test = "";
 
         if ( !DataBaseUtil.isEmpty(project))
-            project = " and sa.id in (select sample_id from sample_project where sample_id = sa.id and project_id " +
+            project = " and s.id in (select p.sample_id from sample_project p where p.sample_id = s.id and p.project_id " +
                       project + ") ";
         else
             project = "";
 
         if ( !DataBaseUtil.isEmpty(orgId))
-            orgId = " and sd.organization_id = " + orgId + " and sd.sample_id = sa.id ";
+            orgId = " and sd.organization_id = " + orgId;
         else
             orgId = "";
 
@@ -237,7 +254,6 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
 
             con = ReportUtil.getConnection(ctx);
             url = ReportUtil.getResourceURL("org/openelis/report/inhouse/main.jasper");
-            dir = ReportUtil.getResourcePath(url);
 
             tempFile = File.createTempFile("inhouse", ".pdf", new File("/tmp"));
 
@@ -249,6 +265,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
             jparam.put("STATUS", aStatus);
             jparam.put("PROJECT", project);
             jparam.put("ORG_ID", orgId);
+            jparam.put("ORDER_BY", orderBy);
             jparam.put("LOGIN_NAME", loginName);
 
             status.setMessage("Loading report");
@@ -295,7 +312,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         l = new ArrayList<OptionListItem>();
         l.add(new OptionListItem("", ""));
         try {
-            s = section.fetchList();
+            s = section.getList();
             for (SectionViewDO n : s)
                 l.add(new OptionListItem(n.getId().toString(), n.getName()));
         } catch (Exception e) {
@@ -314,8 +331,14 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         try {
             t = test.fetchList();
             for (TestMethodVO n : t)
-                l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
-                                                                   n.getMethodName()));
+                if ("N".equals(n.getIsActive()))
+                    l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
+                                                                       n.getMethodName() + " [" +
+                                                                       n.getActiveBegin() + ".." +
+                                                                       n.getActiveEnd() + "]"));
+                else
+                    l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
+                                                                       n.getMethodName()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -331,7 +354,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         l.add(new OptionListItem("", ""));
         statusDO = new ArrayList<DictionaryDO>();
         try {
-            statusDO = dict.fetchByCategorySystemName("analysis_status");
+            statusDO = dictionary.fetchByCategorySystemName("analysis_status");
             for (DictionaryDO n : statusDO)
                 l.add(new OptionListItem(n.getId().toString(), n.getEntry().toString()));
         } catch (Exception e) {
@@ -349,14 +372,18 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         l.add(new OptionListItem("", ""));
 
         try {
-            p = proj.fetchActiveByName("%", 10000000);
+            p = project.fetchByName("%", 100000);
             for (ProjectDO n : p)
-                l.add(new OptionListItem(n.getId().toString(), n.getName().toString()));
+                if ("N".equals(n.getIsActive()))
+                    l.add(new OptionListItem(n.getId().toString(), n.getName() + " [" +
+                                                                   n.getStartedDate() + ".." +
+                                                                   n.getCompletedDate() + "]"));
+                else
+                    l.add(new OptionListItem(n.getId().toString(), n.getName().toString()));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return l;
     }
-
 }

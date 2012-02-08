@@ -74,7 +74,7 @@ public class TestReportBean implements TestReportRemote {
                                                           .setMutiSelect(true));
 
             p.add(new Prompt("TEST", Prompt.Type.ARRAY).setPrompt("Test Name:")
-                                                       .setWidth(200)
+                                                       .setWidth(300)
                                                        .setOptionList(getTests())
                                                        .setMutiSelect(true));
 
@@ -230,8 +230,13 @@ public class TestReportBean implements TestReportRemote {
         try {
             t = test.fetchList();
             for (TestMethodVO n : t)
-                l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
-                                                                   n.getMethodName()));
+                if ("N".equals(n.getIsActive()))
+                    l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
+                                             n.getMethodName() + 
+                                             " ["+n.getActiveBegin()+".."+n.getActiveEnd()+"]"));
+                else
+                    l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
+                                             n.getMethodName()));
         } catch (Exception e) {
             e.printStackTrace();
         }

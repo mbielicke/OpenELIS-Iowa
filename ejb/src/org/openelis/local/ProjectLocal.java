@@ -37,11 +37,13 @@ public interface ProjectLocal {
 
     public ProjectViewDO fetchById(Integer id) throws Exception;
 
+    public ArrayList<ProjectDO> fetchByName(String name, int maxResults) throws Exception;
+
+    public ArrayList<ProjectDO> fetchActiveByName(String name, int maxResults) throws Exception;
+
     public ProjectViewDO add(ProjectViewDO data) throws Exception;
 
     public ProjectViewDO update(ProjectViewDO data) throws Exception;
 
     public void validate(ProjectViewDO data) throws Exception; 
-
-    public ArrayList<ProjectDO> fetchActiveByName(String name, int maxResults) throws Exception;
 }

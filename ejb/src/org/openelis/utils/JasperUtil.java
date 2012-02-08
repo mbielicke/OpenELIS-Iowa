@@ -25,6 +25,7 @@
  */
 package org.openelis.utils;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
@@ -99,6 +100,21 @@ public class JasperUtil {
     /**
      * Concats date with time to call the overloaded changeDate method:
      */
+    public static Timestamp concatDateAndTime(Timestamp date, Time time) {
+        Calendar c;
+
+        if (date == null || time == null)
+            return date;
+
+        c = Calendar.getInstance();
+        c.setTimeInMillis(date.getTime());
+        c.set(Calendar.HOUR_OF_DAY, time.getHours());
+        c.set(Calendar.MINUTE, time.getMinutes());
+        c.set(Calendar.SECOND, time.getSeconds());
+
+        return new Timestamp(c.getTimeInMillis());
+    }
+    
     public static Timestamp concatDateAndTime(Timestamp date, Timestamp time) {
         Calendar c;
 
