@@ -209,8 +209,8 @@ public class WorksheetAnalysisManager implements RPC {
         return proxy().add(this, idHash);
     }
     
-    public WorksheetAnalysisManager update(HashMap<Integer,Integer> idHash) throws Exception {
-        return proxy().update(this, idHash);
+    public WorksheetAnalysisManager update() throws Exception {
+        return proxy().update(this);
     }
        
     public void validate(ValidationErrorsList errorList) throws Exception {
