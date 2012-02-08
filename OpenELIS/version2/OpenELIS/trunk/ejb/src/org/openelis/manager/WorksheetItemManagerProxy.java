@@ -87,11 +87,9 @@ public class WorksheetItemManagerProxy {
     }
 
     public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
-        boolean                  notDone;
-        int                      i, j;
-        HashMap<Integer,Integer> idHash;
-        WorksheetItemDO          item;
-        WorksheetItemLocal       local;
+        int                i, j;
+        WorksheetItemDO    item;
+        WorksheetItemLocal local;
         
         local = EJBFactory.getWorksheetItem();
         for (j = 0; j < manager.deleteCount(); j++)
@@ -105,20 +103,11 @@ public class WorksheetItemManagerProxy {
             } else {
                 local.update(item);
             }
-        }
 
-        idHash = new HashMap<Integer,Integer>();
-        do {
-            notDone = false;
-            for (i = 0; i < manager.count(); i++) {
-                item = manager.getWorksheetItemAt(i);
-                manager.getWorksheetAnalysisAt(i).setWorksheet(manager.getWorksheet());
-                manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-                manager.getWorksheetAnalysisAt(i).update(idHash);
-                if (manager.getWorksheetAnalysisAt(i).getNotDone())
-                    notDone = true;
-            }
-        } while (notDone);
+            manager.getWorksheetAnalysisAt(i).setWorksheet(manager.getWorksheet());
+            manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
+            manager.getWorksheetAnalysisAt(i).update();
+        }
 
         return manager;
     }
