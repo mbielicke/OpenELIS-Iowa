@@ -88,6 +88,17 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
     }
 
     @SuppressWarnings("unchecked")
+    public ArrayList<ProjectDO> fetchByName(String name, int maxResults) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Project.FetchByName");
+        query.setParameter("name", name);
+        query.setMaxResults(maxResults);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<ProjectDO> fetchActiveByName(String name, int maxResults) throws Exception {
         Query query;
 

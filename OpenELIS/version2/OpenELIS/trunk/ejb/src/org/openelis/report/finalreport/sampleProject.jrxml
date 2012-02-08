@@ -6,7 +6,7 @@
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT first 1
-     sp.id sp_id, p.description project_description
+     sp.id sp_id, p.name project_name
 FROM
      sample_project sp,
      project p
@@ -17,7 +17,7 @@ WHERE
 ORDER BY sp_id]]>
 	</queryString>
 	<field name="sp_id" class="java.lang.Integer"/>
-	<field name="project_description" class="java.lang.String"/>
+	<field name="project_name" class="java.lang.String"/>
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField>
@@ -25,7 +25,7 @@ ORDER BY sp_id]]>
 				<textElement>
 					<font pdfFontName="Times-Roman" isPdfEmbedded="true"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_description}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{project_name}.toUpperCase()]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

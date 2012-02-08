@@ -134,8 +134,7 @@ public class TestBean implements TestRemote, TestLocal {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max)
-                                                                                         throws Exception {
+    public ArrayList<TestMethodVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
         List returnList;
@@ -144,11 +143,11 @@ public class TestBean implements TestRemote, TestLocal {
         builder.setMeta(meta);
 
         builder.setSelect("distinct new org.openelis.domain.TestMethodVO(" +
-                          TestMeta.getId() +
-                          ", " +
-                          (TestMeta.getName() + ", " + TestMeta.getDescription() + ", " +
-                           TestMeta.getMethodId() + ", " + TestMeta.getMethodName() +
-                           ", " + TestMeta.getMethodDescription()) + ") ");
+                          TestMeta.getId() + "," + TestMeta.getName() + "," + 
+                          TestMeta.getDescription() + "," + TestMeta.getMethodId() + "," +
+                          TestMeta.getMethodName() + "," + TestMeta.getMethodDescription() + "," + 
+                          TestMeta.getIsActive()+ "," + TestMeta.getActiveBegin() + "," +
+                          TestMeta.getActiveEnd() + ")");
         builder.constructWhere(fields);
         builder.setOrderBy(TestMeta.getName() + ", " + TestMeta.getMethodName());
 

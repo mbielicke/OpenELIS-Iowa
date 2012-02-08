@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sampleInhouse" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.5"/>
-	<property name="ireport.x" value="0"/>
+	<property name="ireport.x" value="15"/>
 	<property name="ireport.y" value="0"/>
 	<property name="ireport.callouts" value="##Tue Sep 21 15:30:40 CDT 2010"/>
 	<import value="java.util.Calendar"/>
@@ -18,7 +18,7 @@
 	<parameter name="FROM" class="java.lang.String"/>
 	<parameter name="TO" class="java.lang.String"/>
 	<parameter name="STATUS" class="java.lang.String">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="PROJECT" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
@@ -27,56 +27,72 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="LOGIN_NAME" class="java.lang.String"/>
+	<parameter name="ORDER_BY" class="java.lang.String">
+		<defaultValueExpression><![CDATA["accession_number"]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain, se.priority,
-       t.description t_description, t.time_ta_average, t.time_holding, m.name m_name, d.entry as status, a.id as a_id
-FROM sample sa, sample_item si, sample_environmental se, test t, section s, test_section ts,
-     analysis a, method m, dictionary d, sample_organization sd
-WHERE sa.domain ='E' and sa.entered_date BETWEEN $P{FROM} AND $P{TO} and
-      si.sample_id =sa.id and a.sample_item_id = si.id and
-      a.test_id = t.id and t.is_active = "Y" and
-      t.method_id = m.id and t.id = ts.test_id and
-      ts.section_id = s.id and a.section_id = s.id and
-      se.sample_id = sa.id and d.id = a.status_id and a.status_id $P!{STATUS}
-      $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
-UNION
-SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain, -1,
-       t.description t_description, t.time_ta_average, t.time_holding, m.name m_name, d.entry as status, a.id as a_id
-FROM sample sa, sample_item si, test t, section s, test_section ts,
-     analysis a, method m, dictionary d, sample_organization sd
-WHERE sa.domain !='E' and sa.entered_date BETWEEN $P{FROM} AND $P{TO} and
-      si.sample_id =sa.id and a.sample_item_id = si.id and
-      a.test_id = t.id and t.is_active = "Y" and
-      t.method_id = m.id and t.id = ts.test_id and
-      ts.section_id = s.id and a.section_id = s.id and
-      d.id = a.status_id and a.status_id $P!{STATUS}
-      $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
-UNION
-SELECT sa.accession_number, sa.collection_date, sa.collection_time, sa.received_date, sa.domain, -1,
-       t.description t_description, t.time_ta_average, t.time_holding, m.name m_name, d.entry as status, a.id as a_id
-FROM sample sa, sample_item si, test t, section s, test_section ts,
-     analysis a,method m, dictionary d, sample_private_well sd
-WHERE sa.domain ='W' and sa.entered_date BETWEEN $P{FROM} AND $P{TO} and
-      si.sample_id =sa.id and a.sample_item_id = si.id and
-      a.test_id = t.id and t.is_active = "Y" and
-      t.method_id = m.id and t.id = ts.test_id and
-      ts.section_id = s.id and a.section_id = s.id and
-      d.id = a.status_id and a.status_id $P!{STATUS}
-      $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
+		<![CDATA[SELECT s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
+       se.priority, t.name t_name, t.time_ta_average, t.time_holding,
+       m.name m_name, d.entry status, d1.entry sample_type, a.id a_id
+FROM sample s, sample_item si, sample_environmental se, analysis a,
+     test t, method m, section sec, dictionary d, dictionary d1,
+     sample_organization sd
+WHERE s.domain = "E" and
+      s.entered_date between $P{FROM} and $P{TO} and
+      s.id = si.sample_id and s.id = se.sample_id and
+      si.id = a.sample_item_id and a.test_id = t.id and
+      t.method_id = m.id and a.section_id = sec.id and
+      a.status_id = d.id and si.type_of_sample_id = d1.id and
+      s.id = sd.sample_id
+      $P!{STATUS} $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
 
-ORDER BY sa.accession_number]]>
+UNION
+
+SELECT s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
+       -1, t.name t_name, t.time_ta_average, t.time_holding,
+       m.name m_name, d.entry status, d1.entry sample_type, a.id a_id
+FROM sample s, sample_item si, sample_private_well sd, analysis a,
+     test t, method m, section sec, dictionary d, dictionary d1
+WHERE s.domain = 'W' and
+      s.entered_date between $P{FROM} and $P{TO} and
+      s.id = si.sample_id and s.id = sd.sample_id and
+      si.id = a.sample_item_id and a.test_id = t.id and
+      t.method_id = m.id and a.section_id = sec.id and
+      a.status_id = d.id and si.type_of_sample_id = d1.id
+      $P!{STATUS} $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
+
+UNION
+
+SELECT s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
+       -1, t.name t_name, t.time_ta_average, t.time_holding,
+       m.name m_name, d.entry status, d1.entry sample_type, a.id a_id
+FROM sample s, sample_item si, analysis a,
+     test t, method m, section sec, dictionary d, dictionary d1,
+     sample_organization sd
+WHERE s.domain not in ('E', 'W') and
+      s.entered_date between $P{FROM} and $P{TO} and
+      s.id = si.sample_id and
+      si.id = a.sample_item_id and a.test_id = t.id and
+      t.method_id = m.id and a.section_id = sec.id and
+      a.status_id = d.id and  si.type_of_sample_id = d1.id and
+      s.id = sd.sample_id
+      $P!{STATUS} $P!{ORG_ID} $P!{TEST} $P!{SECTION} $P!{PROJECT}
+
+ORDER BY $P!{ORDER_BY}]]>
 	</queryString>
 	<field name="accession_number" class="java.lang.Integer"/>
 	<field name="collection_date" class="java.sql.Timestamp"/>
+	<field name="collection_time" class="java.sql.Time"/>
 	<field name="received_date" class="java.sql.Timestamp"/>
-	<field name="t_description" class="java.lang.String"/>
-	<field name="m_name" class="java.lang.String"/>
-	<field name="status" class="java.lang.String"/>
-	<field name="collection_time" class="java.sql.Timestamp"/>
 	<field name="domain" class="java.lang.String"/>
 	<field name="priority" class="java.lang.Integer"/>
+	<field name="t_name" class="java.lang.String"/>
 	<field name="time_ta_average" class="java.lang.Integer"/>
 	<field name="time_holding" class="java.lang.Integer"/>
+	<field name="m_name" class="java.lang.String"/>
+	<field name="status" class="java.lang.String"/>
+	<field name="sample_type" class="java.lang.String"/>
+	<field name="a_id" class="java.lang.Integer"/>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
@@ -129,28 +145,35 @@ ORDER BY sa.accession_number]]>
 	<columnHeader>
 		<band height="12" splitType="Stretch">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="0" width="62" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<reportElement mode="Opaque" x="0" y="0" width="54" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Accession #]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="62" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<reportElement mode="Opaque" x="54" y="0" width="85" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Collected]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="152" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<reportElement mode="Opaque" x="139" y="0" width="85" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[Received]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="242" y="0" width="235" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<reportElement mode="Opaque" x="224" y="0" width="83" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Sample Type]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="307" y="0" width="170" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
@@ -182,32 +205,32 @@ ORDER BY sa.accession_number]]>
 	<detail>
 		<band height="13">
 			<textField>
-				<reportElement x="0" y="0" width="57" height="12"/>
+				<reportElement x="0" y="0" width="50" height="12"/>
 				<textElement>
 					<font size="9" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="62" y="0" width="85" height="12"/>
+				<reportElement x="54" y="0" width="97" height="12"/>
 				<textElement>
 					<font size="9" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{collection_date}]]></textFieldExpression>
+				<textFieldExpression class="java.sql.Timestamp"><![CDATA[JasperUtil.concatDateAndTime($F{collection_date},$F{collection_time})]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
-				<reportElement x="152" y="0" width="85" height="12"/>
+				<reportElement x="139" y="0" width="97" height="12"/>
 				<textElement>
 					<font size="9" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[$F{received_date}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="242" y="1" width="230" height="12"/>
+				<reportElement x="307" y="0" width="165" height="12"/>
 				<textElement>
 					<font size="9" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{t_description},", ",$F{m_name})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{t_name},", ",$F{m_name})]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="476" y="0" width="90" height="12"/>
@@ -216,7 +239,7 @@ ORDER BY sa.accession_number]]>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{status}]]></textFieldExpression>
 			</textField>
-			<textField isStretchWithOverflow="true" pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
 				<reportElement x="571" y="0" width="86" height="12">
 					<printWhenExpression><![CDATA[$F{priority} >= 0]]></printWhenExpression>
 				</reportElement>
@@ -244,6 +267,13 @@ ORDER BY sa.accession_number]]>
 				<textFieldExpression class="java.sql.Timestamp"><![CDATA[JasperUtil.changeDate(
 JasperUtil.concatDateAndTime($F{collection_date},$F{collection_time}),
 $F{time_holding}, Calendar.HOUR)]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy-MM-dd HH:mm" isBlankWhenNull="true">
+				<reportElement x="224" y="0" width="83" height="12"/>
+				<textElement>
+					<font size="9" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_type}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

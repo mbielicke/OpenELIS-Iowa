@@ -4,7 +4,7 @@
 	<property name="com.jasperassistant.designer.DataSource" value="elis"/>
 	<property name="ireport.zoom" value="1.5"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="96"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -149,6 +149,14 @@ Phone # 319-335-4500 or
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
+			<subreport>
+				<reportElement key="containers" positionType="Float" x="0" y="48" width="116" height="12" isRemoveLineWhenBlank="true"/>
+				<subreportParameter name="ORDER_ID">
+					<subreportParameterExpression><![CDATA[$F{id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR}+"/containers.jasper"]]></subreportExpression>
+			</subreport>
 			<line>
 				<reportElement key="topVertSeparator" x="190" y="0" width="1" height="99"/>
 				<graphicElement>
@@ -156,19 +164,25 @@ Phone # 319-335-4500 or
 				</graphicElement>
 			</line>
 			<staticText>
-				<reportElement x="419" y="0" width="157" height="12"/>
-				<textElement>
-					<font fontName="Arial" size="8" pdfFontName="Helvetica"/>
-				</textElement>
-				<text><![CDATA[PLEASE WRITE CORRECTIONS HERE]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="195" y="16" width="70" height="12"/>
+				<reportElement x="195" y="0" width="70" height="12"/>
 				<textElement>
 					<font fontName="Arial" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[REPORT  TO:]]></text>
 			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="195" y="24" width="55" height="12"/>
+				<textElement>
+					<font fontName="Arial" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[($F{report_to_id}==null)?$F{organization_id}:$F{report_to_id}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="255" y="24" width="125" height="12"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="3of9" drawText="false" checksumRequired="false">
+					<jr:codeExpression><![CDATA[($F{report_to_id}==null)?$F{organization_id}.toString():$F{report_to_id}.toString()]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
 			<subreport>
 				<reportElement x="195" y="36" width="185" height="60"/>
 				<subreportParameter name="SUBREPORT_DIR">
@@ -184,12 +198,25 @@ Phone # 319-335-4500 or
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "organization.jasper"]]></subreportExpression>
 			</subreport>
 			<staticText>
-				<reportElement x="390" y="16" width="70" height="12"/>
+				<reportElement x="390" y="0" width="70" height="12"/>
 				<textElement>
 					<font fontName="Arial" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[BILL  TO:]]></text>
 			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="391" y="24" width="55" height="12"/>
+				<textElement>
+					<font fontName="Arial" pdfFontName="Helvetica"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[($F{bill_to_id}==null)?$F{organization_id}:$F{bill_to_id}]]></textFieldExpression>
+			</textField>
+			<componentElement>
+				<reportElement x="451" y="24" width="125" height="12"/>
+				<jr:barbecue xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd" type="3of9" drawText="false" checksumRequired="false">
+					<jr:codeExpression><![CDATA[($F{bill_to_id}==null)?$F{organization_id}.toString():$F{bill_to_id}.toString()]]></jr:codeExpression>
+				</jr:barbecue>
+			</componentElement>
 			<subreport>
 				<reportElement x="390" y="36" width="185" height="60"/>
 				<subreportParameter name="SUBREPORT_DIR">
