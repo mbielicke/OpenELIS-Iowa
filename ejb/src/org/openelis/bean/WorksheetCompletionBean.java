@@ -73,6 +73,8 @@ import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.TestResultDO;
@@ -103,8 +105,11 @@ import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.AnalysisUserManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleDomainInt;
+import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SamplePrivateWellManager;
+import org.openelis.manager.SampleSDWISManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
@@ -145,7 +150,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
         boolean                  isEditable;
         int                      r, i, a, o;
-        String                   statuses[], cellNameIndex, posNum, outFileName;
+        String                   statuses[], cellNameIndex, posNum, outFileName,
+                                 description, location, reportTo;
         File                     outFile;
         FileInputStream          in;
         FileOutputStream         out;
@@ -168,6 +174,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         SampleDomainInt          sDomain;
         SampleItemManager        siManager;
         SampleManager            sManager;
+        SampleOrganizationViewDO soVDO;
+        SamplePrivateWellViewDO  spwVDO;
         SystemUserVO             userVO;
         WorksheetAnalysisDO      waDO, waLinkDO;
         WorksheetAnalysisManager waManager;
@@ -255,12 +263,61 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     aManager = siManager.getAnalysisAt(bundle.getSampleItemIndex());
                     aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
                     arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
+                    
+                    //
+                    // get domain specific description
+                    //
+                    location = "";
+                    reportTo = "";
+                    if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
+                        location = ((SampleEnvironmentalManager)sDomain).getEnvironmental().getLocation();
+                        if (location == null)
+                            location = "";
+                        soVDO = sManager.getOrganizations().getReportTo();
+                        if (soVDO != null) {
+                            reportTo = soVDO.getOrganizationName();
+                            if (reportTo == null)
+                                reportTo = "";
+                        } else {
+                            reportTo = "";
+                        }
+                        description = "loc: "+location+" rep: "+reportTo;
+                    } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
+                        spwVDO = ((SamplePrivateWellManager)sDomain).getPrivateWell();
+                        location = spwVDO.getLocation();
+                        if (location == null)
+                            location = "";
+                        if (spwVDO.getOrganizationId() != null) {
+                            reportTo = spwVDO.getOrganization().getName();
+                            if (reportTo == null)
+                                reportTo = "";
+                        } else {
+                            reportTo = spwVDO.getReportToName();
+                        }
+                        description = "loc: "+location+" rep: "+reportTo;
+                    } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
+                        location = ((SampleSDWISManager)sDomain).getSDWIS().getLocation();
+                        if (location == null)
+                            location = "";
+                        soVDO = sManager.getOrganizations().getReportTo();
+                        if (soVDO != null) {
+                            reportTo = soVDO.getOrganizationName();
+                            if (reportTo == null)
+                                reportTo = "";
+                        } else {
+                            reportTo = "";
+                        }
+                        description = "loc: "+location+" rep: "+reportTo;
+                    } else {
+                        description = "";
+                    }
+                    
 
                     // description
                     cell = row.createCell(2);
                     cell.setCellStyle(styles.get("row_no_edit"));
                     if (sDomain != null)
-                        cell.setCellValue(sDomain.getDomainDescription());
+                        cell.setCellValue(description);
                     else
                         cell.setCellValue("");
     
@@ -334,7 +391,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     cell = oRow.createCell(2);
                     cell.setCellStyle(styles.get("row_no_edit"));
                     if (sDomain != null)
-                        cell.setCellValue(sDomain.getDomainDescription());
+                        cell.setCellValue(description);
                     else
                         cell.setCellValue("");
     
@@ -565,6 +622,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         Iterator<SampleManager>  iter;
         File                     file;
         FileInputStream          in;
+        SimpleDateFormat         format;
         StringTokenizer          tokenizer;
         ValidationErrorsList     errorList;
         Cell                     cell;
@@ -591,6 +649,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetQcResultViewDO  wqrVDO;
         WorksheetResultManager   wrManager;
         WorksheetResultViewDO    wrVDO;
+        
+        format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         
         anCancelledId = dictionaryLocal.fetchBySystemName("analysis_cancelled").getId();
         anCompletedId = dictionaryLocal.fetchBySystemName("analysis_completed").getId();
@@ -707,13 +767,19 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         
                         value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
                         if (value != null) {
-                            aVDO.setStartedDate((Datetime)value);
+                            if (value instanceof Datetime)
+                                aVDO.setStartedDate((Datetime)value);
+                            else if (value instanceof String)
+                                aVDO.setStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, format.parse((String)value)));
                             anaModified = true;
                         }
                         
                         value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_completed."+i+"."+a);
                         if (value != null) {
-                            aVDO.setCompletedDate((Datetime)value);
+                            if (value instanceof Datetime)
+                                aVDO.setCompletedDate((Datetime)value);
+                            else if (value instanceof String)
+                                aVDO.setCompletedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, format.parse((String)value)));
                             anaModified = true;
                         }
                         
@@ -836,8 +902,12 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     }
                     
                     value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
-                    if (value != null && waDO.getQcStartedDate() == null)
-                        waDO.setQcStartedDate((Datetime)value);
+                    if (value != null && waDO.getQcStartedDate() == null) {
+                        if (value instanceof Datetime)
+                            waDO.setQcStartedDate((Datetime)value);
+                        else if (value instanceof String)
+                            waDO.setQcStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, format.parse((String)value)));
+                    }
                 }
             }
             //
