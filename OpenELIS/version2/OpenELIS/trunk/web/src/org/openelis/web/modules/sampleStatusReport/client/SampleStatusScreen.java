@@ -33,6 +33,7 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleStatusWebReportVO;
+import org.openelis.domain.SampleStatusWebReportVO.QAEventType;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission;
@@ -493,12 +494,11 @@ public class SampleStatusScreen extends Screen {
                 row.cells.get(3).setValue(temp1);
                 row.cells.get(4).setValue(data.getReceivedDate());
                 row.cells.get(5).setValue(data.getClientReference());
-                if (data.getHasSampleQAEvent()) {
-                    if (data.getHasSampleOverride())
-                        row.cells.get(6).setValue("No Result");
-                    else if (data.getHasSampleWarning())
-                        row.cells.get(6).setValue("Warning");
-                }
+                if ((QAEventType.OVERRIDE).equals(data.getSampleQA()))
+                    row.cells.get(6).setValue("No Result");
+                else if ((QAEventType.WARNING).equals(data.getSampleQA()))
+                    row.cells.get(6).setValue("Warning");
+                
                 row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
                 row.data = "SAMPLE:" + data.getSampleId();
                 model.add(row);
@@ -508,12 +508,10 @@ public class SampleStatusScreen extends Screen {
                                           data.getMethodReportingDescription());
                 row.cells.get(2).setValue(statusReleased.equals(data.getStatusId()) ? completed
                                                                                    : inProgress);
-                if (data.getHasAnalysisQAEvent()) {
-                    if (data.getHasAnalysisOverride())
-                        row.cells.get(6).setValue("No Result");
-                    else if (data.getHasAnalysisWarning())
-                        row.cells.get(6).setValue("Warning");
-                }
+                if ((QAEventType.OVERRIDE).equals(data.getAnalysisQA()))
+                    row.cells.get(6).setValue("No Result");
+                else if ((QAEventType.WARNING).equals(data.getAnalysisQA()))
+                    row.cells.get(6).setValue("Warning");
                 row.data = "ANALYSIS:" + data.getAnalysisId();
                 row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
                 model.add(row);
@@ -523,12 +521,10 @@ public class SampleStatusScreen extends Screen {
                                           data.getMethodReportingDescription());
                 row.cells.get(2).setValue(statusReleased.equals(data.getStatusId()) ? completed
                                                                                    : inProgress);
-                if (data.getHasAnalysisQAEvent()) {
-                    if (data.getHasAnalysisOverride())
-                        row.cells.get(6).setValue("No Result");
-                    else if (data.getHasAnalysisWarning())
-                        row.cells.get(6).setValue("Warning");
-                }
+                if ((QAEventType.OVERRIDE).equals(data.getAnalysisQA()))
+                    row.cells.get(6).setValue("No Result");
+                else if ((QAEventType.WARNING).equals(data.getAnalysisQA()))
+                    row.cells.get(6).setValue("Warning");
                 row.data = "ANALYSIS:" + data.getAnalysisId();
                 row.style = (accRow % 2 == 0) ? "AltTableRow" : "";
                 model.add(row);
