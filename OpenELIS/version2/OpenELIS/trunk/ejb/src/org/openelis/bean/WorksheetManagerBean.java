@@ -102,11 +102,6 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
                 lockBean.unlock(ReferenceTable.SAMPLE, sMan.getSample().getId());
             }
             man.getLockedManagers().clear();
-//            iter = man.getSampleManagers().values().iterator();
-//            while (iter.hasNext()) {
-//                sMan = iter.next();
-//                sMan.updateCache();
-//            }
             throw e;
         }
 

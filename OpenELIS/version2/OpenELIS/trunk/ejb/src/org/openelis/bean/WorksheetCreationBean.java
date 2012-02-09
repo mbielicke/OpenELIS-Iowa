@@ -46,6 +46,8 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -53,12 +55,16 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.OrganizationLocal;
+import org.openelis.local.SampleOrganizationLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.AnalysisQaEventManager;
+import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.util.QueryBuilderV2;
+import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -66,9 +72,13 @@ import org.openelis.util.QueryBuilderV2;
 public class WorksheetCreationBean implements WorksheetCreationRemote {
 
     @EJB
-    DictionaryLocal dictionaryLocal;
+    DictionaryLocal dictionary;
     @EJB
-    SystemVariableLocal systemVariableLocal;
+    OrganizationLocal organization;
+    @EJB
+    SampleOrganizationLocal sampleOrganization;
+    @EJB
+    SystemVariableLocal systemVariable;
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
@@ -81,13 +91,14 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
     @SuppressWarnings("unchecked")
     public ArrayList<WorksheetCreationVO> query(ArrayList<QueryData> fields, 
                                                 int first, int max) throws Exception {
-        int                    i;
-        List                   list = null;
-        Query                  query;
-        QueryBuilderV2         builder;
-        AnalysisQaEventManager analysisQaManager;
-        SampleQaEventManager   sampleQaManager;
-        WorksheetCreationVO    vo;
+        int                      i;
+        List                     list = null;
+        String                   location, reportToName;
+        Query                    query;
+        QueryBuilderV2           builder;
+        AnalysisQaEventManager   analysisQaManager;
+        SampleQaEventManager     sampleQaManager;
+        WorksheetCreationVO      vo;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
@@ -99,10 +110,12 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                           WorksheetCreationMeta.getSampleCollectionDate()+", "+
                           WorksheetCreationMeta.getSampleCollectionTime()+", "+
                           WorksheetCreationMeta.getSampleReceivedDate()+", "+
-                          WorksheetCreationMeta.getSampleEnvironmentalDescription()+", "+
+                          WorksheetCreationMeta.getSampleEnvironmentalLocation()+", "+
                           WorksheetCreationMeta.getSampleEnvironmentalPriority()+", "+
                           WorksheetCreationMeta.getSampleSDWISLocation()+", "+
                           WorksheetCreationMeta.getSamplePrivateWellLocation()+", "+
+                          WorksheetCreationMeta.getSamplePrivateWellOrganizationId()+", "+
+                          WorksheetCreationMeta.getSamplePrivateWellReportToName()+", "+
 //                          WorksheetCreationMeta.getPatientLastName()+", "+
 //                          WorksheetCreationMeta.getPatientFirstName()+", "+
                           WorksheetCreationMeta.getAnalysisTestId()+", " +
@@ -128,6 +141,40 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
         } else {
             for (i = 0; i < list.size(); i++) {
                 vo = (WorksheetCreationVO) list.get(i);
+                //
+                // Set domain specific description
+                //
+                location = "";
+                reportToName = "";
+                if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(vo.getDomain())) {
+                    location = vo.getEnvLocation();
+                    if (location == null)
+                        location = "";
+                    try {
+                        reportToName = sampleOrganization.fetchReportToBySampleId(vo.getSampleId()).getOrganizationName();
+                    } catch (NotFoundException nfE) {}
+                    vo.setDescription("loc: "+location+" rep: "+reportToName);
+                } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(vo.getDomain())) {
+                    location = vo.getSDWISLocation();
+                    if (location == null)
+                        location = "";
+                    try {
+                        reportToName = sampleOrganization.fetchReportToBySampleId(vo.getSampleId()).getOrganizationName();
+                    } catch (NotFoundException nfE) {}
+                    vo.setDescription("loc: "+location+" rep: "+reportToName);
+                } else if (SampleManager.WELL_DOMAIN_FLAG.equals(vo.getDomain())) {
+                    location = vo.getPrivateWellLocation();
+                    if (location == null)
+                        location = "";
+                    if (vo.getPrivateWellOrgId() != null) {
+                        try {
+                            reportToName = organization.fetchById(vo.getPrivateWellOrgId()).getName();
+                        } catch (NotFoundException nfE) {}
+                    } else {
+                        reportToName = vo.getPrivateWellReportToName();
+                    }
+                    vo.setDescription("loc: "+location+" rep: "+reportToName);
+                }
                 //
                 // Set QA Override Flag
                 //
@@ -229,7 +276,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
         columnNames = new ArrayList<IdNameVO>();
         
         try {
-            formatVDO = dictionaryLocal.fetchById(formatId);
+            formatVDO = dictionary.fetchById(formatId);
         } catch (NotFoundException nfE) {
             formatVDO = new DictionaryViewDO();
             formatVDO.setEntry("DefaultTotal");
@@ -267,7 +314,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
         
         dirName = "";
         try {
-            sysVars = systemVariableLocal.fetchByName("worksheet_template_directory", 1);
+            sysVars = systemVariable.fetchByName("worksheet_template_directory", 1);
             if (sysVars.size() > 0)
                 dirName = ((SystemVariableDO)sysVars.get(0)).getValue();
         } catch (Exception anyE) {

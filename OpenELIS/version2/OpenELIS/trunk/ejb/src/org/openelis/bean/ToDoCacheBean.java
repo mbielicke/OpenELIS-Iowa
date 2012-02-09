@@ -440,7 +440,6 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         SampleCacheVO svo;
         Element elem;
         ArrayList<Integer> sidList;
-        ArrayList<SampleOrganizationViewDO> sorgList;
         ArrayList<SampleProjectViewDO> sprjList;
         ArrayList<SampleQaEventDO> sqeList;
         ArrayList<AnalysisQaevent> aqeList;
@@ -464,8 +463,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     // there is no "report to" for quick-entry (Q) samples
                     //
                     try {
-                        sorgList = sol.fetchReportToBySampleId(id);
-                        name = sorgList.get(0).getOrganizationName();
+                        name = sol.fetchReportToBySampleId(id).getOrganizationName();
                     } catch (NotFoundException e) {
                         name = "";
                     }
@@ -499,8 +497,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     // there is no "report to" for quick-entry (Q) samples
                     //
                     try {
-                        sorgList = sol.fetchReportToBySampleId(id);
-                        name = sorgList.get(0).getOrganizationName();
+                        name = sol.fetchReportToBySampleId(id).getOrganizationName();
                     } catch (NotFoundException e) {
                         name = "";
                     }
@@ -586,7 +583,6 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         AnalysisCacheVO cvo;
         HashMap<Integer, SectionDO> secMap;
         ArrayList<Integer> aidList;
-        ArrayList<SampleOrganizationViewDO> sorgList;
         ArrayList<SampleProjectViewDO> sprjList;
         ArrayList<AnalysisCacheVO> voList;
         ArrayList<AnalysisQaEventDO> aqeList;
@@ -641,8 +637,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                 if ("E".equals(domain)) {
                     if (newSample) {
                         try {
-                            sorgList = sol.fetchReportToBySampleId(sampleId);
-                            orgName = sorgList.get(0).getOrganizationName();
+                            orgName = sol.fetchReportToBySampleId(sampleId).getOrganizationName();
                         } catch (NotFoundException e) {
                             orgName = "";
                         }
@@ -681,8 +676,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                 } else if ("S".equals(domain)) {
                     if (newSample) {
                         try {
-                            sorgList = sol.fetchReportToBySampleId(sampleId);
-                            orgName = sorgList.get(0).getOrganizationName();
+                            orgName = sol.fetchReportToBySampleId(sampleId).getOrganizationName();
                         } catch (NotFoundException e) {
                             orgName = "";
                         }

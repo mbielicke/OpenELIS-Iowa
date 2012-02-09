@@ -1095,8 +1095,7 @@ public class DataViewBean implements DataViewRemote {
                 } else {
                     if (org == null) {
                         try {
-                            orgList = sampleOrganization.fetchReportToBySampleId(sampleId);
-                            org = orgList.get(0);
+                            org = sampleOrganization.fetchReportToBySampleId(sampleId);
                         } catch (NotFoundException e) {
                             // ignore
                         }
