@@ -34,7 +34,6 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
@@ -105,7 +104,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         int analysisId;
         Integer prevSampleId;
         String clause, orgIds;
-        HashMap<String, String> orgMapStr;
+        HashMap<String, String> clauseMap;
         ArrayList<SampleStatusWebReportVO> returnList;
         ArrayList<IdAccessionVO> sampleIdList;
         ArrayList<SampleQaEventViewDO> sampleQAList;
@@ -126,8 +125,8 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * Create a string of organization ids from the clause in a format which
          * the QueryBuilder can understand.
          */
-        orgMapStr = ReportUtil.parseClauseAsString(clause);
-        orgIds = orgMapStr.get("organizationid");
+        clauseMap = ReportUtil.parseClauseAsString(clause);
+        orgIds = clauseMap.get("organizationid");
         if (DataBaseUtil.isEmpty(orgIds))
             return returnList;
 
@@ -239,12 +238,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
 
-        try {
-            return DataBaseUtil.toArrayList(query.getResultList());
-        } catch (PersistenceException e) {
-            log.error("Invalid Clause:" + " " + clause);
-            return new ArrayList<IdAccessionVO>();
-        }
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     private ArrayList<IdAccessionVO> getNonPrivateSamples(ArrayList<QueryData> fields, String clause) throws Exception {
@@ -263,12 +257,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
-        
-        try {
-            return DataBaseUtil.toArrayList(query.getResultList());
-        } catch (PersistenceException e) {
-            log.error("Invalid Clause:" + " " + clause);
-            return new ArrayList<IdAccessionVO>();
-        }
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 }
