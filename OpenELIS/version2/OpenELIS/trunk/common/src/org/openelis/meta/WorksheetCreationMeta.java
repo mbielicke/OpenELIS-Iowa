@@ -51,12 +51,14 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                 SAMP_RECEIVED_DATE = "_sample.receivedDate",
                                 SAMP_ENTERED_DATE = "_sample.enteredDate",
                                 
-                                SAMP_ENV_DESCRIPTION = "_sampleEnvironmental.description",
+                                SAMP_ENV_LOCATION = "_sampleEnvironmental.location",
                                 SAMP_ENV_PRIORITY = "_sampleEnvironmental.priority",
                                 
                                 SAMP_SDWIS_LOCATION = "_sampleSDWIS.location",
 
                                 SAMP_PRIVATE_WELL_LOCATION = "_samplePrivateWell.location",
+                                SAMP_PRIVATE_WELL_ORGANIZATION_ID = "_samplePrivateWell.organizationId",
+                                SAMP_PRIVATE_WELL_REPORT_TO_NAME = "_samplePrivateWell.reportToName",
 
 //                                  PATIENT_LAST_NAME = "_patient.lastName",
 //                                  PATIENT_FIRST_NAME = "_patient.firstName",
@@ -87,9 +89,13 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                                   WSHT_ITEM_POSITION, WSHT_ANA_WORKSHEET_ANALYSIS_ID, 
                                                   SAMP_ID, SAMP_DOMAIN, SAMP_ACCESSION_NUMBER,
                                                   SAMP_COLLECTION_DATE, SAMP_COLLECTION_TIME,
-                                                  SAMP_RECEIVED_DATE, SAMP_ENV_DESCRIPTION,
-                                                  SAMP_ENV_PRIORITY, SAMP_ITEM_TYPE_OF_SAMPLE_ID,
+                                                  SAMP_RECEIVED_DATE, SAMP_ENTERED_DATE,
+                                                  SAMP_ENV_LOCATION, SAMP_ENV_PRIORITY,
+                                                  SAMP_SDWIS_LOCATION, SAMP_PRIVATE_WELL_LOCATION,
+                                                  SAMP_PRIVATE_WELL_ORGANIZATION_ID,
+                                                  SAMP_PRIVATE_WELL_REPORT_TO_NAME,
                                                   /*PATIENT_LAST_NAME, PATIENT_FIRST_NAME,*/
+                                                  SAMP_ITEM_TYPE_OF_SAMPLE_ID,
                                                   ANA_ID, ANA_TEST_ID, ANA_TEST_NAME,
                                                   ANA_TEST_METHOD_NAME, ANA_TEST_TIME_HOLDING,
                                                   ANA_TEST_TIME_TA_AVERAGE, ANA_SECTION_ID,
@@ -142,8 +148,8 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
         return SAMP_ENTERED_DATE;
     }
 
-    public static String getSampleEnvironmentalDescription() {
-        return SAMP_ENV_DESCRIPTION;
+    public static String getSampleEnvironmentalLocation() {
+        return SAMP_ENV_LOCATION;
     }
 
     public static String getSampleEnvironmentalPriority() {
@@ -157,7 +163,16 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
     public static String getSamplePrivateWellLocation() {
         return SAMP_PRIVATE_WELL_LOCATION;
     }
-/*
+
+    public static String getSamplePrivateWellOrganizationId() {
+        return SAMP_PRIVATE_WELL_ORGANIZATION_ID;
+    }
+
+    public static String getSamplePrivateWellReportToName() {
+        return SAMP_PRIVATE_WELL_REPORT_TO_NAME;
+    }
+
+    /*
     public static String getPatientLastName() {
         return PATIENT_LAST_NAME;
     }

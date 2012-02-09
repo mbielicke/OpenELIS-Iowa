@@ -45,10 +45,6 @@ public class SamplePrivateWellManager implements RPC, SampleDomainInt {
         this.sampleId = sampleId;
     }
 
-    public String getDomainDescription() {
-        return privateWell.getLocation();
-    }
-
     // manager methods
     public SamplePrivateWellManager add() throws Exception {
         return proxy().add(this);
