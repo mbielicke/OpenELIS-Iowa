@@ -93,6 +93,7 @@ import org.openelis.local.CategoryCacheLocal;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.PWSLocal;
+import org.openelis.local.ProjectLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.local.SampleEnvironmentalLocal;
 import org.openelis.local.SampleItemLocal;
@@ -122,6 +123,9 @@ public class DataViewBean implements DataViewRemote {
     @EJB
     private SessionCacheLocal               session;
 
+    @EJB
+    private ProjectLocal                    project;
+    
     @EJB
     private SampleProjectLocal              sampleProject;
 
@@ -268,7 +272,7 @@ public class DataViewBean implements DataViewRemote {
          * list of projects
          */
         if (clause != null)
-            return sample.fetchProjectsForOrganizations(clause);
+            return project.fetchForOrganizations(clause);
 
         return new ArrayList<IdNameVO>();
     }

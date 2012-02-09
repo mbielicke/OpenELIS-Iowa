@@ -72,33 +72,6 @@ import org.openelis.utils.Auditable;
                         "receivedById, collectionDate, collectionTime, statusId, packageId," +
                         "clientReference, releasedDate)"
                       + " from Sample where accessionNumber = :accession"),                     
-    @NamedQuery( name = "Sample.FetchProjectsForOrganizations",
-                query = "select new org.openelis.domain.IdNameVO(p.id, p.name)" 
-                      + " from SampleOrganization so, SampleProject sp, Project p, Organization o" 
-                      + " where so.sampleId = sp.sampleId and o.id in (:organizationIds) and so.typeId in(select id from Dictionary where systemName in ('org_report_to')) and" 
-                      + " so.organizationId = o.id and sp.projectId = p.id and sp.isPermanent = 'Y'"),
-    @NamedQuery( name = "Sample.FetchProjectsForPrivateOrganizations",
-                query = "select new org.openelis.domain.IdNameVO(p.id, p.name)" 
-                      + " from SamplePrivateWell so, SampleProject sp, Project p, Organization o"
-                      + " where so.sampleId = sp.sampleId and o.id in (:organizationIds) and so.organizationId = o.id and sp.projectId = p.id and sp.isPermanent = 'Y'"),
-    @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportEnvironmental",
-                query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
-                        "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription, s.id, a.id)"
-                      + " from Sample s, SampleItem si, Test t, Method m, SampleEnvironmental se, Analysis a"
-                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and se.sampleId = s.id and"
-                      + " si.sampleId = s.id and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
-    @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportPrivateWell",
-                query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
-                        "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription, s.id, a.id)"
-                      + " from Sample s, SampleItem si, Test t, Method m, SamplePrivateWell se, Analysis a" 
-                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and se.sampleId = s.id and"
-                      + " si.sampleId = s.id and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
-    @NamedQuery( name = "Sample.FetchSampleAnalysisInfoForSampleStatusReportSDWIS",
-                query = "select new org.openelis.domain.SampleStatusWebReportVO(s.accessionNumber, s.receivedDate, s.collectionDate, s.collectionTime, a.statusId, " +
-                        "s.clientReference, se.collector, t.reportingDescription, m.reportingDescription, s.id, a.id)" 
-                      + " from Sample s, SampleItem si, Test t, Method m, SampleSDWIS se, Analysis a"
-                      + " where s.id in (:sampleIds) and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and se.sampleId = s.id and"
-                      + " si.sampleId = s.id  and a.statusId != (select id from Dictionary where systemName = ('analysis_cancelled')) order by s.accessionNumber, t.name, m.name "),
     @NamedQuery( name = "Sample.FetchSDWISByReleased",
                 query = "select distinct new org.openelis.domain.SampleDO(s.id, s.nextItemSequence, s.domain," +
                         "s.accessionNumber, s.revision, s.orderId, s.enteredDate, s.receivedDate," +
@@ -117,7 +90,7 @@ import org.openelis.utils.Auditable;
                       + " a.id = arf.analysisId order by s.accessionNumber, a.id")})  
                       
 @NamedNativeQueries({
-    @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportBatch",     
+    @NamedNativeQuery(name = "Sample.FetchForFinalReportBatch",     
                 query = "select s.id s_id, so.organization_id o_id, a.id a_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so"
                       + " where s.domain != 'W' and s.status_id in (select id from dictionary where system_name = 'sample_released') and si.sample_id = s.id and a.sample_item_id = si.id and"
@@ -155,8 +128,8 @@ import org.openelis.utils.Auditable;
                       + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released') and"
                       + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_second_report_to')"
                       + " order by s_id , o_id",
-                resultSetMapping="Sample.FetchSamplesForFinalReportBatchMapping"),
-    @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportBatchReprint",     
+                resultSetMapping="Sample.FetchForFinalReportBatchMapping"),
+    @NamedNativeQuery(name = "Sample.FetchForFinalReportBatchReprint",     
                 query = "select s.id s_id, so.organization_id o_id, a.id a_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so"
                       + " where s.domain != 'W' and s.status_id in (select id from dictionary where system_name = 'sample_released') and si.sample_id = s.id and a.sample_item_id = si.id and"
@@ -194,8 +167,8 @@ import org.openelis.utils.Auditable;
                       + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released') and"
                       + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_second_report_to')"
                       + " order by s_id , o_id",
-                resultSetMapping="Sample.FetchSamplesForFinalReportBatchReprintMapping"),
-    @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportSingle",     
+                resultSetMapping="Sample.FetchForFinalReportBatchReprintMapping"),
+    @NamedNativeQuery(name = "Sample.FetchForFinalReportSingle",     
                 query = "select s.id s_id, so.organization_id o_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so"
                       + " where s.id = :sampleId and s.domain != 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_error', 'sample_not_verified')) and si.sample_id = s.id and a.sample_item_id = si.id and"  
@@ -213,8 +186,8 @@ import org.openelis.utils.Auditable;
                       + " si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_second_report_to')"
                       + " order by s_id , o_id",
-                resultSetMapping="Sample.FetchSamplesForFinalReportSingleMapping"),              
-    @NamedNativeQuery(name = "Sample.FetchSamplesForFinalReportPreview",     
+                resultSetMapping="Sample.FetchForFinalReportSingleMapping"),              
+    @NamedNativeQuery(name = "Sample.FetchForFinalReportPreview",     
                 query = "select s.id s_id, so.organization_id o_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so"
                       + " where s.id = :sampleId and s.domain != 'W' and si.sample_id = s.id and a.sample_item_id = si.id and"  
@@ -226,7 +199,7 @@ import org.openelis.utils.Auditable;
                       + " where s.id = :sampleId and s.domain = 'W' and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y'"
                       + " order by s_id , o_id",
-                resultSetMapping="Sample.FetchSamplesForFinalReportPreviewMapping"),
+                resultSetMapping="Sample.FetchForFinalReportPreviewMapping"),
     @NamedNativeQuery(name = "Sample.FetchForClientEmailReceivedReport",     
                 query = "select unique o.id o_id, o.name o_name,  s.accession_number s_anum, s.collection_date s_col_date,"
                       + " s.collection_time s_col_time, s.received_date s_rec, op.value email, sq.type_id qaevent_id,"
@@ -397,15 +370,38 @@ import org.openelis.utils.Auditable;
                         " op.type_id = d4.id and d4.system_name = 'released_reportto_email' and" +
                         " a.id not in (select arf.analysis_id from analysis_report_flags arf where a.id = arf.analysis_id and arf.notified_released = 'Y') " +
                         "order by s_anum ",
-                resultSetMapping="Sample.FetchForClientEmailReleasedReportMapping")})  
+           resultSetMapping="Sample.FetchForClientEmailReleasedReportMapping"),
+     @NamedNativeQuery(name = "Sample.FetchForSampleStatusReport",
+                query = "select s.accession_number s_anum, s.received_date s_rec, s.collection_date s_col_date, s.collection_time s_col_time," +
+                		" a.status_id a_stat_id, CAST(s.client_reference AS varchar(20)) s_cl_ref, se.collector s_col," +
+                        " t.reporting_description t_rep_desc, m.reporting_description m_rep_desc, s.id s_id, a.id a_id " +
+                        "from sample s, sample_environmental se, sample_item si, analysis a, test t, method m " +
+                        "where s.id in (:sampleIds) and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and se.sample_id = s.id and" +
+                        " si.sample_id = s.id and a.status_id != (select id from dictionary where system_name = ('analysis_cancelled')) " +
+                        "UNION " +
+                        "select s.accession_number s_anum, s.received_date s_rec, s.collection_date s_col_date, s.collection_time s_col_time," +
+                        " a.status_id a_stat_id, CAST(s.client_reference AS varchar(20)) s_cl_ref, sp.collector s_col," +
+                        " t.reporting_description t_rep_desc, m.reporting_description m_rep_desc, s.id s_id, a.id a_id " +
+                        "from sample s, sample_private_well sp, sample_item si, analysis a, test t, method m " +
+                        "where s.id in (:sampleIds) and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and sp.sample_id = s.id and" +
+                        " si.sample_id = s.id and a.status_id != (select id from dictionary where system_name = ('analysis_cancelled')) " +
+                        "UNION " +
+                        "select s.accession_number s_anum, s.received_date s_rec, s.collection_date s_col_date, s.collection_time s_col_time," +
+                        " a.status_id a_stat_id, CAST(s.client_reference AS varchar(20)) s_cl_ref, sw.collector s_col," +
+                        " t.reporting_description t_rep_desc, m.reporting_description m_rep_desc, s.id s_id, a.id a_id " +
+                        "from sample s, sample_sdwis sw, sample_item si, analysis a, test t, method m " +
+                        "where s.id in (:sampleIds) and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and sw.sample_id = s.id and" +
+                        " si.sample_id = s.id and a.status_id != (select id from dictionary where system_name = ('analysis_cancelled')) " +
+                        "order by s_anum, t_rep_desc, m_rep_desc ",
+           resultSetMapping="Sample.FetchForSampleStatusReport")})   
 @SqlResultSetMappings({
-    @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportBatchMapping",
+    @SqlResultSetMapping(name="Sample.FetchForFinalReportBatchMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),  @ColumnResult(name="a_id")}),
-    @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportBatchReprintMapping",
+    @SqlResultSetMapping(name="Sample.FetchForFinalReportBatchReprintMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),  @ColumnResult(name="a_id")}),
-    @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportSingleMapping",
+    @SqlResultSetMapping(name="Sample.FetchForFinalReportSingleMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id")}),
-    @SqlResultSetMapping(name="Sample.FetchSamplesForFinalReportPreviewMapping",
+    @SqlResultSetMapping(name="Sample.FetchForFinalReportPreviewMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id")}),
     @SqlResultSetMapping(name="Sample.FetchForClientEmailReceivedReportMapping",
                          columns={@ColumnResult(name="o_id"),  @ColumnResult(name="o_name"),  @ColumnResult(name="s_anum"),
@@ -417,7 +413,12 @@ import org.openelis.utils.Auditable;
                          columns={@ColumnResult(name="o_id"),  @ColumnResult(name="s_anum"), @ColumnResult(name="s_col_date"), 
                                   @ColumnResult(name="s_col_time"), @ColumnResult(name="s_rec"), @ColumnResult(name="email"),  
                                   @ColumnResult(name="domain"), @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"),
-                                  @ColumnResult(name="ref_field3"), @ColumnResult(name="ref_field4")})}) 
+                                  @ColumnResult(name="ref_field3"), @ColumnResult(name="ref_field4")}),
+    @SqlResultSetMapping(name="Sample.FetchForSampleStatusReport",
+                        columns={@ColumnResult(name="s_anum"),  @ColumnResult(name="s_rec"), @ColumnResult(name="s_col_date"), 
+                                 @ColumnResult(name="s_col_time"), @ColumnResult(name="a_stat_id"), @ColumnResult(name="s_cl_ref"),  
+                                 @ColumnResult(name="s_col"), @ColumnResult(name="t_rep_desc"), @ColumnResult(name="m_rep_desc"),
+                                 @ColumnResult(name="s_id"), @ColumnResult(name="a_id")})}) 
                
 @Entity
 @Table(name = "sample")

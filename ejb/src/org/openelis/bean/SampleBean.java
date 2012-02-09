@@ -39,7 +39,6 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdAccessionVO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.entity.Sample;
@@ -200,34 +199,34 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public ArrayList<Object[]> fetchSamplesForFinalReportBatch() throws Exception {
+    public ArrayList<Object[]> fetchForFinalReportBatch() throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("Sample.FetchSamplesForFinalReportBatch");
+        query = manager.createNamedQuery("Sample.FetchForFinalReportBatch");
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<Object[]> fetchSamplesForFinalReportBatchReprint(Date beginPrinted, Date endPrinted) throws Exception {
+    public ArrayList<Object[]> fetchForFinalReportBatchReprint(Date beginPrinted, Date endPrinted) throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("Sample.FetchSamplesForFinalReportBatchReprint");
+        query = manager.createNamedQuery("Sample.FetchForFinalReportBatchReprint");
         query.setParameter("beginPrinted", beginPrinted);
         query.setParameter("endPrinted", endPrinted);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<Object[]> fetchSamplesForFinalReportSingle(Integer sampleId) throws Exception {
+    public ArrayList<Object[]> fetchForFinalReportSingle(Integer sampleId) throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("Sample.FetchSamplesForFinalReportSingle");
+        query = manager.createNamedQuery("Sample.FetchForFinalReportSingle");
         query.setParameter("sampleId", sampleId);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<Object[]> fetchSamplesForFinalReportPreview(Integer sampleId) throws Exception {
+    public ArrayList<Object[]> fetchForFinalReportPreview(Integer sampleId) throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("Sample.FetchSamplesForFinalReportPreview");
+        query = manager.createNamedQuery("Sample.FetchForFinalReportPreview");
         query.setParameter("sampleId", sampleId);
         return DataBaseUtil.toArrayList(query.getResultList());
     }
@@ -262,42 +261,32 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     } 
 
-    public ArrayList<IdNameVO> fetchProjectsForOrganizations(String clause) throws Exception {
+    public ArrayList<SampleStatusWebReportVO> fetchForSampleStatusReport(ArrayList<Integer> sampleIds) throws Exception {
         Query query;
-        QueryBuilderV2 builder;
-        
-        builder = new QueryBuilderV2();
-        builder.setMeta(webMeta);        
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
-                          SampleWebMeta.getProjectId() + ", " + SampleWebMeta.getProjectName()+ ") ");
-        builder.addWhere("("+clause+")");
-        builder.addWhere(SampleWebMeta.getSampleProjectProjectId() + "=" + SampleWebMeta.getProjectId());
-        query = manager.createQuery(builder.getEJBQL());
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-    
-    public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportEnvironmental(ArrayList<Integer> sampleIdList) throws Exception {
-        Query query;
-               
-        query = manager.createNamedQuery("Sample.FetchSampleAnalysisInfoForSampleStatusReportEnvironmental");
-        query.setParameter("sampleIds", sampleIdList);
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
+        SampleStatusWebReportVO vo;
+        ArrayList<Object[]> resultList;
+        ArrayList<SampleStatusWebReportVO> returnList;
 
-    public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportPrivateWell(ArrayList<Integer> sampleIdList) throws Exception {
-        Query query;
-               
-        query = manager.createNamedQuery("Sample.FetchSampleAnalysisInfoForSampleStatusReportPrivateWell");
-        query.setParameter("sampleIds", sampleIdList);
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
-    
-    public ArrayList<SampleStatusWebReportVO> fetchSampleAnalysisInfoForSampleStatusReportSDWIS(ArrayList<Integer> sampleIdList) throws Exception {
-        Query query;
-               
-        query = manager.createNamedQuery("Sample.FetchSampleAnalysisInfoForSampleStatusReportSDWIS");
-        query.setParameter("sampleIds", sampleIdList);
-        return DataBaseUtil.toArrayList(query.getResultList());
+        query = manager.createNamedQuery("Sample.FetchForSampleStatusReport");
+        query.setParameter("sampleIds", sampleIds);
+        resultList = DataBaseUtil.toArrayList(query.getResultList());
+
+        returnList = new ArrayList<SampleStatusWebReportVO>();
+        for (Object[] result : resultList) {
+            vo = new SampleStatusWebReportVO((Integer)result[0],
+                                             (Date)result[1],
+                                             (Date)result[2],
+                                             (Date)result[3],
+                                             (Integer)result[4],
+                                             (String)result[5],
+                                             (String)result[6],
+                                             (String)result[7],
+                                             (String)result[8],
+                                             (Integer)result[9],
+                                             (Integer)result[10]);
+            returnList.add(vo);
+        }
+        return returnList;
     }
     
     public SampleDO add(SampleDO data) {

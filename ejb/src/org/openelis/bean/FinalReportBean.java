@@ -57,6 +57,7 @@ import org.openelis.local.DictionaryLocal;
 import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.PrinterCacheLocal;
+import org.openelis.local.ProjectLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SessionCacheLocal;
@@ -91,7 +92,10 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     private DictionaryLocal            dictionary;
 
     @EJB
-    private SampleProjectLocal         sampleProject;   
+    private SampleProjectLocal         sampleProject;
+    
+    @EJB
+    private ProjectLocal               project;
     
     @EJB
     private PrinterCacheLocal          printer;
@@ -258,7 +262,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          */
         orgPrintList = new ArrayList<OrganizationPrint>();
         try {
-            results = sample.fetchSamplesForFinalReportSingle(data.getId());
+            results = sample.fetchForFinalReportSingle(data.getId());
             status.setMessage("Initializing report");
             /*
              * if the user didn't specify an id for an organization then a
@@ -338,7 +342,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          */
         orgPrintList = new ArrayList<OrganizationPrint>();
         try {
-            results = sample.fetchSamplesForFinalReportPreview(data.getId());
+            results = sample.fetchForFinalReportPreview(data.getId());
             status.setMessage("Initializing report");
 
             if (results.size() < 1)
@@ -433,7 +437,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * resultList that can be locked; the ones that can't be locked, skip
          * all the analysis in that sample (skip the sample)
          */
-        resultList = sample.fetchSamplesForFinalReportBatch();
+        resultList = sample.fetchForFinalReportBatch();
         
         log.debug("Considering "+ resultList.size()+ " cases to run");        
         if (resultList.size() == 0)
@@ -571,7 +575,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * loop through the list and lock all the samples obtained from
          * resultList
          */
-        resultList = sample.fetchSamplesForFinalReportBatchReprint(beginPrinted, endPrinted);
+        resultList = sample.fetchForFinalReportBatchReprint(beginPrinted, endPrinted);
         i = 0;
         while (i < resultList.size()) {
             result = resultList.get(i++);
@@ -913,7 +917,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * list of projects
          */
         if (clause != null)             
-            return sample.fetchProjectsForOrganizations(clause);        
+            return project.fetchForOrganizations(clause);        
         
         return new ArrayList<IdNameVO>();
     }
@@ -932,7 +936,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * so we need to check if the list is empty or not.
          */
         if (clause != null)
-            return sample.fetchProjectsForOrganizations(clause);
+            return project.fetchForOrganizations(clause);
 
         return new ArrayList<IdNameVO>();
     }

@@ -26,8 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -35,25 +34,30 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleStatusWebReportVO;
+import org.openelis.domain.SampleStatusWebReportVO.QAEventType;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.ProjectLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.SampleStatusReportRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.EJBFactory;
+import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -61,6 +65,9 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
 
     @EJB
     private SampleLocal                sample;
+
+    @EJB
+    private ProjectLocal               project;
 
     @EJB
     private DictionaryLocal            dictionary;
@@ -79,6 +86,8 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
 
     private static final SampleWebMeta meta = new SampleWebMeta();
 
+    private static final Logger log  = Logger.getLogger(SampleStatusReportBean.class);
+
     @PostConstruct
     public void init() {
         try {
@@ -87,154 +96,134 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
             qaWarningId = dictionary.fetchBySystemName("qaevent_warning").getId();
             qaOverrideId = dictionary.fetchBySystemName("qaevent_override").getId();
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.error("Failed to lookup constants for dictionary entries", e);
         }
     }
 
     @RolesAllowed("w_status-select")
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception {
-        int id, sampleId, prevSampleId, analysisId;
-        boolean hasOverride, hasWarning;
-        String clause;
+        int analysisId;
+        Integer prevSampleId;
+        String clause, orgIds;
+        HashMap<String, String> orgMapStr;
         ArrayList<SampleStatusWebReportVO> returnList;
-        ArrayList<IdAccessionVO> tempList;
-        ArrayList<Integer> idList;
+        ArrayList<IdAccessionVO> sampleIdList;
         ArrayList<SampleQaEventViewDO> sampleQAList;
         ArrayList<AnalysisQaEventViewDO> analysisQAList;
+        HashMap<Integer, Integer> idMap;
+
+        returnList = new ArrayList<SampleStatusWebReportVO>();
 
         /*
-         * Retrive the sql clause that limits what the user can access. Don't
+         * Retrieve the sql clause that limits what the user can access. Don't
          * allow an empty clause
          */
         clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
         if (clause == null)
-            return new ArrayList<SampleStatusWebReportVO>();
-
-        /*
-         * We need to queries since private well data's report to organization
-         * id is in the private_sample information but the other domains have
-         * the info in sample_organization table. Order the list based on
-         * accession #s
-         */
-        tempList = new ArrayList<IdAccessionVO>();
-        returnList = new ArrayList<SampleStatusWebReportVO>();
-        tempList.addAll(getSampleIds(fields, clause, false));
-        tempList.addAll(getSampleIds(fields, clause, true));
-        Collections.sort(tempList, new AccessionIdComparator());
-
-        if (tempList == null || tempList.size() == 0)
             return returnList;
 
         /*
-         * From tempList we create an arrayList of sample ids, which is sent as
-         * a parameter for getting sample/analysis information.
+         * Create a string of organization ids from the clause in a format which
+         * the QueryBuilder can understand.
          */
-        idList = new ArrayList<Integer>();
-        for (int i = 0; i < tempList.size(); i++ )
-            idList.add(tempList.get(i).getId());
+        orgMapStr = ReportUtil.parseClauseAsString(clause);
+        orgIds = orgMapStr.get("organizationid");
+        if (DataBaseUtil.isEmpty(orgIds))
+            return returnList;
 
         /*
-         * Query all the three domains to get the sample/analysis information
-         * for the list of sample ids
+         * We need two queries since private well data's report to organization
+         * id is in the private_sample information but the other domains have
+         * the info in sample_organization table.
          */
-        returnList.addAll(sample.fetchSampleAnalysisInfoForSampleStatusReportEnvironmental(idList));
-        returnList.addAll(sample.fetchSampleAnalysisInfoForSampleStatusReportPrivateWell(idList));
-        returnList.addAll(sample.fetchSampleAnalysisInfoForSampleStatusReportSDWIS(idList));
+        sampleIdList = new ArrayList<IdAccessionVO>();
+
+        sampleIdList.addAll(getPrivateSamples(fields, orgIds));
+        sampleIdList.addAll(getNonPrivateSamples(fields, orgIds));
+        if (sampleIdList.size() == 0)
+            return returnList;
+
+        /*
+         * We need to send unique sample ids from tempList as parameter for
+         * getting sample/analysis information.
+         */
+        idMap = new HashMap<Integer, Integer>();
+        for (IdAccessionVO vo : sampleIdList)
+            idMap.put(vo.getId(), vo.getId());
+
+        /*
+         * Query the three domains to get the sample/analysis information for
+         * the list of sample ids
+         */
+        returnList = sample.fetchForSampleStatusReport(new ArrayList<Integer>(idMap.values()));
 
         prevSampleId = -1;
         for (SampleStatusWebReportVO vo : returnList) {
-            sampleId = vo.getSampleId();
-            hasOverride = hasWarning = false;
-            if (sampleId != prevSampleId) {
+            if ( !prevSampleId.equals(vo.getSampleId())) {
                 try {
-                    sampleQAList = sampleQa.fetchExternalBySampleId(sampleId);
+                    sampleQAList = sampleQa.fetchExternalBySampleId(vo.getSampleId());
                     for (SampleQaEventViewDO sq : sampleQAList) {
-                        if (qaOverrideId.equals(sq.getTypeId())) {
-                            hasOverride = true;
+                        if (qaWarningId.equals(sq.getTypeId())) {
+                            vo.setSampleQA(QAEventType.WARNING);
+                        } else if (qaOverrideId.equals(sq.getTypeId())) {
+                            vo.setSampleQA(QAEventType.OVERRIDE);
                             break;
                         }
-                        if (qaWarningId.equals(sq.getTypeId())) {
-                            hasWarning = true;
-                        }
-                    }
-                    vo.setHasSampleQAEvent(true);
-                    if (hasOverride) {
-                        vo.setHasSampleOverride(true);
-                        vo.setHasSampleWarning(false);
-                    }
-                    if (hasWarning && (hasOverride == false)) {
-                        vo.setHasSampleWarning(true);
-                        vo.setHasSampleOverride(false);
                     }
                 } catch (NotFoundException e) {
-                    vo.setHasSampleQAEvent(false);
+                    // ignore
                 }
             }
-            hasOverride = hasWarning = false;
             analysisId = vo.getAnalysisId();
             try {
                 analysisQAList = analysisQa.fetchExternalByAnalysisId(analysisId);
                 for (AnalysisQaEventViewDO aq : analysisQAList) {
-                    if (qaOverrideId.equals(aq.getTypeId())) {
-                        hasOverride = true;
+                    if (qaWarningId.equals(aq.getTypeId())) {
+                        vo.setAnalysisQA(QAEventType.WARNING);
+                    } else if (qaOverrideId.equals(aq.getTypeId())) {
+                        vo.setAnalysisQA(QAEventType.OVERRIDE);
                         break;
                     }
-                    if (qaWarningId.equals(aq.getTypeId())) {
-                        hasWarning = true;
-                    }
-                }
-                vo.setHasAnalysisQAEvent(true);
-                if (hasOverride) {
-                    vo.setHasAnalysisOverride(true);
-                    vo.setHasAnalysisWarning(false);
-                }
-                if (hasWarning && (hasOverride == false)) {
-                    vo.setHasAnalysisWarning(true);
-                    vo.setHasAnalysisOverride(false);
                 }
             } catch (NotFoundException e) {
-                vo.setHasAnalysisQAEvent(false);
+                // ignore
             }
-            prevSampleId = sampleId;
+            prevSampleId = vo.getSampleId();
         }
-        /*
-         * Sort the list by accession # of samples. We do the sorting in the
-         * back end instead of doing it in the front, since the comparator for
-         * rows in the table cannot sort correctly if the value in column based
-         * on which the comparison is made is null. In this case, since the
-         * analysis rows don't show accession number on the screen, the value in
-         * the first column of these rows is null and that is the column used
-         * for sorting.
-         */
-        Collections.sort(returnList, new SampleComparator());
         return returnList;
     }
 
     @RolesAllowed("w_status-select")
-    public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
+    public ArrayList<IdNameVO> getProjectList() throws Exception {
         String clause;
+        ArrayList<Integer> orgIds;
         ArrayList<IdNameVO> projectList;
+        HashMap<String, ArrayList<Integer>> orgMapArr;
 
-        projectList = new ArrayList<IdNameVO>();
-        clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
         /*
-         * if clause is null, then the previous method returns an empty HashMap,
-         * so we need to check if the list is empty or not.
+         * Retrieve the sql clause that limits what the user can access. Don't
+         * allow an empty clause
          */
+        clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
         if (clause == null)
             return new ArrayList<IdNameVO>();
-        /*
-         * Adding projects from environment and private domain into projectList.
-         * Since Project name is of type char, we can't use a named native query
-         */
-        projectList.addAll(sample.fetchProjectsForOrganizations(clause));
 
-        Collections.sort(projectList, new ProjectComparator());
+        /*
+         * Create an ArrayList of organization ids from the clause in a format
+         * which the QueryBuilder can understand.
+         */
+        orgMapArr = ReportUtil.parseClauseAsArrayList(clause);
+        orgIds = orgMapArr.get("organizationid");
+
+        /*
+         * Adding projects for organizations from all domains into projectList.
+         */
+        projectList = project.fetchForSampleStatusReport(orgIds);
+
         return projectList;
     }
 
-    private ArrayList<IdAccessionVO> getSampleIds(ArrayList<QueryData> fields, String clause,
-                                                  boolean fromPrivates) throws Exception {
+    private ArrayList<IdAccessionVO> getPrivateSamples(ArrayList<QueryData> fields, String clause) throws Exception {
         QueryBuilderV2 builder;
         Query query;
 
@@ -244,31 +233,42 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
                           SampleWebMeta.getId() + "," + SampleWebMeta.getAccessionNumber() + ") ");
         builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleNotVerifiedId);
         builder.constructWhere(fields);
-        builder.addWhere("(" + clause + ")");
-        if ( !fromPrivates)
-            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
+        builder.addWhere(SampleWebMeta.getWellOrganizationId() + clause);
         builder.setOrderBy(SampleWebMeta.getAccessionNumber());
 
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
-        return DataBaseUtil.toArrayList(query.getResultList());
-    }
 
-    class AccessionIdComparator implements Comparator<IdAccessionVO> {
-        public int compare(IdAccessionVO a1, IdAccessionVO a2) {
-            return a1.getAccessionNumber() - a2.getAccessionNumber();
+        try {
+            return DataBaseUtil.toArrayList(query.getResultList());
+        } catch (PersistenceException e) {
+            log.error("Invalid Clause:" + " " + clause);
+            return new ArrayList<IdAccessionVO>();
         }
     }
 
-    class SampleComparator implements Comparator<SampleStatusWebReportVO> {
-        public int compare(SampleStatusWebReportVO s1, SampleStatusWebReportVO s2) {
-            return s1.getAccessionNumber() - s2.getAccessionNumber();
-        }
-    }
+    private ArrayList<IdAccessionVO> getNonPrivateSamples(ArrayList<QueryData> fields, String clause) throws Exception {
+        QueryBuilderV2 builder;
+        Query query;
 
-    class ProjectComparator implements Comparator<IdNameVO> {
-        public int compare(IdNameVO p1, IdNameVO p2) {
-            return p1.getId() - p2.getId();
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
+                          SampleWebMeta.getId() + ", " + SampleWebMeta.getAccessionNumber() + ") ");
+        builder.addWhere(SampleWebMeta.getStatusId() + " != " + sampleNotVerifiedId);
+        builder.constructWhere(fields);
+
+        builder.addWhere(SampleWebMeta.getSampleOrgOrganizationId() + clause);
+        builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
+        builder.setOrderBy(SampleWebMeta.getAccessionNumber());
+        query = manager.createQuery(builder.getEJBQL());
+        builder.setQueryParams(query, fields);
+        
+        try {
+            return DataBaseUtil.toArrayList(query.getResultList());
+        } catch (PersistenceException e) {
+            log.error("Invalid Clause:" + " " + clause);
+            return new ArrayList<IdAccessionVO>();
         }
     }
 }
