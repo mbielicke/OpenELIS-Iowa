@@ -49,6 +49,8 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetAnalysisDO;
@@ -93,7 +95,10 @@ import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.QcManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleDomainInt;
+import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SamplePrivateWellManager;
+import org.openelis.manager.SampleSDWISManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
@@ -929,7 +934,9 @@ public class WorksheetCompletionScreen extends Screen {
         SampleDataBundle         bundle;
         SampleDomainInt          sDomain;
         SampleManager            sManager;
-        String                   headerLabels[];
+        SampleOrganizationViewDO soVDO;
+        SamplePrivateWellViewDO  spwVDO;
+        String                   headerLabels[], location, reportTo;
         TableDataRow             row;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
@@ -983,10 +990,50 @@ public class WorksheetCompletionScreen extends Screen {
                         aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
                         arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
 
-                        if (sDomain != null)
-                            row.cells.get(2).value = sDomain.getDomainDescription();
-                        else
+                        location = "";
+                        reportTo = "";
+                        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
+                            location = ((SampleEnvironmentalManager)sDomain).getEnvironmental().getLocation();
+                            if (location == null)
+                                location = "";
+                            soVDO = sManager.getOrganizations().getReportTo();
+                            if (soVDO != null) {
+                                reportTo = soVDO.getOrganizationName();
+                                if (reportTo == null)
+                                    reportTo = "";
+                            } else {
+                                reportTo = "";
+                            }
+                            row.cells.get(2).value = "loc: "+location+" rep: "+reportTo;
+                        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
+                            spwVDO = ((SamplePrivateWellManager)sDomain).getPrivateWell();
+                            location = spwVDO.getLocation();
+                            if (location == null)
+                                location = "";
+                            if (spwVDO.getOrganizationId() != null) {
+                                reportTo = spwVDO.getOrganization().getName();
+                                if (reportTo == null)
+                                    reportTo = "";
+                            } else {
+                                reportTo = spwVDO.getReportToName();
+                            }
+                            row.cells.get(2).value = "loc: "+location+" rep: "+reportTo;
+                        } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
+                            location = ((SampleSDWISManager)sDomain).getSDWIS().getLocation();
+                            if (location == null)
+                                location = "";
+                            soVDO = sManager.getOrganizations().getReportTo();
+                            if (soVDO != null) {
+                                reportTo = soVDO.getOrganizationName();
+                                if (reportTo == null)
+                                    reportTo = "";
+                            } else {
+                                reportTo = "";
+                            }
+                            row.cells.get(2).value = "loc: "+location+" rep: "+reportTo;
+                        } else {
                             row.cells.get(2).value = "";
+                        }
                         
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();
                         row.cells.get(4).value = aVDO.getTestName();

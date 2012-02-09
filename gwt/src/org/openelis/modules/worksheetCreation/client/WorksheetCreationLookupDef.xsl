@@ -105,7 +105,7 @@ UIRF Software License are applicable instead of those above.
           <col key="{meta:getSampleAccessionNumber()}" width="90" sort="true" header="{resource:getString($constants,'accessionNum')}">
             <label field="Integer" />
           </col>
-          <col key="{meta:getSampleEnvironmentalDescription()}" width="150" sort="true" header="{resource:getString($constants,'description')}">
+          <col key="{meta:getSampleDescription()}" width="150" sort="true" header="{resource:getString($constants,'description')}">
             <label field="String" />
           </col>
           <col key="{meta:getAnalysisTestName()}" width="100" sort="true" header="{resource:getString($constants,'test')}">
