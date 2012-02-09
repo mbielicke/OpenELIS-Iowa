@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.ProjectViewDO;
 
@@ -46,4 +47,8 @@ public interface ProjectLocal {
     public ProjectViewDO update(ProjectViewDO data) throws Exception;
 
     public void validate(ProjectViewDO data) throws Exception; 
+    
+    public ArrayList<IdNameVO> fetchForOrganizations(String clause) throws Exception;
+    
+    public ArrayList<IdNameVO> fetchForSampleStatusReport(ArrayList<Integer> organizationIdList) throws Exception;
 }

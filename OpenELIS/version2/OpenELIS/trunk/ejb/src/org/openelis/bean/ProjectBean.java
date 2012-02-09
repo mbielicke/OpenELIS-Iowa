@@ -50,6 +50,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.ProjectLocal;
 import org.openelis.meta.ProjectMeta;
+import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.ProjectRemote;
 import org.openelis.util.QueryBuilderV2;
 import org.openelis.utils.EJBFactory;
@@ -63,6 +64,8 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
     private EntityManager       manager;
 
     private static ProjectMeta  meta = new ProjectMeta();
+    
+    private static final SampleWebMeta webMeta = new SampleWebMeta();
 
     public ProjectViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -107,6 +110,38 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         query.setMaxResults(maxResults);
 
         return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<IdNameVO> fetchForOrganizations(String clause) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        
+        builder = new QueryBuilderV2();
+        builder.setMeta(webMeta);        
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" +
+                          SampleWebMeta.getProjectId() + ", " + SampleWebMeta.getProjectName()+ ") ");
+        builder.addWhere("("+clause+")");
+        builder.addWhere(SampleWebMeta.getSampleProjectProjectId() + "=" + SampleWebMeta.getProjectId());
+        query = manager.createQuery(builder.getEJBQL());
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<IdNameVO> fetchForSampleStatusReport(ArrayList<Integer> organizationIds) throws Exception {
+        Query query;
+        IdNameVO vo;
+        ArrayList<Object[]> resultList;
+        ArrayList<IdNameVO> projectList;
+        
+        query = manager.createNamedQuery("Project.FetchForSampleStatusReport");
+        query.setParameter("organizationIds", organizationIds);
+        resultList = DataBaseUtil.toArrayList(query.getResultList());
+        
+        projectList = new ArrayList<IdNameVO>();
+        for (Object[] result : resultList) {
+            vo = new IdNameVO((Integer)result[0], (String)result[1]);
+            projectList.add(vo);
+        }
+        return projectList;
     }
 
     @SuppressWarnings("unchecked")

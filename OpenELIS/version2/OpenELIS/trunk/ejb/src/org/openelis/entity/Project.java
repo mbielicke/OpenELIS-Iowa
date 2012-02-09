@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
@@ -41,9 +42,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -70,7 +75,22 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Project.FetchByIds", 
     			query = "select new org.openelis.domain.IdNameVO(p.id, p.name)" 
     			      + " from Project p where p.id in ( :ids ) ")})
-                
+
+@NamedNativeQueries({
+     @NamedNativeQuery(name = "Project.FetchForSampleStatusReport",
+           query = "select p.id p_id, CAST(p.name AS varchar(20)) p_name" +
+                   " from sample_organization so, sample_project sp, project p" +
+                   " where so.sample_id = sp.sample_id and so.organization_id in (:organizationIds) and so.type_id in (select id from dictionary where system_name in ('org_report_to')) and" +
+                   " sp.project_id = p.id and sp.is_permanent = 'Y'" +
+                   " UNION " +
+                   "select p.id p_id, CAST(p.name AS varchar(20)) p_name" +
+                   " from sample_private_well so, sample_project sp, project p" +
+                   " where so.sample_id = sp.sample_id and so.organization_id in (:organizationIds) and sp.project_id = p.id and sp.is_permanent = 'Y'"+
+                   "order by p_name ",
+           resultSetMapping="Project.FetchForSampleStatusReport")}) 
+@SqlResultSetMappings({    
+    @SqlResultSetMapping(name="Project.FetchForSampleStatusReport",
+                         columns={@ColumnResult(name="p_id"),  @ColumnResult(name="p_name")})})
 @Entity
 @Table(name="project")
 @EntityListeners({AuditUtil.class})
