@@ -37,6 +37,6 @@ import org.openelis.gwt.common.data.QueryData;
 public interface SampleStatusReportRemote {
     
     public ArrayList<SampleStatusWebReportVO> getSampleListForSampleStatusReport(ArrayList<QueryData> fields) throws Exception;
-    public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception;
+    public ArrayList<IdNameVO> getProjectList() throws Exception;
 
 }
