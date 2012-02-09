@@ -39,7 +39,7 @@ public class SampleStatusReportService {
     }    
     
     public ArrayList<IdNameVO> getSampleStatusProjectList() throws Exception {
-        return EJBFactory.getSampleStatusReport().getSampleStatusProjectList();
+        return EJBFactory.getSampleStatusReport().getProjectList();
     }
 
 }
