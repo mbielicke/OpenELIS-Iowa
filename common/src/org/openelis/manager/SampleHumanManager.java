@@ -103,18 +103,6 @@ public class SampleHumanManager implements RPC, SampleDomainInt {
         return human;
     }
 
-    public String getDomainDescription() {
-        String name;
-        
-        name = "";
-        if (patient.getLastName() != null)
-            name += patient.getLastName();
-        if (patient.getFirstName() != null)
-            name += ", " + patient.getFirstName();
-
-        return name;
-    }
-    
     //manager methods
    // public Integer update() {
    //     Integer newId = manager().update(this);

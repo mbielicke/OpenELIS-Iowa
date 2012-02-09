@@ -36,11 +36,11 @@ public class WorksheetCreationVO implements RPC {
     private static final long serialVersionUID = 1L;
 
     protected Boolean  hasQaOverride;
-    protected Integer  analysisId, accessionNumber, preAnalysisId, priority, sampleId,
-                       sectionId, statusId, testId, timeHolding, timeTaAverage,
-                       worksheetFormatId, dueDays;
-    protected String   domain, envDescription, methodName, privateWellLocation,
-                       sdwisLocation, testName;
+    protected Integer  analysisId, accessionNumber, dueDays, preAnalysisId, priority,
+                       privateWellOrgId, sampleId, sectionId, statusId, testId, 
+                       timeHolding, timeTaAverage, worksheetFormatId;
+    protected String   description, domain, envLocation, methodName, privateWellLocation, 
+                       privateWellReportToName, sdwisLocation, testName;
     protected Datetime collectionDate, collectionTime, expireDate, receivedDate;
 
     public WorksheetCreationVO() {
@@ -50,8 +50,9 @@ public class WorksheetCreationVO implements RPC {
     // analysis, accession number, test, method, section, status and received
     public WorksheetCreationVO(Integer analysisId, Integer sampleId, String domain,
                                Integer accessionNumber, Date collectionDate, Date collectionTime,
-                               Date receivedDate, String envDescription, Integer priority,
+                               Date receivedDate, String envLocation, Integer priority,
                                String sdwisLocation, String privateWellLocation,
+                               Integer privateWellOrgId, String privateWellReportToName,
                                Integer testId, String testName, String methodName,
                                Integer timeHolding, Integer timeTaAverage, Integer sectionId,
                                Integer preAnalysisId, Integer statusId, Integer worksheetFormatId) {
@@ -62,10 +63,12 @@ public class WorksheetCreationVO implements RPC {
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
-        setEnvDescription(envDescription);
+        setEnvLocation(envLocation);
         setPriority(priority);
         setSDWISLocation(sdwisLocation);
         setPrivateWellLocation(privateWellLocation);
+        setPrivateWellOrgId(privateWellOrgId);
+        setPrivateWellReportToName(privateWellReportToName);
         setTestId(testId);
         setTestName(testName);
         setMethodName(methodName);
@@ -133,12 +136,12 @@ public class WorksheetCreationVO implements RPC {
         this.receivedDate = DataBaseUtil.toYM(receivedDate);
     }
     
-    public String getEnvDescription() {
-        return envDescription;
+    public String getEnvLocation() {
+        return envLocation;
     }
 
-    public void setEnvDescription(String description) {
-        this.envDescription = DataBaseUtil.trim(description);
+    public void setEnvLocation(String envLocation) {
+        this.envLocation = DataBaseUtil.trim(envLocation);
     }
 
     public String getSDWISLocation() {
@@ -157,18 +160,28 @@ public class WorksheetCreationVO implements RPC {
         this.privateWellLocation = DataBaseUtil.trim(privateWellLocation);
     }
 
+    public Integer getPrivateWellOrgId() {
+        return privateWellOrgId;
+    }
+
+    public void setPrivateWellOrgId(Integer privateWellOrgId) {
+        this.privateWellOrgId = privateWellOrgId;
+    }
+
+    public String getPrivateWellReportToName() {
+        return privateWellReportToName;
+    }
+
+    public void setPrivateWellReportToName(String privateWellReportToName) {
+        this.privateWellReportToName = DataBaseUtil.trim(privateWellReportToName);
+    }
+
     public String getDescription() {
-        String description;
-        
-        description = "";
-        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(getDomain()))
-            description = getEnvDescription();
-        else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(getDomain()))
-            description = getSDWISLocation();
-        else if (SampleManager.WELL_DOMAIN_FLAG.equals(getDomain()))
-            description = getPrivateWellLocation();
-        
         return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
     }
 
     public Integer getPriority() {
