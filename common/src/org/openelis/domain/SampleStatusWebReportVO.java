@@ -1,30 +1,31 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.domain;
 
+import java.sql.Time;
 import java.util.Date;
 
 import org.openelis.gwt.common.DataBaseUtil;
@@ -32,37 +33,48 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
 
 /**
- * The class is used to carry fields for the web based Final Report for SDWIS domain. The fields are considered read/display
- * and do not get committed to the database.
+ * The class is used to carry fields for the web based Final Report for SDWIS
+ * domain. The fields are considered read/display and do not get committed to
+ * the database.
  */
 
 public class SampleStatusWebReportVO implements RPC {
-    
+
     private static final long serialVersionUID = 1L;
 
     protected Integer         accessionNumber, statusId, sampleId, analysisId;
     protected Datetime        collectionDate, collectionTime, receivedDate;
-    protected String          collector, clientReference, testReportingDescription, methodReportingDescription;
-    protected Boolean         hasAnalysisQAEvent, hasSampleQAEvent;
-    protected Boolean         hasAnalysisWarning, hasSampleWarning, hasAnalysisOverride, hasSampleOverride;
+    protected String          collector, clientReference, testReportingDescription,
+                              methodReportingDescription;
+    protected QAEventType     sampleQA, analysisQA;
+
+    public enum QAEventType {
+        WARNING, OVERRIDE
+    };
 
     public SampleStatusWebReportVO() {
     }
-    
-    public SampleStatusWebReportVO(Integer accessionNumber, Date receivedDate, Date collectionDate, Date collectionTime, Integer statusId, String clientReference, String collector, String testReportingDescription, String methodReportingDescription, Integer sampleId, Integer analysisId) {
+
+    public SampleStatusWebReportVO(Integer accessionNumber, Date receivedDate, Date collectionDate,
+                                   Date collectionTime, Integer statusId, String clientReference,
+                                   String collector, String testReportingDescription,
+                                   String methodReportingDescription, Integer sampleId,
+                                   Integer analysisId) {
+        if (collectionTime instanceof Time)
+            collectionTime = new Date(collectionTime.getTime());
         setAccessionNumber(accessionNumber);
-        setReceivedDate(DataBaseUtil.toYM(receivedDate));        
+        setReceivedDate(DataBaseUtil.toYM(receivedDate));
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setStatusId(statusId);
         setClientReference(clientReference);
-        setCollector(collector);        
+        setCollector(collector);
         setTestReportingDescription(testReportingDescription);
         setMethodReportingDescription(methodReportingDescription);
         setSampleId(sampleId);
         setAnalysisId(analysisId);
     }
-    
+
     public Integer getAccessionNumber() {
         return accessionNumber;
     }
@@ -78,7 +90,7 @@ public class SampleStatusWebReportVO implements RPC {
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
     }
-    
+
     public Integer getSampleId() {
         return sampleId;
     }
@@ -86,13 +98,29 @@ public class SampleStatusWebReportVO implements RPC {
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
     }
-    
+
     public Integer getAnalysisId() {
         return analysisId;
     }
 
     public void setAnalysisId(Integer analysisId) {
         this.analysisId = analysisId;
+    }
+
+    public QAEventType getSampleQA() {
+        return sampleQA;
+    }
+
+    public void setSampleQA(QAEventType sampleQA) {
+        this.sampleQA = sampleQA;
+    }
+
+    public QAEventType getAnalysisQA() {
+        return analysisQA;
+    }
+
+    public void setAnalysisQA(QAEventType analysisQA) {
+        this.analysisQA = analysisQA;
     }
 
     public Datetime getCollectionDate() {
@@ -102,7 +130,7 @@ public class SampleStatusWebReportVO implements RPC {
     public void setCollectionDate(Datetime collectionDate) {
         this.collectionDate = DataBaseUtil.toYD(collectionDate);
     }
-    
+
     public Datetime getCollectionTime() {
         return collectionTime;
     }
@@ -149,53 +177,5 @@ public class SampleStatusWebReportVO implements RPC {
 
     public void setMethodReportingDescription(String methodReportingDescription) {
         this.methodReportingDescription = DataBaseUtil.trim(methodReportingDescription);
-    }
-
-    public Boolean getHasAnalysisQAEvent() {
-        return hasAnalysisQAEvent;
-    }
-
-    public void setHasAnalysisQAEvent(Boolean hasAnalysisQAEvent) {
-        this.hasAnalysisQAEvent = hasAnalysisQAEvent;
-    }
-
-    public Boolean getHasSampleQAEvent() {
-        return hasSampleQAEvent;
-    }
-
-    public void setHasSampleQAEvent(Boolean hasSampleQAEvent) {
-        this.hasSampleQAEvent = hasSampleQAEvent;
-    }
-    
-    public Boolean getHasAnalysisWarning() {
-        return hasAnalysisWarning;
-    }
-
-    public void setHasAnalysisWarning(Boolean hasAnalysisWarning) {
-        this.hasAnalysisWarning = hasAnalysisWarning;
-    }
-
-    public Boolean getHasSampleWarning() {
-        return hasSampleWarning;
-    }
-
-    public void setHasSampleWarning(Boolean hasSampleWarning) {
-        this.hasSampleWarning = hasSampleWarning;
-    }
-
-    public Boolean getHasAnalysisOverride() {
-        return hasAnalysisOverride;
-    }
-
-    public void setHasAnalysisOverride(Boolean hasAnalysisOverride) {
-        this.hasAnalysisOverride = hasAnalysisOverride;
-    }
-
-    public Boolean getHasSampleOverride() {
-        return hasSampleOverride;
-    }
-
-    public void setHasSampleOverride(Boolean hasSampleOverride) {
-        this.hasSampleOverride = hasSampleOverride;
     }
 }
