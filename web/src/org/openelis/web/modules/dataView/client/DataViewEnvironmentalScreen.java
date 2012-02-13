@@ -1099,7 +1099,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         window.setBusy(consts.get("querying"));
 
         try {
-            temp = service.call("fetchAnalyteAndAuxFieldForWebEnvironmental", query);
+            temp = service.call("fetchAnalyteAndAuxFieldForWebEnvironmental", data);
             data.setAnalytes(temp.getTestAnalytes());
             data.setAuxFields(temp.getAuxFields());
             loadDeck();

@@ -76,7 +76,7 @@ UIRF Software License are applicable instead of those above.
           </AbsolutePanel>
         <VerticalPanel style="WhiteContentPanel">  
         <VerticalPanel height="5" />        
-        <TabPanel height="350" key="tabPanel" width="610">
+        <TabPanel height="390" key="tabPanel" width="605">
           <tab text="{resource:getString($constants,'query')}">
             <VerticalPanel>
               <TablePanel style="Form" width="400">
@@ -94,18 +94,18 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"test")' />:
                   </text>
-                  <textbox field="String" key="{meta:getAnalysisTestName()}" width="85" tab = "{meta:getAnalysisMethodName()},{meta:getProjectId()}" />
+                  <textbox field="String" key="{meta:getAnalysisTestName()}" case = "LOWER" width="85" tab = "{meta:getAnalysisMethodName()},{meta:getProjectId()}" />
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"method")' />:
                   </text>
-                  <textbox field="String" key="{meta:getAnalysisMethodName()}" width="85" tab = "excludeResultOverride,{meta:getAnalysisTestName()}"/>
+                  <textbox field="String" key="{meta:getAnalysisMethodName()}" case = "LOWER" width="85" tab = "excludeResultOverride,{meta:getAnalysisTestName()}"/>
                 </row>
                 <row>
                   <widget>
                     <HorizontalPanel width="50" />
                   </widget>
                   <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'exResOverride')" />:
+                    <xsl:value-of select="resource:getString($constants,'excludeResultOverride')" />:
                   </text>
                   <check key="excludeResultOverride" tab = "{meta:getAnalysisStatusId()},{meta:getAnalysisMethodName()}"/>
                   <text style="Prompt">
@@ -133,12 +133,12 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"released")' />:
                   </text>
-                  <calendar begin="0" end="2" key="{meta:getAnalysisReleasedDateFrom()}" pattern="{resource:getString($constants,'datePattern')}" width="90" tab = "{meta:getAnalysisReleasedDateTo()},{meta:getAnalysisCompletedDateTo()}"/>
+                  <calendar begin="0" end="4" key="{meta:getAnalysisReleasedDateFrom()}" pattern="{resource:getString($constants,'dateTimePattern')}" width="125" tab = "{meta:getAnalysisReleasedDateTo()},{meta:getAnalysisCompletedDateTo()}"/>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"to")' />:
                   </text>
-                  <calendar begin="0" end="2" key="{meta:getAnalysisReleasedDateTo()}" pattern="{resource:getString($constants,'datePattern')}" width="90" tab = "{meta:getAccessionNumberFrom()},{meta:getAnalysisReleasedDateFrom()}"/>
-                </row>
+                  <calendar begin="0" end="4" key="{meta:getAnalysisReleasedDateTo()}" pattern="{resource:getString($constants,'dateTimePattern')}" width="125" tab = "{meta:getAccessionNumberFrom()},{meta:getAnalysisReleasedDateFrom()}"/>
+                </row>               
               </TablePanel>
               <TablePanel style="Form">
                 <row>
@@ -181,11 +181,11 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"received")' />:
                   </text>
-                  <calendar begin="0" end="2" key="{meta:getReceivedDateFrom()}" pattern="{resource:getString($constants,'datePattern')}" width="90" tab = "{meta:getReceivedDateTo()},{meta:getCollectionDateTo()}"/>
+                  <calendar begin="0" end="4" key="{meta:getReceivedDateFrom()}" pattern="{resource:getString($constants,'dateTimePattern')}" width="125" tab = "{meta:getReceivedDateTo()},{meta:getCollectionDateTo()}"/>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"to")' />:
                   </text>
-                  <calendar begin="0" end="2" key="{meta:getReceivedDateTo()}" pattern="{resource:getString($constants,'datePattern')}" width="90" tab = "{meta:getEnteredDateFrom()},{meta:getReceivedDateFrom()}"/>
+                  <calendar begin="0" end="4" key="{meta:getReceivedDateTo()}" pattern="{resource:getString($constants,'dateTimePattern')}" width="125" tab = "{meta:getEnteredDateFrom()},{meta:getReceivedDateFrom()}"/>
                 </row>
                 <row>
                   <widget>
@@ -194,11 +194,11 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"entered")' />:
                   </text>
-                  <calendar begin="0" end="2" key="{meta:getEnteredDateFrom()}" pattern="{resource:getString($constants,'datePattern')}" width="90" tab = "{meta:getEnteredDateTo()},{meta:getReceivedDateTo()}"/>
+                  <calendar begin="0" end="4" key="{meta:getEnteredDateFrom()}" pattern="{resource:getString($constants,'dateTimePattern')}" width="125" tab = "{meta:getEnteredDateTo()},{meta:getReceivedDateTo()}"/>
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"to")' />:
                   </text>
-                  <calendar begin="0" end="2" key="{meta:getEnteredDateTo()}" pattern="{resource:getString($constants,'datePattern')}" width="90" tab = "{meta:getClientReference()},{meta:getEnteredDateFrom()}"/>
+                  <calendar begin="0" end="4" key="{meta:getEnteredDateTo()}" pattern="{resource:getString($constants,'dateTimePattern')}" width="125" tab = "{meta:getClientReference()},{meta:getEnteredDateFrom()}"/>
                 </row>
                 <row>
                   <widget>
@@ -212,6 +212,42 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'project')" />:
                   </text>
                   <dropdown field="Integer" key="{meta:getProjectId()}" popWidth="auto" width="120" tab = "{meta:getAnalysisTestName()},{meta:getClientReference()}"/>
+                </row>
+                <row>
+                  <widget>
+                    <HorizontalPanel width="90" />
+                  </widget>
+                  <text style="Prompt">
+                    <xsl:value-of select='resource:getString($constants,"reportTo")' />:
+                  </text>
+                  <widget colspan="3">
+                    <textbox field="String" key="reportToOrganizationName" case = "UPPER" width="225" tab = "{meta:getAccessionNumberTo()},{meta:getAnalysisReleasedDateTo()}"/>
+                  </widget>
+                </row>  
+              </TablePanel>
+              <TablePanel style="Form">
+                <row>
+                  <widget colspan="7">
+                    <text style="heading">
+                      <xsl:value-of select='resource:getString($constants,"resultFieldSearchBy")' />
+                    </text>
+                  </widget>
+                </row>
+                <row>
+                  <widget>
+                    <HorizontalPanel width="100" />
+                  </widget>
+                  <text style="Prompt">
+                    <xsl:value-of select="resource:getString($constants,'excludeResults')" />:
+                  </text>
+                  <check key="excludeResults" tab = "{meta:getAnalysisStatusId()},{meta:getAnalysisMethodName()}"/>                                  
+                  <widget>
+                    <HorizontalPanel width="48" />
+                  </widget>
+                  <text style="Prompt">
+                    <xsl:value-of select="resource:getString($constants,'excludeAuxData')" />:
+                  </text>
+                  <check key="excludeAuxData" tab = "{meta:getAnalysisStatusId()},{meta:getAnalysisMethodName()}"/>
                 </row>
               </TablePanel>
             </VerticalPanel>
@@ -268,9 +304,11 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'project')" />
                   </text>
                   <check key="{meta:getClientReferenceHeader()}" />
-                  <text style="LeftAlignPrompt">
-                    <xsl:value-of select='resource:getString($constants,"clntRef")' />
-                  </text>
+                  <widget colspan = "3">
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select='resource:getString($constants,"clntRef")' />
+                    </text>
+                  </widget>
                 </row>
                 <row>
                   <widget colspan="7">
@@ -358,6 +396,21 @@ UIRF Software License are applicable instead of those above.
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select="resource:getString($constants,'container')" />
                   </text>
+                  <check key="{meta:getItemContainerReference()}" />
+                  <widget colspan = "3">
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select="resource:getString($constants,'containerReference')" />
+                    </text>
+                  </widget>
+                </row>
+                <row>
+                  <widget>
+                    <HorizontalPanel width="50" />
+                  </widget>      
+                  <check key="{meta:getItemItemSequence()}" />
+                  <text style="LeftAlignPrompt">
+                    <xsl:value-of select="resource:getString($constants,'sequence')" />
+                  </text>
                 </row>
                 <row>
                   <widget colspan="5">
@@ -400,6 +453,10 @@ UIRF Software License are applicable instead of those above.
                   <widget>
                     <HorizontalPanel width="55" />
                   </widget>
+                  <check key="{meta:getAnalysisUnitOfMeasureId()}" />
+                  <text style="LeftAlignPrompt">
+                    <xsl:value-of select="resource:getString($constants,'unit')" />
+                  </text>
                   <check key="{meta:getAnalysisSubQaName()}" />
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select="resource:getString($constants,'QAEvent')" />

@@ -39,22 +39,14 @@ import org.openelis.server.EJBFactory;
 
 public class ProjectService {
 
-    public ArrayList<IdNameVO> query(Query query) throws Exception {
-        return EJBFactory.getProject().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+    public ArrayList<IdNameVO> fetchList() throws Exception {
+        return EJBFactory.getProject().fetchList();
     }
-
+    
     public ProjectManager fetchById(Integer id) throws Exception {
         return EJBFactory.getProjectManager().fetchById(id);
     }
-
-    public ProjectViewDO fetchDOById(Integer id) throws Exception {
-        return EJBFactory.getProject().fetchById(id);
-    }
-
-    public ProjectManager fetchWithParameters(Integer id) throws Exception {
-        return EJBFactory.getProjectManager().fetchWithParameters(id);
-    }
-
+    
     public ArrayList<ProjectDO> fetchActiveByName(String search) throws Exception {
         ArrayList<ProjectDO> list;
 
@@ -68,6 +60,18 @@ public class ProjectService {
         return list;
     }
     
+    public ProjectViewDO fetchDOById(Integer id) throws Exception {
+        return EJBFactory.getProject().fetchById(id);
+    }
+    
+    public ArrayList<IdNameVO> query(Query query) throws Exception {
+        return EJBFactory.getProject().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
+    }
+
+    public ProjectManager fetchWithParameters(Integer id) throws Exception {
+        return EJBFactory.getProjectManager().fetchWithParameters(id);
+    }
+
     public ProjectDO fetchSingleByName(String name) throws Exception {
         ArrayList<ProjectDO> list;
         

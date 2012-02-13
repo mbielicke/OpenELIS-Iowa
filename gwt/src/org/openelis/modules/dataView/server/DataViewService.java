@@ -38,28 +38,21 @@ import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.Query;
 import org.openelis.server.EJBFactory;
-import org.openelis.remote.DataViewRemote;
-import org.openelis.remote.SystemVariableRemote;
 import org.openelis.util.SessionManager;
 
 public class DataViewService {
-  
-    public ArrayList<IdNameVO> fetchPermanentProjectList() throws Exception {
-        return EJBFactory.getDataView().fetchPermanentProjectList();  
-    }
     
     public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
         return EJBFactory.getDataView().fetchEnvironmentalProjectListForWeb();  
     }
     
-    public DataViewVO fetchAnalyteAndAuxField(Query query) throws Exception {
-        return EJBFactory.getDataView().fetchAnalyteAndAuxField(query.getFields());
+    public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
+        return EJBFactory.getDataView().fetchAnalyteAndAuxField(data);
     }
     
-    public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(Query query) throws Exception {
-        return EJBFactory.getDataView().fetchAnalyteAndAuxFieldForWebEnvironmental(query.getFields());
+    public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
+        return EJBFactory.getDataView().fetchAnalyteAndAuxFieldForWebEnvironmental(data);
     }
     
     public ReportStatus runReport(DataViewVO data) throws Exception {
