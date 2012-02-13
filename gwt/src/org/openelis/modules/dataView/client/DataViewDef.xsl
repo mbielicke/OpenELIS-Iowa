@@ -94,7 +94,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"test")' />:
                   </text>
-                  <textbox field="String" key="{meta:getAnalysisTestName()}" case = "LOWER" width="85" tab = "{meta:getAnalysisMethodName()},{meta:getProjectId()}" />
+                  <textbox field="String" key="{meta:getAnalysisTestName()}" case = "LOWER" width="85" tab = "{meta:getAnalysisMethodName()},excludeAuxData" />
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"method")' />:
                   </text>
@@ -211,7 +211,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'project')" />:
                   </text>
-                  <dropdown field="Integer" key="{meta:getProjectId()}" popWidth="auto" width="120" tab = "{meta:getAnalysisTestName()},{meta:getClientReference()}"/>
+                  <dropdown field="Integer" key="{meta:getProjectId()}" popWidth="auto" width="120" tab = "reportToOrganizationName,{meta:getClientReference()}"/>
                 </row>
                 <row>
                   <widget>
@@ -221,7 +221,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"reportTo")' />:
                   </text>
                   <widget colspan="3">
-                    <textbox field="String" key="reportToOrganizationName" case = "UPPER" width="225" tab = "{meta:getAccessionNumberTo()},{meta:getAnalysisReleasedDateTo()}"/>
+                    <textbox field="String" key="reportToOrganizationName" case = "UPPER" width="225" tab = "excludeResults,{meta:getProjectId()}"/>
                   </widget>
                 </row>  
               </TablePanel>
@@ -240,14 +240,14 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'excludeResults')" />:
                   </text>
-                  <check key="excludeResults" tab = "{meta:getAnalysisStatusId()},{meta:getAnalysisMethodName()}"/>                                  
+                  <check key="excludeResults" tab = "excludeAuxData,reportToOrganizationName"/>                                  
                   <widget>
                     <HorizontalPanel width="48" />
                   </widget>
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'excludeAuxData')" />:
                   </text>
-                  <check key="excludeAuxData" tab = "{meta:getAnalysisStatusId()},{meta:getAnalysisMethodName()}"/>
+                  <check key="excludeAuxData" tab = "{meta:getAnalysisTestName()},excludeResults"/>
                 </row>
               </TablePanel>
             </VerticalPanel>
