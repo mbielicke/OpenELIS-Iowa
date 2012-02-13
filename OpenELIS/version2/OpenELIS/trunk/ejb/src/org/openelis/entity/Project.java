@@ -59,7 +59,10 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQueries( {
+@NamedQueries( {    
+    @NamedQuery( name = "Project.FetchList", 
+                query = "select new org.openelis.domain.IdNameVO(p.id, p.name, p.description)" 
+                      + " from Project p order by p.name"),
     @NamedQuery( name = "Project.FetchById", 
     		    query = "select new org.openelis.domain.ProjectViewDO(p.id, p.name, " + 
                         "p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name, '')" 
