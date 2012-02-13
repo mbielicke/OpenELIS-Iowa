@@ -1078,6 +1078,7 @@ public class DataViewEnvironmentalScreen extends Screen {
 
     protected void getSamples() {
         Query query;
+        QueryData field;
         DataViewVO temp;
         ArrayList<QueryData> queryList;
 
@@ -1094,6 +1095,15 @@ public class DataViewEnvironmentalScreen extends Screen {
             window.setError(consts.get("nofieldSelectedError"));
             return;
         }
+        /*
+         * To make sure that the data belonging to environmental domain gets returned
+         */
+        field = new QueryData();
+        field.query = "E";
+        field.key = SampleWebMeta.getDomain();
+        field.type = QueryData.Type.STRING;        
+        queryList.add(field);
+        
         query.setFields(queryList);
         data.setQueryFields(query.getFields());
         window.setBusy(consts.get("querying"));
