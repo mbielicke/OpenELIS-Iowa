@@ -44,24 +44,26 @@ public class DataViewVO implements RPC {
     protected String                       analysisTestName, analysisTestMethodName,
                                            excludeResultOverride, clientReference,
                                            accessionNumber, revision, collectionDate,
-                                           receivedDate, enteredDate, releasedDate, 
-                                           statusId, projectName, clientReferenceHeader, 
-                                           organizationId, organizationName, organizationAttention, 
-                                           organizationAddressMultipleUnit, organizationAddressAddress,
-                                           organizationAddressCity, organizationAddressState,
-                                           organizationAddressZipCode,
+                                           receivedDate,enteredDate, releasedDate,
+                                           statusId, clientReferenceHeader, projectName,
+                                           reportToOrganizationName, excludeResults,
+                                           excludeAuxData, organizationId, organizationName,
+                                           organizationAttention, organizationAddressMultipleUnit,
+                                           organizationAddressAddress, organizationAddressCity,
+                                           organizationAddressState, organizationAddressZipCode,
                                            sampleItemTypeofSampleId, sampleItemSourceOfSampleId, 
                                            sampleItemSourceOther, sampleItemContainerId,
+                                           sampleItemContainerReference, sampleItemItemSequence,
                                            analysisTestNameHeader, analysisTestMethodNameHeader,
                                            analysisStatusIdHeader, analysisRevision, 
                                            analysisIsReportable, analysisQaName,
                                            analysisCompletedDate, analysisCompletedBy, 
                                            analysisReleasedDate, analysisReleasedBy, 
                                            analysisStartedDate, analysisPrintedDate, 
-                                           sampleEnvironmentalIsHazardous, 
-                                           sampleEnvironmentalPriority, 
-                                           sampleEnvironmentalCollector, sampleEnvironmentalCollectorPhone,
-                                           sampleEnvironmentalLocation, sampleEnvironmentalLocationAddressCity,
+                                           analysisUnitOfMeasureId, sampleEnvironmentalIsHazardous,
+                                           sampleEnvironmentalPriority, sampleEnvironmentalCollector,
+                                           sampleEnvironmentalCollectorPhone, sampleEnvironmentalLocation,
+                                           sampleEnvironmentalLocationAddressCity,
                                            sampleEnvironmentalDescription, samplePrivateWellOwner, 
                                            samplePrivateWellCollector, samplePrivateWellWellNumber,
                                            samplePrivateWellReportToAddressWorkPhone,
@@ -71,7 +73,8 @@ public class DataViewVO implements RPC {
                                            sampleSDWISStateLabId, sampleSDWISFacilityId,
                                            sampleSDWISSampleTypeId, sampleSDWISSampleCategoryId,
                                            sampleSDWISSamplePointId, sampleSDWISLocation,
-                                           sampleSDWISCollector, sampleEnvironmentalCollectorHeader, sampleEnvironmentalLocationHeader;
+                                           sampleSDWISCollector, sampleEnvironmentalCollectorHeader,
+                                           sampleEnvironmentalLocationHeader;
     protected Integer                      analysisStatusId, accessionNumberFrom,
                                            accessionNumberTo, projectId;
     protected Date                         analysisCompletedDateFrom, analysisCompletedDateTo,
@@ -100,6 +103,22 @@ public class DataViewVO implements RPC {
         this.analysisTestMethodName = DataBaseUtil.trim(analysisTestMethodName);
     }
 
+    public String getExcludeResults() {
+        return excludeResults;
+    }
+
+    public void setExcludeResults(String excludeResults) {
+        this.excludeResults = DataBaseUtil.trim(excludeResults);
+    }
+    
+    public String getExcludeAuxData() {
+        return excludeAuxData;
+    }
+
+    public void setExcludeAuxData(String excludeAuxData) {
+        this.excludeAuxData = DataBaseUtil.trim(excludeAuxData);
+    }
+    
     public String getExcludeResultOverride() {
         return excludeResultOverride;
     }
@@ -171,6 +190,14 @@ public class DataViewVO implements RPC {
     public void setStatusId(String statusId) {
         this.statusId = DataBaseUtil.trim(statusId);
     }
+    
+    public String getClientReferenceHeader() {
+        return clientReferenceHeader;
+    }
+
+    public void setClientReferenceHeader(String clientReferenceHeader) {
+        this.clientReferenceHeader = DataBaseUtil.trim(clientReferenceHeader);
+    }
 
     public String getProjectName() {
         return projectName;
@@ -179,13 +206,13 @@ public class DataViewVO implements RPC {
     public void setProjectName(String projectName) {
         this.projectName = DataBaseUtil.trim(projectName);
     }
-
-    public String getClientReferenceHeader() {
-        return clientReferenceHeader;
+    
+    public String getReportToOrganizationName() {
+        return reportToOrganizationName;
     }
 
-    public void setClientReferenceHeader(String clientReferenceHeader) {
-        this.clientReferenceHeader = DataBaseUtil.trim(clientReferenceHeader);
+    public void setReportToOrganizationName(String reportToOrganizationName) {
+        this.reportToOrganizationName = DataBaseUtil.trim(reportToOrganizationName);
     }
 
     public String getOrganizationId() {
@@ -284,6 +311,22 @@ public class DataViewVO implements RPC {
         this.sampleItemContainerId = DataBaseUtil.trim(sampleItemContainerId);
     }
 
+    public String getSampleItemContainerReference() {
+        return sampleItemContainerReference;
+    }
+
+    public void setSampleItemContainerReference(String sampleItemContainerReference) {
+        this.sampleItemContainerReference = DataBaseUtil.trim(sampleItemContainerReference);
+    }
+
+    public String getSampleItemItemSequence() {
+        return sampleItemItemSequence;
+    }
+
+    public void setSampleItemItemSequence(String sampleItemItemSequence) {
+        this.sampleItemItemSequence = DataBaseUtil.trim(sampleItemItemSequence);
+    }
+
     public String getAnalysisTestNameHeader() {
         return analysisTestNameHeader;
     }
@@ -379,7 +422,15 @@ public class DataViewVO implements RPC {
     public void setAnalysisPrintedDate(String analysisPrintedDate) {
         this.analysisPrintedDate = DataBaseUtil.trim(analysisPrintedDate);
     }
+    
+    public String getAnalysisUnitOfMeasureId() {
+        return analysisUnitOfMeasureId;
+    }
 
+    public void setAnalysisUnitOfMeasureId(String analysisUnitOfMeasureId) {
+        this.analysisUnitOfMeasureId = DataBaseUtil.trim(analysisUnitOfMeasureId);
+    }
+    
     public String getSampleEnvironmentalIsHazardous() {
         return sampleEnvironmentalIsHazardous;
     }

@@ -32,17 +32,15 @@ import javax.ejb.Remote;
 import org.openelis.domain.DataViewVO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.ReportStatus;
-import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface DataViewRemote {
-    public ArrayList<IdNameVO> fetchPermanentProjectList() throws Exception;
     
     public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception;
     
-    public DataViewVO fetchAnalyteAndAuxField(ArrayList<QueryData> fields) throws Exception;
+    public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception;
     
-    public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(ArrayList<QueryData> fields) throws Exception ;
+    public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception ;
         
     public ReportStatus runReport(DataViewVO data) throws Exception;
     

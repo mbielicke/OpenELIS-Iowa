@@ -99,35 +99,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
             throw new NotFoundException();
 
         return returnList;
-    }
-    
-    public ArrayList<AnalysisUserViewDO> fetchByActionAndAnalysisId(Integer analysisId,
-                                                                    Integer actionId) throws Exception {
-        Query query;
-        ArrayList<AnalysisUserViewDO> returnList;
-        AnalysisUserViewDO data;
-        SystemUserVO user;
-        
-        query = manager.createNamedQuery("AnalysisUser.FetchByActionAndAnalysisId");
-        query.setParameter("analysisId", analysisId);
-        query.setParameter("actionId", actionId);
-        
-        returnList = DataBaseUtil.toArrayList(query.getResultList());
-        for (int i = 0; i < returnList.size(); i++ ) {
-            data = returnList.get(i);
-
-            if (data.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
-                if (user != null)
-                    data.setSystemUser(user.getLoginName());
-            }
-        }
-        
-        if(returnList.size() == 0)
-            throw new NotFoundException();
-
-        return returnList;
-    }  
+    }         
 
     public AnalysisUserViewDO add(AnalysisUserViewDO data) {
         AnalysisUser entity;

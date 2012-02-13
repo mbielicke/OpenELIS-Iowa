@@ -67,6 +67,14 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
     
     private static final SampleWebMeta webMeta = new SampleWebMeta();
 
+    public ArrayList<IdNameVO> fetchList() throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Project.FetchList");
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public ProjectViewDO fetchById(Integer id) throws Exception {
         Query query;
         ProjectViewDO data;

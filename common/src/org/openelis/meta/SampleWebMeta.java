@@ -109,16 +109,19 @@ public class SampleWebMeta implements Meta, MetaMap {
 
                     ITEM_ID = "_sampleItem.id", 
                     ITEM_SAMPLE_ID = "_sampleItem.sampleId",
+                    ITEM_ITEM_SEQUENCE = "_sampleItem.itemSequence",
                     ITEM_SAMPLE_ITEM_ID = "_sampleItem.sampleItemId",
                     ITEM_TYPE_OF_SAMPLE_ID = "_sampleItem.typeOfSampleId",
                     ITEM_SOURCE_OF_SAMPLE_ID = "_sampleItem.sourceOfSampleId",
                     ITEM_SOURCE_OTHER = "_sampleItem.sourceOther",
                     ITEM_CONTAINER_ID = "_sampleItem.containerId",
+                    ITEM_CONTAINER_REFERENCE = "_sampleItem.containerReference",
 
                     ANALYSIS_ID = "_analysis.id",
                     ANALYSIS_SAMPLE_ITEM_ID = "_analysis.sampleItemId",
                     ANALYSIS_REVISION = "_analysis.revision",            
                     ANALYSIS_IS_REPORTABLE = "_analysis.isReportable",
+                    ANALYSIS_UNIT_OF_MEASURE_ID = "_analysis.unitOfMeasureId",
                     ANALYSIS_STATUS_ID = "_analysis.statusId",
                     ANALYSIS_STATUS_ID_HEADER = "_analysis.statusIdHeader",
                     ANALYSIS_STARTED_DATE = "_analysis.startedDate",
@@ -250,14 +253,17 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   ITEM_ID,
                                                   ITEM_SAMPLE_ID,
                                                   ITEM_SAMPLE_ITEM_ID,
+                                                  ITEM_ITEM_SEQUENCE,
                                                   ITEM_TYPE_OF_SAMPLE_ID,
                                                   ITEM_SOURCE_OF_SAMPLE_ID,
                                                   ITEM_SOURCE_OTHER,
                                                   ITEM_CONTAINER_ID,
+                                                  ITEM_CONTAINER_REFERENCE,
                                                   ANALYSIS_ID,
                                                   ANALYSIS_SAMPLE_ITEM_ID,
                                                   ANALYSIS_REVISION,
                                                   ANALYSIS_IS_REPORTABLE,
+                                                  ANALYSIS_UNIT_OF_MEASURE_ID,
                                                   ANALYSIS_STATUS_ID,
                                                   ANALYSIS_STATUS_ID_HEADER,
                                                   ANALYSIS_STARTED_DATE,
@@ -581,6 +587,10 @@ public class SampleWebMeta implements Meta, MetaMap {
         return ITEM_SAMPLE_ITEM_ID;
     }
     
+    public static String getItemItemSequence() {
+        return ITEM_ITEM_SEQUENCE;
+    }
+    
     public static String getItemTypeofSampleId() {
        return ITEM_TYPE_OF_SAMPLE_ID;
     }
@@ -595,6 +605,10 @@ public class SampleWebMeta implements Meta, MetaMap {
     
     public static String getItemContainerId() {
        return ITEM_CONTAINER_ID;
+    }
+    
+    public static String getItemContainerReference() {
+        return ITEM_CONTAINER_REFERENCE;
     }
 
     public static String getAnalysisId() {
@@ -611,6 +625,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getAnalysisIsReportable() {
         return ANALYSIS_IS_REPORTABLE;
+    }
+    
+    public static String getAnalysisUnitOfMeasureId() {
+        return ANALYSIS_UNIT_OF_MEASURE_ID;
     }
 
     public static String getAnalysisStatusId() {
