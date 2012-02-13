@@ -74,8 +74,8 @@ public class DataViewScreen extends Screen {
     private DataViewVO           data;
     private DataViewScreen       screen;
     private TextBox              analysisTestName, analysisMethodName, accessionNumberFrom,
-                                 accessionNumberTo, clientReference;
-    private CheckBox             excludeResultOverride;
+                                 accessionNumberTo, clientReference, reportToOrganizationName;
+    private CheckBox             excludeResultOverride, excludeResults, excludeAuxData;
     private Dropdown<Integer>    analysisStatusId, projectId;
     private CalendarLookUp       analysisCompletedDateFrom, analysisCompletedDateTo,
                                  analysisReleasedDateFrom, analysisReleasedDateTo,
@@ -88,11 +88,12 @@ public class DataViewScreen extends Screen {
     private Tabs                 tab;
     private FilterScreen         filter;
     private FileLoad             fileLoad;
-
     private AppButton            saveQueryButton, executeQueryButton;
     private TabPanel             tabPanel;
-    private DataViewReportScreen reportRunUtil;
+    private DataViewReportScreen reportScreen;
+    private ScreenService        projectService;         
     private int                  pairsFilled;
+    
     
     private enum Tabs {
         QUERY, COMMON, ENVIRONMENTAL, PRIVATE_WELL, SDWIS;
@@ -101,6 +102,7 @@ public class DataViewScreen extends Screen {
     public DataViewScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DataViewDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");
+        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
         
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -214,6 +216,7 @@ public class DataViewScreen extends Screen {
         });
 
         analysisStatusId = (Dropdown<Integer>)def.getWidget(SampleWebMeta.getAnalysisStatusId());
+        analysisStatusId.setMultiSelect(true);
         addScreenHandler(analysisStatusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisStatusId.setSelection(data.getAnalysisStatusId());                                         
@@ -290,8 +293,38 @@ public class DataViewScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisReleasedDateTo.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
-        });                                       
-
+        }); 
+        
+        excludeResults = (CheckBox)def.getWidget("excludeResults");
+        addScreenHandler(excludeResults, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                excludeResults.setValue(data.getExcludeResults());
+            }
+            
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setExcludeResults(event.getValue());
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                excludeResults.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        excludeAuxData = (CheckBox)def.getWidget("excludeAuxData");
+        addScreenHandler(excludeAuxData, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                excludeAuxData.setValue(data.getExcludeAuxData());
+            }
+            
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setExcludeAuxData(event.getValue());
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                excludeAuxData.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
         accessionNumberFrom = (TextBox)def.getWidget(SampleWebMeta.getAccessionNumberFrom());
         addScreenHandler(accessionNumberFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -428,6 +461,7 @@ public class DataViewScreen extends Screen {
         });
         
         projectId = (Dropdown<Integer>)def.getWidget(SampleWebMeta.getProjectId());
+        projectId.setMultiSelect(true);
         addScreenHandler(projectId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 projectId.setValue(data.getProjectId());
@@ -439,6 +473,21 @@ public class DataViewScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 projectId.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        reportToOrganizationName = (TextBox)def.getWidget("reportToOrganizationName");
+        addScreenHandler(reportToOrganizationName, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                reportToOrganizationName.setValue(data.getReportToOrganizationName());
+            }                        
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setReportToOrganizationName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                reportToOrganizationName.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
         
@@ -516,7 +565,6 @@ public class DataViewScreen extends Screen {
     
     private void initializeDropdowns() {
         Integer id;
-        String query;
         ArrayList<TableDataRow> model;
         List<DictionaryDO> list;
         ArrayList<IdNameVO> projects;
@@ -525,29 +573,10 @@ public class DataViewScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         list = CategoryCache.getBySystemName("analysis_status");
-        query = null;
-        for (DictionaryDO d : list) {
-            if ("analysis_completed".equals(d.getSystemName()) ||
-                            "analysis_released".equals(d.getSystemName())) {
-                row = new TableDataRow(d.getId(), d.getEntry());
-                if (query == null) 
-                    query = d.getId()+ "|"; 
-                else
-                    query += d.getId(); 
-                model.add(row);
-            }
-        }
-        if (query != null) {
-            /*
-             * The first option here is used to indicate that the analyses with
-             * status completed or released are to be queried for. So we need
-             * to make sure that the ids for both statuses get be included in the 
-             * query sent to the back end.   
-             */
-            row = new TableDataRow(null, consts.get("completedOrReleased"));
-            row.data = query;
-            model.add(row);
-        }
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : list)             
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+        
         analysisStatusId.setModel(model);
         if (model.size() > 0) 
             data.setAnalysisStatusId(((Integer)model.get(0).key));              
@@ -555,7 +584,7 @@ public class DataViewScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         try {
-            projects = service.callList("fetchPermanentProjectList");
+            projects = projectService.callList("fetchList");
             map = new HashMap<Integer, Integer>();
             for (IdNameVO d : projects) {
                 id = d.getId();
@@ -739,6 +768,10 @@ public class DataViewScreen extends Screen {
         if (field != null)
             fields.add(field);
         
+        field = getQuery(reportToOrganizationName, "reportToOrganizationName", QueryData.Type.STRING);
+        if (field != null)
+            fields.add(field);
+        
         return fields;
     }
 
@@ -753,8 +786,8 @@ public class DataViewScreen extends Screen {
                 return;
             }
             
-            if (reportRunUtil == null) 
-                reportRunUtil = new DataViewReportScreen("saveQuery", window, "DataView.xml");
+            if (reportScreen == null) 
+                reportScreen = new DataViewReportScreen("saveQuery", window, "DataView.xml");
             //
             // we don't want to serialize the following fields
             //
@@ -762,7 +795,7 @@ public class DataViewScreen extends Screen {
             data.setAnalytes(null);
             data.setAuxFields(null);
             
-            reportRunUtil.runReport(data);
+            reportScreen.runReport(data);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
@@ -791,7 +824,8 @@ public class DataViewScreen extends Screen {
     }            
 
     protected void executeQuery() {
-        int ec, wc, sc; 
+        int cc, ec, wc, sc; 
+        boolean excludeResults, excludeAuxData;
         String domain;
         Query query;
         ArrayList<QueryData> queryList;
@@ -800,6 +834,7 @@ public class DataViewScreen extends Screen {
         
         clearErrors();
         
+        cc = commonTab.getCheckIndicator();
         ec = environmentalTab.getCheckIndicator();
         wc = privateWellTab.getCheckIndicator();
         sc = sdwisTab.getCheckIndicator();
@@ -808,6 +843,14 @@ public class DataViewScreen extends Screen {
             window.setError(consts.get("selFieldsOneDomain"));
             return;
         }   
+        
+        excludeResults = "Y".equals(data.getExcludeResults());
+        excludeAuxData = "Y".equals(data.getExcludeAuxData());
+        
+        if (excludeResults && excludeAuxData && (cc+ec+wc+sc == 0)) {
+            window.setError(consts.get("selAtleastOneField"));
+            return;
+        }
         
         window.clearStatus();
         if ( !validate()) {
@@ -818,19 +861,13 @@ public class DataViewScreen extends Screen {
             return;
         }
         
-        queryList = createWhereFromParamFields(getQueryFields());
+        queryList = createWhere(getQueryFields());
         if (queryList.size() == 0) {
             window.setError(consts.get("emptyQueryException"));
             return;
         }
         query = new Query();
-        query.setFields(queryList);         
-        
-        field = new QueryData();
-        field.query = data.getExcludeResultOverride();
-        field.key = "excludeResultOverride";
-        field.type = QueryData.Type.STRING;        
-        queryList.add(field);
+        query.setFields(queryList);                 
         
         /*
          * assert the domain if the user has selected one or more checkboxes in
@@ -853,13 +890,22 @@ public class DataViewScreen extends Screen {
         }
         
         data.setQueryFields(query.getFields());
+        data.setAnalytes(null);
+        data.setAuxFields(null);
         window.setBusy(consts.get("querying"));
         try {
-            ldata = service.call("fetchAnalyteAndAuxField", query);
-            data.setAnalytes(ldata.getTestAnalytes());
-            data.setAuxFields(ldata.getAuxFields());
-            showFilter(data);
-            window.clearStatus();
+            if (excludeResults && excludeAuxData) {
+                if (reportScreen == null) 
+                    reportScreen = new DataViewReportScreen("runReport", window, null);  
+                        
+                reportScreen.runReport(data);                
+            } else {
+                ldata = service.call("fetchAnalyteAndAuxField", data);
+                data.setAnalytes(ldata.getTestAnalytes());
+                data.setAuxFields(ldata.getAuxFields());
+                showFilter(data);
+                window.clearStatus();
+            }
         } catch (NotFoundException e) {
             window.setDone(consts.get("noRecordsFound"));
         } catch (Exception e) {
@@ -898,7 +944,7 @@ public class DataViewScreen extends Screen {
         }
     }
     
-    private ArrayList<QueryData> createWhereFromParamFields(ArrayList<QueryData> fields) {
+    private ArrayList<QueryData> createWhere(ArrayList<QueryData> fields) {
         int i;
         QueryData field, fcomp, fRel, fCol, fAcc, fRec, fEnt;
         ArrayList<QueryData> list;
@@ -1016,6 +1062,7 @@ public class DataViewScreen extends Screen {
         
         data = new DataViewVO();
         data.setExcludeResultOverride("N");
+        data.setExcludeResults("N");
         data.setAccessionNumber("N");
         data.setRevision("N");
         data.setCollectionDate("N");        
@@ -1036,12 +1083,15 @@ public class DataViewScreen extends Screen {
         data.setSampleItemTypeofSampleId("N");
         data.setSampleItemSourceOfSampleId("N"); 
         data.setSampleItemSourceOther("N"); 
-        data.setSampleItemContainerId("N");
+        data.setSampleItemContainerId("N");        
+        data.setSampleItemContainerReference("N");
+        data.setSampleItemItemSequence("N");       
         data.setAnalysisTestNameHeader("N");
         data.setAnalysisTestMethodNameHeader("N");
         data.setAnalysisStatusIdHeader("N");
         data.setAnalysisRevision("N"); 
         data.setAnalysisIsReportable("N");
+        data.setAnalysisUnitOfMeasureId("N");
         data.setAnalysisQaName("N");
         data.setAnalysisCompletedDate("N"); 
         data.setAnalysisCompletedBy("N"); 
@@ -1093,37 +1143,28 @@ public class DataViewScreen extends Screen {
     }
     
     protected QueryData getQuery(Dropdown<Integer> dd, String key) {
-        String query;
-        TableDataRow sel;
+        StringBuffer buf;
+        ArrayList<TableDataRow> sels;
         QueryData qd;
-
-        sel = dd.getSelection();
-        if (sel == null)
-            return null;
-
-        if (sel.key == null) {
-            if (!SampleWebMeta.getAnalysisStatusId().equals(key))
-                return null;
-            else 
-                /*
-                 * If the first option in the dropdown for analysis status is selected,
-                 * i.e. key == null, then it means that the analyses with status
-                 * completed or released are being queried for. So we need to make
-                 * sure that the ids for both statuses get included in the query
-                 * sent to the back end. The query string for doing that is
-                 * created in initializeDropdowns() and set as the data of the row.  
-                 */
-                query = (String)sel.data;            
-        } else {
-            query = sel.key.toString();
+          
+        sels = dd.getSelections();
+        buf = new StringBuffer(); 
+        for (TableDataRow r : sels) {
+            if (r.key != null) {
+                if (buf.length() > 0)
+                    buf.append("|");
+                buf.append(r.key);
+            }
         }
-                    
-        qd = new QueryData();
-        qd.key = key;
-        qd.type = QueryData.Type.INTEGER;
-        qd.query = query;
         
-        return qd;
+        if (buf.length() > 0) {
+            qd = new QueryData();
+            qd.key = key;
+            qd.type = QueryData.Type.INTEGER;
+            qd.query = buf.toString();
+            return qd;
+        }    
+        return null;
     }
     
     protected QueryData getQuery(CalendarLookUp c, String key) {
