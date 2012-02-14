@@ -629,6 +629,11 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         
         try {
             unitDO = dictionaryCache.getById(analysis.getUnitOfMeasureId());
+        } catch (NotFoundException nfE) {
+            addStatusRow(sampleSDWIS.getPwsNumber0(), sample.getAccessionNumber(),
+                         "Warning: No units for test '"+analysis.getTestName()+
+                         ", "+analysis.getMethodName()+"'");
+            return;
         } catch (Exception anyE) {
             throw new Exception("Error looking up units from dictionary for '"+
                                 analysis.getTestName()+", "+analysis.getMethodName()+
@@ -640,6 +645,11 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         results = new ArrayList<ArrayList<ResultViewDO>>();
         try {
             result.fetchByAnalysisIdForDisplay(analysis.getId(), results);
+        } catch (NotFoundException nfE) {
+            addStatusRow(sampleSDWIS.getPwsNumber0(), sample.getAccessionNumber(),
+                         "Warning: No results for test '"+analysis.getTestName()+
+                         ", "+analysis.getMethodName()+"'");
+            return;
         } catch (Exception anyE) {
             throw new Exception("Error retrieving result records for '"+
                                 analysis.getTestName()+", "+analysis.getMethodName()+
