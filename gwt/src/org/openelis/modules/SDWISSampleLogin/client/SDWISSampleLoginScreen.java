@@ -1173,14 +1173,12 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     }
     
     protected void duplicate() {       
-        SampleDO data;
         SampleDataBundle bundle;
         
-        data = manager.getSample();
         try {
             window.setBusy(consts.get("fetching"));
-            manager = SampleManager.fetchWithAllData(data.getId());
-            if (!SampleManager.SDWIS_DOMAIN_FLAG.equals(data.getDomain())) {
+            manager = SampleManager.fetchWithAllData(manager.getSample().getId());
+            if (!SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
                 Window.alert(consts.get("sampleDomainChangedException"));
                 abort();
                 return;
