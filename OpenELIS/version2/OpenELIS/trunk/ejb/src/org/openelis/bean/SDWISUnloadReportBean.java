@@ -823,6 +823,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         methodCodes.put("epa 200.8 drink",       "200.8");
         methodCodes.put("epa 200.8 sdwa pb&cu",  "200.8");
         methodCodes.put("epa 200.8 uranium dw",  "200.8");
+        methodCodes.put("epa 200.8 mercury dw",  "200.8");
         methodCodes.put("epa 245.2 mercury dw",  "245.2");
         methodCodes.put("epa 300.0",             "300.0");
         methodCodes.put("epa 300.1",             "300.1");
@@ -857,11 +858,11 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         methodCodes.put("sm 2340 b,total hard",  "2340B");
         methodCodes.put("sm 2340 c,total hard",  "2340C");
         methodCodes.put("sm 2510 b",             "2510B");
-        methodCodes.put("sm 2540 c,dissolved",   "2540C");
+        methodCodes.put("sm 2540 c dissolved",   "2540C");
         methodCodes.put("sm 4500 cn e",          "4500CN-E");
         methodCodes.put("sm 4500 f c",           "4500F-C");
         methodCodes.put("sm 4500 h+ b",          "4500H-B");
-        methodCodes.put("sm 4500 h+ b ph & alk", "4500H-B");
+        methodCodes.put("sm 4500 h+ b ph&alk",   "4500H-B");
         methodCodes.put("sm 4500 no2 b",         "4500NO2-B");
         methodCodes.put("sm 4500 no3 d",         "4500NO3-D");
         methodCodes.put("sm 4500 p e",           "4500P-E");
@@ -931,7 +932,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         contaminantIds.put("Benzo(g,h,i)perylene",                  "2312");
         contaminantIds.put("Benzo(k)fluoranthene",                  "2304");
         contaminantIds.put("Beryllium",                             "1075");
-        contaminantIds.put("Bicarbonate Alkalinity",                "1026");
+        contaminantIds.put("Bicarbonate alkalinity",                "1026");
         contaminantIds.put("bis(2-Ethylhexyl)adipate",              "2035");
         contaminantIds.put("bis(2-Ethylhexyl)phthalate",            "2039");
         contaminantIds.put("Bromacil",                              "2098");
@@ -1035,7 +1036,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         contaminantIds.put("Nitrite nitrogen as N",                 "1041");
         contaminantIds.put("Nitrobenzene",                          "2254");
         contaminantIds.put("n-Propylbenzene",                       "2998");
-        contaminantIds.put("Ortho Phosphate as P",                  "1044");
+        contaminantIds.put("ortho-Phosphate as P",                  "1044");
         contaminantIds.put("Oxamyl",                                "2036");
         contaminantIds.put("o-Dichlorobenzene",                     "2968");
         contaminantIds.put("o-Xylene",                              "2997");
@@ -1043,7 +1044,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         contaminantIds.put("Pentachlorophenol",                     "2326");
         contaminantIds.put("Perchlorate",                           "1039");
         contaminantIds.put("Phenanthrene",                          "2278");
-        contaminantIds.put("Phenolphthalein Alkalinity",            "1931");
+        contaminantIds.put("Phenolphthalein alkalinity",            "1931");
         contaminantIds.put("Picloram",                              "2040");
         contaminantIds.put("p-Dichlorobenzene",                     "2969");
         contaminantIds.put("p-Isopropyltoluene",                    "2030");
@@ -1075,7 +1076,6 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         contaminantIds.put("Total 1,3-Dichloropropene",             "2413");
         contaminantIds.put("Total Alkalinity",                      "1927");
         contaminantIds.put("Total Coliform Bacteria",               "3100");
-        contaminantIds.put("Total DCPA mono and diacid degradates", "2108");
         contaminantIds.put("Total Dissolved Solids",                "1930");
         contaminantIds.put("Total Haloacetic Acids (HAA5)",         "2456");
         contaminantIds.put("Total Hardness",                        "1915");  
