@@ -418,6 +418,13 @@ UIRF Software License are applicable instead of those above.
                     <text style="LeftAlignPrompt">
                       <xsl:value-of select="resource:getString($constants,'revision')" />
                     </text>
+                     <widget>
+                      <HorizontalPanel width="10" />
+                    </widget>
+                    <check key="{meta:getAnalysisUnitOfMeasureId()}" />
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select="resource:getString($constants,'unit')" />
+                    </text>
                   </row>
                   <row>
                     <check key="{meta:getAnalysisStartedDate()}" />
