@@ -1504,6 +1504,14 @@ public class DataViewBean implements DataViewRemote {
             prevSamId = sampleId;
             prevRowGroup = rowGroup;
             
+            /*
+             * An empty row can't be created and then added it to the sheet, it has
+             * to be obtained from the sheet. Thus it has to be removed if we don't
+             * want to show it. We do so if two consecutive rows have the same data
+             * in all cells. It can happen if, for example, a user chose to see 
+             * sample items but all the ones under a sample have the same container
+             * and sample type and those were the only fields chosen to be shown.  
+             */
             if (isSameDataInRows(currRow, prevRow)) {
                 sheet.removeRow(currRow);
                 rowIndex--;
@@ -2539,6 +2547,11 @@ public class DataViewBean implements DataViewRemote {
                 anaName2 = aux2.getAnalyteName();
             }            
 
+            /*
+             * If the accession numbers are different then we don't compare the
+             * names of the analytes. If the numbers are the same then comparison
+             * by String is used for the names
+             */
             diff = accNum1 - accNum2;
             if (diff != 0) {
                 return diff;
