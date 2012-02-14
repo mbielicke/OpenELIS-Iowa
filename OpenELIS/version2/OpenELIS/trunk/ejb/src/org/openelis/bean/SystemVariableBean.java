@@ -188,8 +188,10 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     public SystemVariableDO updateAsSystem(SystemVariableDO data) throws Exception {
         SystemVariable entity;
 
-        if ( !data.isChanged())
+        if ( !data.isChanged()) {
+            lock.unlock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
             return data;
+        }
 
         validate(data);
 
@@ -217,14 +219,8 @@ public class SystemVariableBean implements SystemVariableRemote, SystemVariableL
     public SystemVariableDO fetchForUpdateByName(String name) throws Exception {
         SystemVariableDO data;
 
-        try {
-        	data = fetchByName(name);
-        } catch (Exception e) {
-        	return null;
-        }
-        lock.lock(ReferenceTable.SYSTEM_VARIABLE, data.getId());
-        
-        return data;
+        data = fetchByName(name);
+        return fetchForUpdate(data.getId());
     }
     
     public SystemVariableDO abortUpdate(Integer id) throws Exception {
