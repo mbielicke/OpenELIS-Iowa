@@ -2305,6 +2305,17 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                                 * node is selected  
                                 */
                                environmentalTab.setData(manager);
+                               /*
+                                * StateChangeEvent is fired to enable all the editable
+                                * widgets in the tab, because they could be disabled
+                                * due to the tab being made visible for the first
+                                * time since the main screen's state was changed. 
+                                * StateChangeEvent.fire() and not setState() is
+                                * called here because we need to force the firing
+                                * of the event which doesn't happen with setState()
+                                * if the state doesn't change from its last value.
+                                */
+                               StateChangeEvent.fire(environmentalTab, State.UPDATE);
                                if ("sample".equals(selectedRow.leafType))
                                    showTabs(Tabs.ENVIRONMENT); 
                                environmentalTab.draw();
@@ -2324,6 +2335,17 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                                  * node is selected  
                                  */
                                 wellTab.setData(manager);
+                                /*
+                                 * StateChangeEvent is fired to enable all the editable
+                                 * widgets in the tab, because they could be disabled
+                                 * due to the tab being made visible for the first
+                                 * time since the main screen's state was changed. 
+                                 * StateChangeEvent.fire() and not setState() is
+                                 * called here because we need to force the firing
+                                 * of the event which doesn't happen with setState()
+                                 * if the state doesn't change from its last value.
+                                 */
+                                StateChangeEvent.fire(wellTab, State.UPDATE);
                                 if ("sample".equals(selectedRow.leafType))
                                     showTabs(Tabs.PRIVATE_WELL); 
                                 wellTab.draw();
@@ -2343,6 +2365,17 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                                  * node is selected  
                                  */
                                 sdwisTab.setData(manager);
+                                /*
+                                 * StateChangeEvent is fired to enable all the editable
+                                 * widgets in the tab, because they could be disabled
+                                 * due to the tab being made visible for the first
+                                 * time since the main screen's state was changed. 
+                                 * StateChangeEvent.fire() and not setState() is
+                                 * called here because we need to force the firing
+                                 * of the event which doesn't happen with setState()
+                                 * if the state doesn't change from its last value.
+                                 */
+                                StateChangeEvent.fire(sdwisTab, State.UPDATE);
                                 if ("sample".equals(selectedRow.leafType))
                                     showTabs(Tabs.SDWIS); 
                                 sdwisTab.draw();

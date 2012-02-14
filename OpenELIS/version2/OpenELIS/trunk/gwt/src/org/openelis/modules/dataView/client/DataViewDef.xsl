@@ -111,7 +111,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'status')" />:
                   </text>
-                  <dropdown field="Integer" key="{meta:getAnalysisStatusId()}" popWidth="auto" width="85" tab = "{meta:getAnalysisCompletedDateFrom()}, excludeResultOverride"/>
+                  <dropdown field="Integer" key="{meta:getAnalysisStatusId()}" popWidth="auto" width="85" tab = "{meta:getAnalysisCompletedDateFrom()},excludeResultOverride"/>
                 </row>
                 <row>
                   <widget>
