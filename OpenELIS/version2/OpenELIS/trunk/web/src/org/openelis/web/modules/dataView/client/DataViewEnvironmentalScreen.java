@@ -86,8 +86,8 @@ public class DataViewEnvironmentalScreen extends Screen {
                                 receivedDate, releasedDate, statusId, envCollectorPhone, itemTypeofSampleId,
                                 itemSourceOfSampleId, sampleOrgOrganizationName, addressMultipleUnit,
                                 addressStreetAddress, addressCity, addressState, addressZipCode,
-                                analysisTestNameHeader, analysisMethodNameHeader, analysisRevision,
-                                analysisStartedDate, analysisCompletedDate, analysisReleasedDate;
+                                analysisTestNameHeader, analysisMethodNameHeader, analysisRevision, 
+                                analysisUnitOfMeasureId, analysisStartedDate, analysisCompletedDate, analysisReleasedDate;
     private Dropdown<Integer>   projectCode;
     private ReportScreenUtility util;
     private DeckPanel           deckpanel;
@@ -685,6 +685,21 @@ public class DataViewEnvironmentalScreen extends Screen {
                 analysisRevision.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
+        
+        analysisUnitOfMeasureId = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisUnitOfMeasureId());
+        addScreenHandler(analysisUnitOfMeasureId, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                analysisUnitOfMeasureId.setValue(data.getAnalysisUnitOfMeasureId());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setAnalysisUnitOfMeasureId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysisUnitOfMeasureId.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
 
         analysisStartedDate = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisStartedDate());
         addScreenHandler(analysisStartedDate, new ScreenEventHandler<String>() {
@@ -792,6 +807,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 data.setAnalysisTestNameHeader("Y");
                 data.setAnalysisTestMethodNameHeader("Y");
                 data.setAnalysisRevision("Y");
+                data.setAnalysisUnitOfMeasureId("Y");
                 data.setAnalysisStartedDate("Y");
                 data.setAnalysisCompletedDate("Y");
                 data.setAnalysisReleasedDate("Y");
