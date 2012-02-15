@@ -1177,7 +1177,7 @@ public class WorksheetCreationScreen extends Screen {
         // remove it
         //
         if (analysisItems.size() > 0) {
-            for (i--; i > -1 && items.get(i).data instanceof ArrayList; i--) {
+            for (i--; i > -1 && items.get(i).data instanceof ArrayList && ((ArrayList<Object>)items.get(i).data).size() == 2; i--) {
                 if (i % testWorksheetDO.getTotalCapacity() == 0) {
                     while (i < items.size())
                         items.remove(i);
