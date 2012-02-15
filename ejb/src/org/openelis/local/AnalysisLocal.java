@@ -32,6 +32,7 @@ import javax.ejb.Local;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.MCLViolationReportVO;
+import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.gwt.common.Datetime;
 
 
@@ -39,7 +40,7 @@ import org.openelis.gwt.common.Datetime;
 public interface AnalysisLocal {
     public AnalysisViewDO fetchById(Integer id) throws Exception;
     public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception;
-    public ArrayList<AnalysisViewDO> fetchBySampleIdOrderedBySection(Integer sampleId) throws Exception;
+    public ArrayList<SDWISUnloadReportVO> fetchBySampleIdForSDWISUnloadReport(Integer sampleId) throws Exception;
     public ArrayList<AnalysisViewDO> fetchBySampleItemId(Integer sampleItemId) throws Exception;
     public ArrayList<MCLViolationReportVO> fetchForMCLViolationReport(Date beginPrinted, Date endPrinted) throws Exception;
 

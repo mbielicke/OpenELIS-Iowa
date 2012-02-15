@@ -754,8 +754,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                 try {
                                     userVO = EJBFactory.getUserCache().getSystemUser(userToken);
                                     if (userVO != null) {
-                                        auManager.addCompleteRecord(userVO);
-                                        anaModified = true;
+                                        if (auManager.addCompleteRecord(userVO) != -1)
+                                            anaModified = true;
                                     } else {
                                         errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
                                     }
