@@ -54,13 +54,13 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventDO;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SampleSDWISViewDO;
@@ -200,11 +200,11 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
      */
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         boolean sampleOverride;
-        AnalysisViewDO aVDO;
-        ArrayList<AnalysisViewDO> analyses;
-        ArrayList<SampleDO> samples;
+        SDWISUnloadReportVO surVO;
         ArrayList<AnalysisQaEventDO> analysisQaList;
+        ArrayList<SampleDO> samples;
         ArrayList<SampleQaEventDO> sampleQaList;
+        ArrayList<SDWISUnloadReportVO> analyses;
         Counter sampleCounts;
         Date beginReleased, endReleased;
         File tempFile, statFile;
@@ -212,7 +212,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         HashMap<String, Object> jparam;
         HashMap<String, QueryData> param;
         Iterator<SampleDO> sIter;
-        Iterator<AnalysisViewDO> aIter;
+        Iterator<SDWISUnloadReportVO> aIter;
         JRExporter jexport;
         JasperPrint jprint;
         JasperReport jreport;
@@ -322,29 +322,29 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                     }
                     
                     location = "NONE";
-                    analyses = analysis.fetchBySampleIdOrderedBySection(sDO.getId());
+                    analyses = analysis.fetchBySampleIdForSDWISUnloadReport(sDO.getId());
                     aIter = analyses.iterator();
                     while (aIter.hasNext()) {
-                        aVDO = aIter.next();
-                        if (releasedStatusId.equals(aVDO.getStatusId()) && "Y".equals(aVDO.getIsReportable())) {
+                        surVO = aIter.next();
+                        if (releasedStatusId.equals(surVO.getStatusId()) && "Y".equals(surVO.getIsReportable())) {
                             try {
-                                analysisQaList = analysisQA.fetchResultOverrideByAnalysisId(aVDO.getId());
+                                analysisQaList = analysisQA.fetchResultOverrideByAnalysisId(surVO.getAnalysisId());
                                 if (analysisQaList.size() > 0) {
                                     addStatusRow(ssVDO.getPwsNumber0(), sDO.getAccessionNumber(),
-                                                 "Warning: Test '"+aVDO.getTestName()+
-                                                 ", "+aVDO.getMethodName()+"' has a Result Override QAEvent");
+                                                 "Warning: Test '"+surVO.getTestName()+
+                                                 ", "+surVO.getMethodName()+"' has a Result Override QAEvent");
                                     continue;
                                 }
                             } catch (NotFoundException nfE) {
                                 // no qa events found means analysis is not overridden
                             } catch (Exception anyE) {
                                 throw new Exception("Error looking up result override Analysis QAEvents for '"+
-                                                    aVDO.getTestName()+", "+aVDO.getMethodName()+
+                                                    surVO.getTestName()+", "+surVO.getMethodName()+
                                                     "' on accession #"+sDO.getAccessionNumber()+
                                                     "; "+anyE.getMessage());
                             }
                             
-                            secVDO = sectionCache.getById(aVDO.getSectionId());
+                            secVDO = sectionCache.getById(surVO.getSectionId());
                             if (secVDO != null) {
                                 if (!secVDO.getName().endsWith(location)) {
                                     location = secVDO.getName().substring(secVDO.getName().indexOf("-"));
@@ -355,7 +355,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                                                      "Generated");
                                 }
                                 if (!sampleOverride)
-                                    writeResultRows(writer, sDO, ssVDO, aVDO);
+                                    writeResultRows(writer, sDO, ssVDO, surVO);
                             }
                         }
                     }
@@ -595,7 +595,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
     }
 
     protected void writeResultRows(PrintWriter writer, SampleDO sample,
-                                   SampleSDWISViewDO sampleSDWIS, AnalysisViewDO analysis) throws Exception {
+                                   SampleSDWISViewDO sampleSDWIS, SDWISUnloadReportVO surVO) throws Exception {
         int i;
         AnalyteViewDO alVDO;
         ArrayList<ResultViewDO> resultRow;
@@ -615,28 +615,28 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             throw new Exception("Error looking up dictionary entry for Sample Category; "+anyE.getMessage());
         }
 
-        methodCode = methodCodes.get(analysis.getMethodName());
+        methodCode = methodCodes.get(surVO.getMethodName());
         //
         // if we don't have a method code for this analysis we should not be
         // sending it to SDWIS
         //
         if (methodCode == null) {
             addStatusRow(sampleSDWIS.getPwsNumber0(), sample.getAccessionNumber(),
-                         "Warning: No method code for test '"+analysis.getTestName()+
-                         ", "+analysis.getMethodName()+"'");
+                         "Warning: No method code for test '"+surVO.getTestName()+
+                         ", "+surVO.getMethodName()+"'");
             return;
         }
         
         try {
-            unitDO = dictionaryCache.getById(analysis.getUnitOfMeasureId());
+            unitDO = dictionaryCache.getById(surVO.getUnitOfMeasureId());
         } catch (NotFoundException nfE) {
             addStatusRow(sampleSDWIS.getPwsNumber0(), sample.getAccessionNumber(),
-                         "Warning: No units for test '"+analysis.getTestName()+
-                         ", "+analysis.getMethodName()+"'");
+                         "Warning: No units for test '"+surVO.getTestName()+
+                         ", "+surVO.getMethodName()+"'");
             return;
         } catch (Exception anyE) {
             throw new Exception("Error looking up units from dictionary for '"+
-                                analysis.getTestName()+", "+analysis.getMethodName()+
+                                surVO.getTestName()+", "+surVO.getMethodName()+
                                 "' on accession #"+sample.getAccessionNumber()+
                                 "; "+anyE.getMessage());
         }
@@ -644,15 +644,15 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         resultData = new ArrayList<HashMap<String,String>>();
         results = new ArrayList<ArrayList<ResultViewDO>>();
         try {
-            result.fetchByAnalysisIdForDisplay(analysis.getId(), results);
+            result.fetchByAnalysisIdForDisplay(surVO.getAnalysisId(), results);
         } catch (NotFoundException nfE) {
             addStatusRow(sampleSDWIS.getPwsNumber0(), sample.getAccessionNumber(),
-                         "Warning: No results for test '"+analysis.getTestName()+
-                         ", "+analysis.getMethodName()+"'");
+                         "Warning: No results for test '"+surVO.getTestName()+
+                         ", "+surVO.getMethodName()+"'");
             return;
         } catch (Exception anyE) {
             throw new Exception("Error retrieving result records for '"+
-                                analysis.getTestName()+", "+analysis.getMethodName()+
+                                surVO.getTestName()+", "+surVO.getMethodName()+
                                 "' on accession #"+sample.getAccessionNumber()+
                                 "; "+anyE.getMessage());
         }
@@ -677,7 +677,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                         rowData.put("microbe", dictionaryCache.getById(Integer.valueOf(rVDO.getValue())).getEntry());
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up dictionary result for '"+
-                                            analysis.getTestName()+", "+analysis.getMethodName()+
+                                            surVO.getTestName()+", "+surVO.getMethodName()+
                                             "' on accession #"+sample.getAccessionNumber()+
                                             "; "+anyE.getMessage());
                     }
@@ -688,7 +688,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                         else
                             rowData.put("microbe", "P");
 
-                        if (analysis.getMethodName().indexOf("mpn") != -1) {
+                        if (surVO.getMethodName().indexOf("mpn") != -1) {
                             colIter = resultRow.iterator();
                             while (colIter.hasNext()) {
                                 crVDO = colIter.next();
@@ -734,8 +734,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                         alVDO = analyte.fetchById(crVDO.getAnalyteId());
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up result column analyte '"+
-                                            crVDO.getAnalyte()+"' for '"+analysis.getTestName()+
-                                            ", "+analysis.getMethodName()+"' on accession #"+
+                                            crVDO.getAnalyte()+"' for '"+surVO.getTestName()+
+                                            ", "+surVO.getMethodName()+"' on accession #"+
                                             sample.getAccessionNumber()+"; "+anyE.getMessage());
                     }
                     if ("quant_limit".equals(alVDO.getExternalId())) {
@@ -757,9 +757,9 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             row.append("#RES")                                                                              // col 1-4
                .append(getPaddedString(rowData.get("contaminantId"), 4))                                    // col 5-8
                .append(getPaddedString(methodCode, 12))                                                     // col 9-20
-               .append(getPaddedString(ReportUtil.toString(analysis.getStartedDate(), "yyyyMMdd"), 8))      // col 21-28
-               .append(getPaddedString(ReportUtil.toString(analysis.getStartedDate(), "HHmm"), 4))          // col 29-32
-               .append(getPaddedString(ReportUtil.toString(analysis.getCompletedDate(), "yyyyMMdd"), 8))    // col 33-40
+               .append(getPaddedString(ReportUtil.toString(surVO.getStartedDate(), "yyyyMMdd"), 8))      // col 21-28
+               .append(getPaddedString(ReportUtil.toString(surVO.getStartedDate(), "HHmm"), 4))          // col 29-32
+               .append(getPaddedString(ReportUtil.toString(surVO.getCompletedDate(), "yyyyMMdd"), 8))    // col 33-40
                .append(getPaddedString(rowData.get("microbe"), 1))                                          // col 41
                .append(getPaddedNumber(rowData.get("count"), 5))                                            // col 42-46
                .append(getPaddedString(rowData.get("countType"), 10))                                       // col 47-56

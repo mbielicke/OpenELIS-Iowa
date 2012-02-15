@@ -39,6 +39,7 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.MCLViolationReportVO;
+import org.openelis.domain.SDWISUnloadReportVO;
 import org.openelis.entity.Analysis;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -69,11 +70,11 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
         return DataBaseUtil.toArrayList(returnList);
     }
     
-    public ArrayList<AnalysisViewDO> fetchBySampleIdOrderedBySection(Integer sampleId) throws Exception {
+    public ArrayList<SDWISUnloadReportVO> fetchBySampleIdForSDWISUnloadReport(Integer sampleId) throws Exception {
         List returnList;
         Query query;
         
-        query = manager.createNamedQuery("Analysis.FetchBySampleIdOrderedBySection");
+        query = manager.createNamedQuery("Analysis.FetchBySampleIdForSDWISUnload");
         query.setParameter("id", sampleId);
         
         returnList = query.getResultList();
