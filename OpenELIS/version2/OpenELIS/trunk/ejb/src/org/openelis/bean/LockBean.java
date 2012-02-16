@@ -34,6 +34,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.validation.ConstraintViolationException;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.entity.Lock;
@@ -76,36 +77,44 @@ public class LockBean implements LockLocal {
         long timeMillis;
         Integer userId;
         SystemUserVO user;
+        String sessionId;
 
-        userId = userCache.getId(); 
+        userId = userCache.getId();
+        sessionId = userCache.getSessionId();
         timeMillis = System.currentTimeMillis();
-        
+
         pk = new Lock.PK(referenceTableId, referenceId);
-        try {
-            lock = manager.find(Lock.class, pk);
-            if (lock == null) {
-                lock = new Lock();
-                lock.setReferenceTableId(referenceTableId);
-                lock.setReferenceId(referenceId);
-                lock.setSystemUserId(userId);
-                lock.setExpires(lockTimeMillis+timeMillis);
-                lock.setSessionId(userCache.getSessionId());
-                manager.persist(lock);
-            } else if (lock.getExpires() < timeMillis) {
-                //
-                // if the lock has expired, then we can take it over
-                //
-                lock.setSystemUserId(userId);
-                lock.setExpires(lockTimeMillis+timeMillis);
-                lock.setSessionId(userCache.getSessionId());
-            } else {
-                user = userCache.getSystemUser(lock.getSystemUserId());
+        synchronized (pk) {
+            try {
+                lock = manager.find(Lock.class, pk);
+                if (lock == null) {
+                    lock = new Lock();
+                    lock.setReferenceTableId(referenceTableId);
+                    lock.setReferenceId(referenceId);
+                    lock.setSystemUserId(userId);
+                    lock.setExpires(lockTimeMillis + timeMillis);
+                    lock.setSessionId(sessionId);
+                    manager.persist(lock);
+                } else if (lock.getExpires() < timeMillis) {
+                    //
+                    // if the lock has expired, then we can take it over
+                    //
+                    lock.setSystemUserId(userId);
+                    lock.setExpires(lockTimeMillis + timeMillis);
+                    lock.setSessionId(sessionId);
+                } else {
+                    user = userCache.getSystemUser(lock.getSystemUserId());
+                    throw new EntityLockedException("entityLockException",
+                                                    user.getLoginName(),
+                                                    new Date(lock.getExpires()).toString());
+                }
+            } catch (ConstraintViolationException e) {
                 throw new EntityLockedException("entityLockException",
-                                                user.getLoginName(),
-                                                new Date(lock.getExpires()).toString());
+                                                "unknown",
+                                                new Date(lockTimeMillis + timeMillis).toString());
+            } catch (Exception e) {
+                throw e;
             }
-        } catch (Exception e) {
-            throw e;
         }
     }
 
