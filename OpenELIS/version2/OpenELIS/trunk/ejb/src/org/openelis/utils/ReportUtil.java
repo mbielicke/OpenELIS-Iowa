@@ -437,7 +437,7 @@ public class ReportUtil {
         msg = new MimeMessage(session);
         msg.setContent(body, "text/html; charset=ISO-8859-1");
         msg.setFrom(new InternetAddress(from));
-        msg.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
         msg.setSubject(subject);
         msg.saveChanges();
 

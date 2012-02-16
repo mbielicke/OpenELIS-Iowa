@@ -231,7 +231,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             }
             
             lastRun.setValue(currDateTime.toString());
-            sysVarBean.update(lastRun);
+            sysVarBean.updateAsSystem(lastRun);
         } catch (Exception e) {
             if (lastRun != null)
                 sysVarBean.abortUpdate(lastRun.getId());
