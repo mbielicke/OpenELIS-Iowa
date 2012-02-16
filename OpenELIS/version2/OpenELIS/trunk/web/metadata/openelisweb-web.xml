@@ -26,24 +26,61 @@ UIRF Software License are applicable instead of those above.
 -->
 
 <web-app>
- <display-name>OpenELIS Web Portal V2</display-name>
- <description>OpenELIS Web Application Portal for External Organizations</description>
-  
-   <filter>
-        <filter-name>Login Filter</filter-name>
-        <filter-class>org.openelis.web.server.StaticFilter</filter-class>
-        <init-param>
-            <param-name>AppRoot</param-name>
-            <param-value>${catalina.home}/apps/openelisweb/</param-value>
-        </init-param>
-    </filter>
+  <display-name>OpenELIS Web Portal V2</display-name>
+  <description>OpenELIS Web Application Portal for External Organizations</description>
+ 
+  <filter>
+	<filter-name>Login Filter</filter-name>
+    <filter-class>org.openelis.server.StaticFilter</filter-class>
+    <init-param>
+    	<!-- Full path to the XSL stylesheet for login screen -->
+        <param-name>LoginXSL</param-name>
+        <param-value>${catalina.home}/apps/openelisweb/login.xsl</param-value>
+    </init-param>
+    <init-param>
+     	<!-- Wrapper HTML for application -->
+        <param-name>LoginHTML</param-name>
+        <param-value>OpenELIS.html</param-value>
+    </init-param>
+    <init-param>
+     	<!-- Lock timeout in milli seconds (1sec = 1000) that we are going to
+     	     ignore requests once we exceed user or ip counts retries.  -->
+        <param-name>LoginLockoutTime</param-name>
+        <param-value>600000</param-value>
+    </init-param>
+    <init-param>
+     	<!-- # of retries before we ignore any login request from that IP address -->
+        <param-name>LoginIPRetryCount</param-name>
+        <param-value>7</param-value>
+    </init-param>
+    <init-param>
+     	<!-- # of retries before we ignore any login request for that user -->
+        <param-name>LoginNameRetryCount</param-name>
+        <param-value>4</param-value>
+    </init-param>
+    <init-param>
+     	<!-- Fully qualified class name for the constants -->
+     	<param-name>ConstantsPath</param-name>
+        <param-value>org.openelis.constants.OpenELISConstants</param-value>
+    </init-param>
+    <init-param>
+     	<!-- Constant key for authentication message failure in constants file -->
+        <param-name>ConstantsAuthFailure</param-name>
+        <param-value>authFailure</param-value>
+    </init-param>
+    <init-param>
+     	<!-- Java JNDI variable that specified the path to the "jndi.properties" file -->
+        <param-name>ServerJNDIProperties</param-name>
+        <param-value>java:comp/env/openelisJNDI</param-value>
+    </init-param>
+  </filter>
  
   <filter-mapping>
     <filter-name>Login Filter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-  <!-- OpenELISServlets Servlets -->
+  <!-- Servlets -->
 
   <servlet>
     <servlet-name>OpenELISServlet</servlet-name>
@@ -56,11 +93,6 @@ UIRF Software License are applicable instead of those above.
     <servlet-class>org.openelis.gwt.server.ReportServlet</servlet-class>
     <load-on-startup>4</load-on-startup>
   </servlet>
-  
-  <servlet-mapping>
-    <servlet-name>OpenELISServlet</servlet-name>
-    <url-pattern>/OpenELISServlet</url-pattern>
-  </servlet-mapping>
   
   <servlet-mapping>
     <servlet-name>OpenELISServlet</servlet-name>
