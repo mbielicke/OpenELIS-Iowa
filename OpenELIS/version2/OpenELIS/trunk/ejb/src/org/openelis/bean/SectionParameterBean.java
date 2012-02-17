@@ -66,6 +66,21 @@ public class SectionParameterBean implements SectionParameterLocal {
         return DataBaseUtil.toArrayList(list);
     }
     
+    public ArrayList<SectionParameterDO> fetchBySectionIdAndTypeId(Integer id, Integer typeId) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("SectionParameter.FetchBySectionIdAndTypId");
+        query.setParameter("id", id);
+        query.setParameter("typeId", typeId);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
+    }
+    
     public SectionParameterDO add(SectionParameterDO data) throws Exception {
         SectionParameter entity;
         
