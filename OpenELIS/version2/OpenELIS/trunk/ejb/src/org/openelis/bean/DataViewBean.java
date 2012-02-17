@@ -1792,7 +1792,7 @@ public class DataViewBean implements DataViewRemote {
             headers.add(resource.getString("phone"));
         if ("Y".equals(data.getSampleEnvironmentalLocationHeader()))
             headers.add(resource.getString("location"));        
-        if ("Y".equals(data.getSampleEnvironmentalLocationAddressCity()))
+        if ("Y".equals(data.getSampleEnvironmentalLocationAddressCityHeader()))
             headers.add(resource.getString("locationCity"));
         if ("Y".equals(data.getSampleEnvironmentalDescription()))
             headers.add(resource.getString("description"));
@@ -2206,7 +2206,7 @@ public class DataViewBean implements DataViewRemote {
             if (env != null)
                 cell.setCellValue(env.getLocation());
         }
-        if ("Y".equals(data.getSampleEnvironmentalLocationAddressCity())) {
+        if ("Y".equals(data.getSampleEnvironmentalLocationAddressCityHeader())) {
             cell = row.createCell(startCol++ );
             if (env != null)
                 cell.setCellValue(env.getLocationAddress().getCity());
