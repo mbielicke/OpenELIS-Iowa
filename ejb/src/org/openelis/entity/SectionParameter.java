@@ -49,7 +49,10 @@ import org.openelis.utils.AuditUtil;
 @NamedQueries({
     @NamedQuery( name = "SectionParameter.FetchBySectionId",
                 query = "select new org.openelis.domain.SectionParameterDO(p.id,p.sectionId, p.typeId, p.value)"
-                      + " from SectionParameter p where p.sectionId = :id")})
+                      + " from SectionParameter p where p.sectionId = :id"),
+    @NamedQuery( name = "SectionParameter.FetchBySectionIdAndTypeId",
+                query = "select new org.openelis.domain.SectionParameterDO(p.id,p.sectionId, p.typeId, p.value)"
+                      + " from SectionParameter p where p.sectionId = :id and p.typeId = :typeId")})
                       
 @Entity
 @Table(name = "section_parameter")

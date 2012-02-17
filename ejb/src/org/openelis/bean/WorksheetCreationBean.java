@@ -38,6 +38,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFName;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.AreaReference;
@@ -46,8 +47,6 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.OrganizationViewDO;
-import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.domain.WorksheetCreationVO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -64,7 +63,6 @@ import org.openelis.manager.SampleQaEventManager;
 import org.openelis.meta.WorksheetCreationMeta;
 import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -83,6 +81,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
+    private static final Logger                log  = Logger.getLogger(WorksheetCreationBean.class);
     private static final WorksheetCreationMeta meta = new WorksheetCreationMeta();
     
     public WorksheetCreationBean() {
@@ -93,7 +92,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                                                 int first, int max) throws Exception {
         int                      i;
         List                     list = null;
-        String                   location, reportToName;
+        String                   description, reportToName;
         Query                    query;
         QueryBuilderV2           builder;
         AnalysisQaEventManager   analysisQaManager;
@@ -144,37 +143,59 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                 //
                 // Set domain specific description
                 //
-                location = "";
+                description = "";
                 reportToName = "";
                 if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(vo.getDomain())) {
-                    location = vo.getEnvLocation();
-                    if (location == null)
-                        location = "";
+                    if (vo.getEnvLocation() != null && vo.getEnvLocation().length() > 0)
+                        description = "[loc]"+vo.getEnvLocation();
                     try {
                         reportToName = sampleOrganization.fetchReportToBySampleId(vo.getSampleId()).getOrganizationName();
-                    } catch (NotFoundException nfE) {}
-                    vo.setDescription("loc: "+location+" rep: "+reportToName);
+                        if (reportToName != null && reportToName.length() > 0) {
+                            if (description.length() > 0)
+                                description += " ";
+                            description += "[rpt]"+reportToName;
+                        }
+                    } catch (NotFoundException nfE) {
+                        log.debug("Sample Environmental Report To not found: "+nfE.getMessage());
+                    } catch (Exception anyE) {
+                        log.error("Error looking up Sample Environmental Report To: "+anyE.getMessage());
+                    }
                 } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(vo.getDomain())) {
-                    location = vo.getSDWISLocation();
-                    if (location == null)
-                        location = "";
+                    if (vo.getSDWISLocation() != null && vo.getSDWISLocation().length() > 0)
+                        description = "[loc]"+vo.getSDWISLocation();
                     try {
                         reportToName = sampleOrganization.fetchReportToBySampleId(vo.getSampleId()).getOrganizationName();
-                    } catch (NotFoundException nfE) {}
-                    vo.setDescription("loc: "+location+" rep: "+reportToName);
+                        if (reportToName != null && reportToName.length() > 0) {
+                            if (description.length() > 0)
+                                description += " ";
+                            description += "[rpt]"+reportToName;
+                        }
+                    } catch (NotFoundException nfE) {
+                        log.debug("Sample SDWIS Report To not found: "+nfE.getMessage());
+                    } catch (Exception anyE) {
+                        log.error("Error looking up Sample SDWIS Report To: "+anyE.getMessage());
+                    }
                 } else if (SampleManager.WELL_DOMAIN_FLAG.equals(vo.getDomain())) {
-                    location = vo.getPrivateWellLocation();
-                    if (location == null)
-                        location = "";
+                    if (vo.getPrivateWellLocation() != null && vo.getPrivateWellLocation().length() > 0)
+                        description = "[loc]"+vo.getPrivateWellLocation();
                     if (vo.getPrivateWellOrgId() != null) {
                         try {
                             reportToName = organization.fetchById(vo.getPrivateWellOrgId()).getName();
-                        } catch (NotFoundException nfE) {}
+                        } catch (NotFoundException nfE) {
+                            log.debug("Sample Private Well Report To not found: "+nfE.getMessage());
+                        } catch (Exception anyE) {
+                            log.error("Error looking up Sample Private Well Report To: "+anyE.getMessage());
+                        }
                     } else {
                         reportToName = vo.getPrivateWellReportToName();
                     }
-                    vo.setDescription("loc: "+location+" rep: "+reportToName);
+                    if (reportToName != null && reportToName.length() > 0) {
+                        if (description.length() > 0)
+                            description += " ";
+                        description += "[rpt]"+reportToName;
+                    }
                 }
+                vo.setDescription(description);
                 //
                 // Set QA Override Flag
                 //

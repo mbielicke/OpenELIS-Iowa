@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -62,7 +61,6 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.ss.util.CellReference;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
-import org.jfree.util.Log;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteParameterViewDO;
@@ -151,7 +149,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         boolean                  isEditable;
         int                      r, i, a, o;
         String                   statuses[], cellNameIndex, posNum, outFileName,
-                                 description, location, reportTo;
+                                 description, location;
         File                     outFile;
         FileInputStream          in;
         FileOutputStream         out;
@@ -267,59 +265,51 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     //
                     // get domain specific description
                     //
+                    description = "";
                     location = "";
-                    reportTo = "";
                     if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
                         location = ((SampleEnvironmentalManager)sDomain).getEnvironmental().getLocation();
-                        if (location == null)
-                            location = "";
+                        if (location != null && location.length() > 0)
+                            description = "[loc]"+location;
                         soVDO = sManager.getOrganizations().getReportTo();
-                        if (soVDO != null) {
-                            reportTo = soVDO.getOrganizationName();
-                            if (reportTo == null)
-                                reportTo = "";
-                        } else {
-                            reportTo = "";
+                        if (soVDO != null && soVDO.getOrganizationName() != null &&
+                            soVDO.getOrganizationName().length() > 0) {
+                            if (description.length() > 0)
+                                description += " ";
+                            description += "[rpt]"+soVDO.getOrganizationName();
                         }
-                        description = "loc: "+location+" rep: "+reportTo;
-                    } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
-                        spwVDO = ((SamplePrivateWellManager)sDomain).getPrivateWell();
-                        location = spwVDO.getLocation();
-                        if (location == null)
-                            location = "";
-                        if (spwVDO.getOrganizationId() != null) {
-                            reportTo = spwVDO.getOrganization().getName();
-                            if (reportTo == null)
-                                reportTo = "";
-                        } else {
-                            reportTo = spwVDO.getReportToName();
-                        }
-                        description = "loc: "+location+" rep: "+reportTo;
                     } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
                         location = ((SampleSDWISManager)sDomain).getSDWIS().getLocation();
-                        if (location == null)
-                            location = "";
+                        if (location != null && location.length() > 0)
+                            description = "[loc]"+location;
                         soVDO = sManager.getOrganizations().getReportTo();
-                        if (soVDO != null) {
-                            reportTo = soVDO.getOrganizationName();
-                            if (reportTo == null)
-                                reportTo = "";
-                        } else {
-                            reportTo = "";
+                        if (soVDO != null && soVDO.getOrganizationName() != null &&
+                            soVDO.getOrganizationName().length() > 0) {
+                            if (description.length() > 0)
+                                description += " ";
+                            description += "[rpt]"+soVDO.getOrganizationName();
                         }
-                        description = "loc: "+location+" rep: "+reportTo;
-                    } else {
-                        description = "";
+                    } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
+                        spwVDO = ((SamplePrivateWellManager)sDomain).getPrivateWell();
+                        if (spwVDO.getLocation() != null && spwVDO.getLocation().length() > 0)
+                            description = "[loc]"+spwVDO.getLocation();
+                        if (spwVDO.getOrganizationId() != null && spwVDO.getOrganization().getName() != null &&
+                            spwVDO.getOrganization().getName().length() > 0) {
+                            if (description.length() > 0)
+                                description += " ";
+                            description += "[rpt]"+spwVDO.getOrganization().getName();
+                        } else if (spwVDO.getReportToName() != null && spwVDO.getReportToName().length() > 0) {
+                            if (description.length() > 0)
+                                description += " ";
+                            description += "[rpt]"+spwVDO.getReportToName();
+                        }
                     }
                     
 
                     // description
                     cell = row.createCell(2);
                     cell.setCellStyle(styles.get("row_no_edit"));
-                    if (sDomain != null)
-                        cell.setCellValue(description);
-                    else
-                        cell.setCellValue("");
+                    cell.setCellValue(description);
     
                     // qc link
                     cell = row.createCell(3);
@@ -390,10 +380,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     // description (override)
                     cell = oRow.createCell(2);
                     cell.setCellStyle(styles.get("row_no_edit"));
-                    if (sDomain != null)
-                        cell.setCellValue(description);
-                    else
-                        cell.setCellValue("");
+                    cell.setCellValue(description);
     
                     // test name (overrride)
                     cell = oRow.createCell(3);

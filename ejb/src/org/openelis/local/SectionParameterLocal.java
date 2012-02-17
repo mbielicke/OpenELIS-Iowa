@@ -35,6 +35,8 @@ import org.openelis.domain.SectionParameterDO;
 public interface SectionParameterLocal {
     public ArrayList<SectionParameterDO> fetchBySectionId(Integer id) throws Exception;
     
+    public ArrayList<SectionParameterDO> fetchBySectionIdAndTypeId(Integer id, Integer typeId) throws Exception;
+    
     public SectionParameterDO add(SectionParameterDO data) throws Exception;
 
     public SectionParameterDO update(SectionParameterDO data) throws Exception;
