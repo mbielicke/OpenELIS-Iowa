@@ -84,10 +84,10 @@ public class DataViewEnvironmentalScreen extends Screen {
     private CheckBox            accessionNumber, collectorNameHeader, clientReferenceHeader,
                                 collectionSiteHeader, collectedDate, projectCodeHeader, description,
                                 receivedDate, releasedDate, statusId, envCollectorPhone, itemTypeofSampleId,
-                                itemSourceOfSampleId, sampleOrgOrganizationName, addressMultipleUnit,
+                                itemSourceOfSampleId, locationAddrCity, sampleOrgOrganizationName, addressMultipleUnit,
                                 addressStreetAddress, addressCity, addressState, addressZipCode,
                                 analysisTestNameHeader, analysisMethodNameHeader, analysisRevision, 
-                                analysisUnitOfMeasureId, analysisStartedDate, analysisCompletedDate, analysisReleasedDate;
+                                analysisUnitOfMeasureId, analysisStartedDate, analysisCompletedDate, analysisReleasedDate,analysisSubQaName;
     private Dropdown<Integer>   projectCode;
     private ReportScreenUtility util;
     private DeckPanel           deckpanel;
@@ -340,6 +340,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         });
 
         projectCode = (Dropdown)def.getWidget(SampleWebMeta.getProjectId());
+        projectCode.setMultiSelect(true);
         addScreenHandler(projectCode, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 projectCode.setSelection(data.getProjectId());
@@ -548,6 +549,21 @@ public class DataViewEnvironmentalScreen extends Screen {
                 itemSourceOfSampleId.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
+        
+        locationAddrCity = (CheckBox)def.getWidget(SampleWebMeta.getLocationAddrCityHeader());
+        addScreenHandler(locationAddrCity, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                locationAddrCity.setValue(data.getSampleEnvironmentalLocationAddressCityHeader());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSampleEnvironmentalLocationAddressCityHeader(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                locationAddrCity.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
 
         sampleOrgOrganizationName = (CheckBox)def.getWidget(SampleWebMeta.getSampleOrgOrganizationName());
         addScreenHandler(sampleOrgOrganizationName, new ScreenEventHandler<String>() {
@@ -745,6 +761,21 @@ public class DataViewEnvironmentalScreen extends Screen {
                 analysisReleasedDate.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
+        
+        analysisSubQaName = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisSubQaName());
+        addScreenHandler(analysisSubQaName, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                analysisSubQaName.setValue(data.getAnalysisQaName());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setAnalysisQaName(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysisSubQaName.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
 
         selectAllSampleFields = (AppButton)def.getWidget("selectAllSampleFields");
         addScreenHandler(selectAllSampleFields, new ScreenEventHandler<String>() {
@@ -766,6 +797,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 data.setSampleEnvironmentalCollectorPhone("Y");
                 data.setSampleItemTypeofSampleId("Y");
                 data.setSampleItemSourceOfSampleId("Y");
+                data.setSampleEnvironmentalLocationAddressCity("Y");
                 loadTable = false;
                 DataChangeEvent.fire(screen);
             }
@@ -811,6 +843,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 data.setAnalysisStartedDate("Y");
                 data.setAnalysisCompletedDate("Y");
                 data.setAnalysisReleasedDate("Y");
+                data.setAnalysisQaName("Y");
                 loadTable = false;
                 DataChangeEvent.fire(screen);
             }

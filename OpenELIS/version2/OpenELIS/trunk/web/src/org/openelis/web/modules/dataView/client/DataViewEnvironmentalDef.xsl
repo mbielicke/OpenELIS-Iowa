@@ -302,6 +302,10 @@ UIRF Software License are applicable instead of those above.
                       <widget>
                         <HorizontalPanel width="10" />
                       </widget>
+                      <check key="{meta:getLocationAddrCityHeader()}" />
+                  	  <text style="LeftAlignPrompt">
+                        <xsl:value-of select='resource:getString($constants,"locationCity")' />
+                      </text>
                     </row>
                   </TablePanel>
                 </HorizontalPanel>
@@ -444,6 +448,13 @@ UIRF Software License are applicable instead of those above.
                     <check key="{meta:getAnalysisReleasedDate()}" />
                     <text style="LeftAlignPrompt">
                       <xsl:value-of select="resource:getString($constants,'released')" />
+                    </text>
+                     <widget>
+                      <HorizontalPanel width="10" />
+                    </widget>
+                    <check key="{meta:getAnalysisSubQaName()}" />
+                    <text style="LeftAlignPrompt">
+                      <xsl:value-of select="resource:getString($constants,'QAEvent')" />
                     </text>
                   </row>
                 </TablePanel>
