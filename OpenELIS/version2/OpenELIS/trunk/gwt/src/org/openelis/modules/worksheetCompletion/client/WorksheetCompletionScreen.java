@@ -936,7 +936,7 @@ public class WorksheetCompletionScreen extends Screen {
         SampleManager            sManager;
         SampleOrganizationViewDO soVDO;
         SamplePrivateWellViewDO  spwVDO;
-        String                   headerLabels[], location, reportTo;
+        String                   headerLabels[], description, location;
         TableDataRow             row;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
@@ -990,50 +990,45 @@ public class WorksheetCompletionScreen extends Screen {
                         aVDO = aManager.getAnalysisAt(bundle.getAnalysisIndex());
                         arManager = aManager.getAnalysisResultAt(bundle.getAnalysisIndex());
 
-                        location = "";
-                        reportTo = "";
+                        description = "";
                         if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
                             location = ((SampleEnvironmentalManager)sDomain).getEnvironmental().getLocation();
-                            if (location == null)
-                                location = "";
+                            if (location != null && location.length() > 0)
+                                description = "[loc]"+location;
                             soVDO = sManager.getOrganizations().getReportTo();
-                            if (soVDO != null) {
-                                reportTo = soVDO.getOrganizationName();
-                                if (reportTo == null)
-                                    reportTo = "";
-                            } else {
-                                reportTo = "";
+                            if (soVDO != null && soVDO.getOrganizationName() != null &&
+                                soVDO.getOrganizationName().length() > 0) {
+                                if (description.length() > 0)
+                                    description += " ";
+                                description += "[rpt]"+soVDO.getOrganizationName();
                             }
-                            row.cells.get(2).value = "loc: "+location+" rep: "+reportTo;
-                        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
-                            spwVDO = ((SamplePrivateWellManager)sDomain).getPrivateWell();
-                            location = spwVDO.getLocation();
-                            if (location == null)
-                                location = "";
-                            if (spwVDO.getOrganizationId() != null) {
-                                reportTo = spwVDO.getOrganization().getName();
-                                if (reportTo == null)
-                                    reportTo = "";
-                            } else {
-                                reportTo = spwVDO.getReportToName();
-                            }
-                            row.cells.get(2).value = "loc: "+location+" rep: "+reportTo;
                         } else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
                             location = ((SampleSDWISManager)sDomain).getSDWIS().getLocation();
-                            if (location == null)
-                                location = "";
+                            if (location != null && location.length() > 0)
+                                description = "[loc]"+location;
                             soVDO = sManager.getOrganizations().getReportTo();
-                            if (soVDO != null) {
-                                reportTo = soVDO.getOrganizationName();
-                                if (reportTo == null)
-                                    reportTo = "";
-                            } else {
-                                reportTo = "";
+                            if (soVDO != null && soVDO.getOrganizationName() != null &&
+                                soVDO.getOrganizationName().length() > 0) {
+                                if (description.length() > 0)
+                                    description += " ";
+                                description += "[rpt]"+soVDO.getOrganizationName();
                             }
-                            row.cells.get(2).value = "loc: "+location+" rep: "+reportTo;
-                        } else {
-                            row.cells.get(2).value = "";
+                        } else if (SampleManager.WELL_DOMAIN_FLAG.equals(sManager.getSample().getDomain())) {
+                            spwVDO = ((SamplePrivateWellManager)sDomain).getPrivateWell();
+                            if (spwVDO.getLocation() != null && spwVDO.getLocation().length() > 0)
+                                description = "[loc]"+spwVDO.getLocation();
+                            if (spwVDO.getOrganizationId() != null && spwVDO.getOrganization().getName() != null &&
+                                spwVDO.getOrganization().getName().length() > 0) {
+                                if (description.length() > 0)
+                                    description += " ";
+                                description += "[rpt]"+spwVDO.getOrganization().getName();
+                            } else if (spwVDO.getReportToName() != null && spwVDO.getReportToName().length() > 0) {
+                                if (description.length() > 0)
+                                    description += " ";
+                                description += "[rpt]"+spwVDO.getReportToName();
+                            }
                         }
+                        row.cells.get(2).value = description;
                         
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();
                         row.cells.get(4).value = aVDO.getTestName();
