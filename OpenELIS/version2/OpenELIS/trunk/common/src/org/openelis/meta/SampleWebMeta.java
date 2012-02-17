@@ -106,6 +106,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     PWS_NAME = "_pws.name",
 
                     LOCATION_ADDR_CITY = "_locationAddress.city",
+                    LOCATION_ADDR_CITY_HEADER = "_locationAddress.cityHeader",
 
                     ITEM_ID = "_sampleItem.id", 
                     ITEM_SAMPLE_ID = "_sampleItem.sampleId",
@@ -409,6 +410,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getLocationAddrCity() {
         return LOCATION_ADDR_CITY;
+    }
+    
+    public static String getLocationAddrCityHeader() {
+        return LOCATION_ADDR_CITY_HEADER;
     }
 
     public static String getEnvId() {

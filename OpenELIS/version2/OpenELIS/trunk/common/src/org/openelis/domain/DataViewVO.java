@@ -63,7 +63,8 @@ public class DataViewVO implements RPC {
                                            analysisUnitOfMeasureId, sampleEnvironmentalIsHazardous,
                                            sampleEnvironmentalPriority, sampleEnvironmentalCollector,
                                            sampleEnvironmentalCollectorPhone, sampleEnvironmentalLocation,
-                                           sampleEnvironmentalLocationAddressCity,
+                                           sampleEnvironmentalLocationAddressCity, 
+                                           sampleEnvironmentalLocationAddressCityHeader,
                                            sampleEnvironmentalDescription, samplePrivateWellOwner, 
                                            samplePrivateWellCollector, samplePrivateWellWellNumber,
                                            samplePrivateWellReportToAddressWorkPhone,
@@ -477,6 +478,14 @@ public class DataViewVO implements RPC {
 
     public void setSampleEnvironmentalLocationAddressCity(String sampleEnvironmentalLocationAddressCity) {
         this.sampleEnvironmentalLocationAddressCity = DataBaseUtil.trim(sampleEnvironmentalLocationAddressCity);
+    }
+    
+    public String getSampleEnvironmentalLocationAddressCityHeader() {
+        return sampleEnvironmentalLocationAddressCityHeader;
+    }
+
+    public void setSampleEnvironmentalLocationAddressCityHeader(String sampleEnvironmentalLocationAddressCityHeader) {
+        this.sampleEnvironmentalLocationAddressCityHeader = DataBaseUtil.trim(sampleEnvironmentalLocationAddressCityHeader);
     }
 
     public String getSampleEnvironmentalDescription() {
