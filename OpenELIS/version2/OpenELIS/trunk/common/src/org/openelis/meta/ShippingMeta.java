@@ -41,6 +41,7 @@ public class ShippingMeta implements Meta, MetaMap {
                                 STATUS_ID = "_shipping.statusId",
                                 SHIPPED_FROM_ID = "_shipping.shippedFromId",
                                 SHIPPED_TO_ID = "_shipping.shippedToId",
+                                SHIPPED_TO_ATTENTION = "_shipping.shippedToAttention",
                                 PROCESSED_BY	= "_shipping.processedBy",
                                 PROCESSED_DATE = "_shipping.processedDate",
                                 SHIPPED_METHOD_ID = "_shipping.shippedMethodId",
@@ -77,9 +78,9 @@ public class ShippingMeta implements Meta, MetaMap {
     private static HashSet<String> names;
     
     static {
-        names = new HashSet<String>(Arrays.asList(ID, STATUS_ID, SHIPPED_FROM_ID, SHIPPED_TO_ID,
-                                                  PROCESSED_BY, PROCESSED_DATE, SHIPPED_METHOD_ID,
-                                                  SHIPPED_DATE, NUMBER_OF_PACKAGES,COST,
+        names = new HashSet<String>(Arrays.asList(ID, STATUS_ID, SHIPPED_FROM_ID, SHIPPED_TO_ID, 
+                                                  SHIPPED_TO_ATTENTION, PROCESSED_BY, PROCESSED_DATE,
+                                                  SHIPPED_METHOD_ID, SHIPPED_DATE, NUMBER_OF_PACKAGES, COST,
                                                   SHIPPED_TO_ADDRESS_ID, SHIPPED_TO_ADDRESS_MULTIPLE_UNIT,
                                                   SHIPPED_TO_ADDRESS_STREET_ADDRESS, SHIPPED_TO_ADDRESS_CITY,
                                                   SHIPPED_TO_ADDRESS_STATE, SHIPPED_TO_ADDRESS_ZIP_CODE,
@@ -106,6 +107,10 @@ public class ShippingMeta implements Meta, MetaMap {
     
     public static String getShippedToId(){
         return SHIPPED_TO_ID;
+    }
+    
+    public static String getShippedToAttention(){
+        return SHIPPED_TO_ATTENTION;
     }
 
     public static String getProcessedBy() {

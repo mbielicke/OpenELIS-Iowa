@@ -405,6 +405,7 @@ public class Order implements Auditable, Cloneable {
                  .setField("requested_by", requestedBy, original.requestedBy)
                  .setField("cost_center_id", costCenterId, original.costCenterId)
                  .setField("organization_id", organizationId, original.organizationId)
+                 .setField("organization_attention", organizationAttention, original.organizationAttention)
                  .setField("type", type, original.type)
                  .setField("external_order_number", externalOrderNumber, original.externalOrderNumber)
                  .setField("report_to_id", reportToId, original.reportToId)

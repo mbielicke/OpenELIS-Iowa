@@ -185,7 +185,8 @@ public class DataViewBean implements DataViewRemote {
     private static Integer                  organizationReportToId, sampleInErrorId, 
                                             resultDictId, auxFieldValueDictId, 
                                             completedActionId, releasedActionId, 
-                                            releasedStatusId, qaResultOverrideTypeId;   
+                                            releasedStatusId, qaResultOverrideTypeId,
+                                            qaInternalTypeId;   
 
     private static final SampleWebMeta      meta = new SampleWebMeta();
 
@@ -211,6 +212,7 @@ public class DataViewBean implements DataViewRemote {
                 releasedActionId = dictionary.fetchBySystemName("an_user_ac_released").getId();
                 organizationReportToId = dictionary.fetchBySystemName("org_report_to").getId();
                 qaResultOverrideTypeId = dictionary.fetchBySystemName("qaevent_override").getId();
+                qaInternalTypeId = dictionary.fetchBySystemName("qaevent_internal").getId();
                 
                 dictEntryMap = new HashMap<Integer, String>();
                 
@@ -318,12 +320,12 @@ public class DataViewBean implements DataViewRemote {
 
     private DataViewVO fetchAnalyteAndAuxField(DataViewVO data, String moduleName) throws Exception {
         int i;
-        String reportToName;
-        Integer samId, prevSamId, analysisId;
         boolean excludeOverride, excludeResults, excludeAuxData;
+        Integer samId, prevSamId, analysisId;
         QueryBuilderV2 builder;
-        List<Object[]> list, tmpList;
+        QueryData reportTo;
         ArrayList<QueryData> fields;
+        List<Object[]> list;
         ArrayList<Integer> analysisIds, sampleIds;
         ArrayList<ResultViewDO> resList;
         ArrayList<AuxDataViewDO> auxList;
@@ -344,22 +346,32 @@ public class DataViewBean implements DataViewRemote {
         if (moduleName != null) {
             builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);
             builder.addWhere("("+getClause(moduleName)+")");
-        }
+            builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "="+ "'Y'");
+        }        
         
-        reportToName = getReportToName(fields);        
-        builder.constructWhere(fields);
-        builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());   
+        reportTo = null;
+        for (QueryData f : fields) {
+            if ("reportToOrganizationName".equals(f.key)) {
+                reportTo = f;
+                break;
+            }
+        }
         list = new ArrayList<Object[]>();
-        if (reportToName != null) {            
-            tmpList = fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields,
-                                              "("+SampleWebMeta.getSampleOrgOrganizationName() +" like '" + reportToName + "'" +
-                                              " AND " + SampleWebMeta.getSampleOrgTypeId() +" = "+ organizationReportToId+")");
-            list.addAll(tmpList);            
-            tmpList = fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields,
-                                              SampleWebMeta.getWellOrganizationName() + " like '" + reportToName + "'");
-            list.addAll(tmpList);
+        
+        if (reportTo != null) { 
+            reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() +" = "+ organizationReportToId);
+            builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());            
+            list.addAll(fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields));   
+            
+            builder.clearWhereClause();
+            
+            reportTo.key = SampleWebMeta.getWellOrganizationName();
+            builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
+            list.addAll(fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields));
         } else {
-            list = fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields, null);
+            builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());   
+            list = fetchAnalyteAndAuxField(SampleWebMeta.getId(), builder, fields);
         }
                 
         if (list.isEmpty())
@@ -541,7 +553,7 @@ public class DataViewBean implements DataViewRemote {
     }
        
     private ReportStatus runReport(DataViewVO data, String moduleName, boolean showReportableColumnsOnly) throws Exception {
-        boolean excludeResults, excludeAuxData, addSampleCells,  addOrgCells,
+        boolean excludeResults, excludeAuxData, runForWeb, addSampleCells,  addOrgCells,
                 addItemCells, addAnalysisCells, addEnvCells, addWellCells, addSDWISCells;
         ArrayList<String> allCols, cols;
         FileOutputStream out;
@@ -552,11 +564,11 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<AuxFieldDataViewVO> auxList;
         ReportStatus status;
         QueryBuilderV2 builder;
+        QueryData reportTo;
         ArrayList<QueryData> fields;
         HashMap<String, String> resultMap, valueMap;
         HashMap<Integer, HashMap<String, String>> analyteResultMap, auxFieldValueMap;
         HSSFWorkbook wb;
-        String reportToName;
         DataViewComparator comparator;
         
         status = new ReportStatus();
@@ -571,13 +583,17 @@ public class DataViewBean implements DataViewRemote {
         builder = new QueryBuilderV2();
         builder.setMeta(meta);     
         
-        resultList = null;
+        resultList = noResAuxList = null;
         auxDataList = null;
-        noResAuxList = null;
-        analyteResultMap = null;
-        auxFieldValueMap = null;        
+        analyteResultMap = auxFieldValueMap = null;
+        reportTo = null;
         
-        reportToName = getReportToName(fields);
+        for (QueryData f : fields) {
+            if ("reportToOrganizationName".equals(f.key)) {
+                reportTo = f;
+                break;
+            }
+        }
         
         addSampleCells = addOrgCells = addItemCells = addAnalysisCells = addEnvCells = addWellCells = addSDWISCells = false;        
         allCols = new ArrayList<String>(); 
@@ -634,8 +650,8 @@ public class DataViewBean implements DataViewRemote {
         comparator = new DataViewComparator();
         
         if (excludeResults && excludeAuxData) {
-            noResAuxList = getResultsForReport(addEnvCells, addSDWISCells, addWellCells, excludeResults, moduleName, 
-                                              builder, analyteResultMap, comparator, fields, reportToName);           
+            noResAuxList = getResults(addEnvCells, addSDWISCells, addWellCells, moduleName, 
+                                      builder, reportTo, analyteResultMap, data, comparator);           
         } else {
             if ( !excludeResults) {
                 anaList = data.getTestAnalytes();
@@ -664,8 +680,8 @@ public class DataViewBean implements DataViewRemote {
                  * test analytes
                  */
                 if (analyteResultMap != null && analyteResultMap.size() > 0) {
-                    resultList = getResultsForReport(addEnvCells, addSDWISCells, addWellCells, excludeResults, moduleName, 
-                                                    builder, analyteResultMap, comparator, fields, reportToName);
+                    resultList = getResults(addEnvCells, addSDWISCells, addWellCells, moduleName, 
+                                            builder, reportTo, analyteResultMap, data, comparator);
                 }
             }
             
@@ -697,8 +713,8 @@ public class DataViewBean implements DataViewRemote {
                  */
                 builder.clearWhereClause();
                 if (auxFieldValueMap != null && auxFieldValueMap.size() > 0)
-                    auxDataList = getAuxDataForReport(addEnvCells, addSDWISCells, addWellCells, moduleName, builder,
-                                                      auxFieldValueMap, comparator, fields, reportToName) ;
+                    auxDataList = getAuxData(addEnvCells, addSDWISCells, addWellCells, moduleName, builder,
+                                             reportTo, auxFieldValueMap, data, comparator);
             }
         }
         
@@ -706,8 +722,9 @@ public class DataViewBean implements DataViewRemote {
                         (noResAuxList == null || noResAuxList.size() == 0)) 
             throw new NotFoundException();
         
+        runForWeb = (moduleName != null);
         wb = getWorkbook(resultList, auxDataList, noResAuxList, analyteResultMap,
-                         auxFieldValueMap, allCols, showReportableColumnsOnly, 
+                         auxFieldValueMap, allCols, runForWeb, showReportableColumnsOnly, 
                          addSampleCells,  addOrgCells,  addItemCells, addAnalysisCells,
                          addEnvCells, addWellCells, addSDWISCells, data);
         
@@ -743,67 +760,71 @@ public class DataViewBean implements DataViewRemote {
     }      
     
     private List<DataViewResultFetchVO> fetchResults(String moduleName, QueryBuilderV2 builder,
-                                             ArrayList<QueryData> fields, String reportToName,
-                                             HashMap<Integer, HashMap<String, String>> analyteResultMap,
-                                             boolean excludeResults, boolean runForPrivateWell) throws Exception {
-               Query query;
-                       
-               if (excludeResults) {
-                   builder.setSelect("distinct new org.openelis.domain.DataViewResultFetchVO(" + 
-                                     SampleWebMeta.getAccessionNumber() + ", " +
-                                     SampleWebMeta.getId() + ", " + SampleWebMeta.getDomain() + ", "+
-                                     SampleWebMeta.getItemId() + ", " + SampleWebMeta.getAnalysisId() + ")");
-               } else {
-                   builder.setSelect("distinct new org.openelis.domain.DataViewResultFetchVO(" + 
-                                     SampleWebMeta.getAccessionNumber() + ", "+ SampleWebMeta.getResultAnalyteName() + ", " +
-                                     SampleWebMeta.getId() + ", " + SampleWebMeta.getDomain() + ", "+
-                                     SampleWebMeta.getItemId() + ", "+ SampleWebMeta.getResultAnalysisid() + ", " +
-                                     SampleWebMeta.getResultIsColumn() + ", "+ SampleWebMeta.getResultAnalyteId() + ", "+
-                                     SampleWebMeta.getResultTypeId() + ", "+ SampleWebMeta.getResultValue() + ", "+
-                                     SampleWebMeta.getResultSortOrder() + ", "+ SampleWebMeta.getResultTestAnalyteRowGroup() + ")");
-               }        
-                
-               builder.constructWhere(fields);
-               /*
-                * If moduleName is present, then it means that this report is being
-                * run for the samples belonging to the list of organizations specified
-                * in this user's system_user_module for a specific domain.
-                */
-               if (moduleName != null) {
-                   builder.addWhere("("+getClause(moduleName)+")");
-                   builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);
-                   builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);
-               }   
-               
-               if (reportToName != null) {
-                   if (runForPrivateWell)
-                       builder.addWhere(SampleWebMeta.getWellOrganizationName() + " like '" + reportToName + "'" );
-                   else
-                       builder.addWhere("("+SampleWebMeta.getSampleOrgOrganizationName() +" like '" + reportToName + "'" +
-                                        " AND " + SampleWebMeta.getSampleOrgTypeId() +" = "+ organizationReportToId+")");
-                                        
-               }
-               
-               builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId()); 
-               if (!excludeResults) {
-                   builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
-                   builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
-                   builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
-                   builder.addWhere(SampleWebMeta.getResultAnalyteId() +
-                                getListParam(analyteResultMap.keySet()) + ")");
-               }
-               
-               builder.setOrderBy(SampleWebMeta.getAccessionNumber() + (excludeResults ? "" : ", "+SampleWebMeta.getResultAnalyteName()));
-               query = manager.createQuery(builder.getEJBQL());
-               builder.setQueryParams(query, fields);
-               return query.getResultList();
-           }
+                                                     HashMap<Integer, HashMap<String, String>> analyteResultMap,
+                                                     DataViewVO data) throws Exception {
+        boolean excludeResults;
+        Query query;
+        ArrayList<QueryData> fields;
+
+        excludeResults = "Y".equals(data.getExcludeResults());
+        fields = data.getQueryFields();
+
+        if (excludeResults) {
+            builder.setSelect("distinct new org.openelis.domain.DataViewResultFetchVO(" +
+                              SampleWebMeta.getAccessionNumber() + ", " + SampleWebMeta.getId() +
+                              ", " + SampleWebMeta.getDomain() + ", " + SampleWebMeta.getItemId() +
+                              ", " + SampleWebMeta.getAnalysisId() + ")");
+        } else {
+            builder.setSelect("distinct new org.openelis.domain.DataViewResultFetchVO(" +
+                              SampleWebMeta.getAccessionNumber() + ", " +
+                              SampleWebMeta.getResultAnalyteName() + ", " + SampleWebMeta.getId() +
+                              ", " + SampleWebMeta.getDomain() + ", " + SampleWebMeta.getItemId() +
+                              ", " + SampleWebMeta.getResultAnalysisid() + ", " +
+                              SampleWebMeta.getResultIsColumn() + ", " +
+                              SampleWebMeta.getResultAnalyteId() + ", " +
+                              SampleWebMeta.getResultTypeId() + ", " +
+                              SampleWebMeta.getResultValue() + ", " +
+                              SampleWebMeta.getResultSortOrder() + ", " +
+                              SampleWebMeta.getResultTestAnalyteRowGroup() + ")");
+        }
+
+        builder.constructWhere(fields);
+        /*
+         * If moduleName is present, then it means that this report is being run
+         * for the samples belonging to the list of organizations specified in
+         * this user's system_user_module for a specific domain.
+         */
+        if (moduleName != null) {
+            builder.addWhere("(" + getClause(moduleName) + ")");
+            builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId);
+            builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);
+            builder.addWhere(SampleWebMeta.getAnalysisIsReportable() + "="+ "'Y'");
+        }
+
+        builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
+
+        if ( !excludeResults) {
+            builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
+            builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
+            builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
+            builder.addWhere(SampleWebMeta.getResultAnalyteId() +
+                             getListParam(analyteResultMap.keySet()) + ")");
+        }
+
+        builder.setOrderBy(SampleWebMeta.getAccessionNumber() +
+                           (excludeResults ? "" : ", " + SampleWebMeta.getResultAnalyteName()));
+        query = manager.createQuery(builder.getEJBQL());
+        builder.setQueryParams(query, fields);
+        return query.getResultList();
+    }
 
     private List<DataViewAuxDataFetchVO> fetchAuxData(String moduleName, QueryBuilderV2 builder,
-                                      ArrayList<QueryData> fields, String reportToName,
-                                      HashMap<Integer, HashMap<String, String>> auxFieldValueMap,
-                                      boolean runForPrivateWell) throws Exception {
+                                                      HashMap<Integer, HashMap<String, String>> auxFieldValueMap,
+                                                      DataViewVO data) throws Exception {
         Query query;
+        ArrayList<QueryData> fields;
+
+        fields = data.getQueryFields();
         
         builder.setSelect("distinct new org.openelis.domain.DataViewAuxDataFetchVO(" +
                           SampleWebMeta.getAccessionNumber() + ", " + 
@@ -821,16 +842,7 @@ public class DataViewBean implements DataViewRemote {
             builder.addWhere("("+getClause(moduleName)+")");
             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() + "=" + organizationReportToId);
             builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleInErrorId); 
-        }
-        
-        if (reportToName != null) {
-            if (runForPrivateWell)
-                builder.addWhere(SampleWebMeta.getWellOrganizationName() + " like '" + reportToName + "'" );
-            else
-                builder.addWhere("("+SampleWebMeta.getSampleOrgOrganizationName() +" like '" + reportToName + "'" +
-                                 " AND " + SampleWebMeta.getSampleOrgTypeId() +" = "+ organizationReportToId+")");
-                                 
-        }
+        }       
         
         builder.addWhere(SampleWebMeta.getAuxDataIsReportable() + "=" + "'Y'");
         builder.addWhere(SampleWebMeta.getAuxDataValue() + "!=" + "null");
@@ -843,11 +855,13 @@ public class DataViewBean implements DataViewRemote {
         return query.getResultList();
     }    
 
-    private HSSFWorkbook getWorkbook(List<DataViewResultFetchVO> resultList, List<DataViewAuxDataFetchVO> auxDataList,     
+    private HSSFWorkbook getWorkbook(List<DataViewResultFetchVO> resultList, 
+                                     List<DataViewAuxDataFetchVO> auxDataList,     
                                      List<DataViewResultFetchVO> noResAuxList,
                                      HashMap<Integer, HashMap<String, String>> analyteResultMap,
                                      HashMap<Integer, HashMap<String, String>> auxFieldValueMap,
-                                     ArrayList<String> allCols, boolean showReportableColumnsOnly,
+                                     ArrayList<String> allCols, boolean runForWeb,
+                                     boolean showReportableColumnsOnly,
                                      boolean addSampleCells, boolean addOrgCells,
                                      boolean addItemCells, boolean addAnalysisCells,
                                      boolean addEnvCells, boolean addWellCells,
@@ -1114,10 +1128,10 @@ public class DataViewBean implements DataViewRemote {
                                 if (qaResultOverrideTypeId.equals(aqe.getTypeId())) {
                                     anaOverriden = true;
                                     addResultRow = false;
+                                    prevAnalysisId = analysisId;
                                     break;
                                 }
                             }
-                            prevAnalysisId = analysisId;
                         } catch (NotFoundException e) {
                             anaOverriden = false;
                         }
@@ -1127,6 +1141,9 @@ public class DataViewBean implements DataViewRemote {
                     addResultRow = false;
                 }
             }
+            
+            if (addNoResAuxRow && !analysisId.equals(prevAnalysisId))
+                aqeList = null;
             
             if (!addResultRow && !addAuxDataRow && !addNoResAuxRow)
                 continue;
@@ -1189,8 +1206,7 @@ public class DataViewBean implements DataViewRemote {
                 if (addAuxDataRow)
                     addSampleCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, sam, collDateTime, proj);
                 if (addNoResAuxRow)
-                    addSampleCells(noResAuxRow, noResAuxRow.getPhysicalNumberOfCells(), data, sam, collDateTime, proj);
-                
+                    addSampleCells(noResAuxRow, noResAuxRow.getPhysicalNumberOfCells(), data, sam, collDateTime, proj);                
             }
                         
             if (addOrgCells) {
@@ -1266,19 +1282,36 @@ public class DataViewBean implements DataViewRemote {
                             if (aqeList == null) {
                                 try {
                                     aqeList = analysisQaEvent.fetchByAnalysisId(analysisId);
-                                    buf = new StringBuffer();
-                                    for (i = 0; i < aqeList.size(); i++ ) {
-                                        aqe = aqeList.get(i);
-                                        buf.append(aqe.getQaEventName());
-                                        if (i < aqeList.size() - 1)
-                                            buf.append(", ");
-
-                                    }
-                                    qaeNames = buf.toString();
                                 } catch (NotFoundException ignE) {
                                     qaeNames = null;
                                 }
-                            }
+                            } 
+                            
+                            if (aqeList != null) {
+                                buf = new StringBuffer();
+                                for (i = 0; i < aqeList.size(); i++ ) {
+                                    aqe = aqeList.get(i);
+                                    /*
+                                     * if the file is being generated for an
+                                     * external client then we show the
+                                     * reporting text and not name of the qa
+                                     * event and we show it only if the qa event
+                                     * is not internal
+                                     */
+                                    if (runForWeb) {
+                                        if ( !qaInternalTypeId.equals(aqe.getTypeId())) {
+                                            if (buf.length() > 0)
+                                                buf.append(" ");
+                                            buf.append(aqe.getQaEventReportingText());   
+                                        }
+                                    } else {
+                                        if (buf.length() > 0)
+                                            buf.append(", ");
+                                        buf.append(aqe.getQaEventName());
+                                    }                                    
+                                }
+                                qaeNames = buf.toString();
+                            }                                                          
                         }                    
                         if ("Y".equals(data.getAnalysisCompletedBy()) && anaUserList == null) {
                             try {
@@ -1325,12 +1358,12 @@ public class DataViewBean implements DataViewRemote {
                         
                     }
                     if (addResultRow)
-                        addAnalysisCells(resRow, resRow.getPhysicalNumberOfCells(), data, ana, qaeNames, compByNames, relByNames);
+                        addAnalysisCells(resRow, resRow.getPhysicalNumberOfCells(), data, runForWeb, ana, qaeNames, compByNames, relByNames);
                     if (addNoResAuxRow)
-                        addAnalysisCells(noResAuxRow, noResAuxRow.getPhysicalNumberOfCells(), data, ana, qaeNames, compByNames, relByNames);
+                        addAnalysisCells(noResAuxRow, noResAuxRow.getPhysicalNumberOfCells(), data, runForWeb, ana, qaeNames, compByNames, relByNames);
                 } 
                 if (addAuxDataRow) 
-                    addAnalysisCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, null, null, null, null);                
+                    addAnalysisCells(auxRow, auxRow.getPhysicalNumberOfCells(), data, runForWeb, null, null, null, null);                
             }
             
             /*
@@ -1756,7 +1789,7 @@ public class DataViewBean implements DataViewRemote {
             headers.add(resource.getString("analysisStatus"));
         if ("Y".equals(data.getAnalysisRevision()))
             headers.add(resource.getString("analysisRevision"));
-        if ("Y".equals(data.getAnalysisIsReportable()))
+        if ("Y".equals(data.getAnalysisIsReportableHeader()))
             headers.add(resource.getString("reportable"));
         if ("Y".equals(data.getAnalysisUnitOfMeasureId()))
             headers.add(resource.getString("unit"));
@@ -2066,8 +2099,8 @@ public class DataViewBean implements DataViewRemote {
     }
     
     private void addAnalysisCells(Row row, int startCol, DataViewVO data,
-                                  AnalysisViewDO analysis, String qaeNames,
-                                  String compByNames, String relByNames) {
+                                  boolean runForWeb, AnalysisViewDO analysis,
+                                  String qaeNames, String compByNames, String relByNames) {
         boolean isRep;
         Integer id;
         Cell cell;
@@ -2076,13 +2109,13 @@ public class DataViewBean implements DataViewRemote {
         
         if ("Y".equals(data.getAnalysisTestNameHeader())) {
             cell = row.createCell(startCol++ );
-            if (analysis != null)
-                cell.setCellValue(analysis.getTestName());
+            if (analysis != null) 
+                cell.setCellValue(runForWeb ? analysis.getTestReportingDescription() : analysis.getTestName());            
         }
         if ("Y".equals(data.getAnalysisTestMethodNameHeader())) {
             cell = row.createCell(startCol++ );
             if (analysis != null)
-                cell.setCellValue(analysis.getMethodName());
+                cell.setCellValue(runForWeb ? analysis.getMethodReportingDescription() : analysis.getMethodName()); 
         }
         if ("Y".equals(data.getAnalysisStatusIdHeader())) {
             cell = row.createCell(startCol++);
@@ -2108,7 +2141,7 @@ public class DataViewBean implements DataViewRemote {
                 }
             }
         }
-        if ("Y".equals(data.getAnalysisIsReportable())) {
+        if ("Y".equals(data.getAnalysisIsReportableHeader())) {
             cell = row.createCell(startCol++);
             if (analysis != null) {
                 isRep = "Y".equals(analysis.getIsReportable());
@@ -2408,21 +2441,7 @@ public class DataViewBean implements DataViewRemote {
         headerStyle.setFont(font);
         
         return headerStyle;
-    }
-    
-    private String getReportToName (ArrayList<QueryData> fields) {
-        QueryFieldUtil u;        
-        
-        u = new QueryFieldUtil();
-        for (QueryData f : fields) {
-            if ("reportToOrganizationName".equals(f.key)) {
-                fields.remove(f);       
-                u.parse(f.query);
-                return u.getParameter().get(0);
-            }
-        }
-        return null;
-    }  
+    }     
     
     private boolean isSameDataInRows(Row currRow, Row prevRow) {
         int type;
@@ -2462,59 +2481,114 @@ public class DataViewBean implements DataViewRemote {
     }    
     
     private List<Object[]> fetchAnalyteAndAuxField(String key, QueryBuilderV2 builder,
-                                                   ArrayList<QueryData> fields,
-                                                   String where) {
+                                                   ArrayList<QueryData> fields) throws Exception {
         Query query;
-        
-        if (where != null)
-            builder.addWhere(where);
+                
+        builder.constructWhere(fields);
         builder.setOrderBy(key);
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
         return ((List<Object[]>)query.getResultList());
     }
     
-    private ArrayList<DataViewResultFetchVO> getResultsForReport(boolean addEnvCells, boolean addSDWISCells, boolean addWellCells,
-                                                          boolean excludeResults, String moduleName, QueryBuilderV2 builder,
+    private ArrayList<DataViewResultFetchVO> getResults(boolean addEnvCells, boolean addSDWISCells, boolean addWellCells,                                                                 
+                                                          String moduleName, QueryBuilderV2 builder, QueryData reportTo,
                                                           HashMap<Integer, HashMap<String, String>> analyteResultMap, 
-                                                          Comparator<Object> comparator, ArrayList<QueryData> fields, 
-                                                          String reportToName) throws Exception {
+                                                          DataViewVO data, Comparator<Object> comparator) throws Exception {
         List<DataViewResultFetchVO> list;
-        
-        if (addEnvCells || addSDWISCells) {
-            list = fetchResults(moduleName, builder, fields, reportToName, analyteResultMap, excludeResults, false);
+
+
+        if (reportTo == null) {    
+            /*
+             * if the user didn't choose to specify the "report to" organization's
+             * name then the doesn't query include it
+             */
+            list = fetchResults(moduleName, builder, analyteResultMap, data);            
+        } else if (addEnvCells || addSDWISCells) {
+            /*
+             * if the user chose to see data belonging to a domain other than private
+             * well then we only run the query to look for samples having a sample
+             * organization of type report to with a name matching the query
+             */
+            reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() +" = "+ organizationReportToId);
+            list = fetchResults(moduleName, builder, analyteResultMap, data);
         } else if (addWellCells) {
-            list = fetchResults(moduleName, builder, fields, reportToName, analyteResultMap, excludeResults, true);
-        } else if (reportToName == null) {                        
-            list = fetchResults(moduleName, builder, fields, reportToName, analyteResultMap, excludeResults, false);
+            /*
+             * if the user chose to see data belonging to the domain private well
+             * then we only run the query to look for private well samples having
+             * their report to as an organization with a name matching the query
+             */
+            reportTo.key = SampleWebMeta.getWellOrganizationName();
+            list = fetchResults(moduleName, builder, analyteResultMap, data);
         } else {
+            /*
+             * if the user did not choose a domain then we run a query for each
+             * of the above two cases
+             */
             list = new ArrayList<DataViewResultFetchVO>();
-            list.addAll(fetchResults(moduleName, builder, fields, reportToName, analyteResultMap, excludeResults, false));           
-            list.addAll(fetchResults(moduleName, builder, fields, reportToName, analyteResultMap, excludeResults, true));
+            
+            reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+            builder.addWhere(SampleWebMeta.getSampleOrgTypeId() +" = "+ organizationReportToId);
+            list.addAll(fetchResults(moduleName, builder, analyteResultMap, data));     
+                        
+            builder.clearWhereClause();
+            
+            reportTo.key = SampleWebMeta.getWellOrganizationName();
+            list.addAll(fetchResults(moduleName, builder, analyteResultMap, data));
+            
             Collections.sort(list, comparator);
         }
         
         return DataBaseUtil.toArrayList(list);
     }
     
-    private ArrayList<DataViewAuxDataFetchVO> getAuxDataForReport(boolean addEnvCells, boolean addSDWISCells, boolean addWellCells,
-                                                           String moduleName, QueryBuilderV2 builder,
-                                                           HashMap<Integer, HashMap<String, String>> auxFieldValueMap, 
-                                                           Comparator<Object> comparator, ArrayList<QueryData> fields, 
-                                                           String reportToName) throws Exception {
-         List<DataViewAuxDataFetchVO> list;
+    private ArrayList<DataViewAuxDataFetchVO> getAuxData(boolean addEnvCells, boolean addSDWISCells,
+                                                         boolean addWellCells, String moduleName,
+                                                         QueryBuilderV2 builder, QueryData reportTo,
+                                                         HashMap<Integer, HashMap<String, String>> auxFieldValueMap, 
+                                                         DataViewVO data, Comparator<Object> comparator) throws Exception {
+         List<DataViewAuxDataFetchVO> list;        
          
-         if (addEnvCells || addSDWISCells) {
-             list = fetchAuxData(moduleName, builder, fields, reportToName, auxFieldValueMap, false);
-         } else if (addWellCells) {             
-             list = fetchAuxData(moduleName, builder, fields, reportToName, auxFieldValueMap, true);
-         }   else if (reportToName == null) {                        
-             list = fetchAuxData(moduleName, builder, fields, reportToName, auxFieldValueMap, false);
-         } else {                        
+         if (reportTo == null) {          
+             /*
+              * if the user didn't choose to specify the "report to" organization's
+              * name then the doesn't query include it
+              */
+             list = fetchAuxData(moduleName, builder, auxFieldValueMap, data);
+         } else if (addEnvCells || addSDWISCells) {
+             /*
+              * if the user chose to see data belonging to a domain other than private
+              * well then we only run the query to look for samples having a sample
+              * organization of type report to with a name matching the query
+              */
+             reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() +" = "+ organizationReportToId);             
+             list = fetchAuxData(moduleName, builder, auxFieldValueMap, data);
+         } else if (addWellCells) {       
+             /*
+              * if the user chose to see data belonging to the domain private well
+              * then we only run the query to look for private well samples having
+              * their report to as an organization with a name matching the query
+              */
+             reportTo.key = SampleWebMeta.getWellOrganizationName();
+             list = fetchAuxData(moduleName, builder, auxFieldValueMap, data);
+         } else {       
+             /*
+              * if the user did not choose a domain then we run a query for each
+              * of the above two cases
+              */
              list = new ArrayList<DataViewAuxDataFetchVO>();
              
-             list.addAll(fetchAuxData(moduleName, builder, fields, reportToName, auxFieldValueMap, false));           
-             list.addAll(fetchAuxData(moduleName, builder, fields, reportToName, auxFieldValueMap, true));
+             reportTo.key = SampleWebMeta.getSampleOrgOrganizationName();
+             builder.addWhere(SampleWebMeta.getSampleOrgTypeId() +" = "+ organizationReportToId);
+             list.addAll(fetchAuxData(moduleName, builder, auxFieldValueMap, data));  
+             
+             builder.clearWhereClause();
+             
+             reportTo.key = SampleWebMeta.getWellOrganizationName();
+             list.addAll(fetchAuxData(moduleName, builder, auxFieldValueMap, data));
+             
              Collections.sort(list, comparator);
          }
          
@@ -2567,5 +2641,6 @@ public class DataViewBean implements DataViewRemote {
                 return (anaName2 == null) ? -1 : anaName1.compareTo(anaName2);                
             }
         }
-    }                  
+    }     
+    
 }

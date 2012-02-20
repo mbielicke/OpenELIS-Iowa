@@ -58,13 +58,14 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Analysis.FetchById", 
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
                         "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name,pat.name, pam.name) "
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name)"
                       + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.id = :id"),
     @NamedQuery( name = "Analysis.FetchBySampleId",
-                query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
-                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, " + 
-                        "pam.name)"
+                query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
+                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat " + 
                         " LEFT JOIN pat.method pam LEFT JOIN a.test t where si.sampleId = :id order by  si.itemSequence, t.name, t.method.name "),
     @NamedQuery( name = "Analysis.FetchBySampleIdForSDWISUnload",
@@ -72,9 +73,10 @@ import org.openelis.utils.Auditable;
                        + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.section se LEFT JOIN a.test t"
                        + " where si.sampleId = :id order by se.organizationId, a.sectionId, si.itemSequence, t.name, t.method.name "),
     @NamedQuery( name = "Analysis.FetchBySampleItemId",
-                query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision, " + 
-                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId, " + 
-                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.method.id, t.method.name, pat.name, pam.name)"
+                query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
+                        "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
+                        "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.sampleItemId = :id order by t.name, t.method.name "),
     @NamedQuery( name = "Analysis.FetchForCachingByStatusId",
                 query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, a.releasedDate, s.id, s.domain, s.accessionNumber," +

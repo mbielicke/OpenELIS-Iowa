@@ -39,21 +39,22 @@ public class ShippingDO extends DataObject {
 
     protected Integer         id, statusId, shippedFromId, shippedToId,
                               shippedMethodId, numberOfPackages;
-    protected String          processedBy;
+    protected String          shippedToAttention, processedBy;
     protected Datetime        processedDate, shippedDate;
     protected Double          cost;
 
     public ShippingDO() {
     }
 
-    public ShippingDO(Integer id, Integer statusId, Integer shippedFromId,
-                      Integer shippedToId,  String processedBy,
+    public ShippingDO(Integer id, Integer statusId, Integer shippedFromId, 
+                      Integer shippedToId, String shippedToAttention, String processedBy,
                       Date processedDate, Integer shippedMethodId, Date shippedDate,
                       Integer numberOfPackages, Double cost) {
         setId(id);
         setStatusId(statusId);
         setShippedFromId(shippedFromId);
         setShippedToId(shippedToId);
+        setShippedToAttention(shippedToAttention);
         setProcessedBy(processedBy);
         setProcessedDate(DataBaseUtil.toYD(processedDate));
         setShippedMethodId(shippedMethodId);
@@ -99,6 +100,15 @@ public class ShippingDO extends DataObject {
         _changed = true;
     }  
     
+    public String getShippedToAttention() {
+        return shippedToAttention;
+    }
+
+    public void setShippedToAttention(String shippedToAttention) {
+        this.shippedToAttention = DataBaseUtil.trim(shippedToAttention);
+        _changed = true;
+    }
+
     public String getProcessedBy() {
         return processedBy;
     }
