@@ -102,7 +102,7 @@ public class ReportScreenUtility {
         needComma = false;
         for (TableDataRow row : sel) {
             if (needComma)
-                qd.query += ",";
+                qd.query += "|";
             if (row.key != null) {
                 qd.query += row.key.toString();
                 needComma = true;

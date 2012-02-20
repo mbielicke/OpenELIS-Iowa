@@ -76,7 +76,7 @@ UIRF Software License are applicable instead of those above.
           </AbsolutePanel>
         <VerticalPanel style="WhiteContentPanel">  
         <VerticalPanel height="5" />        
-        <TabPanel height="390" key="tabPanel" width="605">
+        <TabPanel height="410" key="tabPanel" width="605">
           <tab text="{resource:getString($constants,'query')}">
             <VerticalPanel>
               <TablePanel style="Form" width="400">
@@ -138,7 +138,16 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select='resource:getString($constants,"to")' />:
                   </text>
                   <calendar begin="0" end="4" key="{meta:getAnalysisReleasedDateTo()}" pattern="{resource:getString($constants,'dateTimePattern')}" width="125" tab = "{meta:getAccessionNumberFrom()},{meta:getAnalysisReleasedDateFrom()}"/>
-                </row>               
+                </row>         
+                <row>
+                  <widget>
+                    <HorizontalPanel width="20" />
+                  </widget>
+                  <text style="Prompt">
+                    <xsl:value-of select="resource:getString($constants,'reportable')" />:
+                  </text>
+                  <dropdown field="String" key="{meta:getAnalysisIsReportable()}" popWidth="auto" width="85" tab = "{meta:getAnalysisCompletedDateFrom()},excludeResultOverride"/>
+                </row>      
               </TablePanel>
               <TablePanel style="Form">
                 <row>
@@ -444,7 +453,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select="resource:getString($constants,'revision')" />
                   </text>
-                  <check key="{meta:getAnalysisIsReportable()}" />
+                  <check key="{meta:getAnalysisIsReportableHeader()}" />
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select="resource:getString($constants,'testReportable')" />
                   </text>

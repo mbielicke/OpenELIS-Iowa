@@ -163,11 +163,11 @@ UIRF Software License are applicable instead of those above.
               </text>
               <dropdown key="{meta:getShippedFromId()}" width="172" popWidth="auto" tab="{meta:getShippedToName()},{meta:getCost()}" field="Integer" required = "true"/>
               <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
-              </text>
+                  <xsl:value-of select='resource:getString($constants,"attention")' />:
+                </text>
               <widget colspan="5">
-                <textbox key="{meta:getShippedToAddressMultipleUnit()}" width="199" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
-              </widget>              
+                 <textbox case="UPPER" field="String" key="{meta:getShippedToAttention()}" max="30" width="188" />
+              </widget>                           
             </row>
             <row>
               <text style="Prompt">
@@ -175,11 +175,11 @@ UIRF Software License are applicable instead of those above.
               </text>
               <calendar key="{meta:getProcessedDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getProcessedBy()},{meta:getShippedToName()}" />
               <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"address")' />:
+                <xsl:value-of select='resource:getString($constants,"aptSuite")' />:
               </text>
               <widget colspan="5">
-                <textbox key="{meta:getShippedToAddressStreetAddress()}" width="199" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
-              </widget>              
+                <textbox key="{meta:getShippedToAddressMultipleUnit()}" width="199" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+              </widget>
             </row>
             <row>
               <text style="Prompt">
@@ -187,20 +187,28 @@ UIRF Software License are applicable instead of those above.
               </text>
               <textbox key="{meta:getProcessedBy()}" width="203" tab="{meta:getShippedMethodId()},{meta:getProcessedDate()}" field="String" />
               <text style="Prompt">
-                <xsl:value-of select='resource:getString($constants,"city")' />:
+                <xsl:value-of select='resource:getString($constants,"address")' />:
               </text>
               <widget colspan="5">
-                <textbox key="{meta:getShippedToAddressCity()}" width="199" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
-              </widget>              
+                <textbox key="{meta:getShippedToAddressStreetAddress()}" width="199" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+              </widget>
             </row>
             <row>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'shippedMethod')" />:
               </text>
               <dropdown key="{meta:getShippedMethodId()}" width="140" popWidth="auto" tab="{meta:getStatusId()},{meta:getProcessedBy()}" field="Integer" />
-              <!-- <widget colspan="2">
-                <HorizontalPanel />
-              </widget> -->
+              <text style="Prompt">
+                <xsl:value-of select='resource:getString($constants,"city")' />:
+              </text>
+              <widget colspan="5">
+                <textbox key="{meta:getShippedToAddressCity()}" width="199" case="UPPER" max="30" style="ScreenTextboxDisplayOnly" field="String" />
+              </widget> 
+            </row>
+            <row>  
+              <widget colspan = "2">
+                <HorizontalPanel/>
+              </widget>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"state")' />:
               </text>
