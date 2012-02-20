@@ -44,7 +44,8 @@ public class AnalysisViewDO extends AnalysisDO {
     // additional fields for read/display purposes
     //
     protected Integer         methodId;
-    protected String          testName, methodName, preAnalysisTest, preAnalysisMethod;
+    protected String          testName, testReportingDescription, methodName,
+                              methodReportingDescription, preAnalysisTest, preAnalysisMethod;
 
     public AnalysisViewDO() {
     }
@@ -55,16 +56,19 @@ public class AnalysisViewDO extends AnalysisDO {
                           Integer parentResultId, String isReportable, Integer unitOfMeasureId,
                           Integer statusId, Date availableDate, Date startedDate,
                           Date completedDate, Date releasedDate, Date printedDate,
-                          String testName, Integer methodId, String methodName, String preAnalysisTest,
-                          String preAnalysisMethod) {
+                          String testName, String testReportingDescription, Integer methodId,
+                          String methodName, String methodReportingDescription,
+                          String preAnalysisTest, String preAnalysisMethod) {
 
         super(id, sampleItemId, revision, testId, sectionId, preAnalysisId, parentAnalysisId,
               parentResultId, isReportable, unitOfMeasureId, statusId, availableDate, startedDate,
               completedDate, releasedDate, printedDate);
 
         setTestName(testName);
+        setTestReportingDescription(testReportingDescription);
         setMethodId(methodId);
         setMethodName(methodName);
+        setMethodReportingDescription(methodReportingDescription);
         setPreAnalysisTest(preAnalysisTest);
         setPreAnalysisMethod(preAnalysisMethod);
     }
@@ -75,6 +79,14 @@ public class AnalysisViewDO extends AnalysisDO {
 
     public void setTestName(String testName) {
         this.testName = DataBaseUtil.trim(testName);
+    }
+
+    public String getTestReportingDescription() {
+        return testReportingDescription;
+    }
+
+    public void setTestReportingDescription(String testReportingDescription) {
+        this.testReportingDescription = DataBaseUtil.trim(testReportingDescription);
     }
 
     public Integer getMethodId() {
@@ -91,6 +103,14 @@ public class AnalysisViewDO extends AnalysisDO {
 
     public void setMethodName(String methodName) {
         this.methodName = DataBaseUtil.trim(methodName);
+    }
+    
+    public String getMethodReportingDescription() {
+        return methodReportingDescription;
+    }
+
+    public void setMethodReportingDescription(String methodReportingDescription) {
+        this.methodReportingDescription = DataBaseUtil.trim(methodReportingDescription);
     }
 
     public String getPreAnalysisTest() {

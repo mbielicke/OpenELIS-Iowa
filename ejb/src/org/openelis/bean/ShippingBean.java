@@ -142,6 +142,7 @@ public class ShippingBean implements ShippingRemote, ShippingLocal{
         entity.setStatusId(data.getStatusId());
         entity.setShippedFromId(data.getShippedFromId());
         entity.setShippedToId(data.getShippedToId());
+        entity.setShippedToAttention(data.getShippedToAttention());
         entity.setProcessedBy(data.getProcessedBy());
         entity.setProcessedDate(data.getProcessedDate());
         entity.setShippedMethodId(data.getShippedMethodId());
@@ -166,6 +167,7 @@ public class ShippingBean implements ShippingRemote, ShippingLocal{
         entity.setStatusId(data.getStatusId());
         entity.setShippedFromId(data.getShippedFromId());
         entity.setShippedToId(data.getShippedToId());
+        entity.setShippedToAttention(data.getShippedToAttention());
         entity.setProcessedBy(data.getProcessedBy());
         entity.setProcessedDate(data.getProcessedDate());
         entity.setShippedMethodId(data.getShippedMethodId());

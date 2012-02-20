@@ -42,13 +42,14 @@ public class DataViewVO implements RPC {
     private static final long              serialVersionUID = 1L;
 
     protected String                       analysisTestName, analysisTestMethodName,
-                                           excludeResultOverride, clientReference,
-                                           accessionNumber, revision, collectionDate,
-                                           receivedDate,enteredDate, releasedDate,
-                                           statusId, clientReferenceHeader, projectName,
-                                           reportToOrganizationName, excludeResults,
-                                           excludeAuxData, organizationId, organizationName,
-                                           organizationAttention, organizationAddressMultipleUnit,
+                                           excludeResultOverride,
+                                           clientReference, accessionNumber, revision,
+                                           collectionDate, receivedDate, enteredDate,
+                                           releasedDate, statusId, clientReferenceHeader,
+                                           projectName, reportToOrganizationName,
+                                           excludeResults, excludeAuxData, organizationId,
+                                           organizationName, organizationAttention,
+                                           organizationAddressMultipleUnit,
                                            organizationAddressAddress, organizationAddressCity,
                                            organizationAddressState, organizationAddressZipCode,
                                            sampleItemTypeofSampleId, sampleItemSourceOfSampleId, 
@@ -56,11 +57,12 @@ public class DataViewVO implements RPC {
                                            sampleItemContainerReference, sampleItemItemSequence,
                                            analysisTestNameHeader, analysisTestMethodNameHeader,
                                            analysisStatusIdHeader, analysisRevision, 
-                                           analysisIsReportable, analysisQaName,
-                                           analysisCompletedDate, analysisCompletedBy, 
-                                           analysisReleasedDate, analysisReleasedBy, 
-                                           analysisStartedDate, analysisPrintedDate, 
-                                           analysisUnitOfMeasureId, sampleEnvironmentalIsHazardous,
+                                           analysisIsReportable, analysisIsReportableHeader,
+                                           analysisQaName, analysisCompletedDate,
+                                           analysisCompletedBy, analysisReleasedDate,
+                                           analysisReleasedBy, analysisStartedDate,
+                                           analysisPrintedDate, analysisUnitOfMeasureId,
+                                           sampleEnvironmentalIsHazardous,
                                            sampleEnvironmentalPriority, sampleEnvironmentalCollector,
                                            sampleEnvironmentalCollectorPhone, sampleEnvironmentalLocation,
                                            sampleEnvironmentalLocationAddressCity, 
@@ -359,13 +361,21 @@ public class DataViewVO implements RPC {
     public void setAnalysisRevision(String analysisRevision) {
         this.analysisRevision = DataBaseUtil.trim(analysisRevision);
     }
-
+    
     public String getAnalysisIsReportable() {
         return analysisIsReportable;
     }
 
     public void setAnalysisIsReportable(String analysisIsReportable) {
         this.analysisIsReportable = DataBaseUtil.trim(analysisIsReportable);
+    }
+    
+    public String getAnalysisIsReportableHeader() {
+        return analysisIsReportableHeader;
+    }
+
+    public void setAnalysisIsReportableHeader(String analysisIsReportableHeader) {
+        this.analysisIsReportableHeader = DataBaseUtil.trim(analysisIsReportableHeader);
     }
 
     public String getAnalysisQaName() {

@@ -222,9 +222,8 @@ public class BillingReportBean implements BillingReportLocal {
         String billedZero, clientCode;
         Object[] row;
         String domain, clientReference, billingType, lastName, projectName,
-               domainInfo, testName, methodName, section, labCode,
-               labDept, currentDateStr, po, procedure, anaReportable,
-               tokens[];
+               domainInfo, testName, methodName, section, labCode, currentDateStr,
+               po, procedure, anaReportable, tokens[];
         Datetime currDateTime;        
         Timestamp recieved, billed;
         SimpleDateFormat df;
@@ -380,9 +379,7 @@ public class BillingReportBean implements BillingReportLocal {
              * section's name is in the format "virology-ic" 
              */
             tokens = section.split("-");
-            labCode = labDept = "";
-            if (tokens.length >= 1) 
-                labDept = tokens[0];
+            labCode = "";
             if (tokens.length >= 2) 
                 labCode = tokens[1];            
             procedure = testName + " by " + methodName;
@@ -430,7 +427,7 @@ public class BillingReportBean implements BillingReportLocal {
                 .append(billedAnalytes).append("|")
                 .append("Y".equals(billedZero) ? "0": "").append("|")
                 .append(labCode.toUpperCase()).append("|")
-                .append(labDept).append("|");  
+                .append(section).append("|");  
             }
             
             if (needCharge) {            
@@ -443,7 +440,7 @@ public class BillingReportBean implements BillingReportLocal {
                      .append(billableAnalytes).append("|")
                      .append(anaZeroCharge ? "0": "").append("|")
                      .append(labCode.toUpperCase()).append("|")
-                     .append(labDept).append("|");
+                     .append(section).append("|");
             }
             
             if (dtrcr.length() == 0 && dtrch.length() == 0)               

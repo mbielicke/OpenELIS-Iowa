@@ -122,6 +122,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     ANALYSIS_SAMPLE_ITEM_ID = "_analysis.sampleItemId",
                     ANALYSIS_REVISION = "_analysis.revision",            
                     ANALYSIS_IS_REPORTABLE = "_analysis.isReportable",
+                    ANALYSIS_IS_REPORTABLE_HEADER = "_analysis.isReportableHeader",
                     ANALYSIS_UNIT_OF_MEASURE_ID = "_analysis.unitOfMeasureId",
                     ANALYSIS_STATUS_ID = "_analysis.statusId",
                     ANALYSIS_STATUS_ID_HEADER = "_analysis.statusIdHeader",
@@ -264,6 +265,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   ANALYSIS_SAMPLE_ITEM_ID,
                                                   ANALYSIS_REVISION,
                                                   ANALYSIS_IS_REPORTABLE,
+                                                  ANALYSIS_IS_REPORTABLE_HEADER,
                                                   ANALYSIS_UNIT_OF_MEASURE_ID,
                                                   ANALYSIS_STATUS_ID,
                                                   ANALYSIS_STATUS_ID_HEADER,
@@ -630,6 +632,10 @@ public class SampleWebMeta implements Meta, MetaMap {
 
     public static String getAnalysisIsReportable() {
         return ANALYSIS_IS_REPORTABLE;
+    }
+    
+    public static String getAnalysisIsReportableHeader() {
+        return ANALYSIS_IS_REPORTABLE_HEADER;
     }
     
     public static String getAnalysisUnitOfMeasureId() {

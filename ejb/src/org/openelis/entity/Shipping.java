@@ -57,18 +57,18 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "Shipping.FetchById",
                 query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
-                		"s.shippedFromId,s.shippedToId,s.processedBy,s.processedDate," +
+                		"s.shippedFromId,s.shippedToId,s.shippedToAttention,s.processedBy,s.processedDate," +
                 		"s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
                       + " from Shipping s where s.id = :id"),
     @NamedQuery( name = "Shipping.FetchByOrderId",
                query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
-                       "s.shippedFromId,s.shippedToId,s.processedBy,s.processedDate," +
+                       "s.shippedFromId,s.shippedToId,s.shippedToAttention,s.processedBy,s.processedDate," +
                        "s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
                      + " from Shipping s left join s.shippingItem i where i.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM "
                      + " and i.referenceId in (select id from OrderItem oi where oi.orderId = :orderId)"),
     @NamedQuery( name = "Shipping.FetchBySampleId",
                query = "select new org.openelis.domain.ShippingViewDO(s.id,s.statusId," +
-                       "s.shippedFromId,s.shippedToId,s.processedBy,s.processedDate," +
+                       "s.shippedFromId,s.shippedToId,s.shippedToAttention,s.processedBy,s.processedDate," +
                        "s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
                      + " from Shipping s left join s.shippingItem i where i.referenceTableId = org.openelis.domain.ReferenceTable.SAMPLE_ITEM "
                      + " and i.referenceId in (select id from SampleItem si where si.sampleId = :sampleId)")})                
@@ -90,6 +90,9 @@ public class Shipping implements Auditable, Cloneable {
 
     @Column(name = "shipped_to_id")
     private Integer                      shippedToId;
+    
+    @Column(name = "shipped_to_attention")
+    private String                      shippedToAttention;
 
     @Column(name = "processed_by")
     private String                       processedBy;
@@ -158,6 +161,15 @@ public class Shipping implements Auditable, Cloneable {
     public void setShippedToId(Integer shippedToId) {
         if (DataBaseUtil.isDifferent(shippedToId, this.shippedToId))
             this.shippedToId = shippedToId;
+    }
+    
+    public String getShippedToAttention() {
+        return shippedToAttention;
+    }
+
+    public void setShippedToAttention(String shippedToAttention) {
+        if (DataBaseUtil.isDifferent(shippedToAttention, this.shippedToAttention))
+            this.shippedToAttention = shippedToAttention;
     }
 
     public String getProcessedBy() {
@@ -257,6 +269,7 @@ public class Shipping implements Auditable, Cloneable {
                  .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
                  .setField("shipped_from_id", shippedFromId, original.shippedFromId, ReferenceTable.DICTIONARY)
                  .setField("shipped_to_id", shippedToId, original.shippedToId, ReferenceTable.ORGANIZATION)
+                 .setField("shipped_to_attention", shippedToAttention, original.shippedToAttention)
                  .setField("processed_by", processedBy, original.processedBy)
                  .setField("processed_date", processedDate, original.processedDate)
                  .setField("shipped_method_id", shippedMethodId, original.shippedMethodId, ReferenceTable.DICTIONARY)

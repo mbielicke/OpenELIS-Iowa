@@ -76,7 +76,8 @@ public class LabelReportBean implements LabelReportLocal {
         f.print("^FO600,105^AE^BY2^BCN,50,Y,N,N^FD"+shippingId+"^FS");             // barcoded/readable shipping id
         f.print("^FO15,115^A040,40^FD"+fromStreetAddress2+"^FS");                  // 2nd line of the lab's street address
         f.print("^FO15,165^A040,40^FD"+fromCity+", "+fromState+" "+fromZip+"^FS"); // the lab's city, state, zip code
-        f.print("^FO150,510^A048,42^FD"+attention+"^FS");                          // the attention line for the receiver
+        if (attention != null)
+            f.print("^FO150,510^A048,42^FD"+attention+"^FS");                      // the attention line for the receiver
         f.print("^FO150,550^A048,42^FD"+toStreetAddress1+"^FS");                   // the receiver's 1st line of street address 
         f.print("^FO150,590^A048,42^FD"+toStreetAddress2+"^FS");                   // the receiver's 2nd line of street address 
         f.print("^FO150,630^A048,42^FD"+toCity+", "+toState+" "+toZip+"^FS");      // the receiver's city, state, zip code

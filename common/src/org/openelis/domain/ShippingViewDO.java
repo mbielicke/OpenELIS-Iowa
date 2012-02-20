@@ -44,11 +44,11 @@ public class ShippingViewDO extends ShippingDO {
     }
     
     public ShippingViewDO(Integer id, Integer statusId, Integer shippedFromId,
-                          Integer shippedToId,  String processedById,
+                          Integer shippedToId, String shippedToAttention, String processedById,
                           Date processedDate, Integer shippedMethodId, Date shippedDate,
                           Integer numberOfPackages, Double cost) { 
-        super(id, statusId, shippedFromId,shippedToId, processedById, processedDate, 
-              shippedMethodId, shippedDate, numberOfPackages, cost);
+        super(id, statusId, shippedFromId, shippedToId, shippedToAttention, processedById,
+              processedDate, shippedMethodId, shippedDate, numberOfPackages, cost);
     }
     
     public OrganizationDO getShippedTo() {
@@ -58,5 +58,4 @@ public class ShippingViewDO extends ShippingDO {
     public void setShippedTo(OrganizationDO shippedTo) {
         this.shippedTo = shippedTo;
     }
-
 }

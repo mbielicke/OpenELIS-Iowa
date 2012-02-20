@@ -257,8 +257,7 @@ public class ShippingReportBean implements ShippingReportRemote {
             if (printLabel) {
                 numpkg = shipData.getNumberOfPackages();
                 //
-                // initialize all parts of the text to be printed on barcode
-                // labels
+                // initialize all parts of the text to be printed on barcode labels
                 //
                 name = "State Hygienic Laboratory";
                 method = "";
@@ -281,13 +280,14 @@ public class ShippingReportBean implements ShippingReportRemote {
                     fromCity = "Ankeny";
                     fromZip = "50023";
                 }
-
+                
                 fromState = "IA";
+                attention = shipData.getShippedToAttention();
                 shipTo = shipData.getShippedTo();
                 address = shipTo.getAddress();
-                attention = toStreetAddress1 = shipTo.getName();
+                toStreetAddress1 = shipTo.getName();
                 toAptSuite = address.getMultipleUnit();
-                toStreetAddress2 = address.getStreetAddress();
+                toStreetAddress2 = address.getStreetAddress();                
                 if (toAptSuite != null)
                     toStreetAddress2 = toAptSuite + " " + toStreetAddress2;
                 toCity = address.getCity();
