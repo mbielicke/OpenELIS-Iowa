@@ -725,7 +725,10 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                     rowData.put("ltIndicator", "");
                     rowData.put("concentration", rVDO.getValue());
                 }
-                rowData.put("concentrationUnit", unitDO.getEntry());
+                if (unitDO.getLocalAbbrev() != null && unitDO.getLocalAbbrev().length() > 0)
+                    rowData.put("concentrationUnit", unitDO.getLocalAbbrev());
+                else
+                    rowData.put("concentrationUnit", unitDO.getEntry());
                 
                 colIter = resultRow.iterator();
                 while (colIter.hasNext()) {
@@ -740,7 +743,10 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                     }
                     if ("quant_limit".equals(alVDO.getExternalId())) {
                         rowData.put("detection", crVDO.getValue());
-                        rowData.put("detectionUnit", unitDO.getEntry());
+                        if (unitDO.getLocalAbbrev() != null && unitDO.getLocalAbbrev().length() > 0)
+                            rowData.put("detectionUnit", unitDO.getLocalAbbrev());
+                        else
+                            rowData.put("detectionUnit", unitDO.getEntry());
                     } else if ("uncertainty".equals(alVDO.getExternalId())) {
                         rowData.put("radMeasureError", crVDO.getValue());
                     }

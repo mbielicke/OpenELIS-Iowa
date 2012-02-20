@@ -213,6 +213,8 @@ public class WorksheetAnalysisManagerProxy {
                         //
                         if ("N".equals(analysis.getIsFromOther())) {
                             arManager = aManager.getAnalysisResultAt(k);
+                            // if the result records haven't been added via a full
+                            // login, we need to add them now
                             if (arManager.rowCount() <= 0) {
                                 try {
                                     arManager = AnalysisResultManager.fetchByTestId(aVDO.getTestId(), aVDO.getUnitOfMeasureId());
