@@ -77,6 +77,7 @@ public class DataViewScreen extends Screen {
                                  accessionNumberTo, clientReference, reportToOrganizationName;
     private CheckBox             excludeResultOverride, excludeResults, excludeAuxData;
     private Dropdown<Integer>    analysisStatusId, projectId;
+    private Dropdown<String>     analysisIsReportable; 
     private CalendarLookUp       analysisCompletedDateFrom, analysisCompletedDateTo,
                                  analysisReleasedDateFrom, analysisReleasedDateTo,
                                  collectionDateFrom, collectionDateTo, receivedDateFrom,
@@ -92,8 +93,7 @@ public class DataViewScreen extends Screen {
     private TabPanel             tabPanel;
     private DataViewReportScreen reportScreen;
     private ScreenService        projectService;         
-    private int                  pairsFilled;
-    
+    private int                  pairsFilled;    
     
     private enum Tabs {
         QUERY, COMMON, ENVIRONMENTAL, PRIVATE_WELL, SDWIS;
@@ -219,11 +219,7 @@ public class DataViewScreen extends Screen {
         analysisStatusId.setMultiSelect(true);
         addScreenHandler(analysisStatusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisStatusId.setSelection(data.getAnalysisStatusId());                                         
-            	if(data.getAnalysisStatusId() == null){
-            		analysisStatusId.setValue(analysisStatusId.getData().size()-1);
-            		analysisStatusId.setText(analysisStatusId.getTextBoxDisplay());
-            	}
+                analysisStatusId.setSelection(data.getAnalysisStatusId());            	         
             }            
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -232,6 +228,21 @@ public class DataViewScreen extends Screen {
             
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisStatusId.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        analysisIsReportable = (Dropdown<String>)def.getWidget(SampleWebMeta.getAnalysisIsReportable());
+        addScreenHandler(analysisIsReportable, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                analysisIsReportable.setSelection(data.getAnalysisIsReportable());                       
+            }            
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setAnalysisIsReportable(event.getValue());
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysisIsReportable.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
 
@@ -600,6 +611,12 @@ public class DataViewScreen extends Screen {
             e.printStackTrace();
             window.close();
         }
+        
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        model.add(new TableDataRow("Y", consts.get("yes")));
+        model.add(new TableDataRow("N", consts.get("no")));
+        analysisIsReportable.setModel(model);
     }
     
     public boolean validate() {        
@@ -714,7 +731,7 @@ public class DataViewScreen extends Screen {
         if (field != null)
             fields.add(field);       
         
-        field = getQuery(analysisStatusId, SampleWebMeta.getAnalysisStatusId());
+        field = getQuery(analysisStatusId, QueryData.Type.INTEGER, SampleWebMeta.getAnalysisStatusId());
         if (field != null)
             fields.add(field);
         
@@ -729,6 +746,10 @@ public class DataViewScreen extends Screen {
         if (field != null)
             fields.add(field);     
         field = getQuery(analysisReleasedDateTo, SampleWebMeta.getAnalysisReleasedDateTo());
+        if (field != null)
+            fields.add(field);
+        
+        field = getQuery(analysisIsReportable, QueryData.Type.STRING, SampleWebMeta.getAnalysisIsReportable());
         if (field != null)
             fields.add(field);
         
@@ -764,7 +785,7 @@ public class DataViewScreen extends Screen {
         if (field != null)
             fields.add(field);
         
-        field = getQuery(projectId, SampleWebMeta.getProjectId());
+        field = getQuery(projectId, QueryData.Type.INTEGER, SampleWebMeta.getProjectId());
         if (field != null)
             fields.add(field);
         
@@ -786,8 +807,13 @@ public class DataViewScreen extends Screen {
                 return;
             }
             
-            if (reportScreen == null) 
-                reportScreen = new DataViewReportScreen("saveQuery", window, "DataView.xml");
+            if (reportScreen == null) {
+                reportScreen = new DataViewReportScreen("saveQuery", window, "DataView.xml");                
+            } else {
+                reportScreen.setRunReportInterface("saveQuery");
+                reportScreen.setWindow(window);
+                reportScreen.setAttachmentName("DataView.xml");
+            }
             //
             // we don't want to serialize the following fields
             //
@@ -895,8 +921,13 @@ public class DataViewScreen extends Screen {
         window.setBusy(consts.get("querying"));
         try {
             if (excludeResults && excludeAuxData) {
-                if (reportScreen == null) 
-                    reportScreen = new DataViewReportScreen("runReport", window, null);  
+                if (reportScreen == null) {
+                    reportScreen = new DataViewReportScreen("runReport", window, null);
+                } else {
+                    reportScreen.setRunReportInterface("runReport");
+                    reportScreen.setWindow(window);
+                    reportScreen.setAttachmentName(null);
+                }
                         
                 reportScreen.runReport(data);                
             } else {
@@ -1090,7 +1121,7 @@ public class DataViewScreen extends Screen {
         data.setAnalysisTestMethodNameHeader("N");
         data.setAnalysisStatusIdHeader("N");
         data.setAnalysisRevision("N"); 
-        data.setAnalysisIsReportable("N");
+        data.setAnalysisIsReportableHeader("N");
         data.setAnalysisUnitOfMeasureId("N");
         data.setAnalysisQaName("N");
         data.setAnalysisCompletedDate("N"); 
@@ -1142,7 +1173,7 @@ public class DataViewScreen extends Screen {
         return qd;
     }
     
-    protected QueryData getQuery(Dropdown<Integer> dd, String key) {
+    protected QueryData getQuery(Dropdown dd, QueryData.Type type, String key) {
         StringBuffer buf;
         ArrayList<TableDataRow> sels;
         QueryData qd;
@@ -1160,7 +1191,7 @@ public class DataViewScreen extends Screen {
         if (buf.length() > 0) {
             qd = new QueryData();
             qd.key = key;
-            qd.type = QueryData.Type.INTEGER;
+            qd.type = type;
             qd.query = buf.toString();
             return qd;
         }    

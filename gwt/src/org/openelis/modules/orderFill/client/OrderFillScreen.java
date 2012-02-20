@@ -278,7 +278,7 @@ public class OrderFillScreen extends Screen {
                 int r, c;
                 TableDataRow row;
                 OrderManager man;
-                OrderViewDO data, prevSelData;
+                OrderViewDO data, prevData;
                 String val, type;
                 boolean cancel;
                 Integer status;
@@ -312,11 +312,16 @@ public class OrderFillScreen extends Screen {
                         else
                             custNoteTab.setState(State.DISPLAY);
                     } else {
-                        prevSelData = getProcessShipData();
-                        if ( (prevSelData != null) && ("N".equals(val)) &&
-                            DataBaseUtil.isDifferent(data.getOrganizationId(),
-                                                     prevSelData.getOrganizationId())) {
-                            Window.alert(consts.get("sameShipToOrderCombined"));
+                        prevData = getProcessShipData();
+                        /*
+                         * only orders with the same ship to, status and type can
+                         * be combined together
+                         */
+                        if (prevData != null && "N".equals(val) &&
+                            (DataBaseUtil.isDifferent(data.getOrganizationId(), prevData.getOrganizationId()) ||
+                            !DataBaseUtil.isSame(data.getStatusId(), prevData.getStatusId()) || 
+                            !DataBaseUtil.isSame(data.getType(), prevData.getType()))) {
+                            Window.alert(consts.get("sameShipToStatusTypeOrderCombined"));
                             custNoteTab.setState(State.DISPLAY);
                             cancel = true;
                         }
@@ -958,7 +963,7 @@ public class OrderFillScreen extends Screen {
         }
     }
 
-    private OrderViewDO getProcessShipData() {
+    private OrderViewDO getProcessShipData() {        
         OrderViewDO data, order;
         Set<Integer> set;
         Iterator<Integer> iter;
@@ -971,17 +976,36 @@ public class OrderFillScreen extends Screen {
 
         set = combinedMap.keySet();
         iter = set.iterator();
-
+        
         man = combinedMap.get(iter.next());
         order = man.getOrder();
 
         data = new OrderViewDO();
-        data.setId(order.getId());
         data.setShipFromId(order.getShipFromId());
         data.setOrganizationId(order.getOrganizationId());
         data.setOrganization(order.getOrganization());
         data.setType(order.getType());
         data.setStatusId(order.getStatusId());
+         
+        /*
+         * Find the first order that has attention for its "ship to" organization.
+         * Since we are already at the first element of the key set, we have to 
+         * check it for that field before starting the while loop, otherwise it 
+         * will be skipped even if it has that field.  
+         */
+        if (order.getOrganizationAttention() != null) {
+            data.setOrganizationAttention(order.getOrganizationAttention());
+        } else {
+            while (iter.hasNext()) {
+                man = combinedMap.get(iter.next());
+                order = man.getOrder();
+                if (order.getOrganizationAttention() != null) {
+                    data.setOrganizationAttention(order.getOrganizationAttention());
+                    break;
+                }
+            } 
+        }
+                
         return data;
     }
 
@@ -1026,8 +1050,7 @@ public class OrderFillScreen extends Screen {
                     // as "is not inventoried" don't get inventory x use records
                     // created for them, they won't get diplayed in one of the
                     // shipping items if only inventory x use records were to be
-                    // used to create shipping items. Thus the following code
-                    // makes
+                    // used to create shipping items. Thus the following code makes
                     // sure that if an order item is associated with such an
                     // inventory item a shipping item gets created for it from
                     // the information in the order item itself.
@@ -1168,6 +1191,7 @@ public class OrderFillScreen extends Screen {
             shipping = new ShippingViewDO();
             shipping.setShippedFromId(data.getShipFromId());
             shipping.setShippedToId(data.getOrganizationId());
+            shipping.setShippedToAttention(data.getOrganizationAttention());
             shipping.setShippedTo(data.getOrganization());
             shippingManager = ShippingManager.getInstance();
             shippingManager.setShipping(shipping);

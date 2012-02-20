@@ -24,7 +24,7 @@ public class CommonTab extends Screen {
                        itemTypeofSampleId, itemSourceOfSampleId, itemSourceOther,
                        itemContainerId, itemContainerReference, itemItemSequence, analysisTestNameHeader, 
                        analysisMethodNameHeader, analysisStatusIdHeader, analysisRevision,
-                       analysisIsReportable, analysisUnitOfMeasureId,
+                       analysisIsReportableHeader, analysisUnitOfMeasureId,
                        analysisSubQaName, analysisCompletedDate, analysisCompletedBy,
                        analysisReleasedDate, analysisReleasedBy, analysisStartedDate,
                        analysisPrintedDate;
@@ -497,20 +497,20 @@ public class CommonTab extends Screen {
             }
         });
 
-        analysisIsReportable = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisIsReportable());
-        addScreenHandler(analysisIsReportable, new ScreenEventHandler<String>() {
+        analysisIsReportableHeader = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisIsReportableHeader());
+        addScreenHandler(analysisIsReportableHeader, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisIsReportable.setValue(data.getAnalysisIsReportable());
-                changeCount(data.getAnalysisIsReportable(), false);
+                analysisIsReportableHeader.setValue(data.getAnalysisIsReportableHeader());
+                changeCount(data.getAnalysisIsReportableHeader(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setAnalysisIsReportable(event.getValue());
+                data.setAnalysisIsReportableHeader(event.getValue());
                 changeCount(event.getValue(), true);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                analysisIsReportable.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+                analysisIsReportableHeader.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
         

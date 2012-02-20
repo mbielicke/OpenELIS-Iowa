@@ -78,7 +78,6 @@ import org.openelis.meta.ShippingMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.note.client.NotesTab;
 import org.openelis.modules.report.client.ShippingReportScreen;
-import org.openelis.report.Prompt;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -90,7 +89,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
-import com.google.gwt.user.client.IncrementalCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
@@ -109,8 +107,9 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                                            updateButton, commitButton, abortButton;
     protected MenuItem                     processShipping, print, shippingHistory, shippingItemHistory,
                                            shippingTrackingHistory;
-    private TextBox                        id, numberOfPackages, cost, shippedToAddressMultipleUnit,
-                                           processedById, shippedToAddressStreetAddress, shippedToAddressCity,
+    private TextBox                        id, numberOfPackages, cost, shippedToAttention,
+                                           shippedToAddressMultipleUnit, processedById, 
+                                           shippedToAddressStreetAddress, shippedToAddressCity,
                                            shippedToAddressState, shippedToAddressZipCode;
     private CalendarLookUp                 shippedDate, processedDate;
     private Dropdown<Integer>              statusId, shippedFromId, shippedMethodId;
@@ -427,7 +426,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
                 cost.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 cost.setQueryMode(event.getState() == State.QUERY);
             }
-        });
+        });                
 
         shippedFromId = (Dropdown)def.getWidget(ShippingMeta.getShippedFromId());
         addScreenHandler(shippedFromId, new ScreenEventHandler<Integer>() {
@@ -442,6 +441,22 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
             public void onStateChange(StateChangeEvent<State> event) {
                 shippedFromId.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
                 shippedFromId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        shippedToAttention = (TextBox)def.getWidget(ShippingMeta.getShippedToAttention());
+        addScreenHandler(shippedToAttention, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                shippedToAttention.setValue(manager.getShipping().getShippedToAttention());
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                manager.getShipping().setShippedToAttention(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                shippedToAttention.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE).contains(event.getState()));
+                shippedToAttention.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
