@@ -70,7 +70,7 @@ public class SectionParameterBean implements SectionParameterLocal {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("SectionParameter.FetchBySectionIdAndTypId");
+        query = manager.createNamedQuery("SectionParameter.FetchBySectionIdAndTypeId");
         query.setParameter("id", id);
         query.setParameter("typeId", typeId);
 
