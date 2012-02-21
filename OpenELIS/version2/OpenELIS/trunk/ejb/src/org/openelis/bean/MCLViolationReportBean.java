@@ -45,6 +45,7 @@ import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SectionParameterDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -56,6 +57,7 @@ import org.openelis.local.AnalyteLocal;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.MCLViolationReportLocal;
 import org.openelis.local.ResultLocal;
+import org.openelis.local.SectionParameterLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.AuxDataManager;
@@ -78,13 +80,15 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
     @EJB
     private ResultLocal             resultBean;
     @EJB
+    private SectionParameterLocal   sectParamBean;
+    @EJB
     private SystemVariableLocal     sysVarBean;
 
     private static final Logger     log  = Logger.getLogger(MCLViolationReportBean.class);
 
     private HashMap<String, String> contaminantIds, methodCodes;
-    private Integer                 lastAnalysisId, ugPerLId, ngPerLId, ngPerMlId;
-    private String                  toEmail;
+    private Integer                 lastAnalysisId, ugPerLId, ngPerLId, ngPerMlId, sectParamTypeId;
+    private String                  dnrEmail;
 
     @PostConstruct
     public void init() {
@@ -95,6 +99,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             ugPerLId = dictionaryCache.getBySystemName("micrograms_per_liter").getId();
             ngPerLId = dictionaryCache.getBySystemName("nanograms_per_liter").getId();
             ngPerMlId = dictionaryCache.getBySystemName("nanograms_per_milliliter").getId();
+            sectParamTypeId = dictionaryCache.getBySystemName("section_mcl_violation_email").getId();
         } catch (Throwable e) {
             e.printStackTrace();
         }
@@ -133,9 +138,10 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         double resultValue, mclValue;
         int i, j, k;
         AnalyteViewDO analyte;
+        ArrayList<SectionParameterDO> emailList;
+        ArrayList<MCLViolationReportVO> analysisList;
         ArrayList<ResultViewDO> resultRow;
         ArrayList<ArrayList<ResultViewDO>> results;
-        ArrayList<MCLViolationReportVO> analysisList;
         AuxDataManager adMan;
         Calendar cal;
         Date startDate, endDate;
@@ -144,8 +150,8 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         ReportStatus status;
         ResultViewDO rowResult, colResult;
         SimpleDateFormat format;
-        String resultSign, resultString;
-        StringBuilder body, footer;
+        String resultSign, resultString, toEmail;
+        StringBuilder shlBody, dnrBody;
         SystemVariableDO lastRun;
 
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
@@ -162,9 +168,11 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         currDateTime = Datetime.getInstance(Datetime.YEAR , Datetime.MINUTE, endDate);
 
         lastRun = null;
+        toEmail = "";
         try {
-            toEmail = sysVarBean.fetchByName("mcl_violation_email").getValue();
+            dnrEmail = sysVarBean.fetchByName("mcl_violation_email").getValue();
             lastRun = sysVarBean.fetchForUpdateByName("last_mcl_violation_report_run");
+System.out.println("Last Run: "+lastRun.getValue());
             startDate = format.parse(lastRun.getValue());
 
             if (startDate.compareTo(endDate) > 0)
@@ -176,11 +184,25 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                 analysisList = new ArrayList<MCLViolationReportVO>();
             }
             
-            body = new StringBuilder();
-            footer = new StringBuilder();
+            shlBody = new StringBuilder();
+            dnrBody = new StringBuilder();
             lastAnalysisId = new Integer(-1);
+            analysis = new MCLViolationReportVO();
             for (i = 0; i < analysisList.size(); i++ ) {
                 analysis = analysisList.get(i);
+                
+                toEmail = "";
+                try {
+                    emailList = sectParamBean.fetchBySectionIdAndTypeId(analysis.getSectionId(), sectParamTypeId);
+                } catch (NotFoundException nfE) {
+                    log.error("No MCL Violation Email Address(es) for Section ("+analysis.getAnalysisId()+").");
+                    continue;
+                }
+                for (j = 0; j < emailList.size(); j++) {
+                    if (toEmail.length() > 0)
+                        toEmail += ",";
+                    toEmail += emailList.get(j).getValue().trim();
+                }
                 
                 adMan = AuxDataManager.fetchById(analysis.getSampleId(), ReferenceTable.SAMPLE);
                 
@@ -212,7 +234,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                                     if (resultValue > mclValue ||
                                         (resultValue == mclValue && (resultSign == null ||
                                                                      resultSign != "<"))) {
-                                        addResultToEmail(body, footer, analysis, adMan, rowResult, colResult);
+                                        addResultToEmail(toEmail, shlBody, dnrBody, analysis, adMan, rowResult, colResult);
                                     }
                                 } catch (NumberFormatException numE) {
                                     log.error("Value is not parseable as a number", numE);
@@ -225,9 +247,10 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                 }
             }
     
-            if (body.length() > 0) {
-                body.append(footer.toString());
-                sendEmail(toEmail, body.toString());
+            if (shlBody.length() > 0) {
+                printFooter(shlBody);
+                sendEmail(toEmail, "OpenELIS MCL Violation", shlBody.toString());
+                sendEmail(dnrEmail, "Chemical Exceedance Report for "+analysis.getFieldOffice(), dnrBody.toString());
             }
             
             lastRun.setValue(currDateTime.toString());
@@ -242,23 +265,25 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         return status;
     }
 
-    protected void addResultToEmail(StringBuilder body, StringBuilder footer, MCLViolationReportVO analysis, 
-                                    AuxDataManager adMan, ResultViewDO rowResult, ResultViewDO mclResult) {
+    protected void addResultToEmail(String toEmail, StringBuilder shlBody, StringBuilder dnrBody,
+                                    MCLViolationReportVO analysis, AuxDataManager adMan,
+                                    ResultViewDO rowResult, ResultViewDO mclResult) {
         if (!lastAnalysisId.equals(analysis.getAnalysisId())) {
             if (!lastAnalysisId.equals(-1)) {
-                body.append(footer.toString());
-                sendEmail(toEmail, body.toString());
+                printFooter(shlBody);
+                sendEmail(toEmail, "OpenELIS MCL Violation", shlBody.toString());
+                sendEmail(dnrEmail, "Subject: Chemical Exceedance Report for "+analysis.getFieldOffice(), dnrBody.toString());
                 log.info("MCL Violation email sent for Accession #"+analysis.getAccessionNumber());
-                body.setLength(0);
-                footer.setLength(0);
+                shlBody.setLength(0);
+                dnrBody.setLength(0);
             }
             lastAnalysisId = analysis.getAnalysisId();
             
-            printHeader(body, analysis);
+            printHeader(shlBody, analysis);
         }
         
-        printResultRow(body, analysis, rowResult, mclResult);
-        printFooter(footer, analysis, adMan, rowResult);
+        printResultRow(shlBody, analysis, rowResult, mclResult);
+        printDNR(dnrBody, analysis, adMan, rowResult);
     }
     
     protected void printHeader(StringBuilder body, MCLViolationReportVO analysis) {
@@ -289,7 +314,14 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             .append("<td>").append(mclResult.getValue()).append("</td></tr>\r\n");
     }
 
-    protected void printFooter(StringBuilder footer, MCLViolationReportVO analysis, AuxDataManager adMan, ResultViewDO rowResult) {
+    protected void printFooter(StringBuilder body) {
+        body.append("</table>\r\n")
+              .append("<br>\r\n")
+              .append("* Result values are changed to mg/L if required.<br>\r\n")
+              .append("<br>\r\n");
+    }
+    
+    protected void printDNR(StringBuilder body, MCLViolationReportVO analysis, AuxDataManager adMan, ResultViewDO rowResult) {
         int    i;
         AuxDataViewDO  auxDataVDO;
         String pbSampleType, origSampleNumber;
@@ -310,44 +342,32 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             }
         }
         
-        if (footer.length() == 0) {
-            footer.append("</table>\r\n")
-                  .append("<br>\r\n")
-                  .append("* Result values are changed to mg/L if required.<br>\r\n")
-                  .append("<br>\r\n")
-                  .append("This notice must be forwarded to IDNR by SHL staff. The forwarded e-mail notice MUST be sent to the<br>\r\n")
-                  .append("e-mail address specified below with the following subject line (cut and paste it to your email subject line).<br>\r\n")
-                  .append("=============================================================================<br>\r\n")
-                  .append("Subject: Chemical Exceedance Report for ").append(analysis.getFieldOffice()).append("<br>\r\n")
-                  .append("======= E-MAIL to: mclviolation (labfax@dnr.iowa.gov) (cut from here) =======<br>\r\n");
-        }
-
-        footer.append("<br>\r\n")
-              .append("PWSID ").append(analysis.getPwsId()).append("<br>\r\n")
-              .append("PWSID Name ").append(analysis.getPwsName()).append("<br>\r\n")
-              .append("Lab ID ").append(analysis.getStateLabId()).append("<br>\r\n")
-              .append("Facility ID ");
+        body.append("\r\n")
+            .append("PWSID ").append(analysis.getPwsId()).append("<br>\r\n")
+            .append("PWSID Name ").append(analysis.getPwsName()).append("<br>\r\n")
+            .append("Lab ID ").append(analysis.getStateLabId()).append("<br>\r\n")
+            .append("Facility ID ");
         
         if (analysis.getFacilityId() != null)
-            footer.append(analysis.getFacilityId());
+            body.append(analysis.getFacilityId());
         
-        footer.append("<br>\r\n")
+        body.append("<br>\r\n")
               .append("Sample Point ID ").append(analysis.getSamplePointId()).append("<br>\r\n")
               .append("Sample Point Description ");
         
         if (analysis.getLocation() != null)
-            footer.append(analysis.getLocation());
+            body.append(analysis.getLocation());
         
-        footer.append("<br>\r\n")
+        body.append("<br>\r\n")
               .append("Sample Type ").append(analysis.getSampleType().substring(0, 2)).append("<br>\r\n")
               .append("PB Sample Type ").append(pbSampleType).append("<br>\r\n")
               .append("Original Sample # ").append(origSampleNumber).append("<br>\r\n")
               .append("Sample Collection Date ").append(ReportUtil.toString(analysis.getCollectionDate(), "yyyy-MM-dd"));
         
         if (analysis.getCollectionTime() != null)
-            footer.append(" ").append(ReportUtil.toString(analysis.getCollectionTime(), "HH:mm"));
+            body.append(" ").append(ReportUtil.toString(analysis.getCollectionTime(), "HH:mm"));
 
-        footer.append("<br>\r\n")
+        body.append("<br>\r\n")
               .append("Lab Sample # ").append("OE").append(analysis.getAccessionNumber()).append("<br>\r\n")
               .append("Contaminant ID ").append(contaminantIds.get(rowResult.getAnalyte())).append("<br>\r\n")
               .append("Contaminant Name ").append(rowResult.getAnalyte()).append("<br>\r\n")
@@ -357,10 +377,9 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
               .append("Result ").append(getAdjustedResult(rowResult, analysis)).append("<br>\r\n");
     }
 
-    protected void sendEmail(String to_email, String body) {
+    protected void sendEmail(String toEmail, String subject, String body) {
         try {
-            ReportUtil.sendEmail("do-not-reply@shl.uiowa.edu",
-                                 to_email, "OpenELIS MCL Violation", body);
+            ReportUtil.sendEmail("do-not-reply@shl.uiowa.edu", toEmail, subject, body);
         } catch (Exception anyE) {
             anyE.printStackTrace();
         }
