@@ -41,7 +41,7 @@ public class MCLViolationReportVO implements RPC {
     private static final long serialVersionUID = 1L;
 
     protected Integer         sampleId, accessionNumber, stateLabId, analysisId,
-                              unitOfMeasureId;
+                              sectionId, unitOfMeasureId;
     protected Datetime        collectionDate, collectionTime, anaStartedDate, anaReleasedDate;
     protected String          facilityId, sampleType, samplePointId, location, pwsId,
                               pwsName, fieldOffice, organizationName, testName, 
@@ -54,9 +54,9 @@ public class MCLViolationReportVO implements RPC {
                                 Date collectionTime, Integer stateLabId, String facilityId,
                                 String sampleType, String samplePointId, String location,
                                 String pwsId, String pwsName, String fieldOffice,
-                                String organizationName, Integer analysisId, Integer unitOfMeasureId,
-                                Date anaStartedDate, Date anaReleasedDate, String unitDescription,
-                                String testName, String methodName) {
+                                String organizationName, Integer analysisId, Integer sectionId,
+                                Integer unitOfMeasureId, Date anaStartedDate, Date anaReleasedDate,
+                                String unitDescription, String testName, String methodName) {
         setSampleId(sampleId);
         setAccessionNumber(accessionNumber);
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
@@ -71,6 +71,7 @@ public class MCLViolationReportVO implements RPC {
         setFieldOffice(DataBaseUtil.trim(fieldOffice));
         setOrganizationName(organizationName);
         setAnalysisId(analysisId);
+        setSectionId(sectionId);
         setUnitOfMeasureId(unitOfMeasureId);
         setAnaStartedDate(DataBaseUtil.toYM(anaStartedDate));        
         setAnaReleasedDate(DataBaseUtil.toYM(anaReleasedDate));
@@ -189,6 +190,14 @@ public class MCLViolationReportVO implements RPC {
 
     public void setAnalysisId(Integer analysisId) {
         this.analysisId = analysisId;
+    }
+
+    public Integer getSectionId() {
+        return sectionId;
+    }
+
+    public void setSectionId(Integer sectionId) {
+        this.sectionId = sectionId;
     }
 
     public Integer getUnitOfMeasureId() {
