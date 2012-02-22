@@ -121,7 +121,7 @@ public class BillingReportBean implements BillingReportLocal {
     private static final String      RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
                                      MISC_BILLING = "billing misc charges by no method",
                                      RUSH_BILLING = "billing rush charges by no method",
-                                     EOL = "\r\n";
+                                     EOL = "\r\n", ZERO_BILL = "0.01";
     
     private static Integer           organizationReportToId, organizationBillToId, analysisCancelledId;
     
@@ -425,7 +425,7 @@ public class BillingReportBean implements BillingReportLocal {
                 .append(procedure).append("|")
                 .append("CR").append("|")
                 .append(billedAnalytes).append("|")
-                .append("Y".equals(billedZero) ? "0": "").append("|")
+                .append("Y".equals(billedZero) ? ZERO_BILL: "").append("|")
                 .append(labCode.toUpperCase()).append("|")
                 .append(section).append("|");  
             }
@@ -438,7 +438,7 @@ public class BillingReportBean implements BillingReportLocal {
                      .append(procedure).append("|")
                      .append("CH").append("|")
                      .append(billableAnalytes).append("|")
-                     .append(anaZeroCharge ? "0": "").append("|")
+                     .append(anaZeroCharge ? ZERO_BILL: "").append("|")
                      .append(labCode.toUpperCase()).append("|")
                      .append(section).append("|");
             }

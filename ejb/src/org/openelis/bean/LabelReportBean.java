@@ -30,6 +30,7 @@ import java.io.PrintStream;
 import javax.ejb.Stateless;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.local.LabelReportLocal;
 
 /**
@@ -83,5 +84,34 @@ public class LabelReportBean implements LabelReportLocal {
         f.print("^FO150,630^A048,42^FD"+toCity+", "+toState+" "+toZip+"^FS");      // the receiver's city, state, zip code
         f.print("^FO150,670^BY4^BZN,50,N,N^FD"+toZip+"^FS");                       // the receiver's barcoded zip code  
         f.print("^XZ");        
+    }
+    
+    /*
+     * Prints a barcode label for kit
+     */
+    public void kitLabel(PrintStream f, String name, String locPhone1, String locPhone2,
+                         String lotNumber, String createdDate, String buildId,
+                         String expiredDate, String kitDescription, String specialInstruction) {                        
+        f.print("^XA");
+        f.print("^CF040,50");
+        f.print("^FO190,15^FD"+name+"^FS");                                               // the lab's name
+        f.print("^CF030,40"); 
+        f.print("^FO250,80^FD"+locPhone1+"^FS");                                          // the location like Iowa City and phone number  
+        f.print("^FO250,130^FD"+locPhone2+"^FS");                                         // another location like Ankeny and phone number  
+        f.print("^FO0,180^GB900,5,5^FS");
+        f.print("^CF025,35");        
+        f.print("^FO15,200^FDLot #: "+DataBaseUtil.toString(lotNumber)+"^FS");            // the lot # given to the kit, if any         
+        f.print("^FO550,200^FDCreated: "+createdDate+"^FS");                              // the date on which the kit was created
+        f.print("^FO15,250^FDBuild Id: ^FS^FO150,250^BY2^BCN,50,Y,N,N^FD"+buildId+"^FS"); // the id of the internal order created when                                         
+        f.print("^FO550,250^FDExpires: "+DataBaseUtil.toString(expiredDate)+"^FS");       // the date of expiration of the kit, if any
+        f.print("^FO15,350^FD"+kitDescription+"^FS");                                     // the descriptive text for the kit         
+        f.print("^FO0,400^GB900,5,5^FS");
+        f.print("^FB900,1,0,C,0");
+        f.print("^FO15,420^FD"+DataBaseUtil.toString(specialInstruction)+"^FS");           // the instruction associated with this kit, if any  
+        f.print("^FO15,500^FDFacility or Location: _________________________________^FS");
+        f.print("^FO15,600^FD__________________________________________________^FS");
+        f.print("^FO15,700^FDDate: ___________________ Time: ___________ AM / PM^FS");
+        f.print("^FO15,800^FDCollector: __________________________________________^FS");
+        f.print("^XZ");
     }
 }

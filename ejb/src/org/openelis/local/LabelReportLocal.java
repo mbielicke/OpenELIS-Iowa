@@ -38,4 +38,7 @@ public interface LabelReportLocal {
                                      String fromStreetAddress, String fromCity, String fromState, String fromZip,
                                      String attention, String toStreetAddress1, String toStreetAddress2, String toCity,
                                      String toState, String toZip);
+    public void kitLabel(PrintStream f, String name, String locPhone1, String locPhone2, String lotNumber, 
+                         String createdDate, String buildId, String expiredDate, String kitDescription,
+                         String specialInstruction);
 }

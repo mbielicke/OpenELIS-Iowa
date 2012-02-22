@@ -142,7 +142,7 @@ public class ShippingReportBean implements ShippingReportRemote {
      * Prints the manifest report as well as all the other forms related to the
      * shipping record, like order request forms and instructions
      */
-    public ReportStatus runReportForProcessing(ArrayList<QueryData> paramList) throws Exception {
+    public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         int numpkg;
         boolean printManifest, printLabel, printReqform, printInstr;
         Integer shippingId, orderId, prevOrderId, itemId, methodId;

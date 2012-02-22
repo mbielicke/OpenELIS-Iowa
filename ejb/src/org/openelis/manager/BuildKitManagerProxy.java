@@ -99,6 +99,7 @@ public class BuildKitManagerProxy {
         order.setType(OrderManager.TYPE_INTERNAL);
         order.setStatusId(statusProcessed);
         orderMan.add();
+        kitMan.order = orderMan.getOrder();
 
         compMan = kitMan.getInventoryItem().getComponents();
         orderItems = new ArrayList<OrderItemViewDO>();
