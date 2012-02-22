@@ -42,6 +42,7 @@ import org.openelis.remote.AuxDataRemote;
 import org.openelis.remote.AuxFieldGroupManagerRemote;
 import org.openelis.remote.AuxFieldGroupRemote;
 import org.openelis.remote.BuildKitManagerRemote;
+import org.openelis.remote.BuildKitsReportRemote;
 import org.openelis.remote.CategoryCacheRemote;
 import org.openelis.remote.CategoryManagerRemote;
 import org.openelis.remote.CategoryRemote;
@@ -311,7 +312,11 @@ public class EJBFactory {
 
     public static QcManagerRemote getQcManager() {
         return (QcManagerRemote)lookup("QcManagerBean!org.openelis.remote.QcManagerRemote");
-    }   
+    }
+    
+    public static BuildKitsReportRemote getBuildKitsReport() {
+        return (BuildKitsReportRemote)lookup("BuildKitsReportBean!org.openelis.remote.BuildKitsReportRemote");
+    }
     
     public static FinalReportRemote getFinalReport() {
         return (FinalReportRemote)lookup("FinalReportBean!org.openelis.remote.FinalReportRemote");

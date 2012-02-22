@@ -29,12 +29,12 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.remote.ShippingReportRemote;
+import org.openelis.remote.BuildKitsReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 
-public class ShippingReportService {
+public class BuildKitsReportService {
 
     public ArrayList<Prompt> getPrompts() throws Exception {
         return remote().getPrompts();
@@ -50,7 +50,7 @@ public class ShippingReportService {
         return st;
     }
     
-    private ShippingReportRemote remote() {
-        return EJBFactory.getShippingReport();
+    private BuildKitsReportRemote remote() {
+        return EJBFactory.getBuildKitsReport();
     }
 }
