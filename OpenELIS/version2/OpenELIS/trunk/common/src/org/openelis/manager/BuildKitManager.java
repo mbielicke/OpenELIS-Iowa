@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import org.openelis.domain.InventoryReceiptViewDO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -37,6 +38,7 @@ public class BuildKitManager implements RPC {
     protected Integer                               inventoryItemId;
     protected InventoryItemManager                  inventoryItem;
     protected InventoryReceiptViewDO                inventoryReceipt;
+    protected OrderViewDO                           order; 
 
     protected transient static BuildKitManagerProxy proxy;         
     /**
@@ -46,6 +48,7 @@ public class BuildKitManager implements RPC {
         inventoryItemId = null;
         inventoryItem = null;
         inventoryReceipt = null;
+        order = null;
     }
     
     /**
@@ -77,6 +80,10 @@ public class BuildKitManager implements RPC {
 
     public void setInventoryReceipt(InventoryReceiptViewDO inventoryReceipt) {
         this.inventoryReceipt = inventoryReceipt;
+    }
+    
+    public OrderViewDO getOrder() {
+        return order;
     }
     
     public BuildKitManager add() throws Exception {

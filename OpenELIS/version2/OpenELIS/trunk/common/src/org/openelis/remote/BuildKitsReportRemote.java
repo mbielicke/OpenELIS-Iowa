@@ -34,7 +34,7 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.report.Prompt;
 
 @Remote
-public interface ShippingReportRemote {
+public interface BuildKitsReportRemote {
 
     public ArrayList<Prompt> getPrompts() throws Exception;
     
