@@ -40,6 +40,7 @@ import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.domain.InventoryReceiptViewDO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -81,6 +82,7 @@ import org.openelis.manager.InventoryTransferManager;
 import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.InventoryItemMeta;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
+import org.openelis.modules.report.client.BuildKitsReportScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -104,6 +106,7 @@ public class BuildKitsScreen extends Screen {
     private CheckBox                              addToExisting;
     private TableWidget                           componentTable;
     private Dropdown<Integer>                     dispensedUnitsId;
+    private BuildKitsReportScreen                 buildKitsReportScreen; 
     private ScreenService                         inventoryItemService, inventoryLocationService,
                                                   storageService;
     
@@ -183,7 +186,7 @@ public class BuildKitsScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.ADD).contains(event.getState()));
             }
-        });
+        });       
         
         name = (AutoComplete)def.getWidget(InventoryItemMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<Integer>() {
@@ -773,6 +776,8 @@ public class BuildKitsScreen extends Screen {
             setState(State.DISPLAY);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("addingComplete"));
+            
+            showReportScreen();
         } catch (ValidationErrorsList e) {
             showErrors(e);
         } catch (Exception e) {
@@ -790,6 +795,55 @@ public class BuildKitsScreen extends Screen {
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
         window.setDone(consts.get("addAborted"));
+    }
+    
+    protected void showReportScreen() {
+        ScreenWindow modal;
+
+        try {
+            if (buildKitsReportScreen == null) {
+                buildKitsReportScreen = new BuildKitsReportScreen();
+                DeferredCommand.addCommand(new Command() {
+                    public void execute() {
+                        try {
+                            loadReportScreen();
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } else {
+                buildKitsReportScreen.reset();
+                loadReportScreen();
+            }
+
+            modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+            modal.setName(consts.get("print"));
+            modal.setContent(buildKitsReportScreen);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void loadReportScreen() throws Exception {
+        OrderViewDO order;
+        InventoryReceiptViewDO receipt;
+        InventoryLocationViewDO location;
+        InventoryItemManager man;
+
+        man = manager.getInventoryItem();
+        order = manager.getOrder();
+        receipt = manager.getInventoryReceipt();
+        location = receipt.getInventoryLocations().get(0);
+
+        buildKitsReportScreen.setFieldValue("LOT_NUMBER", location.getLotNumber());
+        buildKitsReportScreen.setFieldValue("ORDER_ID", order.getId());
+        buildKitsReportScreen.setFieldValue("CREATED_DATE", order.getOrderedDate());
+        buildKitsReportScreen.setFieldValue("EXPIRED_DATE", location.getExpirationDate());
+        buildKitsReportScreen.setFieldValue("ENDING_NUMBER", receipt.getQuantityReceived());
+        buildKitsReportScreen.setFieldValue("KIT_DESCRIPTION", man.getInventoryItem().getName());
     }
     
     private ArrayList<TableDataRow> getTableModel() {

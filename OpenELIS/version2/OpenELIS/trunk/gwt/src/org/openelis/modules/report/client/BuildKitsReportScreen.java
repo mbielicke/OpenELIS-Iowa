@@ -30,20 +30,13 @@ import org.openelis.gwt.services.ScreenService;
 
 /**
  * This class is used to execute reports on behalf of those screens that don't
- * implement ReportScreen like Shipping and Fill Order
+ * implement ReportScreen like Build Kits
  */
-public class ShippingReportScreen extends ReportScreen {
+public class BuildKitsReportScreen extends ReportScreen {
 
-    public ShippingReportScreen() throws Exception {
+    public BuildKitsReportScreen() throws Exception {
         drawScreen(new ScreenDef());
         setName(consts.get("print"));
-        service = new ScreenService("controller?service=org.openelis.modules.report.server.ShippingReportService");
-    }
-    
-    public void runReport() {
-        if ("Y".equals((String)getFieldValue("MANIFEST")) || "Y".equals((String)getFieldValue("SHIPPING_LABEL")) ||
-            "Y".equals((String)getFieldValue("REQUESTFORM")) || "Y".equals((String)getFieldValue("INSTRUCTION")))
-            super.runReport();
-        window.close();
-    }
+        service = new ScreenService("controller?service=org.openelis.modules.report.server.BuildKitsReportService");
+    }    
 }
