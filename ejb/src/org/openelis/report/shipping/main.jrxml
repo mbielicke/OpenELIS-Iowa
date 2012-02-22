@@ -18,6 +18,7 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 	<field name="status_id" class="java.lang.Integer"/>
 	<field name="shipped_from_id" class="java.lang.Integer"/>
 	<field name="shipped_to_id" class="java.lang.Integer"/>
+	<field name="shipped_to_attention" class="java.lang.String"/>
 	<field name="processed_by" class="java.lang.String"/>
 	<field name="processed_date" class="java.sql.Timestamp"/>
 	<field name="shipped_method_id" class="java.lang.Integer"/>
@@ -102,6 +103,9 @@ WHERE s.id = $P{SHIPPING_ID} and s.shipped_from_id = sl.id]]>
 				</subreportParameter>
 				<subreportParameter name="ORGANIZATION_ID">
 					<subreportParameterExpression><![CDATA[$F{shipped_to_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="ATTENTION">
+					<subreportParameterExpression><![CDATA[$F{shipped_to_attention}]]></subreportParameterExpression>
 				</subreportParameter>
 				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "organization.jasper"]]></subreportExpression>
