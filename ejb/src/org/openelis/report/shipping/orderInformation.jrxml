@@ -11,7 +11,7 @@
 		<defaultValueExpression><![CDATA[40]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select o.*, i.name, i.description
+		<![CDATA[select unique o.*, i.name, i.description
 from shipping_item si, order_item o, inventory_item i
 where si.shipping_id = $P{SHIPPING_ID} and
       si.reference_table_id = $P{ORDER_ITEM_REFERENCE_TABLE_ID} and
