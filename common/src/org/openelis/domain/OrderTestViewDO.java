@@ -38,18 +38,19 @@ public class OrderTestViewDO extends OrderTestDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          testName, methodName, description;
+    protected String          testName, methodName, description, isActive;
     
     public OrderTestViewDO() {        
     }
     
-    public OrderTestViewDO(Integer  id, Integer orderId, Integer sortOrder, 
-                           Integer testId, String testName,
-                           String methodName, String description) {
+    public OrderTestViewDO(Integer id, Integer orderId, Integer sortOrder, Integer testId,
+                           String testName, String methodName, String description,
+                           String isActive) {
         super(id, orderId, sortOrder, testId);
         setTestName(testName);
         setMethodName(methodName);
         setDescription(description);
+        setIsActive(isActive);
     }
 
     public String getTestName() {
@@ -76,4 +77,11 @@ public class OrderTestViewDO extends OrderTestDO {
         this.description = DataBaseUtil.trim(description);
     }
 
+    public String getIsActive() {
+        return isActive;
+    }
+
+    public void setIsActive(String isActive) {
+        this.isActive = DataBaseUtil.trim(isActive);
+    }
 }
