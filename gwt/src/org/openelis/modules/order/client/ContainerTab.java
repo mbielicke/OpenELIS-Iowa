@@ -156,6 +156,7 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
                                 data.setTestName(test.getTestName());
                                 data.setDescription(test.getTestDescription());
                                 data.setMethodName(test.getMethodName());
+                                data.setIsActive(test.getIsActive());
                                 
                                 orderTestTable.setCell(r, 1, test.getMethodName());
                                 orderTestTable.setCell(r, 2, test.getTestDescription());
@@ -165,6 +166,7 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
                             data.setTestName(null);
                             data.setMethodName(null);
                             data.setDescription(null);
+                            data.setIsActive(null);
                             
                             orderTestTable.setCell(r, 1, null);
                             orderTestTable.setCell(r, 2, null);
@@ -196,11 +198,13 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
                         data.setTestName(test.getTestName());
                         data.setMethodName(test.getMethodName());
                         data.setDescription(test.getTestDescription());
+                        data.setIsActive(test.getIsActive());
                     } else {
                         data.setTestId(null);
                         data.setTestName(null);
                         data.setMethodName(null);
                         data.setDescription(null);
+                        data.setIsActive(null);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

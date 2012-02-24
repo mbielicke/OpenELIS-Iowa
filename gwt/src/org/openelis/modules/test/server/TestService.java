@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.data.Query;
+import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestPrepManager;
@@ -50,6 +52,26 @@ public class TestService {
         return EJBFactory.getTest().fetchByName(name + "%", 1000);
     }
     
+    public TestViewDO fetchActiveByNameMethodName(Query query) throws Exception {
+        ArrayList<QueryData> fields;
+        QueryData            field;
+        String               testName, methodName;
+
+        fields = query.getFields();
+        field = fields.get(0);
+        if (field.query != null)
+            testName = field.query;
+        else
+            testName = null; 
+        field = fields.get(1);
+        if (field.query != null)
+            methodName = field.query;
+        else
+            methodName = null;
+        
+        return EJBFactory.getTest().fetchActiveByNameMethodName(testName, methodName);
+    }
+
     public ArrayList<TestMethodVO> fetchByPanelId(Integer id) throws Exception {
         return EJBFactory.getTest().fetchByPanelId(id);
     }
