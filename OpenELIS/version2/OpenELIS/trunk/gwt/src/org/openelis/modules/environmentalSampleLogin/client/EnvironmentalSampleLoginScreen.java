@@ -36,10 +36,11 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.domain.SampleDO;
 import org.openelis.domain.StandardNoteDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
@@ -145,7 +146,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
     private SampleEnvironmentalImportOrder envOrderImport;
     private StandardNoteDO                 autoNote; 
-    private ScreenService                  standardNoteService;   
+    private ScreenService                  standardNoteService, testService;
     
     private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
@@ -156,6 +157,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
         standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
+        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         userPermission = UserCache.getPermission().getModule("sampleenvironmental");
         if (userPermission == null)
@@ -551,9 +553,15 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                ValidationErrorsList errors;
+                int i;
+                ArrayList<QueryData> fields;
                 OrderManager man;
-
+                OrderTestViewDO otVDO;
+                Query query;
+                QueryData field;
+                TestViewDO tVDO;
+                ValidationErrorsList errors;
+                
                 if (DataBaseUtil.isEmpty(event.getValue())) {
                     manager.getSample().setOrderId(event.getValue());
                     return;
@@ -590,9 +598,49 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
                     ArrayList<OrderTestViewDO> orderTests = envOrderImport.getTestsFromOrder(event.getValue());
 
-                    if (orderTests != null && orderTests.size() > 0)
-                        ActionEvent.fire(envScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+                    if (orderTests != null && orderTests.size() > 0) {
+                        i = 0;
+                        while (i < orderTests.size()) {
+                            otVDO = orderTests.get(i);
+                            if (!"Y".equals(otVDO.getIsActive())) {
+                                query = new Query();
+                                fields = new ArrayList<QueryData>();
 
+                                field = new QueryData();
+                                field.type = QueryData.Type.STRING;
+                                field.query = otVDO.getTestName();
+                                fields.add(field);
+                                
+                                field = new QueryData();
+                                field.type = QueryData.Type.STRING;
+                                field.query = otVDO.getMethodName();
+                                fields.add(field);
+                                
+                                query.setFields(fields);
+                                try {
+                                    tVDO = testService.call("fetchActiveByNameMethodName", query);
+                                    otVDO.setTestId(tVDO.getId());
+                                    otVDO.setDescription(tVDO.getDescription());
+                                } catch (NotFoundException nfE) {
+                                    if (errors == null)
+                                        errors = new ValidationErrorsList();
+                                    errors.add(new FormErrorException("inactiveTestOnOrderException",
+                                                                      otVDO.getTestName(),
+                                                                      otVDO.getMethodName()));
+                                    orderTests.remove(i);
+                                    continue;
+                                } catch (Exception anyE) {
+                                    anyE.printStackTrace();
+                                    orderTests.remove(i);
+                                    continue;
+                                }
+                            }
+                            i++;
+                        }
+                        
+                        ActionEvent.fire(envScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+                    }
+                    
                     if (errors != null)
                         showErrors(errors);
 
