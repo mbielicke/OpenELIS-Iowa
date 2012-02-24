@@ -288,8 +288,8 @@ System.out.println("Last Run: "+lastRun.getValue());
     
     protected void printHeader(StringBuilder body, MCLViolationReportVO analysis) {
         body.append("\r\n")
-            .append("This is an automatic notification for MCL violation.<br>\r\n")
-            .append("The following analyte(s) exceed the MCL specified by the test.<br>\r\n")
+            .append("This is an automatic notification for MCL violation. NO FURTHER ACTION ON YOUR PART IS REQUIRED.<br>\r\n")
+            .append("The following analyte(s) exceed the MCL specified by the test and IDNR has been notified.<br>\r\n")
             .append("<br>\r\n")
             .append("Accession Number: ").append("OE").append(analysis.getAccessionNumber()).append("<br>\r\n")
             .append("PWS ID: ").append(analysis.getPwsId()).append("<br>\r\n")
