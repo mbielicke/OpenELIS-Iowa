@@ -319,6 +319,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
             newData.setTestName(oldData.getTestName());
             newData.setMethodName(oldData.getMethodName());
             newData.setDescription(oldData.getDescription());
+            newData.setIsActive(oldData.getIsActive());
             newMan.addTest(newData);
         }
     }

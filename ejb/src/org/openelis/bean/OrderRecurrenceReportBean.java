@@ -243,6 +243,10 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
             ndata = new OrderTestViewDO();
             ndata.setSortOrder(data.getSortOrder());
             ndata.setTestId(data.getTestId());            
+            ndata.setTestName(data.getTestName());
+            ndata.setMethodName(data.getMethodName());
+            ndata.setDescription(data.getDescription());
+            ndata.setIsActive(data.getIsActive());
             notm.addTest(ndata);
         }
     }

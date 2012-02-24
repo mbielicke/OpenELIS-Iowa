@@ -90,6 +90,23 @@ public class TestBean implements TestRemote, TestLocal {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
+    public TestViewDO fetchActiveByNameMethodName(String testName, String methodName) throws Exception {
+        TestViewDO data;
+        Query query;
+
+        query = manager.createNamedQuery("Test.FetchActiveByNameMethodName");
+        query.setParameter("name", testName);
+        query.setParameter("methodName", methodName);
+        try {
+            data = (TestViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+
     public ArrayList<TestMethodVO> fetchByPanelId(Integer panelId) throws Exception {
         Query query;
         

@@ -190,7 +190,7 @@ public class PanelBean implements PanelRemote, PanelLocal {
         
         //fetch the testid from each row by test name, method name
         returnList = new ArrayList<IdVO>();
-        query = manager.createNamedQuery("Test.FetchByNameMethodName");
+        query = manager.createNamedQuery("Test.FetchActiveByNameMethodName");
         for (i = 0; i < panelItemList.size(); i++) {
             panelItem = panelItemList.get(i);
             
