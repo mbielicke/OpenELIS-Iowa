@@ -797,7 +797,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                 data.setSampleEnvironmentalCollectorPhone("Y");
                 data.setSampleItemTypeofSampleId("Y");
                 data.setSampleItemSourceOfSampleId("Y");
-                data.setSampleEnvironmentalLocationAddressCity("Y");
+                data.setSampleEnvironmentalLocationAddressCityHeader("Y");
                 loadTable = false;
                 DataChangeEvent.fire(screen);
             }
