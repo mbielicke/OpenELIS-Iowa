@@ -1108,7 +1108,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         contaminantIds.put("Triclopyr",                             "2107");  
         contaminantIds.put("Trifluralin",                           "2055");
         contaminantIds.put("Tritium",                               "4102");    
-        contaminantIds.put("Turbidity",                             "100");   
+        contaminantIds.put("Turbidity",                             "0100");   
         contaminantIds.put("Uranium",                               "4006");
         contaminantIds.put("UV Absorbance at 254 nm",               "2922");
         contaminantIds.put("Vinyl chloride",                        "2976");
