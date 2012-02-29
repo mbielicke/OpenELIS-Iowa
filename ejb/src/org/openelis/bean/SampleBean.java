@@ -38,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
@@ -231,24 +232,62 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<Object[]> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception {
+    public ArrayList<ClientNotificationVO> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception {
         Query query;
+        ClientNotificationVO notificationVo;
+        ArrayList<Object[]> resultList;
+        ArrayList<ClientNotificationVO> returnList;
 
         query = manager.createNamedQuery("Sample.FetchForClientEmailReceivedReport");
         query.setParameter("start_received_date", stDate);
         query.setParameter("end_received_date", endDate);
 
-        return DataBaseUtil.toArrayList(query.getResultList());
+        resultList =  DataBaseUtil.toArrayList(query.getResultList());
+        returnList = new ArrayList<ClientNotificationVO>();
+        for (Object[] result : resultList) {
+            notificationVo = new ClientNotificationVO((Integer)result[0],
+                                                              (Date)result[1],
+                                                              (Date)result[2],
+                                                              (Date)result[3],
+                                                              (String)result[4],
+                                                              (Integer)result[5],
+                                                              (Integer)result[6],
+                                                              (String)result[7],
+                                                              (String)result[8],
+                                                              (String)result[9],
+                                                              (String)result[10]);
+            returnList.add(notificationVo);
+        }
+        return returnList;
     } 
     
-    public ArrayList<Object[]> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception {
+    public ArrayList<ClientNotificationVO> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception {
         Query query;
-        
-        query = manager.createNamedQuery("Sample.FetchForClientEmailReleasedReport");     
+        ClientNotificationVO notificationVo;
+        ArrayList<Object[]> resultList;
+        ArrayList<ClientNotificationVO> returnList;
+
+        query = manager.createNamedQuery("Sample.FetchForClientEmailReleasedReport");
         query.setParameter("start_released_date", stDate);
         query.setParameter("end_released_date", endDate);
-        
-        return DataBaseUtil.toArrayList(query.getResultList());
+
+        resultList = DataBaseUtil.toArrayList(query.getResultList());
+        returnList = new ArrayList<ClientNotificationVO>();
+        for (Object[] result : resultList) {
+            notificationVo = new ClientNotificationVO((Integer)result[0],
+                                                              (Date)result[1],
+                                                              (Date)result[2],
+                                                              (Date)result[3],
+                                                              (String)result[4],
+                                                              null,
+                                                              null,
+                                                              (String)result[7],
+                                                              (String)result[8],
+                                                              (String)result[9],
+                                                              (String)result[10]);
+            returnList.add(notificationVo);
+        }
+        return returnList;
     } 
     
     public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception {
