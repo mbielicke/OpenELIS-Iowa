@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 
@@ -24,10 +25,10 @@ public interface SampleLocal {
 
 	public ArrayList<Object[]> fetchForFinalReportPreview(Integer sampleId) throws Exception;
 	
-	public ArrayList<Object[]> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception;
+	public ArrayList<ClientNotificationVO> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception;
     
-    public ArrayList<Object[]> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception;
-    
+	public ArrayList<ClientNotificationVO> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception;
+	
     public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception;
     
     public ArrayList<SampleStatusWebReportVO> fetchForSampleStatusReport(ArrayList<Integer> sampleIdList) throws Exception;

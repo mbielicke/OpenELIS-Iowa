@@ -1,13 +1,12 @@
 package org.openelis.bean;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -17,24 +16,21 @@ import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AnalysisReportFlagsDO;
+import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.local.AnalysisReportFlagsLocal;
 import org.openelis.local.ClientNotificationReceivedReportLocal;
 import org.openelis.local.SampleLocal;
-import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class ClientNotificationReceivedReportBean implements ClientNotificationReceivedReportLocal {
-    @EJB
-    private SessionCacheLocal        session;
-
     @EJB
     private SampleLocal              sample;
 
@@ -43,8 +39,8 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
 
     @EJB
     private AnalysisReportFlagsLocal analysisReportFlags;
-    
-    private static final Logger log = Logger.getLogger(ClientNotificationReceivedReportBean.class);
+
+    private static final Logger      log = Logger.getLogger(ClientNotificationReceivedReportBean.class);
 
     /*
      * Execute the report and email its output to specified addresses
@@ -52,171 +48,142 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
     @Asynchronous
     @TransactionTimeout(600)
     public void runReport() throws Exception {
-        ReportStatus status;
-        Object[] result;
-        ArrayList<Object[]> resultList;
-        Integer accNum, qaId, lastAccNum;
-        String email;
-        Date rc_stDate, rc_endDate;
-        SystemVariableDO data;
+        String from;
+        Date startReceive, endReceive;
         Calendar cal;
         DateFormat df;
-        HashMap<String, ArrayList<Object[]>> map;
-        HashMap<Integer, Boolean> sMap;
-        ArrayList<Object[]> l;
+        SystemVariableDO lastRun;
+        ArrayList<ClientNotificationVO> resultList;
 
-        accNum = null;
-        resultList = null;
-
-        map = new HashMap<String, ArrayList<Object[]>>();
-        sMap = new HashMap<Integer, Boolean>();
-        status = new ReportStatus();
-        session.setAttribute("ClientNotificationReceivedReport", status);
-
-        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        cal = Calendar.getInstance();
         /*
          * subtracting 1 minute from the current time for end date
          */
+        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        cal = Calendar.getInstance();
         cal.add(Calendar.MINUTE, -1);
-        rc_endDate = cal.getTime();
+        endReceive = cal.getTime();
 
+        lastRun = null;
         try {
-            data = systemVariable.fetchByName("last_receivable_report_run");
-            rc_stDate = df.parse(data.getValue());
+            lastRun = systemVariable.fetchForUpdateByName("last_receivable_report_run");
+            log.debug("last_receivable_report_run = " + lastRun);
+            startReceive = df.parse(lastRun.getValue());
+            if (startReceive.compareTo(endReceive) >= 0)
+                throw new InconsistencyException("Start Date should be earlier than End Date");
+
+            from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");            
+            if (from == null) 
+                throw new InconsistencyException("System variable 'do_not_reply_email_address' not present.");
+
+            resultList = sample.fetchForClientEmailReceivedReport(startReceive, endReceive);
+            log.debug("Considering " + resultList.size() + " cases to run");
+            if (resultList.size() > 0)
+                generateEmail(resultList, from);
+
+            lastRun.setValue(df.format(endReceive));
+            systemVariable.updateAsSystem(lastRun);
         } catch (Exception e) {
-            log.error("System variable 'last_receivable_report_run' not present or invalid date-time", e);
+            log.error(e);
+            if (lastRun != null)
+                systemVariable.abortUpdate(lastRun.getId());
             return;
         }
-
-        if (rc_stDate.compareTo(rc_endDate) >= 0) {
-            log.error("Start Date should be earlier than End Date");
-            return;
-        }
-        
-        resultList = sample.fetchForClientEmailReceivedReport(rc_stDate, rc_endDate);
-        
-        log.debug("Considering "+ resultList.size()+ " cases to run");        
-        if (resultList.size() == 0)
-            return;
-        
-        lastAccNum = -1;
-        for (int i = 0; i < resultList.size(); i++ ) {
-            result = resultList.get(i);
-            email = (String)result[6];
-            accNum = (Integer)result[2];
-            qaId = (Integer)result[7];
-            l = map.get(email);
-            if (l == null) {
-                l = new ArrayList<Object[]>();
-                map.put(email, l);
-                lastAccNum = -1;
-            }
-            if (accNum > lastAccNum)
-                l.add(result);
-            lastAccNum = accNum;
-
-            if (qaId != null) 
-                sMap.put(accNum, Boolean.TRUE);  
-            else 
-                sMap.put(accNum, Boolean.FALSE);  
-
-        }
-        generateEmailsFromList(map, sMap);
     }
 
-    protected ReportStatus generateEmailsFromList(HashMap<String, ArrayList<Object[]>> map,
-                                                  HashMap<Integer, Boolean> sMap) throws Exception {
-
-        int i, j;
-        ReportStatus status;
-        Object[] result;
-        Integer samId;
-        Boolean hasOverride;
-        String email, from, to, rcvd_date, col_dt, ref, qaOverride, proj, text;
+    protected void generateEmail(ArrayList<ClientNotificationVO> resultList, String from) throws Exception {
+        Integer accession, lastAccession, sampleId;
+        String email, to, collectedDt, ref, qaOverride;
         StringBuilder contents;
-        Timestamp rc_date, col_date_time, col_date, col_time;
-        Time cl_time;
-        SystemVariableDO data;
-        DateFormat df, df1;
-        ArrayList<Object[]> l;
+        ArrayList<ClientNotificationVO> l;
+        HashMap<String, ArrayList<ClientNotificationVO>> emails;
+        HashMap<Integer, Boolean> sampleQA;
         ArrayList<Integer> sampleIds;
         ArrayList<AnalysisReportFlagsDO> anaList;
-        AnalysisReportFlagsDO anaData;
 
-        col_dt = null;
-        to = null;
-        sampleIds = new ArrayList<Integer>();
-        status = new ReportStatus();
-        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        df1 = new SimpleDateFormat("yyyy-MM-dd");
+        emails = new HashMap<String, ArrayList<ClientNotificationVO>>();
+        sampleQA = new HashMap<Integer, Boolean>();
         
-        for (i = 0; i < map.size(); i++ ) {
-            email = (String) (map.keySet().toArray())[i];
-            contents = new StringBuilder();
+        /*
+         * Group unique samples for each email address.
+         */
+        lastAccession = -1;
+        for (ClientNotificationVO data : resultList) {
+            accession = data.getAccessionNumber();
+            email = data.getEmail();
+            l = emails.get(email);
+            if (l == null) {
+                l = new ArrayList<ClientNotificationVO>();
+                l.add(data);
+                emails.put(email, l);
+            } else if (accession > lastAccession) {
+                l.add(data);
+            }
+
+            /*
+             * We put an accession number in the map only if it either has a
+             * sample/analysis level qa override. Also If the map already has an
+             * entry for an accession number, we do not update it further.
+             */
+            if (data.getSampleQaeventId() != null || data.getAnalysisQaeventId() != null)
+                if (!sampleQA.containsKey(accession))
+                    sampleQA.put(accession, Boolean.TRUE);
+
+            lastAccession = accession;
+        }
+        
+        collectedDt = null;
+        contents = new StringBuilder();
+        sampleIds = new ArrayList<Integer>();
+        
+        /* 
+         * Generate emails for each email address from the emails map.
+         */
+        for (Entry<String, ArrayList<ClientNotificationVO>> entry : emails.entrySet()) {
+            contents.setLength(0);
+            
             printHeader(contents);
-            l = map.get(email);
-            for (j = 0; j < l.size(); j++ ) {
-                result = (Object[])l.get(j);
-                samId = (Integer)result[2];
-                col_date = (Timestamp)result[3];
-                cl_time = (Time)result[4];
-                rc_date = (Timestamp)result[5];
-                to = (String)result[6];
-                rcvd_date = df.format(rc_date);
+            
+            to = entry.getKey();            
+            l = entry.getValue();
+            for (ClientNotificationVO data : l) {
+                if (data.getCollectionDate() != null)
+                    collectedDt = JasperUtil.concatWithSeparator(data.getCollectionDate(),
+                                                                 " ",
+                                                                 data.getCollectionTime());
+                ref = getReferenceFields(data.getReferenceField1(),
+                                         data.getReferenceField2(),
+                                         data.getReferenceField3(),
+                                         data.getProjectName());
+                sampleId = data.getAccessionNumber();
+                qaOverride = (sampleQA.containsKey(sampleId)) ? "YES" : null;
+                printBody(contents, sampleId, DataBaseUtil.toString(data.getReceivedDate()),
+                                                          collectedDt, ref, qaOverride);
 
-                if (col_date != null) {
-                    if (cl_time != null) {
-                        col_time = new Timestamp(cl_time.getTime());
-                        col_date_time = JasperUtil.concatDateAndTime(col_date, col_time);
-                        col_dt = df.format(col_date_time);
-                    } else {
-                        col_date_time = col_date;
-                        col_dt = df1.format(col_date_time);
-                    }
-                }
-                proj = null;
-                if (result[12] != null)
-                    proj = result[12].toString();
-                ref = getReferenceFields((String)result[9], (String)result[10], (String)result[11], proj);
-                
-                hasOverride = sMap.get(samId);
-                qaOverride = hasOverride ? "YES" : null;
-                printBody(contents, samId, rcvd_date, col_dt, ref, qaOverride);
-
-                col_dt = null;
-                rcvd_date = null;
-                sampleIds.add(samId);
+                sampleIds.add(sampleId);
             }
             printFooter(contents);
-            text = contents.toString();
-            from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");                
-            ReportUtil.sendEmail(from, to, 
-                                 "Samples Received by the State Hygienic Laboratory", text);
-                //sendemail(rcvd_email, text);                
             
-            contents = null;
+            ReportUtil.sendEmail(from, to, "Samples Received by the State Hygienic Laboratory", contents.toString());
         }
         
-        anaList = analysisReportFlags.fetchBySampleAccessionNumbers(sampleIds);
-        for (int k = 0; k < anaList.size(); k++ ) {
-            anaData = anaList.get(k);
-            analysisReportFlags.fetchForUpdateByAnalysisId(anaData.getAnalysisId());
-            anaData.setNotifiedReceived("Y");            
-            analysisReportFlags.update(anaData);
-        }
-        
-        status.setMessage("emailed").setStatus(ReportStatus.Status.PRINTED);
         /*
-         * update system variable last_receivable_report_run with current date
-         * and time.
+         * Updating analysis with notified_received flag set to Y (meaning email has been sent). 
+         * If an exception occurs for updating the flag for an analysis, we don't throw an exception so that the flag 
+         * can be updated for the remaining analyses.
+         * Email associated with the failed analysis will get multiple emails. 
          */
-        data = systemVariable.fetchForUpdateByName("last_receivable_report_run");
-        data.setValue(df.format(new Date()));
-        systemVariable.updateAsSystem(data);
-        
-        status.setStatus(ReportStatus.Status.SAVED);
-        return status;
+        anaList = analysisReportFlags.fetchBySampleAccessionNumbers(sampleIds);
+        for (AnalysisReportFlagsDO anaData : anaList) {
+            try {
+                analysisReportFlags.fetchForUpdateByAnalysisId(anaData.getAnalysisId());
+                anaData.setNotifiedReceived("Y");
+                analysisReportFlags.update(anaData);
+            } catch (EntityLockedException e) {
+                log.error("Could not lock analysis report flag for id " + anaData.getAnalysisId());
+            } catch (Exception e) {
+                log.error("Error occurred while updating report flags " + e);
+            }
+        }
     }
 
     protected void printHeader(StringBuilder body) {
@@ -233,27 +200,17 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
 
     protected void printBody(StringBuilder body, Integer accNum, String dateReceived,
                              String dateCollected, String refInfo, String qaOverride) {
-        body.append("    <tr><td>").append(accNum).append("</td>").append("<td>");
-
-        if (dateCollected != null)
-            body.append(dateCollected);
-
-        body.append("</td>").append("<td>");
-
-        if (dateReceived != null)
-            body.append(dateReceived);
-
-        body.append("</td>").append("<td>");
-
-        if (refInfo != null && refInfo.length() > 0 && !"null".equals(refInfo))
-            body.append(refInfo);
-
-        body.append("</td>").append("<td>");
-
-        if (qaOverride != null && qaOverride.length() > 0 && !"null".equals(qaOverride))
-            body.append(qaOverride);
-
-        body.append("</td></tr>\r\n");
+        body.append("<tr><td>")
+            .append(accNum)
+            .append("</td>").append("<td>")
+            .append(DataBaseUtil.toString(dateCollected))
+            .append("</td>").append("<td>")
+            .append(DataBaseUtil.toString(dateReceived))
+            .append("</td>").append("<td>")
+            .append(DataBaseUtil.toString(refInfo))
+            .append("</td>").append("<td>")
+            .append(DataBaseUtil.toString(qaOverride))
+            .append("</td></tr>\r\n");
     }
 
     protected void printFooter(StringBuilder body) {
@@ -277,19 +234,18 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             .append("<br><br>\r\n")
             .append("<i>This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify <a href='mailto:ask-shl@uiowa.edu'>ask-shl@uiowa.edu</a> immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited.</i>");
     }
-    
+
     protected String getReferenceFields(String... f) {
         StringBuffer b;
 
         b = new StringBuffer();
         for (int i = 0; i < f.length; i++ ) {
-            if (!DataBaseUtil.isEmpty(f[i])) {
-                if (b.length() > 0) 
+            if ( !DataBaseUtil.isEmpty(f[i])) {
+                if (b.length() > 0)
                     b.append(", ");
                 b.append(f[i].trim());
-            }                                       
+            }
         }
-
         return b.toString();
     }
 }

@@ -25,14 +25,13 @@
  */
 package org.openelis.bean;
 
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -42,25 +41,21 @@ import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AnalysisReportFlagsDO;
+import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.EntityLockedException;
+import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.local.AnalysisReportFlagsLocal;
 import org.openelis.local.ClientNotificationReleasedReportLocal;
 import org.openelis.local.SampleLocal;
-import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class ClientNotificationReleasedReportBean implements ClientNotificationReleasedReportLocal {
-
-    @EJB
-    private SessionCacheLocal        session;
-
     @EJB
     private SampleLocal              sample;
 
@@ -69,8 +64,8 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
 
     @EJB
     private AnalysisReportFlagsLocal analysisReportFlags;
-    
-    private static final Logger log = Logger.getLogger(ClientNotificationReleasedReportBean.class);
+
+    private static final Logger      log = Logger.getLogger(ClientNotificationReleasedReportBean.class);
 
     /*
      * Execute the report and email its output to specified addresses
@@ -78,151 +73,129 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
     @Asynchronous
     @TransactionTimeout(600)
     public void runReport() throws Exception {
-        int i;
-        ReportStatus status;
-        Object[] result;
-        ArrayList<Object[]> resultList;
-        String email;
-        Date rc_stDate, rc_endDate;
-        SystemVariableDO data;
+        String from;
+        Date startReceive, endReceive;
+        SystemVariableDO lastRun;
         Calendar cal;
         DateFormat df;
-        HashMap<String, ArrayList<Object[]>> map;
-        ArrayList<Object[]> l;
+        ArrayList<ClientNotificationVO> resultList;
 
-        resultList = null;
-        map = new HashMap<String, ArrayList<Object[]>>();
-
-        status = new ReportStatus();
-        session.setAttribute("ClientNotificationReleasedReport", status);
-
+        /*
+         * subtracting 1 minute from the current time for end date
+         */
         df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         cal = Calendar.getInstance();
         cal.add(Calendar.MINUTE, -1);
-        rc_endDate = cal.getTime();
+        endReceive = cal.getTime();
 
+        lastRun = null;
         try {
-            data = systemVariable.fetchByName("last_released_report_run");
-            rc_stDate = df.parse(data.getValue());
+            lastRun = systemVariable.fetchForUpdateByName("last_released_report_run");
+            log.debug("last_receivable_report_run = " + lastRun);
+            startReceive = df.parse(lastRun.getValue());
+            if (startReceive.compareTo(endReceive) >= 0)
+                throw new InconsistencyException("Start Date should be earlier than End Date");
+
+            from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");
+            if (from == null)
+                throw new InconsistencyException("System variable 'do_not_reply_email_address' not present.");
+            
+            resultList = sample.fetchForClientEmailReleasedReport(startReceive, endReceive);
+            log.debug("Considering " + resultList.size() + " cases to run");
+
+            if (resultList.size() > 0)
+                generateEmail(resultList, from);
+
+            lastRun.setValue(df.format(endReceive));
+            systemVariable.updateAsSystem(lastRun);
         } catch (Exception e) {
-            log.error("System variable 'last_released_report_run' not present or invalid date-time", e);
+            log.error(e);
+            if (lastRun != null)
+                systemVariable.abortUpdate(lastRun.getId());
             return;
         }
-
-        if (rc_stDate.compareTo(rc_endDate) >= 0) {
-            log.error("Start Date should be earlier than End Date");
-            return;
-        }
-        
-        resultList = sample.fetchForClientEmailReleasedReport(rc_stDate, rc_endDate);
-        
-        log.debug("Considering "+ resultList.size()+ " cases to run");        
-        if (resultList.size() == 0)
-            return;
-
-        for (i = 0; i < resultList.size(); i++ ) {
-            result = resultList.get(i);
-            email = (String)result[5];
-            l = map.get(email);
-            if (l == null)
-                l = new ArrayList<Object[]>();
-            l.add(result);
-            map.put(email, l);
-        }
-        generateEmailsFromList(map);
     }
-    
-    protected ReportStatus generateEmailsFromList(HashMap<String, ArrayList<Object[]>> map) throws Exception {
-        int i,j;
-        ReportStatus status;
-        Object[] result;
-        Integer samId;
-        String email,from, to, rcvdDate, col_dt, ref, proj;
-        String text;
+
+    protected void generateEmail(ArrayList<ClientNotificationVO> resultList, String from) throws Exception {
+        Integer accession, lastAccession, sampleId;
+        String email, to, collectedDt, ref;
         StringBuilder contents;
-        Timestamp rc_date, col_date_time, col_date, col_time;
-        Time cl_time;
-        SystemVariableDO data;
-        DateFormat df, df1;
-        ArrayList<Object[]> l;
+        ArrayList<ClientNotificationVO> l;
         ArrayList<Integer> sampleIds;
         ArrayList<AnalysisReportFlagsDO> anaList;
-        AnalysisReportFlagsDO anaData;
-
-        rcvdDate = col_dt = null;
-        contents = null;
-        to = null;
-        text = null;
-        sampleIds = new ArrayList<Integer>();
+        HashMap<String, ArrayList<ClientNotificationVO>> emails;
         
-        status = new ReportStatus();
-        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        df1 = new SimpleDateFormat("yyyy-MM-dd");
-        for (i = 0; i < map.size(); i++ ) {
-            email = (String) (map.keySet().toArray())[i];
-            contents = new StringBuilder();
-            printHeader(contents);
-            l = map.get(email);
-            for (j = 0; j < l.size(); j++ ) {
-                result = (Object[])l.get(j);
-                samId = (Integer)result[1];
-                col_date = (Timestamp)result[2];
-                cl_time = (Time)result[3];
-                rc_date = (Timestamp)result[4];
-                to = (String)result[5];                
-                rcvdDate = df.format(rc_date);
-               
-                if (col_date != null) {
-                    if (cl_time != null) {
-                        col_time = new Timestamp(cl_time.getTime());
-                        col_date_time = JasperUtil.concatDateAndTime(col_date, col_time);
-                        col_dt = df.format(col_date_time);
-                    } else {
-                        col_date_time = col_date;
-                        col_dt = df1.format(col_date_time);
-                    }
-                }
-                proj = null;
-                if (result[10] != null)
-                    proj = result[10].toString();               
-                ref = getReferenceFields((String)result[7], (String)result[8], (String)result[9], proj);               
-                
-                printBody(contents, samId, rcvdDate, col_dt, ref);
+        emails = new HashMap<String, ArrayList<ClientNotificationVO>>();
 
-                col_dt = null;
-                rcvdDate = null;
-                sampleIds.add(samId);
+        /*
+         * Group unique samples for each email address.
+         */
+        lastAccession = -1;
+        for (ClientNotificationVO data : resultList) {
+            accession = data.getAccessionNumber();
+            email = data.getEmail();
+            l = emails.get(email);
+            if (l == null) {
+                l = new ArrayList<ClientNotificationVO>();
+                l.add(data);
+                emails.put(email, l);
+            } else if (accession > lastAccession) {
+                l.add(data);
+            }
+            lastAccession = accession;
+        }
+
+        collectedDt = null;
+        contents = new StringBuilder();
+        sampleIds = new ArrayList<Integer>();
+
+        /*
+         * Generate emails for each email address from the emails map.
+         */
+
+        for (Entry<String, ArrayList<ClientNotificationVO>> entry : emails.entrySet()) {
+            contents.setLength(0);
+
+            printHeader(contents);
+
+            to = entry.getKey();
+            l = entry.getValue();
+            for (ClientNotificationVO data : l) {
+                if (data.getCollectionDate() != null)
+                    collectedDt = JasperUtil.concatWithSeparator(data.getCollectionDate(),
+                                                                 " ",
+                                                                 data.getCollectionTime());
+                ref = getReferenceFields(data.getReferenceField1(),
+                                         data.getReferenceField2(),
+                                         data.getReferenceField3(),
+                                         data.getProjectName());
+                sampleId = data.getAccessionNumber();
+                printBody(contents, sampleId, DataBaseUtil.toString(data.getReceivedDate()),
+                                                              collectedDt, ref);
+
+                sampleIds.add(sampleId);
             }
             printFooter(contents);
-            text = contents.toString();
-            
-            from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");                
-            ReportUtil.sendEmail(from, to, 
-                                     "Your Results are available from the State Hygienic Laboratory at the University of Iowa", text);
-            //sendemail(rcvd_email, text);                           
-            contents = null;
-        }
-        
-        anaList = analysisReportFlags.fetchBySampleAccessionNumbers(sampleIds);
-        for (int k = 0; k < anaList.size(); k++ ) {
-            anaData = anaList.get(k);
-            analysisReportFlags.fetchForUpdateByAnalysisId(anaData.getAnalysisId());
-            anaData.setNotifiedReleased("Y");
-            analysisReportFlags.update(anaData);
+
+            ReportUtil.sendEmail(from,
+                                 to,
+                                 "Your Results are available from the State Hygienic Laboratory at the University of Iowa",
+                                 contents.toString());
         }
 
-        status.setMessage("emailed").setStatus(ReportStatus.Status.PRINTED);
-        /*
-         * update system variable last_released_report_run with current date
-         * and time.
-         */
-        data = systemVariable.fetchForUpdateByName("last_released_report_run");
-        data.setValue(df.format(new Date()));
-        systemVariable.updateAsSystem(data);
-        
-        status.setStatus(ReportStatus.Status.SAVED);
-        return status;
-    
+        anaList = analysisReportFlags.fetchBySampleAccessionNumbers(sampleIds);
+        for (AnalysisReportFlagsDO anaData : anaList) {
+            try {
+                analysisReportFlags.fetchForUpdateByAnalysisId(anaData.getAnalysisId());
+                anaData.setNotifiedReceived("Y");
+                analysisReportFlags.update(anaData);
+            } catch (EntityLockedException e) {
+                log.error("Could not lock analysis report flag for id " + anaData.getAnalysisId());
+            } catch (Exception e) {
+                log.error("Error occurred while updating report flags " + e);
+            }
+        }
+
     }
 
     protected void printHeader(StringBuilder con) {
@@ -238,22 +211,15 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
 
     protected void printBody(StringBuilder body, Integer accNum, String dateReceived,
                              String dateCollected, String refInfo) {
-        body.append("    <tr><td>").append(accNum).append("</td>").append("<td>");
-
-        if (dateCollected != null)
-            body.append(dateCollected);
-
-        body.append("</td>").append("<td>");
-
-        if (dateReceived != null)
-            body.append(dateReceived);
-
-        body.append("</td>").append("<td>");
-
-        if (refInfo != null && refInfo.length() > 0 && !"null".equals(refInfo))
-            body.append(refInfo);
-
-        body.append("</td></tr>\r\n");
+        body.append("<tr><td>")
+            .append(accNum)
+            .append("</td>").append("<td>")
+            .append(DataBaseUtil.toString(dateCollected))
+            .append("</td>").append("<td>")
+            .append(DataBaseUtil.toString(dateReceived))
+            .append("</td>").append("<td>")
+            .append(DataBaseUtil.toString(refInfo))
+            .append("</td></tr>\r\n");
     }
 
     protected void printFooter(StringBuilder body) {
@@ -276,18 +242,18 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
             .append("<b>Disclaimer:</b>\r\n")
             .append("<br><br>\r\n")
             .append("<i>This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify <a href='mailto:ask-shl@uiowa.edu'>ask-shl@uiowa.edu</a> immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited.</i>");
-    }      
-    
+    }
+
     protected String getReferenceFields(String... f) {
         StringBuffer b;
 
         b = new StringBuffer();
         for (int i = 0; i < f.length; i++ ) {
-            if (!DataBaseUtil.isEmpty(f[i])) {
-                if (b.length() > 0) 
+            if ( !DataBaseUtil.isEmpty(f[i])) {
+                if (b.length() > 0)
                     b.append(", ");
                 b.append(f[i].trim());
-            }                                       
+            }
         }
 
         return b.toString();
