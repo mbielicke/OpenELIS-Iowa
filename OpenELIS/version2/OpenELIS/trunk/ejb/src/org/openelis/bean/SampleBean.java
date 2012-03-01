@@ -281,10 +281,10 @@ public class SampleBean implements SampleLocal, SampleRemote {
                                                               (String)result[4],
                                                               null,
                                                               null,
+                                                              (String)result[5],
+                                                              (String)result[6],
                                                               (String)result[7],
-                                                              (String)result[8],
-                                                              (String)result[9],
-                                                              (String)result[10]);
+                                                              (String)result[8]);
             returnList.add(notificationVo);
         }
         return returnList;
