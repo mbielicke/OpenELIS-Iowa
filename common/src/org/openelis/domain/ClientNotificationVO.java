@@ -136,7 +136,7 @@ public class ClientNotificationVO implements RPC {
     }
 
     public void setReferenceField2(String referenceField2) {
-        this.referenceField2 = DataBaseUtil.trim(referenceField1);
+        this.referenceField2 = DataBaseUtil.trim(referenceField2);
     }
 
     public String getReferenceField3() {
