@@ -556,7 +556,7 @@ UIRF Software License are applicable instead of those above.
                   <widget>
                     <HorizontalPanel width="52" />
                   </widget>
-                  <check key="{meta:getLocationAddrCity()}" />
+                  <check key="{meta:getLocationAddrCityHeader()}" />
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select='resource:getString($constants,"locationCity")' />
                   </text>

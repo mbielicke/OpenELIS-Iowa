@@ -2454,8 +2454,8 @@ public class DataViewBean implements DataViewRemote {
             prevCell = prevRow.getCell(i);
             currCell = currRow.getCell(i);
 
-            if (prevCell == null)
-                continue;
+            if ((prevCell == null && currCell != null) || (prevCell != null && currCell == null))
+                return false;
 
             type = prevCell.getCellType();
             switch (type) {
