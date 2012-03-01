@@ -1860,6 +1860,16 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     setState(State.DEFAULT);
                     manager = SampleManager.getInstance();
                     DataChangeEvent.fire(trackingScreen);
+                    
+                    // clear all the tabs
+                    environmentalTab.draw();
+                    wellTab.draw();
+                    sdwisTab.draw();
+                    sampleItemTab.draw();
+                    analysisTab.draw();
+                    analysisNotesTab.draw();
+                    sampleNotesTab.draw();
+                    auxDataTab.draw();
                 } else if (error instanceof LastPageException) {
                     page = query.getPage();
                     query.setPage(page - 1);

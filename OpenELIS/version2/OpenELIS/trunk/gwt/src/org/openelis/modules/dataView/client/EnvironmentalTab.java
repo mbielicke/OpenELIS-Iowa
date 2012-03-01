@@ -114,15 +114,15 @@ public class EnvironmentalTab extends Screen {
             }
         });
 
-        locationAddrCity = (CheckBox)def.getWidget(SampleWebMeta.getLocationAddrCity());
+        locationAddrCity = (CheckBox)def.getWidget(SampleWebMeta.getLocationAddrCityHeader());
         addScreenHandler(locationAddrCity, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                locationAddrCity.setValue(data.getSampleEnvironmentalLocationAddressCity());
-                changeCount(data.getSampleEnvironmentalLocationAddressCity(), false);
+                locationAddrCity.setValue(data.getSampleEnvironmentalLocationAddressCityHeader());
+                changeCount(data.getSampleEnvironmentalLocationAddressCityHeader(), false);
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                data.setSampleEnvironmentalLocationAddressCity(event.getValue());
+                data.setSampleEnvironmentalLocationAddressCityHeader(event.getValue());
                 changeCount(event.getValue(), true);
             }
 
