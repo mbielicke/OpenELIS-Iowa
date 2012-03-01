@@ -14,16 +14,25 @@
 		<![CDATA[]]>
 	</queryString>
 	<summary>
-		<band height="36" splitType="Stretch">
+		<band height="48" splitType="Stretch">
 			<staticText>
-				<reportElement key="private well" positionType="Float" x="0" y="0" width="550" height="24" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement key="generalLine1" positionType="Float" x="0" y="0" width="550" height="24" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
 				<text><![CDATA[The result(s) of this report relate only to the items analyzed. This report shall not be reproduced except in full without the written approval of the laboratory.]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="private well" positionType="Float" x="0" y="24" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
+				<reportElement key="dnrIds" positionType="Float" x="0" y="24" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true">
+					<printWhenExpression><![CDATA["E".equals($P{SAMPLE_DOMAIN}) || "S".equals($P{SAMPLE_DOMAIN})]]></printWhenExpression>
+				</reportElement>
+				<textElement>
+					<font pdfFontName="Times-Roman"/>
+				</textElement>
+				<text><![CDATA[Iowa Environmental Laboratory IDs are: Ankeny #397, Iowa City/Coralville #027, Lakeside #393.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="generalLine2" positionType="Float" x="0" y="36" width="550" height="12" isRemoveLineWhenBlank="true" isPrintWhenDetailOverflows="true"/>
 				<textElement>
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
