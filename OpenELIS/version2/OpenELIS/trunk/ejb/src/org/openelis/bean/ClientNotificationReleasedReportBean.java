@@ -187,7 +187,7 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
         for (AnalysisReportFlagsDO anaData : anaList) {
             try {
                 analysisReportFlags.fetchForUpdateByAnalysisId(anaData.getAnalysisId());
-                anaData.setNotifiedReceived("Y");
+                anaData.setNotifiedReleased("Y");
                 analysisReportFlags.update(anaData);
             } catch (EntityLockedException e) {
                 log.error("Could not lock analysis report flag for id " + anaData.getAnalysisId());
