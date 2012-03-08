@@ -160,7 +160,6 @@ public class SampleManager implements RPC, HasAuxDataInt {
             sample.setNextItemSequence(0);
             sample.setRevision(0);
             sample.setEnteredDate(date);
-            sample.setReceivedDate(date);
             sample.setStatusId(proxy().samNotVerifiedId);
     
         } catch (Exception e) {
