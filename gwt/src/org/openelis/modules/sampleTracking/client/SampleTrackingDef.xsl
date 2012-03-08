@@ -240,7 +240,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'time')" />:
               </text>
-              <textbox key="{meta:getCollectionTime()}" begin="3" end="5" width="60" pattern="{resource:getString($constants,'timePattern')}" tab="{meta:getReceivedDate()},{meta:getCollectionDate()}" field="Date" />
+              <textbox key="{meta:getCollectionTime()}" begin="3" end="5" width="60" max="5" mask="{resource:getString($constants,'timeMask')}" tab="{meta:getReceivedDate()},{meta:getCollectionDate()}" field="Date" />
             </row>
             <row>
               <text style="Prompt">
