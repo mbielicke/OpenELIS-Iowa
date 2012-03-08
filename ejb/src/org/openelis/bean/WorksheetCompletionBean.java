@@ -564,11 +564,11 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         reportableValidation.setSuppressDropDownArrow(false);
         resultSheet.addValidationData(reportableValidation);
 
-        dateTimeColumn = new CellRangeAddressList(1,overrideSheet.getPhysicalNumberOfRows()-1,6,7);
-        dateTimeConstraint = DVConstraint.createDateConstraint(DVConstraint.OperatorType.IGNORED, "1900-01-01 00:00", "2099-12-31 23:59", "yyyy-MM-dd HH:mm");
-        dateTimeValidation = new HSSFDataValidation(dateTimeColumn,dateTimeConstraint);
-        dateTimeValidation.setEmptyCellAllowed(true);
-        overrideSheet.addValidationData(dateTimeValidation);
+//        dateTimeColumn = new CellRangeAddressList(1,overrideSheet.getPhysicalNumberOfRows()-1,6,7);
+//        dateTimeConstraint = DVConstraint.createDateConstraint(DVConstraint.OperatorType.IGNORED, "1900-01-01 00:00", "2099-12-31 23:59", "yyyy-MM-dd HH:mm");
+//        dateTimeValidation = new HSSFDataValidation(dateTimeColumn,dateTimeConstraint);
+//        dateTimeValidation.setEmptyCellAllowed(true);
+//        overrideSheet.addValidationData(dateTimeValidation);
 
         //
         // Auto resize columns on result sheet and override sheet
@@ -603,7 +603,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         Integer                  anCancelledId, anCompletedId, anInitiatedId, anInPrepId,
                                  anLoggedInId, anOnHoldId, anReleasedId, anRequeueId, 
                                  testResultId;
-        String                   userToken;
+        String                   blankIndicator, userToken;
         ArrayList<DictionaryDO>  statusList;
         HashMap<Integer,String>  statusMap;
         Iterator<SampleManager>  iter;
@@ -637,6 +637,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetResultManager   wrManager;
         WorksheetResultViewDO    wrVDO;
         
+        blankIndicator = "!BLANK!";
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         
         anCancelledId = dictionaryLocal.fetchBySystemName("analysis_cancelled").getId();
@@ -775,7 +776,10 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             for (c = 0; c < 30; c++) {
                                 value = getValueFromCellByCoords(wb.getSheet("Worksheet"), rowIndex, 9 + c);
                                 if (value != null && !value.equals(wrVDO.getValueAt(c))) {
-                                    wrVDO.setValueAt(c, value.toString());
+                                    if (blankIndicator.equals(value))
+                                        wrVDO.setValueAt(c, "");
+                                    else
+                                        wrVDO.setValueAt(c, value.toString());
                                     anaModified = true;
                                 }
                             }   
@@ -808,19 +812,25 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                                                                      rVDO.getAnalyte()));
                                             }
                                         }
-                                        if (value != null) {
-                                            testResultId = arManager.validateResultValue(rVDO.getResultGroup(),
-                                                                                         aVDO.getUnitOfMeasureId(),
-                                                                                         value.toString());
-                                            trDO = arManager.getTestResultList().get(testResultId);
-                                            
-                                            rVDO.setTestResultId(testResultId);
-                                            rVDO.setTypeId(trDO.getTypeId());
-                                            rVDO.setValue(arManager.formatResultValue(rVDO.getResultGroup(),
-                                                                                      aVDO.getUnitOfMeasureId(),
-                                                                                      testResultId,
-                                                                                      value.toString()));
-                                            manager.addReflexBundle(bundle, rVDO);
+                                        if (value != null && !value.equals(rVDO.getValue())) {
+                                            if (blankIndicator.equals(value)) {
+                                                rVDO.setTestResultId(null);
+                                                rVDO.setTypeId(null);
+                                                rVDO.setValue("");
+                                            } else {
+                                                testResultId = arManager.validateResultValue(rVDO.getResultGroup(),
+                                                                                             aVDO.getUnitOfMeasureId(),
+                                                                                             value.toString());
+                                                trDO = arManager.getTestResultList().get(testResultId);
+                                                
+                                                rVDO.setTestResultId(testResultId);
+                                                rVDO.setTypeId(trDO.getTypeId());
+                                                rVDO.setValue(arManager.formatResultValue(rVDO.getResultGroup(),
+                                                                                          aVDO.getUnitOfMeasureId(),
+                                                                                          testResultId,
+                                                                                          value.toString()));
+                                                manager.addReflexBundle(bundle, rVDO);
+                                            }
                                             anaModified = true;
                                         }
                                     } catch (ParseException parE) {
@@ -856,14 +866,20 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         wqrVDO = wqrManager.getWorksheetQcResultAt(r);
                         for (c = 0; c < 30; c++) {
                             value = getValueFromCellByCoords(wb.getSheet("Worksheet"), rowIndex, 9 + c);
-                            if (value != null)
-                                wqrVDO.setValueAt(c, value.toString());
+                            if (value != null && !value.equals(wqrVDO.getValueAt(c))) {
+                                if (blankIndicator.equals(value))
+                                    wqrVDO.setValueAt(c, "");
+                                else
+                                    wqrVDO.setValueAt(c, value.toString());
+                            }
                         }
                     }
 
-                    if (waDO.getQcSystemUserId() == null) {
-                        value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_users."+i+"."+a);
-                        if (value != null) {
+                    value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_users."+i+"."+a);
+                    if (value != null) {
+                        if (blankIndicator.equals(value)) {
+                            waDO.setQcSystemUserId(null);
+                        } else {
                             tokenizer = new StringTokenizer((String)value, ",");
                             if (tokenizer.hasMoreTokens()) {
                                 userToken = tokenizer.nextToken();
@@ -878,19 +894,21 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                     errorList.add(new FormErrorException("illegalWorksheetUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
                                 }
                             }
-                        } else {
-                            try {
-                                userVO = EJBFactory.getUserCache().getSystemUser();
-                                waDO.setQcSystemUserId(userVO.getId());
-                            } catch (Exception anyE) {
-                                errorList.add(new FormErrorException("defaultWorksheetQcUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
-                            }
+                        }
+                    } else if (waDO.getQcSystemUserId() == null) {
+                        try {
+                            userVO = EJBFactory.getUserCache().getSystemUser();
+                            waDO.setQcSystemUserId(userVO.getId());
+                        } catch (Exception anyE) {
+                            errorList.add(new FormErrorException("defaultWorksheetQcUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
                         }
                     }
                     
                     value = getValueFromCellByName(wb.getSheet("Overrides"), "analysis_started."+i+"."+a);
-                    if (value != null && waDO.getQcStartedDate() == null) {
-                        if (value instanceof Datetime)
+                    if (value != null) {
+                        if (blankIndicator.equals(value))
+                            waDO.setQcStartedDate(null);
+                        else if (value instanceof Datetime)
                             waDO.setQcStartedDate((Datetime)value);
                         else if (value instanceof String)
                             waDO.setQcStartedDate(new Datetime(Datetime.YEAR, Datetime.MINUTE, format.parse((String)value)));
