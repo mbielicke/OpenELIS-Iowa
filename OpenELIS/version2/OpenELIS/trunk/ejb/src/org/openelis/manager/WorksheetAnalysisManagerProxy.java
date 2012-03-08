@@ -173,6 +173,7 @@ public class WorksheetAnalysisManagerProxy {
             // worksheet
             //
             if ("N".equals(analysis.getIsFromOther())) {
+                analysis.setQcStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
                 qcManager = QcManager.fetchById(analysis.getQcId());
                 wqrManager = manager.getWorksheetQcResultAt(i);
                 initializeWorksheetQcResults(qcManager, wqrManager);
