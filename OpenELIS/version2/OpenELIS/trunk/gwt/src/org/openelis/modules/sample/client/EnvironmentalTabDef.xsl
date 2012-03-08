@@ -62,7 +62,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'phone')" />:
           </text>
-          <textbox field="String" key="{meta:getEnvCollectorPhone()}" width="120px" max = "21" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}"/>
+          <textbox field="String" key="{meta:getEnvCollectorPhone()}" width="120px" max="17" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" tab="{meta:getEnvLocation()},{meta:getEnvCollector()}"/>
         </row>
         <row>
           <text style="Prompt">

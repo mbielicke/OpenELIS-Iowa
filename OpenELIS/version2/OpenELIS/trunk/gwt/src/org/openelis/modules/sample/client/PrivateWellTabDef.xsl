@@ -110,7 +110,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'phone')" />:
                   </text>
-                  <textbox key="{meta:getWellReportToAddressWorkPhone()}" width="100" max="21" tab="{meta:getWellReportToAddressFaxPhone()},{meta:getWellReportToAddressZipCode()}" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" field="String" />
+                  <textbox key="{meta:getWellReportToAddressWorkPhone()}" width="100" max="17" tab="{meta:getWellReportToAddressFaxPhone()},{meta:getWellReportToAddressZipCode()}" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" field="String" />
                 <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"city")' />:
                   </text>
@@ -126,11 +126,11 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                   </text>
-                  <textbox key="{meta:getWellReportToAddressZipCode()}" width="73" mask="99999-9999" max="10" tab="{meta:getWellReportToAddressWorkPhone()},{meta:getWellReportToAddressState()}" field="String" />
+                  <textbox key="{meta:getWellReportToAddressZipCode()}" width="73" mask="{resource:getString($constants,'zipcodePattern')}" max="10" tab="{meta:getWellReportToAddressWorkPhone()},{meta:getWellReportToAddressState()}" field="String" />
                   <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'faxNumber')" />:
                   </text>
-                  <textbox key="{meta:getWellReportToAddressFaxPhone()}" width="100" max="16" tab="{meta:getWellLocation()},{meta:getWellReportToAddressWorkPhone()}" mask="{resource:getString($constants,'phonePattern')}" field="String" />
+                  <textbox key="{meta:getWellReportToAddressFaxPhone()}" width="100" max="12" tab="{meta:getWellLocation()},{meta:getWellReportToAddressWorkPhone()}" mask="{resource:getString($constants,'phonePattern')}" field="String" />
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"state")' />:
                   </text>
@@ -138,7 +138,7 @@ UIRF Software License are applicable instead of those above.
                   <text style="Prompt">
                     <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                   </text>
-                  <textbox key="{meta:getWellLocationAddrZipCode()}" width="73" case="UPPER" max="10" tab="itemsTestsTree,{meta:getWellLocationAddrState()}" field="String" />
+                  <textbox key="{meta:getWellLocationAddrZipCode()}" width="73" case="UPPER" mask="{resource:getString($constants,'zipcodePattern')}" max="10" tab="itemsTestsTree,{meta:getWellLocationAddrState()}" field="String" />
                 </row>
                 <row>
                   <text style="Prompt">
