@@ -142,10 +142,7 @@ UIRF Software License are applicable instead of those above.
                 <col>
                   <check key="active"/>
                 </col>
-                <col>
-                  <!-- <autoComplete field="Integer" key="{meta:getAnalyteName()}" popWidth="auto" width="300">
-                    <col width="300" />
-                  </autoComplete> -->                  
+                <col>                  
                   <label field="String" key="{meta:getAnalyteName()}"/>                    
                 </col>
                 <col>
@@ -172,9 +169,6 @@ UIRF Software License are applicable instead of those above.
                   <check key="active"/>
                 </col>
                 <col>
-                  <!-- <autoComplete field="Integer" key="{meta:getAnalyteName()}" popWidth="auto" width="300">
-                    <col width="300" />
-                  </autoComplete> -->
                   <label field="String" key="{meta:getAnalyteName()}"/>
                 </col>
                 <col>

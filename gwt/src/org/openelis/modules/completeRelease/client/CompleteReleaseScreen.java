@@ -35,7 +35,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -119,6 +118,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
     private SampleDataBundle         dataBundle;
     private TabPanel                 sampleContent;
     private SampleTab                sampleTab;
+    private CompleteReleaseScreen    screen;
     private EnvironmentalTab         environmentalTab;
     private PrivateWellTab           wellTab;
     private SDWISTab                 sdwisTab;
@@ -189,14 +189,14 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         }
 
         initialize();
+        setDataInTabs();
         setState(State.DEFAULT);
         initializeDropdowns();
         DataChangeEvent.fire(this);
     }
 
     private void initialize() {
-        final CompleteReleaseScreen completeScreen = this;
-
+        screen = this;
         //
         // button panel buttons
         //
@@ -522,6 +522,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                 if (completeReleaseTable.getSelections().size() == 1) {
                     dataBundle = (SampleDataBundle)event.getSelectedItem().row.data;
                     manager = dataBundle.getSampleManager();
+                    setDataInTabs();
                     setState(State.DISPLAY);
                     previewFinalReport();
                 }
@@ -535,7 +536,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         sampleTab = new SampleTab(def, window);
         addScreenHandler(sampleTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleTab.setData(manager);
                 sampleTab.draw();
             }
 
@@ -554,11 +554,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
         addScreenHandler(environmentalTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain()))
-                    environmentalTab.setData(manager);
-                else
-                    environmentalTab.setData(null);
-
                 if (tab == Tabs.ENVIRONMENT)
                     environmentalTab.draw();
             }
@@ -579,11 +574,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
         addScreenHandler(wellTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                if (SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain()))
-                    wellTab.setData(manager);
-                else
-                    wellTab.setData(null);
-
                 if (tab == Tabs.PRIVATE_WELL)
                     wellTab.draw();
             }
@@ -604,11 +594,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
         addScreenHandler(sdwisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                if (SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain()))
-                    sdwisTab.setData(manager);
-                else
-                    sdwisTab.setData(null);
-
                 if (tab == Tabs.SDWIS)
                     sdwisTab.draw();
             }
@@ -621,8 +606,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         sampleItemTab = new SampleItemTab(def, window);
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleItemTab.setData(dataBundle);
-
                 if (tab == Tabs.SAMPLE_ITEM)
                     sampleItemTab.draw();
             }
@@ -635,7 +618,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         analysisTab = new AnalysisTab(def, window);
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisTab.setData(dataBundle);
                 if (tab == Tabs.ANALYSIS) {
                     analysisTab.draw();
                 }
@@ -649,8 +631,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         testResultsTab = new ResultTab(def, window, this);
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                testResultsTab.setData(dataBundle);
-
                 if (tab == Tabs.TEST_RESULT)
                     testResultsTab.draw();
             }
@@ -666,7 +646,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                     try {
                         if (testPrepUtil == null) {
                             testPrepUtil = new TestPrepUtility();
-                            testPrepUtil.setScreen(completeScreen);
+                            testPrepUtil.setScreen(screen);
 
                             testPrepUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
                                 public void onAction(ActionEvent<TestPrepUtility.Action> event) {
@@ -710,7 +690,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                 if (event.getAction() == ResultTab.Action.REFLEX_ADDED) {
                     if (testPrepUtil == null) {
                         testPrepUtil = new TestPrepUtility();
-                        testPrepUtil.setScreen(completeScreen);
+                        testPrepUtil.setScreen(screen);
 
                         testPrepUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
                             public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
@@ -731,7 +711,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
                                                 "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisNotesTab.setData(dataBundle);
                 if (tab == Tabs.ANALYSIS_NOTES)
                     analysisNotesTab.draw();
             }
@@ -762,8 +741,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         storageTab = new StorageTab(def, window);
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                storageTab.setData(dataBundle);
-
                 if (tab == Tabs.STORAGE)
                     storageTab.draw();
             }
@@ -776,9 +753,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         qaEventsTab = new QAEventsTab(def, window);
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                qaEventsTab.setData(dataBundle);
-                qaEventsTab.setManager(manager);
-
                 if (tab == Tabs.QA_EVENTS)
                     qaEventsTab.draw();
             }
@@ -791,8 +765,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         auxDataTab = new AuxDataTab(def, window);
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                auxDataTab.setManager(manager);
-
                 if (tab == Tabs.AUX_DATA)
                     auxDataTab.draw();
             }
@@ -901,6 +873,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
         dataBundle = null;
 
+        setDataInTabs();
         showTabs(Tabs.BLANK);
         setState(State.QUERY);
         DataChangeEvent.fire(this);
@@ -933,10 +906,9 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
 
         try {
             manager = manager.fetchForUpdate();
-
             // update row data
             updateAllRows(manager.getSample().getAccessionNumber());
-
+            setDataInTabs();
             setState(State.UPDATE);
 
             DataChangeEvent.fire(this);
@@ -1291,8 +1263,9 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             try {
                 manager.validate();
                 manager = manager.update();
+                                
                 updateAllRows(manager.getSample().getAccessionNumber());
-
+                setDataInTabs();
                 setState(State.DISPLAY);
                 lastAccession = null;
                 DataChangeEvent.fire(this);
@@ -1321,7 +1294,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             try {
                 manager = manager.update();
                 updateAllRows(manager.getSample().getAccessionNumber());
-
+                setDataInTabs();
                 setState(Screen.State.DISPLAY);
                 lastAccession = null;
                 DataChangeEvent.fire(this);
@@ -1347,25 +1320,25 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         if (state == State.QUERY) {
             domain = manager.getSample().getDomain();
             manager = SampleManager.getInstance();
-            manager.getSample().setDomain(domain);
+            manager.getSample().setDomain(domain);            
             historyUtility.setManager(manager);
+            
+            setDataInTabs();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.UPDATE) {
-
             try {
                 manager = manager.abortUpdate();
                 updateTableRow(completeReleaseTable.getSelectedRow());
+                setDataInTabs();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
-
             } catch (Exception e) {
                 Window.alert(e.getMessage());
                 window.clearStatus();
             }
-
         } else {
             window.clearStatus();
         }
@@ -1412,7 +1385,6 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         service.callList("query", query, new AsyncCallback<ArrayList<SampleDataBundle>>() {
             public void onSuccess(ArrayList<SampleDataBundle> result) {
                 manager = null;
-
                 if (result.size() > 0)
                     setState(State.DISPLAY);
                 else
@@ -1597,6 +1569,7 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         if (rows.size() == 1) {
             dataBundle = (SampleDataBundle)rows.get(0).data;
             manager = dataBundle.getSampleManager();
+            setDataInTabs();
             resetScreen();
         }
     }
@@ -1860,4 +1833,29 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
             this.count = count;
         }
     }
+    
+    private void setDataInTabs() {
+        String domain;
+        
+        domain = manager.getSample().getDomain();
+        
+        sampleTab.setData(manager);
+        environmentalTab.setData(null);
+        wellTab.setData(null);
+        sdwisTab.setData(null);
+        if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain))
+            environmentalTab.setData(manager);
+        else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain))
+            wellTab.setData(manager);
+        else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain))
+            sdwisTab.setData(manager);
+        sampleItemTab.setData(dataBundle);
+        analysisTab.setData(dataBundle);
+        testResultsTab.setData(dataBundle);
+        analysisNotesTab.setData(dataBundle);
+        storageTab.setData(dataBundle);
+        qaEventsTab.setData(dataBundle);
+        qaEventsTab.setManager(manager);
+        auxDataTab.setManager(manager);
+    }   
 }

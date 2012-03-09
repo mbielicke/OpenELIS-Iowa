@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleEnvironmentalDO;
@@ -60,12 +61,20 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.meta.SampleMeta;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 public class EnvironmentalTab extends Screen {
     private TextBox                        location, description, collector, collectorPhone;
@@ -74,7 +83,7 @@ public class EnvironmentalTab extends Screen {
     private AppButton                      billToLookup, reportToLookup, projectLookup,
                                            locationLookup;
     private CheckBox                       isHazardous;
-
+    
     private SampleLocationLookupScreen     locationScreen;
     private SampleOrganizationLookupScreen organizationScreen;
     private SampleProjectLookupScreen      projectScreen;
@@ -82,8 +91,8 @@ public class EnvironmentalTab extends Screen {
     private ScreenService                  orgService;
     private ScreenService                  projectService;
 
-    private SampleManager                  manager;
-    private SampleEnvironmentalManager     envManager;
+    private SampleManager                  manager, previousManager;
+    private SampleEnvironmentalManager     envManager, previousEnvManager;
 
     private Integer                        sampleReleasedId;
 
@@ -108,15 +117,15 @@ public class EnvironmentalTab extends Screen {
         initializeDropdowns();
     }
 
-    public void initialize() {
+    public void initialize() {        
         isHazardous = (CheckBox)def.getWidget(SampleMeta.getEnvIsHazardous());
         addScreenHandler(isHazardous, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                isHazardous.setValue(getManager().getEnvironmental().getIsHazardous());
+                isHazardous.setValue(getEnvManager().getEnvironmental().getIsHazardous());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getEnvironmental().setIsHazardous(event.getValue());
+                getEnvManager().getEnvironmental().setIsHazardous(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -125,16 +134,32 @@ public class EnvironmentalTab extends Screen {
                                                         .contains(event.getState())));
                 isHazardous.setQueryMode(event.getState() == State.QUERY);
             }
+        });    
+        
+        isHazardous.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String haz;
+
+                    haz = getPreviousEnvManager().getEnvironmental().getIsHazardous();
+                    getEnvManager().getEnvironmental().setIsHazardous(haz);
+                    isHazardous.setValue(haz);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();                   
+                    setFocusToNext(isHazardous);
+                }
+            }
         });
 
         priority = (TextBox<Integer>)def.getWidget(SampleMeta.getEnvPriority());
         addScreenHandler(priority, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                priority.setValue(getManager().getEnvironmental().getPriority());
+                priority.setValue(getEnvManager().getEnvironmental().getPriority());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                getManager().getEnvironmental().setPriority(event.getValue());
+                getEnvManager().getEnvironmental().setPriority(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -144,15 +169,31 @@ public class EnvironmentalTab extends Screen {
                 priority.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        priority.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    Integer pr;
+
+                    pr = getPreviousEnvManager().getEnvironmental().getPriority();
+                    getEnvManager().getEnvironmental().setPriority(pr) ;
+                    priority.setValue(pr);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(priority);
+                }
+            }
+        });
 
         description = (TextBox)def.getWidget(SampleMeta.getEnvDescription());
         addScreenHandler(description, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                description.setValue(getManager().getEnvironmental().getDescription());
+                description.setValue(getEnvManager().getEnvironmental().getDescription());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getEnvironmental().setDescription(event.getValue());
+                getEnvManager().getEnvironmental().setDescription(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -162,15 +203,31 @@ public class EnvironmentalTab extends Screen {
                 description.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        description.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String desc;
+
+                    desc = getPreviousEnvManager().getEnvironmental().getDescription();
+                    getEnvManager().getEnvironmental().setDescription(desc);
+                    description.setValue(desc);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(description);
+                }
+            }
+        });
 
         collector = (TextBox)def.getWidget(SampleMeta.getEnvCollector());
         addScreenHandler(collector, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                collector.setValue(getManager().getEnvironmental().getCollector());
+                collector.setValue(getEnvManager().getEnvironmental().getCollector());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getEnvironmental().setCollector(event.getValue());
+                getEnvManager().getEnvironmental().setCollector(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -180,15 +237,31 @@ public class EnvironmentalTab extends Screen {
                 collector.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        collector.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String coll;
+
+                    coll = getPreviousEnvManager().getEnvironmental().getCollector();
+                    getEnvManager().getEnvironmental().setCollector(coll);
+                    collector.setValue(coll);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(collector);
+                }
+            }
+        });
 
         collectorPhone = (TextBox)def.getWidget(SampleMeta.getEnvCollectorPhone());
         addScreenHandler(collectorPhone, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                collectorPhone.setValue(getManager().getEnvironmental().getCollectorPhone());
+                collectorPhone.setValue(getEnvManager().getEnvironmental().getCollectorPhone());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getEnvironmental().setCollectorPhone(event.getValue());
+                getEnvManager().getEnvironmental().setCollectorPhone(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -198,15 +271,31 @@ public class EnvironmentalTab extends Screen {
                 collectorPhone.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        collectorPhone.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String phone;
+
+                    phone = getPreviousEnvManager().getEnvironmental().getCollectorPhone();
+                    getEnvManager().getEnvironmental().setCollectorPhone(phone);
+                    collectorPhone.setValue(phone);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(collectorPhone);
+                }
+            }
+        });
 
         location = (TextBox)def.getWidget(SampleMeta.getEnvLocation());
         addScreenHandler(location, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
-                location.setValue(getManager().getEnvironmental().getLocation());
+                location.setValue(getEnvManager().getEnvironmental().getLocation());
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                getManager().getEnvironmental().setLocation(event.getValue());
+                getEnvManager().getEnvironmental().setLocation(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -214,6 +303,35 @@ public class EnvironmentalTab extends Screen {
                                 (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                      .contains(event.getState())));
                 location.setQueryMode(event.getState() == State.QUERY);
+            }
+        });    
+        
+        location.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String loc;
+                    SampleEnvironmentalDO data, prevData;
+                    AddressDO addr, prevAddr;
+                    
+                    data = getEnvManager().getEnvironmental();
+                    prevData = getPreviousEnvManager().getEnvironmental();
+                    addr = data.getLocationAddress();
+                    prevAddr = prevData.getLocationAddress();
+                    
+                    loc = prevData.getLocation();
+                    data.setLocation(loc);
+                    addr.setMultipleUnit(prevAddr.getMultipleUnit());
+                    addr.setStreetAddress(prevAddr.getStreetAddress());
+                    addr.setCity(prevAddr.getCity());
+                    addr.setState(prevAddr.getState());
+                    addr.setZipCode(prevAddr.getZipCode());
+                    addr.setCountry(prevAddr.getCountry());
+                    location.setValue(loc);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(location);
+                }
             }
         });
 
@@ -242,7 +360,7 @@ public class EnvironmentalTab extends Screen {
                 data = null;
                 try {
                     /*
-                     * if a project was not selected and it there were permanent
+                     * if a project was not selected and if there were permanent
                      * projects present then we delete the first permanent project
                      * and set the next permanent one as the first project in the list;  
                      * otherwise we modify the first existing permanent project
@@ -270,8 +388,7 @@ public class EnvironmentalTab extends Screen {
                     } 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
-                }
-            
+                }            
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -310,7 +427,7 @@ public class EnvironmentalTab extends Screen {
                 }
                 window.clearStatus();
             }
-        });
+        });               
 
         reportTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getOrgName());
         addScreenHandler(reportTo, new ScreenEventHandler<String>() {
@@ -331,12 +448,12 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow;
+                TableDataRow row;
                 SampleOrganizationViewDO data;                              
 
-                selectedRow = reportTo.getSelection();
+                row = reportTo.getSelection();
                 try {
-                    if (selectedRow == null || selectedRow.key == null) {
+                    if (row == null || row.key == null) {
                         manager.getOrganizations().removeReportTo();
                         reportTo.setSelection(null, "");
                         return;
@@ -348,13 +465,12 @@ public class EnvironmentalTab extends Screen {
                         manager.getOrganizations().setReportTo(data);
                     }
 
-                    data.setOrganizationId((Integer)selectedRow.key);
-                    data.setOrganizationName((String)selectedRow.cells.get(0).value);
-                    data.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                    data.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    data.setOrganizationId((Integer)row.key);
+                    data.setOrganizationName((String)row.cells.get(0).value);
+                    data.setOrganizationCity((String)row.cells.get(2).value);
+                    data.setOrganizationState((String)row.cells.get(3).value);
 
-                    reportTo.setSelection(data.getOrganizationId(),
-                                        data.getOrganizationName());
+                    reportTo.setSelection(data.getOrganizationId(), data.getOrganizationName());
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -367,12 +483,58 @@ public class EnvironmentalTab extends Screen {
                                                      .contains(event.getState())));
                 reportTo.setQueryMode(event.getState() == State.QUERY);
             }
+        });        
+        
+        reportTo.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    SampleOrganizationViewDO data, prevData;
+                    SampleOrganizationManager man;
+
+                    try {                        
+                        man = manager.getOrganizations();
+                        prevData = previousManager.getOrganizations().getReportTo();
+                        data = man.getReportTo();
+                        
+                        if (prevData == null) {
+                            /*
+                             * if there was no report-to in the previous sample
+                             * then we try to remove the report-to for this sample
+                             * if there is one; we also blank out the autocomplete  
+                             */
+                            man.removeReportTo();
+                            reportTo.setSelection(null, "");
+                        } else {
+                            /*
+                             * if there was a report-to in the previous sample
+                             * then we create a DO for it if there isn't one and
+                             * set all its relevant fields; we also set the value
+                             * in the autocomplete
+                             */
+                            if (data == null) {
+                                data = new SampleOrganizationViewDO();
+                                man.setReportTo(data);                                
+                            }
+                            data.setOrganizationId(prevData.getOrganizationId());
+                            data.setOrganizationName(prevData.getOrganizationName());
+                            data.setOrganizationCity(prevData.getOrganizationCity());
+                            data.setOrganizationState(prevData.getOrganizationState());
+                            reportTo.setSelection(data.getOrganizationId(), data.getOrganizationName());     
+                        }                        
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(reportTo);
+                }
+            }
         });
 
         reportTo.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 getOrganizationMatches(event.getMatch(), reportTo);
-
             }
         });
 
@@ -429,6 +591,53 @@ public class EnvironmentalTab extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 billTo.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                    .contains(event.getState()));
+            }
+        });
+        
+        billTo.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    SampleOrganizationViewDO data, prevData;
+                    SampleOrganizationManager man;
+
+                    try {                        
+                        man = manager.getOrganizations();
+                        prevData = previousManager.getOrganizations().getBillTo();
+                        data = man.getBillTo();
+                        
+                        if (prevData == null) {
+                            /*
+                             * if there was no bill-to in the previous sample
+                             * then we try to remove the bill-to for this sample
+                             * if there is one; we also blank out the autocomplete  
+                             */
+                            man.removeBillTo();
+                            billTo.setSelection(null, "");
+                        } else {
+                            /*
+                             * if there was a bill-to in the previous sample
+                             * then we create a DO for it if there isn't one and
+                             * set all its relevant fields; we also set the value
+                             * in the autocomplete
+                             */
+                            if (data == null) {
+                                data = new SampleOrganizationViewDO();
+                                man.setBillTo(data);                                
+                            }
+                            data.setOrganizationId(prevData.getOrganizationId());
+                            data.setOrganizationName(prevData.getOrganizationName());
+                            data.setOrganizationCity(prevData.getOrganizationCity());
+                            data.setOrganizationState(prevData.getOrganizationState());
+                            billTo.setSelection(data.getOrganizationId(), data.getOrganizationName());     
+                        }                        
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(billTo);
+                }
             }
         });
 
@@ -514,6 +723,11 @@ public class EnvironmentalTab extends Screen {
         envManager = null;
         loaded = false;
     }
+    
+    public void setPreviousData(SampleManager previousManager) {
+        this.previousManager = previousManager;
+        previousEnvManager = null;
+    }
 
     public void draw() {
         if ( !loaded)
@@ -561,7 +775,6 @@ public class EnvironmentalTab extends Screen {
                     public void onAction(ActionEvent<SampleProjectLookupScreen.Action> event) {
                         if (event.getAction() == SampleProjectLookupScreen.Action.OK) {
                             DataChangeEvent.fire(env, project);
-
                         }
                     }
                 });
@@ -675,7 +888,7 @@ public class EnvironmentalTab extends Screen {
         }
     }
 
-    private SampleEnvironmentalManager getManager() {
+    private SampleEnvironmentalManager getEnvManager() {
         if (envManager == null) {
             try {
                 envManager = (SampleEnvironmentalManager)manager.getDomainManager();
@@ -686,5 +899,28 @@ public class EnvironmentalTab extends Screen {
             }
         }
         return envManager;
+    }
+    
+    private SampleEnvironmentalManager getPreviousEnvManager() {
+        if (previousEnvManager == null) {
+            try {
+                previousEnvManager = (SampleEnvironmentalManager)previousManager.getDomainManager();
+            } catch (Exception e) {
+                previousEnvManager = SampleEnvironmentalManager.getInstance();
+                previousEnvManager.getEnvironmental().setIsHazardous("N");
+            }
+        }
+        return previousEnvManager;
+    }
+    
+    private boolean canCopyFromPrevious(KeyDownEvent event) {
+        return (previousManager != null) && event.getNativeKeyCode() == 113;
+    }
+    
+    private void setFocusToNext(Widget currWidget) {
+        NativeEvent event;
+        
+        event = Document.get().createKeyPressEvent(false, false, false, false, KeyCodes.KEY_TAB, KeyCodes.KEY_TAB);        
+        KeyPressEvent.fireNativeEvent(event, currWidget);
     }
 }

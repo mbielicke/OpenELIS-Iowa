@@ -62,6 +62,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -73,6 +74,7 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.order.client.SendoutOrderScreen;
@@ -92,7 +94,13 @@ import org.openelis.modules.sample.client.SamplePrivateWellImportOrder;
 import org.openelis.modules.sample.client.StorageTab;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -102,46 +110,48 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActionHandlers {
-    private boolean                        quickUpdate;
-    private SampleManager                  manager;
-    protected Tabs                         tab;
-    private Integer                        sampleReleasedId;
-    private SampleItemAnalysisTreeTab      treeTab;
-    private PrivateWellTab                 privateWellTab;
-    private SampleItemTab                  sampleItemTab;
-    private AnalysisTab                    analysisTab;
-    private ResultTab                      testResultsTab;
-    private AnalysisNotesTab               analysisNotesTab;
-    private SampleNotesTab                 sampleNotesTab;
-    private StorageTab                     storageTab;
-    private QAEventsTab                    qaEventsTab;
-    private AuxDataTab                     auxDataTab;
+    private boolean                           quickUpdate;
+    private SampleManager                     manager, previousManager;
+    protected Tabs                            tab;
+    private Integer                           sampleReleasedId;
+    private PrivateWellWaterSampleLoginScreen screen;
+    private SampleItemAnalysisTreeTab         treeTab;
+    private PrivateWellTab                    privateWellTab;
+    private SampleItemTab                     sampleItemTab;
+    private AnalysisTab                       analysisTab;
+    private ResultTab                         testResultsTab;
+    private AnalysisNotesTab                  analysisNotesTab;
+    private SampleNotesTab                    sampleNotesTab;
+    private StorageTab                        storageTab;
+    private QAEventsTab                       qaEventsTab;
+    private AuxDataTab                        auxDataTab;
 
-    protected AccessionNumberUtility       accessionNumUtil;
-    protected SampleHistoryUtility         historyUtility;
+    protected AccessionNumberUtility          accessionNumUtil;
+    protected SampleHistoryUtility            historyUtility;
 
-    protected TextBox                      clientReference;
-    protected TextBox<Integer>             accessionNumber, orderNumber;
-    protected TextBox<Datetime>            collectedTime;
-    protected Dropdown<Integer>            statusId;
-    protected CalendarLookUp               collectedDate, receivedDate;
-    protected AppButton                    queryButton, addButton, updateButton,
-                                           nextButton, prevButton, commitButton,
-                                           abortButton, orderLookup;
-    protected MenuItem                     duplicate, historySample, historySamplePrivateWell,
-                                           historySampleProject, historySampleItem,
-                                           historyAnalysis, historyCurrentResult,
-                                           historyStorage, historySampleQA,
-                                           historyAnalysisQA, historyAuxData;
-    protected TabPanel                     tabs;
+    protected TextBox                         clientReference;
+    protected TextBox<Integer>                accessionNumber, orderNumber;
+    protected TextBox<Datetime>               collectedTime;
+    protected Dropdown<Integer>               statusId;
+    protected CalendarLookUp                  collectedDate, receivedDate;
+    protected AppButton                       queryButton, addButton, updateButton,
+                                              nextButton, prevButton, commitButton,
+                                              abortButton, orderLookup;
+    protected MenuItem                        duplicate, historySample, historySamplePrivateWell,
+                                              historySampleProject, historySampleItem,
+                                              historyAnalysis, historyCurrentResult,
+                                              historyStorage, historySampleQA, historyAnalysisQA,
+                                              historyAuxData;
+    protected TabPanel                        tabs;
 
-    private ScreenNavigator                nav;
-    private ModulePermission               userPermission;
-    private SendoutOrderScreen             sendoutOrderScreen;
-    private StandardNoteDO                 autoNote;
-    private ScreenService                  standardNoteService, testService;
+    private ScreenNavigator                   nav;
+    private ModulePermission                  userPermission;
+    private SendoutOrderScreen                sendoutOrderScreen;
+    private StandardNoteDO                    autoNote;
+    private ScreenService                     standardNoteService, testService;
 
     protected SamplePrivateWellImportOrder wellOrderImport;
 
@@ -191,12 +201,14 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         initialize();
         initializeDropdowns();
+        
+        setDataInTabs();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
 
     private void initialize() {
-        final PrivateWellWaterSampleLoginScreen wellScreen = this;
+        screen = this;
 
         //
         // button panel buttons
@@ -385,7 +397,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                  * so that SampleItemAnalysisTreeTab can find the desired analysis
                  * and show the history.
                  */
-                ActionEvent.fire(wellScreen, ResultTab.Action.RESULT_HISTORY, null);
+                ActionEvent.fire(screen, ResultTab.Action.RESULT_HISTORY, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -491,8 +503,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                             DeferredCommand.addCommand(new Command() {
                                 public void execute() {
                                     setFocus(null);
+                                    setDataInTabs();
                                     setState(State.UPDATE);
-                                    DataChangeEvent.fire(wellScreen);
+                                    DataChangeEvent.fire(screen);
                                     window.clearStatus();
                                     quickUpdate = true;
                                 }
@@ -530,101 +543,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                int i;
-                ArrayList<QueryData> fields;
-                OrderManager man;
-                OrderTestViewDO otVDO;
-                Query query;
-                QueryData field;
-                TestViewDO tVDO;
-                ValidationErrorsList errors;
-
-                if (DataBaseUtil.isEmpty(event.getValue())) {
-                    manager.getSample().setOrderId(event.getValue());
-                    return;
-                }
-                
-                if (manager.getSample().getId() != null) {
-                    Window.alert(consts.get("existSampleCantFillFromOrder"));
-                    return;
-                } 
-                
-                manager.getSample().setOrderId(event.getValue());
-                
-                try {
-                    man = OrderManager.fetchById(event.getValue());
-                    if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
-                        orderNumber.addException(new LocalizedException("orderIdInvalidException"));                           
-                        return;
-                    }
-                } catch (NotFoundException e) {                    
-                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));
-                    return;
-                } catch (Exception ex) {
-                    Window.alert(ex.getMessage());
-                    return;
-                }
-
-                if (wellOrderImport == null)
-                    wellOrderImport = new SamplePrivateWellImportOrder();
-
-                try {
-                    errors = wellOrderImport.importOrderInfo(event.getValue(), manager);
-                    DataChangeEvent.fire(wellScreen);
-
-                    ArrayList<OrderTestViewDO> orderTests = wellOrderImport.getTestsFromOrder(event.getValue());
-
-                    if (orderTests != null && orderTests.size() > 0) {
-                        i = 0;
-                        while (i < orderTests.size()) {
-                            otVDO = orderTests.get(i);
-                            if (!"Y".equals(otVDO.getIsActive())) {
-                                query = new Query();
-                                fields = new ArrayList<QueryData>();
-    
-                                field = new QueryData();
-                                field.type = QueryData.Type.STRING;
-                                field.query = otVDO.getTestName();
-                                fields.add(field);
-                                
-                                field = new QueryData();
-                                field.type = QueryData.Type.STRING;
-                                field.query = otVDO.getMethodName();
-                                fields.add(field);
-                                
-                                query.setFields(fields);
-                                try {
-                                    tVDO = testService.call("fetchActiveByNameMethodName", query);
-                                    otVDO.setTestId(tVDO.getId());
-                                    otVDO.setDescription(tVDO.getDescription());
-                                } catch (NotFoundException nfE) {
-                                    if (errors == null)
-                                        errors = new ValidationErrorsList();
-                                    errors.add(new FormErrorException("inactiveTestOnOrderException",
-                                                                      otVDO.getTestName(),
-                                                                      otVDO.getMethodName()));
-                                    orderTests.remove(i);
-                                    continue;
-                                } catch (Exception anyE) {
-                                    anyE.printStackTrace();
-                                    orderTests.remove(i);
-                                    continue;
-                                }
-                            }
-                            i++;
-                        }
-                        
-                        ActionEvent.fire(wellScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
-                    }
-                    
-                    if (errors != null)
-                        showErrors(errors);
-
-                } catch (NotFoundException e) {
-                    // ignore
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
+                importOrder(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -632,6 +551,29 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                         .contains(event.getState())));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        orderNumber.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                Integer orderId, prevOrderId;
+                
+                if (canCopyFromPrevious(event)) { 
+                    orderId = manager.getSample().getOrderId();
+                    prevOrderId = previousManager.getSample().getOrderId();
+                    /*
+                     * we don't want to incur the cost of importing the order if
+                     * the order id in the previous manager is the same as the 
+                     * one in the current manager 
+                     */
+                    if (!DataBaseUtil.isSame(orderId, prevOrderId)) {
+                        importOrder(prevOrderId);
+                        orderNumber.setValue(Util.toString(prevOrderId));
+                    }
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(orderNumber);
+                }
             }
         });
 
@@ -665,6 +607,22 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        collectedDate.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                Datetime dt;
+                
+                if (canCopyFromPrevious(event)) {                    
+                    dt = previousManager.getSample().getCollectionDate();
+                    manager.getSample().setCollectionDate(dt);
+                    collectedDate.setValue(dt);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(collectedDate);
+                }
+            }
+        });
 
         collectedTime = (TextBox<Datetime>)def.getWidget(SampleMeta.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
@@ -680,6 +638,22 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 collectedTime.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                          .contains(event.getState()));
                 collectedTime.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        collectedTime.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                Datetime dt;
+                
+                if (canCopyFromPrevious(event)) {                    
+                    dt = previousManager.getSample().getCollectionTime();
+                    manager.getSample().setCollectionTime(dt);
+                    collectedTime.setValue(dt);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(collectedTime);
+                }
             }
         });
 
@@ -698,6 +672,22 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                          .contains(event.getState())));
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        receivedDate.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                Datetime dt;
+                
+                if (canCopyFromPrevious(event)) {
+                    dt = previousManager.getSample().getReceivedDate();
+                    manager.getSample().setReceivedDate(dt);
+                    receivedDate.setValue(dt);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(receivedDate);
+                }
             }
         });
 
@@ -734,6 +724,22 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        clientReference.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                String cr;
+                
+                if (canCopyFromPrevious(event)) {  
+                    cr = previousManager.getSample().getClientReference();
+                    manager.getSample().setClientReference(cr);
+                    clientReference.setValue(cr);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(clientReference);
+                }
+            }
+        });
 
         // Get TabPanel and set Tab Selection Handlers
         tabs = (TabPanel)def.getWidget("sampleItemTabPanel");
@@ -754,11 +760,10 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         // Set up tabs to recieve State Change events from the main Screen.
         // analysis tree section of the screen
-        treeTab = new SampleItemAnalysisTreeTab(def, window, wellScreen, historyUtility);
+        treeTab = new SampleItemAnalysisTreeTab(def, window, screen, historyUtility);
 
         addScreenHandler(treeTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                treeTab.setData(manager);
                 treeTab.draw();
             }
 
@@ -776,7 +781,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         addScreenHandler(privateWellTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                privateWellTab.setData(manager);
                 privateWellTab.draw();
             }
 
@@ -789,8 +793,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleItemTab.setData(null);
-
                 if (tab == Tabs.SAMPLE_ITEM)
                     drawTabs();
             }
@@ -804,8 +806,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisTab.setData(null);
-
                 if (tab == Tabs.ANALYSIS)
                     drawTabs();
             }
@@ -819,8 +819,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                testResultsTab.setData(null);
-
                 if (tab == Tabs.TEST_RESULT)
                     drawTabs();
             }
@@ -834,8 +832,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                                                 "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisNotesTab.setData(null);
-
                 if (tab == Tabs.ANALYSIS_NOTES)
                     drawTabs();
             }
@@ -850,8 +846,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                                             "sampleIntNoteButton");
         addScreenHandler(sampleNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleNotesTab.setManager(manager);
-
                 if (tab == Tabs.SAMPLE_NOTES)
                     drawTabs();
             }
@@ -864,8 +858,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         storageTab = new StorageTab(def, window);
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                storageTab.setData(null);
-
                 if (tab == Tabs.STORAGE)
                     drawTabs();
             }
@@ -878,9 +870,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         qaEventsTab = new QAEventsTab(def, window);
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                qaEventsTab.setData(null);
-                qaEventsTab.setManager(manager);
-
                 if (tab == Tabs.QA_EVENTS)
                     drawTabs();
             }
@@ -893,8 +882,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         auxDataTab = new AuxDataTab(def, window);
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                auxDataTab.setManager(manager);
-
                 if (tab == Tabs.AUX_DATA)
                     drawTabs();
             }
@@ -924,14 +911,14 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         sampleItemTab.addActionHandler(new ActionHandler<SampleItemTab.Action>() {
             public void onAction(ActionEvent<SampleItemTab.Action> event) {
                 if (state != State.QUERY)
-                    ActionEvent.fire(wellScreen, event.getAction(), event.getData());
+                    ActionEvent.fire(screen, event.getAction(), event.getData());
             }
         });
 
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
                 if (state != State.QUERY && event.getAction() != AnalysisTab.Action.UNIT_CHANGED)
-                    ActionEvent.fire(wellScreen, event.getAction(), event.getData());
+                    ActionEvent.fire(screen, event.getAction(), event.getData());
             }
         });
         
@@ -945,7 +932,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
             public void onAction(ActionEvent<ResultTab.Action> event) {
                 if (state != State.QUERY)
-                    ActionEvent.fire(wellScreen, event.getAction(), event.getData());
+                    ActionEvent.fire(screen, event.getAction(), event.getData());
             }
         });
 
@@ -1010,7 +997,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
 
-        setState(Screen.State.QUERY);
+        setDataInTabs();
+        setState(State.QUERY);
         DataChangeEvent.fire(this);
 
         // we need to make sure the tabs are cleared
@@ -1036,8 +1024,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
 
     protected void add() {
-        NoteViewDO exn;
-        
+        previousManager = manager;
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
 
@@ -1045,17 +1032,14 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         try {
             manager.setDefaults();
             manager.getSample().setReceivedById(UserCache.getPermission().getSystemUserId());
-            if (autoNote != null) { 
-                exn = manager.getExternalNote().getEditingNote();
-                exn.setIsExternal("Y");
-                exn.setText(autoNote.getText());
-            }
+            setDefaults();
         } catch (Exception e) {
             Window.alert(e.getMessage());
             return;
         }
         
-        setState(Screen.State.ADD);
+        setDataInTabs();
+        setState(State.ADD);
         DataChangeEvent.fire(this);
         setFocus(accessionNumber);
         window.setDone(consts.get("enterInformationPressCommit"));
@@ -1066,8 +1050,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
         try {
             manager = manager.fetchForUpdate();
+            
+            setDataInTabs();
             setState(State.UPDATE);
-
             DataChangeEvent.fire(this);
             setFocus(orderNumber);
         } catch (Exception e) {
@@ -1099,7 +1084,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 manager.validate();
                 manager = manager.add();
 
-                setState(Screen.State.DISPLAY);
+                setDataInTabs();
+                setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
@@ -1116,7 +1102,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 manager.validate();
                 manager = manager.update();
 
-                setState(Screen.State.DISPLAY);
+                setDataInTabs();
+                setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
                 quickUpdate = false;
@@ -1140,7 +1127,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             try {
                 manager = manager.add();
 
-                setState(Screen.State.DISPLAY);
+                setDataInTabs();
+                setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
@@ -1154,7 +1142,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             try {
                 manager = manager.update();
 
-                setState(Screen.State.DISPLAY);
+                setDataInTabs();
+                setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
                 quickUpdate = false;
@@ -1175,12 +1164,16 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         if (state == State.QUERY) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+            
+            setDataInTabs();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+            
+            setDataInTabs();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("addAborted"));
@@ -1190,10 +1183,13 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
 
                 quickUpdate = false;
                 if (SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) {
-                    setState(State.DEFAULT);
                     manager = SampleManager.getInstance();
-                    manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+                    manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+                    
+                    setDataInTabs();
+                    setState(State.DEFAULT);
                 } else {
+                    setDataInTabs();
                     setState(State.DISPLAY);
                 }
                 DataChangeEvent.fire(this);
@@ -1208,8 +1204,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
     
     protected void duplicate() {       
-        SampleDataBundle bundle;
-        
         try {
             window.setBusy(consts.get("fetching"));
             manager = SampleManager.fetchWithAllData(manager.getSample().getId());
@@ -1218,23 +1212,18 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 abort();
                 return;
             }
-            
+            previousManager = manager;
             manager = SampleDuplicateUtil.duplicate(manager);            
-            bundle = manager.getBundle();
             
-            treeTab.setData(manager);
-            privateWellTab.setData(manager);
-            sampleNotesTab.setManager(manager);
-            storageTab.setData(bundle);
-            auxDataTab.setManager(manager);
+            setDataInTabs();            
+            setState(State.ADD);            
             
             treeTab.draw();
             privateWellTab.draw();
-            sampleNotesTab.draw();
             storageTab.draw();
             auxDataTab.draw();
-        
-            setState(State.ADD);
+            sampleNotesTab.draw();
+            
             DataChangeEvent.fire(this);
 
             setFocus(accessionNumber);
@@ -1296,6 +1285,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
 
+            setDataInTabs();
             setState(State.DEFAULT);
         } else {
             window.setBusy(consts.get("fetching"));
@@ -1310,7 +1300,8 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 window.clearStatus();
                 return false;
             }
-            setState(Screen.State.DISPLAY);
+            setDataInTabs();
+            setState(State.DISPLAY);
         }
         DataChangeEvent.fire(this);
         window.clearStatus();
@@ -1424,6 +1415,16 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
     }
+    
+    private void setDefaults() throws Exception {
+        NoteViewDO exn;
+                
+        if (autoNote != null) {
+            exn = manager.getExternalNote().getEditingNote();
+            exn.setIsExternal("Y");
+            exn.setText(autoNote.getText());
+        }
+    }
 
     /**
      * We need to add additional fields to the list of queried fields if it
@@ -1517,6 +1518,132 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 fields.add(data);
             }
         }
+    }
+    
+    private boolean canCopyFromPrevious(KeyDownEvent event) {
+        return (previousManager != null) && (event.getNativeKeyCode() == 113);
+    }
+    
+    private void importOrder(Integer orderId) {
+        int i;
+        ArrayList<QueryData> fields;
+        OrderManager man;
+        TestViewDO test;
+        OrderTestViewDO orderTest;
+        Query query;
+        QueryData field;
+        ValidationErrorsList errors;
 
+        if (DataBaseUtil.isEmpty(orderId)) {
+            manager.getSample().setOrderId(orderId);
+            return;
+        }
+        
+        if (manager.getSample().getId() != null) {
+            Window.alert(consts.get("existSampleCantFillFromOrder"));
+            return;
+        } 
+        
+        manager.getSample().setOrderId(orderId);
+        
+        try {
+            man = OrderManager.fetchById(orderId);
+            if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                orderNumber.addException(new LocalizedException("orderIdInvalidException"));                           
+                return;
+            }
+        } catch (NotFoundException e) {                    
+            orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+            return;
+        } catch (Exception ex) {
+            Window.alert(ex.getMessage());
+            return;
+        }
+
+        if (wellOrderImport == null)
+            wellOrderImport = new SamplePrivateWellImportOrder();
+
+        try {
+            errors = wellOrderImport.importOrderInfo(orderId, manager);
+            
+            setDataInTabs();
+            DataChangeEvent.fire(screen);
+
+            ArrayList<OrderTestViewDO> orderTests = wellOrderImport.getTestsFromOrder(orderId);
+
+            if (orderTests != null && orderTests.size() > 0) {
+                i = 0;
+                while (i < orderTests.size()) {
+                    orderTest = orderTests.get(i);
+                    if (!"Y".equals(orderTest.getIsActive())) {
+                        query = new Query();
+                        fields = new ArrayList<QueryData>();
+
+                        field = new QueryData();
+                        field.type = QueryData.Type.STRING;
+                        field.query = orderTest.getTestName();
+                        fields.add(field);
+                        
+                        field = new QueryData();
+                        field.type = QueryData.Type.STRING;
+                        field.query = orderTest.getMethodName();
+                        fields.add(field);
+                        
+                        query.setFields(fields);
+                        try {
+                            test = testService.call("fetchActiveByNameMethodName", query);
+                            orderTest.setTestId(test.getId());
+                            orderTest.setDescription(test.getDescription());
+                        } catch (NotFoundException nfE) {
+                            if (errors == null)
+                                errors = new ValidationErrorsList();
+                            errors.add(new FormErrorException("inactiveTestOnOrderException",
+                                                              orderTest.getTestName(),
+                                                              orderTest.getMethodName()));
+                            orderTests.remove(i);
+                            continue;
+                        } catch (Exception anyE) {
+                            anyE.printStackTrace();
+                            orderTests.remove(i);
+                            continue;
+                        }
+                    }
+                    i++;
+                }
+                
+                ActionEvent.fire(screen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+            }
+            
+            if (errors != null)
+                showErrors(errors);
+
+        } catch (NotFoundException e) {
+            // ignore
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+    }
+    
+    private void setFocusToNext(Widget currWidget) {
+        NativeEvent pressEvent;
+        
+        pressEvent = Document.get().createKeyPressEvent(false, false, false, false, 
+                                                        KeyCodes.KEY_TAB, KeyCodes.KEY_TAB);        
+        KeyPressEvent.fireNativeEvent(pressEvent, currWidget);
+    }
+    
+    private void setDataInTabs() {
+        treeTab.setData(manager);
+        privateWellTab.setData(manager);
+        privateWellTab.setPreviousData(previousManager);
+        sampleItemTab.setData(null);
+        analysisTab.setData(null);
+        testResultsTab.setData(null);
+        analysisNotesTab.setData(null);
+        sampleNotesTab.setManager(manager);
+        storageTab.setData(null);
+        qaEventsTab.setData(null);
+        qaEventsTab.setManager(manager);
+        auxDataTab.setManager(manager);
     }
 }
