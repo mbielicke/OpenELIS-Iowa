@@ -28,12 +28,16 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.mail.internet.AddressException;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.entity.OrganizationParameter;
@@ -41,8 +45,10 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.OrganizationParameterLocal;
 import org.openelis.meta.OrganizationMeta;
+import org.openelis.utils.EmailUtil;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -50,7 +56,24 @@ import org.openelis.meta.OrganizationMeta;
 public class OrganizationParameterBean implements OrganizationParameterLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                    manager;
+    private EntityManager              manager;
+    
+    @EJB
+    private DictionaryLocal            dictionary;
+    
+    private static final Logger log = Logger.getLogger(OrganizationParameterBean.class);
+    
+    private static Integer             receivableReportToId, releasedReportToId;
+    
+    @PostConstruct
+    public void init() {
+        try {
+            receivableReportToId = dictionary.fetchBySystemName("receivable_reportto_email").getId();
+            releasedReportToId = dictionary.fetchBySystemName("released_reportto_email").getId();
+        } catch (Throwable e) {
+            log.error("Failed to lookup constants for dictionary entries", e);
+        }
+    }
 
     public ArrayList<OrganizationParameterDO> fetchByOrganizationId(Integer id) throws Exception {
         Query query;
@@ -123,15 +146,29 @@ public class OrganizationParameterBean implements OrganizationParameterLocal {
     }
 
     public void validate(OrganizationParameterDO data) throws Exception {
+        Integer typeId;
+        String value;
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
-        if (DataBaseUtil.isEmpty(data.getTypeId()))
+        typeId = data.getTypeId();
+        value = data.getValue();
+        
+        if (DataBaseUtil.isEmpty(typeId))
             list.add(new FieldErrorException("fieldRequiredException",
                                              OrganizationMeta.getOrganizationParameterTypeId()));
-        if (DataBaseUtil.isEmpty(data.getValue()))
+        if (DataBaseUtil.isEmpty(value)) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              OrganizationMeta.getOrganizationParameterValue()));
+        } else if (receivableReportToId.equals(typeId) || releasedReportToId.equals(typeId)) {
+            try {
+                EmailUtil.validateAddress(value);
+            } catch (AddressException e) {
+                list.add(new FieldErrorException("invalidFormatEmailException",
+                                                 OrganizationMeta.getOrganizationParameterValue(), value));
+            }
+        }
+        
         if (list.size() > 0)
             throw list;
     }
