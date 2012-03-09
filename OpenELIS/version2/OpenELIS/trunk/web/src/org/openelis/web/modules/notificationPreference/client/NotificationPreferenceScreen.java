@@ -37,6 +37,7 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.PermissionException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
@@ -401,75 +402,82 @@ public class NotificationPreferenceScreen extends Screen {
     
     
     private void add(AddEditEmailVO data) {
-        OrganizationManager oman; 
+        OrganizationManager oman;
         OrganizationParameterManager pman;
         ArrayList<OrganizationParameterDO> list;
-        
+
         window.setBusy(consts.get("adding"));
-        try {
-             //
-             // we try to lock the manager on the screen to be updated and commit its data  
-             //
-            for (int i = 0; i < managerList.size(); i++) {                
-                oman = managerList.get(i);
+        for (int i = 0; i < managerList.size(); i++ ) {
+            oman = managerList.get(i);
+            try {
+                //
+                // we try to lock the manager on the screen to be updated and
+                // commit its data
+                //
                 if (oman.getOrganization().getId().equals(data.getOrganizationId())) {
-                    oman = oman.fetchForUpdate();  
+                    oman = oman.fetchForUpdate();
                     pman = oman.getParameters();
-                    list = createParameters(pman,data);
+                    list = createParameters(pman, data);
                     /*
-                     * a DO is created for each type that the email entered on 
+                     * a DO is created for each type that the email entered on
                      * AddEditEmailScreen is specified to belong to and each of
-                     * those DO's is added to the OrganizationParameterManager 
-                     * in this OrganizationManager    
+                     * those DO's is added to the OrganizationParameterManager
+                     * in this OrganizationManager
                      */
-                    for (int j = 0; j < list.size(); j++) 
-                        pman.addParameter(list.get(j));                    
+                    for (int j = 0; j < list.size(); j++ )
+                        pman.addParameter(list.get(j));
                     managerList.set(i, oman.updateForNotify());
                     break;
                 }
+            } catch (EntityLockedException e) {
+                Window.alert(consts.get("recordNotAvailableLockException"));
+            } catch (ValidationErrorsList e) {
+                for (int j = 0; j < e.size(); j++) 
+                    Window.alert(e.getErrorList().get(j).getMessage()); 
+                try {
+                    oman.abortUpdate();
+                } catch (Exception e1) {
+                    Window.alert(e1.getMessage());
+                    e1.printStackTrace();
+                }
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
             }
-            
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);
-            window.setDone(consts.get("addingComplete"));
-        } catch (EntityLockedException e) {
-            Window.alert(consts.get("recordNotAvailableLockException"));
-            window.clearStatus();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
         }
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);
+        window.setDone(consts.get("addingComplete"));
     }
     
     private void update(AddEditEmailVO data) {
-        OrganizationManager oman; 
+        OrganizationManager oman;
         OrganizationParameterManager pman;
         ArrayList<OrganizationParameterDO> list;
         OrganizationParameterDO par;
         TableDataRow row;
-        
-        
+
         window.setBusy(consts.get("updating"));
-        try {
-             //
-             // we try to lock the manager on the screen to be updated and commit its data  
-             //
-            row = table.getSelection();
-            list = (ArrayList<OrganizationParameterDO>)row.data;            
-            for (int i = 0; i < managerList.size(); i++) {                
-                oman = managerList.get(i);
+        row = table.getSelection();
+        list = (ArrayList<OrganizationParameterDO>)row.data;
+        for (int i = 0; i < managerList.size(); i++ ) {
+            oman = managerList.get(i);
+            try {
+                //
+                // we try to lock the manager on the screen to be updated and
+                // commit its data
+                //
                 if (oman.getOrganization().getId().equals(data.getOrganizationId())) {
-                    oman = oman.fetchForUpdate();  
+                    oman = oman.fetchForUpdate();
                     pman = oman.getParameters();
                     /*
-                     * all the DO's in the fetched manager corresponding to 
-                     * the ones linked to this row are tried to be found and
-                     * their values are set to data's email     
+                     * all the DO's in the fetched manager corresponding to the
+                     * ones linked to this row are tried to be found and their
+                     * values are set to data's email
                      */
-                    for (int j = 0; j < pman.count(); j++) {
+                    for (int j = 0; j < pman.count(); j++ ) {
                         par = pman.getParameterAt(j);
-                        for (int k = 0; k < list.size(); k++) {
+                        for (int k = 0; k < list.size(); k++ ) {
                             if (par.getId().equals(list.get(k).getId())) {
                                 par.setValue(data.getEmail());
                                 break;
@@ -479,48 +487,56 @@ public class NotificationPreferenceScreen extends Screen {
                     managerList.set(i, oman.updateForNotify());
                     break;
                 }
+            } catch (EntityLockedException e) {
+                Window.alert(consts.get("recordNotAvailableLockException"));
+            } catch (ValidationErrorsList e) {
+                for (int j = 0; j < e.size(); j++) 
+                    Window.alert(e.getErrorList().get(j).getMessage());    
+                try {
+                    oman.abortUpdate();
+                } catch (Exception e1) {
+                    Window.alert(e1.getMessage());
+                    e1.printStackTrace();
+                }
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
             }
-            
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);
-            window.setDone(consts.get("updatingComplete"));
-        } catch (EntityLockedException e) {
-            Window.alert(consts.get("recordNotAvailableLockException"));
-            window.clearStatus();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
         }
+
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);
+        window.setDone(consts.get("updatingComplete"));
     }
     
     private void delete() {
-        OrganizationManager oman; 
+        OrganizationManager oman;
         OrganizationParameterManager pman;
         ArrayList<OrganizationParameterDO> list;
         OrganizationParameterDO data, par;
         TableDataRow row;
-                
+
         window.setBusy(consts.get("deleting"));
-        try {
-             //
-             // we try to lock the manager on the screen to be updated and commit its data  
-             //
-            row = table.getSelection();
-            list = (ArrayList<OrganizationParameterDO>)row.data;            
-            for (int i = 0; i < managerList.size(); i++) {                
-                oman = managerList.get(i);
+        row = table.getSelection();
+        list = (ArrayList<OrganizationParameterDO>)row.data;
+        for (int i = 0; i < managerList.size(); i++ ) {
+            oman = managerList.get(i);
+            try {
+                //
+                // we try to lock the manager on the screen to be updated and
+                // commit its data
+                //
                 if (oman.getOrganization().getId().equals(list.get(0).getOrganizationId())) {
-                    oman = oman.fetchForUpdate();  
+                    oman = oman.fetchForUpdate();
                     pman = oman.getParameters();
                     /*
                      * all the DO's in the fetched OrganizationParameterManager
-                     * that have the same ids as the ones linked to the row being
-                     * deleted are searched for and removed if found
+                     * that have the same ids as the ones linked to the row
+                     * being deleted are searched for and removed if found
                      */
-                    for (int j = 0; j < list.size(); j++) {
+                    for (int j = 0; j < list.size(); j++ ) {
                         data = list.get(j);
-                        for (int k = 0; k < pman.count(); k++) {
+                        for (int k = 0; k < pman.count(); k++ ) {
                             par = pman.getParameterAt(k);
                             if (par.getId().equals(data.getId())) {
                                 pman.removeParameter(par);
@@ -531,19 +547,18 @@ public class NotificationPreferenceScreen extends Screen {
                     managerList.set(i, oman.updateForNotify());
                     break;
                 }
+
+            } catch (EntityLockedException e) {
+                Window.alert(consts.get("recordNotAvailableLockException"));
+            } catch (Exception e) {
+                Window.alert(e.getMessage());
+                e.printStackTrace();
             }
-            
-            setState(State.DEFAULT);
-            DataChangeEvent.fire(this);
-            window.setDone(consts.get("deleteComplete"));
-        } catch (EntityLockedException e) {
-            Window.alert(consts.get("recordNotAvailableLockException"));
-            window.clearStatus();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
-        }        
+        }
+
+        setState(State.DEFAULT);
+        DataChangeEvent.fire(this);
+        window.setDone(consts.get("deleteComplete"));
     }
     
     private ArrayList<OrganizationParameterDO> createParameters(OrganizationParameterManager man, AddEditEmailVO data) {        
