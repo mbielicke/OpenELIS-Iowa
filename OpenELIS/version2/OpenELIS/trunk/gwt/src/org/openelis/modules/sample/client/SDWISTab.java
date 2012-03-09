@@ -34,6 +34,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -61,14 +62,22 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.pws.client.PWSScreen;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Widget;
 
 public class SDWISTab extends Screen {
     private Dropdown<Integer>              sampleTypeId, sampleCategoryId;
@@ -82,8 +91,8 @@ public class SDWISTab extends Screen {
 
     protected ScreenService                orgService, pwsService;
 
-    private SampleManager                  manager;
-    private SampleSDWISManager             sdwisManager;
+    private SampleManager                  manager, previousManager;
+    private SampleSDWISManager             sdwisManager, previousSDWISManager;
 
     private Integer                        sampleReleasedId;
 
@@ -155,6 +164,29 @@ public class SDWISTab extends Screen {
                 pwsId.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        pwsId.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String pnum, pname;
+                    SampleSDWISViewDO data, prevData;
+
+                    data = getSDWISManager().getSDWIS();
+                    prevData = getPreviousSDWISManager().getSDWIS();
+                    pnum = prevData.getPwsNumber0();
+                    pname = prevData.getPwsName();
+                    
+                    data.setPwsNumber0(pnum);                    
+                    data.setPwsName(pname);                    
+                    pwsId.setValue(pnum);
+                    pwsName.setValue(pname);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();                   
+                    setFocusToNext(pwsId);
+                }
+            }
+        });
 
         pwsButton = (AppButton)def.getWidget("pwsButton");
         addScreenHandler(pwsButton, new ScreenEventHandler<Object>() {
@@ -198,6 +230,22 @@ public class SDWISTab extends Screen {
                 stateLabId.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        stateLabId.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    Integer labId;
+
+                    labId = getPreviousSDWISManager().getSDWIS().getStateLabId();
+                    getSDWISManager().getSDWIS().setStateLabId(labId);
+                    stateLabId.setValue(labId);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();                   
+                    setFocusToNext(stateLabId);
+                }
+            }
+        });
 
         facilityId = (TextBox)def.getWidget(SampleMeta.getSDWISFacilityId());
         addScreenHandler(facilityId, new ScreenEventHandler<String>() {
@@ -216,6 +264,22 @@ public class SDWISTab extends Screen {
                 facilityId.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        facilityId.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String facId;
+
+                    facId = getPreviousSDWISManager().getSDWIS().getFacilityId();
+                    getSDWISManager().getSDWIS().setFacilityId(facId);
+                    facilityId.setValue(facId);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();                   
+                    setFocusToNext(facilityId);
+                }
+            }
+        });
 
         sampleTypeId = (Dropdown)def.getWidget(SampleMeta.getSDWISSampleTypeId());
         addScreenHandler(sampleTypeId, new ScreenEventHandler<Integer>() {
@@ -232,6 +296,22 @@ public class SDWISTab extends Screen {
                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                          .contains(event.getState())));
                 sampleTypeId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        sampleTypeId.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    Integer typeId;
+
+                    typeId = getPreviousSDWISManager().getSDWIS().getSampleTypeId();
+                    getSDWISManager().getSDWIS().setSampleTypeId(typeId);
+                    sampleTypeId.setValue(typeId);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();                   
+                    setFocusToNext(sampleTypeId);
+                }
             }
         });
 
@@ -253,6 +333,22 @@ public class SDWISTab extends Screen {
                 sampleCategoryId.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        sampleCategoryId.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    Integer catId;
+
+                    catId = getPreviousSDWISManager().getSDWIS().getSampleCategoryId();
+                    getSDWISManager().getSDWIS().setSampleCategoryId(catId);
+                    sampleCategoryId.setValue(catId);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();                   
+                    setFocusToNext(sampleCategoryId);
+                }
+            }
+        });
 
         samplePointId = (TextBox)def.getWidget(SampleMeta.getSDWISSamplePointId());
         addScreenHandler(samplePointId, new ScreenEventHandler<String>() {
@@ -269,6 +365,22 @@ public class SDWISTab extends Screen {
                                      (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                           .contains(event.getState())));
                 samplePointId.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        samplePointId.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String pntId;
+
+                    pntId = getPreviousSDWISManager().getSDWIS().getSamplePointId();
+                    getSDWISManager().getSDWIS().setSamplePointId(pntId);
+                    samplePointId.setValue(pntId);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();                   
+                    setFocusToNext(samplePointId);
+                }
             }
         });
 
@@ -289,6 +401,22 @@ public class SDWISTab extends Screen {
                 pointDesc.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        pointDesc.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String loc;
+
+                    loc = getPreviousSDWISManager().getSDWIS().getLocation();
+                    getSDWISManager().getSDWIS().setLocation(loc);
+                    pointDesc.setValue(loc);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();                   
+                    setFocusToNext(pointDesc);
+                }
+            }
+        });
 
         collector = (TextBox)def.getWidget(SampleMeta.getSDWISCollector());
         addScreenHandler(collector, new ScreenEventHandler<String>() {
@@ -305,6 +433,22 @@ public class SDWISTab extends Screen {
                                  (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                       .contains(event.getState())));
                 collector.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        collector.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    String coll;
+
+                    coll = getPreviousSDWISManager().getSDWIS().getCollector();
+                    getSDWISManager().getSDWIS().setCollector(coll);
+                    collector.setValue(coll);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();                   
+                    setFocusToNext(collector);
+                }
             }
         });
 
@@ -371,6 +515,53 @@ public class SDWISTab extends Screen {
 
             }
         });
+        
+        reportTo.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    SampleOrganizationViewDO data, prevData;
+                    SampleOrganizationManager man;
+
+                    try {                        
+                        man = manager.getOrganizations();
+                        prevData = previousManager.getOrganizations().getReportTo();
+                        data = man.getReportTo();
+                        
+                        if (prevData == null) {
+                            /*
+                             * if there was no report-to in the previous sample
+                             * then we try to remove the report-to for this sample
+                             * if there is one; we also blank out the autocomplete  
+                             */
+                            man.removeReportTo();
+                            reportTo.setSelection(null, "");
+                        } else {
+                            /*
+                             * if there was a report-to in the previous sample
+                             * then we create a DO for it if there isn't one and
+                             * set all its relevant fields; we also set the value
+                             * in the autocomplete
+                             */
+                            if (data == null) {
+                                data = new SampleOrganizationViewDO();
+                                man.setReportTo(data);                                
+                            }
+                            data.setOrganizationId(prevData.getOrganizationId());
+                            data.setOrganizationName(prevData.getOrganizationName());
+                            data.setOrganizationCity(prevData.getOrganizationCity());
+                            data.setOrganizationState(prevData.getOrganizationState());
+                            reportTo.setSelection(data.getOrganizationId(), data.getOrganizationName());     
+                        }                        
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(reportTo);
+                }
+            }
+        });
 
         billTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getBillTo());
         addScreenHandler(billTo, new ScreenEventHandler<String>() {
@@ -430,7 +621,53 @@ public class SDWISTab extends Screen {
         billTo.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 getOrganizationMatches(event.getMatch(), billTo);
+            }
+        });
+        
+        billTo.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    SampleOrganizationViewDO data, prevData;
+                    SampleOrganizationManager man;
 
+                    try {                        
+                        man = manager.getOrganizations();
+                        prevData = previousManager.getOrganizations().getBillTo();
+                        data = man.getBillTo();
+                        
+                        if (prevData == null) {
+                            /*
+                             * if there was no bill-to in the previous sample
+                             * then we try to remove the bill-to for this sample
+                             * if there is one; we also blank out the autocomplete  
+                             */
+                            man.removeBillTo();
+                            billTo.setSelection(null, "");
+                        } else {
+                            /*
+                             * if there was a bill-to in the previous sample
+                             * then we create a DO for it if there isn't one and
+                             * set all its relevant fields; we also set the value
+                             * in the autocomplete
+                             */
+                            if (data == null) {
+                                data = new SampleOrganizationViewDO();
+                                man.setBillTo(data);                                
+                            }
+                            data.setOrganizationId(prevData.getOrganizationId());
+                            data.setOrganizationName(prevData.getOrganizationName());
+                            data.setOrganizationCity(prevData.getOrganizationCity());
+                            data.setOrganizationState(prevData.getOrganizationState());
+                            billTo.setSelection(data.getOrganizationId(), data.getOrganizationName());     
+                        }                        
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(billTo);
+                }
             }
         });
 
@@ -482,6 +719,11 @@ public class SDWISTab extends Screen {
         this.manager = manager;
         sdwisManager = null;
         loaded = false;
+    }
+    
+    public void setPreviousData(SampleManager previousManager) {
+        this.previousManager = previousManager;
+        previousSDWISManager = null;
     }
 
     public void draw() {
@@ -651,5 +893,27 @@ public class SDWISTab extends Screen {
         }
 
         return sdwisManager;
+    }
+    
+    private SampleSDWISManager getPreviousSDWISManager() {
+        if (previousSDWISManager == null) {
+            try {
+                previousSDWISManager = (SampleSDWISManager)previousManager.getDomainManager();
+            } catch (Exception e) {
+                previousSDWISManager = SampleSDWISManager.getInstance();
+            }
+        }
+        return previousSDWISManager;
+    }
+    
+    private boolean canCopyFromPrevious(KeyDownEvent event) {
+        return (previousManager != null) && event.getNativeKeyCode() == 113;
+    }
+    
+    private void setFocusToNext(Widget currWidget) {
+        NativeEvent event;
+        
+        event = Document.get().createKeyPressEvent(false, false, false, false, KeyCodes.KEY_TAB, KeyCodes.KEY_TAB);        
+        KeyPressEvent.fireNativeEvent(event, currWidget);
     }
 }

@@ -131,7 +131,7 @@ public class SampleDuplicateUtil {
     }
     
     private static void duplicateSampleItems(SampleItemManager newMan, SampleItemManager oldMan) throws Exception {
-        int i,j,index;
+        int i, index;
         SampleItemViewDO newData, oldData;
         HashMap<Integer, AnalysisViewDO> oldNewAnaMap;
         

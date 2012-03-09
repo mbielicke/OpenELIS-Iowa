@@ -161,7 +161,7 @@ UIRF Software License are applicable instead of those above.
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"adjDate")' />:
               </text>
-              <calendar key="{meta:getAdjustmentDate()}" begin="0" end="2" width="90" tab="{meta:getSystemUserId()},{meta:getDescription()}" required  = "true"/>
+              <calendar key="{meta:getAdjustmentDate()}" begin="0" end="2" width="90" pattern="{resource:getString($constants,'datePattern')}" tab="{meta:getSystemUserId()},{meta:getDescription()}" required  = "true"/>
               <text style="Prompt">
                 <xsl:value-of select='resource:getString($constants,"user")' />:
               </text>

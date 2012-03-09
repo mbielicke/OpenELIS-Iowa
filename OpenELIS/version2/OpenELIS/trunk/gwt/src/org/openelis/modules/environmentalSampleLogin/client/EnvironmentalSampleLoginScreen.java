@@ -93,7 +93,13 @@ import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.StorageTab;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Document;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.event.dom.client.KeyPressEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
 import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -103,13 +109,14 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class EnvironmentalSampleLoginScreen extends Screen implements HasActionHandlers {
     private boolean                        quickUpdate;
-    private SampleManager                  manager;
+    private SampleManager                  manager, previousManager;
     protected Tabs                         tab;
     private Integer                        sampleReleasedId;
-
+    private EnvironmentalSampleLoginScreen screen;
     private SampleItemAnalysisTreeTab      treeTab;
     private EnvironmentalTab               environmentalTab;
     private SampleItemTab                  sampleItemTab;
@@ -194,12 +201,14 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         initialize();
         initializeDropdowns();
+        
+        setDataInTabs();
         setState(State.DEFAULT);
         DataChangeEvent.fire(this);
     }
 
     private void initialize() {
-        final EnvironmentalSampleLoginScreen envScreen = this;
+        screen = this;
         //
         // button panel buttons
         //
@@ -315,7 +324,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         historyUtility = new SampleHistoryUtility(window) {
             public void historyCurrentResult() {
-                ActionEvent.fire(envScreen, ResultTab.Action.RESULT_HISTORY, null);
+                ActionEvent.fire(screen, ResultTab.Action.RESULT_HISTORY, null);
             }
         };
 
@@ -404,7 +413,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                  * so that SampleItemAnalysisTreeTab can find the desired analysis
                  * and show the history.
                  */
-                ActionEvent.fire(envScreen, ResultTab.Action.RESULT_HISTORY, null);
+                ActionEvent.fire(screen, ResultTab.Action.RESULT_HISTORY, null);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -463,7 +472,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         //
         // screen fields
         //
-
         accessionNumber = (TextBox<Integer>)def.getWidget(SampleMeta.getAccessionNumber());
         addScreenHandler(accessionNumber, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -513,9 +521,10 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                             setDefaults();
                             DeferredCommand.addCommand(new Command() {
                             	public void execute() {
-                            		 setFocus(null);
+                            		 setFocus(null);                            		 
+                            		 setDataInTabs();
                                      setState(State.UPDATE);
-                                     DataChangeEvent.fire(envScreen);
+                                     DataChangeEvent.fire(screen);
                                      window.clearStatus();
                                      quickUpdate = true;
                             	}
@@ -553,102 +562,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                int i;
-                ArrayList<QueryData> fields;
-                OrderManager man;
-                OrderTestViewDO otVDO;
-                Query query;
-                QueryData field;
-                TestViewDO tVDO;
-                ValidationErrorsList errors;
-                
-                if (DataBaseUtil.isEmpty(event.getValue())) {
-                    manager.getSample().setOrderId(event.getValue());
-                    return;
-                }
-                
-                if (manager.getSample().getId() != null) {
-                    Window.alert(consts.get("existSampleCantFillFromOrder"));
-                    return;
-                } 
-                
-                manager.getSample().setOrderId(event.getValue());
-                
-                try {
-                    man = OrderManager.fetchById(event.getValue());
-                    if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
-                        orderNumber.addException(new LocalizedException("orderIdInvalidException"));                           
-                        return;
-                    }
-                } catch (NotFoundException e) {                    
-                    orderNumber.addException(new LocalizedException("orderIdInvalidException"));
-                    return;
-                } catch (Exception ex) {
-                    Window.alert(ex.getMessage());
-                    return;
-                }
-                                                               
-                if (envOrderImport == null)
-                    envOrderImport = new SampleEnvironmentalImportOrder();
-
-                try {
-                    errors = envOrderImport.importOrderInfo(event.getValue(), manager);
-
-                    DataChangeEvent.fire(envScreen);
-
-                    ArrayList<OrderTestViewDO> orderTests = envOrderImport.getTestsFromOrder(event.getValue());
-
-                    if (orderTests != null && orderTests.size() > 0) {
-                        i = 0;
-                        while (i < orderTests.size()) {
-                            otVDO = orderTests.get(i);
-                            if (!"Y".equals(otVDO.getIsActive())) {
-                                query = new Query();
-                                fields = new ArrayList<QueryData>();
-
-                                field = new QueryData();
-                                field.type = QueryData.Type.STRING;
-                                field.query = otVDO.getTestName();
-                                fields.add(field);
-                                
-                                field = new QueryData();
-                                field.type = QueryData.Type.STRING;
-                                field.query = otVDO.getMethodName();
-                                fields.add(field);
-                                
-                                query.setFields(fields);
-                                try {
-                                    tVDO = testService.call("fetchActiveByNameMethodName", query);
-                                    otVDO.setTestId(tVDO.getId());
-                                    otVDO.setDescription(tVDO.getDescription());
-                                } catch (NotFoundException nfE) {
-                                    if (errors == null)
-                                        errors = new ValidationErrorsList();
-                                    errors.add(new FormErrorException("inactiveTestOnOrderException",
-                                                                      otVDO.getTestName(),
-                                                                      otVDO.getMethodName()));
-                                    orderTests.remove(i);
-                                    continue;
-                                } catch (Exception anyE) {
-                                    anyE.printStackTrace();
-                                    orderTests.remove(i);
-                                    continue;
-                                }
-                            }
-                            i++;
-                        }
-                        
-                        ActionEvent.fire(envScreen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
-                    }
-                    
-                    if (errors != null)
-                        showErrors(errors);
-
-                } catch (NotFoundException e) {
-                    // ignore
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
+                importOrder(event.getValue());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -656,6 +570,30 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                    (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                         .contains(event.getState())));
                 orderNumber.setQueryMode(event.getState() == State.QUERY);
+            }
+            
+        });
+        
+        orderNumber.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                Integer orderId, prevOrderId;
+                
+                if (canCopyFromPrevious(event)) { 
+                    orderId = manager.getSample().getOrderId();
+                    prevOrderId = previousManager.getSample().getOrderId();
+                    /*
+                     * we don't want to incur the cost of importing the order if
+                     * the order id in the previous manager is the same as the 
+                     * one in the current manager 
+                     */
+                    if (!DataBaseUtil.isSame(orderId, prevOrderId)) {
+                        importOrder(prevOrderId);
+                        orderNumber.setValue(Util.toString(prevOrderId));
+                    }
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(orderNumber);
+                }
             }
         });
         
@@ -689,11 +627,26 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 collectedDate.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        collectedDate.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                if (canCopyFromPrevious(event)) {
+                    Datetime dt;
+                    
+                    dt = previousManager.getSample().getCollectionDate();
+                    manager.getSample().setCollectionDate(dt);
+                    collectedDate.setValue(dt);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(collectedDate);
+                }
+            }
+        });
 
         collectedTime = (TextBox<Datetime>)def.getWidget(SampleMeta.getCollectionTime());
         addScreenHandler(collectedTime, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-
                 collectedTime.setValue(manager.getSample().getCollectionTime());
             }
 
@@ -705,6 +658,22 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 collectedTime.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                          .contains(event.getState()));
                 collectedTime.setQueryMode(event.getState() == State.QUERY);            }
+        });
+        
+        collectedTime.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                Datetime dt;
+                
+                if (canCopyFromPrevious(event)) {                    
+                    dt = previousManager.getSample().getCollectionTime();
+                    manager.getSample().setCollectionTime(dt);
+                    collectedTime.setValue(dt);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(collectedTime);
+                }
+            }
         });
 
         receivedDate = (CalendarLookUp)def.getWidget(SampleMeta.getReceivedDate());
@@ -722,6 +691,22 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
                                                          .contains(event.getState())));
                 receivedDate.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
+        receivedDate.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                Datetime dt;
+                
+                if (canCopyFromPrevious(event)) {
+                    dt = previousManager.getSample().getReceivedDate();
+                    manager.getSample().setReceivedDate(dt);
+                    receivedDate.setValue(dt);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(receivedDate);
+                }
             }
         });
 
@@ -758,14 +743,29 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 clientReference.setQueryMode(event.getState() == State.QUERY);
             }
         });
+        
+        clientReference.addKeyDownHandler(new KeyDownHandler() {            
+            public void onKeyDown(KeyDownEvent event) {
+                String cr;
+                
+                if (canCopyFromPrevious(event)) {  
+                    cr = previousManager.getSample().getClientReference();
+                    manager.getSample().setClientReference(cr);
+                    clientReference.setValue(cr);
+                    
+                    event.preventDefault();
+                    event.stopPropagation();
+                    setFocusToNext(clientReference);
+                }
+            }
+        });
 
         // Set up tabs to recieve State Change events from the main Screen.
         // analysis tree section of the screen
-        treeTab = new SampleItemAnalysisTreeTab(def, window, envScreen, historyUtility);
+        treeTab = new SampleItemAnalysisTreeTab(def, window, screen, historyUtility);
 
         addScreenHandler(treeTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                treeTab.setData(manager);
                 treeTab.draw();
             }
 
@@ -783,7 +783,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         addScreenHandler(environmentalTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                environmentalTab.setData(manager);
                 environmentalTab.draw();
             }
 
@@ -796,8 +795,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         addScreenHandler(sampleItemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleItemTab.setData(null);
-
                 if (tab == Tabs.SAMPLE_ITEM)
                     drawTabs();
             }
@@ -811,8 +808,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         addScreenHandler(analysisTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisTab.setData(null);
-
                 if (tab == Tabs.ANALYSIS)
                     drawTabs();
             }
@@ -826,8 +821,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         addScreenHandler(testResultsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                testResultsTab.setData(null);
-
                 if (tab == Tabs.TEST_RESULT)
                     drawTabs();
             }
@@ -841,8 +834,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                                 "anIntNotesPanel", "anIntNoteButton");
         addScreenHandler(analysisNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisNotesTab.setData(null);
-
                 if (tab == Tabs.ANALYSIS_NOTES)
                     drawTabs();
             }
@@ -857,8 +848,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                             "sampleIntNoteButton");
         addScreenHandler(sampleNotesTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleNotesTab.setManager(manager);
-
                 if (tab == Tabs.SAMPLE_NOTES)
                     drawTabs();
             }
@@ -871,8 +860,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         storageTab = new StorageTab(def, window);
         addScreenHandler(storageTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                storageTab.setData(null);
-
                 if (tab == Tabs.STORAGE)
                     drawTabs();
             }
@@ -885,9 +872,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         qaEventsTab = new QAEventsTab(def, window);
         addScreenHandler(qaEventsTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                qaEventsTab.setData(null);
-                qaEventsTab.setManager(manager);
-
                 if (tab == Tabs.QA_EVENTS)
                     drawTabs();
             }
@@ -900,8 +884,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         auxDataTab = new AuxDataTab(def, window);
         addScreenHandler(auxDataTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                auxDataTab.setManager(manager);
-
                 if (tab == Tabs.AUX_DATA)
                     drawTabs();
             }
@@ -933,14 +915,14 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         sampleItemTab.addActionHandler(new ActionHandler<SampleItemTab.Action>() {
             public void onAction(ActionEvent<SampleItemTab.Action> event) {
                 if (state != State.QUERY)
-                    ActionEvent.fire(envScreen, event.getAction(), event.getData());
+                    ActionEvent.fire(screen, event.getAction(), event.getData());
             }
         });
 
         analysisTab.addActionHandler(new ActionHandler<AnalysisTab.Action>() {
             public void onAction(ActionEvent<AnalysisTab.Action> event) {
                 if (state != State.QUERY && event.getAction() != AnalysisTab.Action.UNIT_CHANGED)                     
-                    ActionEvent.fire(envScreen, event.getAction(), event.getData());                
+                    ActionEvent.fire(screen, event.getAction(), event.getData());                
             }
         });
         /*
@@ -953,7 +935,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         testResultsTab.addActionHandler(new ActionHandler<ResultTab.Action>() {
             public void onAction(ActionEvent<ResultTab.Action> event) {
                 if (state != State.QUERY)
-                    ActionEvent.fire(envScreen, event.getAction(), event.getData());
+                    ActionEvent.fire(screen, event.getAction(), event.getData());
             }
         });
 
@@ -1032,7 +1014,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
-        setState(Screen.State.QUERY);
+        setDataInTabs();
+        setState(State.QUERY);
         DataChangeEvent.fire(this);
 
         // we need to make sure the tabs are cleared
@@ -1057,6 +1040,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
 
     protected void add() {
+        previousManager = manager;
         manager = SampleManager.getInstance();
         manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
@@ -1070,7 +1054,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             return;
         }
 
-        setState(Screen.State.ADD);
+        setDataInTabs();
+        setState(State.ADD);
         DataChangeEvent.fire(this);
         setFocus(accessionNumber);
         window.setDone(consts.get("enterInformationPressCommit"));
@@ -1081,8 +1066,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
         try {
             manager = manager.fetchForUpdate();
-            setState(State.UPDATE);
             
+            setDataInTabs();
+            setState(State.UPDATE);            
             DataChangeEvent.fire(this);
             setFocus(orderNumber);
         } catch (Exception e) {
@@ -1116,7 +1102,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 manager.validate();
                 manager = manager.add();
 
-                setState(Screen.State.DISPLAY);
+                setDataInTabs();
+                setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
@@ -1133,7 +1120,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 manager.validate();
                 manager = manager.update();
 
-                setState(Screen.State.DISPLAY);
+                setDataInTabs();
+                setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
                 quickUpdate = false;
@@ -1157,7 +1145,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             try {
                 manager = manager.add();
 
-                setState(Screen.State.DISPLAY);
+                setDataInTabs();
+                setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
             } catch (ValidationErrorsList e) {
@@ -1171,7 +1160,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             try {
                 manager = manager.update();
                 
-                setState(Screen.State.DISPLAY);
+                setDataInTabs();
+                setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.clearStatus();
                 quickUpdate = false;
@@ -1192,12 +1182,16 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         if (state == State.QUERY) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+            
+            setDataInTabs();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+            
+            setDataInTabs();
             setState(State.DEFAULT);
             DataChangeEvent.fire(this);
             window.setDone(consts.get("addAborted"));
@@ -1207,10 +1201,13 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
 				quickUpdate = false;
 				if (SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) {
+                    manager = SampleManager.getInstance();
+                    manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
+                    
+                    setDataInTabs();
 					setState(State.DEFAULT);
-					manager = SampleManager.getInstance();
-					manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 				} else {
+				    setDataInTabs();
 					setState(State.DISPLAY);
 				}
 				DataChangeEvent.fire(this);
@@ -1225,8 +1222,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 	}
     
     protected void duplicate() {       
-        SampleDataBundle bundle;
-        
         try {
             window.setBusy(consts.get("fetching"));
             manager = SampleManager.fetchWithAllData(manager.getSample().getId());
@@ -1236,22 +1231,18 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 return;
             }
             
+            previousManager = manager;
             manager = SampleDuplicateUtil.duplicate(manager);            
-            bundle = manager.getBundle();
             
-            treeTab.setData(manager);
-            environmentalTab.setData(manager);
-            sampleNotesTab.setManager(manager);
-            storageTab.setData(bundle);
-            auxDataTab.setManager(manager);
+            setDataInTabs();            
+            setState(State.ADD);            
             
             treeTab.draw();
             environmentalTab.draw();
-            sampleNotesTab.draw();
             storageTab.draw();
             auxDataTab.draw();
-        
-            setState(State.ADD);
+            sampleNotesTab.draw();
+            
             DataChangeEvent.fire(this);
 
             setFocus(accessionNumber);
@@ -1316,6 +1307,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             manager = SampleManager.getInstance();
             manager.getSample().setDomain(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG);
 
+            setDataInTabs();
             setState(State.DEFAULT);
         } else {
             window.setBusy(consts.get("fetching"));
@@ -1325,12 +1317,14 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
             } catch (Exception e) {
                 e.printStackTrace();
+                setDataInTabs();
                 setState(State.DEFAULT);
                 Window.alert(consts.get("fetchFailed") + e.getMessage());
                 window.clearStatus();
                 return false;
             }
-            setState(Screen.State.DISPLAY);
+            setDataInTabs();
+            setState(State.DISPLAY);
         }
         DataChangeEvent.fire(this);
         window.clearStatus();
@@ -1452,5 +1446,132 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             exn.setIsExternal("Y");
             exn.setText(autoNote.getText());
         }
+    }
+
+    private boolean canCopyFromPrevious(KeyDownEvent event) {
+        return (previousManager != null) && event.getNativeKeyCode() == 113;
+    }
+    
+    private void importOrder(Integer orderId) {
+        int i;
+        ArrayList<QueryData> fields;
+        TestViewDO test;
+        OrderTestViewDO orderTest;
+        Query query;
+        QueryData field;
+        ValidationErrorsList errors;        
+        OrderManager man;
+        
+        if (DataBaseUtil.isEmpty(orderId)) {
+            manager.getSample().setOrderId(orderId);
+            return;
+        }
+        
+        if (manager.getSample().getId() != null) {
+            Window.alert(consts.get("existSampleCantFillFromOrder"));
+            return;
+        } 
+        
+        manager.getSample().setOrderId(orderId);
+        
+        try {
+            man = OrderManager.fetchById(orderId);
+            if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
+                orderNumber.addException(new LocalizedException("orderIdInvalidException"));                           
+                return;
+            }
+        } catch (NotFoundException e) {                    
+            orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+            return;
+        } catch (Exception ex) {
+            Window.alert(ex.getMessage());
+            return;
+        }
+                                                       
+        if (envOrderImport == null)
+            envOrderImport = new SampleEnvironmentalImportOrder();
+        
+        try {
+            errors = envOrderImport.importOrderInfo(orderId, manager);
+            
+            setDataInTabs();
+            DataChangeEvent.fire(screen);
+
+            ArrayList<OrderTestViewDO> orderTests = envOrderImport.getTestsFromOrder(orderId);
+
+            if (orderTests != null && orderTests.size() > 0) {
+                i = 0;
+                while (i < orderTests.size()) {
+                    orderTest = orderTests.get(i);
+                    if (!"Y".equals(orderTest.getIsActive())) {
+                        query = new Query();
+                        fields = new ArrayList<QueryData>();
+
+                        field = new QueryData();
+                        field.type = QueryData.Type.STRING;
+                        field.query = orderTest.getTestName();
+                        fields.add(field);
+                        
+                        field = new QueryData();
+                        field.type = QueryData.Type.STRING;
+                        field.query = orderTest.getMethodName();
+                        fields.add(field);
+                        
+                        query.setFields(fields);
+                        try {
+                            test = testService.call("fetchActiveByNameMethodName", query);
+                            orderTest.setTestId(test.getId());
+                            orderTest.setDescription(test.getDescription());
+                        } catch (NotFoundException nfE) {
+                            if (errors == null)
+                                errors = new ValidationErrorsList();
+                            errors.add(new FormErrorException("inactiveTestOnOrderException",
+                                                              orderTest.getTestName(),
+                                                              orderTest.getMethodName()));
+                            orderTests.remove(i);
+                            continue;
+                        } catch (Exception anyE) {
+                            anyE.printStackTrace();
+                            orderTests.remove(i);
+                            continue;
+                        }
+                    }
+                    i++;
+                }
+                
+                ActionEvent.fire(screen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
+            }
+            
+            if (errors != null)
+                showErrors(errors);
+
+        } catch (NotFoundException e) {
+            // ignore
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }
+    }
+    
+    private void setFocusToNext(Widget currWidget) {
+        NativeEvent event;
+        
+        event = Document.get().createKeyPressEvent(false, false, false, false, 
+                                                        KeyCodes.KEY_TAB, KeyCodes.KEY_TAB);        
+        KeyPressEvent.fireNativeEvent(event, currWidget);
+    }
+    
+    private void setDataInTabs() {
+        treeTab.setData(manager);
+        environmentalTab.setData(manager);
+        environmentalTab.setPreviousData(previousManager);
+        sampleItemTab.setData(null);
+        analysisTab.setData(null);
+        testResultsTab.setData(null);
+        analysisNotesTab.setData(null);
+        sampleNotesTab.setManager(manager);
+        storageTab.setData(null);
+        qaEventsTab.setData(null);
+        qaEventsTab.setManager(manager);
+        auxDataTab.setManager(manager);
     }
 }

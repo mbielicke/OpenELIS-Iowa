@@ -317,8 +317,7 @@ public class InventoryAdjustmentScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                systemUserId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
-                systemUserId.setQueryMode(event.getState() == State.QUERY);
+                systemUserId.enable(false);
             }
         });
 
@@ -749,6 +748,9 @@ public class InventoryAdjustmentScreen extends Screen {
     }
     
     protected void commit() {
+        ArrayList<QueryData> fields;
+        Query query;
+        
         setFocus(null);
 
         if ( !validate()) {
@@ -757,10 +759,22 @@ public class InventoryAdjustmentScreen extends Screen {
         }
 
         if (state == State.QUERY) {
-            Query query;
-
             query = new Query();
-            query.setFields(getQueryFields());
+            fields = getQueryFields();            
+            /*
+             * since the widget for inventory location id in the table is an autocomplete
+             * which sets the type of the query field created from its data to string,
+             * we need to change the type to integer here in order to make sure 
+             * that the query in the back end doesn't fail because of the value 
+             * queried by being treated as a string instead of an integer             
+             */
+            for (QueryData f : fields) {                
+                if (InventoryAdjustmentMeta.getInventoryLocationId().equals(f.key)) {
+                    f.type = QueryData.Type.INTEGER;
+                    break;
+                }
+            }
+            query.setFields(fields);
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));

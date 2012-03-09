@@ -82,6 +82,7 @@ public abstract class ImportOrder {
         auxData.setReferenceTableId(ReferenceTable.ORDER);
 
         orderMan = null;
+        auxFieldGroupMan = null;
         auxDataList = auxDataService.callList("fetchByRefId", auxData);
 
         // we don't want to use a hard-coded reference to aux group (language).
