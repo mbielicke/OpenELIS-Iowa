@@ -400,8 +400,8 @@ public class NotificationPreferenceScreen extends Screen {
         addEditEmailScreen.clearFields(data);
     }
     
-    
     private void add(AddEditEmailVO data) {
+        String msg, prevMsg;
         OrganizationManager oman;
         OrganizationParameterManager pman;
         ArrayList<OrganizationParameterDO> list;
@@ -432,8 +432,20 @@ public class NotificationPreferenceScreen extends Screen {
             } catch (EntityLockedException e) {
                 Window.alert(consts.get("recordNotAvailableLockException"));
             } catch (ValidationErrorsList e) {
-                for (int j = 0; j < e.size(); j++) 
-                    Window.alert(e.getErrorList().get(j).getMessage()); 
+                prevMsg = null;
+                for (int j = 0; j < e.size(); j++) {
+                    msg = e.getErrorList().get(j).getMessage();
+                    /*
+                     * If the user tried to add the same email as both received 
+                     * and released, and say the email address was invalid,
+                     * then the list will contain two errors with exactly the same
+                     * message. So we check the message before showing the alert
+                     * so that the user doesn't see identical messages repeated.
+                     */
+                    if (!msg.equals(prevMsg))
+                        Window.alert(msg);
+                    prevMsg = msg;
+                }
                 try {
                     oman.abortUpdate();
                 } catch (Exception e1) {
@@ -451,6 +463,7 @@ public class NotificationPreferenceScreen extends Screen {
     }
     
     private void update(AddEditEmailVO data) {
+        String msg, prevMsg;
         OrganizationManager oman;
         OrganizationParameterManager pman;
         ArrayList<OrganizationParameterDO> list;
@@ -490,8 +503,20 @@ public class NotificationPreferenceScreen extends Screen {
             } catch (EntityLockedException e) {
                 Window.alert(consts.get("recordNotAvailableLockException"));
             } catch (ValidationErrorsList e) {
-                for (int j = 0; j < e.size(); j++) 
-                    Window.alert(e.getErrorList().get(j).getMessage());    
+                prevMsg = null;
+                for (int j = 0; j < e.size(); j++) {
+                    msg = e.getErrorList().get(j).getMessage();
+                    /*
+                     * If the user tried to add the same email as both received 
+                     * and released, and say the email address was invalid,
+                     * then the list will contain two errors with exactly the same
+                     * message. So we check the message before showing the alert
+                     * so that the user doesn't see identical messages repeated.
+                     */
+                    if (!msg.equals(prevMsg))
+                        Window.alert(msg);
+                    prevMsg = msg;
+                }
                 try {
                     oman.abortUpdate();
                 } catch (Exception e1) {
