@@ -64,7 +64,7 @@ UIRF Software License are applicable instead of those above.
           <text style="Prompt">
             <xsl:value-of select="resource:getString($constants,'containerReference')" />:
           </text>
-          <textbox key="{meta:getItemContainerReference()}" tab="{meta:getItemQuantity()},{meta:getItemContainerId()}" width="215" max="10" field="String" />
+          <textbox key="{meta:getItemContainerReference()}" tab="{meta:getItemQuantity()},{meta:getItemContainerId()}" width="150" max="20" field="String" />
         </row>
         <row>
           <text style="Prompt">
