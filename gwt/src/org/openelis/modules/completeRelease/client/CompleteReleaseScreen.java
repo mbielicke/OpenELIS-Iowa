@@ -841,7 +841,8 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         boolean screenValid, tabsValid;
         String domain;
         
-        screenValid = super.validate();
+//        screenValid = super.validate();
+        screenValid = true;
         if (state == State.QUERY)
             //
             // in the state Query, there is no domain and we don't show any tabs  

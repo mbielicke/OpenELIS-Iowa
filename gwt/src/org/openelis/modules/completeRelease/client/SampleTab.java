@@ -218,4 +218,10 @@ public class SampleTab extends Screen {
     private boolean canEdit() {
         return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
+    
+    public boolean validate() {
+        if ( !loaded)
+            return true;
+        return super.validate();
+    }
 }
