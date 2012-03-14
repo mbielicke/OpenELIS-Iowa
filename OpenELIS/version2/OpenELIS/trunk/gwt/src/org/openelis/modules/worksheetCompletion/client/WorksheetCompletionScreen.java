@@ -906,6 +906,10 @@ public class WorksheetCompletionScreen extends Screen {
 
         try {
             sections = manager.getAnalysisSections();
+            // No sections means it's a QC only worksheet. 
+            if (sections.isEmpty())
+                return true;
+            
             iter = sections.values().iterator();
             while (iter.hasNext()) {
                 section = iter.next();

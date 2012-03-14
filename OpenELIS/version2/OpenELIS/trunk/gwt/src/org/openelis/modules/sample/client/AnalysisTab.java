@@ -1188,6 +1188,12 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         loaded = true;
     }
 
+    public boolean validate() {
+        if ( !loaded)
+            return true;
+        return super.validate();
+    }
+    
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());
     }

@@ -677,6 +677,12 @@ public class WorksheetCreationScreen extends Screen {
         
         window.setBusy(consts.get("saving"));
         
+        //
+        // If the format has not been set (QC only worksheet), set it to the default
+        //
+        if (formatId == null)
+            formatId = formatTotal;
+        
         formatColumnNames = new HashMap<Integer,HashMap<Integer,String>>();
 
         try {
