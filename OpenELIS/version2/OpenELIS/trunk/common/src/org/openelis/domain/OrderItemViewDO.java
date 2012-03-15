@@ -38,19 +38,20 @@ public class OrderItemViewDO extends OrderItemDO {
 
     private static final long serialVersionUID = 1L;
 
-    String inventoryItemName;
-    Integer storeId;
+    protected String inventoryItemName, inventoryItemProductUri;
+    protected Integer storeId;
     
     public OrderItemViewDO() {
     }
 
     public OrderItemViewDO(Integer id, Integer orderId, Integer inventoryItemId,
                            Integer quantity, String catalogNumber, Double unitCost, 
-                           String inventoryItemName, Integer storeId) {
+                           String inventoryItemName, Integer storeId, String inventoryItemProductUri) {
         super(id, orderId, inventoryItemId, quantity, catalogNumber, unitCost);
-
+        
         setInventoryItemName(inventoryItemName);
         setStoreId(storeId);
+        setInventoryItemProductUri(inventoryItemProductUri);
     }
 
     public String getInventoryItemName() {
@@ -67,5 +68,13 @@ public class OrderItemViewDO extends OrderItemDO {
 
     public void setStoreId(Integer storeId) {
         this.storeId = storeId;
+    }
+
+    public String getInventoryItemProductUri() {
+        return inventoryItemProductUri;
+    }
+
+    public void setInventoryItemProductUri(String inventoryItemProductUri) {
+        this.inventoryItemProductUri = DataBaseUtil.trim(inventoryItemProductUri);
     }
 }

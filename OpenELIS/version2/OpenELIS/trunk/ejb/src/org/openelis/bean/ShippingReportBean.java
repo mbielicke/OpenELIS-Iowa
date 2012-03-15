@@ -28,7 +28,8 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.OptionListItem;
-import org.openelis.domain.OrderItemDO;
+import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -40,6 +41,7 @@ import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.InventoryItemCacheLocal;
 import org.openelis.local.LabelReportLocal;
 import org.openelis.local.OrderItemLocal;
+import org.openelis.local.OrderLocal;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.RequestformReportLocal;
 import org.openelis.local.SessionCacheLocal;
@@ -59,6 +61,9 @@ public class ShippingReportBean implements ShippingReportRemote {
     @EJB
     private ShippingLocal           shipping;
 
+    @EJB
+    private OrderLocal              order;
+    
     @EJB
     private OrderItemLocal          orderItem;
 
@@ -146,7 +151,11 @@ public class ShippingReportBean implements ShippingReportRemote {
         int numpkg;
         boolean printManifest, printLabel, printReqform, printInstr;
         Integer shippingId, orderId, prevOrderId, itemId, methodId;
-        String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel, requestForm, instruction, dir, printstat, itemUri, uriPath, name, method, fromStreetAddress1, fromStreetAddress2, fromCity, fromState, fromZip, attention, toStreetAddress1, toAptSuite, toStreetAddress2, toCity, toState, toZip;
+        String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel,
+               requestForm, instruction, dir, printstat, itemUri, uriPath, name,
+               method, costCenter, fromStreetAddress1, fromStreetAddress2, fromCity, fromState,
+               fromZip, attention, toStreetAddress1, toAptSuite, toStreetAddress2,
+               toCity, toState, toZip;
         URL url;
         File tempFile;
         HashMap<String, Object> jparam;
@@ -157,9 +166,9 @@ public class ShippingReportBean implements ShippingReportRemote {
         JasperPrint jprint;
         JRExporter jexport;
         ShippingViewDO shipData;
-        ArrayList<OrderItemDO> orderItems;
-        HashMap<Integer, InventoryItemDO> itemMap;
-        InventoryItemDO item;
+        ArrayList<Integer> orderIds;
+        ArrayList<OrderViewDO> orderList;        
+        ArrayList<OrderItemViewDO> itemList;
         AddressDO address;
         OrganizationDO shipTo;
         PrintStream ps;
@@ -254,58 +263,73 @@ public class ShippingReportBean implements ShippingReportRemote {
                 }
             }
 
+            orderIds = null;
             if (printLabel) {
                 numpkg = shipData.getNumberOfPackages();
-                //
-                // initialize all parts of the text to be printed on barcode labels
-                //
-                name = "State Hygienic Laboratory";
-                method = "";
-                methodId = shipData.getShippedMethodId();
-                if (methodId != null)
-                    method = dictionaryCache.getById(methodId).getEntry();
-                fromStreetAddress1 = null;
-                fromStreetAddress2 = null;
-                fromCity = null;
-                fromZip = null;
-
-                if (shipFromICId.equals(shipData.getShippedFromId())) {
-                    fromStreetAddress1 = "University of Iowa Research Park";
-                    fromStreetAddress2 = "2490 Crosspark Rd";
-                    fromCity = "Coralville";
-                    fromZip = "52241-4721";
-                } else if (shipFromAnkId.equals(shipData.getShippedFromId())) {
-                    fromStreetAddress1 = "Iowa Laboratories Complex";
-                    fromStreetAddress2 = "2220 S. Ankeny Blvd";
-                    fromCity = "Ankeny";
-                    fromZip = "50023";
-                }
-                
-                fromState = "IA";
-                attention = shipData.getShippedToAttention();
-                shipTo = shipData.getShippedTo();
-                address = shipTo.getAddress();
-                toStreetAddress1 = shipTo.getName();
-                toAptSuite = address.getMultipleUnit();
-                toStreetAddress2 = address.getStreetAddress();                
-                if (toAptSuite != null)
-                    toStreetAddress2 = toAptSuite + " " + toStreetAddress2;
-                toCity = address.getCity();
-                toState = address.getState();
-                toZip = address.getZipCode();
-
                 //
                 // print the barcode labels
                 //
                 if (numpkg > 0) {
+                    //
+                    // initialize all parts of the text to be printed on barcode
+                    // labels
+                    //
+                    name = "State Hygienic Laboratory";
+                    method = "";
+                    methodId = shipData.getShippedMethodId();
+                    if (methodId != null)
+                        method = dictionaryCache.getById(methodId).getEntry();
+                    fromStreetAddress1 = null;
+                    fromStreetAddress2 = null;
+                    fromCity = null;
+                    fromZip = null;
+
+                    if (shipFromICId.equals(shipData.getShippedFromId())) {
+                        fromStreetAddress1 = "University of Iowa Research Park";
+                        fromStreetAddress2 = "2490 Crosspark Rd";
+                        fromCity = "Coralville";
+                        fromZip = "52241-4721";
+                    } else if (shipFromAnkId.equals(shipData.getShippedFromId())) {
+                        fromStreetAddress1 = "Iowa Laboratories Complex";
+                        fromStreetAddress2 = "2220 S. Ankeny Blvd";
+                        fromCity = "Ankeny";
+                        fromZip = "50023";
+                    }
+
+                    fromState = "IA";
+                    attention = shipData.getShippedToAttention();
+                    shipTo = shipData.getShippedTo();
+                    address = shipTo.getAddress();
+                    toStreetAddress1 = shipTo.getName();
+                    toAptSuite = address.getMultipleUnit();
+                    toStreetAddress2 = address.getStreetAddress();
+                    if (toAptSuite != null)
+                        toStreetAddress2 = toAptSuite + " " + toStreetAddress2;
+                    toCity = address.getCity();
+                    toState = address.getState();
+                    toZip = address.getZipCode();
+                    
+                    orderList = order.fetchByShippingId(shippingId);
+                    orderIds = new ArrayList<Integer>();
+                    costCenter = null;
+                    /*
+                     * find the cost center from the first order that has one defined
+                     * and create a list of the order ids that may be needed later
+                     */
+                    for (OrderViewDO o : orderList) {
+                        orderIds.add(o.getId());
+                        if (o.getCostCenterId() != null && costCenter == null)
+                            costCenter = dictionaryCache.getById(o.getCostCenterId()).getEntry();
+                    }
+                    
                     tempFile = File.createTempFile("shippingAddresslabel", ".txt", new File("/tmp"));
                     ps = new PrintStream(tempFile);
                     for (int i = 0; i < numpkg; i++ ) {
-                        labelReport.shippingAddressLabel(ps, name, method, fromStreetAddress1,
-                                                         "SH" + shippingIdStr, fromStreetAddress2,
-                                                         fromCity, fromState, fromZip, attention,
-                                                         toStreetAddress1, toStreetAddress2,
-                                                         toCity, toState, toZip);
+                        labelReport.shippingAddressLabel(ps, name, method, costCenter,
+                                                         fromStreetAddress1, "SH" + shippingIdStr,
+                                                         fromStreetAddress2, fromCity, fromState,
+                                                         fromZip, attention, toStreetAddress1,
+                                                         toStreetAddress2, toCity, toState, toZip);
                     }
                     ps.close();
                     printstat = ReportUtil.print(tempFile, barcodePrinter, 1);
@@ -314,12 +338,18 @@ public class ShippingReportBean implements ShippingReportRemote {
             }
 
             if (printReqform || printInstr) {
-                orderItems = null;
-                itemMap = new HashMap<Integer, InventoryItemDO>();
-                orderItems = orderItem.fetchByShippingId(shippingId);
-                prevOrderId = null;
                 uriPath = ReportUtil.getSystemVariableValue("inventory_uri_directory");
-                for (OrderItemDO data : orderItems) {
+                
+                if (orderIds == null) {
+                    orderList = order.fetchByShippingId(shippingId);
+                    orderIds = new ArrayList<Integer>();
+                    for (OrderViewDO o : orderList) 
+                        orderIds.add(o.getId());                    
+                }
+                
+                itemList = orderItem.fetchByOrderIds(orderIds);
+                prevOrderId = null;                
+                for (OrderItemViewDO data : itemList) {
                     orderId = data.getOrderId();
                     if ( !orderId.equals(prevOrderId) && printReqform)
                         //
@@ -328,17 +358,12 @@ public class ShippingReportBean implements ShippingReportRemote {
                         runRequestFormReport(orderId, printer);
 
                     if (printInstr) {
-                        itemId = data.getInventoryItemId();
-                        item = itemMap.get(itemId);
-                        if (item == null) {
-                            item = inventoryItemCache.getById(itemId);
-                            itemMap.put(itemId, item);
-                        }
+                        
                         //
                         // print the file linked to this item if any
                         //
 
-                        itemUri = item.getProductUri();
+                        itemUri = data.getInventoryItemProductUri();
                         if (itemUri != null && itemUri.startsWith(PRN_PREFIX) &&
                             data.getQuantity() > 0) {
                             itemUri = itemUri.replaceAll(PRN_PREFIX, "");
