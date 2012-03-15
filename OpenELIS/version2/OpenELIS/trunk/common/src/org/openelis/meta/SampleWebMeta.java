@@ -900,19 +900,19 @@ public class SampleWebMeta implements Meta, MetaMap {
         // sample env
         if (where.indexOf("sampleEnvironmental.") > -1) {
             from += ", IN (_sample.sampleEnvironmental) _sampleEnvironmental ";
-            from += " left join _sampleEnvironmental.locationAddress _locationAddress ";
+            from += " LEFT JOIN _sampleEnvironmental.locationAddress _locationAddress ";
         }
         
         if (where.indexOf("locationAddress.") > -1 && where.indexOf("sampleEnvironmental.") == -1) {
             from += ", IN (_sample.sampleEnvironmental) _sampleEnvironmental ";
-            from += " left join _sampleEnvironmental.locationAddress _locationAddress ";
+            from += " LEFT JOIN _sampleEnvironmental.locationAddress _locationAddress ";
         }
 
         // sample private well
         if (where.indexOf("samplePrivateWell.") > -1 ||
             where.indexOf("privateWellReportToAddress") > -1 ||
             where.indexOf("wellOrganization.") > -1 || where.indexOf("wellLocationAddress.") > -1)
-            from += ", IN (_sample.samplePrivateWell) _samplePrivateWell ";
+            from += " LEFT JOIN _sample.samplePrivateWell _samplePrivateWell ";
 
         if (where.indexOf("wellOrganization.") > -1 ||
             where.indexOf("privateWellReportToAddress") > -1)
@@ -942,13 +942,13 @@ public class SampleWebMeta implements Meta, MetaMap {
             from += ", IN ( _sampleSDWIS.pws) _pws ";
         }
         
-        if (where.indexOf("project.") > -1){
-            from += ", IN (_sample.sampleProject) _sampleProject ";
-            from += ", IN (_sampleProject.project) _project ";
+        if (where.indexOf("project.") > -1) {
+            from += " LEFT JOIN _sample.sampleProject _sampleProject ";
+            from += " LEFT JOIN _sampleProject.project _project ";
         }
         
         if (where.indexOf("_sampleProject.") > -1 && where.indexOf("_project.") == -1)
-            from += ", IN (_sample.sampleProject) _sampleProject ";
+            from += " LEFT JOIN _sample.sampleProject _sampleProject ";
 
         if (where.indexOf("_organization.") > -1) {
             from += ", IN (_sample.sampleOrganization) _sampleOrganization ";
