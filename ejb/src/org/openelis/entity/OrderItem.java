@@ -55,18 +55,16 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "OrderItem.FetchByOrderId",
                 query = "select distinct new org.openelis.domain.OrderItemViewDO(o.id,o.orderId,o.inventoryItemId," +
-                		"o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId)"
+                		"o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId,i.productUri)"
                       + " from OrderItem o left join o.inventoryItem i where o.orderId = :id"),
     @NamedQuery( name = "OrderItem.FetchById",
                 query = "select distinct new org.openelis.domain.OrderItemViewDO(o.id,o.orderId,o.inventoryItemId," +
-                        "o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId)"
+                        "o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId,i.productUri)"
                       + " from OrderItem o left join o.inventoryItem i where o.id = :id"),
-    @NamedQuery( name = "OrderItem.FetchByShippingId",
-                query = "select distinct new org.openelis.domain.OrderItemDO(o.id,o.orderId,o.inventoryItemId," +
-                        "o.quantity,o.catalogNumber,o.unitCost)"
-                      + " from OrderItem o, ShippingItem si where o.id = si.referenceId and si.referenceTableId = :referenceTableId"
-                      +	" and si.shippingId = :shippingId order by o.orderId")})                  
-                      
+    @NamedQuery( name = "OrderItem.FetchByOrderIds",
+                query = "select distinct new org.openelis.domain.OrderItemViewDO(o.id,o.orderId,o.inventoryItemId," +
+                        "o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId,i.productUri)"
+                      + " from OrderItem o left join o.inventoryItem i where o.orderId in (:ids)")})                      
 @Entity
 @Table(name = "order_item")
 @EntityListeners( {AuditUtil.class})

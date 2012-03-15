@@ -63,7 +63,7 @@ public class LabelReportBean implements LabelReportLocal {
     /*
      * Prints a barcode label for shipping address
      */
-    public void shippingAddressLabel(PrintStream f, String name, String method, 
+    public void shippingAddressLabel(PrintStream f, String name, String method, String costCenter, 
                                      String fromStreetAddress1, String shippingId, 
                                      String fromStreetAddress2, String fromCity,
                                      String fromState, String fromZip, String attention, 
@@ -77,12 +77,14 @@ public class LabelReportBean implements LabelReportLocal {
         f.print("^FO600,105^AE^BY2^BCN,50,Y,N,N^FD"+shippingId+"^FS");             // barcoded/readable shipping id
         f.print("^FO15,115^A040,40^FD"+fromStreetAddress2+"^FS");                  // 2nd line of the lab's street address
         f.print("^FO15,165^A040,40^FD"+fromCity+", "+fromState+" "+fromZip+"^FS"); // the lab's city, state, zip code
+        if (costCenter != null)
+            f.print("^FO600,215^A040,40^FD"+costCenter+"^FS");                     // the order's cost center
         if (attention != null)
-            f.print("^FO150,510^A048,42^FD"+attention+"^FS");                      // the attention line for the receiver
+            f.print("^FO150,500^A048,42^FD"+attention+"^FS");                      // the attention line for the receiver
         f.print("^FO150,550^A048,42^FD"+toStreetAddress1+"^FS");                   // the receiver's 1st line of street address 
-        f.print("^FO150,590^A048,42^FD"+toStreetAddress2+"^FS");                   // the receiver's 2nd line of street address 
-        f.print("^FO150,630^A048,42^FD"+toCity+", "+toState+" "+toZip+"^FS");      // the receiver's city, state, zip code
-        f.print("^FO150,670^BY4^BZN,50,N,N^FD"+toZip+"^FS");                       // the receiver's barcoded zip code  
+        f.print("^FO150,600^A048,42^FD"+toStreetAddress2+"^FS");                   // the receiver's 2nd line of street address 
+        f.print("^FO150,650^A048,42^FD"+toCity+", "+toState+" "+toZip+"^FS");      // the receiver's city, state, zip code
+        f.print("^FO150,700^BY4^BZN,50,N,N^FD"+toZip+"^FS");                       // the receiver's barcoded zip code  
         f.print("^XZ");        
     }
     

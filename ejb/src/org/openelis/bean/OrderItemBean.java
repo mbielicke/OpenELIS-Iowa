@@ -72,6 +72,16 @@ public class OrderItemBean implements OrderItemLocal {
         return DataBaseUtil.toArrayList(list);
     }
     
+    @SuppressWarnings("unchecked")
+    public ArrayList<OrderItemViewDO> fetchByOrderIds(ArrayList<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("OrderItem.FetchByOrderIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public OrderItemViewDO fetchById(Integer id) throws Exception {
         Query query;
         OrderItemViewDO data;
@@ -86,21 +96,6 @@ public class OrderItemBean implements OrderItemLocal {
             throw new DatabaseException(e);
         }
         return data;
-    }
-    
-    public ArrayList<OrderItemDO> fetchByShippingId(Integer id) throws Exception {
-        Query query;
-        List list;
-
-        query = manager.createNamedQuery("OrderItem.FetchByShippingId");
-        query.setParameter("shippingId", id);
-        query.setParameter("referenceTableId", ReferenceTable.ORDER_ITEM);
-
-        list = query.getResultList();
-        if (list.isEmpty())
-            throw new NotFoundException();
-
-        return DataBaseUtil.toArrayList(list);
     }
 
     public OrderItemViewDO add(OrderItemViewDO data) throws Exception {

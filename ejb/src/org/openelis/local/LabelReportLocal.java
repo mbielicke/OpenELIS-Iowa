@@ -34,7 +34,7 @@ public interface LabelReportLocal {
 
     public void sampleLoginLabel(PrintStream f, int accession, int container, String received, String location);
     
-    public void shippingAddressLabel(PrintStream f, String name, String method, String location, String shippingId, 
+    public void shippingAddressLabel(PrintStream f, String name, String method, String costCenter, String location, String shippingId, 
                                      String fromStreetAddress, String fromCity, String fromState, String fromZip,
                                      String attention, String toStreetAddress1, String toStreetAddress2, String toCity,
                                      String toState, String toZip);

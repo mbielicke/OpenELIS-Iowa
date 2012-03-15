@@ -64,11 +64,17 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.IdNameVO(o.id,o.description)"
                       + " from Order o where o.description like :description"),
     @NamedQuery( name = "Order.FetchByShippingItemId",
-               query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
+                query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
                         "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
                         "o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId,o.numberOfForms)"
                       + " from Order o left join o.orderItem i "
-                      +	" where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.id = :id)")})
+                      +	" where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.id = :id)"),
+    @NamedQuery( name = "Order.FetchByShippingId",
+                query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
+                         "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
+                         "o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId,o.numberOfForms)"
+                       + " from Order o left join o.orderItem i "
+                       + " where i.id in (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.shippingId = :shippingId)")})
 
 @Entity
 @Table(name = "order")

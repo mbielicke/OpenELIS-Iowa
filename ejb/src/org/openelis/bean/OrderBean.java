@@ -84,6 +84,15 @@ public class OrderBean implements OrderRemote, OrderLocal {
         return data;
     }
     
+    public ArrayList<OrderViewDO> fetchByShippingId(Integer shippingId) throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Order.FetchByShippingId");
+        query.setParameter("shippingId", shippingId);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public OrderViewDO fetchByShippingItemId(Integer id) throws Exception {
         Query query;
         OrderViewDO data;
