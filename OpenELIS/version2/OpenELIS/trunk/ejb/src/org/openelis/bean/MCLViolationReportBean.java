@@ -40,11 +40,13 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
+import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SectionParameterDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -53,10 +55,12 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
+import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.AnalyteLocal;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.MCLViolationReportLocal;
 import org.openelis.local.ResultLocal;
+import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SectionParameterLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
@@ -74,11 +78,15 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
     @EJB
     private AnalysisLocal           analysisBean;
     @EJB
+    private AnalysisQAEventLocal    analysisQAEventBean;
+    @EJB
     private AnalyteLocal            analyteBean;
     @EJB
     DictionaryCacheLocal            dictionaryCache;
     @EJB
     private ResultLocal             resultBean;
+    @EJB
+    private SampleQAEventLocal      sampleQAEventBean;
     @EJB
     private SectionParameterLocal   sectParamBean;
     @EJB
@@ -138,9 +146,11 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         double resultValue, mclValue;
         int i, j, k;
         AnalyteViewDO analyte;
-        ArrayList<SectionParameterDO> emailList;
+        ArrayList<AnalysisQaEventDO> anaQAList;
         ArrayList<MCLViolationReportVO> analysisList;
         ArrayList<ResultViewDO> resultRow;
+        ArrayList<SampleQaEventDO> samQAList;
+        ArrayList<SectionParameterDO> emailList;
         ArrayList<ArrayList<ResultViewDO>> results;
         AuxDataManager adMan;
         Calendar cal;
@@ -172,7 +182,6 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         try {
             dnrEmail = sysVarBean.fetchByName("mcl_violation_email").getValue();
             lastRun = sysVarBean.fetchForUpdateByName("last_mcl_violation_report_run");
-System.out.println("Last Run: "+lastRun.getValue());
             startDate = format.parse(lastRun.getValue());
 
             if (startDate.compareTo(endDate) > 0)
@@ -191,17 +200,27 @@ System.out.println("Last Run: "+lastRun.getValue());
             for (i = 0; i < analysisList.size(); i++ ) {
                 analysis = analysisList.get(i);
                 
+                // exclude analyses with result override qaevents
+                anaQAList = analysisQAEventBean.fetchResultOverrideByAnalysisId(analysis.getAnalysisId());
+                if (anaQAList.size() > 0)
+                    continue;
+                
+                // exclude analyses on samples with result override qaevents
+                samQAList = sampleQAEventBean.fetchResultOverrideBySampleId(analysis.getSampleId());
+                if (samQAList.size() > 0)
+                    continue;
+                
                 toEmail = "";
                 try {
                     emailList = sectParamBean.fetchBySectionIdAndTypeId(analysis.getSectionId(), sectParamTypeId);
+                    for (j = 0; j < emailList.size(); j++) {
+                        if (toEmail.length() > 0)
+                            toEmail += ",";
+                        toEmail += emailList.get(j).getValue().trim();
+                    }
                 } catch (NotFoundException nfE) {
-                    log.error("No MCL Violation Email Address(es) for Section ("+analysis.getAnalysisId()+").");
+                    log.warn("No MCL Violation Email Address(es) for Section ("+analysis.getSectionId()+").");
                     continue;
-                }
-                for (j = 0; j < emailList.size(); j++) {
-                    if (toEmail.length() > 0)
-                        toEmail += ",";
-                    toEmail += emailList.get(j).getValue().trim();
                 }
                 
                 adMan = AuxDataManager.fetchById(analysis.getSampleId(), ReferenceTable.SAMPLE);
