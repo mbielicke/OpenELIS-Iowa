@@ -201,14 +201,22 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                 analysis = analysisList.get(i);
                 
                 // exclude analyses with result override qaevents
-                anaQAList = analysisQAEventBean.fetchResultOverrideByAnalysisId(analysis.getAnalysisId());
-                if (anaQAList.size() > 0)
+                try {
+                    anaQAList = analysisQAEventBean.fetchResultOverrideByAnalysisId(analysis.getAnalysisId());
+                    if (anaQAList.size() > 0)
+                        continue;
+                } catch (NotFoundException nfE) {
                     continue;
+                }
                 
                 // exclude analyses on samples with result override qaevents
-                samQAList = sampleQAEventBean.fetchResultOverrideBySampleId(analysis.getSampleId());
-                if (samQAList.size() > 0)
+                try {
+                    samQAList = sampleQAEventBean.fetchResultOverrideBySampleId(analysis.getSampleId());
+                    if (samQAList.size() > 0)
+                        continue;
+                } catch (NotFoundException nfE) {
                     continue;
+                }
                 
                 toEmail = "";
                 try {
