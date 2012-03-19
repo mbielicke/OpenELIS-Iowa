@@ -1777,8 +1777,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         service.callList("query", query, new AsyncCallback<ArrayList<SampleManager>>() {
             public void onSuccess(ArrayList<SampleManager> result) {
                 manager = null;
-
-                setDataInTabs();
+                
                 if (result.size() > 0)
                     setState(State.DISPLAY);
                 else 
@@ -1788,7 +1787,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 
                 if (result.size() > 0)
                     trackingTree.select(0);
-
+                setDataInTabs();
                 window.clearStatus();
             }
 
