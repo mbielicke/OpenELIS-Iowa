@@ -121,7 +121,7 @@ public class BillingReportBean implements BillingReportLocal {
     private static final String      RECUR = "R", ONE_TIME = "OT", OT_CLIENT_CODE = "PWT",
                                      MISC_BILLING = "billing misc charges by no method",
                                      RUSH_BILLING = "billing rush charges by no method",
-                                     EOL = "\r\n", ZERO_BILL = "0.01";
+                                     EOL = "\r\n", ZERO_BILL = "0.00";
     
     private static Integer           organizationReportToId, organizationBillToId, analysisCancelledId;
     
