@@ -380,50 +380,48 @@ public class ResultBean implements ResultLocal {
      */
     public ArrayList<ArrayList<ResultViewDO>> fetchReportableByAnalysisId(Integer sampleId, Integer analysisId) throws Exception {
         int i;
-        Integer j, rg;
         ResultViewDO data;
         ArrayList<ResultViewDO> ar;
         List<ResultViewDO> list;
         ArrayList<ArrayList<ResultViewDO>> results;
         Query query;
 
-        list = null;
         // get results by analysis id
-        query = manager.createNamedQuery("Result.FetchReportableByAnalysisId");
+        query = manager.createNamedQuery("Result.FetchForFinalReportByAnalysisId");
         query.setParameter("sid", sampleId);
         query.setParameter("aid", analysisId);
         query.setParameter("overrideid", qaEventOverrideId);
+
         list = query.getResultList();
-
-        // build the grid
-        j = -1;
-        ar = null;        
-
         if (list == null || list.size() == 0)
             throw new NotFoundException();
 
+        // build the grid
         results = new ArrayList<ArrayList<ResultViewDO>>();
-        for (i = 0; i < list.size(); i++ ) {
+        i = 0;
+        ar = null;        
+        while (i < list.size()) {
             data = list.get(i);
             
-            rg = data.getRowGroup();
-
-            if (!DataBaseUtil.isSame(j,rg)) {
-                ar = new ArrayList<ResultViewDO>(1);
-                ar.add(data);
-                results.add(ar);  
-                if (rg != null)
-                    j = rg;
-                continue;
-            }
             if ("N".equals(data.getIsColumn())) {
+                if ("N".equals(data.getIsReportable())) {
+                    do {
+                        i++;
+                    } while (i < list.size() && "Y".equals(list.get(i).getIsColumn())) ;
+                    continue;
+                }
+                
                 ar = new ArrayList<ResultViewDO>(1);
-                ar.add(data);
-                results.add(ar);
-                continue;
+                results.add(ar);  
+            } else {
+                if ("N".equals(data.getIsReportable())) {
+                    i++;
+                    continue;
+                }
             }
-
+                    
             ar.add(data);
+            i++;
         }
         
         return results;
