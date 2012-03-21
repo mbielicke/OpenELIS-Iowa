@@ -206,7 +206,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                     if (anaQAList.size() > 0)
                         continue;
                 } catch (NotFoundException nfE) {
-                    continue;
+                    // ignore not found
                 }
                 
                 // exclude analyses on samples with result override qaevents
@@ -215,7 +215,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                     if (samQAList.size() > 0)
                         continue;
                 } catch (NotFoundException nfE) {
-                    continue;
+                    // ignore not found
                 }
                 
                 toEmail = "";
