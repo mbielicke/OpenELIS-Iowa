@@ -1348,14 +1348,13 @@ public class DataViewBean implements DataViewRemote {
                             if (anaUserList != null && relByNames == null) {
                                 for (i = 0; i < anaUserList.size(); i++ ) {
                                     anaUser = anaUserList.get(i);
-                                    if ( !releasedActionId.equals(anaUser.getActionId())) {
+                                    if ( releasedActionId.equals(anaUser.getActionId())) {
                                         relByNames = anaUser.getSystemUser();
                                         break;
                                     }
                                 }
                             }
-                        }    
-                        
+                        }                        
                     }
                     if (addResultRow)
                         addAnalysisCells(resRow, resRow.getPhysicalNumberOfCells(), data, runForWeb, ana, qaeNames, compByNames, relByNames);
