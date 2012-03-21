@@ -252,7 +252,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             if (idVO.getId() != null) {
                 testMan = TestManager.fetchWithPrepTestsSampleTypes(idVO.getId());
 
-                if (!testMan.canAssignThisSection(sectionVDO)) {
+                if (sectionVDO == null || !testMan.canAssignThisSection(sectionVDO)) {
                     sectionVDO = testMan.getTestSections().getDefaultSection();
                     if (sectionVDO == null || !testMan.canAssignThisSection(sectionVDO)) {
                         errorsList.add(new FormErrorException("insufficientPrivilegesAddTest",

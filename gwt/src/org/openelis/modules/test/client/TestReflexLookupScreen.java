@@ -401,10 +401,9 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                         try {
                             tMan = TestManager.fetchById(reflexDO.getAddTestId());
                             tsMan = tMan.getTestSections();
+                            defaultId = tsMan.getDefaultSection().getSectionId();
                             for (k = 0; k < tsMan.count(); k++) {
                                 tsVDO = tsMan.getSectionAt(k);
-                                if (testSectionDefaultId.equals(tsVDO.getFlagId()))
-                                    defaultId = tsVDO.getSectionId();
                                 if (!sections.containsKey(tsVDO.getSectionId())) {
                                     sRow = new TableDataRow(1);
                                     sRow.key = tsVDO.getSectionId();
