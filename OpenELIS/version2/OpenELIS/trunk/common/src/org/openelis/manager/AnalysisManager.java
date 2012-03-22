@@ -183,10 +183,14 @@ public class AnalysisManager implements RPC {
     }
 
     public void cancelAnalysisAt(int index) throws Exception {
-        AnalysisViewDO data;
+        int i, j;
+        AnalysisViewDO data, checkData;
         SectionViewDO section;
         ValidationErrorsList errorsList;
         SystemUserPermission perm;
+        SampleDataBundle bundle;
+        SampleItemManager siMan;
+        AnalysisManager aMan;
 
         perm = proxy().getSystemUserPermission();
         data = items.get(index).analysis;
@@ -199,6 +203,27 @@ public class AnalysisManager implements RPC {
                                                   data.getTestName(),
                                                   data.getMethodName()));
             throw errorsList;
+        }
+        
+        //
+        // check to see if any released analyses on this sample link to this analysis
+        // for prep
+        //
+        bundle = items.get(index).bundle;
+        siMan = bundle.getSampleManager().getSampleItems();
+        for (i = 0; i < siMan.count(); i++) {
+            aMan = siMan.getAnalysisAt(i);
+            for (j = 0; j < aMan.count(); j++) {
+                checkData = aMan.getAnalysisAt(i);
+                if (data.getId().equals(checkData.getPreAnalysisId()) &&
+                    proxy().anReleasedId.equals(checkData.getStatusId())) {
+                    errorsList = new ValidationErrorsList();
+                    errorsList.add(new FormErrorException("noCancelPrepWithReleasedTest",
+                                                          data.getTestName(), data.getMethodName(),
+                                                          checkData.getTestName(), checkData.getMethodName()));
+                    throw errorsList;
+                }
+            }
         }
 
         try {
