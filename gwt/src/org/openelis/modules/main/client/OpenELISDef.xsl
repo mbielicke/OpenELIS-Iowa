@@ -183,6 +183,7 @@ UIRF Software License are applicable instead of those above.
                       <menuItem description="" enable="false" icon="" key="finalReport" label="{resource:getString($constants,'finalReport')}" />
                       <menuItem key="orderRecurrence" description="" enable="false" icon="" label="{resource:getString($constants,'orderRecurrence')}" />
                       <menuItem key="finalReportBatch" description="" enable="false" icon="" label="{resource:getString($constants,'finalReportBatch')}" />
+                      <menuItem key="finalReportBatchReprint" description="" enable="false" icon="" label="{resource:getString($constants,'finalReportBatchReprint')}" />
                     </menuPanel>
                   </menuItem>
                 </menuPanel>
