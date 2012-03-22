@@ -413,16 +413,28 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
     }
     
     protected String getAdjustedResult(ResultViewDO result, MCLViolationReportVO analysis) {
-        BigDecimal value;
+        BigDecimal bdValue;
+        String compOp, strValue;
 
-        value = new BigDecimal(result.getValue());
-        if (ugPerLId.equals(analysis.getUnitOfMeasureId()) || ngPerMlId.equals(analysis.getUnitOfMeasureId())) {
-            value = value.divide(new BigDecimal(1000.0));
-        } else if (ngPerLId.equals(analysis.getUnitOfMeasureId())) {
-            value = value.divide(new BigDecimal(1000000.0));
+        compOp = null; 
+        strValue = result.getValue();
+        if (strValue.startsWith("<") || strValue.startsWith(">")) {
+            compOp = strValue.substring(0, 1);
+            strValue = strValue.substring(1);
         }
         
-        return value.toString();
+        bdValue = new BigDecimal(strValue);
+        if (ugPerLId.equals(analysis.getUnitOfMeasureId()) || ngPerMlId.equals(analysis.getUnitOfMeasureId())) {
+            bdValue = bdValue.divide(new BigDecimal(1000.0));
+        } else if (ngPerLId.equals(analysis.getUnitOfMeasureId())) {
+            bdValue = bdValue.divide(new BigDecimal(1000000.0));
+        }
+        
+        strValue = bdValue.toString();
+        if (compOp != null)
+            strValue = compOp + strValue;
+        
+        return strValue;
     }
 
     private void initMethodCodes() {
