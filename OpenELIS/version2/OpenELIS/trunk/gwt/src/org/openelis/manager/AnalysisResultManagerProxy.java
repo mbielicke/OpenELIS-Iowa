@@ -140,7 +140,7 @@ public class AnalysisResultManagerProxy {
                                     AnalysisViewDO data,
                                     ValidationErrorsList errorsList) throws Exception {
         ArrayList<ResultViewDO> results;
-        ResultViewDO result;
+        ResultViewDO result, rowResult;
         TestResultDO testResult;
         Integer testResultId, resultRequiredId;
         int i, j;
@@ -152,14 +152,23 @@ public class AnalysisResultManagerProxy {
             results = man.getRowAt(i);
 
             j = 0;
+            rowResult = null;
             while (j < results.size()) {
                 result = results.get(j);
+                if (j == 0)
+                    rowResult = result;
 
                 // if required if needs to have a value
                 if (DataBaseUtil.isSame(resultRequiredId, result.getTestAnalyteTypeId()) &&
                     (DataBaseUtil.isEmpty(result.getValue()))) {
-                    errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
-                                                          data.getTestName(), data.getMethodName()));
+                    if (j == 0)
+                        errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                                                              data.getTestName(), data.getMethodName(),
+                                                              rowResult.getAnalyte(), "Value"));
+                    else
+                        errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                                                              data.getTestName(), data.getMethodName(),
+                                                              rowResult.getAnalyte(), result.getAnalyte()));
                     throw errorsList;
                 }
 
@@ -175,8 +184,14 @@ public class AnalysisResultManagerProxy {
                         result.setTestResultId(testResult.getId());
                     }
                 } catch (ParseException e) {
-                    errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
-                                                          data.getTestName(), data.getMethodName()));
+                    if (j == 0)
+                        errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                                                              data.getTestName(), data.getMethodName(),
+                                                              rowResult.getAnalyte(), "Value"));
+                    else
+                        errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                                                              data.getTestName(), data.getMethodName(),
+                                                              rowResult.getAnalyte(), result.getAnalyte()));
                     throw errorsList;
                 }
 
