@@ -439,7 +439,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          */
         resultList = sample.fetchForFinalReportBatch();
         
-        log.debug("Considering "+ resultList.size()+ " cases to run");        
+        log.info("Considering "+ resultList.size()+ " cases to run");        
         if (resultList.size() == 0)
             return status;
         
