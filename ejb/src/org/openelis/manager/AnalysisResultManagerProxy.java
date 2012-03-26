@@ -245,7 +245,7 @@ public class AnalysisResultManagerProxy {
                                     AnalysisViewDO anDO,
                                     ValidationErrorsList errorsList) throws Exception {
         ArrayList<ResultViewDO> results;
-        ResultViewDO result;
+        ResultViewDO result, rowResult;
         Integer resultRequiredId;
         int i, j;
 
@@ -256,14 +256,23 @@ public class AnalysisResultManagerProxy {
             results = man.getRowAt(i);
 
             j = 0;
+            rowResult = null;
             while (j < results.size()) {
                 result = results.get(j);
-
+                if (j == 0)
+                    rowResult = result;
+                
                 // if required if needs to have a value
                 if (resultRequiredId.equals(result.getTestAnalyteTypeId()) &&
                     (DataBaseUtil.isEmpty(result.getValue()))) {
-                    errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
-                                                          anDO.getTestName(), anDO.getMethodName()));
+                    if (j == 0)
+                        errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                                                              anDO.getTestName(), anDO.getMethodName(),
+                                                              rowResult.getAnalyte(), "Value"));
+                    else
+                        errorsList.add(new FormErrorException("completeStatusRequiredResultsException",
+                                                              anDO.getTestName(), anDO.getMethodName(),
+                                                              rowResult.getAnalyte(), result.getAnalyte()));
                 }
 
                 // make sure the result is valid if its filled out
@@ -271,8 +280,14 @@ public class AnalysisResultManagerProxy {
                     if (!DataBaseUtil.isEmpty(result.getValue()))                         
                         validateResult(man, anDO, result);                    
                 } catch (ParseException e) {
-                    errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
-                                                          anDO.getTestName(), anDO.getMethodName()));
+                    if (j == 0)
+                        errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                                                              anDO.getTestName(), anDO.getMethodName(),
+                                                              rowResult.getAnalyte(), "Value"));
+                    else
+                        errorsList.add(new FormErrorException("completeStatusInvalidResultsException",
+                                                              anDO.getTestName(), anDO.getMethodName(),
+                                                              rowResult.getAnalyte(), result.getAnalyte()));
                 }
 
                 j++ ;
