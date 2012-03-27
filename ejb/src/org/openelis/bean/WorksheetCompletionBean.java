@@ -192,7 +192,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         } catch (NotFoundException nfE) {
             formatVDO = new DictionaryViewDO();
             formatVDO.setEntry("DefaultTotal");
-            formatVDO.setSystemName("wformat_total");
+            formatVDO.setSystemName("wf_total");
         } catch (Exception anyE) {
             throw new Exception("Error retrieving worksheet format: "+anyE.getMessage());
         }
