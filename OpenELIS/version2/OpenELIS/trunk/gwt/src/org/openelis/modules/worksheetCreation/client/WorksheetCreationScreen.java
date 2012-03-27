@@ -522,7 +522,7 @@ public class WorksheetCreationScreen extends Screen {
         ArrayList<TableDataRow> model;
 
         try {
-            formatTotal = DictionaryCache.getIdBySystemName("wformat_total");
+            formatTotal = DictionaryCache.getIdBySystemName("wf_total");
             statusWorking = DictionaryCache.getIdBySystemName("worksheet_working");
             typeDup = DictionaryCache.getIdBySystemName("pos_duplicate");
             typeFixed = DictionaryCache.getIdBySystemName("pos_fixed");
