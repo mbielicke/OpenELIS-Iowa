@@ -6,7 +6,6 @@ import java.util.Date;
 import javax.ejb.Local;
 
 import org.openelis.domain.ClientNotificationVO;
-import org.openelis.domain.FinalReportDataVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
 
@@ -18,13 +17,13 @@ public interface SampleLocal {
 
     public ArrayList<SampleDO> fetchSDWISByReleased(Date startDate, Date endDate) throws Exception;
 
-    public ArrayList<FinalReportDataVO> fetchForFinalReportBatch() throws Exception;
+    public ArrayList<Object[]> fetchForFinalReportBatch() throws Exception;
 
-    public ArrayList<FinalReportDataVO> fetchForFinalReportBatchReprint(Date beginPrinted, Date endPrinted) throws Exception;
+    public ArrayList<Object[]> fetchForFinalReportBatchReprint(Date beginPrinted, Date endPrinted) throws Exception;
 
-	public ArrayList<FinalReportDataVO> fetchForFinalReportSingle(Integer sampleId) throws Exception;
+	public ArrayList<Object[]> fetchForFinalReportSingle(Integer sampleId) throws Exception;
 
-	public ArrayList<FinalReportDataVO> fetchForFinalReportPreview(Integer sampleId) throws Exception;
+	public ArrayList<Object[]> fetchForFinalReportPreview(Integer sampleId) throws Exception;
 	
 	public ArrayList<ClientNotificationVO> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception;
     
