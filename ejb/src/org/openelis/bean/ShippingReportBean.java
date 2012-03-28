@@ -26,7 +26,6 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
-import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.OptionListItem;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
@@ -38,7 +37,6 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.InventoryItemCacheLocal;
 import org.openelis.local.LabelReportLocal;
 import org.openelis.local.OrderItemLocal;
 import org.openelis.local.OrderLocal;
@@ -69,9 +67,6 @@ public class ShippingReportBean implements ShippingReportRemote {
 
     @EJB
     private RequestformReportLocal  requestFormReport;
-
-    @EJB
-    private InventoryItemCacheLocal inventoryItemCache;
 
     @EJB
     private LabelReportLocal        labelReport;
@@ -150,7 +145,7 @@ public class ShippingReportBean implements ShippingReportRemote {
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         int numpkg;
         boolean printManifest, printLabel, printReqform, printInstr;
-        Integer shippingId, orderId, prevOrderId, itemId, methodId;
+        Integer shippingId, orderId, prevOrderId, methodId;
         String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel,
                requestForm, instruction, dir, printstat, itemUri, uriPath, name,
                method, costCenter, fromStreetAddress1, fromStreetAddress2, fromCity, fromState,
