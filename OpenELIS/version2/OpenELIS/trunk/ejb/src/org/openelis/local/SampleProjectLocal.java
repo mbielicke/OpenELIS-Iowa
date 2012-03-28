@@ -29,7 +29,6 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.SampleProjectViewDO;
 
 

@@ -89,7 +89,6 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.AnalysisUserLocal;
@@ -1780,6 +1779,8 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<String> headers;
         
         headers = new ArrayList<String>();
+        if ("Y".equals(data.getAnalysisId()))
+            headers.add(resource.getString("analysisId"));
         if ("Y".equals(data.getAnalysisTestNameHeader()))
             headers.add(resource.getString("test"));
         if ("Y".equals(data.getAnalysisTestMethodNameHeader()))
@@ -2106,13 +2107,19 @@ public class DataViewBean implements DataViewRemote {
         DictionaryDO dict;
         Datetime dt;
         
+        if ("Y".equals(data.getAnalysisId())) {
+            cell = row.createCell(startCol++);
+            if (analysis != null) 
+                cell.setCellValue(analysis.getId());            
+        }
+        
         if ("Y".equals(data.getAnalysisTestNameHeader())) {
-            cell = row.createCell(startCol++ );
+            cell = row.createCell(startCol++);
             if (analysis != null) 
                 cell.setCellValue(runForWeb ? analysis.getTestReportingDescription() : analysis.getTestName());            
         }
         if ("Y".equals(data.getAnalysisTestMethodNameHeader())) {
-            cell = row.createCell(startCol++ );
+            cell = row.createCell(startCol++);
             if (analysis != null)
                 cell.setCellValue(runForWeb ? analysis.getMethodReportingDescription() : analysis.getMethodName()); 
         }
@@ -2443,7 +2450,7 @@ public class DataViewBean implements DataViewRemote {
     }     
     
     private boolean isSameDataInRows(Row currRow, Row prevRow) {
-        int type;
+        int prevType, currType;
         Cell prevCell, currCell;
 
         if (currRow == null || prevRow == null)
@@ -2452,12 +2459,23 @@ public class DataViewBean implements DataViewRemote {
         for (int i = 0; i < prevRow.getPhysicalNumberOfCells(); i++ ) {
             prevCell = prevRow.getCell(i);
             currCell = currRow.getCell(i);
-
-            if ((prevCell == null && currCell != null) || (prevCell != null && currCell == null))
+            
+            if (prevCell == null) {
+                if (currCell == null)
+                    continue;
+                else
+                    return false;
+            } else if (currCell == null) {
+                    return false;
+            }
+            
+            prevType = prevCell.getCellType();
+            currType = currCell.getCellType();
+            
+            if (prevType != currType)
                 return false;
-
-            type = prevCell.getCellType();
-            switch (type) {
+            
+            switch (prevType) {
                 case Cell.CELL_TYPE_STRING:
                     if ( !DataBaseUtil.isSame(prevCell.getStringCellValue(),
                                               currCell.getStringCellValue()))
@@ -2477,7 +2495,7 @@ public class DataViewBean implements DataViewRemote {
         }
 
         return true;
-    }    
+    } 
     
     private List<Object[]> fetchAnalyteAndAuxField(String key, QueryBuilderV2 builder,
                                                    ArrayList<QueryData> fields) throws Exception {

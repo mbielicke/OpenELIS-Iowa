@@ -41,7 +41,7 @@ public class DataViewVO implements RPC {
 
     private static final long              serialVersionUID = 1L;
 
-    protected String                       analysisTestName, analysisTestMethodName,
+    protected String                       analysisId, analysisTestName, analysisTestMethodName,
                                            excludeResultOverride,
                                            clientReference, accessionNumber, revision,
                                            collectionDate, receivedDate, enteredDate,
@@ -89,6 +89,14 @@ public class DataViewVO implements RPC {
     protected ArrayList<QueryData>             queryFields;
     protected ArrayList<TestAnalyteDataViewVO> testAnalytes;
     protected ArrayList<AuxFieldDataViewVO>    auxFields;
+    
+    public String getAnalysisId() {
+        return analysisId;
+    }
+
+    public void setAnalysisId(String analysisId) {
+        this.analysisId = DataBaseUtil.trim(analysisId);
+    }
     
     public String getAnalysisTestName() {
         return analysisTestName;
