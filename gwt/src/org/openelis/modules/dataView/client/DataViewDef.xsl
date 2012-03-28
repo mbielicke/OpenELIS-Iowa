@@ -76,7 +76,7 @@ UIRF Software License are applicable instead of those above.
           </AbsolutePanel>
         <VerticalPanel style="WhiteContentPanel">  
         <VerticalPanel height="5" />        
-        <TabPanel height="410" key="tabPanel" width="605">
+        <TabPanel height="410" key="tabPanel" width="630">
           <tab text="{resource:getString($constants,'query')}">
             <VerticalPanel>
               <TablePanel style="Form" width="400">
@@ -437,6 +437,10 @@ UIRF Software License are applicable instead of those above.
                   <widget>
                     <HorizontalPanel width="55" />
                   </widget>
+                  <check key="{meta:getAnalysisId()}" />
+                  <text style="LeftAlignPrompt">
+                    <xsl:value-of select="resource:getString($constants,'id')" />
+                  </text>
                   <check key="{meta:getAnalysisTestNameHeader()}" />
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select="resource:getString($constants,'test')" />
