@@ -405,7 +405,9 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
         try {
             tMan = TestManager.fetchById(tpVDO.getPrepTestId());
             tsMan = tMan.getTestSections();
-            defaultId = tsMan.getDefaultSection().getSectionId();
+            tsVDO = tsMan.getDefaultSection();
+            if (tsVDO != null)
+                defaultId = tsVDO.getSectionId();
             for (i = 0; i < tsMan.count(); i++) {
                 tsVDO = tsMan.getSectionAt(i);
                 if (!sections.containsKey(tsVDO.getSectionId())) {
