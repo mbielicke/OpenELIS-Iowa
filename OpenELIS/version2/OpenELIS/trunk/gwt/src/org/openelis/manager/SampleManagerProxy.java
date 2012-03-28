@@ -28,6 +28,7 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -88,8 +89,12 @@ public class SampleManagerProxy {
         return service.call("fetchWithItemsAnalyses", sampleId);
     }
     
-    public SampleManager fetchWithAllData(Integer sampleId) throws Exception {        
-        return service.call("fetchWithAllData", sampleId);
+    public SampleManager fetchWithAllDataById(Integer sampleId) throws Exception {        
+        return service.call("fetchWithAllDataById", sampleId);
+    }
+    
+    public SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {        
+        return service.call("fetchWithAllDataByAccessionNumber", accessionNumber);
     }
 
     public SampleManager add(SampleManager man) throws Exception {
@@ -116,9 +121,11 @@ public class SampleManagerProxy {
     }
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
+        boolean internalNoteAdded;
         SampleDomainInt domMan;
         SampleDO data;
-        NoteManager noteMan;
+        NoteViewDO note;
+        NoteManager noteMan;      
 
         data = man.getSample();
 
@@ -149,8 +156,20 @@ public class SampleManagerProxy {
         // every unreleased sample needs an internal comment describing the reason
         if (man.unreleaseWithNotes) {
             noteMan = man.getInternalNotes();
-            if (noteMan == null || noteMan.count() == 0)
+            if (noteMan == null || noteMan.count() == 0) {
                 errorsList.add(new FormErrorException("unreleaseNoNoteException"));
+            } else {
+                internalNoteAdded = false;
+                for (int i = 0; i < noteMan.count(); i++) {
+                    note = noteMan.getNoteAt(i);
+                    if (note.getId() == null && "N".equals(note.getIsExternal())) {
+                        internalNoteAdded = true;
+                        break;
+                    }
+                }
+                if (!internalNoteAdded)
+                    errorsList.add(new FormErrorException("unreleaseNoNoteException"));
+            }
         }
 
         //

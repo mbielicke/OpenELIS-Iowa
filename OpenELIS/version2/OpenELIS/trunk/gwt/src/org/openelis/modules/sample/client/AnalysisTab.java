@@ -747,8 +747,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                                                                                         .get(0).colWidget);
         analysisUserTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                Object val;
-                
                 if (!canEdit() || !EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                 }

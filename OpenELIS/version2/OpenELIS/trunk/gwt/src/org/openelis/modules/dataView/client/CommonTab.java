@@ -22,9 +22,9 @@ public class CommonTab extends Screen {
                        sampleOrgOrganizationName, sampleOrgAttention, addressMultipleUnit,
                        addressStreetAddress, addressCity, addressState, addressZipCode,
                        itemTypeofSampleId, itemSourceOfSampleId, itemSourceOther,
-                       itemContainerId, itemContainerReference, itemItemSequence, analysisTestNameHeader, 
-                       analysisMethodNameHeader, analysisStatusIdHeader, analysisRevision,
-                       analysisIsReportableHeader, analysisUnitOfMeasureId,
+                       itemContainerId, itemContainerReference, itemItemSequence, analysisId,
+                       analysisTestNameHeader, analysisMethodNameHeader, analysisStatusIdHeader,
+                       analysisRevision, analysisIsReportableHeader, analysisUnitOfMeasureId,
                        analysisSubQaName, analysisCompletedDate, analysisCompletedBy,
                        analysisReleasedDate, analysisReleasedBy, analysisStartedDate,
                        analysisPrintedDate;
@@ -426,6 +426,23 @@ public class CommonTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 itemItemSequence.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        analysisId = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisId());
+        addScreenHandler(analysisId, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                analysisId.setValue(data.getAnalysisId());
+                changeCount(data.getAnalysisId(), false);
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setAnalysisId(event.getValue());
+                changeCount(event.getValue(), true);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysisId.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
 
