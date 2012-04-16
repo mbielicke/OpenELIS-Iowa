@@ -591,7 +591,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         });
 
         printedDate = (CalendarLookUp)def.getWidget(SampleMeta.getAnalysisPrintedDate());
-        addScreenHandler(releasedDate, new ScreenEventHandler<Datetime>() {
+        addScreenHandler(printedDate, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
                 printedDate.setValue(analysis.getPrintedDate());
             }
