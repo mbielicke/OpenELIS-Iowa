@@ -357,23 +357,18 @@ public class BuildKitsScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                InventoryReceiptViewDO data; 
+                InventoryReceiptViewDO data;
                 InventoryLocationViewDO location;
-                TableDataRow row;               
-                
+                TableDataRow row;
+
                 data = manager.getInventoryReceipt();
                 row = locationStorageLocationName.getSelection();
-                
-                if (data.getInventoryLocations() == null) {
-                    data.setInventoryLocations(new ArrayList<InventoryLocationViewDO>());
-                    data.getInventoryLocations().add(new InventoryLocationViewDO());
-                }
-                
-                location = data.getInventoryLocations().get(0);
+
                 if (row != null && row.data != null) {
                     location = (InventoryLocationViewDO)row.data;
-                    data.getInventoryLocations().set(0, location);                    
+                    data.getInventoryLocations().set(0, location);
                 } else {
+                    location = data.getInventoryLocations().get(0);
                     location.setId(null);
                     location.setStorageLocationId(null);
                     location.setStorageLocationName(null);
@@ -409,7 +404,6 @@ public class BuildKitsScreen extends Screen {
                     return;
                                               
                 param = QueryFieldUtil.parseAutocomplete(event.getMatch());                                
-                window.setBusy();
                 model = new ArrayList<TableDataRow>();
                 try {
                     if(manager.getInventoryItem() == null)
@@ -429,6 +423,7 @@ public class BuildKitsScreen extends Screen {
                         fields.add(field);
 
                         query.setFields(fields);
+                        window.setBusy();
                         invLocList = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
                         for (i = 0; i < invLocList.size(); i++ ) {
                             row = new TableDataRow(4);
@@ -448,6 +443,7 @@ public class BuildKitsScreen extends Screen {
                             model.add(row);
                         }
                     } else {
+                        window.setBusy();
                         storLocList = storageService.callList("fetchAvailableByName", param);
                         for (i = 0; i < storLocList.size(); i++ ) {
                             row = new TableDataRow(4);
@@ -482,8 +478,6 @@ public class BuildKitsScreen extends Screen {
                 InventoryItemDO item;
                 TableDataRow row;
                 
-                item = null;
-                
                 try {
                     if (manager == null || manager.getInventoryItem() == null) {
                         locationLotNumber.setValue(null);
@@ -499,7 +493,7 @@ public class BuildKitsScreen extends Screen {
                 item = (InventoryItemDO)row.data;
                                                             
                 if (state == State.ADD && item != null) 
-                    locationLotNumber.enable(!"Y".equals(item.getIsBulk()));
+                    locationLotNumber.enable("N".equals(item.getIsBulk()));
                 else
                     locationLotNumber.enable(false);
                 
@@ -541,7 +535,7 @@ public class BuildKitsScreen extends Screen {
                 item = (InventoryItemDO)row.data;
                                                             
                 if (state == State.ADD && item != null) 
-                    locationExpirationDate.enable(!"Y".equals(item.getIsBulk()));
+                    locationExpirationDate.enable("N".equals(item.getIsBulk()));
                 else
                     locationExpirationDate.enable(false);
             }
@@ -753,7 +747,13 @@ public class BuildKitsScreen extends Screen {
     }
     
     protected void add() {
-        manager = BuildKitManager.getInstance();
+        InventoryReceiptViewDO data;
+        
+        manager = BuildKitManager.getInstance();        
+        data = manager.getInventoryReceipt();
+        data.setInventoryLocations(new ArrayList<InventoryLocationViewDO>());
+        data.getInventoryLocations().add(new InventoryLocationViewDO());
+        
         setState(State.ADD);
         DataChangeEvent.fire(this);
 
