@@ -143,9 +143,6 @@ public class SampleSDWISBean implements SampleSDWISLocal {
             list.add(new FieldErrorException("pwsIdRequiredException", SampleMeta.getSDWISPwsNumber0()));
         }
         
-        if (data.getStateLabId() == null)
-            list.add(new FieldErrorException("stateLabNumRequiredException", SampleMeta.getSDWISStateLabId()));
-        
         if (data.getSampleTypeId() == null)
             list.add(new FieldErrorException("sampleTypeRequiredException", SampleMeta.getSDWISSampleTypeId()));
         
