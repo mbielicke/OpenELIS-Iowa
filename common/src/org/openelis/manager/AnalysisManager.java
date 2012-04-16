@@ -214,7 +214,7 @@ public class AnalysisManager implements RPC {
         for (i = 0; i < siMan.count(); i++) {
             aMan = siMan.getAnalysisAt(i);
             for (j = 0; j < aMan.count(); j++) {
-                checkData = aMan.getAnalysisAt(i);
+                checkData = aMan.getAnalysisAt(j);
                 if (data.getId().equals(checkData.getPreAnalysisId()) &&
                     proxy().anReleasedId.equals(checkData.getStatusId())) {
                     errorsList = new ValidationErrorsList();
@@ -828,7 +828,7 @@ public class AnalysisManager implements RPC {
         typeOfSampleId = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex())
                                           .getTypeOfSampleId();
         units = testMan.getSampleTypes().getTypesBySampleType(typeOfSampleId);
-        if (units.size() == 1)
+        if (units.size() > 0)
             data.setUnitOfMeasureId(units.get(0).getUnitOfMeasureId());
 
         // if there is a default section then set it
