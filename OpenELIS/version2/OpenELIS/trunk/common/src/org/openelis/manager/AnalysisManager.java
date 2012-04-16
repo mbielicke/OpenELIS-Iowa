@@ -824,7 +824,7 @@ public class AnalysisManager implements RPC {
         if (data.getIsReportable() == null)
             data.setIsReportable(test.getIsReportable());
 
-        // if there is only 1 unit then set it
+        // set the first unit for this sample type if there are any units for it
         typeOfSampleId = sampleItemManager.getSampleItemAt(getBundleAt(index).getSampleItemIndex())
                                           .getTypeOfSampleId();
         units = testMan.getSampleTypes().getTypesBySampleType(typeOfSampleId);
