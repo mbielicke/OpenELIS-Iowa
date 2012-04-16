@@ -671,7 +671,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             
             rowData = new HashMap<String,String>();
             rowData.put("contaminantId", contaminantIds.get(rVDO.getAnalyte()));
-            if ("TC".equals(sampCatDO.getLocalAbbrev())) {
+            if (sdwisBacterialId.equals(sampCatDO.getId())) {
                 if (typeDictionaryId.equals(rVDO.getTypeId())) {
                     try {
                         rowData.put("microbe", dictionaryCache.getById(Integer.valueOf(rVDO.getValue())).getEntry());
