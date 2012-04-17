@@ -166,7 +166,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'stateLabNo')" />:
                 </text>
-                <textbox key="{meta:getSDWISStateLabId()}" width="109" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer" required="true"/>
+                <textbox key="{meta:getSDWISStateLabId()}" width="109" tab="{meta:getSDWISFacilityId()},pwsName" field="Integer"/>
               </row>
               <row>
               
