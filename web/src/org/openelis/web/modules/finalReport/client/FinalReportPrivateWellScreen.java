@@ -33,7 +33,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SamplePrivateWellFinalReportWebVO;
+import org.openelis.domain.FinalReportWebVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission;
@@ -72,7 +72,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class FinalReportPrivateWellScreen extends Screen {
 
-    private FinalReportVO                     data;
+    private FinalReportFormVO                     data;
     private ModulePermission                  userPermission;
     private CalendarLookUp                    releasedFrom, releasedTo, collectedFrom, collectedTo;
     private TextBox                           collectorName, accessionFrom, accessionTo,
@@ -87,7 +87,7 @@ public class FinalReportPrivateWellScreen extends Screen {
     private Label<String>                     queryDeckLabel, numSampleSelected;
     private AppButton                         getSamplesButton, resetButton, runReportButton,
                                               resettButton, backButton, selectAllButton;
-    private ArrayList<SamplePrivateWellFinalReportWebVO> results;
+    private ArrayList<FinalReportWebVO> results;
 
     private enum Decks {
         QUERY, LIST
@@ -118,7 +118,7 @@ public class FinalReportPrivateWellScreen extends Screen {
      */
     private void postConstructor() {
         deck = Decks.QUERY;
-        data = new FinalReportVO();
+        data = new FinalReportFormVO();
 
         initialize();
         setState(State.ADD);
@@ -491,7 +491,7 @@ public class FinalReportPrivateWellScreen extends Screen {
 
     protected void getSamples() {
         Query query;
-        ArrayList<SamplePrivateWellFinalReportWebVO> list;
+        ArrayList<FinalReportWebVO> list;
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
@@ -532,7 +532,7 @@ public class FinalReportPrivateWellScreen extends Screen {
      * Resets all the fields to their original report specified values
      */
     protected void reset() {
-        data = new FinalReportVO();
+        data = new FinalReportFormVO();
         setState(State.ADD);
         DataChangeEvent.fire(this);
         clearErrors();
@@ -547,7 +547,7 @@ public class FinalReportPrivateWellScreen extends Screen {
         clearErrors();
     }
 
-    protected void loadDeck(ArrayList<SamplePrivateWellFinalReportWebVO> list) {
+    protected void loadDeck(ArrayList<FinalReportWebVO> list) {
         switch (deck) {
             case QUERY:
                 deckpanel.showWidget(1);
@@ -563,7 +563,7 @@ public class FinalReportPrivateWellScreen extends Screen {
         }
     }    
 
-    public void setResults(ArrayList<SamplePrivateWellFinalReportWebVO> results) {
+    public void setResults(ArrayList<FinalReportWebVO> results) {
         this.results = results;
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -620,10 +620,8 @@ public class FinalReportPrivateWellScreen extends Screen {
 
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model;
-        SamplePrivateWellFinalReportWebVO data;
+        FinalReportWebVO data;
         TableDataRow tr;
-        Date temp;
-        Datetime temp1;
 
         model = new ArrayList<TableDataRow>();
         if (results == null || results.size() == 0)
@@ -631,26 +629,14 @@ public class FinalReportPrivateWellScreen extends Screen {
 
         for (int i = 0; i < results.size(); i++ ) {
             data = results.get(i);
-            if (data.getCollectionDate() != null) {
-                temp = data.getCollectionDate().getDate();
-                if (data.getCollectionTime() == null) {
-                    temp.setHours(0);
-                    temp.setMinutes(0);
-                } else {
-                    temp.setHours(data.getCollectionTime().getDate().getHours());
-                    temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
-                }
-                temp1 = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
-            } else
-                temp1 = null;
 
             tr = new TableDataRow(data.getAccessionNumber(),
                                   "N",
                                   data.getAccessionNumber(),
                                   data.getLocation(),
-                                  temp1,
+                                  data.getCollectionDateTime(),
                                   data.getCollector(),
-                                  data.getStatus(),
+                                  data.getStatusId(),
                                   data.getLocationAddressCity(),
                                   data.getPrivateWellOwner());
             tr.data = data;
