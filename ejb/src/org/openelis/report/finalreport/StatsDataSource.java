@@ -5,9 +5,9 @@ import net.sf.jasperreports.engine.*;
 
 public class StatsDataSource implements JRDataSource {
     protected ArrayList<OrganizationPrint> stats;
-    protected Iterator<OrganizationPrint> iter;
-    protected String           organizationName;
-    protected Integer          pageCount, organizationId;
+    protected Iterator<OrganizationPrint>  iter;
+    protected String                       organizationName, faxedPrinted;
+    protected Integer                      pageCount, organizationId;
     
     public ArrayList<OrganizationPrint> getStats() {
         return stats;
@@ -17,16 +17,17 @@ public class StatsDataSource implements JRDataSource {
     }
     
     public boolean next() throws JRException {
-        OrganizationPrint ci;
+        OrganizationPrint op;
         
         if (iter == null && stats != null)
             iter = stats.iterator();
         
         if (iter.hasNext()) {
-            ci = (OrganizationPrint) iter.next();               
-            organizationName = ci.getOrganizationName();
-            pageCount = ci.getJprint().getPages().size();
-            organizationId = ci.getOrganizationId();
+            op = (OrganizationPrint) iter.next();
+            organizationId = op.getOrganizationId();
+            organizationName = op.getOrganizationName();
+            pageCount = op.getPageCount();
+            faxedPrinted = op.getFaxNumber() != null ? "Faxed" : "Printed";
         } else {
             return false;
         }
@@ -41,7 +42,8 @@ public class StatsDataSource implements JRDataSource {
             return organizationId;
         else if ("PAGES".equals(field.getName()))
             return pageCount;
+        else if ("FAXED_PRINTED".equals(field.getName()))
+            return faxedPrinted;
         return null;
     }
-
 }

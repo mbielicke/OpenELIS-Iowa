@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="finalreport" pageWidth="612" pageHeight="791" columnWidth="576" leftMargin="18" rightMargin="18" topMargin="18" bottomMargin="18">
 	<property name="ireport.zoom" value="2.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="96"/>
+	<property name="ireport.y" value="240"/>
 	<import value="org.openelis.report.finalreport.OrganizationPrint"/>
 	<import value="org.openelis.report.finalreport.NoteDataSource"/>
 	<parameter name="SAMPLE_ID" class="java.lang.String">
@@ -28,7 +28,7 @@
 FROM
      sample s
 WHERE
-     s.id $P!{SAMPLE_ID}]]>
+     s.id = $P!{SAMPLE_ID}]]>
 	</queryString>
 	<field name="s_id" class="java.lang.Integer"/>
 	<field name="s_accession_number" class="java.lang.Integer"/>
@@ -376,18 +376,6 @@ WHERE
 				</textElement>
 				<text><![CDATA[712/337-3669  ext. 6 Fax: 712/337-0227]]></text>
 			</staticText>
-			<image>
-				<reportElement key="omr-first-image" positionType="Float" x="552" y="-68" width="40" height="65">
-					<printWhenExpression><![CDATA[$V{PAGE_COUNTER}.isFirstPage()]]></printWhenExpression>
-				</reportElement>
-				<imageExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "omrfirst.gif"]]></imageExpression>
-			</image>
-			<image>
-				<reportElement key="omr-middle-image" positionType="Float" x="552" y="-68" width="40" height="65">
-					<printWhenExpression><![CDATA[$V{PAGE_COUNTER}.isNotFirstPage()]]></printWhenExpression>
-				</reportElement>
-				<imageExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "omrmiddle.gif"]]></imageExpression>
-			</image>
 			<staticText>
 				<reportElement x="120" y="30" width="150" height="10"/>
 				<textElement>
@@ -432,149 +420,4 @@ WHERE
 			</staticText>
 		</band>
 	</pageFooter>
-	<lastPageFooter>
-		<band height="60" splitType="Stretch">
-			<textField>
-				<reportElement x="139" y="3" width="158" height="12"/>
-				<textElement textAlignment="Right">
-					<font pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}.toString()+" of"]]></textFieldExpression>
-			</textField>
-			<textField evaluationTime="Group" evaluationGroup="Sample_Organization">
-				<reportElement x="300" y="3" width="27" height="12"/>
-				<textElement>
-					<font pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-			<line>
-				<reportElement x="0" y="16" width="552" height="1"/>
-			</line>
-			<staticText>
-				<reportElement x="2" y="18" width="118" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Michael D. Wichman, Ph.D.]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="120" y="18" width="142" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[University of Iowa Research Park]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="262" y="18" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Lakeside Laboratory]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="2" y="48" width="118" height="10"/>
-				<textElement>
-					<font size="8" isItalic="true" pdfFontName="Times-Italic"/>
-				</textElement>
-				<text><![CDATA[http://www.shl.uiowa.edu]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="2" y="28" width="118" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Michael A. Pentella, Ph.D.]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="2" y="38" width="118" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Associate Directors]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="120" y="28" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[2490 Crosspark Road]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="120" y="48" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[319/335-4500   Fax:  319/335-4555]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="412" y="28" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[2220 S. Ankeny Blvd]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="412" y="18" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Iowa Laboratories Complex]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="412" y="48" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[515/725-1600   Fax:  515/725-1642]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="262" y="28" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[1838 Highway 86]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="262" y="48" width="170" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[712/337-3669  ext. 6 Fax: 712/337-0227]]></text>
-			</staticText>
-			<image>
-				<reportElement key="omr-last-image" positionType="Float" x="552" y="-68" width="40" height="65">
-					<printWhenExpression><![CDATA[$V{PAGE_COUNTER}.isNotFirstPage()]]></printWhenExpression>
-				</reportElement>
-				<imageExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "omrlast.gif"]]></imageExpression>
-			</image>
-			<image>
-				<reportElement key="omr-firstlast-image" positionType="Float" x="552" y="-68" width="40" height="65">
-					<printWhenExpression><![CDATA[$V{PAGE_COUNTER}.isFirstPage()]]></printWhenExpression>
-				</reportElement>
-				<imageExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "omrfirstlast.gif"]]></imageExpression>
-			</image>
-			<staticText>
-				<reportElement x="120" y="38" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Coralville, IA 52241]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="262" y="38" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Milford, IA 51351]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="412" y="38" width="150" height="10"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<text><![CDATA[Ankeny, IA  50023 ]]></text>
-			</staticText>
-		</band>
-	</lastPageFooter>
 </jasperReport>
