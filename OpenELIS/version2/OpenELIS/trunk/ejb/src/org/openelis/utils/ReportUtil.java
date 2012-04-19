@@ -226,33 +226,36 @@ public class ReportUtil {
             file.delete();
         }
     }
-
+    
     /**
      * Sends the file to specified printer and returns the printer's status.
      * NOTE: This method is very "lpr" and "cups" dependent and will not work on non unix platforms.
      */
     public static String printWithoutDelete(File file, String destination, int copies, String... options) throws Exception {
         String status;
-        StringBuffer sb;
+        ArrayList<String> args; 
 
-        sb = new StringBuffer();
         /*
          * UNIX style CUPS printing on LINUX.
          */
         try {
-            sb.append("lpr")
-              .append(" -U ").append(EJBFactory.getUserCache().getName());// username
-
-            if ( !DataBaseUtil.isEmpty(destination))
-                sb.append(" -P ").append(destination);  // printer
-            if (copies > 1)
-                sb.append(" -# ").append(copies);       // copies
-            for (int i = 0; i < options.length; i++ )
-                sb.append(" -o ").append(options[i]);   // -o option[=value]
-
-            sb.append(' ').append(file); // file to print
-
-            exec(sb.toString());
+            args = new ArrayList<String>();
+            args.add("lpr");
+            args.add("-U");
+            args.add(EJBFactory.getUserCache().getName()); 
+            args.add("-P");                                 
+            args.add(destination);
+            if (copies > 1) {
+                args.add("-#");
+                args.add(String.valueOf(copies));
+            }                                                       
+               
+            for (int i = 0; i < options.length; i++ ) {
+                args.add("-o");
+                args.add(String.valueOf(options[i]));
+            }
+            args.add(file.toString());
+            exec(args);
             status = "print queued to " + destination;
         } catch (Exception e) {
             throw new Exception("Could not print to queue "+destination+"; "+e.getMessage());
@@ -260,6 +263,47 @@ public class ReportUtil {
 
         return status;
     }
+    
+    /**
+     * Sends the file through cups for faxing and returns the queued status.
+     * NOTE: This method is very "sendfax" and "cups" dependent and will not work on non unix platforms.
+     */
+    public static String fax(File file, String faxNumber, String fromName, String toName,
+                             String toCompany, String faxNote) throws Exception {
+        String status;
+        ArrayList<String> args; 
+        
+        try {
+            args = new ArrayList<String>();
+            args.add("sendfax");
+            args.add("-o");
+            args.add(EJBFactory.getUserCache().getName());
+
+            if ( !DataBaseUtil.isEmpty(fromName)) {
+                args.add("-X");
+                args.add(fromName);
+            }
+            if ( !DataBaseUtil.isEmpty(toCompany)) {
+                args.add("-x");
+                args.add(toCompany);
+            }
+            if ( !DataBaseUtil.isEmpty(faxNote)) {
+                args.add("-c");
+                args.add(faxNote);
+            }
+            faxNumber = faxNumber.replaceAll("[^0-9]", "");
+            args.add("-d");            
+            args.add(!DataBaseUtil.isEmpty(toName) ? toName + "@" + faxNumber : faxNumber);
+            
+            args.add(file.toString());
+            exec(args);
+            status = "fax queued for " + faxNumber;
+        } catch (Exception e) {
+            throw new Exception("Could not fax; " + e.getMessage());
+        }
+
+        return status;
+    }   
 
     /**
      * Moves the specified file to upload save directory and changes its permission
@@ -281,7 +325,7 @@ public class ReportUtil {
 
         movedFile = new File(saveDir, file.getName());
         copy(file, movedFile);
-        exec("chmod 666 "+movedFile.getAbsolutePath());
+        exec("chmod", "666", movedFile.getAbsolutePath());
         file.delete();
         
         return movedFile;
@@ -339,12 +383,26 @@ public class ReportUtil {
             return null;
         }                
     }
-
+    
     /**
      * Executes a system command and waits for its exit status. The method
      * throws the subprocess's error string as an exception if the exit code is not 0.
      */
-    protected static void exec(String command) throws Exception {
+    protected static void exec(ArrayList<String> args) throws Exception {
+        String cmd[];
+
+        cmd = new String[args.size()];
+        for (int i = 0; i < args.size(); i++) 
+            cmd[i] = args.get(i);
+                
+        exec(cmd);        
+    }
+    
+    /**
+     * Executes a system command and waits for its exit status. The method
+     * throws the subprocess's error string as an exception if the exit code is not 0.
+     */
+    protected static void exec(String... command) throws Exception {
         Process p;
         byte err[];
 
@@ -442,5 +500,19 @@ public class ReportUtil {
         msg.saveChanges();
 
         Transport.send(msg);
-    }   
+    }
+    
+    /** 
+     * This method returns a segment of a command like the one for printing or 
+     * faxing a file, in the format: option "arg" . The first part of the string
+     * is the option to be used in the command e.g. -P, for specifying the printer,
+     * and the second part is the value for that option e.g. "printer 1". If arg
+     * is null or empty then it returns an empty string.     
+     */
+    private static String getOption(String option, String arg) {
+        if (DataBaseUtil.isEmpty(arg))
+            return "";
+        arg = arg.trim().replaceAll("\"", "'");
+        return " "+option+" \""+arg+"\"";
+    }
 }
