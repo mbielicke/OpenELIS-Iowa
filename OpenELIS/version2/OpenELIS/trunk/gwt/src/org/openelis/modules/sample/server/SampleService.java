@@ -53,8 +53,12 @@ public class SampleService {
         return EJBFactory.getSampleManager().fetchWithItemsAnalysis(sampleId);
     }
     
-    public SampleManager fetchWithAllData(Integer sampleId) throws Exception {
-        return EJBFactory.getSampleManager().fetchWithAllData(sampleId);
+    public SampleManager fetchWithAllDataById(Integer sampleId) throws Exception {
+        return EJBFactory.getSampleManager().fetchWithAllDataById(sampleId);
+    }
+    
+    public SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {
+        return EJBFactory.getSampleManager().fetchWithAllDataByAccessionNumber(accessionNumber);
     }
 
     // sample methods

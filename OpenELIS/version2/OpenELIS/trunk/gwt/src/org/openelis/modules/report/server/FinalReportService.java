@@ -27,10 +27,8 @@ package org.openelis.modules.report.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SampleEnvironmentalFinalReportWebVO;
-import org.openelis.domain.SamplePrivateWellFinalReportWebVO;
-import org.openelis.domain.SampleSDWISFinalReportWebVO;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.report.Prompt;
@@ -101,23 +99,23 @@ public class FinalReportService {
         return st;
     }
 
-    public ArrayList<SampleEnvironmentalFinalReportWebVO> getSampleEnvironmentalList(Query query) throws Exception {        
-        return EJBFactory.getFinalReport().getSampleEnvironmentalList(query.getFields());
+    public ArrayList<FinalReportWebVO> getSampleEnvironmentalList(Query query) throws Exception {        
+        return EJBFactory.getFinalReportWeb().getSampleEnvironmentalList(query.getFields());
     } 
     
-    public ArrayList<SamplePrivateWellFinalReportWebVO> getSamplePrivateWellList(Query query) throws Exception{        
-        return EJBFactory.getFinalReport().getSamplePrivateWellList(query.getFields());
+    public ArrayList<FinalReportWebVO> getSamplePrivateWellList(Query query) throws Exception{        
+        return EJBFactory.getFinalReportWeb().getSamplePrivateWellList(query.getFields());
     }  
     
-    public ArrayList<SampleSDWISFinalReportWebVO> getSampleSDWISList(Query query) throws Exception {        
-        return EJBFactory.getFinalReport().getSampleSDWISList(query.getFields());
+    public ArrayList<FinalReportWebVO> getSampleSDWISList(Query query) throws Exception {        
+        return EJBFactory.getFinalReportWeb().getSampleSDWISList(query.getFields());
     }     
     
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception {        
-        return EJBFactory.getFinalReport().getEnvironmentalProjectList();
+        return EJBFactory.getFinalReportWeb().getEnvironmentalProjectList();
     }
     
     public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {        
-        return EJBFactory.getFinalReport().getPrivateWellProjectList();
+        return EJBFactory.getFinalReportWeb().getPrivateWellProjectList();
     }
 }
