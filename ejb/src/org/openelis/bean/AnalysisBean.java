@@ -27,7 +27,9 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -112,7 +114,7 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
             throw new DatabaseException(e);
         }
         return data;
-    }
+    }    
     
     public ArrayList<MCLViolationReportVO> fetchForMCLViolationReport(Date startDate, Date endDate) throws Exception {
         List<MCLViolationReportVO> list;
@@ -183,6 +185,32 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
         entity.setPrintedDate(data.getPrintedDate());
         
         return data;
+    }
+    
+    public void updatePrintedDate(Set<Integer> ids, Datetime printedDate) throws Exception {
+        int i;
+        Query query;
+        ArrayList<Integer> queryList;
+        Iterator<Integer> iter;
+
+        manager.setFlushMode(FlushModeType.COMMIT);
+        query = manager.createNamedQuery("Analysis.UpdatePrintedDateByIds");
+        query.setParameter("printedDate", printedDate.getDate());
+        if (ids.size() <= 1000) {
+            query.setParameter("ids", ids);
+            query.executeUpdate();
+        } else {
+            queryList = new ArrayList<Integer>();
+            iter = ids.iterator();
+            while (iter.hasNext()) {
+                i = 0;
+                queryList.clear();
+                while (iter.hasNext() && i++ < 1000)
+                    queryList.add(iter.next());
+                query.setParameter("ids", queryList);
+                query.executeUpdate();
+            }
+        }
     }
     
     public void updatePrintedDate(Integer id, Datetime timeStamp) throws Exception {

@@ -112,8 +112,12 @@ public class SampleManager implements RPC, HasAuxDataInt {
         return proxy().fetchWithItemsAnalyses(id);
     }
     
-    public static SampleManager fetchWithAllData(Integer id) throws Exception {
-        return proxy().fetchWithAllData(id);
+    public static SampleManager fetchWithAllDataById(Integer id) throws Exception {
+        return proxy().fetchWithAllDataById(id);
+    }
+    
+    public static SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {
+        return proxy().fetchWithAllDataByAccessionNumber(accessionNumber);
     }
 
     public SampleManager add() throws Exception {
