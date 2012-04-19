@@ -155,8 +155,27 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         query.setParameter("id", referenceId);
         query.setParameter("tableId", referenceTableId);
         query.setParameter("analyteName", analyteName);
+        
         list = (List<AuxDataViewDO>)query.getResultList();
 
+        if (list.isEmpty())
+            throw new NotFoundException();
+        
+        return DataBaseUtil.toArrayList(list);
+    }
+    
+    public ArrayList<AuxDataViewDO> fetchByRefIdRefTableIdGroupName(Integer referenceId,
+                                                                    Integer referenceTableId,
+                                                                    String auxFieldGroupName) throws Exception {
+        Query query;
+        List<AuxDataViewDO> list;
+        
+        query = manager.createNamedQuery("AuxData.FetchByRefIdRefTableIdGroupName");
+        query.setParameter("referenceId", referenceId);
+        query.setParameter("referenceTableId", referenceTableId);
+        query.setParameter("auxFieldGroupName", auxFieldGroupName);
+        list = query.getResultList();
+        
         if (list.isEmpty())
             throw new NotFoundException();
         

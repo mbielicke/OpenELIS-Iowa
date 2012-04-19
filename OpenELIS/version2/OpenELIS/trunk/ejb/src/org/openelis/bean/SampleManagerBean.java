@@ -89,8 +89,12 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         return SampleManager.fetchWithItemsAnalyses(id);
     }
     
-    public SampleManager fetchWithAllData(Integer id) throws Exception {
-        return SampleManager.fetchWithAllData(id);
+    public SampleManager fetchWithAllDataById(Integer id) throws Exception {
+        return SampleManager.fetchWithAllDataById(id);
+    }
+    
+    public SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {
+        return SampleManager.fetchWithAllDataByAccessionNumber(accessionNumber);
     }
 
     public SampleManager add(SampleManager man) throws Exception {
@@ -143,7 +147,7 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
         try {
             ut.begin();
             lock.lock(ReferenceTable.SAMPLE, id);
-            man = fetchWithAllData(id);
+            man = fetchWithAllDataById(id);
             ut.commit();
         } catch (Exception e) {
             ut.rollback();

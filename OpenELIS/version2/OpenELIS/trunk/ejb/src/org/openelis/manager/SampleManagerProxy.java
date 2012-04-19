@@ -173,7 +173,7 @@ public class SampleManagerProxy {
         return man;
     }
     
-    public SampleManager fetchWithAllData(Integer sampleId) throws Exception {
+    public SampleManager fetchWithAllDataById(Integer sampleId) throws Exception {
         int addedIndex;
         SampleDO data;
         SampleManager man;
@@ -195,6 +195,76 @@ public class SampleManagerProxy {
         man.getDomainManager();
         man.getOrganizations();
         man.getProjects();
+        man.getAuxData();
+
+        // sample item
+        items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);
+        itemMan = SampleItemManager.getInstance();
+        itemMan.setSampleId(sampleId);
+        itemMan.setSampleManager(man);
+        itemMan.addSampleItems(items);
+        man.sampleItems = itemMan;
+
+        anaMap = new HashMap<Integer, AnalysisManager>();
+        for (int i = 0; i < itemMan.count(); i++ ) {
+            item = itemMan.getSampleItemAt(i);
+            anaMan = AnalysisManager.getInstance();
+            anaMan.setSampleItemId(item.getId());
+            anaMan.setSampleItemManager(itemMan);
+            anaMan.setSampleItemBundle(itemMan.getBundleAt(i));
+            itemMan.setAnalysisAt(anaMan, i);
+
+            anaMap.put(item.getId(), anaMan);
+        }
+
+        // fetch analysess
+        try {
+            analyses = (ArrayList<AnalysisViewDO>)EJBFactory.getAnalysis().fetchBySampleId(sampleId);
+            testCache = new HashMap<Integer, TestManager>();
+            for (int i = 0; i < analyses.size(); i++ ) {
+                analysis = analyses.get(i);
+
+                anaMan = anaMap.get(analysis.getSampleItemId());
+                addedIndex = anaMan.addAnalysis(analysis);
+
+                testMan = testCache.get(analysis.getTestId());
+                if (testMan == null) {
+                    testMan = TestManager.fetchWithPrepTestsSampleTypes(analysis.getTestId());
+                    testCache.put(analysis.getTestId(), testMan);
+                }
+                anaMan.setTestManagerWithResultAt(testMan, analysis.getId(), addedIndex);
+            }
+        } catch (NotFoundException e) {
+            // ignore
+        }
+
+        return man;
+    }
+    
+    public SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {
+        int addedIndex;
+        Integer sampleId;
+        SampleDO data;
+        SampleManager man;
+        SampleItemManager itemMan;
+        SampleItemViewDO item;
+        ArrayList<SampleItemViewDO> items;
+        ArrayList<AnalysisViewDO> analyses;
+        HashMap<Integer, AnalysisManager> anaMap;
+        AnalysisViewDO analysis;
+        AnalysisManager anaMan;
+        HashMap<Integer, TestManager> testCache;
+        TestManager testMan;
+
+        data = EJBFactory.getSample().fetchByAccessionNumber(accessionNumber);
+        sampleId = data.getId();
+        man = SampleManager.getInstance();
+        man.setSample(data);
+
+        man.getDomainManager();
+        man.getOrganizations();
+        man.getProjects();
+        man.getAuxData();
 
         // sample item
         items = (ArrayList<SampleItemViewDO>)EJBFactory.getSampleItem().fetchBySampleId(sampleId);

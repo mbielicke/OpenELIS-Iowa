@@ -27,6 +27,7 @@ package org.openelis.local;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Set;
 
 import javax.ejb.Local;
 
@@ -47,6 +48,7 @@ public interface AnalysisLocal {
     public AnalysisViewDO add(AnalysisViewDO data) throws Exception;
     public AnalysisViewDO update(AnalysisViewDO data) throws Exception;
     public void updatePrintedDate(Integer id, Datetime timeStamp) throws Exception;
+    public void updatePrintedDate(Set<Integer> ids, Datetime timeStamp) throws Exception;
     public void delete(AnalysisViewDO data) throws Exception;
     
 }

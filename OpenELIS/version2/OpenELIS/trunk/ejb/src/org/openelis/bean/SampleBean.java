@@ -39,6 +39,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ClientNotificationVO;
+import org.openelis.domain.FinalReportVO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
@@ -51,7 +52,6 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.local.SampleLocal;
 import org.openelis.meta.SampleMeta;
-import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.SampleRemote;
 import org.openelis.util.QueryBuilderV2;
 
@@ -65,8 +65,6 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
     private static final SampleMeta meta = new SampleMeta();
     
-    private static final SampleWebMeta webMeta = new SampleWebMeta();
-
     private static HashMap<String, String> wellOrgFieldMap, reportToAddressFieldMap;
 
     static {
@@ -200,36 +198,71 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public ArrayList<Object[]> fetchForFinalReportBatch() throws Exception {
+    public ArrayList<FinalReportVO> fetchForFinalReportBatch() throws Exception {
         Query query;
+        List<Object[]> list;
+        ArrayList<FinalReportVO> returnList;
 
         query = manager.createNamedQuery("Sample.FetchForFinalReportBatch");
-        return DataBaseUtil.toArrayList(query.getResultList());
+        list = query.getResultList();
+        
+        returnList = new ArrayList<FinalReportVO>();
+        for (Object[] result : list) 
+            returnList.add(new FinalReportVO((Integer)result[0],(Integer)result[1],
+                                             (Integer)result[2], (String)result[3],
+                                             (String)result[4], (Integer)result[5]));
+        
+        return returnList;
     }
 
-    public ArrayList<Object[]> fetchForFinalReportBatchReprint(Date beginPrinted, Date endPrinted) throws Exception {
+    public ArrayList<FinalReportVO> fetchForFinalReportBatchReprint(Date beginPrinted, Date endPrinted) throws Exception {
         Query query;
+        List<Object[]> list;
+        ArrayList<FinalReportVO> returnList;
 
         query = manager.createNamedQuery("Sample.FetchForFinalReportBatchReprint");
         query.setParameter("beginPrinted", beginPrinted);
         query.setParameter("endPrinted", endPrinted);
-        return DataBaseUtil.toArrayList(query.getResultList());
+        list = query.getResultList();
+        
+        returnList = new ArrayList<FinalReportVO>();
+        for (Object[] result : list) 
+            returnList.add(new FinalReportVO((Integer)result[0],(Integer)result[1],
+                                             (Integer)result[2], (String)result[3],
+                                             (String)result[4], (Integer)result[5]));
+        
+        return returnList;
     }
 
-    public ArrayList<Object[]> fetchForFinalReportSingle(Integer sampleId) throws Exception {
+    public ArrayList<FinalReportVO> fetchForFinalReportSingle(Integer accessionNumber) throws Exception {
         Query query;
+        List<Object[]> list;
+        ArrayList<FinalReportVO> returnList;
 
         query = manager.createNamedQuery("Sample.FetchForFinalReportSingle");
-        query.setParameter("sampleId", sampleId);
-        return DataBaseUtil.toArrayList(query.getResultList());
+        query.setParameter("accessionNumber", accessionNumber);
+        list = query.getResultList();
+        
+        returnList = new ArrayList<FinalReportVO>();
+        for (Object[] result : list) 
+            returnList.add(new FinalReportVO((Integer)result[0],(Integer)result[1],
+                                             (Integer)result[2], (String)result[3], null, null));
+        
+        return returnList;
     }
 
-    public ArrayList<Object[]> fetchForFinalReportPreview(Integer sampleId) throws Exception {
+    public FinalReportVO fetchForFinalReportPreview(Integer accessionNumber) throws Exception {
         Query query;
+        Object result[];
 
         query = manager.createNamedQuery("Sample.FetchForFinalReportPreview");
-        query.setParameter("sampleId", sampleId);
-        return DataBaseUtil.toArrayList(query.getResultList());
+        query.setParameter("accessionNumber", accessionNumber);
+        try {
+            result = (Object[])query.getSingleResult();
+            return new FinalReportVO((Integer)result[0], null,(Integer)result[1], null, null, null);
+        } catch (NoResultException e) {
+            throw new NotFoundException("noRecordsFound");
+        }
     }
     
     public ArrayList<ClientNotificationVO> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception {
