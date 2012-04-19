@@ -25,17 +25,24 @@
  */
 package org.openelis.report.finalreport;
 
-import net.sf.jasperreports.engine.JasperPrint;
 
 /**
  * Class to manage a jasper print object for given organization.
  */
 public class OrganizationPrint {
 
-	private Integer organizationId;
-	private String organizationName, faxNumber, faxNote;
-	private Object sampleIds[];
-	private JasperPrint jprint;
+	private Integer organizationId, sampleId, pageCount;
+    private String organizationName, faxNumber, fromCompany, toCompany, faxNote, faxAttention;
+	
+	public OrganizationPrint() {
+    }
+	
+	public OrganizationPrint(Integer organizationId, String organizationName, String faxAttention, Integer sampleId) {
+	    setOrganizationId(organizationId);
+	    setOrganizationName(organizationName);
+	    setFaxAttention(faxAttention); 
+	    setSampleId(sampleId);
+    }
 
 	public Integer getOrganizationId() {
 		return organizationId;
@@ -44,34 +51,53 @@ public class OrganizationPrint {
 	public void setOrganizationId(Integer organizationId) {
 		this.organizationId = organizationId;
 	}
-
-	public Object[] getSampleIds() {
-		return sampleIds;
-	}
-
-    public void setSampleIds(Integer sampleId) {
-        this.sampleIds = new Object[1];
-        this.sampleIds[0] = sampleId;
-    }
-
-    public void setSampleIds(Object[] sampleIds) {
-        this.sampleIds = sampleIds;
-    }
-
+	
 	public String getOrganizationName() {
-		return organizationName;
+	    return organizationName;   
 	}
 
 	public String setOrganizationName(String organizationName) {
-		return this.organizationName = organizationName;
+	    return this.organizationName = organizationName;
 	}
 
+	public Integer getSampleId() {
+		return sampleId;
+	}
+
+    public void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
+    }
+
+    public Integer getPageCount() {
+        return pageCount;
+    }
+
+    public void setPageCount(Integer pageCount) {
+        this.pageCount = pageCount;
+    }
+    
 	public String getFaxNumber() {
         return faxNumber;
     }
 
     public void setFaxNumber(String faxNumber) {
         this.faxNumber = faxNumber;
+    }
+    
+    public String getFromCompany() {
+        return fromCompany;
+    }
+
+    public void setFromCompany(String fromCompany) {
+        this.fromCompany = fromCompany;
+    }
+    
+    public String getToCompany() {
+        return toCompany;
+    }
+
+    public void setToCompany(String toCompany) {
+        this.toCompany = toCompany;
     }
 
     public String getFaxNote() {
@@ -80,13 +106,13 @@ public class OrganizationPrint {
 
     public void setFaxNote(String faxNote) {
         this.faxNote = faxNote;
+    }    
+
+    public String getFaxAttention() {
+        return faxAttention;
     }
 
-    public JasperPrint getJprint() {
-		return jprint;
-	}
-
-	public void setJprint(JasperPrint jprint) {
-		this.jprint = jprint;
-	}
+    public void setFaxAttention(String faxAttention) {
+        this.faxAttention = faxAttention;
+    }    
 }
