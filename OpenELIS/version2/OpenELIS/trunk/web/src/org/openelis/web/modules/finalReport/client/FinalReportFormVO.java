@@ -28,7 +28,7 @@ package org.openelis.web.modules.finalReport.client;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 
-public class FinalReportVO {
+public class FinalReportFormVO {
     
     private Datetime releasedFrom, releasedTo, collectedFrom, collectedTo;
     private String   collectorName, clientReference, collectionSite, collectionTown, owner, pwsId, facilityId;
@@ -146,6 +146,3 @@ public class FinalReportVO {
         this.projectCode = projectCode;
     }
 }
-
-
-

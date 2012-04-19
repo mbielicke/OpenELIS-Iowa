@@ -26,13 +26,12 @@
 package org.openelis.web.modules.finalReport.client;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.SampleSDWISFinalReportWebVO;
+import org.openelis.domain.FinalReportWebVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission;
@@ -71,20 +70,23 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class FinalReportSDWISScreen extends Screen {
 
-    private FinalReportVO              data;
-    private ModulePermission           userPermission;
-    private CalendarLookUp             releasedFrom, releasedTo, collectedFrom, collectedTo;
-    private TextBox                    collectorName, accessionFrom, accessionTo, clientReference, collectionSite,
-                                       pwsId,facilityId;
-    private ReportScreenUtility        util;
-    private DeckPanel                  deckpanel;
-    private Decks                      deck;
-    private HorizontalPanel            hp;
-    private AbsolutePanel              ap;
-    private TableWidget                sampleEntTable;
-    private Label<String>              queryDeckLabel, numSampleSelected;
-    private AppButton                  getSamplesButton, resetButton, runReportButton, resettButton, backButton, selectAllButton;
-    private ArrayList<SampleSDWISFinalReportWebVO> results;
+    private FinalReportFormVO               data;
+    private ModulePermission            userPermission;
+    private CalendarLookUp              releasedFrom, releasedTo, collectedFrom, 
+                                        collectedTo;
+    private TextBox                     collectorName, accessionFrom, accessionTo, 
+                                        clientReference, collectionSite, pwsId,
+                                        facilityId;
+    private ReportScreenUtility         util;
+    private DeckPanel                   deckpanel;
+    private Decks                       deck;
+    private HorizontalPanel             hp;
+    private AbsolutePanel               ap;
+    private TableWidget                 sampleEntTable;
+    private Label<String>               queryDeckLabel, numSampleSelected;
+    private AppButton                   getSamplesButton, resetButton, runReportButton,
+                                        backButton, selectAllButton;
+    private ArrayList<FinalReportWebVO> results;
     
     private enum Decks {
         QUERY, LIST
@@ -115,7 +117,7 @@ public class FinalReportSDWISScreen extends Screen {
      */
     private void postConstructor() {
         deck = Decks.QUERY;
-        data = new FinalReportVO();
+        data = new FinalReportFormVO();
 
         initialize();
         setState(State.ADD);
@@ -408,17 +410,6 @@ public class FinalReportSDWISScreen extends Screen {
                 runReportButton.enable(true);
             }
         });
-
-        resettButton = (AppButton)def.getWidget("resettButton");
-        addScreenHandler(resettButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                resetSampleList();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                resettButton.enable(true);
-            }
-        });
         
         backButton = (AppButton)def.getWidget("backButton");
         addScreenHandler(backButton, new ScreenEventHandler<Object>() {
@@ -459,7 +450,7 @@ public class FinalReportSDWISScreen extends Screen {
 
     protected void getSamples() {
         Query query;
-        ArrayList<SampleSDWISFinalReportWebVO> list;
+        ArrayList<FinalReportWebVO> list;
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
@@ -498,7 +489,7 @@ public class FinalReportSDWISScreen extends Screen {
      * Resets all the fields to their original report specified values
      */
     protected void reset() {
-        data = new FinalReportVO();
+        data = new FinalReportFormVO();
         DataChangeEvent.fire(this);
         clearErrors();
     }
@@ -512,7 +503,7 @@ public class FinalReportSDWISScreen extends Screen {
         clearErrors();
     }
     
-    protected void loadDeck(ArrayList<SampleSDWISFinalReportWebVO> list) {
+    protected void loadDeck(ArrayList<FinalReportWebVO> list) {
         switch(deck){
             case QUERY:
                 deckpanel.showWidget(1);
@@ -529,7 +520,7 @@ public class FinalReportSDWISScreen extends Screen {
         
     }   
     
-    public void setResults(ArrayList<SampleSDWISFinalReportWebVO> results) {
+    public void setResults(ArrayList<FinalReportWebVO> results) {
         this.results = results;
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -586,39 +577,25 @@ public class FinalReportSDWISScreen extends Screen {
 
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model;
-        SampleSDWISFinalReportWebVO data;
+        FinalReportWebVO data;
         TableDataRow tr;
-        Date temp;
-        Datetime temp1;
 
         model = new ArrayList<TableDataRow>();
         if (results == null || results.size() == 0)
             return model;
 
         for (int i = 0; i < results.size(); i++ ) {
-            data = results.get(i);
-            if (data.getCollectionDate() != null) {
-                temp = data.getCollectionDate().getDate();
-                if (data.getCollectionTime() == null) {
-                    temp.setHours(0);
-                    temp.setMinutes(0);
-                } else {
-                    temp.setHours(data.getCollectionTime().getDate().getHours());
-                    temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
-                }
-                temp1 = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
-            } else
-                temp1 = null;
+            data = results.get(i);            
             tr = new TableDataRow(data.getAccessionNumber(),
                                   "N",
                                   data.getAccessionNumber(),
                                   data.getLocation(),
-                                  temp1,
+                                  data.getCollectionDateTime(),
                                   data.getCollector(),
-                                  data.getStatus(),
-                                  data.getPWSId(),
-                                  data.getPWSName(),
-                                  data.getFacilityId());
+                                  data.getStatusId(),
+                                  data.getSdwisPwsNumber0(),
+                                  data.getSdwisPwsName(),
+                                  data.getSdwisFacilityId());
             tr.data = data;
             model.add(tr);
         }

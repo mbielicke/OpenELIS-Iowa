@@ -59,7 +59,7 @@ import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.web.modules.finalReport.client.FinalReportVO;
+import org.openelis.web.modules.finalReport.client.FinalReportFormVO;
 import org.openelis.web.util.ReportScreenUtility;
 
 import com.google.gwt.core.client.GWT;
@@ -72,7 +72,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class SampleStatusScreen extends Screen {
-    private FinalReportVO                      data;
+    private FinalReportFormVO                      data;
     private ModulePermission                   userPermission;
     private CalendarLookUp                     collectedFrom, collectedTo;
     private TextBox                            accessionFrom, accessionTo, clientReference;
@@ -118,7 +118,7 @@ public class SampleStatusScreen extends Screen {
      */
     private void postConstructor() {
         deck = Decks.QUERY;
-        data = new FinalReportVO();
+        data = new FinalReportFormVO();
 
         initialize();
         setState(State.ADD);
@@ -411,7 +411,7 @@ public class SampleStatusScreen extends Screen {
      * Resets all the fields to their original report specified values
      */
     protected void reset() {
-        data = new FinalReportVO();
+        data = new FinalReportFormVO();
         DataChangeEvent.fire(this);
         clearErrors();
     }

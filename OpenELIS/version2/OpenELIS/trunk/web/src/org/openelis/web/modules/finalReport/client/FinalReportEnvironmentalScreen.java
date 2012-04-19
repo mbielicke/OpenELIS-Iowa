@@ -26,14 +26,13 @@
 package org.openelis.web.modules.finalReport.client;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.FinalReportWebVO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.SampleEnvironmentalFinalReportWebVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission;
@@ -72,23 +71,23 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class FinalReportEnvironmentalScreen extends Screen {
 
-    private FinalReportVO                                  data;
-    private ModulePermission                               userPermission;
-    private CalendarLookUp                                 releasedFrom, releasedTo, collectedFrom,
-                                                           collectedTo;
-    private TextBox                                        collectorName, accessionFrom,
-                                                           accessionTo, clientReference, collectionSite, collectionTown;
-    private Dropdown<Integer>                              projectCode;
-    private ReportScreenUtility                            util;
-    private DeckPanel                                      deckpanel;
-    private Decks                                          deck;
-    private HorizontalPanel                                hp;
-    private AbsolutePanel                                  ap;
-    private TableWidget                                    sampleEntTable;
-    private Label<String>                                  queryDeckLabel, numSampleSelected;
-    private AppButton                                      getSampleListButton, resetButton,
-                                                           runReportButton, resettButton, selectAllButton, backButton;
-    private ArrayList<SampleEnvironmentalFinalReportWebVO> results;
+    private FinalReportFormVO               data;
+    private ModulePermission            userPermission;
+    private CalendarLookUp              releasedFrom, releasedTo, collectedFrom, 
+                                        collectedTo;
+    private TextBox                     collectorName, accessionFrom, accessionTo,
+                                        clientReference, collectionSite, collectionTown;
+    private Dropdown<Integer>           projectCode;
+    private ReportScreenUtility         util;
+    private DeckPanel                   deckpanel;
+    private Decks                       deck;
+    private HorizontalPanel             hp;
+    private AbsolutePanel               ap;
+    private TableWidget                 sampleEntTable;
+    private Label<String>               queryDeckLabel, numSampleSelected;
+    private AppButton                   getSampleListButton, resetButton, runReportButton,
+                                        selectAllButton, backButton;
+    private ArrayList<FinalReportWebVO> results;
 
     private enum Decks {
         QUERY, LIST
@@ -120,7 +119,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
      */
     private void postConstructor() {
         deck = Decks.QUERY;
-        data = new FinalReportVO();
+        data = new FinalReportFormVO();
 
         initialize();
         setState(State.ADD);
@@ -413,17 +412,6 @@ public class FinalReportEnvironmentalScreen extends Screen {
                 runReportButton.enable(true);
             }
         });
-
-        resettButton = (AppButton)def.getWidget("resettButton");
-        addScreenHandler(resettButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                resetSampleList();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                resettButton.enable(true);
-            }
-        });
         
         backButton = (AppButton)def.getWidget("backButton");
         addScreenHandler(backButton, new ScreenEventHandler<Object>() {
@@ -481,7 +469,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
 
     protected void getSamples() {
         Query query;
-        ArrayList<SampleEnvironmentalFinalReportWebVO> list;
+        ArrayList<FinalReportWebVO> list;
         ArrayList<QueryData> queryList;
 
         if ( !validate()) {
@@ -520,7 +508,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
      * Resets all the fields to their original report specified values
      */
     protected void reset() {
-        data = new FinalReportVO();
+        data = new FinalReportFormVO();
         setState(State.ADD);
         DataChangeEvent.fire(this);
         clearErrors();
@@ -535,7 +523,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
         clearErrors();
     }
 
-    protected void loadDeck(ArrayList<SampleEnvironmentalFinalReportWebVO> list) {
+    protected void loadDeck(ArrayList<FinalReportWebVO> list) {
         switch (deck) {
             case QUERY:
                 deckpanel.showWidget(1);
@@ -551,7 +539,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
         }
     }
 
-    public void setResults(ArrayList<SampleEnvironmentalFinalReportWebVO> results) {
+    public void setResults(ArrayList<FinalReportWebVO> results) {
         this.results = results;
         setState(State.ADD);
         DataChangeEvent.fire(this);
@@ -608,10 +596,8 @@ public class FinalReportEnvironmentalScreen extends Screen {
 
     private ArrayList<TableDataRow> getTableModel() {
         ArrayList<TableDataRow> model;
-        SampleEnvironmentalFinalReportWebVO data;
+        FinalReportWebVO data;
         TableDataRow tr;
-        Date temp;
-        Datetime temp1;
 
         model = new ArrayList<TableDataRow>();
         if (results == null || results.size() == 0)
@@ -619,26 +605,13 @@ public class FinalReportEnvironmentalScreen extends Screen {
 
         for (int i = 0; i < results.size(); i++ ) {
             data = results.get(i);
-            if (data.getCollectionDate() != null) {
-                temp = data.getCollectionDate().getDate();
-                if (data.getCollectionTime() == null) {
-                    temp.setHours(0);
-                    temp.setMinutes(0);
-                } else {
-                    temp.setHours(data.getCollectionTime().getDate().getHours());
-                    temp.setMinutes(data.getCollectionTime().getDate().getMinutes());
-                }
-                temp1 = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
-            } else {
-                temp1 = null;
-            }
             tr = new TableDataRow(data.getAccessionNumber(),
                                   "N",
                                   data.getAccessionNumber(),
                                   data.getLocation(),
-                                  temp1,
+                                  data.getCollectionDateTime(),
                                   data.getCollector(),
-                                  data.getStatus(),
+                                  data.getStatusId(),
                                   data.getLocationAddressCity(),
                                   data.getProjectName());
             tr.data = data;
