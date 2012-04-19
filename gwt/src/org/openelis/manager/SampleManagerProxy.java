@@ -89,8 +89,12 @@ public class SampleManagerProxy {
         return service.call("fetchWithItemsAnalyses", sampleId);
     }
     
-    public SampleManager fetchWithAllData(Integer sampleId) throws Exception {        
-        return service.call("fetchWithAllData", sampleId);
+    public SampleManager fetchWithAllDataById(Integer sampleId) throws Exception {        
+        return service.call("fetchWithAllDataById", sampleId);
+    }
+    
+    public SampleManager fetchWithAllDataByAccessionNumber(Integer accessionNumber) throws Exception {        
+        return service.call("fetchWithAllDataByAccessionNumber", accessionNumber);
     }
 
     public SampleManager add(SampleManager man) throws Exception {
@@ -152,19 +156,9 @@ public class SampleManagerProxy {
         // every unreleased sample needs an internal comment describing the reason
         if (man.unreleaseWithNotes) {
             noteMan = man.getInternalNotes();
-            if (noteMan == null || noteMan.count() == 0) {
+            if ((noteMan == null || noteMan.count() == 0) ||
+                (noteMan != null && noteMan.count() > 0 && noteMan.getNoteAt(0).getId() != null)) {
                 errorsList.add(new FormErrorException("unreleaseNoNoteException"));
-            } else {
-                internalNoteAdded = false;
-                for (int i = 0; i < noteMan.count(); i++) {
-                    note = noteMan.getNoteAt(i);
-                    if (note.getId() == null && "N".equals(note.getIsExternal())) {
-                        internalNoteAdded = true;
-                        break;
-                    }
-                }
-                if (!internalNoteAdded)
-                    errorsList.add(new FormErrorException("unreleaseNoNoteException"));
             }
         }
 

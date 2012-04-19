@@ -23,18 +23,27 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.report.client;
+package org.openelis.modules.finalReportSingleReprint.client;
 
 import org.openelis.gwt.screen.ScreenDef;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.ScreenWindowInt;
+import org.openelis.modules.report.client.ReportScreen;
 
 public class FinalReportScreen extends ReportScreen {
-
-    public FinalReportScreen() throws Exception {         
+    
+    public FinalReportScreen(ScreenWindowInt window) throws Exception {         
         drawScreen(new ScreenDef());        
-        setPromptsInterface("getPromptsForSingle");
+        this.window = window;
         setRunReportInterface("runReportForSingle");   
-        setName(consts.get("finalReportSingleReprint"));
         service = new ScreenService("controller?service=org.openelis.modules.report.server.FinalReportService");       
-    } 
+    }
+    
+    /**
+     * This method is overridden in order to make sure that the super class's 
+     * method with the same name doesn't get called, because the screens using 
+     * this class won't get prompts   
+     */
+    protected void getReportParameters() {       
+    }
 }

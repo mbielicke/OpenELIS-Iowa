@@ -70,7 +70,7 @@ import org.openelis.modules.qc.client.QcScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
-import org.openelis.modules.report.client.FinalReportScreen;
+import org.openelis.modules.finalReportSingleReprint.client.FinalReportSingleReprintScreen;
 import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
 import org.openelis.modules.report.client.RequestformReportScreen;
@@ -276,7 +276,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new EnvironmentalSampleLoginScreen(), "environmentalSampleLogin");
+                            browser.addScreen(new EnvironmentalSampleLoginScreen(),
+                                              "environmentalSampleLogin");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -398,7 +399,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new PrivateWellWaterSampleLoginScreen(), "privateWellWaterSampleLogin");
+                            browser.addScreen(new PrivateWellWaterSampleLoginScreen(),
+                                              "privateWellWaterSampleLogin");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1202,7 +1204,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SampleLoginLabelReportScreen(), "sampleLoginLabelReport");
+                            browser.addScreen(new SampleLoginLabelReportScreen(),
+                                              "sampleLoginLabelReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1222,7 +1225,8 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new SampleLoginLabelAdditionalReportScreen(), "sampleLoginLabelAdditionalReport");
+                            browser.addScreen(new SampleLoginLabelAdditionalReportScreen(),
+                                              "sampleLoginLabelAdditionalReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -1262,7 +1266,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new FinalReportScreen(), "finalReport");
+                            browser.addScreen(new FinalReportSingleReprintScreen(), "finalReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

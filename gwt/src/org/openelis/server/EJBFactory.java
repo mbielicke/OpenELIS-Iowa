@@ -25,8 +25,8 @@
  */
 package org.openelis.server;
 
-import java.util.logging.Logger;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 import javax.naming.InitialContext;
 
@@ -52,6 +52,7 @@ import org.openelis.remote.DataViewRemote;
 import org.openelis.remote.DictionaryCacheRemote;
 import org.openelis.remote.DictionaryRemote;
 import org.openelis.remote.FinalReportRemote;
+import org.openelis.remote.FinalReportWebRemote;
 import org.openelis.remote.HistoryRemote;
 import org.openelis.remote.InstrumentManagerRemote;
 import org.openelis.remote.InstrumentRemote;
@@ -320,6 +321,10 @@ public class EJBFactory {
     
     public static FinalReportRemote getFinalReport() {
         return (FinalReportRemote)lookup("FinalReportBean!org.openelis.remote.FinalReportRemote");
+    }
+    
+    public static FinalReportWebRemote getFinalReportWeb() {
+        return (FinalReportWebRemote)lookup("FinalReportWebBean!org.openelis.remote.FinalReportWebRemote");
     }
     
     public static QASummaryReportRemote getQASummaryReport() {

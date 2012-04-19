@@ -1224,7 +1224,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     protected void duplicate() {       
         try {
             window.setBusy(consts.get("fetching"));
-            manager = SampleManager.fetchWithAllData(manager.getSample().getId());
+            manager = SampleManager.fetchWithAllDataById(manager.getSample().getId());
             if (!SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) {
                 Window.alert(consts.get("sampleDomainChangedException"));
                 abort();
