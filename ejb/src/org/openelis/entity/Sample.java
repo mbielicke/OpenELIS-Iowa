@@ -91,14 +91,14 @@ import org.openelis.utils.Auditable;
                       
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Sample.FetchForFinalReportBatch",     
-                query = "select s.id s_id, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
+                query = "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so, organization o"
                       + " where s.domain != 'W' and s.status_id in (select id from dictionary where system_name = 'sample_released') and"
                       +	" si.sample_id = s.id and a.sample_item_id = si.id and a.printed_date is null and"
                       +	" a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " so.sample_id = s.id and so.organization_id = o.id and so.type_id in (select id from dictionary where system_name in ('org_report_to', 'org_second_report_to'))"
                       + " union "
-                      + "select s.id s_id, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
                       + " from sample s, sample_item si, analysis a, test t, sample_organization so, organization o"
                       + " where s.domain != 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error', 'sample_not_verified')) and"
                       + " si.sample_id = s.id and a.sample_item_id = si.id and a.printed_date is null and"
@@ -106,27 +106,27 @@ import org.openelis.utils.Auditable;
                       + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released') and"
                       + " so.sample_id = s.id and so.organization_id = o.id and so.type_id in (select id from dictionary where system_name in ('org_report_to', 'org_second_report_to'))"
                       + " union "
-                      + "select s.id s_id, spw.organization_id o_id, CAST(o.name AS varchar(40)) o_name, 0 o_type_id, spw.report_to_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, spw.organization_id o_id, CAST(o.name AS varchar(40)) o_name, 0 o_type_id, spw.report_to_attention o_attention, a.id a_id"
                       + " from sample s, sample_private_well spw, organization o, sample_item si, analysis a"
                       + " where s.domain = 'W' and s.status_id in (select id from dictionary where system_name = 'sample_released') and"
                       +	" spw.sample_id = s.id and spw.organization_id = o.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.printed_date is null and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y'"
                       + " union "
-                      + "select s.id s_id, spw.organization_id o_id, CAST(o.name AS varchar(40)) o_name, 0 o_type_id, spw.report_to_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, spw.organization_id o_id, CAST(o.name AS varchar(40)) o_name, 0 o_type_id, spw.report_to_attention o_attention, a.id a_id"
                       + " from sample s, sample_private_well spw, organization o, sample_item si, analysis a, test t"
                       + " where s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error', 'sample_not_verified')) and"
                       +	" spw.sample_id = s.id and spw.organization_id = o.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.printed_date is null and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released')"
                       + " union "
-                      + "select s.id s_id, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, sample_organization so, organization o"
                       + " where s.domain = 'W' and s.status_id in (select id from dictionary where system_name = 'sample_released') and"
                       +	" spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.printed_date is null and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " so.sample_id = s.id and so.organization_id = o.id and so.type_id in (select id from dictionary where system_name = 'org_second_report_to')"
                       + " union "
-                      + "select s.id s_id, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, test t, sample_organization so, organization o"
                       + " where s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error', 'sample_not_verified')) and"
                       + " spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
@@ -136,14 +136,14 @@ import org.openelis.utils.Auditable;
                       + " order by o_name, o_id, s_id",
                 resultSetMapping="Sample.FetchForFinalReportBatchMapping"),
     @NamedNativeQuery(name = "Sample.FetchForFinalReportBatchReprint",     
-                query = "select s.id s_id, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
+                query = "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so, organization o"
                       + " where s.domain != 'W' and s.status_id in (select id from dictionary where system_name = 'sample_released') and"
                       +	" si.sample_id = s.id and a.sample_item_id = si.id and a.printed_date between :beginPrinted and :endPrinted and"
                       +	" a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " so.sample_id = s.id and so.organization_id = o.id and so.type_id in (select id from dictionary where system_name in ('org_report_to', 'org_second_report_to'))"
                       + " union "
-                      + "select s.id s_id, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
                       + " from sample s, sample_item si, analysis a, test t, sample_organization so, organization o"
                       + " where s.domain != 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error', 'sample_not_verified')) and"
                       +	" si.sample_id = s.id and a.sample_item_id = si.id and a.printed_date between :beginPrinted and :endPrinted and"
@@ -152,27 +152,27 @@ import org.openelis.utils.Auditable;
                       + " so.sample_id = s.id and so.organization_id = o.id and so.organization_id = o.id and"
                       + " so.type_id in (select id from dictionary where system_name in ('org_report_to', 'org_second_report_to'))"
                       + " union "
-                      + "select s.id s_id, spw.organization_id o_id, CAST(o.name AS varchar(40)) o_name, 0 o_type_id, spw.report_to_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, spw.organization_id o_id, CAST(o.name AS varchar(40)) o_name, 0 o_type_id, spw.report_to_attention o_attention, a.id a_id"
                       + " from sample s, sample_private_well spw, organization o, sample_item si, analysis a"
                       + " where s.domain = 'W' and s.status_id in (select id from dictionary where system_name = 'sample_released') and spw.sample_id = s.id and"
                       +	" spw.organization_id = o.id and si.sample_id = s.id and a.sample_item_id = si.id and a.printed_date between :beginPrinted and :endPrinted and"
                       +	" a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y'"
                       + " union "
-                      + "select s.id s_id, spw.organization_id o_id, CAST(o.name AS varchar(40)) o_name, 0 o_type_id, spw.report_to_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, spw.organization_id o_id, CAST(o.name AS varchar(40)) o_name, 0 o_type_id, spw.report_to_attention o_attention, a.id a_id"
                       + " from sample s, sample_private_well spw, organization o, sample_item si, analysis a, test t"
                       + " where s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error', 'sample_not_verified')) and"
                       +	" spw.sample_id = s.id and spw.organization_id = o.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.printed_date between :beginPrinted and :endPrinted and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " a.test_id = t.id and t.reporting_method_id in (select id from dictionary where system_name = 'analyses_released')"
                       + " union "
-                      + "select s.id s_id, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, sample_organization so, organization o"
                       + " where s.domain = 'W' and s.status_id in (select id from dictionary where system_name = 'sample_released') and spw.sample_id = s.id and"
                       +	" si.sample_id = s.id and a.sample_item_id = si.id and a.printed_date between :beginPrinted and :endPrinted and"
                       +	" a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " so.sample_id = s.id and so.organization_id = o.id and so.type_id in (select id from dictionary where system_name = 'org_second_report_to')"
                       + " union "
-                      + "select s.id s_id, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, CAST(o.name AS varchar(40)) o_name, so.type_id o_type_id, so.organization_attention o_attention, a.id a_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, test t, sample_organization so, organization o"
                       + " where s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_released', 'sample_error', 'sample_not_verified')) and"
                       + " spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and a.printed_date between :beginPrinted and :endPrinted and"
@@ -182,19 +182,19 @@ import org.openelis.utils.Auditable;
                       + " order by o_name, o_id, s_id",
                 resultSetMapping="Sample.FetchForFinalReportBatchReprintMapping"),
     @NamedNativeQuery(name = "Sample.FetchForFinalReportSingle",     
-                query = "select s.id s_id, so.organization_id o_id, so.type_id o_type_id, CAST(o.name AS varchar(40)) o_name"
+                query = "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, so.type_id o_type_id, CAST(o.name AS varchar(40)) o_name"
                       + " from sample s, sample_item si, analysis a, sample_organization so, organization o"
                       + " where s.accession_number = :accessionNumber and s.domain != 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_error', 'sample_not_verified')) and"
                       +	" si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y' and"
                       + " so.sample_id = s.id and so.organization_id = o.id and so.type_id in (select id from dictionary where system_name in ('org_report_to', 'org_second_report_to'))"
                       + " union "
-                      + "select s.id s_id, spw.organization_id o_id, 0 o_type_id, CAST(o.name AS varchar(40)) o_name"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, spw.organization_id o_id, 0 o_type_id, CAST(o.name AS varchar(40)) o_name"
                       + " from sample s, sample_private_well spw, organization o, sample_item si, analysis a"
                       + " where s.accession_number = :accessionNumber and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_error', 'sample_not_verified')) and spw.sample_id = s.id and"
                       + " spw.organization_id = o.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       +	" a.status_id in (select id from dictionary where system_name = 'analysis_released') and a.is_reportable = 'Y'"
                       + " union "
-                      + "select s.id s_id, so.organization_id o_id, so.type_id o_type_id, CAST(o.name AS varchar(40)) o_name"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id, so.type_id o_type_id, CAST(o.name AS varchar(40)) o_name"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, sample_organization so, organization o"
                       + " where s.accession_number = :accessionNumber and s.domain = 'W' and s.status_id not in (select id from dictionary where system_name in ('sample_error', 'sample_not_verified')) and"
                       +	" spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and a.status_id in (select id from dictionary where system_name = 'analysis_released') and"
@@ -202,13 +202,13 @@ import org.openelis.utils.Auditable;
                       + " order by o_name, o_id, s_id",
                 resultSetMapping="Sample.FetchForFinalReportSingleMapping"),              
     @NamedNativeQuery(name = "Sample.FetchForFinalReportPreview",     
-                query = "select s.id s_id, so.organization_id o_id"
+                query = "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, so.organization_id o_id"
                       + " from sample s, sample_item si, analysis a, sample_organization so"
                       + " where s.accession_number = :accessionNumber and s.domain != 'W' and si.sample_id = s.id and a.sample_item_id = si.id and"  
                       + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y' and"
                       + " so.sample_id = s.id and so.type_id in (select id from dictionary where system_name = 'org_report_to')"
                       + " union "
-                      + "select s.id s_id, spw.organization_id o_id"
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, spw.organization_id o_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a"
                       + " where s.accession_number = :accessionNumber and s.domain = 'W' and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y'"
@@ -367,18 +367,26 @@ import org.openelis.utils.Auditable;
            resultSetMapping="Sample.FetchForSampleStatusReport")})   
 @SqlResultSetMappings({
     @SqlResultSetMapping(name="Sample.FetchForFinalReportBatchMapping",
-                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),
-                                  @ColumnResult(name="o_type_id"), @ColumnResult(name="o_name"),
-                                  @ColumnResult(name="o_attention"), @ColumnResult(name="a_id")}),
+                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="s_accession_number"),
+                                  @ColumnResult(name="s_revision"), @ColumnResult(name="s_domain"),
+                                  @ColumnResult(name="o_id"), @ColumnResult(name="o_type_id"),
+                                  @ColumnResult(name="o_name"), @ColumnResult(name="o_attention"),
+                                  @ColumnResult(name="a_id")}),
     @SqlResultSetMapping(name="Sample.FetchForFinalReportBatchReprintMapping",
-                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"),
-                                  @ColumnResult(name="o_type_id"), @ColumnResult(name="o_name"),
-                                  @ColumnResult(name="o_attention"),  @ColumnResult(name="a_id")}),
+                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="s_accession_number"),
+                                  @ColumnResult(name="s_revision"), @ColumnResult(name="s_domain"),
+                                  @ColumnResult(name="o_id"), @ColumnResult(name="o_type_id"),
+                                  @ColumnResult(name="o_name"), @ColumnResult(name="o_attention"),
+                                  @ColumnResult(name="a_id")}),
     @SqlResultSetMapping(name="Sample.FetchForFinalReportSingleMapping",
-                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id"), @ColumnResult(name="o_type_id"),
+                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="s_accession_number"),
+                                  @ColumnResult(name="s_revision"), @ColumnResult(name="s_domain"),
+                                  @ColumnResult(name="o_id"), @ColumnResult(name="o_type_id"),
                                   @ColumnResult(name="o_name")}),
     @SqlResultSetMapping(name="Sample.FetchForFinalReportPreviewMapping",
-                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="o_id")}),
+                         columns={@ColumnResult(name="s_id"), @ColumnResult(name="s_accession_number"),
+                                  @ColumnResult(name="s_revision"), @ColumnResult(name="s_domain"),
+                                  @ColumnResult(name="o_id")}),
     @SqlResultSetMapping(name="Sample.FetchForClientEmailReceivedReportMapping",
                          columns={@ColumnResult(name="accession_number"),  @ColumnResult(name="collection_date"),
                                   @ColumnResult(name="collection_time"), @ColumnResult(name="received_date"), 

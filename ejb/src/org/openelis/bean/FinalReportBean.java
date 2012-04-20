@@ -57,7 +57,7 @@ import org.openelis.local.SessionCacheLocal;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.report.finalreport.OrganizationPrint;
-import org.openelis.report.finalreport.StatsDataSource;
+import org.openelis.report.finalreport.OrganizationPrintDataSource;
 import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
@@ -244,6 +244,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                         orgPrint = new OrganizationPrint();
                         orgPrint.setOrganizationId(result.getOrganizationId());
                         orgPrint.setSampleId(result.getSampleId());
+                        orgPrint.setAccessionNumber(result.getAccessionNumber());
+                        orgPrint.setDomain(result.getDomain());
+                        orgPrint.setRevision(result.getRevision());
                         orgPrintList.add(orgPrint);
                     }
                 }
@@ -265,6 +268,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                         orgPrint.setOrganizationId(result.getOrganizationId());
                         orgPrint.setOrganizationName(result.getOrganizationName());
                         orgPrint.setSampleId(result.getSampleId());
+                        orgPrint.setAccessionNumber(result.getAccessionNumber());
+                        orgPrint.setDomain(result.getDomain());
+                        orgPrint.setRevision(result.getRevision());
                         orgPrint.setFaxNumber(faxNumber);
                         orgPrint.setFromCompany(fromCompany);
                         orgPrint.setFaxAttention(faxAttention);
@@ -316,7 +322,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             result = sample.fetchForFinalReportPreview(Integer.parseInt(accession));
 
             print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
-                                          result.getOrganizationAttention(), result.getSampleId());
+                                          result.getOrganizationAttention(), result.getSampleId(),
+                                          result.getAccessionNumber(), result.getRevision(),
+                                          result.getDomain());
             printList = new ArrayList<OrganizationPrint>();
             printList.add(print);
         } catch (NotFoundException e) {
@@ -444,7 +452,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 continue;
 
             print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
-                                          result.getOrganizationAttention(), result.getSampleId());
+                                          result.getOrganizationAttention(), result.getSampleId(),
+                                          result.getAccessionNumber(), result.getRevision(),
+                                          result.getDomain());
             if ( !print.getOrganizationId().equals(cachedOrgId)) {
                 orgPrint = true;
                 orgFaxNumber = null;
@@ -497,7 +507,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * update all the analyses with date printed
          */
         timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
-        
         analysis.updatePrintedDate(anaSet, timeStamp);
 
         log.debug("Printing the reports");
@@ -580,7 +589,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 continue;
 
             print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
-                                          result.getOrganizationAttention(), result.getSampleId());
+                                          result.getOrganizationAttention(), result.getSampleId(),
+                                          result.getAccessionNumber(), result.getRevision(),
+                                          result.getDomain());
             if ( !print.getOrganizationId().equals(cachedOrgId)) {
                 orgPrint = true;
                 orgFaxNumber = null;
@@ -677,6 +688,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             orgPrint = new OrganizationPrint();
             orgPrint.setOrganizationId(data.getOrganizationId());
             orgPrint.setSampleId(data.getId());
+            orgPrint.setAccessionNumber(data.getAccessionNumber());
+            orgPrint.setDomain(data.getDomain());
+            orgPrint.setRevision(data.getRevision());
             orgPrintList.add(orgPrint);
         }
 
@@ -696,13 +710,14 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         File tempFile;
         Connection con;        
         JasperReport jreport;
-        String dir, printstat, toCompany;
-        JasperPrint print;
+        String dir, printstat, toCompany, faxUser;
+        JasperPrint print, faxPrint;
         List<JRPrintPage> pages;
         HashMap<String, Object> jparam;
         JasperPrint master, stats;
-        StatsDataSource ds;
-
+        OrganizationPrintDataSource ds;
+        ArrayList<OrganizationPrint> orgFaxList;
+        
         con = null;
         zero = new Integer(0);
         try {
@@ -710,9 +725,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             /*
              * get all the report instances
              */
-            url = ReportUtil.getResourceURL("org/openelis/report/finalreport/blank.jasper");
-            jreport = (JasperReport)JRLoader.loadObject(url);
-            master = JasperFillManager.fillReport(jreport, null);
+//            url = ReportUtil.getResourceURL("org/openelis/report/finalreport/blank.jasper");
+//            jreport = (JasperReport)JRLoader.loadObject(url);
+//            master = JasperFillManager.fillReport(jreport, null);
             
             url = ReportUtil.getResourceURL("org/openelis/report/finalreport/main.jasper");
             jreport = (JasperReport)JRLoader.loadObject(url);
@@ -721,53 +736,61 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             jparam = new HashMap<String, Object>();
             jparam.put("REPORT_TYPE", reportType);
             jparam.put("SUBREPORT_DIR", dir);
-            jparam.put("LOGNAME", EJBFactory.getUserCache().getName());            
+            jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
+            jparam.put("CONNECTION", con);
             
             /*
              * print loop
              */
-            for (OrganizationPrint o : orgPrintList) {
-                if (!DataBaseUtil.isEmpty(o.getFaxNumber()))
-                    continue;
-                
-                if (o.getOrganizationId() == null) 
-                    jparam.put("ORGANIZATION_ID", zero);
-                else
-                    jparam.put("ORGANIZATION_ID", o.getOrganizationId());                                                       
-
-                jparam.put("SAMPLE_ID", o.getSampleId().toString());
-                jparam.put("ORGANIZATION_PRINT", o);
-                
-                print = JasperFillManager.fillReport(jreport, jparam, con);
-                if (print == null)
-                    continue;
-                
-                pages = print.getPages();   
-                o.setPageCount(pages.size());
-                for (i = 0; i < pages.size(); i++ )
-                    master.addPage(pages.get(i));
-            }
+//            for (OrganizationPrint o : orgPrintList) {
+//                if (!DataBaseUtil.isEmpty(o.getFaxNumber())) {
+//                    log.info("Skipping Sample ID "+o.getSampleId().toString()+" for printing");
+//                    continue;
+//                }
+//                log.info("Processing Sample ID "+o.getSampleId().toString()+" for printing");
+//                
+//                if (o.getOrganizationId() == null) 
+//                    jparam.put("ORGANIZATION_ID", zero);
+//                else
+//                    jparam.put("ORGANIZATION_ID", o.getOrganizationId());                                                       
+//
+//                jparam.put("SAMPLE_ID", o.getSampleId().toString());
+//                jparam.put("ORGANIZATION_PRINT", o);
+//                
+            ds = new OrganizationPrintDataSource(OrganizationPrintDataSource.Type.PRINT);
+            ds.setData(orgPrintList);
+            print = JasperFillManager.fillReport(jreport, jparam, ds);
+//            if (print != null) {
+//                pages = print.getPages();   
+//                for (i = 0; i < pages.size(); i++ )
+//                    master.addPage(pages.get(i));
+//            }
             
             /*
              * faxing loop
              */
+            faxUser = ReportUtil.getSystemVariableValue("fax_response_user");
             for (OrganizationPrint o : orgPrintList) {
                 if (DataBaseUtil.isEmpty(o.getFaxNumber()))
                     continue;
-                
-                if (o.getOrganizationId() == null) 
-                    jparam.put("ORGANIZATION_ID", zero);
-                else
-                    jparam.put("ORGANIZATION_ID", o.getOrganizationId());                
 
-                jparam.put("SAMPLE_ID", o.getSampleId().toString());
-                jparam.put("ORGANIZATION_PRINT", o);
+//                if (o.getOrganizationId() == null) 
+//                    jparam.put("ORGANIZATION_ID", zero);
+//                else
+//                    jparam.put("ORGANIZATION_ID", o.getOrganizationId());                
+//
+//                jparam.put("SAMPLE_ID", o.getSampleId().toString());
+//                jparam.put("ORGANIZATION_PRINT", o);
                 
-                print = JasperFillManager.fillReport(jreport, jparam, con);
-                if (print == null)
+                ds = new OrganizationPrintDataSource(OrganizationPrintDataSource.Type.FAX);
+                orgFaxList = new ArrayList<OrganizationPrint>();
+                orgFaxList.add(o);
+                ds.setData(orgFaxList);
+                faxPrint = JasperFillManager.fillReport(jreport, jparam, ds);
+                if (faxPrint == null)
                     continue;
-                o.setPageCount(print.getPages().size());
-                tempFile = export(print);                
+//                o.setPageCount(print.getPages().size());
+                tempFile = export(faxPrint);                
                 try {
                     /*
                      * In the case of faxing for a single sample, the user can specify
@@ -779,7 +802,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                     toCompany = o.getToCompany() != null ? o.getToCompany() : o.getOrganizationName();
                     printstat = ReportUtil.fax(tempFile, o.getFaxNumber(), o.getFromCompany(),
                                                o.getFaxAttention(), toCompany,
-                                               o.getFaxNote());
+                                               o.getFaxNote(), faxUser);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.FAXED);
                 } catch (Exception e) {
                     log.error("Sample Id: " + o.getSampleId() + " Organization: " +
@@ -792,20 +815,19 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              * in this run.
              */
             if (forMailing) {
-                ds = new StatsDataSource();
-                ds.setStats(orgPrintList);
+                ds = new OrganizationPrintDataSource(OrganizationPrintDataSource.Type.STATS);
+                ds.setData(orgPrintList);
                 url = ReportUtil.getResourceURL("org/openelis/report/finalreport/stats.jasper");
                 stats = JasperFillManager.fillReport((JasperReport)JRLoader.loadObject(url),
                                                            jparam,
                                                            ds);
                 pages = stats.getPages();
                 for (i = 0; i < pages.size(); i++ )
-                    master.addPage(pages.get(i));
+                    print.addPage(pages.get(i));
             }
 
-            if (master.getPages().size() > 1) {
-                master.removePage(0);
-                tempFile = export(master); 
+            if (print.getPages().size() > 0) {
+                tempFile = export(print); 
                 if (ReportUtil.isPrinter(printer)) {
                     printstat = ReportUtil.print(tempFile, printer, 1);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);

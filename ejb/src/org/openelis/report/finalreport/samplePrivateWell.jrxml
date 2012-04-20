@@ -11,7 +11,6 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ORGANIZATION_PRINT" class="org.openelis.report.finalreport.OrganizationPrint" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT
      s.received_date s_received_date,
@@ -205,17 +204,14 @@ WHERE
 				<reportElement x="72" y="48" width="250" height="60">
 					<printWhenExpression><![CDATA[$P{ORGANIZATION_ID}.equals(0)]]></printWhenExpression>
 				</reportElement>
-				<subreportParameter name="ADDRESS_ID">
-					<subreportParameterExpression><![CDATA[$F{pw_report_to_address_id}]]></subreportParameterExpression>
-				</subreportParameter>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
+				<subreportParameter name="ADDRESS_ID">
+					<subreportParameterExpression><![CDATA[$F{pw_report_to_address_id}]]></subreportParameterExpression>
+				</subreportParameter>
 				<subreportParameter name="NAME">
 					<subreportParameterExpression><![CDATA[$F{pw_report_to_name}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="ORGANIZATION_PRINT">
-					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ATTENTION">
 					<subreportParameterExpression><![CDATA[$F{pw_report_to_attention}]]></subreportParameterExpression>
@@ -229,9 +225,6 @@ WHERE
 				</reportElement>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="ORGANIZATION_PRINT">
-					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ORGANIZATION_ID">
 					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>
@@ -251,9 +244,6 @@ WHERE
 				</subreportParameter>
 				<subreportParameter name="SAMPLE_ID">
 					<subreportParameterExpression><![CDATA[$P{SAMPLE_ID}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="ORGANIZATION_PRINT">
-					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ORGANIZATION_ID">
 					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>

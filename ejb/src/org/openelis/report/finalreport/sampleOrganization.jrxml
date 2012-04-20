@@ -8,7 +8,6 @@
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
 	<parameter name="SAMPLE_ID" class="java.lang.Integer"/>
-	<parameter name="ORGANIZATION_PRINT" class="org.openelis.report.finalreport.OrganizationPrint" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT first 1
      organization_attention, organization_id
@@ -27,9 +26,6 @@ WHERE
 				<reportElement x="0" y="0" width="250" height="60"/>
 				<subreportParameter name="SUBREPORT_DIR">
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="ORGANIZATION_PRINT">
-					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ORGANIZATION_ID">
 					<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>

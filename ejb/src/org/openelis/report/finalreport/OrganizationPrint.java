@@ -25,23 +25,30 @@
  */
 package org.openelis.report.finalreport;
 
+import org.openelis.gwt.common.DataBaseUtil;
+
 
 /**
  * Class to manage a jasper print object for given organization.
  */
 public class OrganizationPrint {
 
-	private Integer organizationId, sampleId, pageCount;
-    private String organizationName, faxNumber, fromCompany, toCompany, faxNote, faxAttention;
+	private Integer organizationId, sampleId, accessionNumber, revision, pageCount;
+    private String organizationName, domain, faxNumber, fromCompany, toCompany, faxNote, faxAttention;
 	
 	public OrganizationPrint() {
     }
 	
-	public OrganizationPrint(Integer organizationId, String organizationName, String faxAttention, Integer sampleId) {
+	public OrganizationPrint(Integer organizationId, String organizationName, String faxAttention,
+	                         Integer sampleId, Integer accessionNumber, Integer revision,
+	                         String domain) {
 	    setOrganizationId(organizationId);
 	    setOrganizationName(organizationName);
 	    setFaxAttention(faxAttention); 
 	    setSampleId(sampleId);
+        setAccessionNumber(accessionNumber);
+        setRevision(revision);
+        setDomain(domain);
     }
 
 	public Integer getOrganizationId() {
@@ -56,8 +63,8 @@ public class OrganizationPrint {
 	    return organizationName;   
 	}
 
-	public String setOrganizationName(String organizationName) {
-	    return this.organizationName = organizationName;
+	public void setOrganizationName(String organizationName) {
+	    this.organizationName = DataBaseUtil.trim(organizationName);
 	}
 
 	public Integer getSampleId() {
@@ -66,6 +73,30 @@ public class OrganizationPrint {
 
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
+    }
+
+    public Integer getAccessionNumber() {
+        return accessionNumber;
+    }
+
+    public void setAccessionNumber(Integer accessionNumber) {
+        this.accessionNumber = accessionNumber;
+    }
+
+    public Integer getRevision() {
+        return revision;
+    }
+
+    public void setRevision(Integer revision) {
+        this.revision = revision;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = DataBaseUtil.trim(domain);
     }
 
     public Integer getPageCount() {
@@ -81,7 +112,7 @@ public class OrganizationPrint {
     }
 
     public void setFaxNumber(String faxNumber) {
-        this.faxNumber = faxNumber;
+        this.faxNumber = DataBaseUtil.trim(faxNumber);
     }
     
     public String getFromCompany() {
@@ -89,7 +120,7 @@ public class OrganizationPrint {
     }
 
     public void setFromCompany(String fromCompany) {
-        this.fromCompany = fromCompany;
+        this.fromCompany = DataBaseUtil.trim(fromCompany);
     }
     
     public String getToCompany() {
@@ -97,7 +128,7 @@ public class OrganizationPrint {
     }
 
     public void setToCompany(String toCompany) {
-        this.toCompany = toCompany;
+        this.toCompany = DataBaseUtil.trim(toCompany);
     }
 
     public String getFaxNote() {
@@ -105,7 +136,7 @@ public class OrganizationPrint {
     }
 
     public void setFaxNote(String faxNote) {
-        this.faxNote = faxNote;
+        this.faxNote = DataBaseUtil.trim(faxNote);
     }    
 
     public String getFaxAttention() {
@@ -113,6 +144,6 @@ public class OrganizationPrint {
     }
 
     public void setFaxAttention(String faxAttention) {
-        this.faxAttention = faxAttention;
+        this.faxAttention = DataBaseUtil.trim(faxAttention);
     }    
 }

@@ -95,6 +95,8 @@ public class FinalReportWebBean implements FinalReportWebRemote {
         builder.setMeta(meta);
         builder.setSelect("distinct " +SampleWebMeta.getId() + ", " +
                           SampleWebMeta.getAccessionNumber() + ", " +
+                          SampleWebMeta.getRevision() + ", " +
+                          SampleWebMeta.getDomain() + ", " +
                           SampleWebMeta.getCollectionDate() + ", " +
                           SampleWebMeta.getCollectionTime() + ", " +
                           SampleWebMeta.getStatusId() + ", " +
@@ -120,8 +122,8 @@ public class FinalReportWebBean implements FinalReportWebRemote {
 
         returnList = new ArrayList<FinalReportWebVO>();
         for (Object[] result : results) {
-            collDateTime = (Date)result[2];
-            collTime = (Date)result[3];
+            collDateTime = (Date)result[4];
+            collTime = (Date)result[5];
             
             if (collDateTime != null) {
                 if (collTime == null) {
@@ -133,9 +135,10 @@ public class FinalReportWebBean implements FinalReportWebRemote {
                 }
             }
             returnList.add(new FinalReportWebVO((Integer)result[0], (Integer)result[1],
-                                                collDateTime, (Integer)result[4],
-                                                (String)result[5], (String)result[6],
-                                                (String)result[7], (Integer)result[8], 
+                                                (Integer)result[2], (String)result[3],
+                                                collDateTime, (Integer)result[6],
+                                                (String)result[7], (String)result[8],
+                                                (String)result[9], (Integer)result[10], 
                                                 null, null, null, null, null));
         }
         /*
@@ -189,6 +192,8 @@ public class FinalReportWebBean implements FinalReportWebRemote {
         builder.setMeta(meta);
         builder.setSelect("distinct " +SampleWebMeta.getId() + ", " +
                           SampleWebMeta.getAccessionNumber() + ", " +
+                          SampleWebMeta.getRevision() + ", " +
+                          SampleWebMeta.getDomain() + ", " +
                           SampleWebMeta.getCollectionDate() + ", " +
                           SampleWebMeta.getCollectionTime() + ", " +
                           SampleWebMeta.getStatusId() + ", " + 
@@ -216,8 +221,8 @@ public class FinalReportWebBean implements FinalReportWebRemote {
 
         returnList = new ArrayList<FinalReportWebVO>();
         for (Object[] result : results) {
-            collDateTime = (Date)result[2];
-            collTime = (Date)result[3];
+            collDateTime = (Date)result[4];
+            collTime = (Date)result[5];
             
             if (collDateTime != null) {
                 if (collTime == null) {
@@ -229,9 +234,10 @@ public class FinalReportWebBean implements FinalReportWebRemote {
                 }
             }
             returnList.add(new FinalReportWebVO((Integer)result[0], (Integer)result[1],
-                                                collDateTime, (Integer)result[4],
-                                                (String)result[5], (String)result[6],
-                                                (String)result[7], (Integer)result[8], 
+                                                (Integer)result[2], (String)result[3],
+                                                collDateTime, (Integer)result[6],
+                                                (String)result[7], (String)result[8],
+                                                (String)result[9], (Integer)result[10], 
                                                 null, null, null, null, null));
         }
         /*
@@ -265,6 +271,8 @@ public class FinalReportWebBean implements FinalReportWebRemote {
         builder.setMeta(meta);
         builder.setSelect("distinct " + SampleWebMeta.getId() + ", " +
                           SampleWebMeta.getAccessionNumber() + ", " +
+                          SampleWebMeta.getRevision() + ", " +
+                          SampleWebMeta.getDomain() + ", " +
                           SampleWebMeta.getCollectionDate() + ", " +
                           SampleWebMeta.getCollectionTime() + ", " + 
                           SampleWebMeta.getStatusId() + ", " +
@@ -293,8 +301,8 @@ public class FinalReportWebBean implements FinalReportWebRemote {
 
         returnList = new ArrayList<FinalReportWebVO>();
         for (Object[] result : results) {
-            collDateTime = (Date)result[2];
-            collTime = (Date)result[3];
+            collDateTime = (Date)result[4];
+            collTime = (Date)result[5];
             
             if (collDateTime != null) {
                 if (collTime == null) {
@@ -306,11 +314,12 @@ public class FinalReportWebBean implements FinalReportWebRemote {
                 }
             }
             returnList.add(new FinalReportWebVO((Integer)result[0], (Integer)result[1],
-                                                collDateTime, (Integer)result[4],
-                                                (String)result[5], (String)result[6],
-                                                null, (Integer)result[7], null, 
-                                                null, (String)result[8], (String)result[9],
-                                                (String)result[10]));
+                                                (Integer)result[2], (String)result[3],
+                                                collDateTime, (Integer)result[6],
+                                                (String)result[7], (String)result[8],
+                                                null, (Integer)result[9], null, 
+                                                null, (String)result[10], (String)result[11],
+                                                (String)result[12]));
         }
         /*
          * push the retrieved list of samples into session so that the system

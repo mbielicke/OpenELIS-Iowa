@@ -9,7 +9,6 @@
 	<parameter name="ATTENTION" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ORGANIZATION_PRINT" class="org.openelis.report.finalreport.OrganizationPrint" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT
      multiple_unit, street_address, city, state, zip_code, country
@@ -36,11 +35,6 @@ WHERE
 			</textField>
 		</band>
 		<band height="48" splitType="Stretch">
-			<textField isBlankWhenNull="false">
-				<reportElement positionType="Float" x="0" y="0" width="250" height="0"/>
-				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{ORGANIZATION_PRINT}.setOrganizationName($P{NAME})]]></textFieldExpression>
-			</textField>
 			<textField>
 				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
 				<textElement>
