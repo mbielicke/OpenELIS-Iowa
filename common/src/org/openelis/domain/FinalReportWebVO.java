@@ -41,22 +41,24 @@ public class FinalReportWebVO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, accessionNumber, organizationId, statusId;
+    protected Integer         id, accessionNumber, revision, organizationId, statusId;
     protected Datetime        collectionDateTime;
     protected String          location, collector, locationAddressCity, projectName,
                               privateWellOwner, sdwisPwsNumber0, sdwisFacilityId, 
-                              sdwisPwsName;
+                              sdwisPwsName, domain;
 
     public FinalReportWebVO() {
     }
     
-    public FinalReportWebVO(Integer id, Integer accessionNumber, Date collectionDateTime,
-                            Integer statusId, String location, String collector,
-                            String locationAddressCity, Integer organizationId,
-                            String projectName, String privateWellOwner, String sdwisPwsNumber0,
-                            String sdwisFacilityId, String sdwisPwsName) {
+    public FinalReportWebVO(Integer id, Integer accessionNumber, Integer revision,
+                            String domain, Date collectionDateTime, Integer statusId,
+                            String location, String collector, String locationAddressCity,
+                            Integer organizationId, String projectName, String privateWellOwner,
+                            String sdwisPwsNumber0, String sdwisFacilityId, String sdwisPwsName) {
         setId(id);
         setAccessionNumber(accessionNumber);
+        setRevision(revision);
+        setDomain(domain);
         setCollectionDateTime(DataBaseUtil.toYM(collectionDateTime));
         setStatusId(statusId);
         setLocation(location);
@@ -84,6 +86,22 @@ public class FinalReportWebVO implements RPC {
 
     public void setAccessionNumber(Integer accessionNumber) {
         this.accessionNumber = accessionNumber;
+    }
+
+    public Integer getRevision() {
+        return revision;
+    }
+
+    public void setRevision(Integer revision) {
+        this.revision = revision;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = DataBaseUtil.trim(domain);
     }
 
     public Integer getOrganizationId() {
