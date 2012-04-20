@@ -126,28 +126,28 @@
 	<detail>
 		<band height="12" splitType="Stretch">
 			<textField>
-				<reportElement key="organizationIdValue" positionType="Float" x="0" y="0" width="72" height="12"/>
+				<reportElement key="organizationIdValue" positionType="Float" isPrintRepeatedValues="false" x="0" y="0" width="72" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font reportFont="FieldData" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{organization_id}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement key="organizationNameValue" positionType="Float" x="93" y="0" width="243" height="12"/>
+				<reportElement key="organizationNameValue" positionType="Float" isPrintRepeatedValues="false" x="93" y="0" width="243" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font reportFont="FieldData" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{organization_name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement key="faxedPrintedValue" positionType="Float" x="349" y="0" width="80" height="12"/>
+				<reportElement key="faxedPrintedValue" positionType="Float" x="349" y="0" width="80" height="12" isRemoveLineWhenBlank="true"/>
 				<textElement>
 					<font reportFont="FieldData" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{faxed_printed}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement key="faxNumberValue" positionType="Float" x="450" y="0" width="96" height="12">
+				<reportElement key="faxNumberValue" positionType="Float" x="450" y="0" width="96" height="12" isRemoveLineWhenBlank="true">
 					<printWhenExpression><![CDATA["Faxed".equals($F{faxed_printed})]]></printWhenExpression>
 				</reportElement>
 				<textElement>
