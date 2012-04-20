@@ -38,15 +38,20 @@ public class FinalReportVO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, organizationId, analysisId, organizationTypeId;
-    protected String          organizationName, organizationAttention;
+    protected Integer         sampleId, accessionNumber, revision, organizationId,
+                              analysisId, organizationTypeId;
+    protected String          domain, organizationName, organizationAttention;
     
     public FinalReportVO() {
     }
     
-    public FinalReportVO(Integer sampleId, Integer organizationId, Integer organizationTypeId,
+    public FinalReportVO(Integer sampleId, Integer accessionNumber, Integer revision,
+                         String domain, Integer organizationId, Integer organizationTypeId,
                          String organizationName, String organizationAttention, Integer analysisId) {
         setSampleId(sampleId);
+        setAccessionNumber(accessionNumber);
+        setRevision(revision);
+        setDomain(domain);
         setOrganizationId(organizationId);
         setOrganizationTypeId(organizationTypeId);
         setOrganizationName(organizationName);
@@ -60,6 +65,30 @@ public class FinalReportVO implements RPC {
 
     public void setSampleId(Integer sampleId) {
         this.sampleId = sampleId;
+    }
+
+    public Integer getAccessionNumber() {
+        return accessionNumber;
+    }
+
+    public void setAccessionNumber(Integer accessionNumber) {
+        this.accessionNumber = accessionNumber;
+    }
+
+    public Integer getRevision() {
+        return revision;
+    }
+
+    public void setRevision(Integer revision) {
+        this.revision = revision;
+    }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public void setDomain(String domain) {
+        this.domain = DataBaseUtil.trim(domain);
     }
 
     public Integer getOrganizationId() {
