@@ -5,12 +5,6 @@
 	<property name="ireport.y" value="240"/>
 	<import value="org.openelis.report.finalreport.OrganizationPrint"/>
 	<import value="org.openelis.report.finalreport.NoteDataSource"/>
-	<parameter name="SAMPLE_ID" class="java.lang.String">
-		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
-	</parameter>
-	<parameter name="ORGANIZATION_ID" class="java.lang.Integer">
-		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
-	</parameter>
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
@@ -18,22 +12,17 @@
 	<parameter name="SYSTEM_NAME" class="java.lang.String" isForPrompting="false">
 		<parameterDescription><![CDATA['org_report_to']]></parameterDescription>
 	</parameter>
-	<parameter name="ORGANIZATION_PRINT" class="org.openelis.report.finalreport.OrganizationPrint" isForPrompting="false"/>
+	<parameter name="CONNECTION" class="java.sql.Connection" isForPrompting="false">
+		<parameterDescription><![CDATA[Database connection for subreports]]></parameterDescription>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT
-     s.id s_id,
-     s.accession_number s_accession_number,
-     s.revision s_revision,
-     s.domain s_domain
-FROM
-     sample s
-WHERE
-     s.id = $P!{SAMPLE_ID}]]>
+		<![CDATA[]]>
 	</queryString>
-	<field name="s_id" class="java.lang.Integer"/>
-	<field name="s_accession_number" class="java.lang.Integer"/>
-	<field name="s_revision" class="java.lang.Integer"/>
-	<field name="s_domain" class="java.lang.String"/>
+	<field name="sample_id" class="java.lang.Integer"/>
+	<field name="accession_number" class="java.lang.Integer"/>
+	<field name="revision" class="java.lang.Integer"/>
+	<field name="domain" class="java.lang.String"/>
+	<field name="organization_id" class="java.lang.Integer"/>
 	<variable name="PAGE_COUNTER" class="org.openelis.report.finalreport.PageCounter" resetType="Group" resetGroup="Sample_Organization">
 		<variableExpression><![CDATA[$V{PAGE_COUNTER}]]></variableExpression>
 		<initialValueExpression><![CDATA[new org.openelis.report.finalreport.PageCounter("B")]]></initialValueExpression>
@@ -44,67 +33,58 @@ WHERE
 	</variable>
 	<variable name="NOTE_DATASOURCE" class="org.openelis.report.finalreport.NoteDataSource" resetType="Group" resetGroup="Sample_Organization" calculation="System">
 		<variableExpression><![CDATA[$V{NOTE_DATASOURCE}]]></variableExpression>
-		<initialValueExpression><![CDATA[NoteDataSource.getInstance($F{s_id}, null, null)]]></initialValueExpression>
+		<initialValueExpression><![CDATA[NoteDataSource.getInstance($F{sample_id}, null, null)]]></initialValueExpression>
 	</variable>
 	<group name="Sample_Organization" isStartNewPage="true" isResetPageNumber="true">
-		<groupExpression><![CDATA[$P{ORGANIZATION_ID}+"-"+$F{s_id}]]></groupExpression>
+		<groupExpression><![CDATA[$F{organization_id}+"-"+$F{sample_id}]]></groupExpression>
 		<groupHeader>
 			<band height="12" splitType="Stretch">
 				<subreport>
 					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
-						<printWhenExpression><![CDATA["W".equals($F{s_domain})]]></printWhenExpression>
+						<printWhenExpression><![CDATA["W".equals($F{domain})]]></printWhenExpression>
 					</reportElement>
 					<subreportParameter name="SUBREPORT_DIR">
 						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="SAMPLE_ID">
-						<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="ORGANIZATION_PRINT">
-						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="ORGANIZATION_ID">
-						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
 					</subreportParameter>
-					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "samplePrivateWell.jasper"]]></subreportExpression>
 				</subreport>
 				<subreport>
 					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
-						<printWhenExpression><![CDATA["E".equals($F{s_domain})]]></printWhenExpression>
+						<printWhenExpression><![CDATA["E".equals($F{domain})]]></printWhenExpression>
 					</reportElement>
 					<subreportParameter name="SUBREPORT_DIR">
 						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="SAMPLE_ID">
-						<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="ORGANIZATION_PRINT">
-						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="ORGANIZATION_ID">
-						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
 					</subreportParameter>
-					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleEnvironmental.jasper"]]></subreportExpression>
 				</subreport>
 				<subreport>
 					<reportElement mode="Transparent" x="0" y="0" width="576" height="12" isRemoveLineWhenBlank="true">
-						<printWhenExpression><![CDATA["S".equals($F{s_domain})]]></printWhenExpression>
+						<printWhenExpression><![CDATA["S".equals($F{domain})]]></printWhenExpression>
 					</reportElement>
 					<subreportParameter name="SUBREPORT_DIR">
 						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="SAMPLE_ID">
-						<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter name="ORGANIZATION_PRINT">
-						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter name="ORGANIZATION_ID">
-						<subreportParameterExpression><![CDATA[$P{ORGANIZATION_ID}]]></subreportParameterExpression>
+						<subreportParameterExpression><![CDATA[$F{organization_id}]]></subreportParameterExpression>
 					</subreportParameter>
-					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 					<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleSDWIS.jasper"]]></subreportExpression>
 				</subreport>
 			</band>
@@ -170,16 +150,16 @@ WHERE
 				<textElement textAlignment="Left">
 					<font size="10" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{s_accession_number}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$F{accession_number}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="492" y="84" width="78" height="12">
-					<printWhenExpression><![CDATA[$F{s_revision} > 0]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$F{revision} > 0]]></printWhenExpression>
 				</reportElement>
 				<textElement textAlignment="Left">
 					<font isBold="true" isItalic="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA["Revision "+$F{s_revision}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA["Revision "+$F{revision}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement key="counter-incrementer" positionType="Float" mode="Transparent" x="0" y="0" width="12" height="12">
@@ -197,7 +177,7 @@ WHERE
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<dataSourceExpression><![CDATA[$V{NOTE_DATASOURCE}]]></dataSourceExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleQaeventNote.jasper"]]></subreportExpression>
@@ -207,12 +187,12 @@ WHERE
 			<subreport>
 				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="SAMPLE_REFERENCE_TABLE_ID">
 					<subreportParameterExpression><![CDATA[8]]></subreportParameterExpression>
 				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "sampleAuxData.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
@@ -220,12 +200,12 @@ WHERE
 			<subreport>
 				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="REPORT_TYPE">
 					<subreportParameterExpression><![CDATA[$P{REPORT_TYPE}]]></subreportParameterExpression>
 				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisPending.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
@@ -243,7 +223,7 @@ WHERE
 					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="UNIT_LIST">
 					<subreportParameterExpression><![CDATA[$V{UNIT_LIST}]]></subreportParameterExpression>
@@ -251,22 +231,22 @@ WHERE
 				<subreportParameter name="REPORT_TYPE">
 					<subreportParameterExpression><![CDATA[$P{REPORT_TYPE}]]></subreportParameterExpression>
 				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysis.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
 		<band height="12" splitType="Stretch">
 			<subreport>
 				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true">
-					<printWhenExpression><![CDATA["W".equals($F{s_domain}) == false]]></printWhenExpression>
+					<printWhenExpression><![CDATA["W".equals($F{domain}) == false]]></printWhenExpression>
 				</reportElement>
 				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="UNIT_LIST">
 					<subreportParameterExpression><![CDATA[$V{UNIT_LIST}]]></subreportParameterExpression>
 				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "analysisUnitList.jasper"]]></subreportExpression>
 			</subreport>
 		</band>
@@ -274,15 +254,15 @@ WHERE
 			<subreport>
 				<reportElement positionType="Float" x="0" y="0" width="550" height="12" isRemoveLineWhenBlank="true"/>
 				<subreportParameter name="SAMPLE_DOMAIN">
-					<subreportParameterExpression><![CDATA[$F{s_domain}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{domain}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="SAMPLE_ID">
-					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+					<subreportParameterExpression><![CDATA[$F{sample_id}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="REPORT_TYPE">
 					<subreportParameterExpression><![CDATA[$P{REPORT_TYPE}]]></subreportParameterExpression>
 				</subreportParameter>
-				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<connectionExpression><![CDATA[$P{CONNECTION}]]></connectionExpression>
 				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "reportTrailer.jasper"]]></subreportExpression>
 			</subreport>
 		</band>

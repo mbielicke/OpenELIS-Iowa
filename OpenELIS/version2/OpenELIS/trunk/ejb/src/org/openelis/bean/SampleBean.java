@@ -208,9 +208,11 @@ public class SampleBean implements SampleLocal, SampleRemote {
         
         returnList = new ArrayList<FinalReportVO>();
         for (Object[] result : list) 
-            returnList.add(new FinalReportVO((Integer)result[0],(Integer)result[1],
+            returnList.add(new FinalReportVO((Integer)result[0], (Integer)result[1],
                                              (Integer)result[2], (String)result[3],
-                                             (String)result[4], (Integer)result[5]));
+                                             (Integer)result[4], (Integer)result[5],
+                                             (String)result[6], (String)result[7],
+                                             (Integer)result[8]));
         
         return returnList;
     }
@@ -227,9 +229,11 @@ public class SampleBean implements SampleLocal, SampleRemote {
         
         returnList = new ArrayList<FinalReportVO>();
         for (Object[] result : list) 
-            returnList.add(new FinalReportVO((Integer)result[0],(Integer)result[1],
+            returnList.add(new FinalReportVO((Integer)result[0], (Integer)result[1],
                                              (Integer)result[2], (String)result[3],
-                                             (String)result[4], (Integer)result[5]));
+                                             (Integer)result[4], (Integer)result[5],
+                                             (String)result[6], (String)result[7],
+                                             (Integer)result[8]));
         
         return returnList;
     }
@@ -245,8 +249,10 @@ public class SampleBean implements SampleLocal, SampleRemote {
         
         returnList = new ArrayList<FinalReportVO>();
         for (Object[] result : list) 
-            returnList.add(new FinalReportVO((Integer)result[0],(Integer)result[1],
-                                             (Integer)result[2], (String)result[3], null, null));
+            returnList.add(new FinalReportVO((Integer)result[0], (Integer)result[1],
+                                             (Integer)result[2], (String)result[3],
+                                             (Integer)result[4], (Integer)result[5],
+                                             (String)result[6], null, null));
         
         return returnList;
     }
@@ -259,7 +265,9 @@ public class SampleBean implements SampleLocal, SampleRemote {
         query.setParameter("accessionNumber", accessionNumber);
         try {
             result = (Object[])query.getSingleResult();
-            return new FinalReportVO((Integer)result[0], null,(Integer)result[1], null, null, null);
+            return new FinalReportVO((Integer)result[0], (Integer)result[1], (Integer)result[2],
+                                     (String)result[3], (Integer)result[4], null,
+                                     null, null, null);
         } catch (NoResultException e) {
             throw new NotFoundException("noRecordsFound");
         }

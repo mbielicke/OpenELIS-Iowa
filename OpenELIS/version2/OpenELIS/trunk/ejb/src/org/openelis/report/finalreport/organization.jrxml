@@ -10,7 +10,6 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="ORGANIZATION_PRINT" class="org.openelis.report.finalreport.OrganizationPrint" isForPrompting="false"/>
 	<queryString>
 		<![CDATA[SELECT
      name, address_id
@@ -30,9 +29,6 @@ WHERE
 				</subreportParameter>
 				<subreportParameter name="NAME">
 					<subreportParameterExpression><![CDATA[$F{name}]]></subreportParameterExpression>
-				</subreportParameter>
-				<subreportParameter name="ORGANIZATION_PRINT">
-					<subreportParameterExpression><![CDATA[$P{ORGANIZATION_PRINT}]]></subreportParameterExpression>
 				</subreportParameter>
 				<subreportParameter name="ATTENTION">
 					<subreportParameterExpression><![CDATA[$P{ATTENTION}]]></subreportParameterExpression>

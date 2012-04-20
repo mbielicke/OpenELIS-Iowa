@@ -269,15 +269,16 @@ public class ReportUtil {
      * NOTE: This method is very "sendfax" and "cups" dependent and will not work on non unix platforms.
      */
     public static String fax(File file, String faxNumber, String fromName, String toName,
-                             String toCompany, String faxNote) throws Exception {
+                             String toCompany, String faxNote, String faxUser) throws Exception {
         String status;
         ArrayList<String> args; 
         
         try {
             args = new ArrayList<String>();
             args.add("sendfax");
+            args.add("-R");
             args.add("-o");
-            args.add(EJBFactory.getUserCache().getName());
+            args.add(faxUser);
 
             if ( !DataBaseUtil.isEmpty(fromName)) {
                 args.add("-X");
