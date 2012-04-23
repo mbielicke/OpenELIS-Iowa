@@ -374,7 +374,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     @RolesAllowed("r_final-select")
     @TransactionTimeout(600)
     public ReportStatus runReportForBatch(ArrayList<QueryData> paramList) throws Exception {
-        Integer cachedOrgId;
+        Integer cachedOrgId, zero;
         Boolean lockSucceeded, orgPrint;
         String printer, orgFaxNumber, faxGrpName;
         Datetime timeStamp;
@@ -425,6 +425,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         log.debug("Locking all samples");
         
         print = null;
+        zero = new Integer(0);
         for (FinalReportVO result: resultList) {
             lockSucceeded = samLockMap.get(result.getSampleId());
             if (lockSucceeded == null) {
@@ -448,27 +449,29 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              * only unique sample & org pairs
              */
             if (print != null && print.getOrganizationId().equals(result.getOrganizationId()) &&
-                print.getSampleId().equals(result.getSampleId()))
+                !result.getOrganizationId().equals(zero) && print.getSampleId().equals(result.getSampleId()))
                 continue;
 
             print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
                                           result.getOrganizationAttention(), result.getSampleId(),
                                           result.getAccessionNumber(), result.getRevision(),
                                           result.getDomain());
-            if ( !print.getOrganizationId().equals(cachedOrgId)) {
+            if (!print.getOrganizationId().equals(cachedOrgId) || print.getOrganizationId().equals(zero)) {
                 orgPrint = true;
                 orgFaxNumber = null;
                 cachedOrgId = print.getOrganizationId();
-                try {
-                    orgParamList = organizationParameter.fetchByOrganizationId(cachedOrgId);
-                    for (OrganizationParameterDO orgParam : orgParamList) {
-                        if (finalReportFaxNumTypeId.equals(orgParam.getTypeId()))
-                            orgFaxNumber = orgParam.getValue();
-                        else if (noFinalReportTypeId.equals(orgParam.getTypeId()))
-                            orgPrint = false;
+                if (!cachedOrgId.equals(zero)) {
+                    try {
+                        orgParamList = organizationParameter.fetchByOrganizationId(cachedOrgId);
+                        for (OrganizationParameterDO orgParam : orgParamList) {
+                            if (finalReportFaxNumTypeId.equals(orgParam.getTypeId()))
+                                orgFaxNumber = orgParam.getValue();
+                            else if (noFinalReportTypeId.equals(orgParam.getTypeId()))
+                                orgPrint = false;
+                        }
+                    } catch (NotFoundException e) {
+                        //ignore
                     }
-                } catch (NotFoundException e) {
-                    //ignore
                 }
             }
 
@@ -533,7 +536,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     @TransactionTimeout(600)
     public ReportStatus runReportForBatchReprint(ArrayList<QueryData> paramList) throws Exception {
         boolean orgPrint;
-        Integer cachedOrgId;
+        Integer cachedOrgId, zero;
         String printer, orgFaxNumber, faxGrpName;
         ReportStatus status;
         ArrayList<FinalReportVO> resultList;
@@ -580,32 +583,35 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * loop through the list and mark the samples for printing or faxing 
          */        
         print = null;
+        zero = new Integer(0);
         for (FinalReportVO result: resultList) {
             /*
              * only unique sample & org pairs
              */
             if (print != null && print.getOrganizationId().equals(result.getOrganizationId()) &&
-                print.getSampleId().equals(result.getSampleId()))
+                !result.getOrganizationId().equals(zero) && print.getSampleId().equals(result.getSampleId()))
                 continue;
 
             print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
                                           result.getOrganizationAttention(), result.getSampleId(),
                                           result.getAccessionNumber(), result.getRevision(),
                                           result.getDomain());
-            if ( !print.getOrganizationId().equals(cachedOrgId)) {
+            if (!print.getOrganizationId().equals(cachedOrgId) || print.getOrganizationId().equals(zero)) {
                 orgPrint = true;
                 orgFaxNumber = null;
                 cachedOrgId = print.getOrganizationId();
-                try {
-                    orgParamList = organizationParameter.fetchByOrganizationId(cachedOrgId);
-                    for (OrganizationParameterDO orgParam : orgParamList) {
-                        if (finalReportFaxNumTypeId.equals(orgParam.getTypeId()))
-                            orgFaxNumber = orgParam.getValue();
-                        else if (noFinalReportTypeId.equals(orgParam.getTypeId()))
-                            orgPrint = false;
+                if (!cachedOrgId.equals(zero)) {
+                    try {
+                        orgParamList = organizationParameter.fetchByOrganizationId(cachedOrgId);
+                        for (OrganizationParameterDO orgParam : orgParamList) {
+                            if (finalReportFaxNumTypeId.equals(orgParam.getTypeId()))
+                                orgFaxNumber = orgParam.getValue();
+                            else if (noFinalReportTypeId.equals(orgParam.getTypeId()))
+                                orgPrint = false;
+                        }
+                    } catch (NotFoundException e) {
+                        //ignore
                     }
-                } catch (NotFoundException e) {
-                    //ignore
                 }
             }
 

@@ -8,8 +8,9 @@ import org.openelis.gwt.common.DataBaseUtil;
 import net.sf.jasperreports.engine.*;
 
 public class OrganizationPrintDataSource implements JRDataSource {
-    private int i;
-    
+    protected int                          i;
+    protected Integer                      lastOrgId, zero;
+    protected String                       lastFaxedPrinted, lastFaxNumber;
     protected Type                         type;
     protected ArrayList<OrganizationPrint> data;
     protected Iterator<OrganizationPrint>  iter;
@@ -21,6 +22,7 @@ public class OrganizationPrintDataSource implements JRDataSource {
 
     public OrganizationPrintDataSource(Type type) {
         this.type = type;
+        zero = new Integer(0);
     }
     
     public ArrayList<OrganizationPrint> getData() {
@@ -31,19 +33,38 @@ public class OrganizationPrintDataSource implements JRDataSource {
         if (data != null) {
             iter = data.iterator();
             i = 0;
+            lastOrgId = new Integer(-1);
+            lastFaxedPrinted = "";
+            lastFaxNumber = "";
         }
     }
     
     public boolean next() throws JRException {
         while (iter != null && iter.hasNext()) {
             i++;
-System.out.println("Processed "+i+" records in report");
 log.info("Processed "+i+" records in report");
             op = (OrganizationPrint) iter.next();
             if ((Type.PRINT.equals(type) && DataBaseUtil.isEmpty(op.getFaxNumber())) ||
-                (Type.FAX.equals(type) && !DataBaseUtil.isEmpty(op.getFaxNumber())) ||
-                Type.STATS.equals(type))
+                (Type.FAX.equals(type) && !DataBaseUtil.isEmpty(op.getFaxNumber()))) {
                 return true;
+            } else if (Type.STATS.equals(type)) {
+                try {
+                    while (lastOrgId.equals(op.getOrganizationId()) && !op.getOrganizationId().equals(zero) &&
+                           lastFaxedPrinted.equals(op.getFaxNumber() != null ? "Faxed" : "Printed") &&
+                           "Printed".equals(lastFaxedPrinted)) {
+                        op = (OrganizationPrint) iter.next();
+                    }
+                    lastOrgId = op.getOrganizationId();
+                    lastFaxedPrinted = op.getFaxNumber() != null ? "Faxed" : "Printed";
+                    if (op.getFaxNumber() != null)
+                        lastFaxNumber = op.getFaxNumber();
+                    else
+                        lastFaxNumber = "";
+                    return true;
+                } catch (NoSuchElementException nseE) {
+                    // reached end of list
+                }
+            }
         }
         return false;
     }
