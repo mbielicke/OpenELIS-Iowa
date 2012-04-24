@@ -45,9 +45,15 @@ import org.openelis.gwt.services.ScreenService;
 public class AnalysisResultManagerProxy {
     protected static final String SAMPLE_SERVICE_URL = "org.openelis.modules.result.server.ResultService";
     protected ScreenService       service;
+    protected static Integer      dictTypeId;
 
     public AnalysisResultManagerProxy() {
         service = new ScreenService("controller?service=" + SAMPLE_SERVICE_URL);
+        try {
+            dictTypeId = DictionaryCache.getIdBySystemName("test_res_type_dictionary");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } 
     }
 
     public AnalysisResultManager fetchByAnalysisIdForDisplay(Integer analysisId) throws Exception {
@@ -126,6 +132,17 @@ public class AnalysisResultManagerProxy {
 
                         result.setTypeId(testResult.getTypeId());
                         result.setTestResultId(testResult.getId());
+                        /*
+                         * If the tab for results on the screen was never opened
+                         * after an analysis was either added or its test was changed
+                         * then the code on the screen wouldn't have had the chance
+                         * to put the dictionary entry's id as the value for the
+                         * results of the type dictionary. This code makes sure
+                         * that the correct value gets set. For the results of the
+                         * other types, the value doesn't need to be changed.   
+                         */
+                        if (testResult.getTypeId().equals(dictTypeId))
+                            result.setValue(testResult.getValue());                     
                     }
                 }
             }

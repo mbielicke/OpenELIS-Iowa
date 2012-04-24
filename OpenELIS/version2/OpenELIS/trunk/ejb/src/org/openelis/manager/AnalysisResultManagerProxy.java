@@ -46,7 +46,7 @@ import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utils.EJBFactory;
 
 public class AnalysisResultManagerProxy {
-    protected static Integer    dictTypeId;
+    protected static Integer    dictTypeId, defaultTypeId;
 
     private static final Logger log  = Logger.getLogger(AnalysisResultManagerProxy.class);
     
@@ -57,7 +57,8 @@ public class AnalysisResultManagerProxy {
             l = EJBFactory.getDictionary();
 
             try {
-                dictTypeId = l.fetchBySystemName("test_res_type_dictionary").getId();                
+                dictTypeId = l.fetchBySystemName("test_res_type_dictionary").getId();     
+                defaultTypeId = l.fetchBySystemName("test_res_type_default").getId();
             } catch (Exception e) {
                 log.error("Failed to lookup constants for dictionary entries", e);
             }
@@ -307,42 +308,38 @@ public class AnalysisResultManagerProxy {
 
     private void mergeResultGrid(ArrayList<ArrayList<ResultViewDO>> oldGrid,
                                  ArrayList<ArrayList<ResultViewDO>> newGrid) throws Exception {
-        int i,j, k,l;        
         String val;
-        ResultViewDO r1, r2;
+        ResultViewDO rnew, rold;
         DictionaryCacheLocal dcl;
-        ArrayList<ResultViewDO> newList, oldList;
-
         
         /*
          * we go through each row in the new test's grid of analytes and find the 
          * first matching row analyte from the old test's grid  
          */
         dcl = EJBFactory.getDictionaryCache();
-        for (i = 0; i < newGrid.size(); i++ ) {            
-            for (j = 0; j < oldGrid.size(); j++ ) {
-                newList = newGrid.get(i);
-                oldList = oldGrid.get(j);
-                
-                r1 = newList.get(0);                
-                r2 = oldList.get(0);
-
-                if (r1.getAnalyteId().equals(r2.getAnalyteId())) {               
+        for (ArrayList<ResultViewDO> newList: newGrid) { 
+            rnew = newList.get(0);
+            for (ArrayList<ResultViewDO> oldList: oldGrid) {                
+                rold = oldList.get(0);
+                /*
+                 * compare the row analytes 
+                 */
+                if (rnew.getAnalyteId().equals(rold.getAnalyteId())) {               
                     /*
-                     * we go through each column in the new grid's row and find the 
+                     * We go through each column in the new grid's row and find the 
                      * first matching column analyte from the old grid's row and copy its
-                     * result value to the new column  
+                     * result value to the new column.  
+                     * If the data in the new column is a dictionary entry then 
+                     * we copy its literal value, because the new validator needs
+                     * to validate against the literal value.
                      */
-                    for (k = 0; k < newList.size(); k++) {                        
-                        for (l = 0; l < oldList.size(); l++) {
-                            r1 = newList.get(k);
-                            r2 = oldList.get(l);
-
-                            if (r1.getAnalyteId().equals(r2.getAnalyteId())) {
-                                val = r2.getValue();
-                                if (dictTypeId.equals(r2.getTypeId()) && !DataBaseUtil.isEmpty(val)) 
+                    for (ResultViewDO ncol: newList) {                        
+                        for (ResultViewDO ocol: oldList) {
+                            if (ncol.getAnalyteId().equals(ocol.getAnalyteId()) && ncol.getValue() == null) {
+                                val = ocol.getValue();                                
+                                if (dictTypeId.equals(ocol.getTypeId()) && !DataBaseUtil.isEmpty(val)) 
                                     val = dcl.getById(Integer.valueOf(val)).getEntry();
-                                r1.setValue(val);                   
+                                ncol.setValue(val);                   
                             }
                         }                                               
                     } 
@@ -363,15 +360,13 @@ public class AnalysisResultManagerProxy {
         typeId = data.getTypeId();
         result.setTypeId(typeId);
         /*
-         * Since the validation done for the results of type 
-         * dictionary succeeds if the value of the result matches 
-         * the entry of the dictionary record that the corresponding
-         * test result has the id of, it can happen that the value
-         * set in the result, from the default for this unit, passes
-         * validation. In that case the type will be set to dictionary
-         * in the result and the value won't be a valid id. The 
-         * following check makes sure that the value is set to 
-         * the correct id taken from the test result.                  
+         * Since the validation done for the results of type dictionary succeeds
+         * if the value of the result matches the entry of the dictionary record
+         * that the corresponding test result has the id of, it can happen that
+         * the value set in the result, from the default for this unit, passes
+         * validation. In that case the type will be set to dictionary in the result
+         * and the value won't be a valid id. The following check makes sure that
+         * the value is set to the correct id taken from the test result.                  
          */
         if (dictTypeId.equals(typeId))
             result.setValue(data.getValue());
