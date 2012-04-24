@@ -242,7 +242,12 @@ import org.openelis.utils.Auditable;
                       + " union "
                       + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, spw.organization_id o_id"
                       + " from sample s, sample_private_well spw, sample_item si, analysis a"
-                      + " where s.accession_number = :accessionNumber and s.domain = 'W' and spw.sample_id = s.id and si.sample_id = s.id and a.sample_item_id = si.id and"
+                      + " where s.accession_number = :accessionNumber and s.domain = 'W' and spw.sample_id = s.id and spw.organization_id is not null and si.sample_id = s.id and a.sample_item_id = si.id and"
+                      + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y'"
+                      + " union "
+                      + "select s.id s_id, s.accession_number s_accession_number, s.revision s_revision, CAST(s.domain AS varchar(1)) s_domain, 0 o_id"
+                      + " from sample s, sample_private_well spw, sample_item si, analysis a"
+                      + " where s.accession_number = :accessionNumber and s.domain = 'W' and spw.sample_id = s.id and spw.organization_id is null and si.sample_id = s.id and a.sample_item_id = si.id and"
                       + " a.status_id in (select id from dictionary where system_name in ('analysis_released', 'analysis_completed')) and a.is_reportable = 'Y'"
                       + " order by s_id , o_id",
                 resultSetMapping="Sample.FetchForFinalReportPreviewMapping"),
