@@ -716,7 +716,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         File tempFile;
         Connection con;        
         JasperReport jreport;
-        String dir, printstat, toCompany, faxUser;
+        String dir, printstat, toCompany, faxOwner, faxEmail;
         JasperPrint print, faxPrint;
         List<JRPrintPage> pages;
         HashMap<String, Object> jparam;
@@ -775,7 +775,13 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             /*
              * faxing loop
              */
-            faxUser = ReportUtil.getSystemVariableValue("fax_response_user");
+            if (forMailing) {
+                faxOwner = ReportUtil.getSystemVariableValue("system_fax_owner");
+                faxEmail = ReportUtil.getSystemVariableValue("system_fax_email");
+            } else {
+                faxOwner = EJBFactory.getUserCache().getSystemUser().getLoginName();
+                faxEmail = EJBFactory.getUserCache().getSystemUser().getLoginName();
+            }
             for (OrganizationPrint o : orgPrintList) {
                 if (DataBaseUtil.isEmpty(o.getFaxNumber()))
                     continue;
@@ -808,7 +814,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                     toCompany = o.getToCompany() != null ? o.getToCompany() : o.getOrganizationName();
                     printstat = ReportUtil.fax(tempFile, o.getFaxNumber(), o.getFromCompany(),
                                                o.getFaxAttention(), toCompany,
-                                               o.getFaxNote(), faxUser);
+                                               o.getFaxNote(), faxOwner, faxEmail);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.FAXED);
                 } catch (Exception e) {
                     log.error("Sample Id: " + o.getSampleId() + " Organization: " +

@@ -269,7 +269,7 @@ public class ReportUtil {
      * NOTE: This method is very "sendfax" and "cups" dependent and will not work on non unix platforms.
      */
     public static String fax(File file, String faxNumber, String fromName, String toName,
-                             String toCompany, String faxNote, String faxUser) throws Exception {
+                             String toCompany, String faxNote, String faxOwner, String faxEmail) throws Exception {
         String status;
         ArrayList<String> args; 
         
@@ -277,18 +277,26 @@ public class ReportUtil {
             args = new ArrayList<String>();
             args.add("sendfax");
             args.add("-R");
-            args.add("-o");
-            args.add(faxUser);
+            
+            if (!DataBaseUtil.isEmpty(faxOwner)) {
+                args.add("-o");
+                args.add(faxOwner);
+            }
 
-            if ( !DataBaseUtil.isEmpty(fromName)) {
+            if (!DataBaseUtil.isEmpty(faxEmail)) {
+                args.add("-f");
+                args.add(faxEmail);
+            }
+
+            if (!DataBaseUtil.isEmpty(fromName)) {
                 args.add("-X");
                 args.add(fromName);
             }
-            if ( !DataBaseUtil.isEmpty(toCompany)) {
+            if (!DataBaseUtil.isEmpty(toCompany)) {
                 args.add("-x");
                 args.add(toCompany);
             }
-            if ( !DataBaseUtil.isEmpty(faxNote)) {
+            if (!DataBaseUtil.isEmpty(faxNote)) {
                 args.add("-c");
                 args.add(faxNote);
             }
