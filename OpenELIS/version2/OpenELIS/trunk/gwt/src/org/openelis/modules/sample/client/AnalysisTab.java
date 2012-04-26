@@ -298,16 +298,14 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         });
 
         test.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                int                     i;
-                Integer                 sampleType;
+            public void onGetMatches(GetMatchesEvent event) {                
+                Integer                 sampleType, key;
                 ArrayList<QueryData>    fields;
                 ArrayList<TableDataRow> model;
                 ArrayList<TestMethodVO> autoList;
                 Query                   query;
                 QueryData               field;
                 TableDataRow            row;
-                TestMethodVO            autoDO;
                 
                 sampleType = sampleItem.getTypeOfSampleId();
                 if (sampleType == null) {
@@ -321,11 +319,11 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 field = new QueryData();
                 //
                 // the methd
-                if (analysis.getId() == null || analysis.getId() < 0) {
+                if (analysis.getId() == null || analysis.getId() < 0)
                     field.query = QueryFieldUtil.parseAutocomplete(event.getMatch()) + "%";
-                } else {
+                else
                     field.query = QueryFieldUtil.parseAutocomplete(analysis.getTestName());
-                }
+                
                 fields.add(field);
 
                 field = new QueryData();
@@ -338,9 +336,17 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                     autoList = panelService.callList("fetchByNameSampleTypeWithTests", query);
                     model = new ArrayList<TableDataRow>();
 
-                    for (i = 0; i < autoList.size(); i++ ) {
-                        autoDO = autoList.get(i);
-                        row = new TableDataRow(i, autoDO.getTestName(), autoDO.getMethodName(),
+                    for (TestMethodVO autoDO : autoList) {                     
+                        /*
+                         * Since the keys of the rows need to be unique and it can
+                         * happen that a panel has the same id as a test, a negative
+                         * number is used as the key for a row showing a panel 
+                         * and a positive one for a row showing a test. An index
+                         * in a loop can't be used here because it can clash with
+                         * an id and two different rows may be treated as the same.                         
+                         */
+                        key = autoDO.getMethodId() == null ? -autoDO.getTestId() : autoDO.getTestId();                        
+                        row = new TableDataRow(key, autoDO.getTestName(), autoDO.getMethodName(),
                                                autoDO.getTestDescription());
                         row.data = autoDO;
                         model.add(row);
