@@ -39,10 +39,10 @@ public class AnalysisCacheVO implements RPC {
     private static final long serialVersionUID = 1L;
 
     protected Integer         id, statusId, sectionId, sampleId, sampleAccessionNumber,
-                              testTimeHolding,testTimeTaAverage, sampleEnvironmentalPriority;                              
-    protected String          sampleDomain, sampleReportToName, testName, testMethodName,
-                              sectionName, analysisQaeventResultOverride, sampleQaeventResultOverride, 
-                              sampleProjectName, samplePrivateWellOwner, sampleSDWISPWSName;
+                              testTimeHolding,testTimeTaAverage;                                                            
+    protected String          sampleDomain, testName, testMethodName, sectionName,
+                              analysisQaeventResultOverride, sampleQaeventResultOverride, 
+                              domainSpecificField, sampleReportToName;
     protected Datetime        availableDate, startedDate, completedDate, releasedDate,
                               sampleReceivedDate, sampleCollectionDate,
                               sampleCollectionTime;
@@ -234,43 +234,19 @@ public class AnalysisCacheVO implements RPC {
         this.sampleQaeventResultOverride = DataBaseUtil.trim(sampleQaeventResultOverride);
     }
     
+    public String getDomainSpecificField() {
+        return domainSpecificField;
+    }
+
+    public void setDomainSpecificField(String domainSpecificField) {
+        this.domainSpecificField = DataBaseUtil.trim(domainSpecificField);
+    }
+
     public String getSampleReportToName() {
         return sampleReportToName;
     }
     
     public void setSampleReportToName(String sampleReportToName) {
         this.sampleReportToName = DataBaseUtil.trim(sampleReportToName);
-    }
-
-    public Integer getSampleEnvironmentalPriority() {
-        return sampleEnvironmentalPriority;
-    }
-
-    public void setSampleEnvironmentalPriority(Integer sampleEnvironmentalPriority) {
-        this.sampleEnvironmentalPriority = sampleEnvironmentalPriority;
-    }
-
-    public String getSampleProjectName() {
-        return sampleProjectName;
-    }
-
-    public void setSampleProjectName(String sampleProjectName) {
-        this.sampleProjectName = DataBaseUtil.trim(sampleProjectName);
-    }
-    
-    public String getSamplePrivateWellOwner() {
-        return samplePrivateWellOwner;
-    }
-
-    public void setSamplePrivateWellOwner(String samplePrivateWellOwner) {
-        this.samplePrivateWellOwner = DataBaseUtil.trim(samplePrivateWellOwner);
-    }
-
-    public String getSampleSDWISPWSName() {
-        return sampleSDWISPWSName;
-    }
-
-    public void setSampleSDWISPWSName(String sampleSDWISPWSName) {
-        this.sampleSDWISPWSName = DataBaseUtil.trim(sampleSDWISPWSName);
-    }
+    }   
 }

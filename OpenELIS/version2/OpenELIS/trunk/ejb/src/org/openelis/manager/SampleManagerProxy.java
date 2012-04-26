@@ -478,21 +478,17 @@ public class SampleManagerProxy {
     
     public void updateCache(SampleManager man) {
         boolean sampleOverriden, analysisOverriden;
-        Integer priority;
-        String domain, orgName, prjName, owner, pwsName;
+        String domain, orgName;
         AnalysisManager am;
         SampleItemManager im;
         AnalysisViewDO ana;
-        SampleProjectViewDO sproj;
         AnalysisCacheVO avo;  
         SampleCacheVO svo;
         SectionCacheLocal scl;
         ToDoCacheLocal tcl;
         SampleQaEventManager sqm;
         AnalysisQaEventManager aqm;
-        SampleEnvironmentalManager sem;        
         SamplePrivateWellManager spwm;
-        SampleSDWISManager ssdm;
         SamplePrivateWellViewDO spw;
         SampleOrganizationViewDO rt;
         TestViewDO test;
@@ -503,21 +499,16 @@ public class SampleManagerProxy {
             tcl = EJBFactory.getToDoCache();
             sample = man.getSample();
             rt = man.getOrganizations().getReportTo();
-            priority = null;
             orgName = null;
-            prjName = null;
-            owner = null;
-            pwsName= null;
             domain = sample.getDomain();
 
             if ("E".equals(domain)) {                 
                 if (rt != null)             
                     orgName = rt.getOrganizationName();
-                sem = (SampleEnvironmentalManager)man.getDomainManager();
-                priority = sem.getEnvironmental().getPriority();
+                /*sem = (SampleEnvironmentalManager)man.getDomainManager();
                 sproj = man.getProjects().getFirstPermanentProject();
                 if (sproj != null)
-                    prjName = sproj.getProjectName();
+                    prjName = sproj.getProjectName();*/
             } else if ("W".equals(domain)) {
                 spwm = (SamplePrivateWellManager)man.getDomainManager();
                 spw = spwm.getPrivateWell();
@@ -525,12 +516,12 @@ public class SampleManagerProxy {
                     orgName = spw.getReportToName();
                 else
                     orgName = spw.getOrganization().getName();
-                owner = spw.getOwner();
+                //owner = spw.getOwner();
             } else if ("S".equals(domain)) { 
                 if (rt != null)             
                     orgName = rt.getOrganizationName();
-                ssdm = (SampleSDWISManager)man.getDomainManager();
-                pwsName = ssdm.getSDWIS().getPwsName();
+                //ssdm = (SampleSDWISManager)man.getDomainManager();
+                //pwsName = ssdm.getSDWIS().getPwsName();
             }
             
             /*
@@ -549,10 +540,10 @@ public class SampleManagerProxy {
             sampleOverriden = sqm.hasResultOverrideQA();
             
             svo.setReportToName(orgName); 
-            svo.setSampleEnvironmentalPriority(priority);
+            /*svo.setSampleEnvironmentalPriority(priority);
             svo.setSampleProjectName(prjName);
             svo.setSamplePrivateWellOwner(owner);
-            svo.setSampleSDWISPWSName(pwsName);
+            svo.setSampleSDWISPWSName(pwsName);*/
             
             im = man.getSampleItems();
             /*
@@ -594,10 +585,10 @@ public class SampleManagerProxy {
                     avo.setSampleReceivedDate(sample.getReceivedDate());
                     avo.setSampleCollectionDate(sample.getCollectionDate());
                     avo.setSampleCollectionTime(sample.getCollectionTime());
-                    avo.setSampleEnvironmentalPriority(priority);
+                    /*avo.setSampleEnvironmentalPriority(priority);
                     avo.setSampleProjectName(prjName);
                     avo.setSamplePrivateWellOwner(owner);
-                    avo.setSampleSDWISPWSName(pwsName);
+                    avo.setSampleSDWISPWSName(pwsName);*/
                     tcl.update(avo);   
                 }
             }       

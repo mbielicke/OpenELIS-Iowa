@@ -38,9 +38,9 @@ public class SampleCacheVO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, statusId, accessionNumber, sampleEnvironmentalPriority;                              
-    protected String          domain, reportToName, qaeventResultOverride, sampleProjectName,
-                              samplePrivateWellOwner, sampleSDWISPWSName;
+    protected Integer         id, statusId, accessionNumber;                              
+    protected String          domain, qaeventResultOverride, 
+                              domainSpecificField, reportToName;
     protected Datetime        receivedDate, collectionDate, collectionTime;
     
     public SampleCacheVO() {        
@@ -124,43 +124,19 @@ public class SampleCacheVO implements RPC {
         this.qaeventResultOverride = DataBaseUtil.trim(qaeventResultOverride);
     }
     
+    public String getDomainSpecificField() {
+        return domainSpecificField;
+    }
+
+    public void setDomainSpecificField(String domainSpecificField) {
+        this.domainSpecificField = DataBaseUtil.trim(domainSpecificField);
+    }
+    
     public String getReportToName() {
         return reportToName;
     }
     
     public void setReportToName(String reportToName) {
         this.reportToName = DataBaseUtil.trim(reportToName);
-    }
-    
-    public Integer getSampleEnvironmentalPriority() {
-        return sampleEnvironmentalPriority;
-    }
-
-    public void setSampleEnvironmentalPriority(Integer sampleEnvironmentalPriority) {
-        this.sampleEnvironmentalPriority = sampleEnvironmentalPriority;
-    }
-
-    public String getSampleProjectName() {
-        return sampleProjectName;
-    }
-
-    public void setSampleProjectName(String sampleProjectName) {
-        this.sampleProjectName = DataBaseUtil.trim(sampleProjectName);
-    }
-    
-    public String getSamplePrivateWellOwner() {
-        return samplePrivateWellOwner;
-    }
-
-    public void setSamplePrivateWellOwner(String samplePrivateWellOwner) {
-        this.samplePrivateWellOwner = DataBaseUtil.trim(samplePrivateWellOwner);
-    }
-
-    public String getSampleSDWISPWSName() {
-        return sampleSDWISPWSName;
-    }
-
-    public void setSampleSDWISPWSName(String sampleSDWISPWSName) {
-        this.sampleSDWISPWSName = DataBaseUtil.trim(sampleSDWISPWSName);
     }
 }

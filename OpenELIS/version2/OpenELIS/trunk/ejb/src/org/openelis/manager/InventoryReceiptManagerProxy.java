@@ -244,8 +244,7 @@ public class InventoryReceiptManagerProxy {
                     qtyReceived += data.getQuantityReceived();
 
                     if (qtyOrdered < qtyReceived) {
-                        list.add(new TableFieldErrorException(
-                                                              "numReqLessThanNumRecException",
+                        list.add(new TableFieldErrorException("numReqLessThanNumRecException",
                                                               i,
                                                               InventoryReceiptMeta.getQuantityReceived(),
                                                               "receiptTable"));
