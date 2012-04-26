@@ -32,6 +32,7 @@ import java.util.HashMap;
 
 import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisCacheVO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
@@ -191,72 +192,65 @@ public class LoggedInTab extends Screen {
     
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
-        ArrayList<TableDataRow> model;
-        Integer priority;
-        String domain, sectName, project;
+        Integer accNum, prevAccNum;
+        String sectName;
+        
         TableDataRow row;
-        Datetime scd, sct;
+        Datetime scDate, scTime, scDateTime;
         Date temp;
-        SystemUserPermission perm;        
+        SystemUserPermission perm;     
+        ArrayList<TableDataRow> model;
 
         model = new ArrayList<TableDataRow>();
         perm = UserCache.getPermission();
-        sectOnly = "Y".equals(loadBySection);
+        sectOnly = "Y".equals(loadBySection);        
+        accNum = null;
+        prevAccNum = null;
+        scDateTime = null;
         
         for (AnalysisCacheVO data : fullList) {
             sectName = data.getSectionName();
             if (sectOnly && perm.getSection(sectName) == null)
                 continue;
             row = new TableDataRow(10);
-            row.cells.get(0).setValue(data.getSampleAccessionNumber());
+            accNum = data.getSampleAccessionNumber(); 
+            row.cells.get(0).setValue(accNum);
             row.cells.get(1).setValue(data.getSampleDomain());
             row.cells.get(2).setValue(sectName);
             row.cells.get(3).setValue(data.getTestName());
             row.cells.get(4).setValue(data.getTestMethodName());
 
-            scd = data.getSampleCollectionDate();
-            sct = data.getSampleCollectionTime();
-            if (scd != null) {
-                temp = scd.getDate();
-                if (sct == null) {
-                    temp.setHours(0);
-                    temp.setMinutes(0);
+            if (!accNum.equals(prevAccNum)) {
+                scDate = data.getSampleCollectionDate();
+                scTime = data.getSampleCollectionTime();
+                if (scDate != null) {
+                    temp = scDate.getDate();
+                    if (scTime == null) {
+                        temp.setHours(0);
+                        temp.setMinutes(0);
+                    } else {
+                        temp.setHours(scTime.getDate().getHours());
+                        temp.setMinutes(scTime.getDate().getMinutes());
+                    }
+                    scDateTime = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
                 } else {
-                    temp.setHours(sct.getDate().getHours());
-                    temp.setMinutes(sct.getDate().getMinutes());
-                }
-
-                row.cells.get(5).setValue(Datetime.getInstance(Datetime.YEAR,
-                                                               Datetime.MINUTE, temp));
+                    scDateTime = null;
+                }                
             }
+            
+            row.cells.get(5).setValue(scDateTime);
             row.cells.get(6).setValue(data.getSampleReceivedDate());
             if ("Y".equals(data.getAnalysisQaeventResultOverride()) ||
                 "Y".equals(data.getSampleQaeventResultOverride()))
                 row.cells.get(7).setValue("Y");
             else
                 row.cells.get(7).setValue("N");
-            domain = data.getSampleDomain();
-            if ("E".equals(domain)) {
-                priority = data.getSampleEnvironmentalPriority();
-                project = data.getSampleProjectName();
-                if (priority == null) {
-                    if (project != null)
-                        row.cells.get(8).setValue(project);
-                } else {
-                    if (project == null)
-                        row.cells.get(8).setValue(priority);
-                    else
-                        row.cells.get(8).setValue(priority + ", " + project);
-                }
-            } else if ("W".equals(domain)) {
-                row.cells.get(8).setValue(data.getSamplePrivateWellOwner());
-            } else if ("S".equals(domain)) {
-                row.cells.get(8).setValue(data.getSampleSDWISPWSName());
-            }
-
+            row.cells.get(8).setValue(data.getDomainSpecificField());
             row.cells.get(9).setValue(data.getSampleReportToName());
-            row.data = data;
+            row.data = data;            
             model.add(row);
+            
+            prevAccNum = accNum;
         }
         
         return model;
@@ -414,5 +408,5 @@ public class LoggedInTab extends Screen {
         ops.setHeight(215);
         ops.setTitle(consts.get("timeSinceAnalysesLoggedIn"));
         return ops;      
-    }
+    }    
 }

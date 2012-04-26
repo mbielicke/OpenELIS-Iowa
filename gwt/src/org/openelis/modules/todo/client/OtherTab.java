@@ -148,8 +148,7 @@ public class OtherTab extends Screen {
     
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
-        Integer priority;
-        String domain, sectName, project;
+        String sectName;
         TableDataRow row;
         ArrayList<TableDataRow> model;
         Datetime scd, sct;
@@ -192,27 +191,9 @@ public class OtherTab extends Screen {
                 "Y".equals(data.getSampleQaeventResultOverride()))
                 row.cells.get(8).setValue("Y");
             else
-                row.cells.get(8).setValue("N");
+                row.cells.get(8).setValue("N");            
 
-            domain = data.getSampleDomain();
-            if ("E".equals(domain)) {
-                priority = data.getSampleEnvironmentalPriority();
-                project = data.getSampleProjectName();
-                if (priority == null) {
-                    if (project != null)
-                        row.cells.get(9).setValue(project);
-                } else {
-                    if (project == null)
-                        row.cells.get(9).setValue(priority);
-                    else
-                        row.cells.get(9).setValue(priority + ", " + project);
-                }
-            } else if ("W".equals(domain)) {
-                row.cells.get(9).setValue(data.getSamplePrivateWellOwner());
-            } else if ("S".equals(domain)) {
-                row.cells.get(9).setValue(data.getSampleSDWISPWSName());
-            }
-
+            row.cells.get(9).setValue(data.getDomainSpecificField());
             row.cells.get(10).setValue(data.getSampleReportToName());
             row.data = data;
             model.add(row);

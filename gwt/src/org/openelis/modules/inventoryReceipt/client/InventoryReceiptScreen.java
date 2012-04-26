@@ -677,7 +677,9 @@ public class InventoryReceiptScreen extends Screen {
                     if(exceptions != null && event.getData() != null) {
                         for (i = 0; i < exceptions.size(); i++) {
                             ex = exceptions.get(i);
-                            if ("storageLocReqForItemException".equals(ex.getKey())) {
+                            if ("storageLocReqForItemException".equals(ex.getKey()) || 
+                                "itemNotExistAtLocationException".equals(ex.getKey()) ||
+                                "itemExistAtLocationException".equals(ex.getKey())) {
                                 exceptions.remove(i);
                                 break;
                             }                                        

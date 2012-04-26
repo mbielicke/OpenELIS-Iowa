@@ -156,8 +156,7 @@ public class CompletedTab extends Screen {
     
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
-        Integer priority;
-        String domain, sectName, project;
+        String sectName;
         TableDataRow row;
         ArrayList<TableDataRow> model;
         SystemUserPermission perm;
@@ -182,26 +181,7 @@ public class CompletedTab extends Screen {
             else
                 row.cells.get(5).setValue("N");
             row.cells.get(6).setValue(data.getCompletedDate());
-
-            domain = data.getSampleDomain();
-            if ("E".equals(domain)) {
-                priority = data.getSampleEnvironmentalPriority();
-                project = data.getSampleProjectName();
-                if (priority == null) {
-                    if (project != null)
-                        row.cells.get(7).setValue(project);
-                } else {
-                    if (project == null)
-                        row.cells.get(7).setValue(priority);
-                    else
-                        row.cells.get(7).setValue(priority + ", " + project);
-                }
-            } else if ("W".equals(domain)) {
-                row.cells.get(7).setValue(data.getSamplePrivateWellOwner());
-            } else if ("S".equals(domain)) {
-                row.cells.get(7).setValue(data.getSampleSDWISPWSName());
-            }
-
+            row.cells.get(7).setValue(data.getDomainSpecificField());
             row.cells.get(8).setValue(data.getSampleReportToName());
             row.data = data;
             model.add(row);
@@ -344,8 +324,8 @@ public class CompletedTab extends Screen {
          * If "chart" is null then this is the first time that it's being drawn,
          * i.e. the tab was opened for the first time. If "reattachChart" is true
          * then chart needs to be re-attached to the panel it's being diplayed in
-         * because the screen's being dragged caused chart to get detached. 
-         * Otherwise, chart can just be redrawn because only the data showing 
+         * because the screen's being dragged caused the chart to get detached. 
+         * Otherwise, the chart can just be redrawn because only the data showing 
          * in it changed.    
          */        
         if (chart == null) {

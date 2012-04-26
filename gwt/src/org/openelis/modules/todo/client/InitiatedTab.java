@@ -241,29 +241,11 @@ public class InitiatedTab extends Screen {
             diff = now.getDate().getTime() - stdt.getDate().getTime();
             units = diff.doubleValue() / day.doubleValue();
             ceil = Math.ceil(units);
-            row.cells.get(7).setValue(ceil.intValue());
-
-            domain = data.getSampleDomain();
-            if ("E".equals(domain)) {
-                priority = data.getSampleEnvironmentalPriority();
-                project = data.getSampleProjectName();
-                if (priority == null) {
-                    if (project != null)
-                        row.cells.get(8).setValue(project);
-                } else {
-                    if (project == null)
-                        row.cells.get(8).setValue(priority);
-                    else
-                        row.cells.get(8).setValue(priority + ", " + project);
-                }
-            } else if ("W".equals(domain)) {
-                row.cells.get(8).setValue(data.getSamplePrivateWellOwner());
-            } else if ("S".equals(domain)) {
-                row.cells.get(8).setValue(data.getSampleSDWISPWSName());
-            }
-
-            row.cells.get(9).setValue(data.getSampleReportToName());
-            row.data = data;
+            
+            row.cells.get(7).setValue(ceil.intValue());            
+            row.cells.get(8).setValue(data.getDomainSpecificField());
+            row.cells.get(9).setValue(data.getSampleReportToName());            
+            row.data = data;            
             model.add(row);
         }
 
