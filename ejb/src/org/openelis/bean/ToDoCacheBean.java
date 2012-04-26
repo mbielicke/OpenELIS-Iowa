@@ -45,7 +45,6 @@ import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleCacheVO;
 import org.openelis.domain.SampleEnvironmentalDO;
-import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventDO;
@@ -424,8 +423,8 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
     private ArrayList<SampleCacheVO> createSampleCacheEntries(Cache cache,
                                                               List<SampleCacheVO> queryList)
                                                                                             throws Exception {
-        Integer id;
-        String name, prjName;
+        String orgName, prjName, domSpecField;
+        StringBuffer buf;
         Sample sample;
         AnalysisQAEventLocal aqel;
         SampleQAEventLocal sqel;
@@ -453,59 +452,64 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         ssdl = EJBFactory.getSampleSDWIS();
         spl = EJBFactory.getSampleProject();
         sidList = new ArrayList<Integer>();
+        buf = new StringBuffer();
+        domSpecField = null;
 
         try {
             for (SampleCacheVO data : queryList) {
                 data.setQaeventResultOverride("N");
-                id = data.getId();
+                
+                buf.setLength(0);
+                domSpecField = null;
+                
                 if ("E".equals(data.getDomain())) {
                     //
                     // there is no "report to" for quick-entry (Q) samples
                     //
                     try {
-                        name = sol.fetchReportToBySampleId(id).getOrganizationName();
+                        orgName = sol.fetchReportToBySampleId(data.getId()).getOrganizationName();
                     } catch (NotFoundException e) {
-                        name = "";
+                        orgName = "";
                     }
-                    data.setReportToName(name);
+                    data.setReportToName(orgName);
 
-                    senv = sel.fetchBySampleId(id);
-                    data.setSampleEnvironmentalPriority(senv.getPriority());
-
+                    senv = sel.fetchBySampleId(data.getId());
+                    
                     try {
-                        sprjList = spl.fetchPermanentBySampleId(id);
+                        sprjList = spl.fetchPermanentBySampleId(data.getId());
                         prjName = sprjList.get(0).getProjectName();
                     } catch (NotFoundException e) {
                         prjName = "";
                     }
-                    data.setSampleProjectName(prjName);
+                    domSpecField = getDomainSpecificField(buf, senv.getPriority(), prjName, senv.getLocation());
                 } else if ("W".equals(data.getDomain())) {
                     /*
                      * if the sample's domain is private well(W) then it may not
                      * have its "report to" linked to sample_organization, but
                      * present in sample_private_well
                      */
-                    spw = spwl.fetchBySampleId(id);
+                    spw = spwl.fetchBySampleId(data.getId());
                     if (spw.getOrganization() != null)
-                        name = spw.getOrganization().getName();
+                        orgName = spw.getOrganization().getName();
                     else
-                        name = spw.getReportToName();
-                    data.setReportToName(name);
-                    data.setSamplePrivateWellOwner(spw.getOwner());
+                        orgName = spw.getReportToName();
+                    data.setReportToName(orgName);
+                    domSpecField = spw.getOwner();
                 } else if ("S".equals(data.getDomain())) {
                     //
                     // there is no "report to" for quick-entry (Q) samples
                     //
                     try {
-                        name = sol.fetchReportToBySampleId(id).getOrganizationName();
+                        orgName = sol.fetchReportToBySampleId(data.getId()).getOrganizationName();
                     } catch (NotFoundException e) {
-                        name = "";
+                        orgName = "";
                     }
-                    data.setReportToName(name);
+                    data.setReportToName(orgName);
 
-                    ssd = ssdl.fetchBySampleId(id);
-                    data.setSampleSDWISPWSName(ssd.getPwsName());
+                    ssd = ssdl.fetchBySampleId(data.getId());
+                    domSpecField = getDomainSpecificField(buf, ssd.getPwsName(), ssd.getFacilityId());
                 }
+                data.setDomainSpecificField(domSpecField);
                 cache.put(new Element(data.getId(), data));
                 sidList.add(data.getId());
             }
@@ -565,8 +569,8 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                                                                   List<AnalysisCacheVO> queryList)
                                                                                                   throws Exception {
         Integer secId, sampleId, prevSampleId;
-        String domain, orgName, prjName, sampleResOverride;
-        boolean newSample;
+        String domain, orgName, prjName, sampleResOverride, domSpecField;
+        StringBuffer buf;
         Element elem;
         SectionLocal sl;
         SectionDO sec;
@@ -605,7 +609,9 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         spw = null;
         ssd = null;
         sampleResOverride = null;
-
+        buf = new StringBuffer();
+        domSpecField = null;
+        
         try {
             prevSampleId = null;
             for (AnalysisCacheVO data : queryList) {
@@ -623,71 +629,60 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                 sampleId = data.getSampleId();
                 domain = data.getSampleDomain();
 
-                newSample = !sampleId.equals(prevSampleId);
-                if (newSample) {
+                if (!sampleId.equals(prevSampleId)) {
                     try {
                         sqel.fetchResultOverrideBySampleId(sampleId);
                         sampleResOverride = "Y";
                     } catch (NotFoundException e) {
                         sampleResOverride = "N";
                     }
-                }
-
-                data.setSampleQaeventResultOverride(sampleResOverride);
-                if ("E".equals(domain)) {
-                    if (newSample) {
+                    
+                    buf.setLength(0);
+                    domSpecField = null;
+                    
+                    if ("E".equals(domain)) {                        
                         try {
                             orgName = sol.fetchReportToBySampleId(sampleId).getOrganizationName();
                         } catch (NotFoundException e) {
                             orgName = "";
                         }
-                    }
-                    data.setSampleReportToName(orgName);
-
-                    if (newSample)
-                        senv = sel.fetchBySampleId(sampleId);
-
-                    data.setSampleEnvironmentalPriority(senv.getPriority());
-
-                    if (newSample) {
+                        
                         try {
                             sprjList = spl.fetchPermanentBySampleId(sampleId);
                             prjName = sprjList.get(0).getProjectName();
                         } catch (NotFoundException e) {
                             prjName = "";
                         }
-                    }
-                    data.setSampleProjectName(prjName);
-                } else if ("W".equals(domain)) {
-                    /*
-                     * if the sample's domain is private well(W) then it may not
-                     * have its "report to" linked to sample_organization, but
-                     * present in sample_private_well
-                     */
-                    if (newSample)
+                        senv = sel.fetchBySampleId(sampleId);
+                        domSpecField = getDomainSpecificField(buf, senv.getPriority(), prjName, senv.getLocation());
+                    } else if ("W".equals(domain)) {
+                        /*
+                         * if the sample's domain is private well(W) then it may not
+                         * have its "report to" linked to sample_organization, but
+                         * present in sample_private_well
+                         */
                         spw = spwl.fetchBySampleId(sampleId);
 
-                    if (spw.getOrganization() != null)
-                        orgName = spw.getOrganization().getName();
-                    else
-                        orgName = spw.getReportToName();
-                    data.setSampleReportToName(orgName);
-                    data.setSamplePrivateWellOwner(spw.getOwner());
-                } else if ("S".equals(domain)) {
-                    if (newSample) {
+                        if (spw.getOrganization() != null)
+                            orgName = spw.getOrganization().getName();
+                        else
+                            orgName = spw.getReportToName();
+                        domSpecField = spw.getOwner();
+                    } else if ("S".equals(domain)) {
                         try {
                             orgName = sol.fetchReportToBySampleId(sampleId).getOrganizationName();
                         } catch (NotFoundException e) {
                             orgName = "";
                         }
-                    }
-                    data.setSampleReportToName(orgName);
-
-                    if (newSample)
                         ssd = ssdl.fetchBySampleId(sampleId);
-
-                    data.setSampleSDWISPWSName(ssd.getPwsName());
+                        domSpecField = getDomainSpecificField(buf, ssd.getPwsName(), ssd.getFacilityId());
+                    }
                 }
+
+                data.setSampleQaeventResultOverride(sampleResOverride);
+                data.setDomainSpecificField(domSpecField);               
+                data.setSampleReportToName(orgName);
+                
                 cache.put(new Element(data.getId(), data));
                 aidList.add(data.getId());
                 prevSampleId = sampleId;
@@ -749,5 +744,16 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         }
 
         return list;
+    }
+    
+    private String getDomainSpecificField(StringBuffer buf, Object...fields) {
+        for (Object o : fields) {
+            if (!DataBaseUtil.isEmpty(o)) {
+                if (buf.length() > 0)
+                    buf.append(", ");
+                buf.append(o);            
+            }
+        }        
+        return buf.toString();
     }
 }

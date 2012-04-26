@@ -58,7 +58,7 @@ import org.openelis.utils.Auditable;
                         "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +
                         "i.inventoryItem.name,i.inventoryItem.storeId,s.name,s.storageUnit.description,s.location)"
                       + " from InventoryLocation i left join i.storageLocation s"
-                      + " where i.inventoryItemId = :id"),
+                      + " where i.inventoryItemId = :id order by i.quantityOnhand DESC"),
     @NamedQuery( name = "InventoryLocation.FetchByLocationNameAndItemId",
                 query = "select new org.openelis.domain.InventoryLocationViewDO(i.id,i.inventoryItemId," +
                         "i.lotNumber,i.storageLocationId,i.quantityOnhand,i.expirationDate," +

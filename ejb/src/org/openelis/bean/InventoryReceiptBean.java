@@ -462,7 +462,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
     public void validate(InventoryReceiptViewDO data) throws Exception {
         ValidationErrorsList list;
         InventoryItemViewDO item;
-        InventoryLocationViewDO locationData;
+        InventoryLocationViewDO location;
         Integer orderItemQ, receivedQ;
 
         //
@@ -491,13 +491,25 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
             list.add(new FieldErrorException("fieldRequiredException", InventoryReceiptMeta.getOrganizationName()));
         
         if (data.getInventoryLocations() != null) {
-            locationData = data.getInventoryLocations().get(0);
-            if (locationData.getStorageLocationId() == null) 
+            location = data.getInventoryLocations().get(0);
+            if (location.getStorageLocationId() == null) 
                 list.add(new FieldErrorException("storageLocReqForItemException", InventoryReceiptMeta.getInventoryItemName()));
             
-            if (item != null && locationData.getLotNumber() == null && "Y".equals(item.getIsLotMaintained())) 
+            if (item != null && location.getLotNumber() == null && "Y".equals(item.getIsLotMaintained())) 
                 list.add(new FieldErrorException("lotNumRequiredForOrderItemException", 
                                                  InventoryReceiptMeta.getInventoryItemName()));
+            
+            /*
+             * if this item is to be added to an existing location then the
+             * location specified here must already exist
+             */
+            if ("Y".equals(data.getAddToExistingLocation()) && location.getId() == null)
+                list.add(new FieldErrorException("itemNotExistAtLocationException",
+                                                 InventoryReceiptMeta.getInventoryItemName()));
+            else if ("N".equals(data.getAddToExistingLocation()) && location.getId() != null)
+                list.add(new FieldErrorException("itemExistAtLocationException",
+                                                 InventoryReceiptMeta.getInventoryItemName()));
+            
         } else {
             list.add(new FieldErrorException("storageLocReqForItemException", InventoryReceiptMeta.getInventoryItemName()));
         }                

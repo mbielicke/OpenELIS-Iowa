@@ -104,14 +104,14 @@ public class LabelReportBean implements LabelReportLocal {
         f.print("^CF025,35");        
         f.print("^FO15,200^FDLot #: "+DataBaseUtil.toString(lotNumber)+"^FS");            // the lot # given to the kit, if any         
         f.print("^FO550,200^FDCreated: "+createdDate+"^FS");                              // the date on which the kit was created
-        f.print("^FO15,250^FDBuild Id: ^FS^FO150,250^BY2^BCN,50,Y,N,N^FD"+buildId+"^FS"); // the id of the internal order created when                                         
+        f.print("^FO15,250^FDBuild Id: ^FS^FO150,250^BY2^BCN,50,N,N,N^FD"+buildId+"^FS"); // the id of the internal order created when                                         
         f.print("^FO550,250^FDExpires: "+DataBaseUtil.toString(expiredDate)+"^FS");       // the date of expiration of the kit, if any
+        f.print("^FO200,300^FD"+buildId+"^FS");                                           // the human-readable internal order number
         f.print("^FO15,350^FD"+kitDescription+"^FS");                                     // the descriptive text for the kit         
         f.print("^FO0,400^GB900,5,5^FS");
-        f.print("^FB900,1,0,C,0");
-        f.print("^FO15,420^FD"+DataBaseUtil.toString(specialInstruction)+"^FS");           // the instruction associated with this kit, if any  
-        f.print("^FO15,500^FDFacility or Location: _________________________________^FS");
-        f.print("^FO15,600^FD__________________________________________________^FS");
+        f.print("^FO15,420^FB900,4,0,C,0");                                               // defines the region for printing the special instructions     
+        f.print("^FD"+DataBaseUtil.toString(specialInstruction)+"^FS");                   // the instruction associated with this kit, if any  
+        f.print("^FO15,600^FDFacility or Location: _________________________________^FS");
         f.print("^FO15,700^FDDate: ___________________ Time: ___________ AM / PM^FS");
         f.print("^FO15,800^FDCollector: __________________________________________^FS");
         f.print("^XZ");
