@@ -480,7 +480,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              * defines the values for faxing.Auxiliary fax info on sample is applied
              * only to the primary report to. 
              */              
-            if (primaryReportToTypeId.equals(result.getOrganizationTypeId()) && !DataBaseUtil.isEmpty(faxGrpName)) {
+            if ((primaryReportToTypeId.equals(result.getOrganizationTypeId()) ||
+                 zero.equals(result.getOrganizationTypeId())) &&
+                !DataBaseUtil.isEmpty(faxGrpName)) {
                 try {
                     auxList = auxData.fetchByRefIdRefTableIdGroupName(result.getSampleId(),
                                                                       ReferenceTable.SAMPLE,
@@ -620,7 +622,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              * defines the values for faxing.Auxiliary fax info on sample is applied
              * only to the primary report to. 
              */              
-            if (primaryReportToTypeId.equals(result.getOrganizationTypeId()) && !DataBaseUtil.isEmpty(faxGrpName)) {
+            if ((primaryReportToTypeId.equals(result.getOrganizationTypeId()) ||
+                 zero.equals(result.getOrganizationTypeId())) &&
+                !DataBaseUtil.isEmpty(faxGrpName)) {
                 try {
                     auxList = auxData.fetchByRefIdRefTableIdGroupName(result.getSampleId(),
                                                                       ReferenceTable.SAMPLE,
