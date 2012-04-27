@@ -214,7 +214,7 @@ public class ResultValidator implements RPC {
                             compOp = null;
                             if (value.length() > 1 && (value.startsWith(">") || value.startsWith("<"))) {
                                 compOp = value.substring(0, 1);
-                                value = value.substring(1);
+                                value = value.substring(1).trim();
                             }
                             if (item.roundingMethod != null) {
                                 switch (item.roundingMethod) {
