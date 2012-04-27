@@ -79,6 +79,7 @@ public class FinalReportSingleReprintScreen extends Screen {
     private AppButton                      runReportButton, resetButton;
     private FinalReportScreen              finalReportScreen;
     private Integer                        billToTypeId, finalRepFaxTypeId;   
+    private String                         VIEW_PDF_KEY = "-view-";
     private ScreenService                  preferencesService;
 
     public FinalReportSingleReprintScreen() throws Exception {
@@ -387,7 +388,7 @@ public class FinalReportSingleReprintScreen extends Screen {
         model = new ArrayList<TableDataRow>();
         try {
             options = preferencesService.callList("getPrinters", "pdf");
-            model.add(new TableDataRow("-view-", consts.get("viewInPDF")));
+            model.add(new TableDataRow(VIEW_PDF_KEY, consts.get("viewInPDF")));
             for (OptionListItem item : options)
                 model.add(new TableDataRow(item.getKey(), item.getLabel()));
             billToTypeId = DictionaryCache.getIdBySystemName("org_bill_to");
@@ -497,7 +498,7 @@ public class FinalReportSingleReprintScreen extends Screen {
         data.setFrom(consts.get("fromCompany"));
         try {
             prefs = Preferences.userRoot();
-            data.setPrinter(prefs.get("default_printer", null));
+            data.setPrinter(prefs.get("default_printer", VIEW_PDF_KEY));
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
@@ -530,15 +531,11 @@ public class FinalReportSingleReprintScreen extends Screen {
     private void setFaxFieldsRequired(boolean required) {
         faxNumber.getField().required = required;
         from.getField().required = required;
-        toName.getField().required = required;
-        toCompany.getField().required = required;
     }
     
     private void clearExceptionsFromFaxFields() {
         faxNumber.clearExceptions();
         from.clearExceptions();
-        toName.clearExceptions();
-        toCompany.clearExceptions();
     }
     
     private ArrayList<TableDataRow> getOrgModel() {
@@ -712,7 +709,7 @@ public class FinalReportSingleReprintScreen extends Screen {
             for (int i = 0; i < auxm.count(); i++ ) {
                 aux = auxm.getAuxDataAt(i);
                 if ("fax_to_attention".equals(aux.getAnalyteExternalId()))
-                    faxVO.setFrom(aux.getValue());
+                    faxVO.setToName(aux.getValue());
                 else if ("final_report_fax_num".equals(aux.getAnalyteExternalId()))
                     faxVO.setFaxNumber(aux.getValue());
             }
