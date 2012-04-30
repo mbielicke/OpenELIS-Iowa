@@ -449,7 +449,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              * only unique sample & org pairs
              */
             if (print != null && print.getOrganizationId().equals(result.getOrganizationId()) &&
-                !result.getOrganizationId().equals(zero) && print.getSampleId().equals(result.getSampleId()))
+                (!result.getOrganizationId().equals(zero) || print.getOrganizationName().equals(result.getOrganizationName())) &&
+                print.getSampleId().equals(result.getSampleId()))
                 continue;
 
             print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
@@ -591,7 +592,8 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
              * only unique sample & org pairs
              */
             if (print != null && print.getOrganizationId().equals(result.getOrganizationId()) &&
-                !result.getOrganizationId().equals(zero) && print.getSampleId().equals(result.getSampleId()))
+                (!result.getOrganizationId().equals(zero) || print.getOrganizationName().equals(result.getOrganizationName())) &&
+                print.getSampleId().equals(result.getSampleId()))
                 continue;
 
             print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
