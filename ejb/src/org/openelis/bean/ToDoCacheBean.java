@@ -67,6 +67,7 @@ import org.openelis.local.SectionLocal;
 import org.openelis.local.ToDoCacheLocal;
 import org.openelis.remote.ToDoCacheRemote;
 import org.openelis.utils.EJBFactory;
+import org.openelis.utils.JasperUtil;
 
 /**
  * This class provides application level cache handling for todo lists
@@ -423,8 +424,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
     private ArrayList<SampleCacheVO> createSampleCacheEntries(Cache cache,
                                                               List<SampleCacheVO> queryList)
                                                                                             throws Exception {
-        String orgName, prjName, domSpecField;
-        StringBuffer buf;
+        String orgName, projName, domSpecField;
         Sample sample;
         AnalysisQAEventLocal aqel;
         SampleQAEventLocal sqel;
@@ -439,6 +439,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         SampleCacheVO svo;
         Element elem;
         ArrayList<Integer> sidList;
+        ArrayList fields;
         ArrayList<SampleProjectViewDO> sprjList;
         ArrayList<SampleQaEventDO> sqeList;
         ArrayList<AnalysisQaevent> aqeList;
@@ -452,14 +453,13 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         ssdl = EJBFactory.getSampleSDWIS();
         spl = EJBFactory.getSampleProject();
         sidList = new ArrayList<Integer>();
-        buf = new StringBuffer();
+        fields = new ArrayList();
         domSpecField = null;
-
+        
         try {
             for (SampleCacheVO data : queryList) {
                 data.setQaeventResultOverride("N");
                 
-                buf.setLength(0);
                 domSpecField = null;
                 
                 if ("E".equals(data.getDomain())) {
@@ -469,19 +469,19 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                     try {
                         orgName = sol.fetchReportToBySampleId(data.getId()).getOrganizationName();
                     } catch (NotFoundException e) {
-                        orgName = "";
+                        orgName = null;
                     }
                     data.setReportToName(orgName);
 
-                    senv = sel.fetchBySampleId(data.getId());
-                    
                     try {
                         sprjList = spl.fetchPermanentBySampleId(data.getId());
-                        prjName = sprjList.get(0).getProjectName();
+                        projName = sprjList.get(0).getProjectName();
                     } catch (NotFoundException e) {
-                        prjName = "";
+                        projName = null;
                     }
-                    domSpecField = getDomainSpecificField(buf, senv.getPriority(), prjName, senv.getLocation());
+                    
+                    senv = sel.fetchBySampleId(data.getId());
+                    domSpecField = getEnvDomainSpecField(senv, projName, fields);
                 } else if ("W".equals(data.getDomain())) {
                     /*
                      * if the sample's domain is private well(W) then it may not
@@ -505,9 +505,9 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                         orgName = "";
                     }
                     data.setReportToName(orgName);
-
-                    ssd = ssdl.fetchBySampleId(data.getId());
-                    domSpecField = getDomainSpecificField(buf, ssd.getPwsName(), ssd.getFacilityId());
+                    
+                    ssd = ssdl.fetchBySampleId(data.getId());                    
+                    domSpecField = getSDWISDomainSpecField(ssd, fields);
                 }
                 data.setDomainSpecificField(domSpecField);
                 cache.put(new Element(data.getId(), data));
@@ -569,8 +569,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                                                                   List<AnalysisCacheVO> queryList)
                                                                                                   throws Exception {
         Integer secId, sampleId, prevSampleId;
-        String domain, orgName, prjName, sampleResOverride, domSpecField;
-        StringBuffer buf;
+        String domain, orgName, projName, sampleResOverride, domSpecField;
         Element elem;
         SectionLocal sl;
         SectionDO sec;
@@ -587,6 +586,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         AnalysisCacheVO cvo;
         HashMap<Integer, SectionDO> secMap;
         ArrayList<Integer> aidList;
+        ArrayList fields;
         ArrayList<SampleProjectViewDO> sprjList;
         ArrayList<AnalysisCacheVO> voList;
         ArrayList<AnalysisQaEventDO> aqeList;
@@ -603,14 +603,14 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         secMap = new HashMap<Integer, SectionDO>();
         voList = new ArrayList<AnalysisCacheVO>();
         aidList = new ArrayList<Integer>();
+        fields = new ArrayList();
         orgName = null;
         senv = null;
-        prjName = null;
+        projName = null;
         spw = null;
         ssd = null;
         sampleResOverride = null;
-        buf = new StringBuffer();
-        domSpecField = null;
+        domSpecField = null;      
         
         try {
             prevSampleId = null;
@@ -637,24 +637,23 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                         sampleResOverride = "N";
                     }
                     
-                    buf.setLength(0);
                     domSpecField = null;
                     
                     if ("E".equals(domain)) {                        
                         try {
                             orgName = sol.fetchReportToBySampleId(sampleId).getOrganizationName();
                         } catch (NotFoundException e) {
-                            orgName = "";
+                            orgName = null;
                         }
                         
                         try {
                             sprjList = spl.fetchPermanentBySampleId(sampleId);
-                            prjName = sprjList.get(0).getProjectName();
+                            projName = sprjList.get(0).getProjectName();
                         } catch (NotFoundException e) {
-                            prjName = "";
+                            projName = null;
                         }
                         senv = sel.fetchBySampleId(sampleId);
-                        domSpecField = getDomainSpecificField(buf, senv.getPriority(), prjName, senv.getLocation());
+                        domSpecField = getEnvDomainSpecField(senv, projName, fields);
                     } else if ("W".equals(domain)) {
                         /*
                          * if the sample's domain is private well(W) then it may not
@@ -672,10 +671,10 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
                         try {
                             orgName = sol.fetchReportToBySampleId(sampleId).getOrganizationName();
                         } catch (NotFoundException e) {
-                            orgName = "";
+                            orgName = null;
                         }
                         ssd = ssdl.fetchBySampleId(sampleId);
-                        domSpecField = getDomainSpecificField(buf, ssd.getPwsName(), ssd.getFacilityId());
+                        domSpecField = getSDWISDomainSpecField(ssd, fields);
                     }
                 }
 
@@ -746,14 +745,22 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         return list;
     }
     
-    private String getDomainSpecificField(StringBuffer buf, Object...fields) {
-        for (Object o : fields) {
-            if (!DataBaseUtil.isEmpty(o)) {
-                if (buf.length() > 0)
-                    buf.append(", ");
-                buf.append(o);            
-            }
-        }        
-        return buf.toString();
+    private String getEnvDomainSpecField(SampleEnvironmentalDO senv, String projName, ArrayList fields) {
+        fields.clear();                        
+        
+        fields.add(senv.getPriority());
+        fields.add(projName);
+        fields.add(senv.getLocation());
+        
+        return JasperUtil.concatWithSeparator(fields, ", ");
+    }
+    
+    private String getSDWISDomainSpecField(SampleSDWISViewDO ssd, ArrayList fields) {        
+        fields.clear();
+        
+        fields.add(ssd.getPwsName());
+        fields.add(ssd.getFacilityId());
+        
+        return JasperUtil.concatWithSeparator(fields, ", ");
     }
 }

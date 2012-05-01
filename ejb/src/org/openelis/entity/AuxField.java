@@ -309,7 +309,7 @@ public class AuxField implements Auditable, Cloneable {
                  .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
                  .setField("description", description, original.description)
                  .setField("method_id", methodId, original.methodId, ReferenceTable.METHOD)
-                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, ReferenceTable.METHOD)
+                 .setField("unit_of_measure_id", unitOfMeasureId, original.unitOfMeasureId, ReferenceTable.DICTIONARY)
                  .setField("is_required", isRequired, original.isRequired)
                  .setField("is_active", isActive, original.isActive)
                  .setField("is_reportable", isReportable, original.isReportable)

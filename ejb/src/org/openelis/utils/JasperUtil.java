@@ -73,9 +73,11 @@ public class JasperUtil {
 
         buf = new StringBuffer();
         for (Object i : list) {
-            if (buf.length() > 0)
-                buf.append(delimiter);
-            buf.append(i.toString().trim());
+            if (i != null) {
+                if (buf.length() > 0)
+                    buf.append(delimiter);
+                buf.append(i.toString().trim());
+            }
         }
         return buf.toString();
     }

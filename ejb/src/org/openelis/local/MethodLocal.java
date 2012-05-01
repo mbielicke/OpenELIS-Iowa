@@ -25,22 +25,11 @@
 */
 package org.openelis.local;
 
-import java.util.ArrayList;
-
 import javax.ejb.Local;
 
-import org.openelis.domain.QaEventDO;
-import org.openelis.domain.QaEventViewDO;
+import org.openelis.domain.MethodDO;
 
 @Local
-public interface QaeventLocal {
-    public QaEventViewDO fetchById(Integer id) throws Exception;
-    
-    public ArrayList<QaEventDO> fetchBySampleId(Integer sampleId);
-    
-    public ArrayList<QaEventDO> fetchNotInternalBySampleId(Integer sampleId);
-    
-    public ArrayList<QaEventDO> fetchByAnalysisId(Integer analysisId);
-    
-    public ArrayList<QaEventDO> fetchNotInternalByAnalysisId(Integer analysisId);       
+public interface MethodLocal {
+    public MethodDO fetchById(Integer id) throws Exception;
 }
