@@ -655,10 +655,6 @@ public class FinalReportSingleReprintScreen extends Screen {
              * all unique organizations associated with the sample are added to 
              * the dropdown  
              */
-            /*
-             * all unique organizations associated with the sample except the one
-             * for bill-to are added to the dropdown  
-             */
             for (i = 0; i < orgs.count(); i++ ) {
                 samOrg = orgs.getOrganizationAt(i);
                 orgId = samOrg.getOrganizationId();

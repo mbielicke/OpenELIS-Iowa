@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationContactDO;
@@ -98,7 +99,8 @@ public class OrganizationScreen extends Screen {
 
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
                                   commitButton, abortButton;
-    private MenuItem              orgHistory, orgContactHistory, orgParameterHistory;
+    private MenuItem              orgHistory, orgAddressHistory, orgContactHistory, 
+                                  orgContactAddressHistory, orgParameterHistory;
     private TextBox               id, name, multipleUnit, city, zipCode, streetAddress;
     private CheckBox              isActive;
     private Dropdown<String>      stateCode, country;
@@ -255,6 +257,17 @@ public class OrganizationScreen extends Screen {
             }
         });
         
+        orgAddressHistory = (MenuItem)def.getWidget("orgAddressHistory");
+        addScreenHandler(orgAddressHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                orgAddressHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orgAddressHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
         orgContactHistory = (MenuItem)def.getWidget("orgContactHistory");
         addScreenHandler(orgContactHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -263,6 +276,17 @@ public class OrganizationScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 orgContactHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        orgContactAddressHistory = (MenuItem)def.getWidget("orgContactAddressHistory");
+        addScreenHandler(orgContactAddressHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                orgContactAddressHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                orgContactAddressHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
         
@@ -786,6 +810,15 @@ public class OrganizationScreen extends Screen {
                                   ReferenceTable.ORGANIZATION, hist);                
     }
     
+    protected void orgAddressHistory() {
+        IdNameVO hist;
+        AddressDO addr;
+
+        addr = manager.getOrganization().getAddress();
+        hist = new IdNameVO(addr.getId(), addr.getStreetAddress());
+        HistoryScreen.showHistory(consts.get("orgAddressHistory"), ReferenceTable.ADDRESS, hist);
+    }
+    
     protected void orgContactHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -808,6 +841,29 @@ public class OrganizationScreen extends Screen {
 
         HistoryScreen.showHistory(consts.get("orgContactHistory"),
                                   ReferenceTable.ORGANIZATION_CONTACT, refVoList);
+    }
+    
+    protected void orgContactAddressHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        OrganizationContactManager man;
+        AddressDO addr;
+
+        try {
+            man = manager.getContacts();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                addr = man.getContactAt(i).getAddress();
+                refVoList[i] = new IdNameVO(addr.getId(), addr.getStreetAddress());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("orgContactAddressHistory"), ReferenceTable.ADDRESS, refVoList);
     }
     
     protected void orgParameterHistory() {        

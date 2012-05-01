@@ -29,9 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.openelis.cache.CategoryCache;
+import org.openelis.cache.DictionaryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.HistoryVO;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SectionDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -114,14 +118,60 @@ public class HistoryScreen extends Screen {
         
         historyTree.addBeforeLeafOpenHandler(new BeforeLeafOpenHandler() {
             public void onBeforeLeafOpen(BeforeLeafOpenEvent event) {
+                String label;
                 TreeDataItem item;
-                int index;
+                Integer refId, refTable;
                 
-                item = event.getItem();                
+                item = event.getItem();
+
                 if("itemLabel".equals(item.leafType)) {
-                    index = historyTree.getData().indexOf(item);
-                    addHistoryItems(index, item);
-                }                
+                    /*
+                     * if children have been added to the item already and if the
+                     * item is at the top level then the children don't need to
+                     * be fetched or traversed through again  
+                     */
+                    if (item.getItems() != null && item.getItems().size() > 0)
+                        return;
+                    addHistoryItems(historyTree.getData().indexOf(item), item);
+                } /*else if("historyItem".equals(item.leafType)) {
+                    /*
+                     * if the item's children are showing a field and its value, 
+                     * then they need to be traversed through at least once in 
+                     * order to convert any foreign keys e.g. dictionary ids to 
+                     * the corresponding labels e.g dictionary entries; thus the
+                     * check to see if the item has any children doesn't apply here
+                     * and item.data == true means that this has been done already
+                                       
+                    if ((Boolean)item.data)
+                        return;
+                    
+                    item.data = true;
+                    for (TreeDataItem child : item.getItems()) {
+                        if (child.data != null && child.key != null) {
+                            /*
+                             * this child is showing a linked record's id e.g. 
+                             * the id of a dictionary entry                             
+                             
+                            refId = Integer.parseInt((String)child.key);
+                            refTable = Integer.parseInt((String)child.data);
+                            
+                            /*
+                             * the label representing the linked record is tried
+                             * to be fetched and set in the child 
+                             
+                            try {
+                                label = getLabel(refTable, refId);                               
+                                if (label != null) {
+                                    child.cells.get(1).setValue(label);
+                                    child.leafType = "fields";
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Window.alert(e.getMessage());
+                            }
+                        }
+                    }
+                } */            
             }            
         });                
     }
@@ -170,7 +220,7 @@ public class HistoryScreen extends Screen {
         ArrayList<TreeDataItem> model;
         TreeDataItem item;
 
-        if (referenceVoList == null || referenceTableId == null || referenceVoList.length == 0)
+        if (referenceVoList == null || referenceVoList.length == 0 || referenceTableId == null)
             return null;
         
         model = new ArrayList<TreeDataItem>();
@@ -202,13 +252,13 @@ public class HistoryScreen extends Screen {
     
     private void addHistoryItems(int index, TreeDataItem parent) {
         Integer activityId;
+        String changes, operation, label;
         ArrayList<HistoryVO> list;
         IdNameVO refVO;
         TreeDataItem item, child;
         Document doc;
-        String changes, operation;
         NodeList nodes;
-        Node root, node, refTable;
+        Node root, node, firstChild, refTable;
         Query query;
         QueryData field; 
 
@@ -243,24 +293,28 @@ public class HistoryScreen extends Screen {
 
                 item.cells.get(2).setValue(operation);
 
-                changes = data.getChanges();
+                changes = data.getChanges();                
                 if (changes != null) {
                     doc = XMLParser.parse(changes);
                     root = doc.getDocumentElement();
                     nodes = root.getChildNodes();
                     for (int i = 0; i < nodes.getLength(); i++ ) {
-                        node = nodes.item(i);
-                        refTable = node.getAttributes().getNamedItem("refTable");                        
+                        node = nodes.item(i);                                     
                         child = new TreeDataItem(2);                        
                         child.cells.get(0).setValue(node.getNodeName());
-                        if(node.getFirstChild() != null)
-                            child.cells.get(1).setValue(node.getFirstChild().getNodeValue());
-                        if (refTable != null) { 
+                        
+                        firstChild = node.getFirstChild();                                 
+                        if(firstChild != null) 
+                            child.cells.get(1).setValue(firstChild.getNodeValue());
+                            //child.key = firstChild.getNodeValue();                        
+                        
+                        refTable = node.getAttributes().getNamedItem("refTable");
+                        /*if (refTable != null) {      
                             child.data = refTable.getNodeValue();          
                             child.leafType = "linkfields";
-                        } else {
+                        } else {*/
                             child.leafType = "fields";
-                        }
+                        //}
                         item.addItem(child);
                     }
 
@@ -280,4 +334,25 @@ public class HistoryScreen extends Screen {
             window.setStatus(consts.get("noRecordsFound"), "");
         }
     }
+    
+    /*private String getLabel(Integer refTable, Integer refId) throws Exception {
+        String label;
+        DictionaryDO dict;
+        SectionDO sect;
+        
+        label = null;
+        switch (refTable) {
+            case ReferenceTable.DICTIONARY:  
+                dict = DictionaryCache.getById(refId);
+                if (dict != null )
+                    label = dict.getEntry();                                        
+                break;
+            case ReferenceTable.SECTION:
+                sect = SectionCache.getById(refId);
+                if (sect != null)
+                    label = sect.getName();
+                break;
+        }
+        return label;
+    }*/
 }

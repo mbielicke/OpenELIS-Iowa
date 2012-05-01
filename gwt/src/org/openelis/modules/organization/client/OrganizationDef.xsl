@@ -127,7 +127,9 @@ UIRF Software License are applicable instead of those above.
                   </menuDisplay>
                   <menuPanel layout="vertical" position="below" style="topMenuContainer">
                     <menuItem key="orgHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orgHistory')}" />
+                    <menuItem key="orgAddressHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orgAddressHistory')}" />
                     <menuItem key="orgContactHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orgContactHistory')}" />
+                    <menuItem key="orgContactAddressHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orgContactAddressHistory')}" />
                     <menuItem key="orgParameterHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'orgParameterHistory')}" />
                   </menuPanel>
                 </menuItem>
