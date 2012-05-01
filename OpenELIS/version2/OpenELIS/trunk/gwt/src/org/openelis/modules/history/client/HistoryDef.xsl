@@ -50,7 +50,7 @@ UIRF Software License are applicable instead of those above.
                 <tree key="historyTree" width="auto" maxRows="10" showScroll="ALWAYS">
                   <header>
                     <col width="200" header="{resource:getString($constants,'nameDateAndTime')}" />
-                    <col width="130" header="{resource:getString($constants,'userName')}" />
+                    <col width="130" header="{resource:getString($constants,'userValue')}" />
                     <col width="80" header="{resource:getString($constants,'operation')}" />
                   </header>
                   <leaf key="itemLabel">
