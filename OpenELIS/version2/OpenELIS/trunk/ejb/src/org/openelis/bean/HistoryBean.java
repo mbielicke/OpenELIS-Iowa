@@ -26,22 +26,46 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.HistoryVO;
+import org.openelis.domain.InventoryItemDO;
+import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.entity.History;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.local.AnalysisLocal;
+import org.openelis.local.AnalyteLocal;
+import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.HistoryLocal;
+import org.openelis.local.InventoryItemCacheLocal;
+import org.openelis.local.MethodLocal;
+import org.openelis.local.OrganizationLocal;
+import org.openelis.local.ProjectLocal;
+import org.openelis.local.QaeventLocal;
+import org.openelis.local.SampleItemLocal;
+import org.openelis.local.SectionCacheLocal;
+import org.openelis.local.TestLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.HistoryRemote;
-import org.openelis.utils.EJBFactory;
+import org.openelis.util.XMLUtil;
+import org.openelis.utils.JasperUtil;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -49,25 +73,67 @@ import org.openelis.utils.EJBFactory;
 public class HistoryBean implements HistoryRemote, HistoryLocal {
 
     @PersistenceContext(unitName = "openelis")
-    EntityManager               manager;
+    private EntityManager           manager;
 
+    @EJB
+    private AnalysisLocal           analysis;
+    
+    @EJB
+    private AnalyteLocal            analyte;
+
+    @EJB
+    private DictionaryCacheLocal    dictionaryCache;
+
+    @EJB
+    private InventoryItemCacheLocal inventoryItemCache;
+
+    @EJB
+    private MethodLocal             method;
+    
+    @EJB
+    private OrganizationLocal       organization; 
+    
+    @EJB
+    private ProjectLocal            project;  
+
+    @EJB
+    private QaeventLocal            qaevent;
+
+    @EJB
+    private SampleItemLocal         sampleItem;
+
+    @EJB
+    private SectionCacheLocal       sectionCache;
+
+    @EJB
+    private TestLocal               test;
+
+    @EJB
+    private UserCacheLocal          userCache;
+    
+    private static final Logger     log = Logger.getLogger(HistoryBean.class);
+    
     @SuppressWarnings("unchecked")
-    public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId) throws Exception{
+    public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId) throws Exception {
         Query query;
         SystemUserVO user;
         List<HistoryVO> list;
+        HashMap<Integer, HashMap<Integer, String>> refTableMap;
 
         query = manager.createNamedQuery("History.FetchByReferenceIdAndTable");
         query.setParameter("referenceId", referenceId);
         query.setParameter("referenceTableId", referenceTableId);
 
         list = query.getResultList();
+        refTableMap = new HashMap<Integer, HashMap<Integer,String>>();
+        
         for (HistoryVO h : list) {
             if (h.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(h.getSystemUserId());
-                if (user != null)
-                    h.setSystemUserLoginName(user.getLoginName());
+                user = userCache.getSystemUser(h.getSystemUserId());
+                if (user != null) 
+                    h.setSystemUserLoginName(user.getLoginName());                
             }
+            h.setChanges(getChangesWithLabels(h.getChanges(), refTableMap));
         }
         return DataBaseUtil.toArrayList(list);
     }
@@ -89,5 +155,131 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
         data.setId(entity.getId());
         
         return data;
+    }
+    
+    private String getChangesWithLabels(String changes, HashMap<Integer, HashMap<Integer, String>> refTableMap) {
+        Integer refTable, refId;
+        String label;
+        HashMap<Integer, String> refIdMap;
+        Document doc;
+        Element root;
+        NodeList nodes;
+        Node parentNode, refIdNode, refTableNode;
+
+        if (changes == null)
+            return null;
+
+        try {
+            doc = XMLUtil.parse(changes);
+        } catch (Exception e) {
+            log.error("Failed to parse changes"+ e);
+            return null;
+        }
+        
+        root = doc.getDocumentElement();
+        nodes = root.getChildNodes();                        
+        refTable = null;
+        refId = null;
+        
+        for (int i = 0; i < nodes.getLength(); i++ ) {
+            parentNode = nodes.item(i);
+            
+            refTableNode = parentNode.getAttributes().getNamedItem("refTable");
+            refIdNode = parentNode.getFirstChild();            
+            if (refIdNode == null || refTableNode == null)
+                continue;
+
+            //
+            // get the reference table and reference id from the changes
+            //
+            if (!DataBaseUtil.isEmpty(refTableNode.getNodeValue()))
+                refTable = Integer.parseInt(refTableNode.getNodeValue());
+
+            if (!DataBaseUtil.isEmpty(refIdNode.getNodeValue()))
+                refId = Integer.parseInt(refIdNode.getNodeValue());
+            /*
+             * A mapping is created between reference table numbers and another
+             * mapping which is between reference ids and the corresponding labels
+             * for the records that the reference ids link to. Whenever the label
+             * for a record from a given table is to be obtained it's first looked 
+             * up in the mapping and only when it's not found here, is it fetched.              
+             */
+            refIdMap = refTableMap.get(refTable);
+            if (refIdMap == null) {
+                refIdMap = new HashMap<Integer, String>();
+                refTableMap.put(refTable, refIdMap);
+            }
+            label = refIdMap.get(refId);
+
+            if (label == null) {
+                label = DataBaseUtil.toString(getLabel(refTable, refId));               
+                refIdMap.put(refId, label);
+            }
+            //
+            // replace the id with the label
+            //
+            refIdNode.setNodeValue(label);
+        }
+        
+        try {
+            return XMLUtil.toString(doc);
+        } catch (Exception e) {
+            log.error("Failed to convert the data back to xml"+ e);
+            return null;
+        }        
+    }    
+    
+    private String getLabel(Integer refTable, Integer refId) {
+        InventoryItemDO item;
+        SampleItemViewDO sitem;
+        String cont;
+        
+        if (refTable == null || refId == null)
+            return null;
+
+        try {
+            switch (refTable) {
+                case ReferenceTable.ANALYSIS:
+                    return getTestLabel(analysis.fetchById(refId).getTestId());
+                case ReferenceTable.ANALYTE:
+                    return analyte.fetchById(refId).getName();
+                case ReferenceTable.DICTIONARY:
+                    return getDictionaryLabel(refId);
+                case ReferenceTable.INVENTORY_ITEM:
+                    item = inventoryItemCache.getById(refId);
+                    return JasperUtil.concatWithSeparator(item.getName(),", ",getDictionaryLabel(item.getStoreId()));
+                case ReferenceTable.METHOD:
+                    return method.fetchById(refId).getName();
+                case ReferenceTable.ORGANIZATION:
+                    return organization.fetchById(refId).getName();
+                case ReferenceTable.PROJECT:
+                    return project.fetchById(refId).getName();
+                case ReferenceTable.QAEVENT:
+                    return qaevent.fetchById(refId).getName();
+                case ReferenceTable.SAMPLE_ITEM:
+                    sitem = sampleItem.fetchById(refId);
+                    cont = DataBaseUtil.trim(sitem.getContainer());
+                    return JasperUtil.concatWithSeparator(sitem.getItemSequence(), " - ", 
+                                                               cont != null ? cont : "<>");
+                case ReferenceTable.SECTION:
+                    return sectionCache.getById(refId).getName();
+                case ReferenceTable.TEST:
+                    return getTestLabel(refId);
+            }
+        } catch (Exception e) {
+            log.error("Failed to look up record with reference table: "+ refTable +" and reference id: "+refId, e);
+        }
+        return refId.toString();
+    }
+
+    private String getDictionaryLabel(Integer id) throws Exception {
+        return dictionaryCache.getById(id).getEntry();
+    }
+    
+    private String getTestLabel(Integer id) throws Exception {
+        TestViewDO t;
+
+        t = test.fetchById(id);
+        return JasperUtil.concatWithSeparator(t.getName(), ", ",  t.getMethodName());
     }
 }
