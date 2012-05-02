@@ -148,55 +148,6 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    /*public ArrayList<QcChartResultVO> fetchDataForQcChart(QcChartReportVO data) throws Exception {
-        String analyteName;
-        Query query;
-        ArrayList<QcChartResultVO> voList;
-        QcChartResultVO vo;
-        ArrayList<Object[]> resultList;
-        ArrayList<QcChartResultVO> returnList;
-        HashMap<String, ArrayList<QcChartResultVO>> map;
-
-        if (data.getWorkSheetCreatedDateFrom() != null && data.getWorkSheetCreatedDateTo() != null) {
-            query = manager.createNamedQuery("WorksheetAnalysis.FetchDataForQcChartForDateRange");
-            query.setParameter("startedDate", data.getWorkSheetCreatedDateFrom().getDate());
-            query.setParameter("endDate", data.getWorkSheetCreatedDateTo().getDate());
-
-        } else if (data.getNumInstances() > 0) {
-            query = manager.createNamedQuery("WorksheetAnalysis.FetchDataForQcChartForNumRange");
-            query.setParameter("numInstances", data.getNumInstances());
-        } else {
-            throw new InconsistencyException();
-        }
-        query.setParameter("qcName", data.getName());
-        
-        resultList = DataBaseUtil.toArrayList(query.getResultList());
-
-        returnList = new ArrayList<QcChartResultVO>();
-        map = new HashMap<String, ArrayList<QcChartResultVO>>();
-        for (Object[] result : resultList) {
-            vo = getQcChartResultVO(result);
-            if (vo != null) {
-                returnList.add(vo);
-                analyteName = vo.getAnalyteParameter();
-                /*
-                 * for each new analyte create a new entry in map.
-                 */
-              /*  voList = map.get(analyteName);
-                if (voList == null) {
-                    voList = new ArrayList<QcChartResultVO>();
-                    map.put(analyteName, voList);
-                }
-                voList.add(vo);
-            }
-        }
-
-        for (Entry<String, ArrayList<QcChartResultVO>> entry : map.entrySet()) {
-            calculateStatistics(entry.getValue());
-        }
-        return returnList;
-    }
-*/
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {
         WorksheetAnalysis entity;
 
