@@ -84,6 +84,7 @@ import org.openelis.remote.ProviderManagerRemote;
 import org.openelis.remote.ProviderRemote;
 import org.openelis.remote.QASummaryReportRemote;
 import org.openelis.remote.QaEventRemote;
+import org.openelis.remote.QcChartReportRemote;
 import org.openelis.remote.QcManagerRemote;
 import org.openelis.remote.QcRemote;
 import org.openelis.remote.RequestformReportRemote;
@@ -493,6 +494,10 @@ public class EJBFactory {
     
     public static CronRemote getCron() {
     	return (CronRemote)lookup("CronBean!org.openelis.remote.CronRemote");
+    }
+    
+    public static QcChartReportRemote getQcChart() {
+        return (QcChartReportRemote)lookup("QcChartReportBean!org.openelis.remote.QcChartReportRemote");
     }
     
     public static PrinterCacheRemote getPrinterCache() {

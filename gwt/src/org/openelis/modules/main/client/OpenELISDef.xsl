@@ -184,6 +184,7 @@ UIRF Software License are applicable instead of those above.
                       <menuItem description="" enable="false" icon="" key="orderRecurrence" label="{resource:getString($constants,'orderRecurrence')}" />
                       <menuItem description="" enable="false" icon="" key="finalReportBatch" label="{resource:getString($constants,'finalReportBatch')}" />
                       <menuItem description="" enable="false" icon="" key="finalReportBatchReprint" label="{resource:getString($constants,'finalReportBatchReprint')}" />
+                      <menuItem description="" enable="false" icon="" key="qcChart" label="{resource:getString($constants,'qcChart')}" />
                     </menuPanel>
                   </menuItem>
                 </menuPanel>
