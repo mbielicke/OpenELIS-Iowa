@@ -26,6 +26,7 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.ejb.Local;
 
@@ -54,4 +55,7 @@ public interface AnalyteParameterLocal {
     public AnalyteParameterViewDO abortUpdate(Integer id) throws Exception;   
     
     public void validate(AnalyteParameterViewDO data) throws Exception;
+    
+    public AnalyteParameterViewDO fetchForQcChartReport (Integer analyteId, Integer refId, 
+                                                         Integer refTableId, Date worksheetCreatedDate) throws Exception;
 }

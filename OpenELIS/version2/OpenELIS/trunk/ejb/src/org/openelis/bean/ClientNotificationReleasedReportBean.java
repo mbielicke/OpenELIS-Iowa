@@ -176,11 +176,14 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
                 sampleIds.add(sampleId);
             }
             printFooter(contents);
-
-            ReportUtil.sendEmail(from,
-                                 to,
-                                 "Your Results are available from the State Hygienic Laboratory at the University of Iowa",
-                                 contents.toString());
+            try {
+                ReportUtil.sendEmail(from,
+                                     to,
+                                     "Your Results are available from the State Hygienic Laboratory at the University of Iowa",
+                                     contents.toString());
+            } catch (Exception e) {
+                log.error(e);
+            }
         }
 
         anaList = analysisReportFlags.fetchBySampleAccessionNumbers(sampleIds);

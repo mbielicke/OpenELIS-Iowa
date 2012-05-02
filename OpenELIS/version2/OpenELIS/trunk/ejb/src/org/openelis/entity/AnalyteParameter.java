@@ -75,7 +75,14 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
                         "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
                         "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name)"
-                      + " from AnalyteParameter ap where ap.id = :id")})
+                      + " from AnalyteParameter ap where ap.id = :id"),
+    @NamedQuery( name = "AnalyteParameter.FetchForQcChartReport",
+                query = "select new org.openelis.domain.AnalyteParameterViewDO(ap.id, ap.referenceId," +
+                        "ap.referenceTableId, ap.analyteId, ap.typeOfSampleId, ap.isActive, ap.activeBegin," +
+                        "ap.activeEnd, ap.p1, ap.p2, ap.p3, ap.analyte.name) " +
+                        "from AnalyteParameter ap " +
+                        "where ap.referenceId = :referenceId and ap.referenceTableId = :referenceTableId and ap.analyteId = :analyteId and" +
+                        " ap.activeBegin < :worksheetCreatedDate and ap.activeEnd > :worksheetCreatedDate")})
 
 @Entity
 @Table(name = "analyte_parameter")
