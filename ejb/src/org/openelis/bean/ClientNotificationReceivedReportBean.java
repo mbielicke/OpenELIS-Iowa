@@ -163,7 +163,15 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             }
             printFooter(contents);
             
-            ReportUtil.sendEmail(from, to, "Samples Received by the State Hygienic Laboratory", contents.toString());
+            try {
+                ReportUtil.sendEmail(from,
+                                     to,
+                                     "Samples Received by the State Hygienic Laboratory",
+                                     contents.toString());
+            } catch (Exception e) {
+                log.error(e);
+            }
+            
         }
         
         /*

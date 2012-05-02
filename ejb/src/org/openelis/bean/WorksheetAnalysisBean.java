@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCacheVO;
 import org.openelis.entity.WorksheetAnalysis;
@@ -54,28 +56,27 @@ import org.openelis.meta.WorksheetCompletionMeta;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
 
     @EJB
-    private DictionaryLocal dictionary;
-    
-    @EJB 
-    private UserCacheLocal  userCache; 
+    private DictionaryLocal      dictionary;
 
-    private static Integer workingId;
-    
+    @EJB
+    private UserCacheLocal       userCache;
+
+    private static Integer       workingId;
+
     @PostConstruct
     public void init() {
         if (workingId == null) {
-            try {                
+            try {
                 workingId = dictionary.fetchBySystemName("worksheet_working").getId();
             } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
     }
-    
+
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
@@ -97,9 +98,9 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
     public WorksheetAnalysisDO fetchById(Integer id) throws Exception {
         Query query;
         WorksheetAnalysisDO data;
-        
+
         query = manager.createNamedQuery("WorksheetAnalysis.FetchById");
-        query.setParameter("id",id);
+        query.setParameter("id", id);
         try {
             data = (WorksheetAnalysisDO)query.getSingleResult();
         } catch (NoResultException e) {
@@ -107,20 +108,20 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        
+
         return data;
     }
-    
+
     public ArrayList<WorksheetCacheVO> fetchByWorking() throws Exception {
         Query query;
         List<WorksheetCacheVO> list;
         SystemUserVO user;
-                
+
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetStatusId");
         query.setParameter("statusId", workingId);
-        list = query.getResultList();          
-        
-        for (WorksheetCacheVO data : list) {            
+        list = query.getResultList();
+
+        for (WorksheetCacheVO data : list) {
             user = userCache.getSystemUser(data.getSystemUserId());
             if (user != null)
                 data.setSystemUserName(user.getLoginName());
@@ -128,6 +129,74 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         return DataBaseUtil.toArrayList(list);
     }
     
+    public ArrayList<QcChartResultVO> fetchByDateForQcChart(Date dateFrom, Date dateTo, String qcName) throws Exception {
+        Query query;
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchByDateForQcChart");
+        query.setParameter("startedDate", dateFrom);
+        query.setParameter("endDate", dateTo);
+        query.setParameter("qcName", qcName);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName) throws Exception {
+        Query query;
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchByInstancesForQcChart");
+        //query.setParameter("numInstance", numInstances);
+        query.setParameter("qcName", qcName);
+        query.setMaxResults(numInstances);
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
+    /*public ArrayList<QcChartResultVO> fetchDataForQcChart(QcChartReportVO data) throws Exception {
+        String analyteName;
+        Query query;
+        ArrayList<QcChartResultVO> voList;
+        QcChartResultVO vo;
+        ArrayList<Object[]> resultList;
+        ArrayList<QcChartResultVO> returnList;
+        HashMap<String, ArrayList<QcChartResultVO>> map;
+
+        if (data.getWorkSheetCreatedDateFrom() != null && data.getWorkSheetCreatedDateTo() != null) {
+            query = manager.createNamedQuery("WorksheetAnalysis.FetchDataForQcChartForDateRange");
+            query.setParameter("startedDate", data.getWorkSheetCreatedDateFrom().getDate());
+            query.setParameter("endDate", data.getWorkSheetCreatedDateTo().getDate());
+
+        } else if (data.getNumInstances() > 0) {
+            query = manager.createNamedQuery("WorksheetAnalysis.FetchDataForQcChartForNumRange");
+            query.setParameter("numInstances", data.getNumInstances());
+        } else {
+            throw new InconsistencyException();
+        }
+        query.setParameter("qcName", data.getName());
+        
+        resultList = DataBaseUtil.toArrayList(query.getResultList());
+
+        returnList = new ArrayList<QcChartResultVO>();
+        map = new HashMap<String, ArrayList<QcChartResultVO>>();
+        for (Object[] result : resultList) {
+            vo = getQcChartResultVO(result);
+            if (vo != null) {
+                returnList.add(vo);
+                analyteName = vo.getAnalyteParameter();
+                /*
+                 * for each new analyte create a new entry in map.
+                 */
+              /*  voList = map.get(analyteName);
+                if (voList == null) {
+                    voList = new ArrayList<QcChartResultVO>();
+                    map.put(analyteName, voList);
+                }
+                voList.add(vo);
+            }
+        }
+
+        for (Entry<String, ArrayList<QcChartResultVO>> entry : map.entrySet()) {
+            calculateStatistics(entry.getValue());
+        }
+        return returnList;
+    }
+*/
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {
         WorksheetAnalysis entity;
 
@@ -186,15 +255,101 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         if (DataBaseUtil.isEmpty(data.getAccessionNumber()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetAnalysisAccessionNumber()));
-        if (DataBaseUtil.isEmpty(data.getAnalysisId()) &&
-            DataBaseUtil.isEmpty(data.getQcId())) {
+        if (DataBaseUtil.isEmpty(data.getAnalysisId()) && DataBaseUtil.isEmpty(data.getQcId())) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetAnalysisAnalysisId()));
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetAnalysisQcId()));
         }
-        
+
         if (list.size() > 0)
             throw list;
     }
+
+    /*protected QcChartResultVO getQcChartResultVO(Object[] result) throws Exception {
+        Integer sortOrderV1, sortOrderV2;
+        Double plotValue;
+        String value1, value2, systemName;
+        QcChartResultVO vo;
+
+        vo = null;
+        sortOrderV2 = null;
+        systemName = (String)result[7];
+        if ("wf_rad1".equals(systemName)) {
+            sortOrderV1 = dictionaryCache.getBySystemName(systemName + "_final_value")
+                                         .getSortOrder();
+            sortOrderV2 = dictionaryCache.getBySystemName(systemName + "_expected_value")
+                                         .getSortOrder();
+        } else if ("wf_envana2".equals(systemName)) {
+            sortOrderV1 = dictionaryCache.getBySystemName(systemName + "_calculated_value")
+                                         .getSortOrder();
+            sortOrderV2 = dictionaryCache.getBySystemName(systemName + "_expected_value")
+                                         .getSortOrder();
+        } else {
+            sortOrderV1 = dictionaryCache.getBySystemName(systemName + "_final_value")
+                                         .getSortOrder();
+        }
+        value1 = (String)result[8 + sortOrderV1];
+        plotValue = null;
+        value2 = null;
+        try {
+        if (sortOrderV2 != null) {
+            value2 = (String)result[8 + sortOrderV2];
+            if (value1 != null && value2 != null)
+                plotValue = new Double( (Double.parseDouble(value1) / Double.parseDouble(value2)) * 100);
+        } else if (value1 != null) {
+            plotValue = new Double(value1);
+        }
+        } catch(Exception e){
+            Log.error(e);
+        }
+
+        /*
+         * fill up the vo only for non null plotValues
+         */
+       /* if (plotValue != null) {
+            vo = new QcChartResultVO();
+            vo.setAccessionNumber((String)result[0]);
+            vo.setLotNumber((String)result[1]);
+            vo.setWorksheetCreatedDate(DataBaseUtil.toYM((Date)result[6]));
+            vo.setAnalyteParameter((String)result[2]);
+            vo.setValue1(value1);
+            vo.setValue2(value2);
+            vo.setPlotValue(plotValue);
+        }
+        return vo;
+    }
+
+    private void calculateStatistics(ArrayList<QcChartResultVO> list) {
+        int i, numValue;
+        double mean, sd, diff, sqDiffSum, sum, uWL, uCL, lWL, lCL;
+        QcChartResultVO data;
+
+        numValue = list.size();
+        sum = 0.0;
+        for (i = 0; i < numValue; i++ ) {
+            data = list.get(i);
+            sum = sum + data.getPlotValue();
+        }
+        mean = sum / numValue;
+        sqDiffSum = 0.0;
+        for (i = 0; i < numValue; i++ ) {
+            data = list.get(i);
+            diff = data.getPlotValue() - mean;
+            sqDiffSum += diff * diff;
+        }
+        sd = Math.sqrt(sqDiffSum / (numValue - 1));
+        uWL = mean + 2 * sd;
+        uCL = mean + 3 * sd;
+        lWL = mean - 2 * sd;
+        lCL = mean - 3 * sd;
+        for (i = 0; i < numValue; i++ ) {
+            data = list.get(i);
+            data.setMean(mean);
+            data.setUWL(uWL);
+            data.setUCL(uCL);
+            data.setLWL(lWL);
+            data.setLCL(lCL);
+        }
+    }*/
 }

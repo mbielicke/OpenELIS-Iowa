@@ -26,10 +26,10 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -154,6 +154,27 @@ public class AnalyteParameterBean implements AnalyteParameterRemote, AnalytePara
 
         return data;
     }   
+    
+    public AnalyteParameterViewDO fetchForQcChartReport (Integer analyteId, Integer refId, 
+                                                         Integer refTableId, Date worksheetCreatedDate) throws Exception {
+        Query query;
+        AnalyteParameterViewDO data;
+
+        query = manager.createNamedQuery("AnalyteParameter.FetchForQcChartReport");
+        query.setParameter("analyteId", analyteId);
+        query.setParameter("referenceId", refId);
+        query.setParameter("referenceTableId", refTableId);
+        query.setParameter("worksheetCreatedDate", worksheetCreatedDate);
+
+        try {
+            data = (AnalyteParameterViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
 
     public ArrayList<ReferenceIdTableIdNameVO> query(ArrayList<QueryData> fields,
                                                      int first, int max)  throws Exception {

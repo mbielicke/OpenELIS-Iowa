@@ -26,9 +26,11 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetCacheVO;
 
@@ -47,4 +49,8 @@ public interface WorksheetAnalysisLocal {
     public void delete(WorksheetAnalysisDO data) throws Exception;
 
     public void validate(WorksheetAnalysisDO data) throws Exception;
+    
+    public ArrayList<QcChartResultVO> fetchByDateForQcChart(Date dateFrom, Date dateTo, String qcName) throws Exception;
+    
+    public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName) throws Exception;//change to Integer
 }
