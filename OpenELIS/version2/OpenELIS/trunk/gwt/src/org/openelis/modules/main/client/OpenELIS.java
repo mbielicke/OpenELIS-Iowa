@@ -1484,7 +1484,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
         
-        addClickHandler("qcChart", "system", new ClickHandler() {
+        addClickHandler("qcChart", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {

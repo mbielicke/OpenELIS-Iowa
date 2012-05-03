@@ -456,14 +456,17 @@ public class QcChartScreen extends Screen {
         
         query.setFields(fields);
         
-        window.setBusy(consts.get("querying"));
+        window.setBusy();
         if(((fromDate != null) && (toDate != null)) || numInstance != null) {
             service.call("fetchForQcChart", query, new AsyncCallback<QcChartReportViewVO>() {
                 public void onSuccess(QcChartReportViewVO result) {
                     setResults(result);
                     recomputeButton.enable(true);
                     plotDataButton.enable(true);
-                    window.setDone(consts.get("done"));
+                    if(result.getQcList().size() > 0)
+                        window.setDone(consts.get("done"));
+                    else
+                        window.setDone(consts.get("noRecordsFound"));
                 }
 
                 public void onFailure(Throwable error) {
@@ -482,7 +485,7 @@ public class QcChartScreen extends Screen {
     }
     
     protected void reCompute() {
-        window.setBusy(consts.get("querying"));
+        window.setBusy();
   
             service.call("recompute", results, new AsyncCallback<QcChartReportViewVO>() {
                 public void onSuccess(QcChartReportViewVO result) {
@@ -506,6 +509,7 @@ public class QcChartScreen extends Screen {
     }
     
     protected void plotGraph() {
+        window.setBusy(consts.get("genReportMessage"));
         try {
             if (qcChartReportScreen == null) 
                 qcChartReportScreen = new QcChartReportScreen(window);  
@@ -517,6 +521,7 @@ public class QcChartScreen extends Screen {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
+        window.clearStatus();
     }
     
     private ArrayList<TableDataRow> getTableModel() {
