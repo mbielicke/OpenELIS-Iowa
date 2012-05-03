@@ -15,7 +15,7 @@ public class QCChartCustomizer extends JRAbstractChartCustomizer {
         XYPlot plot;
         
         plot = (XYPlot) chart.getPlot();
-        /* We assume that the data points are in chart. 
+        /* We assume that the data points are in the first plot series, hence we are starting from 1. 
          * We remove the shapes for all other series (UCL, LCL, UWL, LWL) from
          * the jasper report interface.
          */
