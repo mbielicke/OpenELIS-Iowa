@@ -6,7 +6,7 @@
 	<property name="com.jasperassistant.designer.SnapToGrid" value="true"/>
 	<property name="com.jasperassistant.designer.Grid" value="true"/>
 	<property name="ireport.zoom" value="1.8181818181818181"/>
-	<property name="ireport.x" value="309"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<reportFont name="FieldData" isDefault="false" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 	<reportFont name="FieldLabel" isDefault="false" size="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -617,49 +617,49 @@
 		<band height="10" splitType="Stretch">
 			<textField>
 				<reportElement positionType="Float" x="18" y="0" width="42" height="10"/>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ACCESSION_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement positionType="Float" x="60" y="0" width="74" height="10"/>
-				<textElement textAlignment="Center">
+				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{LOT_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField pattern="yyyy-MM-dd">
 				<reportElement positionType="Float" x="134" y="0" width="60" height="10"/>
-				<textElement textAlignment="Center">
+				<textElement>
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$F{CREATED_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00####" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="194" y="0" width="55" height="10"/>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{VALUE_1}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00####" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="249" y="0" width="60" height="10"/>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{VALUE_2}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00####" isBlankWhenNull="true">
 				<reportElement positionType="Float" x="309" y="0" width="64" height="10"/>
-				<textElement textAlignment="Center">
+				<textElement textAlignment="Right">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{PLOT_VALUE}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement positionType="Float" x="0" y="0" width="18" height="10"/>
-				<textElement textAlignment="Center" rotation="None">
+				<textElement textAlignment="Right" rotation="None">
 					<font size="8"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></textFieldExpression>
