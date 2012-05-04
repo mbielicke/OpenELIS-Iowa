@@ -125,7 +125,7 @@ public abstract class ImportOrder {
 
         orderDO    = orderMan.getOrder();
         shipToDO   = orderDO.getOrganization();
-        reportToDO = orderDO.getReportTo();
+        /*reportToDO = orderDO.getReportTo();
         billToDO   = orderDO.getBillTo();
 
         //report to
@@ -174,7 +174,7 @@ public abstract class ImportOrder {
             billToSampOrg.setOrganizationCity(shipToDO.getAddress().getCity());
             billToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
             man.getOrganizations().addOrganization(billToSampOrg);
-        }
+        }*/
     }
     
     protected void loadSampleItems(Integer orderId, SampleManager man) throws Exception {

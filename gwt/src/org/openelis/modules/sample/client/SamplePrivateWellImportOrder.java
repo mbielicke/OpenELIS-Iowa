@@ -27,7 +27,6 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 
-import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.OrderViewDO;
@@ -40,7 +39,6 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.screen.Calendar;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.OrderManager;
@@ -164,11 +162,9 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         privateWell = wellMan.getPrivateWell();
         orderDO = orderMan.getOrder();
         shipToDO = orderDO.getOrganization();
-        reportToDO = orderDO.getReportTo();
-        billToDO = orderDO.getBillTo();
 
         // report to
-        if (reportToDO != null) {
+        /*if (reportToDO != null) {
             privateWell.setOrganizationId(reportToDO.getId());
             privateWell.setOrganization(reportToDO);
             privateWell.setReportToAttention(orderDO.getReportToAttention());
@@ -182,7 +178,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         billToSampOrg = new SampleOrganizationViewDO();
         if (billToDO != null) {
             billToSampOrg.setOrganizationId(billToDO.getId());
-            billToSampOrg.setOrganizationAttention(orderDO.getBillToAttention());
+            //billToSampOrg.setOrganizationAttention(orderDO.getBillToAttention());
             billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
             billToSampOrg.setOrganizationName(billToDO.getName());
             billToSampOrg.setOrganizationCity(billToDO.getAddress().getCity());
@@ -204,6 +200,6 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
             billToSampOrg.setOrganizationCity(shipToDO.getAddress().getCity());
             billToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
             man.getOrganizations().addOrganization(billToSampOrg);
-        }
+        }*/
     }
 }
