@@ -198,14 +198,8 @@ public class SampleWebMeta implements Meta, MetaMap {
                     RESULT_TEST_ANALYTE_RESULT_GROUP = "_result.testAnalyte.resultGroup",
                     
                     AUX_DATA_AUX_FIELD_ANALYTE_ID = "_auxField.analyteId",
-                    AUX_DATA_AUX_FIELD_ANALYTE_NAME = "_auxField.analyte.name",
+                    AUX_DATA_AUX_FIELD_ANALYTE_NAME = "_auxField.analyte.name";
                     
-                    QC_NAME = "_qc.name",
-                    QC_TYPE = "_qc.typeId",
-                    WORKSHEET_CREATED_DATE  = "_worksheet.createdDate",
-                    WORKSHEET_CREATED_DATE_FROM = "_worksheet.createdDateFrom",
-                    WORKSHEET_CREATED_DATE_TO = "_worksheet.createdDateTo";
-
     private static HashSet<String> names;
 
     static {
@@ -321,13 +315,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   RESULT_TEST_ANALYTE_TYPE_ID,
                                                   RESULT_TEST_ANALYTE_RESULT_GROUP,
                                                   AUX_DATA_AUX_FIELD_ANALYTE_ID,
-                                                  AUX_DATA_AUX_FIELD_ANALYTE_NAME,
-                                                  QC_NAME,
-                                                  QC_TYPE,
-                                                  WORKSHEET_CREATED_DATE,
-                                                  WORKSHEET_CREATED_DATE_FROM,
-                                                  WORKSHEET_CREATED_DATE_TO
-                                                  ));
+                                                  AUX_DATA_AUX_FIELD_ANALYTE_NAME));
     }
 
     public static String getId() {
@@ -899,26 +887,6 @@ public class SampleWebMeta implements Meta, MetaMap {
     
     public static String getAuxDataAuxFieldAnalyteName() {
         return AUX_DATA_AUX_FIELD_ANALYTE_NAME;
-    }
-    
-    public static String getQCName() {
-        return QC_NAME;
-    }
-
-    public static String getQCType() {
-        return QC_TYPE;
-    }
-
-    public static String getWorksheetCreatedDate() {
-        return WORKSHEET_CREATED_DATE;
-    }
-    
-    public static String getWorksheetCreatedDateFrom() {
-        return WORKSHEET_CREATED_DATE_FROM;
-    }
-    
-    public static String getWorksheetCreatedDateTo() {
-        return WORKSHEET_CREATED_DATE_TO;
     }
     
     public boolean hasColumn(String columnName) {
