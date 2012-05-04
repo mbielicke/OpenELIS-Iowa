@@ -48,24 +48,24 @@
         <TablePanel padding="0" spacing="0">
           <row>
             <table key="sampleOrganizationTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">
-              <col width="125" header="Type">
+              <col width="125" header="{resource:getString($constants,'type')}">
                 <dropdown width="125" field="Integer" required="true"/>
               </col>
-              <col width="180" header="Attention">
+              <col width="180" header="{resource:getString($constants,'attention')}">
               	<textbox case = "UPPER" field="String"/>
               </col>
               <col width="220" header="Name">
-                <autoComplete width="130px" case="UPPER" field="Integer" required="true">
-                  <col width="200" header="Name" />
-                  <col width="130" header="Street" />
-                  <col width="120" header="City" />
-                  <col width="20" header="St" />
+                <autoComplete width="130" case="UPPER" field="Integer" required="true">
+                  <col width="200" header="{resource:getString($constants,'name')}" />
+                  <col width="130" header="{resource:getString($constants,'street')}" />
+                  <col width="120" header="{resource:getString($constants,'city')}" />
+                  <col width="20" header="{resource:getString($constants,'st')}" />
                 </autoComplete>
               </col>
-              <col width="110" header="City">
+              <col width="110" header="{resource:getString($constants,'city')}">
                 <label field="String" />
               </col>
-              <col width="55" header="State">
+              <col width="55" header="{resource:getString($constants,'state')}">
                 <label field="String" />
               </col>
             </table>

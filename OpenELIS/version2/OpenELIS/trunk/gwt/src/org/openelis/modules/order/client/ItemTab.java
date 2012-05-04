@@ -278,7 +278,7 @@ public class ItemTab extends Screen {
 
         try {
             for (i = 0; i < manager.getItems().count(); i++ ) {
-                data = (OrderItemViewDO)manager.getItems().getItemAt(i);
+                data = manager.getItems().getItemAt(i);
                 row = new TableDataRow(numColumns);
 
                 row.cells.get(0).setValue(data.getQuantity());

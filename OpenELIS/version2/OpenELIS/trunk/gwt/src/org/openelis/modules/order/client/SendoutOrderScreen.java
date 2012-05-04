@@ -118,13 +118,15 @@ public class SendoutOrderScreen extends Screen {
     private ButtonGroup                            atoz;
     private ScreenNavigator                        nav;
 
-    private ReportToBillToTab                      reportToBillToTab;
+    private OrganizationTab                      organizationTab;
     private AuxDataTab                             auxDataTab;
+    private TestTab                                testTab;  
     private ContainerTab                           containerTab;
     private ItemTab                                itemTab;
     private ShipNoteTab                            shipNoteTab;
     private CustomerNoteTab                        custNoteTab;
     private InternalNoteTab                        internalNoteTab;
+    private SampleNoteTab                          sampleNoteTab; 
     private RecurrenceTab                          recurrenceTab;
     private FillTab                                fillTab;
     
@@ -164,7 +166,8 @@ public class SendoutOrderScreen extends Screen {
     protected ScreenService                        organizationService, panelService, shippingService;
 
     private enum Tabs {
-        REPORT_TO, AUX_DATA, CONTAINER, ITEM, SHIP_NOTE, CUSTOMER_NOTE, INTERNAL_NOTE, RECURRENCE, FILL 
+        ORGANIZATION, AUX_DATA,TEST, CONTAINER, ITEM, SHIP_NOTE, CUSTOMER_NOTE,
+        INTERNAL_NOTE, SAMPLE_NOTE, RECURRENCE, FILL 
     };
 
     public SendoutOrderScreen() throws Exception {
@@ -208,7 +211,7 @@ public class SendoutOrderScreen extends Screen {
     }
 
     private void postConstructor() {
-        tab = Tabs.REPORT_TO;
+        tab = Tabs.ORGANIZATION;
         manager = OrderManager.getInstance();
 
         try {
@@ -563,10 +566,10 @@ public class SendoutOrderScreen extends Screen {
                         data = list.get(i);
 
                         row.key = data.getId();
-                        row.cells.get(0).value = data.getName();
-                        row.cells.get(1).value = data.getAddress().getStreetAddress();
-                        row.cells.get(2).value = data.getAddress().getCity();
-                        row.cells.get(3).value = data.getAddress().getState();
+                        row.cells.get(0).setValue(data.getName());
+                        row.cells.get(1).setValue(data.getAddress().getStreetAddress());
+                        row.cells.get(2).setValue(data.getAddress().getCity());
+                        row.cells.get(3).setValue(data.getAddress().getState());
 
                         row.data = data;
 
@@ -856,16 +859,16 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        reportToBillToTab = new ReportToBillToTab(def, window);
-        addScreenHandler(reportToBillToTab, new ScreenEventHandler<Object>() {
+        organizationTab = new OrganizationTab(def, window);
+        addScreenHandler(organizationTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                reportToBillToTab.setManager(manager);
-                if (tab == Tabs.REPORT_TO)
+                organizationTab.setManager(manager);
+                if (tab == Tabs.ORGANIZATION)
                     drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                reportToBillToTab.setState(event.getState());
+                organizationTab.setState(event.getState());
             }
         });      
         
@@ -882,6 +885,27 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
+        testTab = new TestTab(def, window);
+        addScreenHandler(testTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                testTab.setManager(manager);
+                if (tab == Tabs.TEST)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                testTab.setState(event.getState());
+            }
+        });
+        
+        testTab.addActionHandler(new ActionHandler<TestTab.Action>() {
+            public void onAction(ActionEvent<TestTab.Action> event) {
+                if (event.getAction() == TestTab.Action.ADD_AUX) {
+                    addAuxGroupsFromPanel((Integer)event.getData());
+                }
+            }
+        });
+        
         containerTab = new ContainerTab(def, window);
         addScreenHandler(containerTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -892,14 +916,6 @@ public class SendoutOrderScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 containerTab.setState(event.getState());
-            }
-        });
-
-        containerTab.addActionHandler(new ActionHandler<ContainerTab.Action>() {
-            public void onAction(ActionEvent<ContainerTab.Action> event) {
-                if (event.getAction() == ContainerTab.Action.ADD_AUX) {
-                    addAuxGroupsFromPanel((Integer)event.getData());
-                }
             }
         });
 
@@ -955,6 +971,19 @@ public class SendoutOrderScreen extends Screen {
             }
         });
         
+        sampleNoteTab = new SampleNoteTab(def, window, "sampleNotesPanel", "sampleEditNoteButton");
+        addScreenHandler(sampleNoteTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                sampleNoteTab.setManager(manager);
+                if (tab == Tabs.SAMPLE_NOTE)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                sampleNoteTab.setState(event.getState());
+            }
+        });
+        
         recurrenceTab = new RecurrenceTab(def, window);
         addScreenHandler(recurrenceTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -989,7 +1018,7 @@ public class SendoutOrderScreen extends Screen {
                 QueryData field;
 
                 window.setBusy(consts.get("querying"));
-                // this screen should only query for kit orders
+                // this screen should only query for send-out orders
                 field = new QueryData();
                 field.key = OrderMeta.getType();
                 field.query = OrderManager.TYPE_SEND_OUT;
@@ -1141,7 +1170,7 @@ public class SendoutOrderScreen extends Screen {
 
     public void setManager(OrderManager manager) {
         this.manager = manager;
-        reportToBillToTab.setManager(manager);
+        organizationTab.setManager(manager);
         auxDataTab.setManager(manager);
         containerTab.setManager(manager);
         itemTab.setManager(manager);
@@ -1151,7 +1180,7 @@ public class SendoutOrderScreen extends Screen {
         recurrenceTab.setManager(manager);
         fillTab.setManager(manager);
 
-        reportToBillToTab.draw();
+        organizationTab.draw();
         auxDataTab.draw();
         containerTab.draw();
         itemTab.draw();
@@ -1178,7 +1207,7 @@ public class SendoutOrderScreen extends Screen {
         DataChangeEvent.fire(this);
 
         // clear all the tabs
-        reportToBillToTab.draw();
+        organizationTab.draw();
         auxDataTab.draw();
         containerTab.draw();
         itemTab.draw();
@@ -1341,6 +1370,8 @@ public class SendoutOrderScreen extends Screen {
     }
 
     protected void abort() {
+        boolean ok;
+        
         setFocus(null);
         clearErrors();
         window.setBusy(consts.get("cancelChanges"));
@@ -1349,18 +1380,28 @@ public class SendoutOrderScreen extends Screen {
             fetchById(null);
             window.setDone(consts.get("queryAborted"));
         } else if (state == State.ADD) {
-            fetchById(null);
-            window.setDone(consts.get("addAborted"));
-        } else if (state == State.UPDATE) {
-            try {
-                manager = manager.abortUpdate();
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
+            ok = Window.confirm(consts.get("abortWarning"));
+            if (ok) {
                 fetchById(null);
+                window.setDone(consts.get("addAborted"));
+            } else {
+                window.setDone(consts.get("enterInformationPressCommit"));
             }
-            window.setDone(consts.get("updateAborted"));
+        } else if (state == State.UPDATE) {
+            ok = Window.confirm(consts.get("abortWarning"));
+            if (ok) {
+                try {
+                    manager = manager.abortUpdate();
+                    setState(State.DISPLAY);
+                    DataChangeEvent.fire(this);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    fetchById(null);
+                }
+                window.setDone(consts.get("updateAborted"));
+            } else {
+                window.clearStatus();
+            }
         } else {
             window.clearStatus();
         }
@@ -1372,7 +1413,7 @@ public class SendoutOrderScreen extends Screen {
             
             manager = service.call("duplicate", manager.getOrder().getId());
 
-            reportToBillToTab.setManager(manager);
+            organizationTab.setManager(manager);
             auxDataTab.setManager(manager);
             containerTab.setManager(manager);
             itemTab.setManager(manager);
@@ -1380,7 +1421,7 @@ public class SendoutOrderScreen extends Screen {
             custNoteTab.setManager(manager);
             recurrenceTab.setManager(manager);
 
-            reportToBillToTab.draw();
+            organizationTab.draw();
             auxDataTab.draw();
             containerTab.draw();
             itemTab.draw();
@@ -1587,14 +1628,17 @@ public class SendoutOrderScreen extends Screen {
             window.setBusy(consts.get("fetching"));
             try {
                 switch (tab) {
-                    case REPORT_TO:
-                        manager = OrderManager.fetchById(id);
+                    case ORGANIZATION:
+                        manager = OrderManager.fetchWithOrganizations(id);
                         break;
                     case AUX_DATA:
                         manager = OrderManager.fetchById(id);
                         break;
+                    case TEST:
+                        manager = OrderManager.fetchWithTests(id);
+                        break;
                     case CONTAINER:
-                        manager = OrderManager.fetchWithTestsAndContainers(id);
+                        manager = OrderManager.fetchWithContainers(id);
                         break;
                     case ITEM:
                         manager = OrderManager.fetchWithItems(id);
@@ -1665,11 +1709,14 @@ public class SendoutOrderScreen extends Screen {
 
     private void drawTabs() {
         switch (tab) {
-            case REPORT_TO:
-                reportToBillToTab.draw();
+            case ORGANIZATION:
+                organizationTab.draw();
                 break;
             case AUX_DATA:
                 auxDataTab.draw();
+                break;
+            case TEST:
+                testTab.draw();
                 break;
             case CONTAINER:
                 containerTab.draw();

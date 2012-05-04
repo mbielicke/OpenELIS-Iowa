@@ -31,31 +31,16 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.PanelDO;
-import org.openelis.domain.TestMethodVO;
-import org.openelis.domain.TestViewDO;
-import org.openelis.gwt.common.LocalizedException;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
-import org.openelis.gwt.event.BeforeGetMatchesEvent;
-import org.openelis.gwt.event.BeforeGetMatchesHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.GetMatchesEvent;
-import org.openelis.gwt.event.GetMatchesHandler;
-import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
-import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -67,24 +52,16 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderTestManager;
-import org.openelis.manager.PanelManager;
-import org.openelis.manager.TestManager;
-import org.openelis.meta.OrderMeta;
 
 import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
-public class ContainerTab extends Screen implements HasActionHandlers<ContainerTab.Action> {
+public class ContainerTab extends Screen {
 
     private OrderManager          manager;
-    private AutoComplete<Integer> test;
-    private AppButton             addTestButton, removeTestButton, addContainerButton,
+    private AppButton             addContainerButton,
                                   removeContainerButton;
-    private TableWidget           orderTestTable, orderContainerTable;
+    private TableWidget           orderContainerTable;
     private boolean               loaded;
 
     protected ScreenService       analysisService, panelService, testService;
@@ -106,279 +83,7 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
         initializeDropdowns();
     }
 
-    private void initialize() {        
-        orderTestTable = (TableWidget)def.getWidget("orderTestTable");
-        addScreenHandler(orderTestTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {       
-                if(state != State.QUERY)
-                    orderTestTable.load(getTestTableModel());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                orderTestTable.enable(true);
-                orderTestTable.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        orderTestTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if(state != State.ADD && state != State.UPDATE)  
-                    event.cancel();                
-            }            
-        });
-        
-        orderTestTable.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int r, c;
-                OrderTestViewDO data;
-                TestMethodVO test;
-                Object val;
-
-                r = event.getRow();
-                c = event.getCol();
-                val = orderTestTable.getObject(r,c);
-                
-                try {
-                    data = manager.getTests().getTestAt(r);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    return;
-                }
-                
-                switch(c) {
-                    case 0:
-                        if (val != null) {
-                            test = (TestMethodVO) ((TableDataRow)val).data;
-                            if(test.getMethodId() == null) {
-                                addTestsFromPanel(test.getTestId(), r);
-                            } else {
-                                data.setTestId(test.getTestId());
-                                data.setTestName(test.getTestName());
-                                data.setDescription(test.getTestDescription());
-                                data.setMethodName(test.getMethodName());
-                                data.setIsActive(test.getIsActive());
-                                
-                                orderTestTable.setCell(r, 1, test.getMethodName());
-                                orderTestTable.setCell(r, 2, test.getTestDescription());
-                            }
-                        } else {
-                            data.setTestId(null);
-                            data.setTestName(null);
-                            data.setMethodName(null);
-                            data.setDescription(null);
-                            data.setIsActive(null);
-                            
-                            orderTestTable.setCell(r, 1, null);
-                            orderTestTable.setCell(r, 2, null);
-                        }
-                }
-            }
-        });
-
-        orderTestTable.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
-                int r;
-                TableDataRow val;
-                OrderTestViewDO data;
-                TestMethodVO test;                
-                OrderTestManager man;
-                
-                r = event.getIndex();
-                
-                try {
-                    man = manager.getTests();
-                    man.addTestAt(r);
-                    data = man.getTestAt(r);                    
-                    
-                    val = (TableDataRow)orderTestTable.getObject(r, 0);
-                    
-                    if(val != null) {
-                        test = (TestMethodVO)val.data;
-                        data.setTestId(test.getTestId());
-                        data.setTestName(test.getTestName());
-                        data.setMethodName(test.getMethodName());
-                        data.setDescription(test.getTestDescription());
-                        data.setIsActive(test.getIsActive());
-                    } else {
-                        data.setTestId(null);
-                        data.setTestName(null);
-                        data.setMethodName(null);
-                        data.setDescription(null);
-                        data.setIsActive(null);
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-
-        orderTestTable.addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {
-                try {
-                    manager.getTests().removeTestAt(event.getIndex());
-                } catch (Exception e) {                    
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-        
-        test = (AutoComplete) orderTestTable.getColumnWidget(OrderMeta.getTestName());
-        test.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
-            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
-                int                     r;
-                Integer                 sampleType, testPanelId, sepIndex;
-                String                  value, flag;
-                ArrayList<TableDataRow> model;
-                TableDataRow            row;
-                OrderContainerDO        oData;
-                PanelDO                 pDO;
-                PanelManager            pMan;
-                TestManager             tMan;
-                TestViewDO              tVDO;
-                TestMethodVO            tmData;
-
-                value = event.getMatch();
-                if (value.matches("[tp][0-9]*\\-[0-9]*")) {
-                    flag = value.substring(0, 1);
-                    sepIndex = value.indexOf("-");
-                    testPanelId = Integer.valueOf(value.substring(1, sepIndex));
-                    sampleType = Integer.valueOf(value.substring(sepIndex + 1));
-                    try {
-                        //
-                        // Add container so we can set the sample type to it
-                        //
-                        orderContainerTable.addRow();
-                        r = orderContainerTable.numRows() - 1;
-                        oData = manager.getContainers().getContainerAt(r);
-                        oData.setTypeOfSampleId(sampleType);
-                        orderContainerTable.load(getContainerTableModel());
-                        orderContainerTable.selectRow(r);
-                        orderContainerTable.scrollToSelection();
-
-                        row = new TableDataRow(3);
-                        tmData = new TestMethodVO();
-                        if ("t".equals(flag)) {
-                            tMan = testService.call("fetchById", testPanelId);
-                            tVDO = tMan.getTest();
-                            row.key = tVDO.getId();
-                            tmData.setTestId(tVDO.getId());
-                            row.cells.get(0).value = tVDO.getName();
-                            tmData.setTestName(tVDO.getName());
-                            row.cells.get(1).value = tVDO.getMethodName();
-                            tmData.setMethodId(tVDO.getMethodId());
-                            tmData.setMethodName(tVDO.getMethodName());
-                            row.cells.get(2).value = tVDO.getDescription();
-                            tmData.setTestDescription(tVDO.getDescription());
-                        } else if ("p".equals(flag)) {
-                            pMan = panelService.call("fetchById", testPanelId);
-                            pDO = pMan.getPanel();
-                            row.key = pDO.getId();
-                            tmData.setTestId(pDO.getId());
-                            row.cells.get(0).value = pDO.getName();
-                            tmData.setTestName(pDO.getName());
-                            row.cells.get(2).value = pDO.getDescription();
-                            tmData.setTestDescription(pDO.getDescription());
-                        }
-                        row.data = tmData;
-                        model = new ArrayList<TableDataRow>();
-                        model.add(row);
-                        test.setModel(model);
-                        test.setSelection(row.key);
-                        orderTestTable.finishEditing();
-                    } catch (Exception e) {
-                        Window.alert(e.getMessage());
-                    }
-                    event.cancel();
-                }
-            }
-        });
-
-        test.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<TableDataRow> model;
-                ArrayList<TestMethodVO> autoList;
-                TableDataRow            row;
-                TestMethodVO            data;
-
-                try {
-                    autoList = panelService.callList("fetchByNameWithTests", 
-                                                     QueryFieldUtil.parseAutocomplete(event.getMatch())+"%");
-                    model = new ArrayList<TableDataRow>();
-                    for (int i = 0; i < autoList.size(); i++ ) {
-                        data = autoList.get(i);
-                        row = new TableDataRow(i, data.getTestName(), data.getMethodName(),
-                                               data.getTestDescription());
-                        row.data = data;
-                        model.add(row);
-                    }
-                    test.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }            
-        });
-        
-        test.addSelectionHandler(new SelectionHandler<TableRow>() {
-            public void onSelection(SelectionEvent<TableRow> event) {
-                TableDataRow selectedRow;
-                TestMethodVO data;
-                int r;
-
-                selectedRow = event.getSelectedItem().row;                
-                r = orderTestTable.getSelectedRow();
-
-                //
-                // since rows can be added to this table in two ways i.e. by 
-                // clicking addTestButton or selecting a panel and adding all
-                // the tests belonging to that panel we have to make sure that 
-                // in both cases the id of the test is set for each
-                // 
-                if (selectedRow != null && selectedRow.key != null) {
-                    data = (TestMethodVO)selectedRow.data;
-                    orderTestTable.setCell(r, 1, data.getMethodName());
-                    orderTestTable.setCell(r, 2, data.getTestDescription());
-                } else {
-                    orderTestTable.setCell(r, 1, null);
-                    orderTestTable.setCell(r, 1, null);
-                }
-            }
-
-        });
-
-        addTestButton = (AppButton)def.getWidget("addTestButton");
-        addScreenHandler(addTestButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                int r;
-
-                r = orderTestTable.getSelectedRow() + 1;
-                if (r == 0) 
-                    r = orderTestTable.numRows();                
-                orderTestTable.addRow(r);
-                orderTestTable.selectRow(r);
-                orderTestTable.scrollToSelection();
-                orderTestTable.startEditing(r, 0);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                addTestButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
-            }
-        });
-
-        removeTestButton = (AppButton)def.getWidget("removeTestButton");
-        addScreenHandler(removeTestButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                int r;
-
-                r = orderTestTable.getSelectedRow();
-                if (r > -1 && orderTestTable.numRows() > 0)
-                    orderTestTable.deleteRow(r);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                removeTestButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
-            }
-        });
+    private void initialize() {                
         
         orderContainerTable = (TableWidget)def.getWidget("orderContainerTable");
         addScreenHandler(orderContainerTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
@@ -417,7 +122,7 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
                     return;
                 }
                 
-                switch(c) {
+                /*switch(c) {
                     case 0:
                         data.setContainerId((Integer)val);
                         break;
@@ -427,7 +132,7 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
                     case 2:
                         data.setTypeOfSampleId((Integer)val);
                         break;
-                }
+                }*/
             }
         });
 
@@ -502,9 +207,7 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
         ArrayList<DictionaryDO> list;
         TableDataRow row;
 
-        container = (Dropdown) orderContainerTable.getColumns().get(0).getColumnWidget();
-        sampleTypes = (Dropdown) orderContainerTable.getColumns().get(2).getColumnWidget();        
-
+        container = (Dropdown) orderContainerTable.getColumns().get(1).getColumnWidget();
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("sample_container");
@@ -515,6 +218,7 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
         }
         container.setModel(model);
 
+        sampleTypes = (Dropdown) orderContainerTable.getColumns().get(2).getColumnWidget();
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("type_of_sample");
@@ -524,40 +228,13 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
             model.add(row); 
         }
         sampleTypes.setModel(model);
-    }   
-    
-    private ArrayList<TableDataRow> getTestTableModel() {
-        int i;
-        OrderTestViewDO data;
-        ArrayList<TableDataRow> model;
-        OrderTestManager man;
-        TableDataRow row;
-        
-        
-        model = new ArrayList<TableDataRow>();
-        if (manager == null)
-            return model;
-        
-        try {
-            man = manager.getTests();
-            for (i = 0; i < man.count(); i++ ) {
-                data = (OrderTestViewDO)man.getTestAt(i);
-                row = new TableDataRow(data.getTestId(), data.getTestName());
-                row.data = data;
-                model.add(new TableDataRow(null, row, data.getMethodName(), data.getDescription()));
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-        }
-        return model;
     }
     
     private ArrayList<TableDataRow> getContainerTableModel() {
-        int i;
         OrderContainerDO data;
         ArrayList<TableDataRow> model;
         OrderContainerManager man;
+        TableDataRow row;
         
         model = new ArrayList<TableDataRow>();
         if (manager == null)
@@ -565,11 +242,14 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
         
         try {
             man = manager.getContainers();
-            for (i = 0; i < man.count(); i++ ) {
-                data = (OrderContainerDO)man.getContainerAt(i);
-                model.add(new TableDataRow(null, data.getContainerId(), 
-                                           data.getNumberOfContainers(),                                                            
-                                           data.getTypeOfSampleId()));
+            for (int i = 0; i < man.count(); i++ ) {
+                data = man.getContainerAt(i);
+                
+                row = new TableDataRow(3);
+                row.cells.get(0).setValue(null);
+                row.cells.get(1).setValue(data.getContainerId());
+                row.cells.get(2).setValue(data.getTypeOfSampleId());
+                model.add(row);
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
@@ -588,46 +268,5 @@ public class ContainerTab extends Screen implements HasActionHandlers<ContainerT
             DataChangeEvent.fire(this);
 
         loaded = true;
-    }    
-    
-    private void addTestsFromPanel(Integer panelId, int index) {
-        ArrayList<TestMethodVO> tests;
-        TableDataRow row, val;  
-        TestMethodVO data;
-
-        try {
-            tests = testService.callList("fetchByPanelId", panelId);            
-            if (tests != null && tests.size() > 0) {
-                orderTestTable.deleteRow(index);
-                for (int i = 0; i < tests.size(); i++ ) {
-                    data = tests.get(i);
-
-                    row = new TableDataRow(3);
-
-                    val = new TableDataRow(data.getTestId(), data.getTestName());
-                    val.data = data;
-
-                    row.cells.get(0).setValue(val);
-                    row.cells.get(1).setValue(data.getMethodName());
-                    row.cells.get(2).setValue(data.getTestDescription());
-
-                    orderTestTable.addRow(index + i, row);
-                }
-            } else {
-                orderTestTable.setCellException(index, 0, new LocalizedException("noActiveTestFoundForPanelException"));
-                orderTestTable.setCell(index, 0, null);
-                orderTestTable.setCell(index, 1, null);
-                orderTestTable.setCell(index, 2, null);
-            }
-            
-            ActionEvent.fire(this, Action.ADD_AUX, panelId);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
-    } 
-
-    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
-        return addHandler(handler, ActionEvent.getType());
     }
 }

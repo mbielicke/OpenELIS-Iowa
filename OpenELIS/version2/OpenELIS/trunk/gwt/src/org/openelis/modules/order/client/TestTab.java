@@ -1,0 +1,474 @@
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
+package org.openelis.modules.order.client;
+
+import java.util.ArrayList;
+import java.util.EnumSet;
+
+import org.openelis.domain.OrderContainerDO;
+import org.openelis.domain.OrderTestViewDO;
+import org.openelis.domain.PanelDO;
+import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestViewDO;
+import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeGetMatchesEvent;
+import org.openelis.gwt.event.BeforeGetMatchesHandler;
+import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.GetMatchesEvent;
+import org.openelis.gwt.event.GetMatchesHandler;
+import org.openelis.gwt.event.HasActionHandlers;
+import org.openelis.gwt.event.StateChangeEvent;
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.AppButton;
+import org.openelis.gwt.widget.AutoComplete;
+import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindowInt;
+import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.event.CellEditedHandler;
+import org.openelis.gwt.widget.table.event.RowAddedEvent;
+import org.openelis.gwt.widget.table.event.RowAddedHandler;
+import org.openelis.gwt.widget.table.event.RowDeletedEvent;
+import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.gwt.widget.tree.TreeDataItem;
+import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.PanelManager;
+import org.openelis.manager.TestManager;
+
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Window;
+
+public class TestTab extends Screen implements HasActionHandlers<TestTab.Action> {
+
+    private OrderManager          manager;
+    private AutoComplete<Integer> test;
+    private AppButton             addTestButton, removeTestButton;
+    private TreeWidget            tree;
+    private boolean               loaded;
+
+    protected ScreenService       analysisService, panelService, testService;
+
+    public enum Action {
+        ADD_AUX
+    };
+
+    public TestTab(ScreenDefInt def, ScreenWindowInt window) {
+        service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
+        analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
+        panelService  = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
+        testService  = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
+
+        setDefinition(def);
+        setWindow(window);
+        initialize();
+    }
+
+    private void initialize() {        
+        tree = (TreeWidget)def.getWidget("orderTestTree");
+        addScreenHandler(tree, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+            public void onDataChange(DataChangeEvent event) {       
+                tree.load(getTreeModel());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                tree.enable(true);
+            }
+        });
+
+        tree.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                TreeDataItem item;
+                
+                if ((state == State.ADD || state == State.UPDATE || state == State.QUERY)) {  
+                    item = tree.getSelection();
+                    if (("test".equals(item.leafType) && event.getCol() > 1) || 
+                                    ("analyte".equals(item.leafType) && event.getCol() > 0));
+                        event.cancel();
+                } else {
+                    event.cancel();
+                }
+            }            
+        });
+        
+        tree.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                int r, c;
+                OrderTestViewDO data;
+                TestMethodVO test;
+                Object val;
+
+                r = event.getRow();
+                c = event.getCol();
+                val = tree.getObject(r,c);
+                
+                try {
+                    data = manager.getTests().getTestAt(r);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    return;
+                }
+                
+                switch(c) {
+                    case 0:
+                        if (val != null) {
+                            test = (TestMethodVO) ((TableDataRow)val).data;
+                            if(test.getMethodId() == null) {
+                                addTestsFromPanel(test.getTestId(), r);
+                            } else {
+                                data.setTestId(test.getTestId());
+                                data.setTestName(test.getTestName());
+                                data.setDescription(test.getTestDescription());
+                                data.setMethodName(test.getMethodName());
+                                data.setIsActive(test.getIsActive());
+                                
+                                tree.setCell(r, 1, test.getMethodName());
+                                tree.setCell(r, 2, test.getTestDescription());
+                            }
+                        } else {
+                            data.setTestId(null);
+                            data.setTestName(null);
+                            data.setMethodName(null);
+                            data.setDescription(null);
+                            data.setIsActive(null);
+                            
+                            tree.setCell(r, 1, null);
+                            tree.setCell(r, 2, null);
+                        }
+                }
+            }
+        });
+
+        tree.addRowAddedHandler(new RowAddedHandler() {
+            public void onRowAdded(RowAddedEvent event) {
+                int r;
+                TableDataRow val;
+                OrderTestViewDO data;
+                TestMethodVO test;                
+                OrderTestManager man;
+                
+                r = event.getIndex();
+                
+                try {
+                    man = manager.getTests();
+                    man.addTestAt(r);
+                    data = man.getTestAt(r);                    
+                    
+                    val = (TableDataRow)tree.getObject(r, 0);
+                    
+                    if(val != null) {
+                        test = (TestMethodVO)val.data;
+                        data.setTestId(test.getTestId());
+                        data.setTestName(test.getTestName());
+                        data.setMethodName(test.getMethodName());
+                        data.setDescription(test.getTestDescription());
+                        data.setIsActive(test.getIsActive());
+                    } else {
+                        data.setTestId(null);
+                        data.setTestName(null);
+                        data.setMethodName(null);
+                        data.setDescription(null);
+                        data.setIsActive(null);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+
+        tree.addRowDeletedHandler(new RowDeletedHandler() {
+            public void onRowDeleted(RowDeletedEvent event) {
+                try {
+                    manager.getTests().removeTestAt(event.getIndex());
+                } catch (Exception e) {                    
+                    Window.alert(e.getMessage());
+                }
+            }
+        });
+        test = (AutoComplete) tree.getColumns().get("test").get(1).getColumnWidget();
+        test.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
+            public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
+                int                     r;
+                Integer                 sampleType, testPanelId, sepIndex;
+                String                  value, flag;
+                ArrayList<TableDataRow> model;
+                TableDataRow            row;
+                OrderContainerDO        oData;
+                PanelDO                 pDO;
+                PanelManager            pMan;
+                TestManager             tMan;
+                TestViewDO              tVDO;
+                TestMethodVO            tmData;
+
+                value = event.getMatch();
+                if (value.matches("[tp][0-9]*\\-[0-9]*")) {
+                    flag = value.substring(0, 1);
+                    sepIndex = value.indexOf("-");
+                    testPanelId = Integer.valueOf(value.substring(1, sepIndex));
+                    sampleType = Integer.valueOf(value.substring(sepIndex + 1));
+                    try {
+                        //
+                        // Add container so we can set the sample type to it
+                        //
+                        //TODO find out what the follwoing code is for
+                        /*orderContainerTable.addRow();
+                        r = orderContainerTable.numRows() - 1;
+                        oData = manager.getContainers().getContainerAt(r);
+                        oData.setTypeOfSampleId(sampleType);
+                        orderContainerTable.load(getContainerTableModel());
+                        orderContainerTable.selectRow(r);
+                        orderContainerTable.scrollToSelection();*/
+
+                        row = new TableDataRow(3);
+                        tmData = new TestMethodVO();
+                        if ("t".equals(flag)) {
+                            tMan = testService.call("fetchById", testPanelId);
+                            tVDO = tMan.getTest();
+                            row.key = tVDO.getId();
+                            tmData.setTestId(tVDO.getId());
+                            row.cells.get(0).value = tVDO.getName();
+                            tmData.setTestName(tVDO.getName());
+                            row.cells.get(1).value = tVDO.getMethodName();
+                            tmData.setMethodId(tVDO.getMethodId());
+                            tmData.setMethodName(tVDO.getMethodName());
+                            row.cells.get(2).value = tVDO.getDescription();
+                            tmData.setTestDescription(tVDO.getDescription());
+                        } else if ("p".equals(flag)) {
+                            pMan = panelService.call("fetchById", testPanelId);
+                            pDO = pMan.getPanel();
+                            row.key = pDO.getId();
+                            tmData.setTestId(pDO.getId());
+                            row.cells.get(0).value = pDO.getName();
+                            tmData.setTestName(pDO.getName());
+                            row.cells.get(2).value = pDO.getDescription();
+                            tmData.setTestDescription(pDO.getDescription());
+                        }
+                        row.data = tmData;
+                        model = new ArrayList<TableDataRow>();
+                        model.add(row);
+                        test.setModel(model);
+                        test.setSelection(row.key);
+                        tree.finishEditing();
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
+                    event.cancel();
+                }
+            }
+        });
+
+        test.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                ArrayList<TableDataRow> model;
+                ArrayList<TestMethodVO> autoList;
+                TableDataRow            row;
+                TestMethodVO            data;
+
+                try {
+                    autoList = panelService.callList("fetchByNameWithTests", 
+                                                     QueryFieldUtil.parseAutocomplete(event.getMatch())+"%");
+                    model = new ArrayList<TableDataRow>();
+                    for (int i = 0; i < autoList.size(); i++ ) {
+                        data = autoList.get(i);
+                        row = new TableDataRow(i, data.getTestName(), data.getMethodName(),
+                                               data.getTestDescription());
+                        row.data = data;
+                        model.add(row);
+                    }
+                    test.showAutoMatches(model);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }            
+        });
+        
+        test.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                TableDataRow selectedRow;
+                TestMethodVO data;
+                int r;
+
+                selectedRow = event.getSelectedItem().row;                
+                r = tree.getSelectedRow();
+
+                //
+                // since rows can be added to this table in two ways i.e. by 
+                // clicking addTestButton or selecting a panel and adding all
+                // the tests belonging to that panel we have to make sure that 
+                // in both cases the id of the test is set for each
+                // 
+                if (selectedRow != null && selectedRow.key != null) {
+                    data = (TestMethodVO)selectedRow.data;
+                    tree.setCell(r, 1, data.getMethodName());
+                    tree.setCell(r, 2, data.getTestDescription());
+                } else {
+                    tree.setCell(r, 1, null);
+                    tree.setCell(r, 1, null);
+                }
+            }
+
+        });
+
+        addTestButton = (AppButton)def.getWidget("addTestButton");
+        addScreenHandler(addTestButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int r;
+
+                r = tree.getSelectedRow() + 1;
+                if (r == 0) 
+                    r = tree.numRows();    
+              //TODO fix the following
+                //orderTestTree.addRow(r);
+                //orderTestTree.selectRow(r);
+                tree.scrollToSelection();
+                tree.startEditing(r, 0);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                addTestButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+
+        removeTestButton = (AppButton)def.getWidget("removeTestButton");
+        addScreenHandler(removeTestButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int r;
+
+                r = tree.getSelectedRow();
+                if (r > -1 && tree.numRows() > 0)
+                    tree.deleteRow(r);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                removeTestButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+    }
+    
+    private ArrayList<TreeDataItem> getTreeModel() {
+        int i;
+        OrderTestViewDO data;
+        ArrayList<TreeDataItem> model;
+        OrderTestManager man;
+        TableDataRow row;
+        TreeDataItem item;
+        
+        
+        model = new ArrayList<TreeDataItem>();
+        if (manager == null)
+            return model;
+        
+        try {
+            man = manager.getTests();
+            for (i = 0; i < man.count(); i++ ) {
+                data = (OrderTestViewDO)man.getTestAt(i);
+                item = new TreeDataItem(4);
+                item.leafType = "test";
+                item.key = data.getId();
+                item.cells.get(0).setValue(null);
+                row = new TableDataRow(data.getTestId(), data.getTestName());
+                row.data = data;
+                item.cells.get(1).setValue(row);
+                item.cells.get(2).setValue(data.getMethodName());
+                item.cells.get(3).setValue(data.getDescription());
+                item.close();
+                item.checkForChildren(true);
+                
+                model.add(item);
+            }
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            e.printStackTrace();
+        }
+        return model;
+    }   
+    
+    public void setManager(OrderManager manager) {
+        this.manager = manager;
+        loaded = false;
+    }
+
+    public void draw() {
+        if ( !loaded)
+            DataChangeEvent.fire(this);
+
+        loaded = true;
+    }    
+    
+    private void addTestsFromPanel(Integer panelId, int index) {
+        ArrayList<TestMethodVO> tests;
+        TableDataRow row, val;  
+        TestMethodVO data;
+
+        try {
+            tests = testService.callList("fetchByPanelId", panelId);            
+            if (tests != null && tests.size() > 0) {
+                tree.deleteRow(index);
+                for (int i = 0; i < tests.size(); i++ ) {
+                    data = tests.get(i);
+
+                    row = new TableDataRow(3);
+
+                    val = new TableDataRow(data.getTestId(), data.getTestName());
+                    val.data = data;
+
+                    row.cells.get(0).setValue(val);
+                    row.cells.get(1).setValue(data.getMethodName());
+                    row.cells.get(2).setValue(data.getTestDescription());
+                    //TODO fix the following
+                    //orderTestTree.addRow(index + i, row);
+                }
+            } else {
+                tree.setCellException(index, 0, new LocalizedException("noActiveTestFoundForPanelException"));
+                tree.setCell(index, 0, null);
+                tree.setCell(index, 1, null);
+                tree.setCell(index, 2, null);
+            }
+            
+            ActionEvent.fire(this, Action.ADD_AUX, panelId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+    } 
+
+    public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
+    }
+}

@@ -35,9 +35,9 @@ import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestManager;
-import org.openelis.report.Prompt;
 import org.openelis.server.EJBFactory;
 
 public class OrderService {
@@ -52,6 +52,10 @@ public class OrderService {
     public OrderViewDO fetchByShippingItemId(Integer id) throws Exception {
         return EJBFactory.getOrder().fetchByShippingItemId(id);
     }
+    
+    public OrderManager fetchWithOrganizations(Integer id) throws Exception {
+        return EJBFactory.getOrderManager().fetchWithOrganizations(id);
+    }
 
     public OrderManager fetchWithItems(Integer id) throws Exception {
         return EJBFactory.getOrderManager().fetchWithItems(id);
@@ -65,9 +69,13 @@ public class OrderService {
         return EJBFactory.getOrderManager().fetchWithNotes(id);
     }
     
-    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
-        return EJBFactory.getOrderManager().fetchWithTestsAndContainers(id);
-    } 
+    public OrderManager fetchWithTests(Integer id) throws Exception {
+        return EJBFactory.getOrderManager().fetchWithTests(id);
+    }
+    
+    public OrderManager fetchWithContainers(Integer id) throws Exception {
+        return EJBFactory.getOrderManager().fetchWithContainers(id);
+    }
     
     public OrderManager fetchWithRecurring(Integer id) throws Exception {
         return EJBFactory.getOrderManager().fetchWithRecurring(id);
@@ -104,6 +112,11 @@ public class OrderService {
     //
     // support for OrderItemManager, OrderFillManager, OrderTestManager, OrderContainerManager
     //
+    
+    public OrderOrganizationManager fetchOrganizationByOrderId(Integer id) throws Exception {
+        return EJBFactory.getOrderManager().fetchOrganizationByOrderId(id);
+    }
+    
     public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
         return EJBFactory.getOrderManager().fetchItemByOrderId(id);
     }

@@ -40,6 +40,10 @@ public class OrderManagerProxy {
     public OrderManager fetchById(Integer id) throws Exception {
         return service.call("fetchById", id);
     }
+    
+    public OrderManager fetchWithOrganizations(Integer id) throws Exception {
+        return service.call("fetchWithOrganizations", id);
+    }
 
     public OrderManager fetchWithItems(Integer id) throws Exception {
         return service.call("fetchWithItems", id);
@@ -53,8 +57,12 @@ public class OrderManagerProxy {
         return service.call("fetchWithNotes", id);
     }
     
-    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
-        return service.call("fetchWithTestsAndContainers", id);
+    public OrderManager fetchWithTests(Integer id) throws Exception {
+        return service.call("fetchWithTests", id);
+    }
+    
+    public OrderManager fetchWithContainers(Integer id) throws Exception {
+        return service.call("fetchWithContainers", id);
     }
     
     public OrderManager fetchWithRecurring(Integer id) throws Exception {
