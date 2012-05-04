@@ -123,9 +123,7 @@
 				<text><![CDATA[Statistics]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="mean" positionType="Float" x="560" y="85" width="110" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
-					<printWhenExpression><![CDATA[$F{MEAN}!=null]]></printWhenExpression>
-				</reportElement>
+				<reportElement key="mean" positionType="Float" x="560" y="85" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.0"/>
@@ -138,9 +136,7 @@
 				<text><![CDATA[Mean]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="uwl" positionType="Float" x="560" y="121" width="110" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
-					<printWhenExpression><![CDATA[$F{UWL} != null]]></printWhenExpression>
-				</reportElement>
+				<reportElement key="uwl" positionType="Float" x="560" y="121" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.0"/>
@@ -153,9 +149,7 @@
 				<text><![CDATA[UWL]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="ucl" positionType="Float" x="560" y="109" width="110" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
-					<printWhenExpression><![CDATA[$F{UCL} != null]]></printWhenExpression>
-				</reportElement>
+				<reportElement key="ucl" positionType="Float" x="560" y="109" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.0"/>
@@ -168,7 +162,7 @@
 				<text><![CDATA[UCL]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="670" y="85" width="80" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="85" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{MEAN} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -181,7 +175,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{MEAN}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="670" y="109" width="80" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="109" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{UCL} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -194,7 +188,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{UCL}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="670" y="121" width="80" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="121" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{UWL} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -207,7 +201,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[($F{UWL})]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="670" y="133" width="80" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="133" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{LWL} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -220,9 +214,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[($F{LWL})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="lwl" positionType="Float" x="560" y="133" width="110" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
-					<printWhenExpression><![CDATA[$F{LWL} != null]]></printWhenExpression>
-				</reportElement>
+				<reportElement key="lwl" positionType="Float" x="560" y="133" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.0"/>
@@ -235,7 +227,7 @@
 				<text><![CDATA[LWL]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="670" y="145" width="80" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="145" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{LCL} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -248,9 +240,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[($F{LCL})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="lcl" positionType="Float" x="560" y="145" width="110" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
-					<printWhenExpression><![CDATA[$F{LCL} != null]]></printWhenExpression>
-				</reportElement>
+				<reportElement key="lcl" positionType="Float" x="560" y="145" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.0"/>
@@ -263,9 +253,7 @@
 				<text><![CDATA[LCL]]></text>
 			</staticText>
 			<staticText>
-				<reportElement key="concBias" positionType="Float" x="560" y="97" width="110" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
-					<printWhenExpression><![CDATA[$F{MEAN}!=null]]></printWhenExpression>
-				</reportElement>
+				<reportElement key="concBias" positionType="Float" x="560" y="97" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<topPen lineWidth="0.0"/>
 					<leftPen lineWidth="0.0"/>
@@ -278,7 +266,7 @@
 				<text><![CDATA[Conc Bias]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="670" y="97" width="80" height="12" isRemoveLineWhenBlank="true" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="97" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{MEAN}!=null]]></printWhenExpression>
 				</reportElement>
 				<box>
