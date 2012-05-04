@@ -39,6 +39,7 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderViewDO;
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.entity.Order;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -63,7 +64,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
     private EntityManager            manager;
     
     @EJB
-    private  OrganizationLocal       organizationBean;
+    private  OrganizationLocal       organization;
 
     private static final OrderMeta meta = new OrderMeta();
     
@@ -75,7 +76,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         query.setParameter("id", id);
         try {
             data = (OrderViewDO)query.getSingleResult();          
-            setOrganizationReportToBillTo(data);
+            data.setOrganization(organization.fetchById(data.getOrganizationId()));
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -101,7 +102,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         query.setParameter("id", id);
         try {
             data = (OrderViewDO)query.getSingleResult();          
-            setOrganizationReportToBillTo(data);
+            data.setOrganization(organization.fetchById(data.getOrganizationId()));
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -168,11 +169,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
                           OrderMeta.getOrganizationId()+", " +
                           OrderMeta.getOrganizationAttention()+", " +
                           OrderMeta.getType()+", " +
-                          OrderMeta.getExternalOrderNumber()+", " +
-                          OrderMeta.getReportToId()+", " +
-                          OrderMeta.getReportToAttention()+", " +
-                          OrderMeta.getBillToId()+", " +
-                          OrderMeta.getBillToAttention()+", " +
+                          OrderMeta.getExternalOrderNumber()+", " +                          
                           OrderMeta.getShipFromId()+", " +
                           OrderMeta.getNumberOfForms()+ ") ");
         builder.constructWhere(fields);       
@@ -193,7 +190,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         try {
             for (int i = 0; i < list.size(); i++ ) {
                 data = (OrderViewDO)list.get(i);
-                setOrganizationReportToBillTo(data);
+                data.setOrganization(organization.fetchById(data.getOrganizationId()));
             }
             return DataBaseUtil.toArrayList(list);
         } catch (NoResultException e) {            
@@ -220,10 +217,6 @@ public class OrderBean implements OrderRemote, OrderLocal {
         entity.setOrganizationAttention(data.getOrganizationAttention());
         entity.setType(data.getType());
         entity.setExternalOrderNumber(data.getExternalOrderNumber());
-        entity.setReportToId(data.getReportToId());
-        entity.setReportToAttention(data.getReportToAttention());
-        entity.setBillToId(data.getBillToId());
-        entity.setBillToAttention(data.getBillToAttention());
         entity.setShipFromId(data.getShipFromId());
         entity.setNumberOfForms(data.getNumberOfForms());
 
@@ -252,10 +245,6 @@ public class OrderBean implements OrderRemote, OrderLocal {
         entity.setOrganizationAttention(data.getOrganizationAttention());
         entity.setType(data.getType());
         entity.setExternalOrderNumber(data.getExternalOrderNumber());
-        entity.setReportToId(data.getReportToId());
-        entity.setReportToAttention(data.getReportToAttention());
-        entity.setBillToId(data.getBillToId());
-        entity.setBillToAttention(data.getBillToAttention());
         entity.setShipFromId(data.getShipFromId());
         entity.setNumberOfForms(data.getNumberOfForms());
 
@@ -277,31 +266,5 @@ public class OrderBean implements OrderRemote, OrderLocal {
 
         if (list.size() > 0)
             throw list;
-    }
-    
-    private void setOrganizationReportToBillTo(OrderViewDO data) throws Exception {
-        ArrayList<Integer> ids;   
-        List<OrganizationViewDO> list;
-        OrganizationViewDO organization;
-        
-        ids = new ArrayList<Integer>(3);
-        if (data.getOrganizationId() != null)
-            ids.add(data.getOrganizationId());
-        if (data.getReportToId() != null) 
-            ids.add(data.getReportToId());
-        if (data.getBillToId() != null) 
-            ids.add(data.getBillToId());
-        if (ids.size() != 0) {
-            list = organizationBean.fetchByIds(ids);
-            for (int i = 0; i < list.size(); i++) {
-                organization = list.get(i);
-                if (organization.getId().equals(data.getOrganizationId()) && data.getOrganization() == null)
-                    data.setOrganization(organization);
-                if (organization.getId().equals(data.getReportToId()) && data.getReportTo() == null)
-                    data.setReportTo(organization);
-                if (organization.getId().equals(data.getBillToId()) && data.getBillTo() == null)
-                    data.setBillTo(organization);
-            }
-        }
     }
 }

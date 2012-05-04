@@ -38,9 +38,10 @@ public class OrderDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, parentOrderId, statusId, neededInDays, costCenterId, organizationId, reportToId,
-                              billToId, shipFromId, numberOfForms;
-    protected String          description, requestedBy, type, externalOrderNumber, organizationAttention, reportToAttention, billToAttention;
+    protected Integer         id, parentOrderId, statusId, neededInDays, costCenterId,
+                              organizationId, shipFromId, numberOfForms;
+    protected String          description, requestedBy, type, externalOrderNumber,
+                              organizationAttention;
     protected Datetime        orderedDate;
 
     public OrderDO() {
@@ -49,9 +50,8 @@ public class OrderDO extends DataObject {
     public OrderDO(Integer id, Integer parentOrderId, String description, Integer statusId,
                    Date orderedDate, Integer neededInDays, String requestedBy, 
                    Integer costCenterId, Integer organizationId,String organizationAttention, 
-                   String type, String externalOrderNumber, Integer reportToId,
-                   String reportToAttention, Integer billToId, String billToAttention,
-                   Integer shipFromId, Integer numberOfForms) {
+                   String type, String externalOrderNumber, Integer shipFromId, 
+                   Integer numberOfForms) {
         setId(id);
         setParentOrderId(parentOrderId);
         setDescription(description);
@@ -64,10 +64,6 @@ public class OrderDO extends DataObject {
         setOrganizationAttention(organizationAttention);                
         setType(type);
         setExternalOrderNumber(externalOrderNumber);
-        setReportToId(reportToId);
-        setReportToAttention(reportToAttention);
-        setBillToId(billToId);
-        setBillToAttention(billToAttention);
         setShipFromId(shipFromId);
         setNumberOfForms(numberOfForms);
         
@@ -173,24 +169,6 @@ public class OrderDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getReportToId() {
-        return reportToId;
-    }
-
-    public void setReportToId(Integer reportToId) {
-        this.reportToId = reportToId;
-        _changed = true;
-    }
-
-    public Integer getBillToId() {
-        return billToId;
-    }
-
-    public void setBillToId(Integer billToId) {
-        this.billToId = billToId;
-        _changed = true;
-    }
-
     public Integer getShipFromId() {
         return shipFromId;
     }
@@ -215,24 +193,6 @@ public class OrderDO extends DataObject {
 
     public void setOrganizationAttention(String organizationAttention) {
         this.organizationAttention = DataBaseUtil.trim(organizationAttention);
-        _changed = true;
-    }
-
-    public String getReportToAttention() {
-        return reportToAttention;
-    }
-
-    public void setReportToAttention(String reportToAttention) {
-        this.reportToAttention = DataBaseUtil.trim(reportToAttention);
-        _changed = true;
-    }
-
-    public String getBillToAttention() {
-        return billToAttention;
-    }
-
-    public void setBillToAttention(String billToAttention) {
-        this.billToAttention = DataBaseUtil.trim(billToAttention);
         _changed = true;
     }
 }

@@ -44,6 +44,7 @@ import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
@@ -60,6 +61,7 @@ import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.remote.OrderManagerRemote;
@@ -101,6 +103,10 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
     public OrderManager fetchById(Integer id) throws Exception {
         return OrderManager.fetchById(id);
     }
+    
+    public OrderManager fetchWithOrganizations(Integer id) throws Exception {
+        return OrderManager.fetchWithOrganizations(id);
+    }
 
     public OrderManager fetchWithItems(Integer id) throws Exception {
         return OrderManager.fetchWithItems(id);
@@ -114,8 +120,12 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
         return OrderManager.fetchWithNotes(id);
     }
     
-    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {        
-        return OrderManager.fetchWithTestsAndContainers(id);
+    public OrderManager fetchWithTests(Integer id) throws Exception {        
+        return OrderManager.fetchWithTests(id);
+    }
+    
+    public OrderManager fetchWithContainers(Integer id) throws Exception {        
+        return OrderManager.fetchWithContainers(id);
     }
     
     public OrderManager fetchWithRecurring(Integer id) throws Exception {
@@ -209,7 +219,11 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
         
         return newMan;
     }
-
+    
+    public OrderOrganizationManager fetchOrganizationByOrderId(Integer id) throws Exception {
+        return OrderOrganizationManager.fetchByOrderId(id);
+    } 
+    
     public OrderItemManager fetchItemByOrderId(Integer id) throws Exception {
         return OrderItemManager.fetchByOrderId(id);
     }
@@ -260,21 +274,38 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
         newData.setOrganization(oldData.getOrganization());
         newData.setOrganizationAttention(oldData.getOrganizationAttention());
         newData.setOrganizationId(oldData.getOrganizationId());        
-        newData.setReportTo(oldData.getReportTo());
-        newData.setReportToAttention(oldData.getReportToAttention());
-        newData.setReportToId(oldData.getReportToId());        
-        newData.setBillTo(oldData.getBillTo());
-        newData.setBillToAttention(oldData.getBillToAttention());
-        newData.setBillToId(oldData.getBillToId());
         newData.setShipFromId(oldData.getShipFromId());   
         newData.setNumberOfForms(oldData.getNumberOfForms());               
         
+        duplicateOrganizations(oldMan.getOrganizations(), newMan.getOrganizations());
         duplicateItems(oldMan.getItems(), newMan.getItems());        
         duplicateNotes(oldMan.getShippingNotes(), newMan.getShippingNotes());
         duplicateNotes(oldMan.getCustomerNotes(), newMan.getCustomerNotes());
         duplicateTests(oldMan.getTests(), newMan.getTests());
         duplicateContainers(oldMan.getContainers(), newMan.getContainers());
         duplicateAuxData(oldMan.getAuxData(), newMan.getAuxData(), forRecur);
+    }
+    
+    private void duplicateOrganizations(OrderOrganizationManager oldMan, OrderOrganizationManager newMan)  {        
+        OrderOrganizationViewDO oldData, newData;
+        
+        for (int i = 0; i < oldMan.count(); i++) {
+            oldData = oldMan.getOrganizationAt(i);
+            newData = new OrderOrganizationViewDO();
+            newData.setOrganizationId(oldData.getOrganizationId());
+            newData.setOrganizationAttention(oldData.getOrganizationAttention());
+            newData.setTypeId(oldData.getTypeId());
+            newData.setOrganizationName(oldData.getOrganizationName());
+            newData.setOrganizationAddressMultipleUnit(oldData.getOrganizationAddressMultipleUnit());
+            newData.setOrganizationAddressStreetAddress(oldData.getOrganizationAddressStreetAddress());
+            newData.setOrganizationAddressCity(oldData.getOrganizationAddressCity());
+            newData.setOrganizationAddressState(oldData.getOrganizationAddressState());
+            newData.setOrganizationAddressZipCode(oldData.getOrganizationAddressZipCode());
+            newData.setOrganizationAddressWorkPhone(oldData.getOrganizationAddressWorkPhone());
+            newData.setOrganizationAddressFaxPhone(oldData.getOrganizationAddressFaxPhone());
+            newData.setOrganizationAddressCountry(oldData.getOrganizationAddressCountry());
+            newMan.addOrganization(newData);
+        }
     }
 
     private void duplicateItems(OrderItemManager oldMan, OrderItemManager newMan)  {        
