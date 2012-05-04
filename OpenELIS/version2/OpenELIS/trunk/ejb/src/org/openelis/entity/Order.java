@@ -58,7 +58,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Order.FetchById",
                 query = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
                 		"o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
-                		"o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId,o.numberOfForms)"
+                		"o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
                 	  + " from Order o where o.id = :id"),
     @NamedQuery( name = "Order.FetchByDescription",
                 query = "select distinct new org.openelis.domain.IdNameVO(o.id,o.description)"
@@ -66,13 +66,13 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Order.FetchByShippingItemId",
                 query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
                         "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
-                        "o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId,o.numberOfForms)"
+                        "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
                       + " from Order o left join o.orderItem i "
                       +	" where i.id = (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.id = :id)"),
     @NamedQuery( name = "Order.FetchByShippingId",
                 query  = "select new org.openelis.domain.OrderViewDO(o.id,o.parentOrderId,o.description,o.statusId,o.orderedDate," +
                          "o.neededInDays,o.requestedBy,o.costCenterId,o.organizationId,o.organizationAttention," +
-                         "o.type,o.externalOrderNumber,o.reportToId,o.reportToAttention,o.billToId,o.billToAttention,o.shipFromId,o.numberOfForms)"
+                         "o.type,o.externalOrderNumber,o.shipFromId,o.numberOfForms)"
                        + " from Order o left join o.orderItem i "
                        + " where i.id in (select s.referenceId from ShippingItem s where s.referenceTableId = org.openelis.domain.ReferenceTable.ORDER_ITEM and s.shippingId = :shippingId)")})
 
@@ -119,18 +119,6 @@ public class Order implements Auditable, Cloneable {
     @Column(name = "external_order_number")
     private String                externalOrderNumber;
 
-    @Column(name = "report_to_id")
-    private Integer               reportToId;
-    
-    @Column(name = "report_to_attention")
-    private String               reportToAttention;
-
-    @Column(name = "bill_to_id")
-    private Integer               billToId;
-    
-    @Column(name = "bill_to_attention")
-    private String               billToAttention;
-
     @Column(name = "ship_from_id")
     private Integer               shipFromId;
     
@@ -139,15 +127,11 @@ public class Order implements Auditable, Cloneable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", insertable = false, updatable = false)
-    private Organization          organization;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "report_to_id", insertable = false, updatable = false)
-    private Organization          reportTo;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bill_to_id", insertable = false, updatable = false)
-    private Organization          billTo;
+    private Organization          organization;       
+    
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Collection<OrderOrganization> orderOrganization; 
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
@@ -167,7 +151,7 @@ public class Order implements Auditable, Cloneable {
     
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Collection<OrderRecurrence>     orderRecurrence;    
+    private Collection<OrderRecurrence> orderRecurrence;    
 
     @Transient
     private Order                 original;
@@ -281,42 +265,6 @@ public class Order implements Auditable, Cloneable {
             this.externalOrderNumber = externalOrderNumber;
     }
 
-    public Integer getReportToId() {
-        return reportToId;
-    }
-
-    public void setReportToId(Integer reportToId) {
-        if (DataBaseUtil.isDifferent(reportToId, this.reportToId))
-            this.reportToId = reportToId;
-    }
-
-    public String getReportToAttention() {
-        return reportToAttention;
-    }
-
-    public void setReportToAttention(String reportToAttention) {
-        if (DataBaseUtil.isDifferent(reportToAttention, this.reportToAttention))
-            this.reportToAttention = reportToAttention;
-    }
-
-    public Integer getBillToId() {
-        return billToId;
-    }
-
-    public void setBillToId(Integer billToId) {
-        if (DataBaseUtil.isDifferent(billToId, this.billToId))
-            this.billToId = billToId;
-    }    
-
-    public String getBillToAttention() {
-        return billToAttention;
-    }
-
-    public void setBillToAttention(String billToAttention) {
-        if (DataBaseUtil.isDifferent(billToAttention, this.billToAttention))
-            this.billToAttention = billToAttention;
-    }
-
     public Integer getShipFromId() {
         return shipFromId;
     }
@@ -333,18 +281,18 @@ public class Order implements Auditable, Cloneable {
     public void setNumberOfForms(Integer numberOfForms) {
         if (DataBaseUtil.isDifferent(numberOfForms, this.numberOfForms))
             this.numberOfForms = numberOfForms;
-    }    
-
-    public Organization getBillTo() {
-        return billTo;
     }
 
     public Organization getOrganization() {
         return organization;
     }
+    
+    public Collection<OrderOrganization> getOrderOrganization() {
+        return orderOrganization;
+    }
 
-    public Organization getReportTo() {
-        return reportTo;
+    public void setOrderOrganization(Collection<OrderOrganization> orderOrganization) {
+        this.orderOrganization = orderOrganization;
     }
 
     public Collection<OrderItem> getOrderItem() {
@@ -414,8 +362,6 @@ public class Order implements Auditable, Cloneable {
                  .setField("organization_attention", organizationAttention, original.organizationAttention)
                  .setField("type", type, original.type)
                  .setField("external_order_number", externalOrderNumber, original.externalOrderNumber)
-                 .setField("report_to_id", reportToId, original.reportToId)
-                 .setField("bill_to_id", billToId, original.billToId)
                  .setField("ship_from_id", shipFromId, original.shipFromId)
                  .setField("number_of_forms", numberOfForms, original.numberOfForms);
 

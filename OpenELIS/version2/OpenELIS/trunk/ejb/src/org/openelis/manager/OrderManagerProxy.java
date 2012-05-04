@@ -46,6 +46,15 @@ public class OrderManagerProxy {
         
         return m;
     }
+    
+    public OrderManager fetchWithOrganizations(Integer id) throws Exception {
+        OrderManager m;
+
+        m = fetchById(id);
+        m.getOrganizations();
+
+        return m;
+    }
 
     public OrderManager fetchWithItems(Integer id) throws Exception {
         OrderManager m;
@@ -76,12 +85,20 @@ public class OrderManagerProxy {
         return m;
     }
     
-    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
+    public OrderManager fetchWithTests(Integer id) throws Exception {
+        OrderManager m;
+
+        m = fetchById(id);
+        m.getTests();
+
+        return m;
+    }
+    
+    public OrderManager fetchWithContainers(Integer id) throws Exception {
         OrderManager m;
 
         m = fetchById(id);
         m.getContainers();
-        m.getTests();
 
         return m;
     }
@@ -103,6 +120,11 @@ public class OrderManagerProxy {
         data = man.getOrder();
         EJBFactory.getOrder().add(data);
         id = data.getId();   
+        
+        if (man.organizations != null) {
+            man.getOrganizations().setOrderId(id);
+            man.getOrganizations().add();
+        }
         
         if (man.items != null) {
             man.getItems().setOrderId(id);
@@ -167,8 +189,12 @@ public class OrderManagerProxy {
 
         data = man.getOrder();        
         id = data.getId();                 
-
         EJBFactory.getOrder().update(data);
+
+        if (man.organizations != null) {
+            man.getOrganizations().setOrderId(id);
+            man.getOrganizations().update();
+        }
         
         if (man.items != null) {
             man.getItems().setOrderId(id);
@@ -244,6 +270,13 @@ public class OrderManagerProxy {
         list = new ValidationErrorsList();
         try {
             EJBFactory.getOrder().validate(man.getOrder());
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        
+        try {
+            if (man.organizations != null)
+                man.getOrganizations().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }

@@ -7,6 +7,7 @@ import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestManager;
 
@@ -14,6 +15,8 @@ import org.openelis.manager.OrderTestManager;
 public interface OrderManagerRemote {
 
     public OrderManager fetchById(Integer id) throws Exception;
+    
+    public OrderManager fetchWithOrganizations(Integer id) throws Exception;
 
     public OrderManager fetchWithItems(Integer id) throws Exception;
 
@@ -21,7 +24,9 @@ public interface OrderManagerRemote {
 
     public OrderManager fetchWithNotes(Integer id) throws Exception;
     
-    public OrderManager fetchWithTestsAndContainers(Integer id) throws Exception;
+    public OrderManager fetchWithTests(Integer id) throws Exception;
+
+    public OrderManager fetchWithContainers(Integer id) throws Exception;
 
     public OrderManager fetchWithRecurring(Integer id) throws Exception;
     
@@ -34,6 +39,8 @@ public interface OrderManagerRemote {
     public OrderManager fetchForUpdate(Integer id) throws Exception;
 
     public OrderManager abortUpdate(Integer id) throws Exception;
+    
+    public OrderOrganizationManager fetchOrganizationByOrderId(Integer id) throws Exception;
     
     public OrderItemManager fetchItemByOrderId(Integer id) throws Exception;
 

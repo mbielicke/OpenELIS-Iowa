@@ -36,6 +36,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
     private static final long                    serialVersionUID = 1L;
 
     protected OrderViewDO                        order;
+    protected OrderOrganizationManager           organizations;
     protected OrderItemManager                   items;
     protected OrderFillManager                   fills;
     protected OrderReceiptManager                receipts;
@@ -57,6 +58,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
      */
     protected OrderManager() {
         order = null;
+        organizations = null;
         items = null;
         fills = null;
         receipts = null;
@@ -92,6 +94,10 @@ public class OrderManager implements RPC, HasAuxDataInt {
         return proxy().fetchById(id);
     }
     
+    public static OrderManager fetchWithOrganizations(Integer id) throws Exception {
+        return proxy().fetchWithOrganizations(id);
+    }
+    
     public static OrderManager fetchWithItems(Integer id) throws Exception {
         return proxy().fetchWithItems(id);
     }
@@ -104,8 +110,12 @@ public class OrderManager implements RPC, HasAuxDataInt {
         return proxy().fetchWithNotes(id);
     }
     
-    public static OrderManager fetchWithTestsAndContainers(Integer id) throws Exception {
-        return proxy().fetchWithTestsAndContainers(id);
+    public static OrderManager fetchWithTests(Integer id) throws Exception {
+        return proxy().fetchWithTests(id);
+    }
+    
+    public static OrderManager fetchWithContainers(Integer id) throws Exception {
+        return proxy().fetchWithContainers(id);
     }
     
     public static OrderManager fetchWithRecurrence(Integer id) throws Exception {
@@ -143,7 +153,26 @@ public class OrderManager implements RPC, HasAuxDataInt {
 
     //
     // other managers
-    //
+    //    
+    public OrderOrganizationManager getOrganizations() throws Exception {
+        if (organizations == null) {
+            if (order.getId() != null) {
+                try {
+                    organizations = OrderOrganizationManager.fetchByOrderId(order.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+
+            if (organizations == null)
+                organizations = OrderOrganizationManager.getInstance();
+        }
+
+        return organizations;
+    }
+    
     public OrderItemManager getItems() throws Exception {
         if (items == null) {
             if (order.getId() != null) {
@@ -254,23 +283,6 @@ public class OrderManager implements RPC, HasAuxDataInt {
         return internalNotes;
     }
     
-    public OrderContainerManager getContainers() throws Exception {
-        if (containers == null) {
-            if (order.getId() != null) {
-                try {
-                    containers = OrderContainerManager.fetchByOrderId(order.getId());
-                } catch (NotFoundException e) {
-                    // ignore
-                } catch (Exception e) {
-                    throw e;
-                }
-            }
-            if (containers == null)
-                containers = OrderContainerManager.getInstance();
-        }
-        return containers;
-    }
-    
     public OrderTestManager getTests() throws Exception {
         if (tests == null) {
             if (order.getId() != null) {
@@ -286,6 +298,23 @@ public class OrderManager implements RPC, HasAuxDataInt {
                 tests = OrderTestManager.getInstance();
         }
         return tests;
+    }
+    
+    public OrderContainerManager getContainers() throws Exception {
+        if (containers == null) {
+            if (order.getId() != null) {
+                try {
+                    containers = OrderContainerManager.fetchByOrderId(order.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (containers == null)
+                containers = OrderContainerManager.getInstance();
+        }
+        return containers;
     }
     
     public AuxDataManager getAuxData() throws Exception {

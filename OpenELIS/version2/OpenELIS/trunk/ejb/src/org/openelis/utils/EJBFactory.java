@@ -57,6 +57,8 @@ import org.openelis.local.NoteLocal;
 import org.openelis.local.OrderContainerLocal;
 import org.openelis.local.OrderItemLocal;
 import org.openelis.local.OrderLocal;
+import org.openelis.local.OrderManagerLocal;
+import org.openelis.local.OrderOrganizationLocal;
 import org.openelis.local.OrderRecurrenceLocal;
 import org.openelis.local.OrderTestLocal;
 import org.openelis.local.OrganizationContactLocal;
@@ -220,6 +222,10 @@ public class EJBFactory {
         return (NoteLocal)lookup("NoteBean!org.openelis.local.NoteLocal");
     }
 
+    public static OrderOrganizationLocal getOrderOrganization() {
+        return (OrderOrganizationLocal)lookup("OrderOrganizationBean!org.openelis.local.OrderOrganizationLocal");
+    }
+    
     public static OrderContainerLocal getOrderContainer() {
         return (OrderContainerLocal)lookup("OrderContainerBean!org.openelis.local.OrderContainerLocal");
     }
@@ -230,6 +236,10 @@ public class EJBFactory {
     
     public static OrderLocal getOrder() {
         return (OrderLocal)lookup("OrderBean!org.openelis.local.OrderLocal");
+    }
+    
+    public static OrderManagerLocal getOrderManager() {
+        return (OrderManagerLocal)lookup("OrderManagerBean!org.openelis.local.OrderManagerLocal");
     }
     
     public static OrderTestLocal getOrderTest() {

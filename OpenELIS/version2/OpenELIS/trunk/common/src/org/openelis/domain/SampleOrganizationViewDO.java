@@ -28,8 +28,8 @@ package org.openelis.domain;
 import org.openelis.gwt.common.DataBaseUtil;
 
 /**
- * The class extends analysis DO and carries several commonly used fields such
- * as test & method names. The additional fields are for read/display only and
+ * The class extends sample organization DO and carries several commonly used fields
+ * such as organization name. The additional fields are for read/display only and
  * do not get committed to the database. Note: isChanged will reflect any
  * changes to read/display fields.
  */
