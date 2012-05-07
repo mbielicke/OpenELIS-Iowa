@@ -19,6 +19,8 @@ public class QCChartCustomizer extends JRAbstractChartCustomizer {
          * We remove the shapes for all other series (UCL, LCL, UWL, LWL) from
          * the jasper report interface.
          */
+        plot.getRenderer().setSeriesShape(0, ShapeUtilities.createDiamond(2));
+        
         for (int i = 1; i < plot.getSeriesCount(); i++) 
             plot.getRenderer().setSeriesShape(i, ShapeUtilities.createDiamond(0));
 

@@ -6,8 +6,8 @@
 	<property name="com.jasperassistant.designer.SnapToGrid" value="true"/>
 	<property name="com.jasperassistant.designer.Grid" value="true"/>
 	<property name="ireport.zoom" value="1.8181818181818181"/>
-	<property name="ireport.x" value="274"/>
-	<property name="ireport.y" value="96"/>
+	<property name="ireport.x" value="291"/>
+	<property name="ireport.y" value="0"/>
 	<reportFont name="FieldData" isDefault="false" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 	<reportFont name="FieldLabel" isDefault="false" size="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 	<reportFont name="SectionHeaderLabel" isDefault="false" size="12" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
@@ -64,73 +64,70 @@
 		<groupHeader>
 			<band/>
 		</groupHeader>
-		<groupFooter>
-			<band height="200"/>
-		</groupFooter>
 	</group>
 	<pageHeader>
-		<band height="250" splitType="Stretch">
+		<band height="258" splitType="Stretch">
 			<staticText>
-				<reportElement key="headerTitle1" mode="Opaque" x="317" y="1" width="120" height="12"/>
+				<reportElement key="headerTitle1" mode="Opaque" x="317" y="0" width="120" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[QC Chart]]></text>
 			</staticText>
 			<textField pattern="">
-				<reportElement key="headerLogname" mode="Opaque" x="652" y="13" width="100" height="12"/>
+				<reportElement key="headerLogname" mode="Opaque" x="652" y="12" width="100" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGNAME}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMM dd, yyyy">
-				<reportElement x="0" y="1" width="100" height="12"/>
+				<reportElement x="0" y="0" width="100" height="12"/>
 				<textElement>
 					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="HH:mm:ss">
-				<reportElement x="0" y="13" width="100" height="12"/>
+				<reportElement x="0" y="12" width="100" height="12"/>
 				<textElement>
 					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField pattern="">
-				<reportElement x="650" y="1" width="77" height="12"/>
+				<reportElement x="650" y="0" width="77" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + " of"]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Report" pattern="">
-				<reportElement x="730" y="1" width="22" height="12"/>
+				<reportElement x="730" y="0" width="22" height="12"/>
 				<textElement>
 					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
 			</textField>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="">
-				<reportElement x="168" y="13" width="419" height="12"/>
+				<reportElement x="168" y="12" width="419" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{ANALYTE_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="headerTitle1" mode="Opaque" x="587" y="73" width="163" height="12"/>
+				<reportElement key="headerTitle1" mode="Opaque" x="587" y="72" width="163" height="12"/>
 				<textElement textAlignment="Center">
 					<font size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
 				<text><![CDATA[Statistics]]></text>
 			</staticText>
 			<line>
-				<reportElement x="587" y="85" width="163" height="1" forecolor="#C0C0C0"/>
+				<reportElement x="587" y="84" width="163" height="1" forecolor="#C0C0C0"/>
 			</line>
 			<staticText>
-				<reportElement key="mean" positionType="Float" x="560" y="85" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="mean" positionType="Float" x="560" y="84" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -144,7 +141,7 @@
 				<text><![CDATA[Mean]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="85" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="84" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{MEAN} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -158,7 +155,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{MEAN}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="meanRecov" positionType="Float" x="560" y="97" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="meanRecov" positionType="Float" x="560" y="96" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -169,10 +166,10 @@
 				<textElement textAlignment="Right">
 					<font reportFont="FieldLabel" size="10" isBold="true" pdfFontName="Times-BoldItalic"/>
 				</textElement>
-				<text><![CDATA[Mean Recov]]></text>
+				<text><![CDATA[Mean Recovery]]></text>
 			</staticText>
 			<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="97" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="96" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$V{Chart_Util}.getMeanRecovery($F{MEAN}, $F{VALUE_1}) != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -186,7 +183,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{Chart_Util}.getMeanRecovery($F{MEAN}, $F{VALUE_1})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="concBias" positionType="Float" x="560" y="109" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="concBias" positionType="Float" x="560" y="108" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -200,7 +197,7 @@
 				<text><![CDATA[Conc Bias]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="109" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="108" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$V{Chart_Util}.getConcentrationBias($F{MEAN}, $F{VALUE_1}) != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -214,7 +211,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{Chart_Util}.getConcentrationBias($F{MEAN}, $F{VALUE_1})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="percentBias" positionType="Float" x="560" y="121" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="percentBias" positionType="Float" x="560" y="120" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -228,7 +225,7 @@
 				<text><![CDATA[%  Recovery - 100]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="121" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="120" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$V{Chart_Util}.getPercentBias($F{MEAN}, $F{VALUE_1}) != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -242,7 +239,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{Chart_Util}.getPercentBias($F{MEAN}, $F{VALUE_1})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="relSD" positionType="Float" x="560" y="133" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="relSD" positionType="Float" x="560" y="132" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -256,8 +253,8 @@
 				<text><![CDATA[%  Rel SD]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="133" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
-					<printWhenExpression><![CDATA[ $V{Chart_Util}.getRelativeSD($V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL}),$F{MEAN}) != null]]></printWhenExpression>
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="132" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+					<printWhenExpression><![CDATA[$V{Chart_Util}.getRelativeSD($V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL}),$F{MEAN}) != null]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<pen lineColor="#C0C0C0"/>
@@ -267,10 +264,10 @@
 					<rightPen lineWidth="0.0" lineColor="#C0C0C0"/>
 				</box>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression class="java.lang.Double"><![CDATA[ $V{Chart_Util}.getRelativeSD($V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL}),$F{MEAN})]]></textFieldExpression>
+				<textFieldExpression class="java.lang.Double"><![CDATA[$V{Chart_Util}.getRelativeSD($V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL}),$F{MEAN})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="sd" positionType="Float" x="560" y="145" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="sd" positionType="Float" x="560" y="144" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -284,7 +281,7 @@
 				<text><![CDATA[SD]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="145" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="144" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL}) != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -298,7 +295,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[$V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="ucl" positionType="Float" x="560" y="157" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="ucl" positionType="Float" x="560" y="156" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -312,7 +309,7 @@
 				<text><![CDATA[UCL]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="157" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="156" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{UCL} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -326,7 +323,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[$F{UCL}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="uwl" positionType="Float" x="560" y="169" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="uwl" positionType="Float" x="560" y="168" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -340,7 +337,7 @@
 				<text><![CDATA[UWL]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="169" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="168" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{UWL} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -354,7 +351,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[($F{UWL})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="lwl" positionType="Float" x="560" y="181" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="lwl" positionType="Float" x="560" y="180" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -368,7 +365,7 @@
 				<text><![CDATA[LWL]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="181" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="180" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{LWL} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -382,7 +379,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[($F{LWL})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="lcl" positionType="Float" x="560" y="193" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="lcl" positionType="Float" x="560" y="192" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -396,7 +393,7 @@
 				<text><![CDATA[LCL]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="193" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="192" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$F{LCL} != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -410,7 +407,7 @@
 				<textFieldExpression class="java.lang.Double"><![CDATA[($F{LCL})]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement key="tValue" positionType="Float" x="560" y="205" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
+				<reportElement key="tValue" positionType="Float" x="560" y="204" width="110" height="12" printWhenGroupChanges="AnalyteGroupHeader"/>
 				<box>
 					<pen lineColor="#C0C0C0"/>
 					<topPen lineWidth="0.0" lineColor="#C0C0C0"/>
@@ -424,7 +421,7 @@
 				<text><![CDATA[SD * t-value]]></text>
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
-				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="205" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
+				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="204" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
 					<printWhenExpression><![CDATA[$V{Chart_Util}.getSD($F{MEAN}, $F{UCL}, $F{LCL}) != null]]></printWhenExpression>
 				</reportElement>
 				<box>
@@ -439,7 +436,7 @@
 			</textField>
 			<xyLineChart>
 				<chart evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" customizerClass="org.openelis.report.qcchart.QCChartCustomizer">
-					<reportElement isPrintRepeatedValues="false" x="0" y="50" width="587" height="190" printWhenGroupChanges="AnalyteGroupHeader">
+					<reportElement isPrintRepeatedValues="false" x="0" y="48" width="587" height="190" printWhenGroupChanges="AnalyteGroupHeader">
 						<property name="IntegerTickUnits" value="true"/>
 					</reportElement>
 					<chartTitle position="Top"/>
@@ -472,6 +469,11 @@
 						<seriesExpression><![CDATA["LWL"]]></seriesExpression>
 						<xValueExpression><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></xValueExpression>
 						<yValueExpression><![CDATA[$F{LWL}]]></yValueExpression>
+					</xySeries>
+					<xySeries>
+						<seriesExpression><![CDATA["Mean"]]></seriesExpression>
+						<xValueExpression><![CDATA[$V{AnalyteGroupHeader_COUNT}]]></xValueExpression>
+						<yValueExpression><![CDATA[$F{MEAN}]]></yValueExpression>
 					</xySeries>
 				</xyDataset>
 				<linePlot isShowShapes="true">
