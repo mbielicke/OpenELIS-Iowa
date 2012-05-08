@@ -517,6 +517,7 @@ public class WorksheetAnalysisManagerProxy {
             wqrVDO.setTypeId(qcaVDO.getTypeId());
             wqrVDO.setAnalyteId(qcaVDO.getAnalyteId());
             wqrVDO.setAnalyteName(qcaVDO.getAnalyteName());
+            wqrVDO.setQcAnalyteIsTrendable(qcaVDO.getIsTrendable());
             wqrManager.addWorksheetQcResult(wqrVDO);
         }
     }
