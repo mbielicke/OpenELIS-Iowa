@@ -37,7 +37,6 @@ public class WorksheetQcResultViewDO extends WorksheetQcResultDO {
 
     protected Integer analyteId;
     protected String  analyteName;
-    protected String  qcAnalyteIsTrendable;
 
     public WorksheetQcResultViewDO() {
     }
@@ -50,13 +49,12 @@ public class WorksheetQcResultViewDO extends WorksheetQcResultDO {
                                    String v18, String v19, String v20, String v21, String v22,
                                    String v23, String v24, String v25, String v26, String v27,
                                    String v28, String v29, String v30, Integer analyteId,
-                                   String analyteName, String qcAnalyteIsTrendable) {
+                                   String analyteName) {
         super(id, worksheetAnalysisId, sortOrder, qcAnalyteId, typeId, v1, v2, v3,
               v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15, v16, v17, v18,
               v19, v20, v21, v22, v23, v24, v25, v26, v27, v28, v29, v30);
         setAnalyteId(analyteId);
         setAnalyteName(analyteName);
-        setQcAnalyteIsTrendable(qcAnalyteIsTrendable);
     }
 
     public Integer getAnalyteId() {
@@ -73,13 +71,5 @@ public class WorksheetQcResultViewDO extends WorksheetQcResultDO {
 
     public void setAnalyteName(String analyteName) {
         this.analyteName = DataBaseUtil.trim(analyteName);
-    }
-
-    public String getQcAnalyteIsTrendable() {
-        return qcAnalyteIsTrendable;
-    }
-
-    public void setQcAnalyteIsTrendable(String qcAnalyteIsTrendable) {
-        this.qcAnalyteIsTrendable = DataBaseUtil.trim(qcAnalyteIsTrendable);
     }
 }
