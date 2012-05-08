@@ -836,7 +836,6 @@ public class WorksheetCreationScreen extends Screen {
                             }
                             newWqrVDO.setAnalyteId(wqrVDO.getAnalyteId());
                             newWqrVDO.setAnalyteName(wqrVDO.getAnalyteName());
-                            newWqrVDO.setQcAnalyteIsTrendable(wqrVDO.getQcAnalyteIsTrendable());
                             newWqrManager.addWorksheetQcResult(newWqrVDO);
                         }
                     }
