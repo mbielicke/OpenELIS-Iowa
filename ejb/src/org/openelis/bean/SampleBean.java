@@ -280,8 +280,8 @@ public class SampleBean implements SampleLocal, SampleRemote {
         ArrayList<ClientNotificationVO> returnList;
 
         query = manager.createNamedQuery("Sample.FetchForClientEmailReceivedReport");
-        query.setParameter("start_received_date", stDate);
-        query.setParameter("end_received_date", endDate);
+        query.setParameter("start_entered_date", stDate);
+        query.setParameter("end_entered_date", endDate);
 
         resultList =  DataBaseUtil.toArrayList(query.getResultList());
         returnList = new ArrayList<ClientNotificationVO>();

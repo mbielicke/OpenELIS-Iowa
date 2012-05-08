@@ -49,43 +49,37 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
     @TransactionTimeout(600)
     public void runReport() throws Exception {
         String from;
-        Date startReceive, endReceive;
+        Date startEntered, endEntered;
         Calendar cal;
         DateFormat df;
-        SystemVariableDO lastRun;
+        SystemVariableDO runBackDays;
         ArrayList<ClientNotificationVO> resultList;
 
-        /*
-         * subtracting 1 minute from the current time for end date
-         */
-        df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        cal = Calendar.getInstance();
-        cal.add(Calendar.MINUTE, -1);
-        endReceive = cal.getTime();
-
-        lastRun = null;
         try {
-            lastRun = systemVariable.fetchForUpdateByName("last_receivable_report_run");
-            log.debug("last_receivable_report_run = " + lastRun);
-            startReceive = df.parse(lastRun.getValue());
-            if (startReceive.compareTo(endReceive) >= 0)
-                throw new InconsistencyException("Start Date should be earlier than End Date");
+            runBackDays = systemVariable.fetchByName("receivable_report_back_days");
+            log.debug("receivable_report_back_days = " + runBackDays);
+
+            /*
+             * subtracting runBackDays from the current time for start date
+             */
+            df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            cal = Calendar.getInstance();
+            endEntered = cal.getTime();
+            log.info("Receivable Notification End Date: " + df.format(endEntered));
+            cal.add(Calendar.DAY_OF_MONTH, -Integer.valueOf(runBackDays.getValue()));
+            startEntered = cal.getTime();
+            log.info("Receivable Notification Start Date: " + df.format(startEntered));
 
             from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");            
             if (from == null) 
                 throw new InconsistencyException("System variable 'do_not_reply_email_address' not present.");
 
-            resultList = sample.fetchForClientEmailReceivedReport(startReceive, endReceive);
+            resultList = sample.fetchForClientEmailReceivedReport(startEntered, endEntered);
             log.debug("Considering " + resultList.size() + " cases to run");
             if (resultList.size() > 0)
                 generateEmail(resultList, from);
-
-            lastRun.setValue(df.format(endReceive));
-            systemVariable.updateAsSystem(lastRun);
         } catch (Exception e) {
             log.error(e);
-            if (lastRun != null)
-                systemVariable.abortUpdate(lastRun.getId());
             return;
         }
     }
