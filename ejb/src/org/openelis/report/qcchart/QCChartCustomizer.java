@@ -1,5 +1,7 @@
 package org.openelis.report.qcchart;
 
+import java.awt.Color;
+
 import net.sf.jasperreports.engine.JRAbstractChartCustomizer;
 import net.sf.jasperreports.engine.JRChart;
 
@@ -24,6 +26,13 @@ public class QCChartCustomizer extends JRAbstractChartCustomizer {
         for (int i = 1; i < plot.getSeriesCount(); i++) 
             plot.getRenderer().setSeriesShape(i, ShapeUtilities.createDiamond(0));
 
+        plot.getRenderer().setSeriesPaint(0, Color.RED);
+        plot.getRenderer().setSeriesPaint(1, Color.BLUE);
+        plot.getRenderer().setSeriesPaint(2, Color.GREEN);
+        plot.getRenderer().setSeriesPaint(3, Color.ORANGE);
+        plot.getRenderer().setSeriesPaint(4, Color.MAGENTA);
+        plot.getRenderer().setSeriesPaint(5, Color.CYAN);
+        
         n = (NumberAxis) plot.getDomainAxis();
         n.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
     }
