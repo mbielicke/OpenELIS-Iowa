@@ -41,5 +41,4 @@ public class WorksheetCreationService {
     public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
         return EJBFactory.getWorksheetCreation().getColumnNames(formatId);
     }
-
 }
