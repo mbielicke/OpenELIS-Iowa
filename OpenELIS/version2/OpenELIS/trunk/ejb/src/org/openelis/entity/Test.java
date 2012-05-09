@@ -90,7 +90,7 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.TestMethodSampleTypeVO(t.id, t.name, m.name, type.typeOfSampleId, d.entry)"
                        + " from Test t left join t.method m INNER JOIN t.testTypeOfSample type LEFT JOIN type.dictionary d where t.isActive='Y' order by t.name,m.name,d.entry"),
     @NamedQuery( name = "Test.FetchByPanelId",
-                query = "select distinct new org.openelis.domain.TestMethodVO(t.id,t.name,t.description,t.method.id,t.method.name,t.method.description,t.isActive,t.activeBegin,t.activeEnd)"
+                query = "select new org.openelis.domain.TestMethodVO(t.id,t.name,t.description,t.method.id,t.method.name,t.method.description,t.isActive,t.activeBegin,t.activeEnd)"
                       + " from Test t, PanelItem i where t.name = i.name and t.method.name = i.methodName and t.isActive ='Y' and i.panelId = :panelId order by t.name,t.method.name"),
     @NamedQuery( name = "Test.FetchList", 
                 query = "select new org.openelis.domain.TestMethodVO(t.id,t.name,t.description,m.id,m.name,m.description,t.isActive,t.activeBegin,t.activeEnd)"
