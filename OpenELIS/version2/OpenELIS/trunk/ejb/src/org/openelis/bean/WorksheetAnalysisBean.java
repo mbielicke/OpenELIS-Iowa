@@ -140,14 +140,35 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
     }
     
     public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName) throws Exception {
+        Integer id;
         Query query;
+        ArrayList<Object[]> list;
+        ArrayList<Integer> ids;
+
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByInstancesForQcChart");
-        //query.setParameter("numInstance", numInstances);
         query.setParameter("qcName", qcName);
         query.setMaxResults(numInstances);
+
+        list = DataBaseUtil.toArrayList(query.getResultList());
+        
+        ids = new ArrayList<Integer>();
+        for (int i = 0; i < list.size(); i++ ) {
+            id = (Integer)(list.get(i))[1];
+            if (id != null)
+                ids.add(id);
+        }
+        if (ids.size() == 0)
+            return new ArrayList<QcChartResultVO>();
+
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchAnalytesForQcChart");
+        query.setParameter("ids", ids);
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
 
+
+    
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {
         WorksheetAnalysis entity;
 
