@@ -38,6 +38,7 @@ public class QcChartReportViewVO implements RPC {
     
     protected ReportType reportType;
     protected Integer plotType, qcType;
+    protected String qcName;
     
     protected ArrayList<Value> qcList;
   
@@ -55,6 +56,12 @@ public class QcChartReportViewVO implements RPC {
         this.qcType = qcType;
     }
     
+    public String getQcName() {
+        return qcName;
+    }
+    public void setQcName(String qcName) {
+        this.qcName = qcName;
+    }
     public ReportType getReportType() {
         return reportType;
     }
@@ -70,9 +77,17 @@ public class QcChartReportViewVO implements RPC {
     }
     
     public static class Value implements RPC {
+        public Integer getwId() {
+            return wId;
+        }
+
+        public void setwId(Integer wId) {
+            this.wId = wId;
+        }
+
         private static final long serialVersionUID = 1L;
         
-        protected Integer         qcId, analyteId;
+        protected Integer         qcId, wId, analyteId;
         protected String          accessionNumber, lotNumber, analyteName, value1, value2, isPlot;
         protected Double          plotValue, mean, uWL, uCL, lWL, lCL, sd;
         protected Datetime        worksheetCreatedDate;
@@ -84,6 +99,14 @@ public class QcChartReportViewVO implements RPC {
 
         public void setQcId(Integer qcId) {
             this.qcId = qcId;
+        }
+        
+        public Integer getWId() {
+            return wId;
+        }
+
+        public void setWId(Integer wId) {
+            this.wId = wId;
         }
 
         public Integer getAnalyteId() {
