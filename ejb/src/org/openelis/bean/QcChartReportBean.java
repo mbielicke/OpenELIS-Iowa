@@ -109,7 +109,7 @@ public class QcChartReportBean implements QcChartReportRemote {
         } catch (Exception e) {
             throw new InconsistencyException("You must specify a valid plot type or qc type or number of instances.");
         }
-        
+
         /*
          * The report can be run either by dates or number of instances going
          * back from now.
@@ -142,6 +142,7 @@ public class QcChartReportBean implements QcChartReportRemote {
         qcList = new ArrayList<Value>();
         analyteMap = new HashMap<String, QcChartReportViewVO>();
         list = null;
+
         for (QcChartResultVO result : resultList) {
             systemName = result.getWorksheetFormat();
             loadMapForQC(systemName, columnMap);
@@ -150,8 +151,7 @@ public class QcChartReportBean implements QcChartReportRemote {
             if (DataBaseUtil.isSame(typeQcSpike, qc) && systemName.equals("wf_rad1")) {
                 vo = getQCSpikePercent(result, vo, columnMap);
                 data.setReportType(ReportType.SPIKE_PERCENT);
-            }
-            else if (DataBaseUtil.isSame(typeQcSpike, qc)) {
+            } else if (DataBaseUtil.isSame(typeQcSpike, qc)) {
                 vo = getQCSpikeConc(result, vo, columnMap);
                 data.setReportType(ReportType.SPIKE_CONC);
             }
@@ -245,12 +245,12 @@ public class QcChartReportBean implements QcChartReportRemote {
         vo.setPlotType(dataPoints.getPlotType());
         vo.setQcType(dataPoints.getQcType());
         vo.setReportType(dataPoints.getReportType());
-
+        vo.setQcName(dataPoints.getQcName());
         return vo;
     }
 
     public ReportStatus runReport(QcChartReportViewVO dataPoints) throws Exception {
-        String plotType, printstat, printer;
+        String qcName, printstat, printer;
         QcChartReportViewVO result;
         ArrayList<Value> list;
         URL url;
@@ -264,11 +264,8 @@ public class QcChartReportBean implements QcChartReportRemote {
 
         result = recompute(dataPoints);
 
-        if (DataBaseUtil.isSame(typeDynamicId, result.getPlotType()))
-            plotType = "Dynamic";
-        else
-            plotType = "Static";
-        //printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        qcName = result.getQcName();
+        // printer = ReportUtil.getSingleParameter(param, "PRINTER");
         printer = "-view-";
         /*
          * push status into session so we can query it while the report is
@@ -285,15 +282,15 @@ public class QcChartReportBean implements QcChartReportRemote {
 
         try {
             status.setMessage("Initializing report");
-            if((ReportType.SPIKE_CONC).equals(result.getReportType()))
+            if ( (ReportType.SPIKE_CONC).equals(result.getReportType()))
                 url = ReportUtil.getResourceURL("org/openelis/report/qcchart/spikeConc.jasper");
             else
                 url = ReportUtil.getResourceURL("org/openelis/report/qcchart/spikePercent.jasper");
-            
+
             tempFile = File.createTempFile("QcChart", ".pdf", new File("/tmp"));
             jparam = new HashMap<String, Object>();
             jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
-            jparam.put("PLOT_TYPE", plotType);
+            jparam.put("QCNAME", qcName);
 
             status.setMessage("Loading report");
             jreport = (JasperReport)JRLoader.loadObject(url);
@@ -306,7 +303,7 @@ public class QcChartReportBean implements QcChartReportRemote {
 
             jexport.exportReport();
             status.setPercentComplete(100);
-            
+
             if (ReportUtil.isPrinter(printer)) {
                 printstat = ReportUtil.print(tempFile, printer, 1);
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
@@ -333,6 +330,7 @@ public class QcChartReportBean implements QcChartReportRemote {
         vo.setIsPlot("Y");
         vo.setAccessionNumber(result.getAccessionNumber());
         vo.setLotNumber(result.getLotNumber());
+        vo.setWId(result.getWId());
         vo.setQcId(result.getQcId());
         vo.setAnalyteId(result.getAnalyteId());
         vo.setAnalyteName(result.getAnalyteParameter());
@@ -351,7 +349,7 @@ public class QcChartReportBean implements QcChartReportRemote {
                                                        HashMap<String, HashMap<String, Integer>> map) throws Exception {
 
         String worksheetFormat;
- 
+
         worksheetFormat = result.getWorksheetFormat();
         value.setValue1(getValue(worksheetFormat, "expected_value", result, map));
         value.setValue2(getValue(worksheetFormat, "final_percent_recov", result, map));
@@ -456,7 +454,6 @@ public class QcChartReportBean implements QcChartReportRemote {
                 }
             } catch (Exception e) {
                 log.error("Error retrieving analyte parameters for an analysis on worksheet", e);
-                throw e;
             }
         }
     }
