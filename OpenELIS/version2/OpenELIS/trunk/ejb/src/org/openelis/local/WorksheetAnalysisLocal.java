@@ -52,5 +52,5 @@ public interface WorksheetAnalysisLocal {
     
     public ArrayList<QcChartResultVO> fetchByDateForQcChart(Date dateFrom, Date dateTo, String qcName) throws Exception;
     
-    public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName) throws Exception;//change to Integer
+    public ArrayList<QcChartResultVO> fetchByInstancesForQcChart(Integer numInstances, String qcName) throws Exception;
 }
