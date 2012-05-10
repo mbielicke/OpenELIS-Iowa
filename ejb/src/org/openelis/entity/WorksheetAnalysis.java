@@ -7,7 +7,6 @@ package org.openelis.entity;
 import java.util.Date;
 
 import javax.persistence.Column;
-import javax.persistence.ColumnResult;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
@@ -15,13 +14,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
-import javax.persistence.SqlResultSetMapping;
-import javax.persistence.SqlResultSetMappings;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -44,7 +39,7 @@ import org.openelis.utils.Auditable;
                       + " from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Analysis a, Test t, Method m, Section s where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and w.statusId = :statusId"
                       +	" and wa.analysisId = a.id and a.testId = t.id and t.methodId = m.id and a.sectionId = s.id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByDateForQcChart",
-                query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, q.lotNumber, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
+                query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, q.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
                         " wqr.value1,wqr.value2,wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
                         " wqr.value8,wqr.value9,wqr.value10,wqr.value11,wqr.value12," +
                         " wqr.value13,wqr.value14,wqr.value15,wqr.value16,wqr.value17," +
@@ -55,58 +50,24 @@ import org.openelis.utils.Auditable;
                         "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wqr.worksheetAnalysisId = wa.id and wa.qcId = q.id and wqr.qcAnalyteId = qa.id and" + 
                         " qa.analyteId = a.id and qa.isTrendable = 'Y' and w.createdDate between :startedDate and :endDate and q.name = :qcName and d.id = w.formatId " + 
                         "order by w.createdDate"),
-   @NamedQuery( name = "WorksheetAnalysis.FetchByInstancesForQcChart",
-                        query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, q.lotNumber, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
+    @NamedQuery( name = "WorksheetAnalysis.FetchByInstancesForQcChart",
+                query = "select w.createdDate, wa.id " +
+                        "from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Qc q " +  
+                        "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wa.qcId = q.id and" + 
+                        " q.name = :qcName " + 
+                        "order by w.createdDate desc"),
+   @NamedQuery( name = "WorksheetAnalysis.FetchAnalytesForQcChart",
+               query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, q.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
                         " wqr.value1,wqr.value2,wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
                         " wqr.value8,wqr.value9,wqr.value10,wqr.value11,wqr.value12," +
                         " wqr.value13,wqr.value14,wqr.value15,wqr.value16,wqr.value17," +
                         " wqr.value18,wqr.value19,wqr.value20,wqr.value21,wqr.value22," +
                         " wqr.value23,wqr.value24,wqr.value25,wqr.value26,wqr.value27," +
                         " wqr.value28,wqr.value29,wqr.value30 ) " +
-                        "from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, WorksheetQcResult wqr, Qc q, QcAnalyte qa, Analyte a, Dictionary d " +  
+                        "from  WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, WorksheetQcResult wqr, Qc q, QcAnalyte qa, Analyte a, Dictionary d " +  
                         "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wqr.worksheetAnalysisId = wa.id and wa.qcId = q.id and wqr.qcAnalyteId = qa.id and" + 
-                        " qa.analyteId = a.id and qa.isTrendable = 'Y' and q.name = :qcName and d.id = w.formatId " + 
-                        "order by wa.id desc")})         
-
-    @NamedNativeQueries({
-    @NamedNativeQuery(name = "WorksheetAnalysis.FetchDataForQcChartForDateRange",
-                query = "select wa.accession_number, q.lot_number, CAST(a.name AS varchar(60)) analyte_parameter_name, ap.p1, ap.p2, ap.p3, w.created_date, d.system_name," +
-                        " wqr.value_1,wqr.value_2,wqr.value_3,wqr.value_4,wqr.value_5,wqr.value_6,wqr.value_7," +
-                        " wqr.value_8,wqr.value_9,wqr.value_10,wqr.value_11,wqr.value_12," +
-                        " wqr.value_13,wqr.value_14,wqr.value_15,wqr.value_16,wqr.value_17," +
-                        " wqr.value_18,wqr.value_19,wqr.value_20,wqr.value_21,wqr.value_22," +
-                        " wqr.value_23,wqr.value_24,wqr.value_25,wqr.value_26,wqr.value_27," +
-                        " wqr.value_28,wqr.value_29,wqr.value_30 " +
-                        "from  worksheet_analysis wa, worksheet_item wi, worksheet w, worksheet_qc_result wqr, qc q, qc_analyte qa, analyte a, dictionary d, outer analyte_parameter ap " +
-                        "where wa.worksheet_item_id = wi.id and wi.worksheet_id = w.id and wqr.worksheet_analysis_id = wa.id and wa.qc_id = q.id and wqr.qc_analyte_id = qa.id and" +
-                        " qa.analyte_id = a.id and qa.is_trendable = 'Y' and w.created_date between :startedDate and :endDate and q.name = :qcName and" +
-                        " ap.reference_id = q.id and ap.reference_table_id = 51 and ap.analyte_id = a.id and ap.active_begin < w.created_date and ap.active_end > w.created_date and d.id = w.format_id " +
-                        "order by w.created_date",
-           resultSetMapping = "WorksheetAnalysis.FetchDataForQcChartForDateRange"),
-    @NamedNativeQuery(name = "WorksheetAnalysis.FetchDataForQcChartForNumRange",
-                query = "select first :numInstances wa.accession_number, q.lot_number, CAST(a.name AS varchar(60)) analyte_parameter_name, ap.p1, ap.p2, ap.p3, w.created_date " +
-                        "from  worksheet_analysis wa, worksheet_item wi, worksheet w, worksheet_qc_result wqr, qc q, qc_analyte qa, analyte a, outer analyte_parameter ap " +
-                        "where wa.worksheet_item_id = wi.id and wi.worksheet_id = w.id and wqr.worksheet_analysis_id = wa.id and wa.qc_id = q.id and wqr.qc_analyte_id = qa.id and" +
-                        " qa.analyte_id = a.id and qa.is_trendable = 'Y' and q.name = :qcName and" +
-                        " ap.reference_id = q.id and ap.reference_table_id = 51 and ap.analyte_id = a.id and ap.active_begin < w.created_date and ap.active_end > w.created_date " +
-                        "order by wa.id desc",
-           resultSetMapping = "WorksheetAnalysis.FetchDataForQcChartForNumRange")})
-@SqlResultSetMappings({
-    @SqlResultSetMapping(name="WorksheetAnalysis.FetchDataForQcChartForDateRange",
-                         columns={@ColumnResult(name="accession_number"), @ColumnResult(name="lot_number"), @ColumnResult(name="analyte_parameter_name"), 
-                                  @ColumnResult(name="p1"), @ColumnResult(name="p2"), @ColumnResult(name="p3"),  
-                                  @ColumnResult(name="created_date"), @ColumnResult(name="system_name"), @ColumnResult(name="value_1"), @ColumnResult(name="value_2"),
-                                  @ColumnResult(name="value_3"),@ColumnResult(name="value_4"),@ColumnResult(name="value_5"),@ColumnResult(name="value_6"),
-                                  @ColumnResult(name="value_7"),@ColumnResult(name="value_8"),@ColumnResult(name="value_9"),@ColumnResult(name="value_10"),
-                                  @ColumnResult(name="value_11"),@ColumnResult(name="value_12"),@ColumnResult(name="value_13"),@ColumnResult(name="value_14"),
-                                  @ColumnResult(name="value_15"),@ColumnResult(name="value_16"),@ColumnResult(name="value_17"),@ColumnResult(name="value_18"),
-                                  @ColumnResult(name="value_19"),@ColumnResult(name="value_20"),@ColumnResult(name="value_21"),@ColumnResult(name="value_22"),
-                                  @ColumnResult(name="value_23"),@ColumnResult(name="value_24"),@ColumnResult(name="value_25"),@ColumnResult(name="value_26"),
-                                  @ColumnResult(name="value_27"),@ColumnResult(name="value_28"),@ColumnResult(name="value_29"),@ColumnResult(name="value_30")}),
-    @SqlResultSetMapping(name="WorksheetAnalysis.FetchDataForQcChartForNumRange",
-                         columns={@ColumnResult(name="accession_number"), @ColumnResult(name="lot_number"), @ColumnResult(name="analyte_parameter_name"), 
-                                  @ColumnResult(name="p1"), @ColumnResult(name="p2"), @ColumnResult(name="p3"),  
-                                  @ColumnResult(name="created_date")})}) 
+                        " qa.analyteId = a.id and qa.isTrendable = 'Y' and d.id = w.formatId and wa.id in (:ids) " + 
+                        "order by w.createdDate")})      
 
 @Entity
 @Table(name = "worksheet_analysis")
