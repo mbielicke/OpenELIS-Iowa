@@ -516,6 +516,7 @@ public class QcChartScreen extends Screen {
             else
                 qcChartReportScreen.setWindow(window);
             
+            results.setQcName(data.getName());            
             qcChartReportScreen.runReport(results);
         } catch (Exception e) {
             Window.alert(e.getMessage());
