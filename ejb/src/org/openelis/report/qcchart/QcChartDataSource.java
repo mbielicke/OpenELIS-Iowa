@@ -7,18 +7,19 @@ import org.openelis.domain.QcChartReportViewVO;
 import net.sf.jasperreports.engine.*;
 
 public class QcChartDataSource implements JRDataSource {
-    
-    protected Integer          number;
-    protected Double           plotValue, mean, ucl, lcl, uwl, lwl, sd;
-    protected String           accessionNumber, lotNumber, value1, value2, analyteName;
-    protected Date             createdDate;
+
+    protected Integer                              wId, number;
+    protected Double                               plotValue, mean, ucl, lcl, uwl, lwl, sd;
+    protected String                               accessionNumber, lotNumber, value1, value2, analyteName;
+    protected Date                                 createdDate;
     protected ArrayList<QcChartReportViewVO.Value> values;
-    protected Iterator<QcChartReportViewVO.Value> iter;
-    protected QcChartReportViewVO.Value value;
-    
+    protected Iterator<QcChartReportViewVO.Value>  iter;
+    protected QcChartReportViewVO.Value            value;
+
     public ArrayList<QcChartReportViewVO.Value> getValues() {
         return values;
     }
+
     public void setValues(ArrayList<QcChartReportViewVO.Value> values) {
         this.values = values;
     }
@@ -41,11 +42,13 @@ public class QcChartDataSource implements JRDataSource {
                     value = (QcChartReportViewVO.Value)iter.next();
             }
             /*
-             * The previous loop can reach the end of the list and if the last element is one with isPlot = Y 
-             * it needs to be plotted, which won't happen if this method returns false. So in order to plot this value we return value.getIsPlot().
-             * Otherwise if the last element is one with isPlot = N, then False is returned as usual.
+             * The previous loop can reach the end of the list and if the last
+             * element is one with isPlot = Y it needs to be plotted, which
+             * won't happen if this method returns false. So in order to plot
+             * this value we return value.getIsPlot(). Otherwise if the last
+             * element is one with isPlot = N, then False is returned as usual.
              */
-            if (!iter.hasNext())
+            if ( !iter.hasNext())
                 return "Y".equals(value.getIsPlot());
         } else {
             return false;
@@ -58,6 +61,8 @@ public class QcChartDataSource implements JRDataSource {
             return value.getAccessionNumber();
         else if ("LOT_NUMBER".equals(field.getName()))
             return value.getLotNumber();
+        else if ("WORKSHEET_NUMBER".equals(field.getName()))
+            return value.getWId();
         else if ("VALUE_1".equals(field.getName()))
             return value.getValue1();
         else if ("VALUE_2".equals(field.getName()))
@@ -66,15 +71,15 @@ public class QcChartDataSource implements JRDataSource {
             return value.getPlotValue();
         else if ("MEAN".equals(field.getName()))
             return value.getMean();
-        else if("UCL".equals(field.getName()))
+        else if ("UCL".equals(field.getName()))
             return value.getUCL();
-        else if("LCL".equals(field.getName()))
+        else if ("LCL".equals(field.getName()))
             return value.getLCL();
-        else if("UWL".equals(field.getName()))
+        else if ("UWL".equals(field.getName()))
             return value.getUWL();
-        else if("LWL".equals(field.getName()))
+        else if ("LWL".equals(field.getName()))
             return value.getLWL();
-        else if("SD".equals(field.getName()))
+        else if ("SD".equals(field.getName()))
             return value.getSd();
         else if ("CREATED_DATE".equals(field.getName()))
             return value.getWorksheetCreatedDate().getDate();
