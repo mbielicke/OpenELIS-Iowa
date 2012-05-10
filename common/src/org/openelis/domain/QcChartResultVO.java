@@ -34,15 +34,15 @@ import org.openelis.gwt.common.RPC;
 public class QcChartResultVO implements RPC {
     private static final long serialVersionUID = 1L;
 
-    protected Integer         qcId, analyteId, worksheetAnalysisId;
+    protected Integer         wId, qcId, analyteId, worksheetAnalysisId;
     protected String          accessionNumber, lotNumber, analyteParameter, worksheetFormat;
     protected Datetime        worksheetCreatedDate;
     protected String          values[];
 
     public QcChartResultVO() {
     }
-
-    public QcChartResultVO(String accessionNumber, String lotNumber, Integer qcId, Integer analyteId, Integer worksheetAnalysisId, String analyteParameter, String worksheetFormat, Date worksheetCreatedDate,
+    
+    public QcChartResultVO(String accessionNumber, String lotNumber, Integer wId, Integer qcId, Integer analyteId, Integer worksheetAnalysisId, String analyteParameter, String worksheetFormat, Date worksheetCreatedDate,
                            String v1, String v2, String v3, String v4, String v5, String v6, String v7, String v8,
                            String v9, String v10, String v11, String v12, String v13, String v14,
                            String v15, String v16, String v17, String v18, String v19, String v20,
@@ -53,6 +53,7 @@ public class QcChartResultVO implements RPC {
 
         setAccessionNumber(accessionNumber);
         setLotNumber(lotNumber);
+        setWId(wId);
         setQcId(qcId);
         setAnalyteId(analyteId);
         setWorksheetAnalysisId(worksheetAnalysisId);
@@ -89,6 +90,14 @@ public class QcChartResultVO implements RPC {
         setValueAt(27, v28);
         setValueAt(28, v29);
         setValueAt(29, v30);
+    }
+    
+    public Integer getWId() {
+        return wId;
+    }
+
+    public void setWId(Integer wId) {
+        this.wId = wId;
     }
     
     public Integer getQcId() {
