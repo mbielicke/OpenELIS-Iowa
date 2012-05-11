@@ -166,9 +166,6 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-
-
-    
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception {
         WorksheetAnalysis entity;
 
