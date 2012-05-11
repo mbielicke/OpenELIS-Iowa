@@ -116,15 +116,8 @@ public class HistoryScreen extends Screen {
                 TreeDataItem item;
                 
                 item = event.getItem();
-                if("itemLabel".equals(item.leafType)) {
-                    /*
-                     * if children have been added to the item already then the
-                     * they don't need to be fetched again  
-                     */
-                    if (item.getItems() != null && item.getItems().size() > 0)
-                        return;
-                    addHistoryItems(historyTree.getData().indexOf(item), item);
-                }
+                if("itemLabel".equals(item.leafType)) 
+                    addHistoryItems(historyTree.getData().indexOf(item), item);                
             }            
         });                
     }

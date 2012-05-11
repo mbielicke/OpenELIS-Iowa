@@ -358,7 +358,7 @@ public class Order implements Auditable, Cloneable {
                  .setField("needed_in_days", neededInDays, original.neededInDays)
                  .setField("requested_by", requestedBy, original.requestedBy)
                  .setField("cost_center_id", costCenterId, original.costCenterId)
-                 .setField("organization_id", organizationId, original.organizationId)
+                 .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION)
                  .setField("organization_attention", organizationAttention, original.organizationAttention)
                  .setField("type", type, original.type)
                  .setField("external_order_number", externalOrderNumber, original.externalOrderNumber)

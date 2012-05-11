@@ -101,6 +101,10 @@ public class BuildKitsReportBean implements BuildKitsReportRemote {
                                                                     .setDefaultValue("1")                                                              
                                                                     .setWidth(30)
                                                                     .setRequired(true));
+            p.add(new Prompt("NUMBER_OF_LABELS_PER_KIT", Prompt.Type.INTEGER).setPrompt("# Labels/Kit:")
+                                                                     .setDefaultValue("1")                                                              
+                                                                     .setWidth(30)
+                                                                     .setRequired(true));
             p.add(new Prompt("KIT_DESCRIPTION", Prompt.Type.STRING).setPrompt("Description:")
                                                                    .setHidden(true));
             d = dictionary.fetchByCategorySystemName("kit_special_instructions");
@@ -123,7 +127,7 @@ public class BuildKitsReportBean implements BuildKitsReportRemote {
     }
 
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
-        int startNum, endNum;
+        int i,j, startNum, endNum, numLabels;
         ReportStatus status;
         HashMap<String, QueryData> param;
         String lotNumber, orderId, createdDate, expiredDate, kitDesc, specInstr,
@@ -150,8 +154,9 @@ public class BuildKitsReportBean implements BuildKitsReportRemote {
         specInstr = ReportUtil.getSingleParameter(param, "SPECIAL_INSTRUCTIONS");
         printer = ReportUtil.getSingleParameter(param, "BARCODE");
         startNum = 0;
+        numLabels = 0;
         
-        if (DataBaseUtil.isEmpty(printer) || DataBaseUtil.isEmpty(orderId))
+        if (DataBaseUtil.isEmpty(orderId) || DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify the order id and printer for this report");
         
         //
@@ -175,6 +180,15 @@ public class BuildKitsReportBean implements BuildKitsReportRemote {
                 throw new InconsistencyException("Starting number must be at least 1");
         }
         
+        try {
+            numLabels = Integer.parseInt(ReportUtil.getSingleParameter(param, "NUMBER_OF_LABELS_PER_KIT"));
+        } catch (Exception e) {
+            throw new InconsistencyException("You must specify a valid number of labels per kit");
+        } finally {
+            if (numLabels < 1)
+                throw new InconsistencyException("Number of labels per kit must be at least 1");
+        }
+        
         endNum = Integer.parseInt(ReportUtil.getSingleParameter(param, "ENDING_NUMBER"));
         
         log.info("Printing labels for order # "+orderId+" starting at "+ startNum);
@@ -185,11 +199,12 @@ public class BuildKitsReportBean implements BuildKitsReportRemote {
          */
         tempFile = File.createTempFile("loginlabel", ".txt", new File("/tmp"));
         ps = new PrintStream(tempFile);
-        while (startNum <= endNum) {
-            labelReport.kitLabel(ps, "State Hygienic Laboratory", "Iowa City 319-335-4500", 
-                                 "Ankeny 515-725-1600", lotNumber, createdDate,
-                                 orderId+"."+startNum, expiredDate, kitDesc, specInstr);
-            startNum++;
+        for (i = startNum; i <= endNum; i++) {
+            for (j = 0; j < numLabels; j++) {
+                labelReport.kitLabel(ps, "State Hygienic Laboratory", "Iowa City 319-335-4500",
+                                     "Ankeny 515-725-1600", lotNumber, createdDate,
+                                     orderId + "." + i, expiredDate, kitDesc, specInstr);                
+            }
         }
         ps.close();
         
