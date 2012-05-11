@@ -182,16 +182,16 @@ UIRF Software License are applicable instead of those above.
                 <col  width="30" align="left" header="{resource:getString($constants,'plot')}">
                   <check/>
                 </col>
-                <col  width="80" align="left" header="{resource:getString($constants,'accessionNum')}">
+                <col  width="80" align="left" header="{resource:getString($constants,'accessionNum')}" sort="true">
                   <textbox field="String" />
                 </col>
-                <col width="110" align="left" header="{resource:getString($constants,'lotNum')}">
+                <col width="110" align="left" header="{resource:getString($constants,'lotNum')}" sort="true">
                   <textbox field="String" />
                 </col>
-                <col width="110" align="left" header="{resource:getString($constants,'creationDate')}">
+                <col width="110" align="left" header="{resource:getString($constants,'creationDate')}" sort="true">
                   <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
                 </col>
-                <col  width="200" align="left" header="{resource:getString($constants,'analyte')}">
+                <col  width="200" align="left" header="{resource:getString($constants,'analyte')}" sort="true">
                   <textbox field="String" />
                 </col>
                 <col  width="50" align="right" header="{resource:getString($constants,'v1')}">
