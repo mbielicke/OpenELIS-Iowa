@@ -49,7 +49,7 @@ WHERE s.domain = "E" and
 UNION
 
 SELECT s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
-       -1, t.name t_name, t.time_ta_average, t.time_holding,
+       null, t.name t_name, t.time_ta_average, t.time_holding,
        m.name m_name, d.entry status, d1.entry sample_type, a.id a_id
 FROM sample s, sample_item si, sample_private_well sd, analysis a,
      test t, method m, section sec, dictionary d, dictionary d1
@@ -64,7 +64,7 @@ WHERE s.domain = 'W' and
 UNION
 
 SELECT s.accession_number, s.collection_date, s.collection_time, s.received_date, s.domain,
-       -1, t.name t_name, t.time_ta_average, t.time_holding,
+       null, t.name t_name, t.time_ta_average, t.time_holding,
        m.name m_name, d.entry status, d1.entry sample_type, a.id a_id
 FROM sample s, sample_item si, analysis a,
      test t, method m, section sec, dictionary d, dictionary d1,
