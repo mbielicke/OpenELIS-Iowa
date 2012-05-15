@@ -127,7 +127,7 @@ UIRF Software License are applicable instead of those above.
                <widget>
               <appButton key="reCompute" style="Button" >
                       <HorizontalPanel>  
-                      <AbsolutePanel style="FindButtonImage" />                   
+                      <AbsolutePanel style="refreshButtonImage" />                   
                         <text>
                           <xsl:value-of select="resource:getString($constants,'reCompute')" />
                         </text>
@@ -140,7 +140,7 @@ UIRF Software License are applicable instead of those above.
                              <widget>
               <appButton key="plotdata" style="Button" >
                       <HorizontalPanel>  
-                      <AbsolutePanel style="FindButtonImage" />                   
+                      <AbsolutePanel style="chartButtonImage" />                   
                         <text>
                           <xsl:value-of select="resource:getString($constants,'plotData')" />
                         </text>
