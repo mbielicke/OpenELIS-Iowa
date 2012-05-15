@@ -272,7 +272,7 @@ public class QcChartReportBean implements QcChartReportRemote {
          * running
          */
         status = new ReportStatus();
-        session.setAttribute("SampleInhouseReport", status);
+        session.setAttribute("qcChartReport", status);
         list = result.getQcList();
 
         if (list.size() > 1)
@@ -287,7 +287,7 @@ public class QcChartReportBean implements QcChartReportRemote {
             else
                 url = ReportUtil.getResourceURL("org/openelis/report/qcchart/spikePercent.jasper");
 
-            tempFile = File.createTempFile("QcChart", ".pdf", new File("/tmp"));
+            tempFile = File.createTempFile("qcreport", ".pdf", new File("/tmp"));
             jparam = new HashMap<String, Object>();
             jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
             jparam.put("QCNAME", qcName);

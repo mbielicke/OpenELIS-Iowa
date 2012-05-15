@@ -38,8 +38,9 @@ public class QcChartReportScreen extends ReportScreen {
 
     public QcChartReportScreen(ScreenWindowInt window) throws Exception {
         drawScreen(new ScreenDef());
+        setName(consts.get("qcChartReport"));
         this.window = window;
-        service = new ScreenService("controller?service=org.openelis.modules.qcChart.server.QcChartService");// chartreportservice
+        service = new ScreenService("controller?service=org.openelis.modules.qcChart.server.QcChartService");
     }
 
     /**
