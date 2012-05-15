@@ -178,7 +178,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
             
             <widget valign="top">
-              <table key="plotDataTable" width="auto" maxRows="9" showScroll="ALWAYS" style="ScreenTableWithSides"  title="" tab ="{meta:getWorksheetCreatedDateFrom()},plot">
+              <table key="plotDataTable" width="auto" maxRows="9" showScroll="ALWAYS" multiSelect = "true" style="ScreenTableWithSides"  title="" tab ="{meta:getWorksheetCreatedDateFrom()},plot">
                 <col  width="30" align="left" header="{resource:getString($constants,'plot')}">
                   <check/>
                 </col>
@@ -220,6 +220,49 @@ UIRF Software License are applicable instead of those above.
                 </col>
               </table>
             </widget>
+            <HorizontalPanel>            
+             <widget halign="left">
+                <appButton key="selectButton" style="Button" >
+                  <HorizontalPanel>
+                    <AbsolutePanel style="Checked" />
+                    <text>
+                      <xsl:value-of select='resource:getString($constants,"select")' />
+                    </text>                   
+                  </HorizontalPanel>
+                </appButton>
+              </widget>              
+              <widget halign="right">
+              <appButton key="unselectButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="Unchecked" />
+                    <text>
+                      <xsl:value-of select='resource:getString($constants,"unselect")' />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
+              </widget>
+              <HorizontalPanel width = "20"/>
+              <widget halign="left">
+				 <appButton key="selectAllButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="Checked" />
+                    <text>
+                      <xsl:value-of select='resource:getString($constants,"selectAll")' />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
+              </widget>             
+              <widget halign="right">
+                <appButton key="unselectAllButton" style="Button" >
+                  <HorizontalPanel>
+                    <AbsolutePanel style="Unchecked" />
+                    <text>
+                      <xsl:value-of select='resource:getString($constants,"unselectAll")' />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
+              </widget>
+            </HorizontalPanel>
           </VerticalPanel>
     </screen>
   </xsl:template>

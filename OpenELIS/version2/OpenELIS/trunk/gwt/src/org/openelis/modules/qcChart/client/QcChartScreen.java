@@ -83,7 +83,7 @@ public class QcChartScreen extends Screen {
     private CalendarLookUp   workSheetCreatedDateFrom, workSheetCreatedDateTo; 
     private TextBox          numInstances;
     private Dropdown<Integer> plotType; 
-    protected AppButton       getDataButton, recomputeButton, plotDataButton; 
+    protected AppButton       getDataButton, recomputeButton, plotDataButton, selectButton, selectAllButton, unselectAllButton, unselectButton; 
     private TableWidget       plotDataTable;
     private QcChartReportViewVO results;
     private ScreenService     qcService;
@@ -321,6 +321,68 @@ public class QcChartScreen extends Screen {
                 results.getQcList().get(r).setIsPlot((String)val);
             }
         });
+        
+        selectButton = (AppButton)def.getWidget("selectButton");
+        addScreenHandler(selectButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int list[];
+                
+                list = plotDataTable.getSelectedRows();
+                for (int i = 0; i < list.length; i++ ){
+                    plotDataTable.setCell(list[i], 0, "Y");
+                    results.getQcList().get(list[i]).setIsPlot("Y");
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                selectButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        selectAllButton = (AppButton)def.getWidget("selectAllButton");
+        addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                for (int i = 0; i < plotDataTable.numRows(); i++ ){
+                    plotDataTable.setCell(i, 0, "Y");
+                    results.getQcList().get(i).setIsPlot("Y");
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                selectAllButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        unselectAllButton = (AppButton)def.getWidget("unselectAllButton");
+        addScreenHandler(unselectAllButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                for (int i = 0; i < plotDataTable.numRows(); i++ ){
+                    plotDataTable.setCell(i, 0, "N");
+                    results.getQcList().get(i).setIsPlot("N");
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                unselectAllButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        unselectButton = (AppButton)def.getWidget("unselectButton");
+        addScreenHandler(unselectButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int list[];
+                
+                list = plotDataTable.getSelectedRows();
+                for (int i = 0; i < list.length; i++ ){
+                    plotDataTable.setCell(list[i], 0, "N");
+                    results.getQcList().get(list[i]).setIsPlot("N");
+                }
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                unselectButton.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });        
     }
     
     protected void initializeDropdowns() {
@@ -509,6 +571,18 @@ public class QcChartScreen extends Screen {
     }
     
     protected void plotGraph() {
+        int cnt;
+        
+        cnt = 0;
+        for (int i = 0; i < plotDataTable.numRows(); i++ ){
+            if("Y".equals(results.getQcList().get(i).getIsPlot()))
+                break;
+            else cnt++;
+        }
+        if (plotDataTable.numRows() == cnt) {
+            window.setError(consts.get("noSampleSelectedError"));
+            return;
+        }
         window.setBusy(consts.get("genReportMessage"));
         try {
             if (qcChartReportScreen == null) 
