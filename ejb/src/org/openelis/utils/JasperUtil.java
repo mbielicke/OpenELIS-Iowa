@@ -34,7 +34,9 @@ public class JasperUtil {
 
     /**
      * Concats two strings together. Null parameters are ignored.
+     * @see DataBaseUtil
      */
+    @Deprecated
     public static String concat(Object a, Object b) {
         StringBuffer buf;
 
@@ -50,7 +52,9 @@ public class JasperUtil {
     /**
      * Concats two strings together with the specified delimiter. Null
      * parameters are ignored and the delimiter is not used.
+     * @see DataBaseUtil
      */
+    @Deprecated
     public static String concatWithSeparator(Object a, Object delimiter, Object b) {
         StringBuffer buf;
 
@@ -67,7 +71,9 @@ public class JasperUtil {
 
     /**
      * Concats a list of objects together using delimiter.
+     * @see DataBaseUtil
      */
+    @Deprecated
     public static String concatWithSeparator(List list, Object delimiter) {
         StringBuffer buf;
 

@@ -132,5 +132,6 @@ public class ReferenceTable {
                             ANALYSIS_REPORT_FLAGS =         107,
                             ORDER_RECURRENCE =              108,
     						CRON =                          109,
-    						ORDER_ORGANIZATION =            110;  
+    						ORDER_ORGANIZATION =            110,
+                            QC_TEST_ANALYTE =               111;  
 }

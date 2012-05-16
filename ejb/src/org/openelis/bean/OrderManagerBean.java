@@ -63,6 +63,7 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
+import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.remote.OrderManagerRemote;
 import org.openelis.utils.EJBFactory;
@@ -238,6 +239,18 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
     
     public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {       
         return OrderTestManager.fetchByOrderId(id);
+    }
+    
+    public OrderTestAnalyteManager fetchTestAnalyteByOrderTestId(Integer id) throws Exception {        
+        return OrderTestAnalyteManager.fetchByOrderTestId(id);
+    }
+    
+    public OrderTestAnalyteManager fetchMergedTestAnalyteByOrderTestId(Integer id) throws Exception {
+        return OrderTestAnalyteManager.fetchMergedByOrderTestId(id);
+    }
+    
+    public OrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception {
+        return OrderTestAnalyteManager.fetchByTestId(id);
     }
     
     public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {        

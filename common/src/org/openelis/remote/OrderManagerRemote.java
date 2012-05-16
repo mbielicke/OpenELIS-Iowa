@@ -9,6 +9,7 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
+import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
 
 @Remote
@@ -49,6 +50,12 @@ public interface OrderManagerRemote {
     public OrderReceiptManager fetchReceiptByOrderId(Integer id) throws Exception;
     
     public OrderTestManager fetchTestByOrderId(Integer id) throws Exception;
+    
+    public OrderTestAnalyteManager fetchTestAnalyteByOrderTestId(Integer id) throws Exception;
+    
+    public OrderTestAnalyteManager fetchMergedTestAnalyteByOrderTestId(Integer id) throws Exception;
+
+    public OrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception;
     
     public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception;
     

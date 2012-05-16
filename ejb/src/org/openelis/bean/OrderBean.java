@@ -1,5 +1,5 @@
 /**
- * Exhibit A - UIRF Open-source Based Public Software License.
+ * 	Exhibit A - UIRF Open-source Based Public Software License.
  * 
  * The contents of this file are subject to the UIRF Open-source Based Public
  * Software License(the "License"); you may not use this file except in
@@ -76,7 +76,8 @@ public class OrderBean implements OrderRemote, OrderLocal {
         query.setParameter("id", id);
         try {
             data = (OrderViewDO)query.getSingleResult();          
-            data.setOrganization(organization.fetchById(data.getOrganizationId()));
+            if (data.getOrganizationId() != null)
+                data.setOrganization(organization.fetchById(data.getOrganizationId()));
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {

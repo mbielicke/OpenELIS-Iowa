@@ -46,7 +46,6 @@ import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.local.OrderManagerLocal;
 import org.openelis.local.OrderRecurrenceReportLocal;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.NoteManager;
@@ -93,7 +92,6 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
         Calendar cal;
         OrderManager man, nom;
         ArrayList<OrderRecurrenceDO> list;
-        OrderManagerLocal oml;
 
         now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         today = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
@@ -111,7 +109,6 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
             return;
         }        
 
-        oml = EJBFactory.getOrderManager();
         for (OrderRecurrenceDO data : list) {
             id = data.getOrderId();
             try {
