@@ -100,6 +100,7 @@ public class DataViewEnvironmentalScreen extends Screen {
                                 selectAllAuxButton, unselectAllAuxButton;
     private Screen              screen;
     private boolean             loadTable;
+    private ScreenService       reportService;
 
     private enum Decks {
         QUERY, LIST
@@ -111,6 +112,7 @@ public class DataViewEnvironmentalScreen extends Screen {
     public DataViewEnvironmentalScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DataViewEnvironmentalDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");
+        reportService = new ScreenService("controller?service=org.openelis.modules.report.dataView.server.DataViewReportService");
 
         userPermission = UserCache.getPermission().getModule("w_dataview_environmental");
         if (userPermission == null)
@@ -1235,7 +1237,7 @@ public class DataViewEnvironmentalScreen extends Screen {
             }
         }
         try {
-            st = service.call("runReportForWebEnvironmental", data);
+            st = reportService.call("runReportForWebEnvironmental", data);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "report?file=" + st.getMessage();
 

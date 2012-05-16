@@ -94,7 +94,8 @@
   		   <include name="org/openelis/modules/organization/server/*.class"/>
   	       <include name="org/openelis/modules/sample/server/*.class"/>
   	       <include name="org/openelis/modules/analysis/server/*.class"/>
-  	    	<include name="org/openelis/modules/dataView/server/*.class"/>
+  	       <include name="org/openelis/modules/dataView/server/*.class"/>
+  	       <include name="org/openelis/modules/report/dataView/server/*.class"/>
   		   <include name="org/openelis/manager/*.class"/>
   	       <include name="org/openelis/server/*.class"/>
   	    </fileset>
