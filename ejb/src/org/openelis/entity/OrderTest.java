@@ -24,9 +24,10 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQuery( name = "OrderTest.FetchByOrderId",
-            query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId, o.sortOrder," +
-            		"o.testId, o.test.name, o.test.method.name, o.test.description, o.test.isActive)"
-                  + " from OrderTest o where o.orderId = :id")
+            query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId,"+
+                    " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.name," +
+                    " o.test.description, o.test.isActive)"
+                  + " from OrderTest o where o.orderId = :id order by o.sortOrder")
 
 @Entity
 @Table(name = "order_test")
@@ -40,6 +41,9 @@ public class OrderTest implements Auditable, Cloneable {
 
     @Column(name = "order_id")
     private Integer   orderId;
+    
+    @Column(name = "item_sequence")
+    private Integer    itemSequence;
 
     @Column(name = "sort_order")
     private Integer   sortOrder;
@@ -72,13 +76,22 @@ public class OrderTest implements Auditable, Cloneable {
             this.orderId = orderId;
     }
 
-    public Integer getSequence() {
+    public Integer getItemSequence() {
+        return itemSequence;
+    }
+
+    public void setItemSequence(Integer itemSequence) {
+        if (DataBaseUtil.isDifferent(itemSequence, this.itemSequence))
+            this.itemSequence = itemSequence;
+    }
+
+    public Integer getSortOrder() {
         return sortOrder;
     }
 
-    public void setSequence(Integer sequence) {
-        if (DataBaseUtil.isDifferent(sequence, this.sortOrder))
-            this.sortOrder = sequence;
+    public void setSortOrder(Integer sortOrder) {
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
+            this.sortOrder = sortOrder;
     }
 
     public Integer getTestId() {
@@ -115,7 +128,8 @@ public class OrderTest implements Auditable, Cloneable {
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("order_id", orderId, original.orderId)
-                 .setField("sequence", sortOrder, original.sortOrder)
+                 .setField("item_sequence", itemSequence, original.itemSequence)
+                 .setField("sort_order", sortOrder, original.sortOrder)
                  .setField("test_id", testId, original.testId, ReferenceTable.TEST);
 
         return audit;

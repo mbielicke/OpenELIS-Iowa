@@ -43,10 +43,10 @@ public class OrderTestViewDO extends OrderTestDO {
     public OrderTestViewDO() {        
     }
     
-    public OrderTestViewDO(Integer id, Integer orderId, Integer sortOrder, Integer testId,
-                           String testName, String methodName, String description,
+    public OrderTestViewDO(Integer id, Integer orderId, Integer itemSequence, Integer sortOrder,
+                           Integer testId, String testName, String methodName, String description,
                            String isActive) {
-        super(id, orderId, sortOrder, testId);
+        super(id, orderId, itemSequence, sortOrder, testId);
         setTestName(testName);
         setMethodName(methodName);
         setDescription(description);

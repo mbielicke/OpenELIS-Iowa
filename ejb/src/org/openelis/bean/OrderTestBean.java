@@ -75,7 +75,8 @@ public class OrderTestBean implements OrderTestLocal {
         manager.setFlushMode(FlushModeType.COMMIT);
         entity = new OrderTest();
         entity.setOrderId(data.getOrderId());
-        entity.setSequence(data.getSortOrder());
+        entity.setItemSequence(data.getItemSequence());        
+        entity.setSortOrder(data.getSortOrder());
         entity.setTestId(data.getTestId());
 
         manager.persist(entity);
@@ -94,7 +95,8 @@ public class OrderTestBean implements OrderTestLocal {
 
         entity = manager.find(OrderTest.class, data.getId());
         entity.setOrderId(data.getOrderId());
-        entity.setSequence(data.getSortOrder());
+        entity.setItemSequence(data.getItemSequence());
+        entity.setSortOrder(data.getSortOrder());
         entity.setTestId(data.getTestId());
 
         return data;
