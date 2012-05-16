@@ -139,7 +139,7 @@ public class OrderTestAnalyte implements Auditable, Cloneable {
         Audit audit;
 
         audit = new Audit();
-        audit.setReferenceTableId(ReferenceTable.QC_TEST_ANALYTE);
+        audit.setReferenceTableId(ReferenceTable.ORDER_TEST_ANALYTE);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
