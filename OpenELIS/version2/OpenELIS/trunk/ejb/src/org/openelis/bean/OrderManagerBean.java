@@ -375,7 +375,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
             oldData = oldMan.getContainerAt(i);
             newData = new OrderContainerDO();
             newData.setContainerId(oldData.getContainerId());
-            newData.setNumberOfContainers(oldData.getNumberOfContainers());
+            newData.setItemSequence(oldData.getItemSequence());
             newData.setTypeOfSampleId(oldData.getTypeOfSampleId());            
             newMan.addContainer(newData);
         }

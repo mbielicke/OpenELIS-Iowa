@@ -29,14 +29,16 @@ public class OrderTestDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
     
-    protected Integer  id, orderId, sortOrder, testId;    
+    protected Integer  id, orderId, itemSequence, sortOrder, testId;    
     
     public OrderTestDO() {        
     }
     
-    public OrderTestDO(Integer  id, Integer orderId, Integer sortOrder, Integer testId) {   
+    public OrderTestDO(Integer  id, Integer orderId, Integer itemSequence, Integer sortOrder,
+                       Integer testId) {   
         setId(id);
         setOrderId(orderId);
+        setItemSequence(itemSequence);
         setSortOrder(sortOrder);
         setTestId(testId);
         _changed = false;
@@ -58,6 +60,14 @@ public class OrderTestDO extends DataObject {
     public void setOrderId(Integer orderId) {
         this.orderId = orderId;
         _changed = true;
+    }
+
+    public Integer getItemSequence() {
+        return itemSequence;
+    }
+
+    public void setItemSequence(Integer itemSequence) {
+        this.itemSequence = itemSequence;
     }
 
     public Integer getSortOrder() {

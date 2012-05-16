@@ -257,7 +257,7 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
             data = man.getContainerAt(i);
             ndata = new OrderContainerDO();
             ndata.setContainerId(data.getContainerId());
-            ndata.setNumberOfContainers(data.getNumberOfContainers());
+            ndata.setItemSequence(data.getItemSequence());
             ndata.setTypeOfSampleId(data.getTypeOfSampleId());            
             nocm.addContainer(ndata);
         }

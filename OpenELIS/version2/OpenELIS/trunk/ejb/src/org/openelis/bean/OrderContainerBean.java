@@ -76,7 +76,7 @@ public class OrderContainerBean implements OrderContainerLocal {
         entity = new OrderContainer();
         entity.setOrderId(data.getOrderId());
         entity.setContainerId(data.getContainerId());
-        entity.setNumberOfContainers(data.getNumberOfContainers());
+        entity.setItemSequence(data.getItemSequence());
         entity.setTypeOfSampleId(data.getTypeOfSampleId());
         
         manager.persist(entity);
@@ -96,7 +96,7 @@ public class OrderContainerBean implements OrderContainerLocal {
         entity = manager.find(OrderContainer.class, data.getId());
         entity.setOrderId(data.getOrderId());
         entity.setContainerId(data.getContainerId());
-        entity.setNumberOfContainers(data.getNumberOfContainers());
+        entity.setItemSequence(data.getItemSequence());
         entity.setTypeOfSampleId(data.getTypeOfSampleId());        
 
         return data;
@@ -121,7 +121,7 @@ public class OrderContainerBean implements OrderContainerLocal {
         if (data.getContainerId() == null)
             list.add(new FieldErrorException("fieldRequiredException",
                                              OrderMeta.getContainerContainerId()));
-        num = data.getNumberOfContainers();
+        num = data.getItemSequence();
         if (num == null) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              OrderMeta.getContainerNumberOfContainers()));

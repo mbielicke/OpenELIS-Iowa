@@ -194,7 +194,7 @@ public abstract class ImportOrder {
         for(int i=0; i<containerMan.count(); i++){
             containerDO = containerMan.getContainerAt(i);
             
-            for(int j=0; j<containerDO.getNumberOfContainers(); j++){
+            for(int j=0; j<containerDO.getItemSequence(); j++){
                 addedIndex = itemMan.addSampleItem();
                 itemDO = itemMan.getSampleItemAt(addedIndex);
                 itemDO.setContainerId(containerDO.getContainerId());

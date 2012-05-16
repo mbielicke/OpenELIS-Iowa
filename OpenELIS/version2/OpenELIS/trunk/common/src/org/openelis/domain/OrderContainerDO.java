@@ -29,17 +29,17 @@ public class OrderContainerDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, orderId, containerId, numberOfContainers, typeOfSampleId;
+    protected Integer         id, orderId, containerId, itemSequence, typeOfSampleId;
     
     public OrderContainerDO() {
     }
 
     public OrderContainerDO(Integer id, Integer orderId, Integer containerId,
-                            Integer numberOfContainers, Integer typeOfSampleId) {
+                            Integer itemSequence, Integer typeOfSampleId) {
         setId(id);
         setOrderId(orderId);
         setContainerId(containerId);
-        setNumberOfContainers(numberOfContainers);
+        setItemSequence(itemSequence);
         setTypeOfSampleId(typeOfSampleId);    
         _changed = false;
     }
@@ -71,12 +71,12 @@ public class OrderContainerDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getNumberOfContainers() {
-        return numberOfContainers;
+    public Integer getItemSequence() {
+        return itemSequence;
     }
 
-    public void setNumberOfContainers(Integer numberOfContainers) {
-        this.numberOfContainers = numberOfContainers;
+    public void setItemSequence(Integer itemSequence) {
+        this.itemSequence = itemSequence;
         _changed = true;
     }
 

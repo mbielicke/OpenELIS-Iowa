@@ -22,7 +22,7 @@ import org.openelis.utils.Auditable;
 
 @NamedQuery( name = "OrderContainer.FetchByOrderId",
             query = "select distinct new org.openelis.domain.OrderContainerDO(o.id,o.orderId,o.containerId," +
-                     "o.numberOfContainers,o.typeOfSampleId)"
+                     "o.itemSequence,o.typeOfSampleId)"
                    + " from OrderContainer o where o.orderId = :id")
                    
 @Entity
@@ -41,8 +41,8 @@ public class OrderContainer implements Auditable, Cloneable {
     @Column(name = "container_id")
     private Integer        containerId;
 
-    @Column(name = "number_of_containers")
-    private Integer        numberOfContainers;
+    @Column(name = "item_sequence")
+    private Integer        itemSequence;
 
     @Column(name = "type_of_sample_id")
     private Integer        typeOfSampleId;
@@ -77,13 +77,13 @@ public class OrderContainer implements Auditable, Cloneable {
             this.containerId = containerId;
     }
 
-    public Integer getNumberOfContainers() {
-        return numberOfContainers;
+    public Integer getItemSequence() {
+        return itemSequence;
     }
 
-    public void setNumberOfContainers(Integer numberOfContainers) {
-        if (DataBaseUtil.isDifferent(numberOfContainers, this.numberOfContainers))
-            this.numberOfContainers = numberOfContainers;
+    public void setItemSequence(Integer itemSequence) {
+        if (DataBaseUtil.isDifferent(itemSequence, this.itemSequence))
+            this.itemSequence = itemSequence;
     }
 
     public Integer getTypeOfSampleId() {
@@ -113,7 +113,7 @@ public class OrderContainer implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("order_id", orderId, original.orderId)
                  .setField("container_id", containerId, original.containerId, ReferenceTable.DICTIONARY)
-                 .setField("number_of_containers", numberOfContainers, original.numberOfContainers)
+                 .setField("item_sequence", itemSequence, original.itemSequence)
                  .setField("type_of_sample_id", typeOfSampleId, original.typeOfSampleId, ReferenceTable.DICTIONARY);
 
         return audit;
