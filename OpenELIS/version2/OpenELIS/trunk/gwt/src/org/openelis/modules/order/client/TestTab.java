@@ -29,10 +29,12 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 
 import org.openelis.domain.OrderContainerDO;
+import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.PanelDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -52,7 +54,6 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -63,7 +64,10 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
 import org.openelis.gwt.widget.tree.TreeWidget;
+import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
+import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.PanelManager;
 import org.openelis.manager.TestManager;
@@ -81,6 +85,8 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
     private AppButton             addTestButton, removeTestButton;
     private TreeWidget            tree;
     private boolean               loaded;
+    private static final String   TEST_LEAF = "test", ANALYTE_LEAF = "analyte";
+    private ArrayList<String>     names;
 
     protected ScreenService       analysisService, panelService, testService;
 
@@ -100,6 +106,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
     }
 
     private void initialize() {        
+        
         tree = (TreeWidget)def.getWidget("orderTestTree");
         addScreenHandler(tree, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {       
@@ -110,87 +117,117 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                 tree.enable(true);
             }
         });
-
-        tree.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                TreeDataItem item;
+        
+        tree.addSelectionHandler(new SelectionHandler<TreeDataItem>() {
+            public void onSelection(SelectionEvent<TreeDataItem> event) {
+                TreeDataItem row;
                 
-                if ((state == State.ADD || state == State.UPDATE || state == State.QUERY)) {  
-                    item = tree.getSelection();
-                    if (("test".equals(item.leafType) && event.getCol() > 1) || 
-                                    ("analyte".equals(item.leafType) && event.getCol() > 0));
-                        event.cancel();
+                if (state == State.ADD || state == State.UPDATE) {
+                    row = event.getSelectedItem();
+                    removeTestButton.enable(TEST_LEAF.equals(row.leafType));
+                }              
+            }
+        });
+
+        tree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                TreeDataItem row;
+
+                if ( (state == State.ADD || state == State.UPDATE)) {
+                    row = tree.getSelection();
+                    if (ANALYTE_LEAF.equals(row.leafType) &&(event.getCol() > 0))
+                        event.cancel();                    
                 } else {
                     event.cancel();
                 }
-            }            
+            }
         });
+        
+        tree.addBeforeLeafOpenHandler(new BeforeLeafOpenHandler() {
+            public void onBeforeLeafOpen(BeforeLeafOpenEvent event) {
+                TreeDataItem item;
+                
+                item = event.getItem();
+                if(TEST_LEAF.equals(item.leafType)) {
+                    addAnalytes(item.childIndex, item);
+                    item.checkForChildren(item.hasChildren());
+                }
+            }            
+        }); 
         
         tree.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 OrderTestViewDO data;
+                OrderTestAnalyteViewDO ana;
                 TestMethodVO test;
                 Object val;
+                TreeDataItem row;
 
                 r = event.getRow();
                 c = event.getCol();
-                val = tree.getObject(r,c);
-                
-                try {
-                    data = manager.getTests().getTestAt(r);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    return;
-                }
-                
-                switch(c) {
+                val = tree.getObject(r, c);
+                row = tree.getSelection();
+
+                switch (c) {
                     case 0:
-                        if (val != null) {
-                            test = (TestMethodVO) ((TableDataRow)val).data;
-                            if(test.getMethodId() == null) {
-                                addTestsFromPanel(test.getTestId(), r);
+                        if (TEST_LEAF.equals(row.leafType)) {
+
+                        } else if (ANALYTE_LEAF.equals(row.leafType)) {
+                            ana = (OrderTestAnalyteViewDO)row.data;
+                            ana.setTestAnalyteIsReportable((String)val);
+                        }
+                        break;
+                    case 1:
+                        if (TEST_LEAF.equals(row.leafType)) {
+                            data = (OrderTestViewDO)row.data;
+
+                            if (val != null) {
+                                test = (TestMethodVO) ((TableDataRow)val).data;
+                                if (test.getMethodId() == null) {
+                                    addTestsFromPanel(test.getTestId(), row);
+                                } else {
+                                    data.setTestId(test.getTestId());
+                                    data.setTestName(test.getTestName());
+                                    data.setDescription(test.getTestDescription());
+                                    data.setMethodName(test.getMethodName());
+                                    data.setIsActive(test.getIsActive());
+                                    
+                                    reloadAnalytes(row);
+                                }
                             } else {
-                                data.setTestId(test.getTestId());
-                                data.setTestName(test.getTestName());
-                                data.setDescription(test.getTestDescription());
-                                data.setMethodName(test.getMethodName());
-                                data.setIsActive(test.getIsActive());
+                                data.setTestId(null);
+                                data.setTestName(null);
+                                data.setMethodName(null);
+                                data.setDescription(null);
+                                data.setIsActive(null);   
                                 
-                                tree.setCell(r, 1, test.getMethodName());
-                                tree.setCell(r, 2, test.getTestDescription());
+                                reloadAnalytes(row);
                             }
-                        } else {
-                            data.setTestId(null);
-                            data.setTestName(null);
-                            data.setMethodName(null);
-                            data.setDescription(null);
-                            data.setIsActive(null);
-                            
-                            tree.setCell(r, 1, null);
-                            tree.setCell(r, 2, null);
                         }
                 }
-            }
+            }            
         });
 
         tree.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 int r;
                 TableDataRow val;
+                TreeDataItem row;
                 OrderTestViewDO data;
                 TestMethodVO test;                
                 OrderTestManager man;
                 
-                r = event.getIndex();
-                
                 try {
                     man = manager.getTests();
+                    row = (TreeDataItem)event.getRow();
+                    r = row.childIndex;
                     man.addTestAt(r);
-                    data = man.getTestAt(r);                    
+                    data = man.getTestAt(r);    
+                    row.data = data;
                     
-                    val = (TableDataRow)tree.getObject(r, 0);
-                    
+                    val = (TableDataRow)row.cells.get(1).getValue();
+
                     if(val != null) {
                         test = (TestMethodVO)val.data;
                         data.setTestId(test.getTestId());
@@ -214,14 +251,31 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
 
         tree.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
-                try {
-                    manager.getTests().removeTestAt(event.getIndex());
-                } catch (Exception e) {                    
-                    Window.alert(e.getMessage());
+                TreeDataItem row;
+                
+                row = ((TreeDataItem)event.getRow());
+                /*
+                 * analytes don't need to be deleted here because they get deleted
+                 * in the back-end when the test gets deleted                 
+                 */
+                if (TEST_LEAF.equals(row.leafType)) {
+                    try {
+                        /*
+                         * childIndex and not event.getIndex() is passed to the
+                         * method because the former corresponds to the ordering
+                         * of the tests in the manager whereas the latter to the 
+                         * index of the deleted item in the tree which differs based
+                         * on what items are showing
+                         */
+                        manager.getTests().removeTestAt(row.childIndex);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                    }
                 }
             }
         });
-        test = (AutoComplete) tree.getColumns().get("test").get(1).getColumnWidget();
+        
+        test = (AutoComplete) tree.getColumns().get(TEST_LEAF).get(1).getColumnWidget();
         test.addBeforeGetMatchesHandler(new BeforeGetMatchesHandler() {
             public void onBeforeGetMatches(BeforeGetMatchesEvent event) {
                 int                     r;
@@ -306,8 +360,8 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < autoList.size(); i++ ) {
                         data = autoList.get(i);
-                        row = new TableDataRow(i, data.getTestName(), data.getMethodName(),
-                                               data.getTestDescription());
+                        row = new TableDataRow(i, data.getTestName(), data.getMethodName(), data.getTestDescription());
+                        row.display = getTestLabel(data.getTestName(),data.getMethodName(), data.getTestDescription());
                         row.data = data;
                         model.add(row);
                     }
@@ -318,46 +372,50 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
             }            
         });
         
-        test.addSelectionHandler(new SelectionHandler<TableRow>() {
+        //TODO get rid of this code
+        /*test.addSelectionHandler(new SelectionHandler<TableRow>() {
             public void onSelection(SelectionEvent<TableRow> event) {
-                TableDataRow selectedRow;
+                String label;
+                TableDataRow selRow;
                 TestMethodVO data;
-                int r;
 
-                selectedRow = event.getSelectedItem().row;                
-                r = tree.getSelectedRow();
-
+                selRow = event.getSelectedItem().row;                
                 //
                 // since rows can be added to this table in two ways i.e. by 
                 // clicking addTestButton or selecting a panel and adding all
-                // the tests belonging to that panel we have to make sure that 
-                // in both cases the id of the test is set for each
+                // the tests belonging to that panel, it has to be made sure that 
+                // in both cases the id of the test is set in each case
                 // 
-                if (selectedRow != null && selectedRow.key != null) {
-                    data = (TestMethodVO)selectedRow.data;
-                    tree.setCell(r, 1, data.getMethodName());
-                    tree.setCell(r, 2, data.getTestDescription());
+                if (selRow != null && selRow.key != null) {
+                    data = (TestMethodVO)selRow.data;
+                    label = getTestLabel(data.getTestName(),data.getMethodName(), data.getTestDescription(), new StringBuffer());
+                    test.textbox.setText(label);
                 } else {
-                    tree.setCell(r, 1, null);
-                    tree.setCell(r, 1, null);
+                    test.textbox.setText(null);
                 }
             }
-
-        });
+        });*/
 
         addTestButton = (AppButton)def.getWidget("addTestButton");
         addScreenHandler(addTestButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int r;
-
-                r = tree.getSelectedRow() + 1;
-                if (r == 0) 
-                    r = tree.numRows();    
-              //TODO fix the following
-                //orderTestTree.addRow(r);
-                //orderTestTree.selectRow(r);
+                int index, numRows;
+                TreeDataItem selRow, newRow;                
+                
+                index = 0;
+                numRows = tree.getData().size();
+                selRow = tree.getSelection();                
+                
+                if (selRow == null)  
+                    index = numRows;
+                else if (TEST_LEAF.equals(selRow.leafType))
+                    index = selRow.childIndex + 1;
+                else if (ANALYTE_LEAF.equals(selRow.leafType))
+                    index = selRow.parent.childIndex + 1;
+                
+                newRow = addTestRowAt(index, null);               
                 tree.scrollToSelection();
-                tree.startEditing(r, 0);
+                tree.startEditing(newRow, 1);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -381,15 +439,47 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
         });
     }
     
+    protected void addAnalytes(int index, TreeDataItem parent) {
+        OrderTestAnalyteManager man;
+        OrderTestAnalyteViewDO data;
+        TreeDataItem item;
+        
+        if(parent.getItems().size() > 0)
+            return;             
+        
+        try {
+            window.setBusy(consts.get("fetching"));
+            
+            if (state == State.ADD || state == State.UPDATE)
+                man = manager.getTests().getMergedAnalytesAt(index); 
+            else
+                man = manager.getTests().getAnalytesAt(index); 
+                        
+            for (int i = 0; i < man.count(); i++) {
+                data = man.getAnalyteAt(i);
+                item = new TreeDataItem(2);
+                item.leafType = ANALYTE_LEAF;
+                item.cells.get(0).setValue(data.getTestAnalyteIsReportable());
+                item.cells.get(1).setValue(data.getAnalyteName());
+                item.data = data;
+                parent.addItem(item);
+            }            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+        window.clearStatus();
+    }   
+
     private ArrayList<TreeDataItem> getTreeModel() {
         int i;
+        String label;
         OrderTestViewDO data;
         ArrayList<TreeDataItem> model;
         OrderTestManager man;
         TableDataRow row;
         TreeDataItem item;
-        
-        
+                
         model = new ArrayList<TreeDataItem>();
         if (manager == null)
             return model;
@@ -398,15 +488,15 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
             man = manager.getTests();
             for (i = 0; i < man.count(); i++ ) {
                 data = (OrderTestViewDO)man.getTestAt(i);
-                item = new TreeDataItem(4);
-                item.leafType = "test";
+                item = new TreeDataItem(2);
+                item.leafType = TEST_LEAF;
                 item.key = data.getId();
+                item.data = data;
                 item.cells.get(0).setValue(null);
-                row = new TableDataRow(data.getTestId(), data.getTestName());
+                label = getTestLabel(data.getTestName(), data.getMethodName(), data.getDescription());
+                row = new TableDataRow(data.getTestId(), label);
                 row.data = data;
                 item.cells.get(1).setValue(row);
-                item.cells.get(2).setValue(data.getMethodName());
-                item.cells.get(3).setValue(data.getDescription());
                 item.close();
                 item.checkForChildren(true);
                 
@@ -417,6 +507,19 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
             e.printStackTrace();
         }
         return model;
+    }
+
+    private String getTestLabel(String testName, String methodName, String description) {
+        if (names == null)
+            names = new ArrayList<String>();
+        else
+            names.clear();
+        
+        names.add(testName);
+        names.add(methodName);
+        names.add(description);
+                
+        return DataBaseUtil.concatWithSeparator(names, ", ");
     }   
     
     public void setManager(OrderManager manager) {
@@ -431,34 +534,19 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
         loaded = true;
     }    
     
-    private void addTestsFromPanel(Integer panelId, int index) {
+    private void addTestsFromPanel(Integer panelId, TreeDataItem row) {
+        int index;
         ArrayList<TestMethodVO> tests;
-        TableDataRow row, val;  
-        TestMethodVO data;
 
         try {
-            tests = testService.callList("fetchByPanelId", panelId);            
-            if (tests != null && tests.size() > 0) {
-                tree.deleteRow(index);
-                for (int i = 0; i < tests.size(); i++ ) {
-                    data = tests.get(i);
-
-                    row = new TableDataRow(3);
-
-                    val = new TableDataRow(data.getTestId(), data.getTestName());
-                    val.data = data;
-
-                    row.cells.get(0).setValue(val);
-                    row.cells.get(1).setValue(data.getMethodName());
-                    row.cells.get(2).setValue(data.getTestDescription());
-                    //TODO fix the following
-                    //orderTestTree.addRow(index + i, row);
-                }
+            tests = testService.callList("fetchByPanelId", panelId);   
+            index = row.childIndex;
+            if (tests != null && tests.size() > 0) {                
+                tree.deleteRow(row);
+                for (int i = 0; i < tests.size(); i++ ) 
+                    addTestRowAt(index+i, tests.get(i));                
             } else {
-                tree.setCellException(index, 0, new LocalizedException("noActiveTestFoundForPanelException"));
-                tree.setCell(index, 0, null);
-                tree.setCell(index, 1, null);
-                tree.setCell(index, 2, null);
+                tree.setCellException(index, 1, new LocalizedException("noActiveTestFoundForPanelException"));
             }
             
             ActionEvent.fire(this, Action.ADD_AUX, panelId);
@@ -466,7 +554,54 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
-    } 
+    }
+
+    private void reloadAnalytes(TreeDataItem row) {
+        try {
+            /*
+             * make sure that the OrderTestAnalyteManager for this order test contains 
+             * the analytes for the new test 
+             */
+            manager.getTests().refreshAnalytesByTestAt(row.childIndex);                                
+            /*
+             * remove all the analytes because the test has changed and the analytes
+             * belonged to the previous test
+             */
+            row.getItems().clear();
+            
+            row.close();
+            tree.toggle(row);
+            row.checkForChildren(row.hasChildren());
+            tree.refresh(true);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
+    }
+    
+    private TreeDataItem addTestRowAt(int index, TestMethodVO data) {
+        String testLabel;
+        TreeDataItem row;
+        TableDataRow val;
+        
+        row = new TreeDataItem(2);
+        if (data != null) {
+            testLabel = getTestLabel(data.getTestName(), data.getMethodName(), data.getTestDescription());
+            val = new TableDataRow(data.getTestId(), testLabel);
+            val.data = data;
+            row.cells.get(1).setValue(val);
+        }
+        
+        row.leafType = TEST_LEAF;
+        row.checkForChildren(true);
+        
+        if (index < tree.getData().size())                                    
+            tree.addRow(index, row);
+        else 
+            tree.addRow(row);
+        
+        return row;
+    }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
         return addHandler(handler, ActionEvent.getType());

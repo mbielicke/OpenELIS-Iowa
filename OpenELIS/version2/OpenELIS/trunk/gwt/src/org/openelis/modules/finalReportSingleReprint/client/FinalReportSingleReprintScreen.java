@@ -58,6 +58,7 @@ import org.openelis.manager.Preferences;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
+import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintReportScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -68,19 +69,20 @@ import com.google.gwt.user.client.Window;
 
 public class FinalReportSingleReprintScreen extends Screen {
 
-    private FormVO                         data;
-    private SampleManager                  manager;
-    private FinalReportSingleReprintScreen screen;
-    private TextBox                        accessionNumber, faxNumber, from, toName, toCompany;
-    private CheckBox                       print, fax;
-    private Dropdown<Integer>              organization;
-    private Dropdown<String>               printer, destination;
-    private TextArea                       comment;
-    private AppButton                      runReportButton, resetButton;
-    private FinalReportScreen              finalReportScreen;
-    private Integer                        billToTypeId, finalRepFaxTypeId;   
-    private String                         VIEW_PDF_KEY = "-view-";
-    private ScreenService                  preferencesService;
+    private FormVO                               data;
+    private SampleManager                        manager;
+    private FinalReportSingleReprintScreen       screen;
+    private TextBox                              accessionNumber, faxNumber, from, toName,
+                                                 toCompany;
+    private CheckBox                             print, fax;
+    private Dropdown<Integer>                    organization;
+    private Dropdown<String>                     printer, destination;
+    private TextArea                             comment;
+    private AppButton                            runReportButton, resetButton;
+    private FinalReportSingleReprintReportScreen finalReportScreen;
+    private Integer                              billToTypeId, finalRepFaxTypeId;
+    private String                               VIEW_PDF_KEY = "-view-";
+    private ScreenService                        preferencesService;
 
     public FinalReportSingleReprintScreen() throws Exception {
         super((ScreenDefInt)GWT.create(FinalReportSingleReprintDef.class));
@@ -478,7 +480,7 @@ public class FinalReportSingleReprintScreen extends Screen {
         
         try {
             if (finalReportScreen == null) 
-                finalReportScreen = new FinalReportScreen(window);  
+                finalReportScreen = new FinalReportSingleReprintReportScreen(window);  
             else
                 finalReportScreen.setWindow(window);
             

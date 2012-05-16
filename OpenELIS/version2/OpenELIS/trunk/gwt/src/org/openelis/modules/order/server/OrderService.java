@@ -37,6 +37,7 @@ import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
+import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.server.EJBFactory;
 
@@ -131,6 +132,18 @@ public class OrderService {
     
     public OrderTestManager fetchTestByOrderId(Integer id) throws Exception {
         return EJBFactory.getOrderManager().fetchTestByOrderId(id);
+    }
+    
+    public OrderTestAnalyteManager fetchTestAnalyteByOrderTestId(Integer id) throws Exception {
+        return EJBFactory.getOrderManager().fetchTestAnalyteByOrderTestId(id);
+    }
+    
+    public static OrderTestAnalyteManager fetchMergedTestAnalyteByOrderTestId(Integer id) throws Exception {
+        return EJBFactory.getOrderManager().fetchMergedTestAnalyteByOrderTestId(id);
+    }
+    
+    public OrderTestAnalyteManager fetchTestAnalyteByTestId(Integer id) throws Exception {
+        return EJBFactory.getOrderManager().fetchTestAnalyteByTestId(id);
     }
     
     public OrderContainerManager fetchContainerByOrderId(Integer id) throws Exception {
