@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.OrderTestAnalyteLocal;
 import org.openelis.local.OrderTestLocal;
+import org.openelis.manager.OrderTestManager.OrderTestListItem;
 import org.openelis.utils.EJBFactory;
 
 public class OrderTestManagerProxy {
@@ -42,7 +44,9 @@ public class OrderTestManagerProxy {
         tests = EJBFactory.getOrderTest().fetchByOrderId(id);
         m = OrderTestManager.getInstance();
         m.setOrderId(id);
-        m.setTests(tests);
+        
+        for (int i = 0; i < tests.size(); i++ )
+            m.addTest(tests.get(i));
 
         return m;
     }
@@ -50,6 +54,7 @@ public class OrderTestManagerProxy {
     public OrderTestManager add(OrderTestManager man) throws Exception {
         OrderTestLocal tl;
         OrderTestViewDO data;
+        OrderTestAnalyteManager anaMan;
 
         tl = EJBFactory.getOrderTest();
         for (int i = 0; i < man.count(); i++ ) {
@@ -57,6 +62,10 @@ public class OrderTestManagerProxy {
             data.setSortOrder(i+1);
             data.setOrderId(man.getOrderId());
             tl.add(data);
+            
+            anaMan = man.getAnalytesAt(i);
+            anaMan.setOrderTestId(data.getId());
+            anaMan.add();
         }
 
         return man;
@@ -64,11 +73,26 @@ public class OrderTestManagerProxy {
 
     public OrderTestManager update(OrderTestManager man) throws Exception {
         OrderTestLocal tl;
+        OrderTestAnalyteLocal al;
         OrderTestViewDO data;
+        OrderTestAnalyteManager anaMan;
+        OrderTestListItem item;
         
         tl = EJBFactory.getOrderTest();
-        for (int j = 0; j < man.deleteCount(); j++ )
-            tl.delete(man.getDeletedAt(j));
+        al = EJBFactory.getOrderTestAnalyte();
+        
+        for (int j = 0; j < man.deleteCount(); j++ ) {            
+            item = man.getDeletedAt(j);
+            /*
+             * The analytes are deleted through the local interface and not the 
+             * manager because the OrderTestManager may not have the analyte loaded
+             * because the user never looked them up. Also some of the analytes 
+             * may never have been marked as reportable, so they may not have any
+             * ids.   
+             */
+            al.deleteByOrderTestId(item.test.getId());                       
+            tl.delete(item.test);
+        }
 
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getTestAt(i);
@@ -79,6 +103,10 @@ public class OrderTestManagerProxy {
             } else {
                 tl.update(data);
             }
+            
+            anaMan = man.getAnalytesAt(i);
+            anaMan.setOrderTestId(data.getId());
+            anaMan.update();
         }
 
         return man;
@@ -87,14 +115,23 @@ public class OrderTestManagerProxy {
     public void validate(OrderTestManager man) throws Exception {
         ValidationErrorsList list;
         OrderTestLocal tl;
+        OrderTestViewDO data;
 
         tl = EJBFactory.getOrderTest();
         list = new ValidationErrorsList();
         for (int i = 0; i < man.count(); i++ ) {
+            data = man.getTestAt(i);
             try {
-                tl.validate(man.getTestAt(i));
+                tl.validate(data);
             } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "orderTestTable", i);
+                DataBaseUtil.mergeException(list, e, "orderTestTree", i);
+            }
+            
+            try {
+                if (man.items.get(i).analytes != null)
+                    man.getAnalytesAt(i).validate(data);
+            } catch (Exception e) {
+                list.add(e);
             }
         }
         

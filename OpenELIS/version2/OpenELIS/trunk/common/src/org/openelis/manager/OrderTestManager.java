@@ -28,15 +28,16 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.OrderTestViewDO;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
 
 public class OrderTestManager implements RPC {
     
     private static final long serialVersionUID = 1L;
     
-    protected Integer         orderId;
-    protected ArrayList<OrderTestViewDO> tests, deleted;
-    
+    protected Integer                       orderId;
+    protected ArrayList<OrderTestListItem>  items, deleted;
+
     protected transient static OrderTestManagerProxy proxy;
     
     protected OrderTestManager() {        
@@ -50,56 +51,68 @@ public class OrderTestManager implements RPC {
     }
     
     public OrderTestViewDO getTestAt(int i) {
-        return tests.get(i);
+        return items.get(i).test;
     }
     
     public void setTestAt(OrderTestViewDO test, int i) {
-        if(tests == null)
-            tests = new ArrayList<OrderTestViewDO>();
-        tests.set(i, test);        
+        if(items == null)
+            items = new ArrayList<OrderTestListItem>();
+        items.get(i).test = test;        
     }
     
     public void addTest() {
-        if(tests == null)
-            tests = new ArrayList<OrderTestViewDO>();
-        tests.add(new OrderTestViewDO());        
+        OrderTestListItem item;
+        
+        if(items == null)
+            items = new ArrayList<OrderTestListItem>();
+        item = new OrderTestListItem();        
+        item.test = new OrderTestViewDO();
+        items.add(item);
     }
     
     public void addTest(OrderTestViewDO test) {
-        if(tests == null)
-            tests = new ArrayList<OrderTestViewDO>();
-        tests.add(test);        
+        OrderTestListItem item;
+        
+        if(items == null)
+            items = new ArrayList<OrderTestListItem>();
+        item = new OrderTestListItem();        
+        item.test = test;
+        items.add(item);
     }
     
     public void addTestAt(int i) {
-        if(tests == null)
-            tests = new ArrayList<OrderTestViewDO>();
-        tests.add(i, new OrderTestViewDO());        
+        OrderTestListItem item;
+        
+        if(items == null)
+            items = new ArrayList<OrderTestListItem>();
+        item = new OrderTestListItem();        
+        item.test = new OrderTestViewDO();
+        items.add(i, item);
     }
     
     public void removeTestAt(int i) {
-        OrderTestViewDO tmp;
+        OrderTestListItem tmp;
         
-        if(tests == null || i >= tests.size())
+        if(items == null || i >= items.size())
             return;
         
-        tmp = tests.remove(i);
-        if (tmp.getId() != null) {
+        tmp = items.remove(i);
+        if (tmp.test.getId() != null) {
             if (deleted == null)
-                deleted = new ArrayList<OrderTestViewDO>();
+                deleted = new ArrayList<OrderTestListItem>();
             deleted.add(tmp);        
         }
     }
     
-    public ArrayList<OrderTestViewDO> getTests(){
-        return tests;
+    public ArrayList<OrderTestListItem> getTests(){
+        return items;
     }
     
     public int count() {
-        if (tests == null)
+        if (items == null)
             return 0;
 
-        return tests.size();
+        return items.size();
     }
     
     // service methods
@@ -118,6 +131,97 @@ public class OrderTestManager implements RPC {
     public void validate() throws Exception {
         proxy().validate(this);
     }
+    
+    public OrderTestAnalyteManager getAnalytesAt(int i) throws Exception {
+        OrderTestListItem item;
+        
+        item = items.get(i);
+        if (item.analytes == null) {
+            if (item.test != null && item.test.getId() != null) {
+                try {
+                    item.analytes = OrderTestAnalyteManager.fetchByOrderTestId(item.test.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+        }
+
+        if (item.analytes == null)
+            item.analytes = OrderTestAnalyteManager.getInstance();
+
+        return item.analytes;
+    }
+    
+    public OrderTestAnalyteManager getMergedAnalytesAt(int i) throws Exception {
+        OrderTestListItem item;
+
+        item = items.get(i);
+        if (item.analytes == null) {
+            if (item.test != null) {
+                if (item.test.getId() != null) {
+                    try {
+                        item.analytes = OrderTestAnalyteManager.fetchMergedByOrderTestId(item.test.getId());
+                    } catch (NotFoundException e) {
+                        // ignore
+                    } catch (Exception e) {
+                        throw e;
+                    }
+                } else if (item.test.getTestId() != null) {
+                    try {
+                        item.analytes = OrderTestAnalyteManager.fetchByTestId(item.test.getTestId());
+                    } catch (NotFoundException e) {
+                        // ignore
+                    } catch (Exception e) {
+                        throw e;
+                    }
+                }
+
+            }
+        }
+
+        if (item.analytes == null)
+            item.analytes = OrderTestAnalyteManager.getInstance();
+
+        return item.analytes;
+    }
+    
+    public void refreshAnalytesByTestAt(int i) throws Exception {
+        OrderTestListItem item;
+        OrderTestAnalyteManager newMan;
+        
+        /*
+         * done to make sure that the the analytes for the old test are present 
+         * before merging them with those of the new one 
+         */
+        getMergedAnalytesAt(i);
+        
+        /*
+         * if the test id is null then the OrderTestAnalyteManager for this 
+         * order test is assigned to an empty one because the analytes need to
+         * be preserved for the next time a test id gets set so that these analytes
+         * can be included with the ones for the new test and get committed correctly  
+         */
+        item = items.get(i);
+        if (item.test == null || item.test.getTestId() == null) {
+            newMan = OrderTestAnalyteManager.getInstance();
+        } else {
+            /*
+             * fetch the analytes for the new test associated with this order
+             * test and merge them with the analytes from the previous test
+             */
+            try {
+                newMan = OrderTestAnalyteManager.fetchByTestId(item.test.getTestId());
+            } catch (NotFoundException e) {
+                newMan = OrderTestAnalyteManager.getInstance();
+            } catch (Exception e) {
+                throw e;
+            }
+        }
+        newMan.mergeAnalytes(item.analytes);
+        item.analytes = newMan;        
+    }
 
     // friendly methods used by managers and proxies
     Integer getOrderId() {
@@ -128,8 +232,8 @@ public class OrderTestManager implements RPC {
         orderId = id;
     }
     
-    void setTests(ArrayList<OrderTestViewDO> tests) {
-        this.tests = tests;
+    void setTests(ArrayList<OrderTestListItem> tests) {
+        this.items = tests;
     }
     
     int deleteCount() {
@@ -138,7 +242,7 @@ public class OrderTestManager implements RPC {
         return deleted.size();
     }
     
-    OrderTestViewDO getDeletedAt(int i) {
+    OrderTestListItem getDeletedAt(int i) {
         return deleted.get(i);
     }
     
@@ -146,5 +250,12 @@ public class OrderTestManager implements RPC {
         if (proxy == null)
             proxy = new OrderTestManagerProxy();
         return proxy;
+    }
+    
+    static class OrderTestListItem implements RPC {
+        private static final long serialVersionUID = 1L;
+        
+        OrderTestViewDO         test;
+        OrderTestAnalyteManager analytes;
     }
 }

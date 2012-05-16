@@ -29,21 +29,24 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.TestAnalyteViewDO;
+import org.openelis.domain.OrderTestAnalyteViewDO;
 
 @Local
-public interface TestAnalyteLocal {
+public interface OrderTestAnalyteLocal {
+
+    public ArrayList<OrderTestAnalyteViewDO> fetchByOrderTestId(Integer id) throws Exception;
     
-    public ArrayList<ArrayList<TestAnalyteViewDO>> fetchByTestId(Integer id) throws Exception;
+    public ArrayList<OrderTestAnalyteViewDO> fetchRowAnalytesByTestId(Integer id) throws Exception;
     
-    public ArrayList<TestAnalyteViewDO> fetchRowAnalytesByTestId(Integer id) throws Exception;
+    public ArrayList<OrderTestAnalyteViewDO> fetchRowAnalytesByOrderTestId(Integer id) throws Exception;
     
-    public TestAnalyteViewDO add(TestAnalyteViewDO data) throws Exception;
+    public OrderTestAnalyteViewDO add(OrderTestAnalyteViewDO data) throws Exception;
     
-    public TestAnalyteViewDO update(TestAnalyteViewDO data) throws Exception;
+    public OrderTestAnalyteViewDO update(OrderTestAnalyteViewDO data) throws Exception;
     
-    public void delete(TestAnalyteViewDO data) throws Exception;
+    public void delete(OrderTestAnalyteViewDO data) throws Exception;
     
-    public void validate(TestAnalyteViewDO data) throws Exception;
+    public void deleteByOrderTestId(Integer id) throws Exception;
     
+    public void validate(OrderTestAnalyteViewDO data) throws Exception;
 }

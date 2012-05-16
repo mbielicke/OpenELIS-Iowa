@@ -190,17 +190,12 @@ public class AuxFieldManagerProxy {
         l = EJBFactory.getAuxField();
         vl = EJBFactory.getAuxFieldValue();
 
-        try {
-            for (int j = 0; j < man.deleteCount(); j++ ) {
-                item = man.getDeletedAt(j);
-                for (int k = 0; k < item.values.count(); k++ )
-                    vl.delete(item.values.getAuxFieldValueAt(k));
+        for (int j = 0; j < man.deleteCount(); j++ ) {
+            item = man.getDeletedAt(j);
+            for (int k = 0; k < item.values.count(); k++ )
+                vl.delete(item.values.getAuxFieldValueAt(k));
 
-                l.delete(item.field);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
+            l.delete(item.field);
         }
 
         for (int i = 0; i < man.count(); i++ ) {

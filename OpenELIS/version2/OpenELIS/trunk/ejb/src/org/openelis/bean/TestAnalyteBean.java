@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -103,6 +104,20 @@ public class TestAnalyteBean implements TestAnalyteLocal {
 
         return grid;
     }
+    
+    public ArrayList<TestAnalyteViewDO> fetchRowAnalytesByTestId(Integer testId) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("TestAnalyte.FetchRowAnalytesByTestId");
+        query.setParameter("testId", testId);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
 
     public TestAnalyteViewDO add(TestAnalyteViewDO data) throws Exception {
         TestAnalyte entity;
@@ -152,40 +167,32 @@ public class TestAnalyteBean implements TestAnalyteLocal {
 
     public void delete(TestAnalyteViewDO analyteDO) throws Exception {
         TestAnalyte entity;
+        
         manager.setFlushMode(FlushModeType.COMMIT);
 
         entity = manager.find(TestAnalyte.class, analyteDO.getId());
         if (entity != null)
             manager.remove(entity);
-
     }
 
-    public void validate(TestAnalyteViewDO anaDO) throws Exception {
-        FieldErrorException exc;
+    public void validate(TestAnalyteViewDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
         
-        if (DataBaseUtil.isEmpty(anaDO.getAnalyteId())) {
-            exc = new FieldErrorException("fieldRequiredException",
-                                          TestMeta.getAnalyteAnalyteId());
-            list.add(exc);
-        }
+        if (data.getAnalyteId() == null)
+            list.add(new FieldErrorException("fieldRequiredException",
+                                          TestMeta.getAnalyteAnalyteId()));        
         
-        if (DataBaseUtil.isEmpty(anaDO.getTypeId())) {
-            exc = new FieldErrorException("analyteTypeRequiredException",
-                                          TestMeta.getAnalyteTypeId());
-            list.add(exc);
-        }
+        if (data.getTypeId() == null) 
+            list.add(new FieldErrorException("analyteTypeRequiredException",
+                                          TestMeta.getAnalyteTypeId()));        
         
-        if (DataBaseUtil.isEmpty(anaDO.getResultGroup())) {
-            exc = new FieldErrorException("fieldRequiredException",
-                                          TestMeta.getAnalyteResultGroup());
-            list.add(exc);
-        }
+        if (data.getResultGroup() == null)
+            list.add(new FieldErrorException("fieldRequiredException",
+                                          TestMeta.getAnalyteResultGroup()));        
 
         if (list.size() > 0)
             throw list;
     }
-
 }
