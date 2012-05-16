@@ -26,10 +26,8 @@
 package org.openelis.modules.qcChart.server;
 
 import org.openelis.domain.QcChartReportViewVO;
-import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.server.EJBFactory;
-import org.openelis.util.SessionManager;
 
 public class QcChartService {
 
@@ -39,15 +37,5 @@ public class QcChartService {
     
     public QcChartReportViewVO recompute(QcChartReportViewVO vo) throws Exception {
         return EJBFactory.getQcChart().recompute(vo);  
-    }
-    
-    public ReportStatus runReport(QcChartReportViewVO vo) throws Exception { 
-        ReportStatus st;
-        
-        st = EJBFactory.getQcChart().runReport(vo);
-        if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
-
-        return st;
     }
 }

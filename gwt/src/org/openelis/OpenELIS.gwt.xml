@@ -46,6 +46,8 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.buildKits.BuildKits"/>
     <inherits name="org.openelis.modules.clinicalSampleLogin.ClinicalSampleLogin"/>
     <inherits name="org.openelis.modules.completeRelease.CompleteRelease"/>
+    <inherits name="org.openelis.modules.cron.Cron"/>
+    <inherits name="org.openelis.modules.dataView.DataView"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
     <inherits name="org.openelis.modules.environmentalSampleLogin.EnvironmentalSampleLogin"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
@@ -91,9 +93,11 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.ELISCommon"/>     
     <inherits name="org.openelis.modules.sampleTracking.SampleTracking"/>
     <inherits name="org.openelis.modules.report.Report"/>
-    <inherits name="org.openelis.modules.dataView.DataView"/>
+    <inherits name="org.openelis.modules.report.dataView.DataView"/>
+    <inherits name="org.openelis.modules.report.finalReportSingleReprint.FinalReportSingleReprint"/>
+    <inherits name="org.openelis.modules.report.orderRequestForm.OrderRequestForm"/>
+    <inherits name="org.openelis.modules.report.qcChart.QcChart"/>
     <inherits name="org.openelis.modules.todo.ToDo"/>
-    <inherits name="org.openelis.modules.cron.Cron"/>
     <inherits name="org.openelis.modules.finalReportSingleReprint.FinalReportSingleReprint"/>
     <inherits name="org.openelis.modules.qcChart.QcChart"/>
     <source path="manager"/>

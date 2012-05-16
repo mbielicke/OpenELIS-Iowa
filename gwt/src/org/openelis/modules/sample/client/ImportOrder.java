@@ -109,7 +109,8 @@ public abstract class ImportOrder {
         
         testManager = orderMan.getTests();
         
-        return testManager.getTests();
+        //return testManager.getTests();
+        return null;
     }   
     
     protected abstract ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,

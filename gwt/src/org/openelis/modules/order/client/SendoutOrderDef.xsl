@@ -139,6 +139,7 @@ UIRF Software License are applicable instead of those above.
                     <menuItem description="" enable="false" icon="" key="process" label="{resource:getString($constants,'process')}" />
                     <html>&lt;hr/&gt;</html>
                     <menuItem description="" enable="false" icon="historyIcon" key="orderHistory" label="{resource:getString($constants,'orderHistory')}" />
+                    <menuItem description="" enable="false" icon="historyIcon" key="organizationHistory" label="{resource:getString($constants,'orderOrganizationHistory')}" />
                     <menuItem description="" enable="false" icon="historyIcon" key="itemHistory" label="{resource:getString($constants,'orderItemHistory')}" />
                     <menuItem description="" enable="false" icon="historyIcon" key="testHistory" label="{resource:getString($constants,'orderTestHistory')}" />
                     <menuItem description="" enable="false" icon="historyIcon" key="containerHistory" label="{resource:getString($constants,'orderContainerHistory')}" />
@@ -332,10 +333,8 @@ UIRF Software License are applicable instead of those above.
                   <widget valign="top">
                     <tree key="orderTestTree" maxRows="11" showScroll="ALWAYS" width="auto">
                       <header>
-                        <col header="{resource:getString($constants,'itemNum')}" width="45" />
-                        <col header="{resource:getString($constants,'test')}" width="160" />
-                        <col header="{resource:getString($constants,'method')}" width="130" />
-                        <col header="{resource:getString($constants,'description')}" width="240" />
+                        <col header="{resource:getString($constants,'itemNum')}" width="55" />
+                        <col header="{resource:getString($constants,'testMethodDescription')}" width="526" />
                       </header>
                       <leaf key="test">
                         <col align="left">
@@ -343,17 +342,11 @@ UIRF Software License are applicable instead of those above.
                         </col>
                         <col align="left" key="{meta:getTestName()}">
                           <autoComplete case="LOWER" field="Integer" popWidth="560" required="true" width="160">
-                            <col header="{resource:getString($constants,'test')}" width="150" />
+                            <col header="{resource:getString($constants,'testMethodDescription')}" width="150" />
                             <col header="{resource:getString($constants,'method')}" width="150" />
                             <col header="{resource:getString($constants,'description')}" width="250" />
                           </autoComplete>
-                        </col>
-                        <col align="left" key="{meta:getTestMethodName()}">
-                          <textbox field="String" />
-                        </col>
-                        <col align="left" key="description">
-                          <label field="String" />
-                        </col>
+                        </col>                        
                       </leaf>
                       <leaf key="analyte">
                         <col>

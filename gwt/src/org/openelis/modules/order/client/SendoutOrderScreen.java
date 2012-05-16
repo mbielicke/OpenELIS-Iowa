@@ -40,6 +40,7 @@ import org.openelis.domain.IdNameVO;
 import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
+import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.domain.OrderRecurrenceDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
@@ -90,10 +91,12 @@ import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
 import org.openelis.modules.history.client.HistoryScreen;
+import org.openelis.modules.report.orderRequestForm.client.OrderRequestFormReportScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.shipping.client.ShippingScreen;
 import org.openelis.utilcommon.ResultValidator;
@@ -118,7 +121,7 @@ public class SendoutOrderScreen extends Screen {
     private ButtonGroup                            atoz;
     private ScreenNavigator                        nav;
 
-    private OrganizationTab                      organizationTab;
+    private OrganizationTab                        organizationTab;
     private AuxDataTab                             auxDataTab;
     private TestTab                                testTab;  
     private ContainerTab                           containerTab;
@@ -136,7 +139,7 @@ public class SendoutOrderScreen extends Screen {
                                                    addButton, updateButton, commitButton,
                                                    abortButton;
     private MenuItem                               duplicate, shippingInfo, orderRequestForm, process,
-                                                   orderHistory, itemHistory, testHistory,
+                                                   orderHistory, organizationHistory, itemHistory, testHistory,
                                                    containerHistory;
     private TextBox                                id, neededInDays, numberOfForms, requestedBy,
                                                    organizationAttention, organizationAddressMultipleUnit,
@@ -380,6 +383,17 @@ public class SendoutOrderScreen extends Screen {
                 orderHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        organizationHistory = (MenuItem)def.getWidget("organizationHistory");
+        addScreenHandler(organizationHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                organizationHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                organizationHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
 
         itemHistory = (MenuItem)def.getWidget("itemHistory");
         addScreenHandler(itemHistory, new ScreenEventHandler<Object>() {
@@ -507,12 +521,10 @@ public class SendoutOrderScreen extends Screen {
                 OrderViewDO data;
 
                 data = manager.getOrder();
-                if (data.getOrganization() != null) {
-                    organizationName.setSelection(data.getOrganizationId(), data.getOrganization()
-                                                                                .getName());
-                } else {
-                    organizationName.setSelection(null, "");
-                }
+                if (data.getOrganization() != null)
+                    organizationName.setSelection(data.getOrganizationId(), data.getOrganization().getName());
+                else
+                    organizationName.setSelection(null, "");                
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -1318,7 +1330,7 @@ public class SendoutOrderScreen extends Screen {
                 showErrors(e);
                 /*
                  * if the status of the order was set to recurring in this method
-                 * and the data couldn't get committed because of errors is validation,
+                 * and the data couldn't get committed because of errors in validation,
                  * the status gets set back to what it was before committing,
                  * so that if the user commits with an inactive interval later,
                  * the status doesn't remain recurring, as the status is set to
@@ -1550,6 +1562,32 @@ public class SendoutOrderScreen extends Screen {
 
         hist = new IdNameVO(manager.getOrder().getId(), manager.getOrder().getId().toString());
         HistoryScreen.showHistory(consts.get("orderHistory"), ReferenceTable.ORDER, hist);
+    }
+    
+
+    protected void organizationHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        OrderOrganizationManager man;
+        OrderOrganizationViewDO data;
+
+        window.setBusy();
+        try {
+            man = manager.getOrganizations();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getOrganizationAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getOrganizationName());
+            }
+            
+            HistoryScreen.showHistory(consts.get("orderOrganizationHistory"),
+                                      ReferenceTable.ORDER_ORGANIZATION, refVoList);
+            window.clearStatus();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }        
     }
 
     protected void itemHistory() {

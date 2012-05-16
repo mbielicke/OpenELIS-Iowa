@@ -55,26 +55,6 @@ public class DataViewService {
         return EJBFactory.getDataView().fetchAnalyteAndAuxFieldForWebEnvironmental(data);
     }
     
-    public ReportStatus runReport(DataViewVO data) throws Exception {
-        ReportStatus st;
-
-        st = EJBFactory.getDataView().runReport(data);
-        if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
-
-        return st;
-    }
-    
-    public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
-        ReportStatus st;
-
-        st = EJBFactory.getDataView().runReportForWebEnvironmental(data);
-        if (st.getStatus() == ReportStatus.Status.SAVED)
-            SessionManager.getSession().setAttribute(st.getMessage(), st);
-
-        return st;
-    }
-    
     public void loadQuery(FileItem file) throws Exception {
         int len;
         byte buf[];      
