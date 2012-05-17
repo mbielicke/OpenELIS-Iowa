@@ -86,7 +86,7 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
 
     protected void generateEmail(ArrayList<ClientNotificationVO> resultList, String from) throws Exception {
         Integer accession, lastAccession, sampleId;
-        String email, to, collectedDt, ref, qaOverride;
+        String email, lastEmail, to, collectedDt, ref, qaOverride;
         StringBuilder contents;
         ArrayList<ClientNotificationVO> l;
         HashMap<String, ArrayList<ClientNotificationVO>> emails;
@@ -101,6 +101,7 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
          * Group unique samples for each email address.
          */
         lastAccession = -1;
+        lastEmail = "";
         for (ClientNotificationVO data : resultList) {
             accession = data.getAccessionNumber();
             email = data.getEmail();
@@ -109,10 +110,12 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
                 l = new ArrayList<ClientNotificationVO>();
                 l.add(data);
                 emails.put(email, l);
-            } else if (accession > lastAccession) {
+            } else if (accession > lastAccession || !lastEmail.equals(email)) {
                 l.add(data);
             }
-
+            lastAccession = accession;
+            lastEmail = email;
+            
             /*
              * We put an accession number in the map only if it either has a
              * sample/analysis level qa override. Also If the map already has an
@@ -121,8 +124,6 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             if (data.getSampleQaeventId() != null || data.getAnalysisQaeventId() != null)
                 if (!sampleQA.containsKey(accession))
                     sampleQA.put(accession, Boolean.TRUE);
-
-            lastAccession = accession;
         }
         
         collectedDt = null;

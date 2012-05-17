@@ -118,7 +118,7 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
 
     protected void generateEmail(ArrayList<ClientNotificationVO> resultList, String from) throws Exception {
         Integer accession, lastAccession, sampleId;
-        String email, to, collectedDt, ref;
+        String email, lastEmail, to, collectedDt, ref;
         StringBuilder contents;
         ArrayList<ClientNotificationVO> l;
         ArrayList<Integer> sampleIds;
@@ -131,6 +131,7 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
          * Group unique samples for each email address.
          */
         lastAccession = -1;
+        lastEmail = "";
         for (ClientNotificationVO data : resultList) {
             accession = data.getAccessionNumber();
             email = data.getEmail();
@@ -139,10 +140,11 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
                 l = new ArrayList<ClientNotificationVO>();
                 l.add(data);
                 emails.put(email, l);
-            } else if (accession > lastAccession) {
+            } else if (accession > lastAccession || !lastEmail.equals(email)) {
                 l.add(data);
             }
             lastAccession = accession;
+            lastEmail = email;
         }
 
         collectedDt = null;
