@@ -139,6 +139,8 @@ public class QcChartScreen extends Screen {
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 TableDataRow row;
+                
+                disableScreenButtons();
 
                 row = qcName.getSelection();
                 data.setName(event.getValue());
@@ -240,7 +242,8 @@ public class QcChartScreen extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                data.setPlotTypeId(event.getValue());
+                disableScreenButtons();
+                data.setPlotTypeId(event.getValue());                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -464,6 +467,7 @@ public class QcChartScreen extends Screen {
         String qcName;
         ArrayList<QueryData> fields;
 
+        disableScreenButtons();
         clearErrors();
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -640,6 +644,13 @@ public class QcChartScreen extends Screen {
             model.add(tr);
         }
         return model;
+    }
+
+    private void disableScreenButtons() {
+        recomputeButton.enable(false);
+        plotDataButton.enable(false);
+        results = null;
+        plotDataTable.load(getTableModel());
     }
 
     public class QcChartVO {
