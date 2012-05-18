@@ -9,9 +9,9 @@ import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
-import org.jfree.util.Log;
 import org.openelis.domain.OptionListItem;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.remote.PrinterCacheRemote;
@@ -27,6 +27,8 @@ public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote {
     protected ArrayList<Printer>       printerList;
     protected HashMap<String, Printer> printerHash;
     
+    private static final Logger log = Logger.getLogger(CronSchedulerBean.class);
+
     /**
      * Constructor
      */
@@ -111,7 +113,7 @@ public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote {
                 tempHash.put(name, printer);
             }
         } catch (Exception ioE) {
-            Log.error(ioE.getMessage());
+            log.error(ioE.getMessage());
             tempList = null;
         } finally {
             if (tempList != null) {
