@@ -344,7 +344,7 @@ public class NotificationPreferenceScreen extends Screen {
         QueryData field;
 
         //
-        // the structure of the clause should be "organizationid:id1,id2,..."
+        // the structure of the clause should be "organizationId:id1,id2,..."
         //
         full = clause.split(":");
         query = new Query();
