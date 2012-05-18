@@ -16,4 +16,5 @@ public interface PrinterCacheLocal {
 	
 	public ArrayList<OptionListItem> getListByType(String type);
 
+    public void refresh();
 }
