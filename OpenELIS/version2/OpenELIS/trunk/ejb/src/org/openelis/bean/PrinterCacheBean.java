@@ -3,12 +3,15 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.Singleton;
 import javax.print.DocFlavor;
 import javax.print.PrintService;
 import javax.print.PrintServiceLookup;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.jfree.util.Log;
 import org.openelis.domain.OptionListItem;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.remote.PrinterCacheRemote;
@@ -19,20 +22,18 @@ import org.openelis.utils.Printer;
  */
 @Singleton
 @SecurityDomain("openelis")
-public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote{
+public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote {
 
     protected ArrayList<Printer>       printerList;
     protected HashMap<String, Printer> printerHash;
-    protected long                     lastPolled;
-
-    protected int                      CACHE_TIME;
     
     /**
      * Constructor
      */
     public PrinterCacheBean() {
-        CACHE_TIME = 15 * 60 * 1000;
-        lastPolled = 0;
+        printerList = new ArrayList<Printer>();
+        printerHash = new HashMap<String, Printer>();
+        refresh();
     }
 
     /**
@@ -41,9 +42,7 @@ public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote{
     public ArrayList<OptionListItem> getList() {
         ArrayList<OptionListItem> tempList;
 
-        refresh();
         tempList = new ArrayList<OptionListItem>();
-        
         for (Printer p : printerList) 
             tempList.add(new OptionListItem(p.getName(), p.getDescription()));        
 
@@ -54,7 +53,6 @@ public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote{
      * Returns a printer specified by name
      */
     public Printer getPrinterByName(String name) {
-        refresh();
         return printerHash.get(name);
     }
 
@@ -67,7 +65,6 @@ public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote{
 
         tempList = new ArrayList<OptionListItem>();
         if (type != null) {
-            refresh();
             for (Printer p : printerList) {
                 if (type.equals(p.getType()))
                     tempList.add(new OptionListItem(p.getName(), p.getDescription()));
@@ -76,56 +73,51 @@ public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote{
         return tempList;
     }    
 
-    /*
-     * Internal method to refresh the printer list cache
+    /**
+     * Method to refresh the printer list cache
      */
-    protected void refresh() {
-        long now;
+    @Asynchronous
+    @TransactionTimeout(30)
+    public void refresh() {
         String name, type;
         Printer printer;
         PrintService printers[];
         ArrayList<Printer> tempList;
         HashMap<String, Printer> tempHash;
 
-        now = System.currentTimeMillis();
-        if (now > lastPolled + CACHE_TIME) {
-            lastPolled = now;
-            tempList = new ArrayList<Printer>();
-            tempHash = new HashMap<String, Printer>();
+        tempList = new ArrayList<Printer>();
+        tempHash = new HashMap<String, Printer>();
 
-            try {
-                printers = PrintServiceLookup.lookupPrintServices(null, null);
-                for (PrintService p : printers) {
-                    name = p.getName();
-                    /*
-                     * This is a patch until we can figure out how to distinguish barcode
-                     * printers from their mime type
-                     */
-                    type = "unk";
-                    if (name.contains("_bar")) {
-                        type = "zpl";
-                    } else if (p.getSupportedDocFlavors() != null) {
-                        for (DocFlavor f : p.getSupportedDocFlavors())
-                            if (f.getMimeType().contains("application/pdf")) {
-                                type = "pdf";
-                                break;
-                            }
-                    }
-                    printer = new Printer(name, name, type, p);
-                    tempList.add(printer);
-                    tempHash.put(name, printer);
+        try {
+            printers = PrintServiceLookup.lookupPrintServices(null, null);
+            for (PrintService p : printers) {
+                name = p.getName();
+                /*
+                 * This is a patch until we can figure out how to distinguish barcode
+                 * printers from their mime type
+                 */
+                type = "unk";
+                if (name.contains("_bar")) {
+                    type = "zpl";
+                } else if (p.getSupportedDocFlavors() != null) {
+                    for (DocFlavor f : p.getSupportedDocFlavors())
+                        if (f.getMimeType().contains("application/pdf")) {
+                            type = "pdf";
+                            break;
+                        }
                 }
-            } catch (Exception ioE) {
-                ioE.printStackTrace();
-                tempList = null;
-                lastPolled = 0;
-            } finally {
-                if (tempList != null) {
-                    printerList = tempList;
-                    printerHash = tempHash;
-                }
+                printer = new Printer(name, name, type, p);
+                tempList.add(printer);
+                tempHash.put(name, printer);
+            }
+        } catch (Exception ioE) {
+            Log.error(ioE.getMessage());
+            tempList = null;
+        } finally {
+            if (tempList != null) {
+                printerList = tempList;
+                printerHash = tempHash;
             }
         }
     }
-
 }

@@ -126,7 +126,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * the QueryBuilder can understand.
          */
         clauseMap = ReportUtil.parseClauseAsString(clause);
-        orgIds = clauseMap.get("organizationid");
+        orgIds = clauseMap.get("organizationId");
         if (DataBaseUtil.isEmpty(orgIds))
             return returnList;
 
@@ -212,7 +212,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * which the QueryBuilder can understand.
          */
         orgMapArr = ReportUtil.parseClauseAsArrayList(clause);
-        orgIds = orgMapArr.get("organizationid");
+        orgIds = orgMapArr.get("organizationId");
 
         /*
          * Adding projects for organizations from all domains into projectList.
