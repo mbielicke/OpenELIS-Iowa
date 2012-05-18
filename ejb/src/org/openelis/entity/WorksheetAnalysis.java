@@ -48,13 +48,14 @@ import org.openelis.utils.Auditable;
                         " wqr.value28,wqr.value29,wqr.value30 ) " +
                         "from  WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, WorksheetQcResult wqr, Qc q, QcAnalyte qa, Analyte a, Dictionary d " +  
                         "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wqr.worksheetAnalysisId = wa.id and wa.qcId = q.id and wqr.qcAnalyteId = qa.id and" + 
-                        " qa.analyteId = a.id and qa.isTrendable = 'Y' and w.createdDate between :startedDate and :endDate and q.name = :qcName and d.id = w.formatId " + 
+                        " qa.analyteId = a.id and qa.isTrendable = 'Y' and w.createdDate between :startedDate and :endDate and q.name = :qcName and d.id = w.formatId and" +
+                        " w.statusId in (select id from Dictionary where systemName in ('worksheet_complete', 'worksheet_working')) "+ 
                         "order by w.createdDate"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByInstancesForQcChart",
                 query = "select w.createdDate, wa.id " +
                         "from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Qc q " +  
                         "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wa.qcId = q.id and" + 
-                        " q.name = :qcName " + 
+                        " q.name = :qcName and w.statusId in (select id from Dictionary where systemName in ('worksheet_complete', 'worksheet_working')) " + 
                         "order by w.createdDate desc"),
    @NamedQuery( name = "WorksheetAnalysis.FetchAnalytesForQcChart",
                query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, q.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
