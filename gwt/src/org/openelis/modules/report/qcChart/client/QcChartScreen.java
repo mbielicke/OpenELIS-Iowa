@@ -94,7 +94,7 @@ public class QcChartScreen extends Screen {
 
     public QcChartScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcChartDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.qcChart.server.QcChartService");
+        service = new ScreenService("controller?service=org.openelis.modules.report.qcChart.server.QcChartReportService");
         qcService = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
 
         DeferredCommand.addCommand(new Command() {
