@@ -23,10 +23,9 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.dataView.client;
+package org.openelis.modules.report.finalReportSingleReprint.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface FilterDef extends ScreenDefInt {
-
+public interface FinalReportSingleReprintDef extends ScreenDefInt {
 }

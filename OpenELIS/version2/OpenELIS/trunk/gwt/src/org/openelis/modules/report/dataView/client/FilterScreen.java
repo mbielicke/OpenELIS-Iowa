@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.dataView.client;
+package org.openelis.modules.report.dataView.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -47,7 +47,6 @@ import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.modules.report.dataView.client.DataViewReportScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -73,7 +72,7 @@ public class FilterScreen extends Screen {
     
     public FilterScreen() throws Exception {
         super((ScreenDefInt)GWT.create(FilterDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");        
+        service = new ScreenService("controller?service=org.openelis.modules.report.dataView.server.DataViewReportService");        
         
         initialize();
         

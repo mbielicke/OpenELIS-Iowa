@@ -23,9 +23,11 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.finalReportSingleReprint.client;
+
+package org.openelis.modules.report.qcChart.client;
 
 import org.openelis.gwt.screen.ScreenDefInt;
 
-public interface FinalReportSingleReprintDef extends ScreenDefInt {
+public interface QcChartDef extends ScreenDefInt {
+
 }

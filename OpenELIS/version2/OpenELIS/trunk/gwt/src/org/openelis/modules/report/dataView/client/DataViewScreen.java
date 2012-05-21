@@ -23,7 +23,7 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.modules.dataView.client;
+package org.openelis.modules.report.dataView.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -57,7 +57,6 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.modules.report.dataView.client.DataViewReportScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -102,7 +101,7 @@ public class DataViewScreen extends Screen {
     
     public DataViewScreen() throws Exception {
         super((ScreenDefInt)GWT.create(DataViewDef.class));
-        service = new ScreenService("controller?service=org.openelis.modules.dataView.server.DataViewService");
+        service = new ScreenService("controller?service=org.openelis.modules.report.dataView.server.DataViewReportService");
         projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
         
         DeferredCommand.addCommand(new Command() {
@@ -152,7 +151,7 @@ public class DataViewScreen extends Screen {
             fileLoad.setAction("openelis/upload");
 
                 
-        fileLoad.setService("org.openelis.modules.dataView.server.DataViewService");
+        fileLoad.setService("org.openelis.modules.report.dataView.server.DataViewReportService");
         fileLoad.setMethod("loadQuery");
         fileLoad.addSubmitCompleteHandler(new FormPanel.SubmitCompleteHandler() {
             public void onSubmitComplete(SubmitCompleteEvent event) {

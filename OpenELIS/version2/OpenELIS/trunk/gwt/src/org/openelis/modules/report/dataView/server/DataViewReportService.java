@@ -25,12 +25,97 @@
 */
 package org.openelis.modules.report.dataView.server;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+
+import javax.servlet.http.HttpSession;
+
+import org.apache.commons.fileupload.FileItem;
 import org.openelis.domain.DataViewVO;
+import org.openelis.domain.IdNameVO;
+import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 
 public class DataViewReportService {
+    
+    public ArrayList<IdNameVO> fetchEnvironmentalProjectListForWeb() throws Exception {
+        return EJBFactory.getDataView().fetchEnvironmentalProjectListForWeb();  
+    }
+    
+    public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
+        return EJBFactory.getDataView().fetchAnalyteAndAuxField(data);
+    }
+    
+    public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
+        return EJBFactory.getDataView().fetchAnalyteAndAuxFieldForWebEnvironmental(data);
+    }
+    
+    public void loadQuery(FileItem file) throws Exception {
+        int len;
+        byte buf[];      
+        DataViewVO data;
+        OutputStream out;
+        InputStream in;
+        File temp;        
+        SystemVariableDO list;
+        
+        out = null;
+        in = null;
+        temp = null;
+        try {
+            list = EJBFactory.getSystemVariable().fetchByName("upload_save_directory");
+
+            temp = File.createTempFile("dataview", ".xml", new File(list.getValue()));
+            out = new FileOutputStream(temp);
+            buf = new byte[1024];
+            in = file.getInputStream();
+            while ( (len = in.read(buf)) > 0)
+                out.write(buf, 0, len);
+            out.close();
+
+            data = EJBFactory.getDataView().loadQuery(temp.getPath());
+            in.close(); 
+            temp.delete();
+            SessionManager.getSession().setAttribute("dataViewQuery", data);
+        } catch (Exception e) {
+            if (in != null)
+                in.close(); 
+            if (temp != null)
+                temp.delete();
+            if (out != null) 
+                out.close();
+            throw e;
+        }       
+    }
+    
+    public DataViewVO openQuery() throws Exception {
+        DataViewVO data;
+        HttpSession session;
+        
+        session = SessionManager.getSession();               
+        data = (DataViewVO)session.getAttribute("dataViewQuery");
+        /*
+         * we remove the VO from the session because there's no need to hold on
+         * to it beyond one request 
+         */
+        session.removeAttribute("dataViewQuery");
+        return data;
+    }
+    
+    public ReportStatus saveQuery(DataViewVO data) throws Exception {
+        ReportStatus st;
+
+        st = EJBFactory.getDataView().saveQuery(data);
+        if (st.getStatus() == ReportStatus.Status.SAVED)
+            SessionManager.getSession().setAttribute(st.getMessage(), st);
+
+        return st;
+    }
     
     public ReportStatus runReport(DataViewVO data) throws Exception {
         ReportStatus st;
