@@ -353,16 +353,16 @@ public class Order implements Auditable, Cloneable {
             audit.setField("id", id, original.id)
                  .setField("parentOrderId", parentOrderId, original.parentOrderId)
                  .setField("description", description, original.description)
-                 .setField("status_id", statusId, original.statusId)
+                 .setField("status_id", statusId, original.statusId, ReferenceTable.DICTIONARY)
                  .setField("ordered_date", orderedDate, original.orderedDate)
                  .setField("needed_in_days", neededInDays, original.neededInDays)
                  .setField("requested_by", requestedBy, original.requestedBy)
-                 .setField("cost_center_id", costCenterId, original.costCenterId)
+                 .setField("cost_center_id", costCenterId, original.costCenterId,ReferenceTable.DICTIONARY)
                  .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION)
                  .setField("organization_attention", organizationAttention, original.organizationAttention)
                  .setField("type", type, original.type)
                  .setField("external_order_number", externalOrderNumber, original.externalOrderNumber)
-                 .setField("ship_from_id", shipFromId, original.shipFromId)
+                 .setField("ship_from_id", shipFromId, original.shipFromId, ReferenceTable.DICTIONARY)
                  .setField("number_of_forms", numberOfForms, original.numberOfForms);
 
         return audit;

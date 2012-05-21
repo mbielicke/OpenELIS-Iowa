@@ -68,6 +68,7 @@ public class OrderTestDO extends DataObject {
 
     public void setItemSequence(Integer itemSequence) {
         this.itemSequence = itemSequence;
+        _changed = true;
     }
 
     public Integer getSortOrder() {

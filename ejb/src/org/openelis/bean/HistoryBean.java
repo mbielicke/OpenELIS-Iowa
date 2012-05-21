@@ -247,7 +247,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
                     return getDictionaryLabel(refId);
                 case ReferenceTable.INVENTORY_ITEM:
                     item = inventoryItemCache.getById(refId);
-                    return JasperUtil.concatWithSeparator(item.getName(),", ",getDictionaryLabel(item.getStoreId()));
+                    return DataBaseUtil.concatWithSeparator(item.getName(),", ",getDictionaryLabel(item.getStoreId()));
                 case ReferenceTable.METHOD:
                     return method.fetchById(refId).getName();
                 case ReferenceTable.ORGANIZATION:
@@ -259,7 +259,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
                 case ReferenceTable.SAMPLE_ITEM:
                     sitem = sampleItem.fetchById(refId);
                     cont = DataBaseUtil.trim(sitem.getContainer());
-                    return JasperUtil.concatWithSeparator(sitem.getItemSequence(), " - ", 
+                    return DataBaseUtil.concatWithSeparator(sitem.getItemSequence(), " - ", 
                                                                cont != null ? cont : "<>");
                 case ReferenceTable.SECTION:
                     return sectionCache.getById(refId).getName();
@@ -280,6 +280,6 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
         TestViewDO t;
 
         t = test.fetchById(id);
-        return JasperUtil.concatWithSeparator(t.getName(), ", ",  t.getMethodName());
+        return DataBaseUtil.concatWithSeparator(t.getName(), ", ",  t.getMethodName());
     }
 }
