@@ -1,4 +1,4 @@
-package org.openelis.modules.dataView.client;
+package org.openelis.modules.report.dataView.client;
 
 import java.util.EnumSet;
 

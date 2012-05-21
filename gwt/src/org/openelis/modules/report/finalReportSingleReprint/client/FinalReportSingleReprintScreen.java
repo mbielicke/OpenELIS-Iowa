@@ -23,7 +23,7 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.modules.finalReportSingleReprint.client;
+package org.openelis.modules.report.finalReportSingleReprint.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -58,7 +58,6 @@ import org.openelis.manager.Preferences;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
-import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintReportScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

@@ -27,10 +27,19 @@ package org.openelis.modules.report.qcChart.server;
 
 import org.openelis.domain.QcChartReportViewVO;
 import org.openelis.gwt.common.ReportStatus;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 
 public class QcChartReportService {
+    
+    public QcChartReportViewVO fetchForQcChart(Query query) throws Exception {
+        return EJBFactory.getQcChart().fetchForQcChart(query.getFields());  
+    }
+    
+    public QcChartReportViewVO recompute(QcChartReportViewVO data) throws Exception {
+        return EJBFactory.getQcChart().recompute(data);  
+    }
     
     public ReportStatus runReport(QcChartReportViewVO data) throws Exception { 
         ReportStatus st;
