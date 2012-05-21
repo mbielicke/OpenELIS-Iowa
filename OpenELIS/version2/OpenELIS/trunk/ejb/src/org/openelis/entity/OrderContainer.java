@@ -23,7 +23,7 @@ import org.openelis.utils.Auditable;
 @NamedQuery( name = "OrderContainer.FetchByOrderId",
             query = "select distinct new org.openelis.domain.OrderContainerDO(o.id,o.orderId,o.containerId," +
                      "o.itemSequence,o.typeOfSampleId)"
-                   + " from OrderContainer o where o.orderId = :id")
+                   + " from OrderContainer o where o.orderId = :id order by o.itemSequence")
                    
 @Entity
 @Table(name = "order_container")
