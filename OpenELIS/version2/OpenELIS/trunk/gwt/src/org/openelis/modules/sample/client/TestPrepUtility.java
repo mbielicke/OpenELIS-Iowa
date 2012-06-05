@@ -555,7 +555,6 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
             for (int i = 0; i < values.size(); i++ ) {
                 af = values.get(i);
                 dictEntry = null;
-                rv = new ResultValidator();
 
                 type = types.get(af.getTypeId());
                 if (type == ResultValidator.Type.DICTIONARY) {
