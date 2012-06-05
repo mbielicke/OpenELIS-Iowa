@@ -139,10 +139,10 @@ UIRF Software License are applicable instead of those above.
                   <VerticalPanel spacing="0" padding="0">
       		<table key="analysisUserTable" tab = "{meta:getAnalysisTestName()},worksheetTable" style="ScreenTableWithSides" width="auto" maxRows="3" showScroll="ALWAYS" title="">
             	<col width="115" header="User">
-              		<autoComplete width="100" case="LOWER" field="Integer"/>
+              		<autoComplete width="100" case="LOWER" field="Integer" required="true"/>
             	</col>
             	<col width="114" header="Action">
-              		<dropdown width="100" field="Integer" />
+              		<dropdown width="100" field="Integer" required="true"/>
             	</col>
             </table>
             <HorizontalPanel style="TableFooterPanel">
