@@ -63,13 +63,13 @@ UIRF Software License are applicable instead of those above.
                       <xsl:value-of select="resource:getString($constants,'dateReleased')" />:
                     </text>
                     <widget>
-                      <calendar begin="0" end="2" key="{meta:getReleasedDateFrom()}" pattern="{resource:getString($constants,'datePattern')}" width="90" />
+                      <calendar begin="0" end="4" key="{meta:getReleasedDateFrom()}" pattern="{resource:getString($constants,'dateTimeMinutePattern')}" width="125" />
                     </widget>
                     <text style="Prompt">
                       <xsl:value-of select="resource:getString($constants,'to')" />:
                     </text>
                     <widget>
-                      <calendar begin="0" end="2" key="{meta:getReleasedDateTo()}" pattern="{resource:getString($constants,'datePattern')}" width="90" />
+                      <calendar begin="0" end="4" key="{meta:getReleasedDateTo()}" pattern="{resource:getString($constants,'dateTimeMinutePattern')}" width="125" />
                     </widget>
                   </row>
                   <row>
