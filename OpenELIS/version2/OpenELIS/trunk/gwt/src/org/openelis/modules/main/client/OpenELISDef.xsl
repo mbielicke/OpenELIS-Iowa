@@ -174,6 +174,7 @@ UIRF Software License are applicable instead of those above.
                     <menuPanel layout="vertical" position="beside" style="topMenuContainer">
                       <menuItem description="" enable="false" icon="" key="sampleInhouseReport" label="{resource:getString($constants,'sampleInhouseReport')}" />
                       <menuItem description="" enable="false" icon="" key="volumeReport" label="{resource:getString($constants,'volumeReport')}" />
+                      <menuItem description="" enable="false" icon="" key="toDoAnalyteReport" label="{resource:getString($constants,'toDoAnalyteReport')}" />
                       <menuItem description="" enable="false" icon="" key="sampleDataExport" label="{resource:getString($constants,'sampleDataExport')}" />
                       <menuItem description="" enable="false" icon="" key="QAByOrganization" label="{resource:getString($constants,'QAByOrganization')}" />
                       <menuItem description="" enable="false" icon="" key="testCountByFacility" label="{resource:getString($constants,'testCountByFacility')}" />
@@ -185,7 +186,6 @@ UIRF Software License are applicable instead of those above.
                       <menuItem description="" enable="false" icon="" key="orderRecurrence" label="{resource:getString($constants,'orderRecurrence')}" />
                       <menuItem description="" enable="false" icon="" key="finalReportBatch" label="{resource:getString($constants,'finalReportBatch')}" />
                       <menuItem description="" enable="false" icon="" key="finalReportBatchReprint" label="{resource:getString($constants,'finalReportBatchReprint')}" />
-                      <menuItem description="" enable="false" icon="" key="toDoAnalyteReport" label="{resource:getString($constants,'toDoAnalyteReport')}" />
                     </menuPanel>
                   </menuItem>
                 </menuPanel>
