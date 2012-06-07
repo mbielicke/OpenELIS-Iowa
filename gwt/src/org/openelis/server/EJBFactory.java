@@ -114,6 +114,7 @@ import org.openelis.remote.TestManagerRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.remote.TestReportRemote;
 import org.openelis.remote.TestTrailerRemote;
+import org.openelis.remote.ToDoAnalyteReportRemote;
 import org.openelis.remote.ToDoCacheRemote;
 import org.openelis.remote.TurnaroundReportRemote;
 import org.openelis.remote.UserCacheRemote;
@@ -502,6 +503,10 @@ public class EJBFactory {
     
     public static PrinterCacheRemote getPrinterCache() {
     	return (PrinterCacheRemote)lookup("PrinterCacheBean!org.openelis.remote.PrinterCacheRemote");
+    }
+    
+    public static ToDoAnalyteReportRemote getToDoAnalyteReport() {
+        return (ToDoAnalyteReportRemote)lookup("ToDoAnalyteReportBean!org.openelis.remote.ToDoAnalyteReportRemote");
     }
           
     public static Object lookup(String bean) {
