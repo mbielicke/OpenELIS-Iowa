@@ -62,7 +62,7 @@ public class WorksheetItemManagerProxy {
         HashMap<Integer,Integer> idHash;
         WorksheetItemDO          item;
         WorksheetItemLocal       local;
-        
+
         local = EJBFactory.getWorksheetItem();
         for (i = 0; i < manager.count(); i++) {
             item = manager.getWorksheetItemAt(i);

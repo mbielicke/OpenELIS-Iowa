@@ -114,7 +114,7 @@ public class WorksheetAnalysisManagerProxy {
         int                 i;
         Integer             oldId, qcLinkId;
         WorksheetAnalysisDO analysis;
-        
+
         manager.setNotDone(false);
         for (i = 0; i < manager.count(); i++) {
             analysis = manager.getWorksheetAnalysisAt(i);
@@ -138,7 +138,7 @@ public class WorksheetAnalysisManagerProxy {
                 idHash.put(oldId, analysis.getId());
             }
         }
-        
+
         return manager;
     }
 
@@ -157,7 +157,7 @@ public class WorksheetAnalysisManagerProxy {
         WorksheetAnalysisLocal    local;
         WorksheetQcResultManager  wqrManager;
         WorksheetResultManager    wrManager;
-        
+
         local = EJBFactory.getWorksheetAnalysis();
 
         if (analysis.getQcId() != null) {

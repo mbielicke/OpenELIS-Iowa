@@ -281,7 +281,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
      */
     public SystemUserPermission getPermission() throws Exception {
         Element e;
-        String name;
+        String name, appName;
         SystemUserPermission data;
 
         name = getName();
@@ -291,7 +291,8 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         }
 
         try {
-            data = EJBFactory.getSecurity().fetchByApplicationAndLoginName("openelis", name);
+            appName = System.getProperty("org.openelis.system.security.application");
+            data = EJBFactory.getSecurity().fetchByApplicationAndLoginName(appName, name);
             if (data != null) {
                 permCache.put(new Element(name, data));
                 cache.put(new Element(data.getLoginName(), data.getUser()));
