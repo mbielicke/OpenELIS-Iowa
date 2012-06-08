@@ -25,9 +25,9 @@ import org.openelis.utils.Auditable;
 
 @NamedQuery( name = "OrderTest.FetchByOrderId",
             query = "select distinct new org.openelis.domain.OrderTestViewDO(o.id, o.orderId,"+
-                    " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.name," +
-                    " o.test.description, o.test.isActive)"
-                  + " from OrderTest o where o.orderId = :id order by o.sortOrder")
+                    " o.itemSequence, o.sortOrder, o.testId, o.test.name, o.test.method.id," +
+                    " o.test.method.name, o.test.description, o.test.isActive)"
+                  + " from OrderTest o where o.orderId = :id order by o.itemSequence, o.sortOrder")
 
 @Entity
 @Table(name = "order_test")

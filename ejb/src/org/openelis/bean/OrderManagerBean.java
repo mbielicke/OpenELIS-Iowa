@@ -46,6 +46,7 @@ import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.domain.OrderRecurrenceDO;
+import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
@@ -209,16 +210,14 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
         return newMan;
     }
     
-    public OrderManager duplicateForRecurrence(Integer id) throws Exception {
+    public void recur(Integer id) throws Exception {
         OrderManager newMan;
         OrderManager oldMan;
-        
         
         oldMan = fetchById(id);
         newMan = OrderManager.getInstance();      
         duplicateOrder(oldMan, newMan, true);
-        
-        return newMan;
+        add(newMan);
     }
     
     public OrderOrganizationManager fetchOrganizationByOrderId(Integer id) throws Exception {
@@ -265,7 +264,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
         EJBFactory.getUserCache().applyPermission("order", flag);
     }
     
-    private void duplicateOrder(OrderManager oldMan, OrderManager newMan, boolean forRecur) throws Exception {
+    private void duplicateOrder(OrderManager oldMan, OrderManager newMan, boolean forRecurrence) throws Exception {
         Datetime now;
         OrderViewDO oldData, newData;
         
@@ -274,13 +273,13 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
         oldData = oldMan.getOrder();
         newData = newMan.getOrder();
         
-        if (forRecur)
+        if (forRecurrence)
             newData.setParentOrderId(oldData.getId());
         newData.setDescription(oldData.getDescription());
         newData.setStatusId(pendingId);
         newData.setOrderedDate(now);
         newData.setNeededInDays(oldData.getNeededInDays());
-        newData.setRequestedBy(forRecur ? oldData.getRequestedBy() : userCache.getName());
+        newData.setRequestedBy(forRecurrence ? oldData.getRequestedBy() : userCache.getName());
         newData.setCostCenterId(oldData.getCostCenterId());
         newData.setType(oldData.getType());
         newData.setExternalOrderNumber(oldData.getExternalOrderNumber());
@@ -294,9 +293,9 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
         duplicateItems(oldMan.getItems(), newMan.getItems());        
         duplicateNotes(oldMan.getShippingNotes(), newMan.getShippingNotes());
         duplicateNotes(oldMan.getCustomerNotes(), newMan.getCustomerNotes());
-        duplicateTests(oldMan.getTests(), newMan.getTests());
+        duplicateTests(oldMan.getTests(), newMan.getTests(), forRecurrence);
         duplicateContainers(oldMan.getContainers(), newMan.getContainers());
-        duplicateAuxData(oldMan.getAuxData(), newMan.getAuxData(), forRecur);
+        duplicateAuxData(oldMan.getAuxData(), newMan.getAuxData(), forRecurrence);
     }
     
     private void duplicateOrganizations(OrderOrganizationManager oldMan, OrderOrganizationManager newMan)  {        
@@ -352,12 +351,14 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
         }
     }
     
-    private void duplicateTests(OrderTestManager oldMan, OrderTestManager newMan) {
+    private void duplicateTests(OrderTestManager oldMan, OrderTestManager newMan, boolean forRecurrence) throws Exception {
         OrderTestViewDO oldData, newData;
+        OrderTestAnalyteManager oldAnaMan;
         
         for (int i = 0; i < oldMan.count(); i++) {
             oldData = oldMan.getTestAt(i);
             newData = new OrderTestViewDO();
+            newData.setItemSequence(oldData.getItemSequence());
             newData.setSortOrder(oldData.getSortOrder());
             newData.setTestId(oldData.getTestId());
             newData.setTestName(oldData.getTestName());
@@ -365,6 +366,25 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
             newData.setDescription(oldData.getDescription());
             newData.setIsActive(oldData.getIsActive());
             newMan.addTest(newData);
+            
+            oldAnaMan = forRecurrence ? oldMan.getAnalytesAt(i) : oldMan.getMergedAnalytesAt(i);
+            duplicateAnalytes(oldAnaMan, newMan.getAnalytesAt(i));
+        }
+    }        
+    
+    private void duplicateAnalytes(OrderTestAnalyteManager oldMan, OrderTestAnalyteManager newMan) {
+        OrderTestAnalyteViewDO oldData, newData;
+        
+        for (int i = 0; i < oldMan.count(); i++) {
+            oldData = oldMan.getAnalyteAt(i);
+            newData = new OrderTestAnalyteViewDO();
+            newData.setAnalyteId(oldData.getAnalyteId());
+            newData.setAnalyteName(oldData.getAnalyteName());
+            newData.setTestAnalyteSortOrder(oldData.getTestAnalyteSortOrder());            
+            newData.setTestAnalyteTypeId(oldData.getTestAnalyteTypeId());
+            newData.setTestAnalyteIsReportable(oldData.getTestAnalyteIsReportable());
+            newData.setTestAnalyteIsPresent(oldData.getTestAnalyteIsPresent());
+            newMan.addAnalyte(newData);
         }
     }
     
@@ -382,7 +402,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
     }
     
     private void duplicateAuxData(AuxDataManager oldMan, AuxDataManager newMan,
-                                  boolean forRecur) {
+                                  boolean forRecurrence) {
         AuxDataViewDO oldData, newData;   
         ArrayList<AuxFieldValueViewDO> values;
         AuxFieldViewDO fieldDO;
@@ -400,7 +420,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
             newData.setAnalyteName(oldData.getAnalyteName());
             newData.setAnalyteId(oldData.getAnalyteId());
             newData.setAnalyteExternalId(oldData.getAnalyteExternalId());
-            if (!forRecur) {
+            if (!forRecurrence) {
                 fieldDO = oldMan.getAuxFieldAt(i);
                 values = oldMan.getAuxValuesAt(i);
                 newMan.addAuxDataFieldAndValues(newData, fieldDO, values);

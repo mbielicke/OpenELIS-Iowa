@@ -42,7 +42,8 @@ public class OrderManager implements RPC, HasAuxDataInt {
     protected OrderReceiptManager                receipts;
     protected OrderContainerManager              containers; 
     protected OrderTestManager                   tests; 
-    protected NoteManager                        shipNotes, customerNotes, internalNotes;
+    protected NoteManager                        shipNotes, customerNotes, 
+                                                 internalNotes, sampleNotes;
     protected AuxDataManager                     auxData;
     protected OrderRecurrenceDO                  recurrence;
 
@@ -283,6 +284,27 @@ public class OrderManager implements RPC, HasAuxDataInt {
         return internalNotes;
     }
     
+    public NoteManager getSampleNotes() throws Exception {
+        if (sampleNotes == null) {
+            if (order.getId() != null) {
+                try {
+                    sampleNotes = NoteManager.fetchByRefTableRefIdIsExt(ReferenceTable.ORDER_SAMPLE_NOTE, order.getId(), true);
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+
+            if (sampleNotes == null) {
+                sampleNotes = NoteManager.getInstance();
+                sampleNotes.setIsExternal(true);
+            }
+        }
+
+        return sampleNotes;
+    }
+    
     public OrderTestManager getTests() throws Exception {
         if (tests == null) {
             if (order.getId() != null) {
@@ -325,7 +347,7 @@ public class OrderManager implements RPC, HasAuxDataInt {
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
-                    throw e;
+                   throw e;
                 }
             }
     

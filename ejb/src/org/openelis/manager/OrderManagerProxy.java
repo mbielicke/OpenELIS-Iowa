@@ -81,6 +81,7 @@ public class OrderManagerProxy {
         m.getShippingNotes();
         m.getCustomerNotes();
         m.getInternalNotes();
+        m.getSampleNotes();
 
         return m;
     }
@@ -154,6 +155,12 @@ public class OrderManagerProxy {
             man.getInternalNotes().add();
         }
         
+        if (man.sampleNotes != null) {
+            man.getSampleNotes().setReferenceId(id);
+            man.getSampleNotes().setReferenceTableId(ReferenceTable.ORDER_SAMPLE_NOTE);
+            man.getSampleNotes().add();
+        }
+        
         if (man.auxData != null) {
             man.getAuxData().setReferenceId(id);
             man.getAuxData().setReferenceTableId(ReferenceTable.ORDER);
@@ -222,6 +229,12 @@ public class OrderManagerProxy {
             man.getInternalNotes().setReferenceId(id);
             man.getInternalNotes().setReferenceTableId(ReferenceTable.ORDER);
             man.getInternalNotes().update();
+        }
+        
+        if (man.sampleNotes != null) {
+            man.getSampleNotes().setReferenceId(id);
+            man.getSampleNotes().setReferenceTableId(ReferenceTable.ORDER_SAMPLE_NOTE);
+            man.getSampleNotes().update();
         }
         
         if (man.auxData != null) {

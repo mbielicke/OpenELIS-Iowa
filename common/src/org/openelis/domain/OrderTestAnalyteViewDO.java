@@ -50,6 +50,7 @@ public class OrderTestAnalyteViewDO extends OrderTestAnalyteDO {
                                   String testAnalyteIsPresent) {
         super(id, orderTestId, analyteId);
         setAnalyteName(analyteName);
+        setTestAnalyteSortOrder(testAnalyteSortOrder);
         setTestAnalyteTypeId(testAnalyteTypeId);
         setTestAnalyteIsReportable(testAnalyteIsReportable);
         setTestAnalyteIsPresent(testAnalyteIsPresent);

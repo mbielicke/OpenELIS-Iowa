@@ -40,14 +40,17 @@ public class OrderTestViewDO extends OrderTestDO {
 
     protected String          testName, methodName, description, isActive;
     
+    protected Integer         methodId;
+    
     public OrderTestViewDO() {        
     }
     
     public OrderTestViewDO(Integer id, Integer orderId, Integer itemSequence, Integer sortOrder,
-                           Integer testId, String testName, String methodName, String description,
-                           String isActive) {
+                           Integer testId, String testName, Integer methodId, String methodName,
+                           String description, String isActive) {
         super(id, orderId, itemSequence, sortOrder, testId);
         setTestName(testName);
+        setMethodId(methodId);
         setMethodName(methodName);
         setDescription(description);
         setIsActive(isActive);
@@ -59,6 +62,14 @@ public class OrderTestViewDO extends OrderTestDO {
 
     public void setTestName(String testName) {
         this.testName = DataBaseUtil.trim(testName);
+    }
+    
+    private void setMethodId(Integer methodId) {
+        this.methodId = methodId;
+    }
+
+    public Integer getMethodId() {
+        return methodId;
     }
 
     public String getMethodName() {

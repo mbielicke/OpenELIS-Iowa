@@ -82,6 +82,14 @@ public class OrderContainerManager implements RPC {
         
         return count() - 1;
     }
+    
+    public int addContainerAt(OrderContainerDO container, int i) {
+        if (containers == null)
+            containers = new ArrayList<OrderContainerDO>();
+        containers.add(i, container);   
+        
+        return count() - 1;
+    }
 
     public void removeContainerAt(int i) {
         OrderContainerDO tmp;
@@ -95,6 +103,22 @@ public class OrderContainerManager implements RPC {
                 deleted = new ArrayList<OrderContainerDO>();
             deleted.add(tmp);
         }
+    }
+    
+    public void moveContainer(int oldIndex, int newIndex) {
+        OrderContainerDO entry;
+
+        if (containers == null || oldIndex == newIndex)
+            return;
+
+        entry = containers.remove(oldIndex);
+        if (newIndex > oldIndex)
+            newIndex-- ;
+
+        if (newIndex >= count())
+            addContainer(entry);
+        else
+            addContainerAt(entry, newIndex);
     }
 
     public int count() {

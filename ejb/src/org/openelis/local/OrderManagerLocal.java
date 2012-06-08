@@ -6,6 +6,6 @@ import org.openelis.manager.OrderManager;
 
 @Local
 public interface OrderManagerLocal {    
-    public OrderManager duplicate(Integer id) throws Exception;
-    public OrderManager duplicateForRecurrence(Integer id) throws Exception;
+    public OrderManager duplicate(Integer orderId) throws Exception;
+    public void recur(Integer orderId) throws Exception;
 }

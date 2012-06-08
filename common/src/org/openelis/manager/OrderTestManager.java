@@ -27,6 +27,7 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.RPC;
@@ -104,8 +105,22 @@ public class OrderTestManager implements RPC {
         }
     }
     
-    public ArrayList<OrderTestListItem> getTests(){
-        return items;
+    public void removeNotReportableAnalytesAt(int i) { 
+        OrderTestAnalyteManager aman;
+        OrderTestAnalyteViewDO ana;
+        
+        if(items == null || i >= items.size())
+            return;
+        
+        aman = items.get(i).analytes;
+        if (aman == null)
+            return;
+        
+        for (int j = 0; j < aman.count(); j++) {
+            ana = aman.getAnalyteAt(j);
+            if ("N".equals(ana.getTestAnalyteIsReportable()))
+                aman.removeAnalyteAt(j--);
+        }
     }
     
     public int count() {
@@ -192,8 +207,8 @@ public class OrderTestManager implements RPC {
         OrderTestAnalyteManager newMan;
         
         /*
-         * done to make sure that the the analytes for the old test are present 
-         * before merging them with those of the new one 
+         * done to make sure that the analytes for the old test are present before
+         * merging them with those of the new one 
          */
         getMergedAnalytesAt(i);
         

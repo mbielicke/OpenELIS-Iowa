@@ -40,7 +40,7 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
 
     protected String organizationName, organizationMultipleUnit, organizationStreetAddress,
                      organizationCity, organizationState, organizationZipCode, organizationWorkPhone,
-                     organizationFaxPhone;
+                     organizationFaxPhone, organizationCountry;
 
     public SampleOrganizationViewDO() {
     }
@@ -50,7 +50,8 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
                                     String organizationName, String organizationMultipleUnit,
                                     String organizationStreetAddress, String organizationCity,
                                     String organizationState, String organizationZipCode,
-                                    String organizationWorkPhone, String organizationFaxPhone) {
+                                    String organizationWorkPhone, String organizationFaxPhone,
+                                    String organizationCountry) {
         super(id, sampleId, organizationId, organizationAttention, typeId);
         setOrganizationName(organizationName);
         setOrganizationMultipleUnit(organizationMultipleUnit);
@@ -60,6 +61,7 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
         setOrganizationZipCode(organizationZipCode);
         setOrganizationWorkPhone(organizationWorkPhone);
         setOrganizationFaxPhone(organizationFaxPhone);
+        setOrganizationCountry(organizationCountry);
     }
 
     public String getOrganizationName() {
@@ -124,5 +126,13 @@ public class SampleOrganizationViewDO extends SampleOrganizationDO {
 
     public void setOrganizationFaxPhone(String organizationFaxPhone) {
         this.organizationFaxPhone = DataBaseUtil.trim(organizationFaxPhone);
+    }
+
+    public String getOrganizationCountry() {
+        return organizationCountry;
+    }
+
+    public void setOrganizationCountry(String organizationCountry) {
+        this.organizationCountry = DataBaseUtil.trim(organizationCountry);
     }
 }

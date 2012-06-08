@@ -32,13 +32,11 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.OrderTestAnalyteLocal;
 import org.openelis.utils.EJBFactory;
-import org.openelis.utils.JasperUtil;
 
 public class OrderTestAnalyteManagerProxy {
 
@@ -112,24 +110,10 @@ public class OrderTestAnalyteManagerProxy {
 
         tal = EJBFactory.getOrderTestAnalyte();
         
-        i = 0;
-        while (i < man.count()) {
+        for (i = 0; i < man.count(); i++) {
             data = man.getAnalyteAt(i);
-            /*
-             * only add the analytes from the test that were chosen by the user
-             * to be included in the order
-             */
-            if ("Y".equals(data.getTestAnalyteIsReportable())) {
-                data.setOrderTestId(man.getOrderTestId());
-                tal.add(data);
-                i++;
-            } else {
-                /*
-                 * this is done so that the returned manager doesn't contain any
-                 * analytes that weren't added here 
-                 */
-                man.removeAnalyteAt(i);
-            }            
+            data.setOrderTestId(man.getOrderTestId());
+            tal.add(data);
         }
 
         return man;
@@ -145,53 +129,31 @@ public class OrderTestAnalyteManagerProxy {
         for (i = 0; i < man.deleteCount(); i++ )
             tal.delete(man.getDeletedAt(i));        
         
-        i = 0;
-        while (i < man.count()) {
+        for (i = 0; i < man.count(); i++) {
             data = man.getAnalyteAt(i);
-            /*
-             * only add/update the analytes from the test that were chosen by the
-             * user to be included in the order
-             */
-            if ("Y".equals(data.getTestAnalyteIsReportable())) {
-                if (data.getId() == null) {
-                    data.setOrderTestId(man.getOrderTestId());
-                    tal.add(data);
-                } else {
-                    tal.update(data);
-                }
-                i++;
+            if (data.getId() == null) {
+                data.setOrderTestId(man.getOrderTestId());
+                tal.add(data);
             } else {
-                /*
-                 * delete the rest of the analytes
-                 */
-                if (data.getId() != null)
-                    tal.delete(data);   
-                /*
-                 * this is done so that the returned manager doesn't contain any
-                 * analytes that weren't added/updated here 
-                 */
-                man.removeAnalyteAt(i);
+                tal.update(data);
             }
         }
         return man;
     }
 
-    public void validate(OrderTestAnalyteManager man, OrderTestViewDO test) throws Exception {
-        String testLabel;
+    public void validate(OrderTestAnalyteManager man, OrderTestViewDO test, int index) throws Exception {
         ValidationErrorsList list;
         OrderTestAnalyteViewDO data;        
+        OrderTestAnalyteLocal al;
         
         list = new ValidationErrorsList();
+        al = EJBFactory.getOrderTestAnalyte();
         for (int i = 0; i < man.count(); i++) {
             data = man.getAnalyteAt(i);
-            if ("N".equals(data.getTestAnalyteIsPresent()) && "Y".equals(data.getTestAnalyteIsReportable())) {
-                /*
-                 * this analyte is not present in the original test thus it needs
-                 * to be removed from this order test 
-                 */
-                testLabel = JasperUtil.concatWithSeparator(test.getTestName(), ", ", test.getMethodName());
-                list.add(new FieldErrorException("analyteNotPresentInTestException", null,
-                                                 data.getAnalyteName(), testLabel));
+            try {
+                al.validate(data, index);
+            } catch (Exception e) {
+                list.add(e);
             }
         }
         
