@@ -30,10 +30,13 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.PWSDO;
+import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
@@ -50,6 +53,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -84,12 +88,14 @@ public class SDWISTab extends Screen {
     private TextBox                        pwsId, pwsName, facilityId,
                                            samplePointId, pointDesc, collector;
     private TextBox<Integer>               stateLabId;
-    private AutoComplete<Integer>          reportTo, billTo;
-    private AppButton                      pwsButton, reportToLookup, billToLookup;
+    private AutoComplete<Integer>          reportTo, billTo, project;
+    private AppButton                      pwsButton, projectLookup, reportToLookup, billToLookup;
 
+    private SDWISTab                       screen;
+    private SampleProjectLookupScreen      projectScreen;
     private SampleOrganizationLookupScreen organizationScreen;
 
-    protected ScreenService                orgService, pwsService;
+    protected ScreenService                projectService, orgService, pwsService;
 
     private SampleManager                  manager, previousManager;
     private SampleSDWISManager             sdwisManager, previousSDWISManager;
@@ -110,14 +116,17 @@ public class SDWISTab extends Screen {
         
         setWindow(window);
         
+        projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
         orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         pwsService = new ScreenService("controller?service=org.openelis.modules.pws.server.PWSService");
-
+        
         initialize();
         initializeDropdowns();
     }
 
     public void initialize() {
+        screen = this;
+        
         pwsId = (TextBox)def.getWidget(SampleMeta.getSDWISPwsNumber0());
         addScreenHandler(pwsId, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -451,6 +460,115 @@ public class SDWISTab extends Screen {
                 }
             }
         });
+        
+        project = (AutoComplete<Integer>)def.getWidget(SampleMeta.getProjectName());
+        addScreenHandler(project, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                SampleProjectViewDO data;
+                
+                try {
+                    data = manager.getProjects().getFirstPermanentProject();
+                    if (data != null)
+                        project.setSelection(new TableDataRow(data.getProjectId(),
+                                                              data.getProjectName(),
+                                                              data.getProjectDescription()));
+                    else
+                        project.setSelection(new TableDataRow(null, "", ""));
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                TableDataRow row;
+                SampleProjectViewDO data;
+
+                row = project.getSelection();
+                data = null;
+                try {
+                    /*
+                     * if a project was not selected and it there were permanent
+                     * projects present then we delete the first permanent project
+                     * and set the next permanent one as the first project in the list;  
+                     * otherwise we modify the first existing permanent project
+                     * or create a new one if none existed
+                     */
+                    if (row == null || row.key == null) {                        
+                        manager.getProjects().removeFirstPermanentProject();
+                        data = manager.getProjects().getFirstPermanentProject();
+                        if (data != null) {
+                            manager.getProjects().setProjectAt(data, 0);
+                            
+                            project.setSelection(new TableDataRow(data.getProjectId(), data.getProjectName(), data.getProjectDescription()));
+                        } else {
+                            project.setSelection(new TableDataRow(null, "", ""));                            
+                        }
+                    } else {
+                        data = manager.getProjects().getFirstPermanentProject();
+                        if (data == null) {
+                            data = new SampleProjectViewDO();
+                            data.setIsPermanent("Y");                            
+                            manager.getProjects().addProjectAt(data, 0);
+                        }
+                        data.setProjectId((Integer)row.key);
+                        data.setProjectName((String)row.cells.get(0).getValue());
+                        data.setProjectDescription((String)row.cells.get(1).getValue());                        
+                    } 
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                }
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                project.enable(event.getState() == State.QUERY ||
+                               (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                    .contains(event.getState())));
+                project.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+
+        project.addGetMatchesHandler(new GetMatchesHandler() {
+            public void onGetMatches(GetMatchesEvent event) {
+                TableDataRow row;
+                ProjectDO data;
+                ArrayList<ProjectDO> list;
+                ArrayList<TableDataRow> model;
+
+                window.setBusy();
+                try {
+                    list = projectService.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    model = new ArrayList<TableDataRow>();
+                    for (int i = 0; i < list.size(); i++ ) {
+                        row = new TableDataRow(4);
+                        data = list.get(i);
+
+                        row.key = data.getId();
+                        row.cells.get(0).value = data.getName();
+                        row.cells.get(1).value = data.getDescription();
+
+                        model.add(row);
+                    }
+                    project.showAutoMatches(model);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                }
+                window.clearStatus();
+            }
+        });
+
+        projectLookup = (AppButton)def.getWidget("projectLookup");
+        addScreenHandler(projectLookup, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onProjectLookupClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                projectLookup.enable(event.getState() == State.DISPLAY ||
+                                     (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
+                                                          .contains(event.getState())));
+            }
+        });
 
         reportTo = (AutoComplete<Integer>)def.getWidget(SampleMeta.getOrgName());
         addScreenHandler(reportTo, new ScreenEventHandler<String>() {
@@ -471,12 +589,13 @@ public class SDWISTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow;
-                SampleOrganizationViewDO data;                              
+                TableDataRow row;
+                SampleOrganizationViewDO data;    
+                OrganizationDO org;                              
 
-                selectedRow = reportTo.getSelection();
+                row = reportTo.getSelection();
                 try {
-                    if (selectedRow == null || selectedRow.key == null) {
+                    if (row == null || row.key == null) {
                         manager.getOrganizations().removeReportTo();
                         reportTo.setSelection(null, "");
                         return;
@@ -488,10 +607,9 @@ public class SDWISTab extends Screen {
                         manager.getOrganizations().setReportTo(data);
                     }
 
-                    data.setOrganizationId((Integer)selectedRow.key);
-                    data.setOrganizationName((String)selectedRow.cells.get(0).value);
-                    data.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                    data.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    org = (OrganizationDO)row.data;
+                    if (org != null)
+                        getSampleOrganization(org, data);
 
                     reportTo.setSelection(data.getOrganizationId(),
                                         data.getOrganizationName());
@@ -546,10 +664,7 @@ public class SDWISTab extends Screen {
                                 data = new SampleOrganizationViewDO();
                                 man.setReportTo(data);                                
                             }
-                            data.setOrganizationId(prevData.getOrganizationId());
-                            data.setOrganizationName(prevData.getOrganizationName());
-                            data.setOrganizationCity(prevData.getOrganizationCity());
-                            data.setOrganizationState(prevData.getOrganizationState());
+                            getSampleOrganization(prevData, data);
                             reportTo.setSelection(data.getOrganizationId(), data.getOrganizationName());     
                         }                        
                     } catch (Exception e) {
@@ -582,13 +697,14 @@ public class SDWISTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow;
+                TableDataRow row;
                 SampleOrganizationViewDO data;
+                OrganizationDO org;
 
-                selectedRow = billTo.getSelection();
+                row = billTo.getSelection();
 
                 try {
-                    if (selectedRow == null || selectedRow.key == null) {
+                    if (row == null || row.key == null) {
                         manager.getOrganizations().removeBillTo();
                         billTo.setSelection(null, "");
                         return;
@@ -600,13 +716,11 @@ public class SDWISTab extends Screen {
                         manager.getOrganizations().setBillTo(data);
                     }
 
-                    data.setOrganizationId((Integer)selectedRow.key);
-                    data.setOrganizationName((String)selectedRow.cells.get(0).value);
-                    data.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                    data.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    org = (OrganizationDO)row.data;
+                    if (org != null)
+                        getSampleOrganization(org, data);
 
-                    billTo.setSelection(data.getOrganizationId(),
-                                        data.getOrganizationName());
+                    billTo.setSelection(data.getOrganizationId(), data.getOrganizationName());
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -654,10 +768,7 @@ public class SDWISTab extends Screen {
                                 data = new SampleOrganizationViewDO();
                                 man.setBillTo(data);                                
                             }
-                            data.setOrganizationId(prevData.getOrganizationId());
-                            data.setOrganizationName(prevData.getOrganizationName());
-                            data.setOrganizationCity(prevData.getOrganizationCity());
-                            data.setOrganizationState(prevData.getOrganizationState());
+                            getSampleOrganization(prevData, data);
                             billTo.setSelection(data.getOrganizationId(), data.getOrganizationName());     
                         }                        
                     } catch (Exception e) {
@@ -738,7 +849,6 @@ public class SDWISTab extends Screen {
         ScreenWindow modal;
 
         try {
-            final SDWISTab sdwis = this;
             pwsScreen = new PWSScreen(pwsId.getValue());
 
             pwsScreen.addActionHandler(new ActionHandler<PWSScreen.Action>() {
@@ -752,7 +862,7 @@ public class SDWISTab extends Screen {
                             getSDWISManager().getSDWIS().setPwsNumber0(pwsDO.getNumber0());
 
                             pwsId.clearExceptions();
-                            DataChangeEvent.fire(sdwis);
+                            DataChangeEvent.fire(screen);
                             setFocus(pwsId);
 
                         }
@@ -766,6 +876,34 @@ public class SDWISTab extends Screen {
 
         } catch (Exception e) {
             Window.alert("openPWSScreen: " + e.getMessage());
+        }
+    }
+    
+    private void onProjectLookupClick() {
+        try {
+            if (projectScreen == null) {
+                projectScreen = new SampleProjectLookupScreen();
+                projectScreen.addActionHandler(new ActionHandler<SampleProjectLookupScreen.Action>() {
+                    public void onAction(ActionEvent<SampleProjectLookupScreen.Action> event) {
+                        if (event.getAction() == SampleProjectLookupScreen.Action.OK) {
+                            DataChangeEvent.fire(screen, project);
+
+                        }
+                    }
+                });
+            }
+
+            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+            modal.setName(consts.get("sampleProject"));
+            modal.setContent(projectScreen);
+            projectScreen.setScreenState(state);
+
+            projectScreen.setManager(manager.getProjects());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("error: " + e.getMessage());
+            return;
         }
     }
 
@@ -784,6 +922,7 @@ public class SDWISTab extends Screen {
                 data = list.get(i);
 
                 row.key = data.getId();
+                row.data = data;
                 row.cells.get(0).value = data.getName();
                 row.cells.get(1).value = data.getAddress().getStreetAddress();
                 row.cells.get(2).value = data.getAddress().getCity();
@@ -802,14 +941,13 @@ public class SDWISTab extends Screen {
     private void onOrganizationLookupClick() {
         try {
             if (organizationScreen == null) {
-                final SDWISTab env = this;
                 organizationScreen = new SampleOrganizationLookupScreen();
 
                 organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationLookupScreen.Action>() {
                     public void onAction(ActionEvent<SampleOrganizationLookupScreen.Action> event) {
                         if (event.getAction() == SampleOrganizationLookupScreen.Action.OK) {
-                            DataChangeEvent.fire(env, reportTo);
-                            DataChangeEvent.fire(env, billTo);
+                            DataChangeEvent.fire(screen, reportTo);
+                            DataChangeEvent.fire(screen, billTo);
                         }
                     }
                 });
@@ -915,5 +1053,30 @@ public class SDWISTab extends Screen {
         
         event = Document.get().createKeyPressEvent(false, false, false, false, KeyCodes.KEY_TAB, KeyCodes.KEY_TAB);        
         KeyPressEvent.fireNativeEvent(event, currWidget);
+    }
+    
+    private void getSampleOrganization(OrganizationDO org, SampleOrganizationViewDO data) {
+        AddressDO addr;
+        
+        addr = org.getAddress();
+        data.setOrganizationId(org.getId());
+        data.setOrganizationName(org.getName());
+        data.setOrganizationMultipleUnit(addr.getMultipleUnit());
+        data.setOrganizationStreetAddress(addr.getStreetAddress());
+        data.setOrganizationCity(addr.getCity());
+        data.setOrganizationState(addr.getState());
+        data.setOrganizationZipCode(addr.getZipCode());
+        data.setOrganizationCountry(addr.getCountry());
+    }
+    
+    private void getSampleOrganization(SampleOrganizationViewDO prevData, SampleOrganizationViewDO data) {
+        data.setOrganizationId(prevData.getOrganizationId());
+        data.setOrganizationName(prevData.getOrganizationName());
+        data.setOrganizationMultipleUnit(prevData.getOrganizationMultipleUnit());
+        data.setOrganizationStreetAddress(prevData.getOrganizationStreetAddress());
+        data.setOrganizationCity(prevData.getOrganizationCity());
+        data.setOrganizationState(prevData.getOrganizationState());
+        data.setOrganizationZipCode(prevData.getOrganizationZipCode());
+        data.setOrganizationCountry(prevData.getOrganizationCountry());
     }
 }

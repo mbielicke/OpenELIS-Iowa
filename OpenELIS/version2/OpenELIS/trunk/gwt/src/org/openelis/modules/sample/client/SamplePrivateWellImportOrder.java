@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ProjectDO;
@@ -39,27 +40,24 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
 
 public class SamplePrivateWellImportOrder extends ImportOrder {
-    protected static final String PROJECT_SERVICE_URL  = "org.openelis.modules.project.server.ProjectService";
-    
-    protected ScreenService       projectService;
 
-    public SamplePrivateWellImportOrder() {
-        projectService = new ScreenService("controller?service=" + PROJECT_SERVICE_URL);
+    public SamplePrivateWellImportOrder() throws Exception {
     }
     
     public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
         return super.importOrderInfo(orderId, manager, "sample_well_aux_data");
     }
 
-    protected ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
-                                            Integer envAuxGroupId, SampleManager manager) throws Exception {
+    protected void loadFieldsFromAuxData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId,
+                                         SampleManager manager, ValidationErrorsList errors) throws Exception {
         AuxDataViewDO data;
         ProjectDO proj;
         SampleProjectViewDO sampleProj;
@@ -68,10 +66,8 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
         SamplePrivateWellManager wellMan;
         SamplePrivateWellViewDO well;
         AddressDO locAddr;
-        ValidationErrorsList errorsList;
         DateField df;
 
-        errorsList = new ValidationErrorsList();
         sample = manager.getSample();
         wellMan = (SamplePrivateWellManager)manager.getDomainManager();
         well = wellMan.getPrivateWell();
@@ -81,7 +77,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
             data = auxDataList.get(i);
             try {
                 if ( !data.getGroupId().equals(envAuxGroupId)) {
-                    saveAuxData(data, errorsList, manager);
+                    saveAuxData(data, errors, manager);
                     continue;
                 }
                 analyteId = data.getAnalyteExternalId();
@@ -108,10 +104,10 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                 } else if ("loc_city".equals(analyteId)) {
                     locAddr.setCity(data.getValue());
                 } else if ("loc_state".equals(analyteId)) {
-                    if (getDropdownByValue(data.getValue(), "state") != null)
+                    if (getDictionaryByEntry(data.getValue(), "state") != null)
                         locAddr.setState(data.getValue());
                     else if (data.getValue() != null)
-                        errorsList.add(new FormErrorException("orderImportError", "state",
+                        errors.add(new FormErrorException("orderImportError", "state",
                                                               data.getValue()));
                 } else if ("loc_zip_code".equals(analyteId)) {
                     locAddr.setZipCode(data.getValue());
@@ -133,7 +129,7 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                         manager.getProjects().addFirstPermanentProject(sampleProj);
 
                     } else {
-                        errorsList.add(new FormErrorException("orderImportError", "project",
+                        errors.add(new FormErrorException("orderImportError", "project",
                                                               data.getValue()));
                     }
                 }
@@ -141,65 +137,90 @@ public class SamplePrivateWellImportOrder extends ImportOrder {
                 // problem with aux input, ignore
             }
         }
-        
-        if (errorsList.size() > 0)
-            return errorsList;
-
-        return null;
     }
 
-    protected void loadReportToBillTo(Integer orderId, SampleManager man) throws Exception {
-        OrderViewDO orderDO;
-        OrganizationDO shipToDO, reportToDO, billToDO;
+    protected void loadOrganizations(Integer orderId, SampleManager man) throws Exception {
+        OrderViewDO order;
+        OrganizationDO shipTo;
         SamplePrivateWellManager wellMan;
-        SamplePrivateWellViewDO privateWell;
-        SampleOrganizationViewDO billToSampOrg;
+        SamplePrivateWellViewDO well;
+        OrderOrganizationManager orderOrgMan;
+        SampleOrganizationManager samOrgMan;
+        OrderOrganizationViewDO ordOrg, ordReportTo;
+        SampleOrganizationViewDO samBillTo;
 
         if (orderMan == null)
             orderMan = OrderManager.fetchById(orderId);
 
         wellMan = (SamplePrivateWellManager)man.getDomainManager();
-        privateWell = wellMan.getPrivateWell();
-        orderDO = orderMan.getOrder();
-        shipToDO = orderDO.getOrganization();
-
-        // report to
-        /*if (reportToDO != null) {
-            privateWell.setOrganizationId(reportToDO.getId());
-            privateWell.setOrganization(reportToDO);
-            privateWell.setReportToAttention(orderDO.getReportToAttention());
-        } else {
-            privateWell.setOrganizationId(shipToDO.getId());
-            privateWell.setOrganization(shipToDO);
-            privateWell.setReportToAttention(orderDO.getOrganizationAttention());
+        well = wellMan.getPrivateWell();
+        order = orderMan.getOrder();
+        shipTo = order.getOrganization();
+        
+        orderOrgMan = orderMan.getOrganizations(); 
+        samOrgMan = man.getOrganizations();
+        ordReportTo = null;
+        samBillTo = null;
+        
+        for (int i = 0; i < orderOrgMan.count(); i++) {
+            ordOrg = orderOrgMan.getOrganizationAt(i);
+            /*
+             * create the report-to, bill-to and secondary report-to organizations
+             * for the sample if the corresponding organizations are defined in
+             * the order
+             */
+            if (reportToId.equals(ordOrg.getTypeId())) {
+                ordReportTo = ordOrg;
+                well.setOrganizationId(ordReportTo.getOrganizationId());
+                well.setOrganization(createOrganization(ordOrg));
+                well.setReportToAttention(ordOrg.getOrganizationAttention());
+            } else if (billToId.equals(ordOrg.getTypeId())) {
+                samBillTo = createSampleOrganization(ordOrg, billToId);
+                samOrgMan.addOrganization(samBillTo);
+            } else if (secondReportToId.equals(ordOrg.getTypeId())) {
+                samOrgMan.addOrganization(createSampleOrganization(ordOrg, secondReportToId));
+            }
+        }       
+                
+        /*
+         * if report-to was not found then set the ship-to as the report-to 
+         */
+        order = orderMan.getOrder();
+        if (ordReportTo == null) {
+            well.setOrganizationId(shipTo.getId());
+            well.setOrganization(shipTo);
+            well.setReportToAttention(order.getOrganizationAttention());
         }
-
-        // bill to
-        billToSampOrg = new SampleOrganizationViewDO();
-        if (billToDO != null) {
-            billToSampOrg.setOrganizationId(billToDO.getId());
-            //billToSampOrg.setOrganizationAttention(orderDO.getBillToAttention());
-            billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
-            billToSampOrg.setOrganizationName(billToDO.getName());
-            billToSampOrg.setOrganizationCity(billToDO.getAddress().getCity());
-            billToSampOrg.setOrganizationState(billToDO.getAddress().getState());
-            man.getOrganizations().addOrganization(billToSampOrg);
-        } else if (reportToDO != null) {
-            billToSampOrg.setOrganizationId(reportToDO.getId());
-            billToSampOrg.setOrganizationAttention(orderDO.getReportToAttention());
-            billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
-            billToSampOrg.setOrganizationName(reportToDO.getName());
-            billToSampOrg.setOrganizationCity(reportToDO.getAddress().getCity());
-            billToSampOrg.setOrganizationState(reportToDO.getAddress().getState());
-            man.getOrganizations().addOrganization(billToSampOrg);
-        } else {
-            billToSampOrg.setOrganizationId(shipToDO.getId());
-            billToSampOrg.setOrganizationAttention(orderDO.getOrganizationAttention());
-            billToSampOrg.setTypeId(DictionaryCache.getIdBySystemName("org_bill_to"));
-            billToSampOrg.setOrganizationName(shipToDO.getName());
-            billToSampOrg.setOrganizationCity(shipToDO.getAddress().getCity());
-            billToSampOrg.setOrganizationState(shipToDO.getAddress().getState());
-            man.getOrganizations().addOrganization(billToSampOrg);
-        }*/
+        
+        /*
+         * if bill-to was not found and if report-to was found then set it as the
+         * bill-to otherwise set the ship-to as the bill-to 
+         */
+        if (samBillTo == null) {
+            if (ordReportTo != null)
+                samOrgMan.addOrganization(createSampleOrganization(ordReportTo, billToId));
+            else
+                samOrgMan.addOrganization(createSampleOrganization(order, billToId));
+        }
+    }
+    
+    private OrganizationDO createOrganization(OrderOrganizationViewDO org) {
+        OrganizationDO data;
+        AddressDO addr;
+        
+        data = new OrganizationDO();
+        data.setId(org.getOrganizationId());
+        data.setName(org.getOrganizationName());
+        
+        addr = data.getAddress();
+        addr.setMultipleUnit(org.getOrganizationAddressMultipleUnit());
+        addr.setStreetAddress(org.getOrganizationAddressStreetAddress());
+        addr.setCity(org.getOrganizationAddressCity());
+        addr.setState(org.getOrganizationAddressState());
+        addr.setZipCode(org.getOrganizationAddressZipCode());
+        addr.setFaxPhone(org.getOrganizationAddressFaxPhone());
+        addr.setWorkPhone(org.getOrganizationAddressWorkPhone());
+        
+        return data;
     }
 }

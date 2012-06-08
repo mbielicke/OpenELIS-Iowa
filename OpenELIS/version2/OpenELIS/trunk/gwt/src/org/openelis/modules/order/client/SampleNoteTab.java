@@ -42,7 +42,7 @@ public class SampleNoteTab extends NotesTab {
                         String editButtonKey) {
         super(def, window, notesPanelKey, editButtonKey);
     }
-
+    
     public void setManager(OrderManager parentManager) {
         this.parentManager = parentManager;
         loaded = false;
@@ -51,12 +51,12 @@ public class SampleNoteTab extends NotesTab {
     public void draw() {
         if (parentManager != null && !loaded) {
             try {
-                manager = parentManager.getCustomerNotes();
+                manager = parentManager.getSampleNotes();
                 DataChangeEvent.fire(this);
                 loaded = true;
             } catch (Exception e) {
                 Window.alert(e.getMessage());
             }
         }
-    }
+    }    
 }

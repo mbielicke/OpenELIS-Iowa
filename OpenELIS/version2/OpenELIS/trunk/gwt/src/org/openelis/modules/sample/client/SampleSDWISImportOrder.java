@@ -30,7 +30,9 @@ import java.util.ArrayList;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.PWSDO;
+import org.openelis.domain.ProjectDO;
 import org.openelis.domain.SampleDO;
+import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
@@ -46,7 +48,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
     
     protected ScreenService       pwsService;
     
-    public SampleSDWISImportOrder() {
+    public SampleSDWISImportOrder() throws Exception {
         pwsService = new ScreenService("controller?service=" + PWS_SERVICE_URL);
     }
 
@@ -54,19 +56,19 @@ public class SampleSDWISImportOrder extends ImportOrder {
         return super.importOrderInfo(orderId, manager, "sample_sdwis_aux_data");
     }
     
-    protected ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
-                                            Integer envAuxGroupId, SampleManager manager) throws Exception {
+    protected void loadFieldsFromAuxData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId,
+                                         SampleManager manager, ValidationErrorsList errors) throws Exception {
         AuxDataViewDO data;
         String analyteId;
         DictionaryDO dict;
         Integer value;
         SampleDO sample;
+        ProjectDO proj;
+        SampleProjectViewDO smplProj;
         PWSDO pws;
         SampleSDWISViewDO sdwis;
         DateField df;
-        ValidationErrorsList errorsList;
 
-        errorsList = new ValidationErrorsList();
         sample = manager.getSample();
         sdwis = ((SampleSDWISManager)manager.getDomainManager()).getSDWIS();
         
@@ -74,7 +76,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
             data = auxDataList.get(i);
             try {
                 if ( !data.getGroupId().equals(envAuxGroupId)) {
-                    saveAuxData(data, errorsList, manager);
+                    saveAuxData(data, errors, manager);
                     continue;
                 }
                 analyteId = data.getAnalyteExternalId();
@@ -100,7 +102,7 @@ public class SampleSDWISImportOrder extends ImportOrder {
                             sdwis.setPwsName(pws.getName());
                             sdwis.setPwsNumber0(pws.getNumber0());
                         } catch (NotFoundException e) {
-                            errorsList.add(new FormErrorException("orderImportError", "pws id",
+                            errors.add(new FormErrorException("orderImportError", "pws id",
                                                                   data.getValue()));
                         }
                     }
@@ -110,20 +112,20 @@ public class SampleSDWISImportOrder extends ImportOrder {
                     sdwis.setFacilityId(data.getValue());
                 } else if ("sample_type".equals(analyteId)) {
                     value = null;
-                    dict = getDropdownByKey(data.getValue(), "sdwis_sample_type");
+                    dict = getDictionaryByKey(data.getValue(), "sdwis_sample_type");
                     if (dict != null)
                         value = dict.getId();
                     else if (data.getValue() != null)
-                        errorsList.add(new FormErrorException("orderImportError", "sample type",
+                        errors.add(new FormErrorException("orderImportError", "sample type",
                                                               data.getValue()));
                     sdwis.setSampleTypeId(value);
                 } else if ("sample_cat".equals(analyteId)) {
                     value = null;
-                    dict = getDropdownByKey(data.getValue(), "sdwis_sample_category");
+                    dict = getDictionaryByKey(data.getValue(), "sdwis_sample_category");
                     if (dict != null)
                         value = dict.getId();
                     else if (data.getValue() != null)
-                        errorsList.add(new FormErrorException("orderImportError",
+                        errors.add(new FormErrorException("orderImportError",
                                                               "sample category", data.getValue()));
 
                     sdwis.setSampleCategoryId(value);
@@ -133,15 +135,25 @@ public class SampleSDWISImportOrder extends ImportOrder {
                     sdwis.setLocation(data.getValue());
                 } else if ("collector".equals(analyteId)) {
                     sdwis.setCollector(data.getValue());
+                } else if ("project_name".equals(analyteId) && data.getValue() != null) {
+                    proj = projectService.call("fetchSingleByName", data.getValue());
+                    if (proj != null) {
+                        smplProj = new SampleProjectViewDO();
+                        smplProj.setIsPermanent("Y");
+                        smplProj.setProjectId(proj.getId());
+                        smplProj.setProjectName(proj.getName());
+                        smplProj.setProjectDescription(proj.getDescription());
+
+                        manager.getProjects().addFirstPermanentProject(smplProj);
+
+                    } else {
+                        errors.add(new FormErrorException("orderImportError", "project",
+                                                              data.getValue()));
+                    }
                 }
             } catch (Exception e) {
                 // problem with aux input, ignore
             }
         }
-
-        if (errorsList.size() > 0)
-            return errorsList;
-
-        return null;
     }
 }

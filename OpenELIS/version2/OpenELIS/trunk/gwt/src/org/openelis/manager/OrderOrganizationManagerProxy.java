@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import org.openelis.cache.DictionaryCache;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.services.ScreenService;
 
 public class OrderOrganizationManagerProxy {

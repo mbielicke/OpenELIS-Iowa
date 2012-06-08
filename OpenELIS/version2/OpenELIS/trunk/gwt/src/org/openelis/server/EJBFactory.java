@@ -69,6 +69,7 @@ import org.openelis.remote.LabelRemote;
 import org.openelis.remote.MethodRemote;
 import org.openelis.remote.NoteManagerRemote;
 import org.openelis.remote.OrderManagerRemote;
+import org.openelis.remote.OrderRecurrenceReportRemote;
 import org.openelis.remote.OrderRemote;
 import org.openelis.remote.OrganizationManagerRemote;
 import org.openelis.remote.OrganizationRemote;
@@ -275,6 +276,10 @@ public class EJBFactory {
 
     public static OrganizationManagerRemote getOrganizationManager() {
         return (OrganizationManagerRemote)lookup("OrganizationManagerBean!org.openelis.remote.OrganizationManagerRemote");
+    }
+    
+    public static OrderRecurrenceReportRemote getOrderRecurrenceReport() {
+        return (OrderRecurrenceReportRemote)lookup("OrderRecurrenceReportBean!org.openelis.remote.OrderRecurrenceReportRemote");
     }
 
     public static PanelManagerRemote getPanelManager() {

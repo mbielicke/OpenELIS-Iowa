@@ -39,6 +39,7 @@ import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
+import org.openelis.report.Prompt;
 import org.openelis.server.EJBFactory;
 
 public class OrderService {
@@ -152,5 +153,13 @@ public class OrderService {
     
     public OrderRecurrenceDO fetchRecurrenceByOrderId(Integer id) throws Exception {
         return EJBFactory.getOrderManager().fetchRecurrenceByOrderId(id);
+    }
+    
+    public ArrayList<Prompt> getPrompts() throws Exception {
+        return EJBFactory.getOrderRecurrenceReport().getPrompts();
+    }
+    
+    public void recurOrders() throws Exception {
+        EJBFactory.getOrderRecurrenceReport().recurOrders();
     }
 }

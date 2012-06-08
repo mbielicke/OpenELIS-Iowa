@@ -31,7 +31,12 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrderContainerDO;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
+import org.openelis.gwt.event.BeforeDragStartEvent;
+import org.openelis.gwt.event.BeforeDragStartHandler;
 import org.openelis.gwt.event.DataChangeEvent;
+import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
@@ -41,6 +46,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
@@ -50,32 +56,36 @@ import org.openelis.gwt.widget.table.event.RowAddedEvent;
 import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
+import org.openelis.gwt.widget.table.event.RowMovedEvent;
+import org.openelis.gwt.widget.table.event.RowMovedHandler;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.modules.order.client.TestTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Window;
 
 public class ContainerTab extends Screen {
 
-    private OrderManager          manager;
-    private AppButton             addContainerButton,
-                                  removeContainerButton;
-    private TableWidget           orderContainerTable;
-    private boolean               loaded;
+    private OrderManager            manager;
+    private AppButton               addContainerButton, removeContainerButton, popoutButton,
+                                    duplicateButton;
+    private TableWidget             table;
+    private ContainerTab            screen;
+    private boolean                 loaded;
+    private TestContainerPopoutUtil popoutUtil;
 
-    protected ScreenService       analysisService, panelService, testService;
-
-    public enum Action {
-        ADD_AUX
-    };
-
-    public ContainerTab(ScreenDefInt def, ScreenWindowInt window) {
+    protected ScreenService         analysisService, testService;
+    
+    public ContainerTab(ScreenDefInt def, ScreenWindowInt window, TestContainerPopoutUtil popoutUtil) {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         analysisService = new ScreenService("controller?service=org.openelis.modules.analysis.server.AnalysisService");
-        panelService  = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         testService  = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
+        this.popoutUtil = popoutUtil;
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -84,28 +94,36 @@ public class ContainerTab extends Screen {
     }
 
     private void initialize() {                
+        screen = this;
         
-        orderContainerTable = (TableWidget)def.getWidget("orderContainerTable");
-        addScreenHandler(orderContainerTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+        table = (TableWidget)def.getWidget("orderContainerTable");
+        addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 if(state != State.QUERY)
-                    orderContainerTable.load(getContainerTableModel());
+                    table.load(getContainerTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                orderContainerTable.enable(true);
-                orderContainerTable.setQueryMode(event.getState() == State.QUERY);
+                table.enable(true);
+                table.setQueryMode(event.getState() == State.QUERY);
             }
         });
         
-        orderContainerTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+        table.addSelectionHandler(new SelectionHandler<TableRow>() {
+            public void onSelection(SelectionEvent<TableRow> event) {
+                if((state == State.ADD || state == State.UPDATE)) 
+                    duplicateButton.enable(true);
+            }
+        });
+                    
+        table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if(state != State.ADD && state != State.UPDATE && state != State.QUERY)  
-                    event.cancel();                
+                if((state != State.ADD && state != State.UPDATE) || event.getCol() == 0) 
+                        event.cancel();
             }            
         });
 
-        orderContainerTable.addCellEditedHandler(new CellEditedHandler() {
+        table.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
                 Object val;
@@ -113,7 +131,7 @@ public class ContainerTab extends Screen {
 
                 r = event.getRow();
                 c = event.getCol();
-                val = orderContainerTable.getObject(r,c);
+                val = table.getObject(r,c);
                 
                 try {
                     data = manager.getContainers().getContainerAt(r);
@@ -122,62 +140,114 @@ public class ContainerTab extends Screen {
                     return;
                 }
                 
-                /*switch(c) {
-                    case 0:
-                        data.setContainerId((Integer)val);
-                        break;
+                switch(c) {
                     case 1:
-                        data.setNumberOfContainers((Integer)val);
+                        data.setContainerId((Integer)val);
                         break;
                     case 2:
                         data.setTypeOfSampleId((Integer)val);
                         break;
-                }*/
+                }
             }
         });
 
-        orderContainerTable.addRowAddedHandler(new RowAddedHandler() {
+        table.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 int index;
                 Integer sampleTypeId;
                 OrderContainerDO data, prevData;
                 OrderContainerManager man;
+                
                 try {
                     man = manager.getContainers();
-                    index = man.addContainer();
+                    index = event.getIndex();
+                    man.addContainerAt(index);
+                    data = man.getContainerAt(index);
+                    data.setItemSequence(index);
+                    table.setCell(index, 0, index);
                     if (index > 0) {
                         prevData = man.getContainerAt(index-1);
                         sampleTypeId = prevData.getTypeOfSampleId();                        
-                        data = man.getContainerAt(index);
                         data.setTypeOfSampleId(sampleTypeId);
-                        orderContainerTable.setCell(index, 2, sampleTypeId);
+                        table.setCell(index, 2, sampleTypeId);
                     }
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         });
 
-        orderContainerTable.addRowDeletedHandler(new RowDeletedHandler() {
+        table.addRowDeletedHandler(new RowDeletedHandler() {
             public void onRowDeleted(RowDeletedEvent event) {
+                int index;
+                OrderContainerManager man;
+                
+                index = event.getIndex();
                 try {
-                    manager.getContainers().removeContainerAt(event.getIndex());
+                    man = manager.getContainers();
+                    man.removeContainerAt(index);
+                    /*
+                     * if the removed container was not at the end of the old list 
+                     * then the sequences of all the containers appearing after 
+                     * it in the old list needs to be reset
+                     */
+                    resetSequencesFrom(index);                                                    
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
+                    e.printStackTrace();
                 }
             }
         });
-
+        
+        table.enableDrag(true);
+        table.enableDrop(true);
+        table.addTarget(table);
+        
+        table.addBeforeDragStartHandler(new BeforeDragStartHandler<TableRow>() {
+            public void onBeforeDragStart(BeforeDragStartEvent<TableRow> event) {
+                /*
+                 * this is done to make sure that the drag and drop doesn't interfere
+                 * with editing of the cells of the table
+                 */
+                if (table.isEditing())
+                    event.cancel();
+            }
+            
+        });
+        
+        table.addRowMovedHandler(new RowMovedHandler() {
+            public void onRowMoved(RowMovedEvent event) {
+                int oldIndex, newIndex;
+                OrderContainerManager man;
+                
+                try {
+                    man = manager.getContainers();
+                    oldIndex = event.getOldIndex();
+                    newIndex = event.getNewIndex();
+                    man.moveContainer(oldIndex, newIndex);
+                    /*
+                     * the sequence in the containers appearing in the new list 
+                     * needs to be reset including that of the dropped object 
+                     */
+                    resetSequencesFrom(newIndex < oldIndex ? newIndex : oldIndex);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        });
+        
         addContainerButton = (AppButton)def.getWidget("addContainerButton");
         addScreenHandler(addContainerButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n;
 
-                orderContainerTable.addRow();
-                n = orderContainerTable.numRows() - 1;
-                orderContainerTable.selectRow(n);
-                orderContainerTable.scrollToSelection();
-                orderContainerTable.startEditing(n, 0);
+                table.addRow();
+                n = table.numRows() - 1;
+                table.selectRow(n);
+                table.scrollToSelection();
+                table.startEditing(n, 1);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -190,13 +260,81 @@ public class ContainerTab extends Screen {
             public void onClick(ClickEvent event) {
                 int r;
 
-                r = orderContainerTable.getSelectedRow();
-                if (r > -1 && orderContainerTable.numRows() > 0)
-                    orderContainerTable.deleteRow(r);
+                r = table.getSelectedRow();
+                if (r > -1 && table.numRows() > 0)
+                    table.deleteRow(r);                
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 removeContainerButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+        
+        popoutButton = (AppButton)def.getWidget("containerPopoutButton");
+        if (popoutButton != null) {
+            addScreenHandler(popoutButton, new ScreenEventHandler<Object>() {
+                public void onClick(ClickEvent event) {
+                    table.finishEditing();
+                    showPopout();
+                }
+
+                public void onStateChange(StateChangeEvent<State> event) {
+                    popoutButton.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                                               .contains(event.getState()));
+                }
+            });
+            
+            if (popoutUtil != null) {
+                popoutUtil.addActionHandler(new ActionHandler<TestContainerPopoutLookup.Action>() {
+                    public void onAction(ActionEvent<org.openelis.modules.order.client.TestContainerPopoutLookup.Action> event) {
+                        if (event.getAction() == TestContainerPopoutLookup.Action.OK &&
+                                        (state == State.ADD || state == State.UPDATE)) {
+                            DataChangeEvent.fire(screen);
+                        }
+                    }
+                });
+            }
+        }
+        
+        duplicateButton = (AppButton)def.getWidget("duplicateContainerButton");
+        addScreenHandler(duplicateButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                int n, r;     
+                OrderContainerDO prevData, data;
+                OrderContainerManager man;
+                
+                r = table.getSelectedRow();
+                if (r == -1)
+                    return;
+                try {
+                    man = manager.getContainers();
+                    n = r + 1;
+                    if (n < table.numRows())
+                        table.addRow(n);
+                    else
+                        table.addRow();
+                    
+                    prevData = man.getContainerAt(r);
+                    data = man.getContainerAt(n);
+                    data.setContainerId(prevData.getContainerId());
+                    data.setOrderId(prevData.getOrderId());
+                    data.setTypeOfSampleId(prevData.getTypeOfSampleId());
+                    
+                    table.setCell(n, 1, data.getContainerId());
+                    table.setCell(n, 2, data.getTypeOfSampleId());                    
+                    resetSequencesFrom(n);
+                    
+                    table.selectRow(n);
+                    table.scrollToSelection();
+                    table.startEditing(n, 1);
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }                
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                duplicateButton.enable(EnumSet.of(State.ADD,State.UPDATE).contains(event.getState()));
             }
         });
     }
@@ -207,7 +345,7 @@ public class ContainerTab extends Screen {
         ArrayList<DictionaryDO> list;
         TableDataRow row;
 
-        container = (Dropdown) orderContainerTable.getColumns().get(1).getColumnWidget();
+        container = (Dropdown) table.getColumns().get(1).getColumnWidget();
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("sample_container");
@@ -218,7 +356,7 @@ public class ContainerTab extends Screen {
         }
         container.setModel(model);
 
-        sampleTypes = (Dropdown) orderContainerTable.getColumns().get(2).getColumnWidget();
+        sampleTypes = (Dropdown) table.getColumns().get(2).getColumnWidget();
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("type_of_sample");
@@ -246,7 +384,7 @@ public class ContainerTab extends Screen {
                 data = man.getContainerAt(i);
                 
                 row = new TableDataRow(3);
-                row.cells.get(0).setValue(null);
+                row.cells.get(0).setValue(data.getItemSequence());
                 row.cells.get(1).setValue(data.getContainerId());
                 row.cells.get(2).setValue(data.getTypeOfSampleId());
                 model.add(row);
@@ -256,6 +394,25 @@ public class ContainerTab extends Screen {
             e.printStackTrace();
         }
         return model;
+    }
+    
+    private void resetSequencesFrom(int index) throws Exception {
+        OrderContainerManager man;
+        
+        man = manager.getContainers();
+        for (int i = index; i < man.count(); i++) {
+           man.getContainerAt(i).setItemSequence(i);
+           table.setCell(i, 0, i);
+        }
+    }
+    
+    private void showPopout() {
+        try {
+            popoutUtil.showPopout(consts.get("testsAndContainers"), state, manager);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("TestContainerPopoutLookup error: " + e.getMessage());
+        }
     }
     
     public void setManager(OrderManager manager) {

@@ -274,7 +274,21 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select="resource:getString($constants,'collector')" />:
                 </text>
-                <textbox key="{meta:getSDWISCollector()}" width="162" case="LOWER" max="20" tab="{meta:getOrgName()},{meta:getSDWISLocation()}" field="String" />
+                <textbox key="{meta:getSDWISCollector()}" width="162" case="LOWER" max="20" tab="{meta:getProjectName()},{meta:getSDWISLocation()}" field="String" />
+                </row>
+                <row>
+                  <text style="Prompt">
+                    <xsl:value-of select="resource:getString($constants,'project')" />:
+                  </text>
+                  <HorizontalPanel>
+                    <autoComplete key="{meta:getProjectName()}" width="179" case="LOWER" popWidth="auto" tab="{meta:getOrgName()},{meta:getSDWISCollector()}" field="Integer">
+                      <col width="150" header="{resource:getString($constants,'name')}" />
+                      <col width="275" header="{resource:getString($constants,'description')}" />
+                    </autoComplete>
+                    <appButton key="projectLookup" style="LookupButton">
+                      <AbsolutePanel style="LookupButtonImage" />
+                    </appButton>
+                  </HorizontalPanel>
                 </row>
                 <row>
                   <text style="Prompt">
@@ -282,7 +296,7 @@ UIRF Software License are applicable instead of those above.
                   </text>
                   <widget colspan="3">
                     <HorizontalPanel>
-                      <autoComplete key="{meta:getOrgName()}" width="179" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getSDWISCollector()}" field="Integer">
+                      <autoComplete key="{meta:getOrgName()}" width="179" case="UPPER" popWidth="auto" tab="{meta:getBillTo()},{meta:getProjectName()}" field="Integer">
                         <col width="200" header="{resource:getString($constants,'name')}" />
                         <col width="130" header="{resource:getString($constants,'street')}" />
                         <col width="120" header="{resource:getString($constants,'city')}" />

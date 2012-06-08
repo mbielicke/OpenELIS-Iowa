@@ -62,7 +62,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -73,6 +72,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
@@ -746,6 +746,23 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
 
             public void onStateChange(StateChangeEvent<State> event) {
                 treeTab.setState(event.getState());
+            }
+        });
+        
+        /*
+         * This handler would be invoked when the tree in the tree tab needs to be
+         * refreshed due to new prep tests being added e.g. on importing an order.
+         * The handler above isn't used for this purpose because it responds to 
+         * the DataChangeEvent fired by this screen and not by the tree utility.
+         * The utility doesn't make a DataChangeEvent be fired by the screen because
+         * the above handler would be invoked and it would need to reset the manager
+         * in the tab, which is not the desired default behavior. The data in the 
+         * tab in the default case is set by setDataInTabs() due to other issues. 
+         */
+        treeTab.getTreeUtil().addScreenHandler(screen, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                treeTab.setData(manager);
+                treeTab.draw();
             }
         });
 
@@ -1433,16 +1450,10 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     
     
     private void importOrder(Integer orderId) {
-        int i;
-        ArrayList<QueryData> fields;
-        TestViewDO test;
-        OrderTestViewDO orderTest;
-        Query query;
-        QueryData field;
-        ValidationErrorsList errors;        
         OrderManager man;
+        ValidationErrorsList errors;        
         
-        if (DataBaseUtil.isEmpty(orderId)) {
+        if (orderId == null) {
             manager.getSample().setOrderId(orderId);
             return;
         }
@@ -1452,83 +1463,50 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             return;
         } 
         
-        manager.getSample().setOrderId(orderId);
-        
         try {
+            if (manager.getSampleItems().count() > 0 ) {
+                if (!Window.confirm(consts.get("sampleContainsItems"))) {
+                    orderNumber.setValue(manager.getSample().getOrderId());
+                    return;
+                }
+            }
+
+            manager.getSample().setOrderId(orderId);
+            
+            window.setBusy(consts.get("fetching"));
+            
             man = OrderManager.fetchById(orderId);
             if (!OrderManager.TYPE_SEND_OUT.equals(man.getOrder().getType())) {
                 orderNumber.addException(new LocalizedException("orderIdInvalidException"));                           
+                window.clearStatus();
                 return;
             }
         } catch (NotFoundException e) {                    
             orderNumber.addException(new LocalizedException("orderIdInvalidException"));
+            window.clearStatus();
             return;
         } catch (Exception ex) {
             Window.alert(ex.getMessage());
+            window.clearStatus();
             return;
         }
                                                        
-        if (sdwisOrderImport == null)
-            sdwisOrderImport = new SampleSDWISImportOrder();
-        
         try {
+            if (sdwisOrderImport == null)
+                sdwisOrderImport = new SampleSDWISImportOrder();
+            
             errors = sdwisOrderImport.importOrderInfo(orderId, manager);
-
             setDataInTabs();
             DataChangeEvent.fire(screen);
-
-            ArrayList<OrderTestViewDO> orderTests = sdwisOrderImport.getTestsFromOrder(orderId);
-
-            if (orderTests != null && orderTests.size() > 0) {
-                i = 0;
-                while (i < orderTests.size()) {
-                    orderTest = orderTests.get(i);
-                    if (!"Y".equals(orderTest.getIsActive())) {
-                        query = new Query();
-                        fields = new ArrayList<QueryData>();
-
-                        field = new QueryData();
-                        field.type = QueryData.Type.STRING;
-                        field.query = orderTest.getTestName();
-                        fields.add(field);
-                        
-                        field = new QueryData();
-                        field.type = QueryData.Type.STRING;
-                        field.query = orderTest.getMethodName();
-                        fields.add(field);
-                        
-                        query.setFields(fields);
-                        try {
-                            test = testService.call("fetchActiveByNameMethodName", query);
-                            orderTest.setTestId(test.getId());
-                            orderTest.setDescription(test.getDescription());
-                        } catch (NotFoundException nfE) {
-                            if (errors == null)
-                                errors = new ValidationErrorsList();
-                            errors.add(new FormErrorException("inactiveTestOnOrderException",
-                                                              orderTest.getTestName(),
-                                                              orderTest.getMethodName()));
-                            orderTests.remove(i);
-                            continue;
-                        } catch (Exception anyE) {
-                            anyE.printStackTrace();
-                            orderTests.remove(i);
-                            continue;
-                        }
-                    }
-                    i++;
-                }
+            window.clearStatus();
                 
-                ActionEvent.fire(screen, AnalysisTab.Action.ORDER_LIST_ADDED, orderTests);
-            }
-            
-            if (errors != null)
+            ActionEvent.fire(screen, AnalysisTab.Action.ORDER_LIST_ADDED, null);
+            if (errors != null && errors.size() > 0)
                 showErrors(errors);
 
-        } catch (NotFoundException e) {
-            // ignore
         } catch (Exception e) {
             Window.alert(e.getMessage());
+            window.clearStatus();
         }
     }
     
@@ -1540,6 +1518,16 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         KeyPressEvent.fireNativeEvent(event, currWidget);
     }
     
+    /**
+     * If the status of the sample showing on the screen is changed from Released to
+     * something else and on changing the state, the status stays Released and the
+     *  widgets in the tabs stay disabled. Also, if the status changes from something
+     * else to Released, the widgets are not disabled. This is because the data 
+     * in the tabs is set in their handlers of DataChangeEvent which is fired after
+     * StateChangeEvent and the handlers of the latter in the widgets are responsible
+     * for enabling or disabling the widgets. That is why we need to set the data
+     * in the tabs before changing the state.
+     */
     private void setDataInTabs() {
         treeTab.setData(manager);
         sdwisTab.setData(manager);

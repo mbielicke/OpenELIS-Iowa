@@ -127,7 +127,7 @@ public class OrderFillScreen extends Screen {
     private org.openelis.modules.report.client.ShippingReportScreen shippingReportScreen;  
 
     private boolean                            treeValid;
-    private Integer                            status_pending, status_processed;
+    private Integer                            statusPendingId, statusProcessedId;
     private HashMap<TableDataRow, OrderViewDO> orderMap;
     private HashMap<Integer, OrderManager>     combinedMap;
 
@@ -267,7 +267,7 @@ public class OrderFillScreen extends Screen {
                     process.enable(false);
 
                     list = new ArrayList<Integer>();
-                    list.add(status_pending);
+                    list.add(statusPendingId);
                     orderTable.setCell(0, 2, list);
                 }
             }
@@ -327,7 +327,7 @@ public class OrderFillScreen extends Screen {
                         }
                     }
                 } else {
-                    if (status_processed.equals(status) && OrderManager.TYPE_SEND_OUT.equals(type))
+                    if (statusProcessedId.equals(status) && OrderManager.TYPE_SEND_OUT.equals(type))
                         shippingInfo.enable(true);
                     else
                         shippingInfo.enable(false);
@@ -505,14 +505,15 @@ public class OrderFillScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         list = CategoryCache.getBySystemName("order_status");
-        for (DictionaryDO resultDO : list) {
+        for (DictionaryDO data : list) {
             //
-            // we're not showing recurring orders on this screen
+            // we're not showing recurring or on hold orders on this screen
             //
-            if ("order_status_recurring".equals(resultDO.getSystemName()))
+            if ("order_status_recurring".equals(data.getSystemName()) ||
+                            "order_status_on_hold".equals(data.getSystemName()))
                 continue;
-            row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
-            row.enabled = ("Y".equals(resultDO.getIsActive()));
+            row = new TableDataRow(data.getId(), data.getEntry());
+            row.enabled = ("Y".equals(data.getIsActive()));
             model.add(row);
         }
 
@@ -540,8 +541,8 @@ public class OrderFillScreen extends Screen {
         type.setModel(model);
 
         try {
-            status_pending = DictionaryCache.getIdBySystemName("order_status_pending");
-            status_processed = DictionaryCache.getIdBySystemName("order_status_processed");
+            statusPendingId = DictionaryCache.getIdBySystemName("order_status_pending");
+            statusProcessedId = DictionaryCache.getIdBySystemName("order_status_processed");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -618,7 +619,7 @@ public class OrderFillScreen extends Screen {
                 validateQuantityOnHand();
                 while (iter.hasNext()) {
                     man = combinedMap.get(iter.next());
-                    man.getOrder().setStatusId(status_processed);
+                    man.getOrder().setStatusId(statusProcessedId);
                     man = man.update();
                 }
                 shippingManager = getShippingManager(data);
@@ -1187,7 +1188,7 @@ public class OrderFillScreen extends Screen {
 
         shippingManager = null;
         if (OrderManager.TYPE_SEND_OUT.equals(data.getType()) &&
-            status_pending.equals(data.getStatusId())) {
+            statusPendingId.equals(data.getStatusId())) {
             shipping = new ShippingViewDO();
             shipping.setShippedFromId(data.getShipFromId());
             shipping.setShippedToId(data.getOrganizationId());

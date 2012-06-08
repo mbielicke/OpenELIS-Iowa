@@ -106,7 +106,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
 
     private void initialize() {
         treeTab = this;
-
+        
         itemsTree = (TreeWidget)def.getWidget("itemsTestsTree");
         treeUtil = new SampleTreeUtility(window, itemsTree, (Screen)parentScreen) {
             public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow,
@@ -126,7 +126,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
                 itemsTree.select(row);
                 itemsTree.scrollToVisible();
             }
-        };
+        };              
 
         treeUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
             public void onAction(ActionEvent<TestPrepUtility.Action> event) {                
@@ -331,7 +331,9 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
         parentScreen.addActionHandler(new ActionHandler() {
             public void onAction(ActionEvent event) {
                 TreeDataItem selected;
+                ArrayList<SampleDataBundle> bundles;
                 SampleDataBundle data;
+                ArrayList<OrderTestViewDO> orderTests;
                 
                 if (event.getAction() == SampleItemTab.Action.CHANGED) {
                     selected = itemsTree.getSelection();
@@ -354,9 +356,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
                 } else if (event.getAction() == AnalysisTab.Action.PANEL_ADDED) {
                     treeUtil.analysisTestChanged((Integer)event.getData(), true);
                 } else if(event.getAction() == AnalysisTab.Action.ORDER_LIST_ADDED) {
-                    itemsTree.select(0);
-                    treeUtil.onAddAnalysisButtonClick();
-                    treeUtil.importOrderTestList((ArrayList<OrderTestViewDO>)event.getData());
+                    treeUtil.importOrderCheckPrep();                   
                 } else if (event.getAction() == AnalysisTab.Action.CHANGED_DONT_CHECK_PREPS) {
                     selected = itemsTree.getSelection();
                     treeUtil.updateAnalysisRow(selected);
@@ -529,5 +529,9 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
             DataChangeEvent.fire(this);
 
         loaded = true;
+    }
+    
+    public SampleTreeUtility getTreeUtil() {
+        return treeUtil;
     }
 }

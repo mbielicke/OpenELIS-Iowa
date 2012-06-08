@@ -58,6 +58,6 @@ public class OrderTestAnalyteManagerProxy {
         return null;
     }
     
-    public void validate(OrderTestAnalyteManager man, OrderTestViewDO test) throws Exception {
+    public void validate(OrderTestAnalyteManager man, OrderTestViewDO test, int index) throws Exception {
     }
 }

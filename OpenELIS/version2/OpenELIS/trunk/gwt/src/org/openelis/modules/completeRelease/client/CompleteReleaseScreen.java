@@ -1835,6 +1835,16 @@ public class CompleteReleaseScreen extends Screen implements HasActionHandlers,
         }
     }
     
+    /**
+     * If the status of the sample showing on the screen is changed from Released to
+     * something else and on changing the state, the status stays Released and the
+     *  widgets in the tabs stay disabled. Also, if the status changes from something
+     * else to Released, the widgets are not disabled. This is because the data 
+     * in the tabs is set in their handlers of DataChangeEvent which is fired after
+     * StateChangeEvent and the handlers of the latter in the widgets are responsible
+     * for enabling or disabling the widgets. That is why we need to set the data
+     * in the tabs before changing the state.
+     */
     private void setDataInTabs() {
         String domain;
         

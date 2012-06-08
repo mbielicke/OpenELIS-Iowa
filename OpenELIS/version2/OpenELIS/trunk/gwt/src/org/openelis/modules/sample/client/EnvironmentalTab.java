@@ -84,6 +84,7 @@ public class EnvironmentalTab extends Screen {
                                            locationLookup;
     private CheckBox                       isHazardous;
     
+    private EnvironmentalTab               screen;
     private SampleLocationLookupScreen     locationScreen;
     private SampleOrganizationLookupScreen organizationScreen;
     private SampleProjectLookupScreen      projectScreen;
@@ -117,7 +118,9 @@ public class EnvironmentalTab extends Screen {
         initializeDropdowns();
     }
 
-    public void initialize() {        
+    public void initialize() {     
+        screen = this;
+        
         isHazardous = (CheckBox)def.getWidget(SampleMeta.getEnvIsHazardous());
         addScreenHandler(isHazardous, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -449,7 +452,8 @@ public class EnvironmentalTab extends Screen {
 
             public void onValueChange(ValueChangeEvent<String> event) {
                 TableDataRow row;
-                SampleOrganizationViewDO data;                              
+                SampleOrganizationViewDO data;    
+                OrganizationDO org;                
 
                 row = reportTo.getSelection();
                 try {
@@ -465,10 +469,9 @@ public class EnvironmentalTab extends Screen {
                         manager.getOrganizations().setReportTo(data);
                     }
 
-                    data.setOrganizationId((Integer)row.key);
-                    data.setOrganizationName((String)row.cells.get(0).value);
-                    data.setOrganizationCity((String)row.cells.get(2).value);
-                    data.setOrganizationState((String)row.cells.get(3).value);
+                    org = (OrganizationDO)row.data;
+                    if (org != null)
+                        getSampleOrganization(org, data);
 
                     reportTo.setSelection(data.getOrganizationId(), data.getOrganizationName());
 
@@ -515,10 +518,7 @@ public class EnvironmentalTab extends Screen {
                                 data = new SampleOrganizationViewDO();
                                 man.setReportTo(data);                                
                             }
-                            data.setOrganizationId(prevData.getOrganizationId());
-                            data.setOrganizationName(prevData.getOrganizationName());
-                            data.setOrganizationCity(prevData.getOrganizationCity());
-                            data.setOrganizationState(prevData.getOrganizationState());
+                            getSampleOrganization(prevData, data);
                             reportTo.setSelection(data.getOrganizationId(), data.getOrganizationName());     
                         }                        
                     } catch (Exception e) {
@@ -557,31 +557,30 @@ public class EnvironmentalTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow;
-                SampleOrganizationViewDO billToOrg;
+                TableDataRow row;
+                SampleOrganizationViewDO data;
+                OrganizationDO org;
 
-                selectedRow = billTo.getSelection();
+                row = billTo.getSelection();
 
                 try {
-                    if (selectedRow == null || selectedRow.key == null) {
+                    if (row == null || row.key == null) {
                         manager.getOrganizations().removeBillTo();
                         billTo.setSelection(null, "");
                         return;
                     }
 
-                    billToOrg = manager.getOrganizations().getBillTo();
-                    if (billToOrg == null) {
-                        billToOrg = new SampleOrganizationViewDO();
-                        manager.getOrganizations().setBillTo(billToOrg);
+                    data = manager.getOrganizations().getBillTo();
+                    if (data == null) {
+                        data = new SampleOrganizationViewDO();
+                        manager.getOrganizations().setBillTo(data);
                     }
 
-                    billToOrg.setOrganizationId((Integer)selectedRow.key);
-                    billToOrg.setOrganizationName((String)selectedRow.cells.get(0).value);
-                    billToOrg.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                    billToOrg.setOrganizationState((String)selectedRow.cells.get(3).value);
-
-                    billTo.setSelection(billToOrg.getOrganizationId(),
-                                        billToOrg.getOrganizationName());
+                    org = (OrganizationDO)row.data;
+                    if (org != null)
+                        getSampleOrganization(org, data);
+                    
+                    billTo.setSelection(data.getOrganizationId(), data.getOrganizationName());
 
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
@@ -624,10 +623,7 @@ public class EnvironmentalTab extends Screen {
                                 data = new SampleOrganizationViewDO();
                                 man.setBillTo(data);                                
                             }
-                            data.setOrganizationId(prevData.getOrganizationId());
-                            data.setOrganizationName(prevData.getOrganizationName());
-                            data.setOrganizationCity(prevData.getOrganizationCity());
-                            data.setOrganizationState(prevData.getOrganizationState());
+                            getSampleOrganization(prevData, data);
                             billTo.setSelection(data.getOrganizationId(), data.getOrganizationName());     
                         }                        
                     } catch (Exception e) {
@@ -751,6 +747,7 @@ public class EnvironmentalTab extends Screen {
                 data = list.get(i);
 
                 row.key = data.getId();
+                row.data = data;
                 row.cells.get(0).value = data.getName();
                 row.cells.get(1).value = data.getAddress().getStreetAddress();
                 row.cells.get(2).value = data.getAddress().getCity();
@@ -769,12 +766,11 @@ public class EnvironmentalTab extends Screen {
     private void onProjectLookupClick() {
         try {
             if (projectScreen == null) {
-                final EnvironmentalTab env = this;
                 projectScreen = new SampleProjectLookupScreen();
                 projectScreen.addActionHandler(new ActionHandler<SampleProjectLookupScreen.Action>() {
                     public void onAction(ActionEvent<SampleProjectLookupScreen.Action> event) {
                         if (event.getAction() == SampleProjectLookupScreen.Action.OK) {
-                            DataChangeEvent.fire(env, project);
+                            DataChangeEvent.fire(screen, project);
                         }
                     }
                 });
@@ -797,14 +793,13 @@ public class EnvironmentalTab extends Screen {
     private void onOrganizationLookupClick() {
         try {
             if (organizationScreen == null) {
-                final EnvironmentalTab env = this;
                 organizationScreen = new SampleOrganizationLookupScreen();
 
                 organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationLookupScreen.Action>() {
                     public void onAction(ActionEvent<SampleOrganizationLookupScreen.Action> event) {
                         if (event.getAction() == SampleOrganizationLookupScreen.Action.OK) {
-                            DataChangeEvent.fire(env, reportTo);
-                            DataChangeEvent.fire(env, billTo);
+                            DataChangeEvent.fire(screen, reportTo);
+                            DataChangeEvent.fire(screen, billTo);
                         }
                     }
                 });
@@ -827,13 +822,12 @@ public class EnvironmentalTab extends Screen {
     private void onLocationLookupClick() {
         try {
             if (locationScreen == null) {
-                final EnvironmentalTab env = this;
                 locationScreen = new SampleLocationLookupScreen();
 
                 locationScreen.addActionHandler(new ActionHandler<SampleLocationLookupScreen.Action>() {
                     public void onAction(ActionEvent<SampleLocationLookupScreen.Action> event) {
                         if (event.getAction() == SampleLocationLookupScreen.Action.OK) {
-                            DataChangeEvent.fire(env, location);
+                            DataChangeEvent.fire(screen, location);
                         }
                     }
                 });
@@ -922,5 +916,30 @@ public class EnvironmentalTab extends Screen {
         
         event = Document.get().createKeyPressEvent(false, false, false, false, KeyCodes.KEY_TAB, KeyCodes.KEY_TAB);        
         KeyPressEvent.fireNativeEvent(event, currWidget);
+    }
+    
+    private void getSampleOrganization(OrganizationDO org, SampleOrganizationViewDO data) {
+        AddressDO addr;
+        
+        addr = org.getAddress();
+        data.setOrganizationId(org.getId());
+        data.setOrganizationName(org.getName());
+        data.setOrganizationMultipleUnit(addr.getMultipleUnit());
+        data.setOrganizationStreetAddress(addr.getStreetAddress());
+        data.setOrganizationCity(addr.getCity());
+        data.setOrganizationState(addr.getState());
+        data.setOrganizationZipCode(addr.getZipCode());
+        data.setOrganizationCountry(addr.getCountry());
+    }
+    
+    private void getSampleOrganization(SampleOrganizationViewDO prevData, SampleOrganizationViewDO data) {
+        data.setOrganizationId(prevData.getOrganizationId());
+        data.setOrganizationName(prevData.getOrganizationName());
+        data.setOrganizationMultipleUnit(prevData.getOrganizationMultipleUnit());
+        data.setOrganizationStreetAddress(prevData.getOrganizationStreetAddress());
+        data.setOrganizationCity(prevData.getOrganizationCity());
+        data.setOrganizationState(prevData.getOrganizationState());
+        data.setOrganizationZipCode(prevData.getOrganizationZipCode());
+        data.setOrganizationCountry(prevData.getOrganizationCountry());
     }
 }

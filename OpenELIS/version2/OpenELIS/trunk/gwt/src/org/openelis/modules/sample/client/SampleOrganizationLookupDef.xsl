@@ -47,14 +47,14 @@
       <VerticalPanel padding="0" spacing="0">
         <TablePanel padding="0" spacing="0">
           <row>
-            <table key="sampleOrganizationTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">
+            <table key="sampleOrganizationTable" width="800" maxRows="10" showScroll="ALWAYS" tab="sampleOrganizationTable,sampleOrganizationTable" title="">
               <col width="125" header="{resource:getString($constants,'type')}">
                 <dropdown width="125" field="Integer" required="true"/>
               </col>
               <col width="180" header="{resource:getString($constants,'attention')}">
               	<textbox case = "UPPER" field="String"/>
               </col>
-              <col width="220" header="Name">
+              <col width="220" header="{resource:getString($constants,'name')}">
                 <autoComplete width="130" case="UPPER" field="Integer" required="true">
                   <col width="200" header="{resource:getString($constants,'name')}" />
                   <col width="130" header="{resource:getString($constants,'street')}" />
@@ -62,11 +62,23 @@
                   <col width="20" header="{resource:getString($constants,'st')}" />
                 </autoComplete>
               </col>
+              <col width="130" header="{resource:getString($constants,'aptSuite')}">
+                <label field="String" />
+              </col>
+              <col width="130" header="{resource:getString($constants,'address')}">
+                <label field="String" />
+              </col>
               <col width="110" header="{resource:getString($constants,'city')}">
                 <label field="String" />
               </col>
               <col width="55" header="{resource:getString($constants,'state')}">
+                <dropdown width = "40" field="String" />
+              </col>
+              <col width="70" header="{resource:getString($constants,'zipcode')}">
                 <label field="String" />
+              </col>
+              <col width="126" header="{resource:getString($constants,'country')}">
+                <dropdown width="110" field="String" />
               </col>
             </table>
           </row>
