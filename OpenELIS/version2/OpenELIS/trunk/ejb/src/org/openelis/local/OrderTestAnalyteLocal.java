@@ -48,5 +48,5 @@ public interface OrderTestAnalyteLocal {
     
     public void deleteByOrderTestId(Integer id) throws Exception;
     
-    public void validate(OrderTestAnalyteViewDO data) throws Exception;
+    public void validate(OrderTestAnalyteViewDO data, int index) throws Exception;
 }

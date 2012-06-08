@@ -36,36 +36,48 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
-import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderContainerDO;
-import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderRecurrenceDO;
-import org.openelis.domain.OrderTestViewDO;
-import org.openelis.domain.OrderViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.OrderManagerLocal;
+import org.openelis.local.OrderRecurrenceLocal;
 import org.openelis.local.OrderRecurrenceReportLocal;
-import org.openelis.manager.AuxDataManager;
-import org.openelis.manager.NoteManager;
-import org.openelis.manager.OrderContainerManager;
-import org.openelis.manager.OrderItemManager;
-import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderTestManager;
-import org.openelis.utils.EJBFactory;
+import org.openelis.remote.OrderRecurrenceReportRemote;
+import org.openelis.report.Prompt;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
+public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal, OrderRecurrenceReportRemote {
     
     @EJB
-    private DictionaryLocal     dictionary;
+    private DictionaryLocal      dictionary;
 
-    private static Integer      daysId, monthsId, yearsId, pendingId;
+    @EJB
+    private OrderRecurrenceLocal orderRecurrence;
+
+    @EJB
+    private OrderManagerLocal    orderManager;
+
+    private static Integer      daysId, monthsId, yearsId;
 
     private static final Logger log = Logger.getLogger(OrderRecurrenceReportBean.class);
+    
+    public ArrayList<Prompt> getPrompts() throws Exception {
+        ArrayList<Prompt> p;
+
+        try {
+            p = new ArrayList<Prompt>();
+
+            p.add(new Prompt("PRESS_BUTTON", Prompt.Type.STRING).setPrompt("Press the button:")
+                                                          .setWidth(200));
+            return p;
+        } catch (Exception e) {
+            log.error(e);
+            throw e;
+        }
+    }
     
     @PostConstruct
     public void init() {
@@ -74,7 +86,6 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
                 daysId = dictionary.fetchBySystemName("order_recurrence_unit_days").getId();
                 monthsId = dictionary.fetchBySystemName("order_recurrence_unit_months").getId();
                 yearsId = dictionary.fetchBySystemName("order_recurrence_unit_years").getId();
-                pendingId = dictionary.fetchBySystemName("order_status_pending").getId();
             } catch (Throwable e) {
                 log.error("Failed to lookup constants for dictionary entries", e);
             }
@@ -87,20 +98,16 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
     @Asynchronous
     @TransactionTimeout(600)    
     public void recurOrders() {
-        Integer id;
-        Datetime now, today;
+        Datetime today;
         Calendar cal;
-        OrderManager man, nom;
         ArrayList<OrderRecurrenceDO> list;
 
-        now = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
-        today = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
         cal = Calendar.getInstance();
+        today = Datetime.getInstance(Datetime.YEAR, Datetime.DAY);
         cal.setTime(today.getDate());
-        id = null;
         
         try {
-            list = EJBFactory.getOrderRecurrence().fetchActiveList();
+            list = orderRecurrence.fetchActiveList();
         } catch (NotFoundException e) {
             log.debug("No recurring orders found", e);
             return;
@@ -110,19 +117,15 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
         }        
 
         for (OrderRecurrenceDO data : list) {
-            id = data.getOrderId();
             try {
-                man = OrderManager.fetchById(id);
                 /*
                  * we need to make sure that the order can be recurred today
                  * before creating a new one from it
                  */
-                if (recurs(cal, data)) {
-                    nom = getOrderManager(man, now, today);
-                    nom.add();
-                }
+                if (recurs(cal, data)) 
+                    orderManager.recur(data.getOrderId());                
             } catch (Exception e) {                
-                log.error("Failed to recur order: "+ id.toString(), e);
+                log.error("Failed to recur order: "+ data.getOrderId().toString(), e);
             }
         }
     }
@@ -154,130 +157,5 @@ public class OrderRecurrenceReportBean implements OrderRecurrenceReportLocal {
         }
         
         return false;
-    }
-    
-    /** 
-     * Creates a new OrderManager from "man" without the data from OrderFillManager   
-     */
-    private OrderManager getOrderManager(OrderManager man, Datetime now, Datetime today) throws Exception {
-        OrderManager nom;
-        
-        nom = OrderManager.getInstance();        
-        fillOrder(man.getOrder(), nom.getOrder(), today);         
-        fillItemManager(man.getItems(), nom.getItems());        
-        fillNoteManager(man.getShippingNotes(), nom.getShippingNotes(), now);
-        fillNoteManager(man.getCustomerNotes(), nom.getCustomerNotes(), now);
-        fillTestManager(man.getTests(), nom.getTests());
-        fillContainerManager(man.getContainers(), nom.getContainers());
-        fillAuxDataManager(man.getAuxData(), nom.getAuxData());
-        
-        return nom;
-    }        
-
-    /**
-     * Fills a new OrderViewDO (ndata) with the data in an existing one (data) 
-     */
-    private void fillOrder(OrderViewDO data, OrderViewDO ndata, Datetime today) {               
-        ndata.setParentOrderId(data.getId());
-        ndata.setDescription(data.getDescription());
-        ndata.setStatusId(pendingId);
-        ndata.setOrderedDate(today);
-        ndata.setNeededInDays(data.getNeededInDays());
-        ndata.setRequestedBy(data.getRequestedBy());
-        ndata.setCostCenterId(data.getCostCenterId());
-        ndata.setOrganizationId(data.getOrganizationId());
-        ndata.setOrganizationAttention(data.getOrganizationAttention());
-        ndata.setType(data.getType());
-        ndata.setExternalOrderNumber(data.getExternalOrderNumber());
-        ndata.setShipFromId(data.getShipFromId());   
-        ndata.setNumberOfForms(data.getNumberOfForms());
-    }
-    
-    /**
-     * Fills a new OrderItemManager (nim) with the data in an existing one (man) 
-     */
-    private void fillItemManager(OrderItemManager man, OrderItemManager nim)  {        
-        OrderItemViewDO data, ndata;
-        
-        for (int i = 0; i < man.count(); i++) {
-            data = man.getItemAt(i);
-            ndata = new OrderItemViewDO();
-            ndata.setInventoryItemId(data.getInventoryItemId());
-            ndata.setQuantity(data.getQuantity());
-            ndata.setCatalogNumber(data.getCatalogNumber());
-            ndata.setUnitCost(data.getUnitCost());
-            nim.addItem(ndata);
-        }
-    }
-    
-    /**
-     * Fills a new NoteManager (nnm) with the data in an existing one (man) 
-     */
-    private void fillNoteManager(NoteManager man, NoteManager nnm, Datetime now) throws Exception {
-        NoteViewDO data, ndata;
-        
-        for (int i = 0; i < man.count(); i++) {
-            data = man.getNoteAt(i);
-            ndata = new NoteViewDO();
-            ndata.setTimestamp(now);
-            ndata.setIsExternal(data.getIsExternal());
-            ndata.setSystemUserId(data.getSystemUserId());
-            ndata.setSubject(data.getSubject());
-            ndata.setText(data.getText());            
-            nnm.addNote(ndata);
-        }
-    }
-    
-    /**
-     * Fills a new OrderTestManager (notm) with the data in an existing one (man) 
-     */
-    private void fillTestManager(OrderTestManager man, OrderTestManager notm) {
-        OrderTestViewDO data, ndata;
-        
-        for (int i = 0; i < man.count(); i++) {
-            data = man.getTestAt(i);
-            ndata = new OrderTestViewDO();
-            ndata.setSortOrder(data.getSortOrder());
-            ndata.setTestId(data.getTestId());            
-            ndata.setTestName(data.getTestName());
-            ndata.setMethodName(data.getMethodName());
-            ndata.setDescription(data.getDescription());
-            ndata.setIsActive(data.getIsActive());
-            notm.addTest(ndata);
-        }
-    }
-    
-    /**
-     * Fills a new OrderContainerManager (nocm) with the data in an existing one (man) 
-     */
-    private void fillContainerManager(OrderContainerManager man, OrderContainerManager nocm) {
-        OrderContainerDO data, ndata;
-        
-        for (int i = 0; i < man.count(); i++) {
-            data = man.getContainerAt(i);
-            ndata = new OrderContainerDO();
-            ndata.setContainerId(data.getContainerId());
-            ndata.setItemSequence(data.getItemSequence());
-            ndata.setTypeOfSampleId(data.getTypeOfSampleId());            
-            nocm.addContainer(ndata);
-        }
-    }
-    
-    /**
-     * Fills a new AuxDataManager (nadm) with the data in an existing one (man) 
-     */
-    private void fillAuxDataManager(AuxDataManager man, AuxDataManager nadm) {
-        AuxDataViewDO data, ndata;
-        
-        for (int i = 0; i < man.count(); i++) {
-            data = man.getAuxDataAt(i);
-            ndata = new AuxDataViewDO();
-            ndata.setSortOrder(data.getSortOrder());
-            ndata.setAuxFieldId(data.getAuxFieldId());
-            ndata.setIsReportable(data.getIsReportable());
-            ndata.setTypeId(data.getTypeId());
-            ndata.setValue(data.getValue());
-            nadm.addAuxData(ndata);
-        }
     }
 }

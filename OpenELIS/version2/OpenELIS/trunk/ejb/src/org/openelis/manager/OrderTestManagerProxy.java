@@ -28,7 +28,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.domain.OrderTestViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderTestAnalyteLocal;
 import org.openelis.local.OrderTestLocal;
@@ -122,14 +121,14 @@ public class OrderTestManagerProxy {
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getTestAt(i);
             try {
-                tl.validate(data);
+                tl.validate(data, i+1);
             } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "orderTestTree", i);
+                list.add(e);
             }
             
             try {
                 if (man.items.get(i).analytes != null)
-                    man.getAnalytesAt(i).validate(data);
+                    man.getAnalytesAt(i).validate(data, i+1);
             } catch (Exception e) {
                 list.add(e);
             }

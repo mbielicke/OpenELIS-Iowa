@@ -42,7 +42,6 @@ import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderTestLocal;
-import org.openelis.meta.OrderMeta;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -112,14 +111,20 @@ public class OrderTestBean implements OrderTestLocal {
             manager.remove(entity);
     }
     
-    public void validate(OrderTestViewDO data) throws Exception {
+    public void validate(OrderTestViewDO data, int index) throws Exception {
         ValidationErrorsList list;
+        String indexStr;
 
         list = new ValidationErrorsList();
+        indexStr = String.valueOf(index);
         if (data.getTestId() == null)
-            list.add(new FieldErrorException("fieldRequiredException",
-                                             OrderMeta.getTestName()));        
+            list.add(new FieldErrorException("testNameRequiredException", null, indexStr));        
         
+        if (data.getItemSequence() == null)
+            list.add(new FieldErrorException("itemNumRequiredException", null, indexStr));
+        else if (data.getItemSequence() < 0)
+            list.add(new FieldErrorException("itemNumCantBeNegativeException", null, indexStr));
+               
         if (list.size() > 0)
             throw list;
     }

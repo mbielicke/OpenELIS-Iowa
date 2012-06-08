@@ -124,10 +124,10 @@ public class OrderContainerBean implements OrderContainerLocal {
         num = data.getItemSequence();
         if (num == null) {
             list.add(new FieldErrorException("fieldRequiredException",
-                                             OrderMeta.getContainerNumberOfContainers()));
+                                             OrderMeta.getContainerItemSequence()));
         } else if(num > MAX_QUANTITY) {
             list.add(new FieldErrorException("qtyNotMoreThanMaxException",
-                                             OrderMeta.getContainerNumberOfContainers(), MAX_QUANTITY.toString()));            
+                                             OrderMeta.getContainerItemSequence(), MAX_QUANTITY.toString()));            
         }
         
         if (list.size() > 0)

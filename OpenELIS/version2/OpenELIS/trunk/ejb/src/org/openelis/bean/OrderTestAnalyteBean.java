@@ -38,7 +38,9 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OrderTestAnalyteViewDO;
 import org.openelis.entity.OrderTestAnalyte;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.OrderTestAnalyteLocal;
 
 @Stateless
@@ -143,6 +145,20 @@ public class OrderTestAnalyteBean implements OrderTestAnalyteLocal {
         }
     }
 
-    public void validate(OrderTestAnalyteViewDO data) throws Exception {
+    public void validate(OrderTestAnalyteViewDO data, int index) throws Exception {
+        String indexStr;
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
+        indexStr = String.valueOf(index);
+        if ("N".equals(data.getTestAnalyteIsPresent()) && "Y".equals(data.getTestAnalyteIsReportable()))
+            /*
+             * this analyte is not present in the original test thus it needs
+             * to be removed from this order test 
+             */
+            list.add(new FieldErrorException("analyteNotPresentInTestException", null, indexStr, data.getAnalyteName()));            
+        
+        if (list.size() > 0)
+            throw list;
     }
 }

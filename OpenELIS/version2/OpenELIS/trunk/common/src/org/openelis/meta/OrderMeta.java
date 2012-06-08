@@ -109,11 +109,12 @@ public class OrderMeta implements Meta, MetaMap {
 	                               CONT_ID = "_orderContainer.id",
 	                               CONT_ORDER_ID = "_orderContainer.orderId",
 	                               CONT_CONTAINER_ID = "_orderContainer.containerId",
-	                               CONT_NUMBER_OF_CONTAINERS = "_orderContainer.numberOfContainers",
+	                               CONT_ITEM_SEQUENCE = "_orderContainer.numberOfContainers",
 	                               CONT_TYPE_OF_SAMPLE_ID = "_orderContainer.typeOfSampleId",
 	                               
 	                               TEST_ID = "_orderTest.id",
 	                               TEST_ORDER_ID = "_orderTest.orderId",
+	                               TEST_ITEM_SEQUENCE = "_orderTest.itemSequence",
 	                               TEST_SORT_ORDER = "_orderTest.sortOrder",
 	                               TEST_REFERENCE_ID = "_orderTest.referenceId",
 	                               TEST_REFERENCE_TABLE_ID = "_orderTest.referenceTableId",
@@ -182,10 +183,10 @@ public class OrderMeta implements Meta, MetaMap {
                                                   RCPT_UPC,                                                
                                                   
                                                   CONT_ID, CONT_ORDER_ID, CONT_CONTAINER_ID,
-                                                  CONT_NUMBER_OF_CONTAINERS, CONT_TYPE_OF_SAMPLE_ID,
+                                                  CONT_ITEM_SEQUENCE, CONT_TYPE_OF_SAMPLE_ID,
                                                   
-                                                  TEST_ID, TEST_ORDER_ID, TEST_SORT_ORDER, TEST_REFERENCE_ID,
-                                                  TEST_REFERENCE_TABLE_ID,
+                                                  TEST_ID, TEST_ORDER_ID, TEST_ITEM_SEQUENCE, TEST_SORT_ORDER,
+                                                  TEST_REFERENCE_ID, TEST_REFERENCE_TABLE_ID,
                                                   
                                                   AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID, AUX_DATA_REFERENCE_ID,
                                                   AUX_DATA_REFERENCE_TABLE_ID, AUX_DATA_IS_REPORTABLE,
@@ -467,8 +468,8 @@ public class OrderMeta implements Meta, MetaMap {
         return CONT_CONTAINER_ID;
     }
     
-    public static String getContainerNumberOfContainers() {
-        return CONT_NUMBER_OF_CONTAINERS;
+    public static String getContainerItemSequence() {
+        return CONT_ITEM_SEQUENCE;
     }
     
     public static String getContainerTypeOfSampleId() {
@@ -481,6 +482,10 @@ public class OrderMeta implements Meta, MetaMap {
     
     public static String getTestOrderId() {
         return TEST_ORDER_ID;
+    }
+    
+    public static String getTestItemSequence() {
+        return TEST_ITEM_SEQUENCE;    
     }
     
     public static String getTestSortOrder() {

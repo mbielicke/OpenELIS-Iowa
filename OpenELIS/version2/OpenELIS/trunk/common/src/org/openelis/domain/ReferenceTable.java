@@ -133,5 +133,6 @@ public class ReferenceTable {
                             ORDER_RECURRENCE =              108,
     						CRON =                          109,
     						ORDER_ORGANIZATION =            110,
-                            ORDER_TEST_ANALYTE =               111;  
+                            ORDER_TEST_ANALYTE =            111,
+                            ORDER_SAMPLE_NOTE =             112;  
 }

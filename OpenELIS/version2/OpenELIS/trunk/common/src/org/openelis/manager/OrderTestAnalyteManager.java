@@ -100,8 +100,8 @@ public class OrderTestAnalyteManager implements RPC {
         return proxy().update(this);
     }
 
-    public void validate(OrderTestViewDO test) throws Exception {
-        proxy().validate(this, test);
+    public void validate(OrderTestViewDO test, int index) throws Exception {
+        proxy().validate(this, test, index);
     }
 
     // friendly methods used by managers and proxies

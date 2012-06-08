@@ -39,8 +39,6 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.OrganizationViewDO;
 import org.openelis.entity.Order;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -102,8 +100,9 @@ public class OrderBean implements OrderRemote, OrderLocal {
         query = manager.createNamedQuery("Order.FetchByShippingItemId");
         query.setParameter("id", id);
         try {
-            data = (OrderViewDO)query.getSingleResult();          
-            data.setOrganization(organization.fetchById(data.getOrganizationId()));
+            data = (OrderViewDO)query.getSingleResult();         
+            if (data.getOrganizationId() != null)
+                data.setOrganization(organization.fetchById(data.getOrganizationId()));
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -191,7 +190,8 @@ public class OrderBean implements OrderRemote, OrderLocal {
         try {
             for (int i = 0; i < list.size(); i++ ) {
                 data = (OrderViewDO)list.get(i);
-                data.setOrganization(organization.fetchById(data.getOrganizationId()));
+                if (data.getOrganizationId() != null)
+                    data.setOrganization(organization.fetchById(data.getOrganizationId()));
             }
             return DataBaseUtil.toArrayList(list);
         } catch (NoResultException e) {            
@@ -262,9 +262,16 @@ public class OrderBean implements OrderRemote, OrderLocal {
         if (DataBaseUtil.isEmpty(data.getNeededInDays()))
             list.add(new FieldErrorException("fieldRequiredException", OrderMeta.getNeededInDays()));
         
-        if ("S".equals(data.getType()) && DataBaseUtil.isEmpty(data.getNumberOfForms()))
-            list.add(new FieldErrorException("fieldRequiredException", OrderMeta.getNumberOfForms()));
-
+        if ("S".equals(data.getType())) { 
+            if (data.getNumberOfForms() == null)
+               list.add(new FieldErrorException("fieldRequiredException", OrderMeta.getNumberOfForms()));
+            
+            if (data.getShipFromId() == null)
+                list.add(new FieldErrorException("fieldRequiredException", OrderMeta.getShipFromId()));
+            
+            if (data.getCostCenterId() == null)
+                list.add(new FieldErrorException("fieldRequiredException", OrderMeta.getCostCenterId()));
+        }
         if (list.size() > 0)
             throw list;
     }
