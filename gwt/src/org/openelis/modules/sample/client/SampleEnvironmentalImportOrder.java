@@ -37,25 +37,21 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.DateField;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 
 public class SampleEnvironmentalImportOrder extends ImportOrder {
-    protected static final String  PROJECT_SERVICE_URL  = "org.openelis.modules.project.server.ProjectService";
-    protected ScreenService        projectService;
-
-    public SampleEnvironmentalImportOrder() {
-        projectService = new ScreenService("controller?service=" + PROJECT_SERVICE_URL);
+    
+    public SampleEnvironmentalImportOrder() throws Exception {
     }
     
     public ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager) throws Exception {
         return super.importOrderInfo(orderId, manager, "sample_env_aux_data");
-    }
+    }   
 
-    protected ValidationErrorsList importData(ArrayList<AuxDataViewDO> auxDataList,
-                                            Integer envAuxGroupId, SampleManager manager) throws Exception {
+    protected void loadFieldsFromAuxData(ArrayList<AuxDataViewDO> auxDataList, Integer envAuxGroupId,
+                                         SampleManager manager, ValidationErrorsList errors) throws Exception {
         AuxDataViewDO data;
         String analyteId;        
         SampleDO sample;
@@ -64,9 +60,7 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
         SampleEnvironmentalDO env;
         AddressDO locAddr;
         DateField df;
-        ValidationErrorsList errorsList;
 
-        errorsList = new ValidationErrorsList();
         sample = manager.getSample();
         env = ((SampleEnvironmentalManager)manager.getDomainManager()).getEnvironmental();
         locAddr = env.getLocationAddress();
@@ -75,7 +69,7 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
             data = auxDataList.get(i);
             try {
                 if ( !data.getGroupId().equals(envAuxGroupId)) {
-                    saveAuxData(data, errorsList, manager);
+                    saveAuxData(data, errors, manager);
                     continue;
                 }
                 analyteId = data.getAnalyteExternalId();
@@ -110,18 +104,18 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
                 } else if ("loc_city".equals(analyteId)) {
                     locAddr.setCity(data.getValue());
                 } else if ("loc_state".equals(analyteId)) {
-                    if (getDropdownByValue(data.getValue(), "state") != null)
+                    if (getDictionaryByEntry(data.getValue(), "state") != null)
                         locAddr.setState(data.getValue());
                     else if (data.getValue() != null)
-                        errorsList.add(new FormErrorException("orderImportError", "state",
+                        errors.add(new FormErrorException("orderImportError", "state",
                                                               data.getValue()));
                 } else if (analyteId.equals("loc_zip_code")) {
                     locAddr.setZipCode(data.getValue());
                 } else if ("loc_country".equals(analyteId)) {
-                    if (getDropdownByValue(data.getValue(), "country") != null)
+                    if (getDictionaryByEntry(data.getValue(), "country") != null)
                         locAddr.setCountry(data.getValue());
                     else if (data.getValue() != null)
-                        errorsList.add(new FormErrorException("orderImportError", "country",
+                        errors.add(new FormErrorException("orderImportError", "country",
                                                               data.getValue()));
                 } else if ("priority".equals(analyteId)) {
                     env.setPriority(new Integer(data.getValue()));
@@ -140,19 +134,15 @@ public class SampleEnvironmentalImportOrder extends ImportOrder {
 
                         manager.getProjects().addFirstPermanentProject(smplProj);
 
-                    } else
-                        errorsList.add(new FormErrorException("orderImportError", "project",
+                    } else {
+                        errors.add(new FormErrorException("orderImportError", "project",
                                                               data.getValue()));
+                    }
                 }
 
             } catch (Exception e) {
                 // problem with aux input, ignore
             }
         }
-
-        if (errorsList.size() > 0)
-            return errorsList;
-
-        return null;
     }
 }

@@ -27,17 +27,12 @@ package org.openelis.modules.order.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.AuxFieldValueViewDO;
-import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.IdVO;
 import org.openelis.domain.OrderContainerDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderOrganizationViewDO;
@@ -47,10 +42,8 @@ import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ShippingViewDO;
-import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
@@ -73,6 +66,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -86,8 +80,7 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.AuxDataManager;
-import org.openelis.manager.AuxFieldManager;
+import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.manager.OrderContainerManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
@@ -95,11 +88,11 @@ import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.meta.OrderMeta;
+import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.report.orderRequestForm.client.OrderRequestFormReportScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
 import org.openelis.modules.shipping.client.ShippingScreen;
-import org.openelis.utilcommon.ResultValidator;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -138,7 +131,7 @@ public class SendoutOrderScreen extends Screen {
     private AppButton                              queryButton, previousButton, nextButton,
                                                    addButton, updateButton, commitButton,
                                                    abortButton;
-    private MenuItem                               duplicate, shippingInfo, orderRequestForm, process,
+    private MenuItem                               duplicate, shippingInfo, orderRequestForm,
                                                    orderHistory, organizationHistory, itemHistory, testHistory,
                                                    containerHistory;
     private TextBox                                id, neededInDays, numberOfForms, requestedBy,
@@ -155,18 +148,14 @@ public class SendoutOrderScreen extends Screen {
     private ShippingManager                        shippingManager;
     private ShippingScreen                         shippingScreen;
     private OrderRequestFormReportScreen           requestformReportScreen;
+    private TestContainerPopoutUtil                popoutUtil;
     
     private Integer                                statusPendingId, statusRecurringId,
-                                                   statusProcessedId, auxAlphaLowerId,
-                                                   auxAlphaMixedId, auxAlphaUpperId, 
-                                                   auxDateId, auxDateTimeId, auxDefaultId,
-                                                   auxDictionaryId, auxNumericId,
-                                                   auxTimeId;
+                                                   statusProcessedId, statusOnHoldId;
+                                                  
     private String                                 descQuery;
     
-    private HashMap<Integer, ResultValidator.Type> types;
-
-    protected ScreenService                        organizationService, panelService, shippingService;
+    protected ScreenService                        organizationService, shippingService, panelService;
 
     private enum Tabs {
         ORGANIZATION, AUX_DATA,TEST, CONTAINER, ITEM, SHIP_NOTE, CUSTOMER_NOTE,
@@ -189,8 +178,8 @@ public class SendoutOrderScreen extends Screen {
     private void SendoutOrderScreenImpl() throws Exception {
         service = new ScreenService("controller?service=org.openelis.modules.order.server.OrderService");
         organizationService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
-        panelService = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         shippingService = new ScreenService("controller?service=org.openelis.modules.shipping.server.ShippingService");
+        panelService  = new ScreenService("controller?service=org.openelis.modules.panel.server.PanelService");
         
         userPermission = UserCache.getPermission();
         userModulePermission = userPermission.getModule("sendoutorder");
@@ -346,8 +335,9 @@ public class SendoutOrderScreen extends Screen {
                 shippingInfo();
             }
 
-            public void onStateChange(StateChangeEvent<State> event) {                
-                shippingInfo.enable(false);
+            public void onStateChange(StateChangeEvent<State> event) {  
+                shippingInfo.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
+                                    statusProcessedId.equals(manager.getOrder().getStatusId()));
             }
         });
         
@@ -360,18 +350,7 @@ public class SendoutOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {                
                 orderRequestForm.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
-        });
-        
-        process = (MenuItem)def.getWidget("process");
-        addScreenHandler(process, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                process();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {               
-                process.enable(false);
-            }
-        });
+        });       
 
         orderHistory = (MenuItem)def.getWidget("orderHistory");
         addScreenHandler(orderHistory, new ScreenEventHandler<Object>() {
@@ -599,23 +578,64 @@ public class SendoutOrderScreen extends Screen {
         statusId = (Dropdown)def.getWidget(OrderMeta.getStatusId());
         addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                Integer id;
-                
-                id = manager.getOrder().getStatusId();
-                statusId.setSelection(id);
-                
-                shippingInfo.enable(state == State.DISPLAY && statusProcessedId.equals(id));
-                process.enable(state == State.DISPLAY && statusPendingId.equals(id) && 
-                               userModulePermission.hasUpdatePermission());
+                statusId.setSelection(manager.getOrder().getStatusId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getOrder().setStatusId(event.getValue());
+                try {
+                    /*
+                     * only orders with no items can be set as "processed" here
+                     */
+                    if (!statusProcessedId.equals(event.getValue()) || manager.getItems().count() == 0) {
+                        manager.getOrder().setStatusId(event.getValue());
+                     } else {
+                        statusId.setValue(manager.getOrder().getStatusId());
+                        Window.alert(consts.get("onlyProcessOrdersWithNoItems"));
+                     }
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                statusId.enable(EnumSet.of(State.QUERY).contains(event.getState()));
-                statusId.setQueryMode(event.getState() == State.QUERY);
+                Integer status;
+
+                ArrayList<TableDataRow> model;
+
+                status = manager.getOrder().getStatusId();
+
+                if ( (event.getState() != State.ADD && event.getState() != State.UPDATE)) {
+                    statusId.setQueryMode(event.getState() == State.QUERY);
+                    statusId.enable(event.getState() == State.QUERY);
+                    return;
+                }
+                
+                model = statusId.getData();
+                for (TableDataRow r : model) {
+                    if (statusPendingId.equals(r.key) || statusOnHoldId.equals(r.key))
+                        r.enabled = true;
+                    else if (statusProcessedId.equals(r.key))
+                        /*
+                         * the option for "Processed" is only enabled for an existing
+                         * order and only if it is pending
+                         */
+                        r.enabled = (event.getState() != State.ADD) && statusPendingId.equals(status);
+                    else
+                        r.enabled = false;
+                }
+
+                statusId.enable(!statusProcessedId.equals(status) && !statusRecurringId.equals(status));
+            }
+        });
+        
+        statusId.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {           
+            public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {                
+                TableDataRow r;
+                
+                r = event.getItem().row;                
+                if (!r.enabled)
+                    event.cancel();
             }
         });
 
@@ -638,8 +658,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressMultipleUnit.enable(false);
-                organizationAddressMultipleUnit.setQueryMode(false);
+                organizationAddressMultipleUnit.enable(event.getState() == State.QUERY);
+                organizationAddressMultipleUnit.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -679,8 +699,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressStreetAddress.enable(false);
-                organizationAddressStreetAddress.setQueryMode(false);
+                organizationAddressStreetAddress.enable(event.getState() == State.QUERY);
+                organizationAddressStreetAddress.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -718,8 +738,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressCity.enable(false);
-                organizationAddressCity.setQueryMode(false);
+                organizationAddressCity.enable(event.getState() == State.QUERY);
+                organizationAddressCity.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -759,8 +779,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressState.enable(false);
-                organizationAddressState.setQueryMode(false);
+                organizationAddressState.enable(event.getState() == State.QUERY);
+                organizationAddressState.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -783,8 +803,8 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressZipCode.enable(false);
-                organizationAddressZipCode.setQueryMode(false);
+                organizationAddressZipCode.enable(event.getState() == State.QUERY);
+                organizationAddressZipCode.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -897,7 +917,8 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        testTab = new TestTab(def, window);
+        popoutUtil = new TestContainerPopoutUtil();
+        testTab = new TestTab(def, window, popoutUtil);
         addScreenHandler(testTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 testTab.setManager(manager);
@@ -908,17 +929,36 @@ public class SendoutOrderScreen extends Screen {
             public void onStateChange(StateChangeEvent<State> event) {
                 testTab.setState(event.getState());
             }
-        });
+        });       
         
         testTab.addActionHandler(new ActionHandler<TestTab.Action>() {
             public void onAction(ActionEvent<TestTab.Action> event) {
                 if (event.getAction() == TestTab.Action.ADD_AUX) {
-                    addAuxGroupsFromPanel((Integer)event.getData());
+                    ValidationErrorsList errors;
+                    try {
+                        errors = AuxDataUtil.addAuxGroupsFromPanel((Integer)event.getData(),
+                                                                   manager.getAuxData());
+                        auxDataTab.setManager(manager);
+                        if (errors != null && errors.size() > 0)
+                            showErrors(errors);
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        e.printStackTrace();
+                    }
+                } else if (event.getAction() == TestTab.Action.REFRESH_AUX) {
+                    /*
+                     * This event is fired when TestTab responds to the closing 
+                     * of the pop-out showing tests and containers. It's fired to
+                     * make sure that the aux data tab gets refreshed correctly
+                     * to any new aux groups added to the order because of being
+                     * part of a panel added through the pop-out.  
+                     */
+                    auxDataTab.setManager(manager);
                 }
             }
         });
         
-        containerTab = new ContainerTab(def, window);
+        containerTab = new ContainerTab(def, window, popoutUtil);
         addScreenHandler(containerTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 containerTab.setManager(manager);
@@ -930,7 +970,7 @@ public class SendoutOrderScreen extends Screen {
                 containerTab.setState(event.getState());
             }
         });
-
+        
         itemTab = new ItemTab(def, window);
         addScreenHandler(itemTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1150,30 +1190,12 @@ public class SendoutOrderScreen extends Screen {
         }
 
         shipFromId.setModel(model);
-
-        types = new HashMap<Integer, ResultValidator.Type>();
+        
         try {
-            auxAlphaLowerId = DictionaryCache.getIdBySystemName("aux_alpha_lower");
-            types.put(auxAlphaLowerId, ResultValidator.Type.ALPHA_LOWER);
-            auxAlphaMixedId = DictionaryCache.getIdBySystemName("aux_alpha_mixed");
-            types.put(auxAlphaMixedId, ResultValidator.Type.ALPHA_MIXED);
-            auxAlphaUpperId = DictionaryCache.getIdBySystemName("aux_alpha_upper");
-            types.put(auxAlphaUpperId, ResultValidator.Type.ALPHA_UPPER);
-            auxDateId = DictionaryCache.getIdBySystemName("aux_date");
-            types.put(auxDateId, ResultValidator.Type.DATE);
-            auxDateTimeId = DictionaryCache.getIdBySystemName("aux_date_time");
-            types.put(auxDateTimeId, ResultValidator.Type.DATE_TIME);
-            auxDefaultId = DictionaryCache.getIdBySystemName("aux_default");
-            types.put(auxDefaultId, ResultValidator.Type.DEFAULT);
-            auxDictionaryId = DictionaryCache.getIdBySystemName("aux_dictionary");
-            types.put(auxDictionaryId, ResultValidator.Type.DICTIONARY);
-            auxNumericId = DictionaryCache.getIdBySystemName("aux_numeric");
-            types.put(auxNumericId, ResultValidator.Type.NUMERIC);
-            auxTimeId = DictionaryCache.getIdBySystemName("aux_time");
-            types.put(auxTimeId, ResultValidator.Type.TIME);
             statusPendingId = DictionaryCache.getIdBySystemName("order_status_pending");
             statusRecurringId = DictionaryCache.getIdBySystemName("order_status_recurring");
             statusProcessedId = DictionaryCache.getIdBySystemName("order_status_processed");
+            statusOnHoldId = DictionaryCache.getIdBySystemName("order_status_on_hold"); 
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1184,29 +1206,57 @@ public class SendoutOrderScreen extends Screen {
         this.manager = manager;
         organizationTab.setManager(manager);
         auxDataTab.setManager(manager);
+        testTab.setManager(manager);
         containerTab.setManager(manager);
         itemTab.setManager(manager);
         shipNoteTab.setManager(manager);
         custNoteTab.setManager(manager);
         internalNoteTab.setManager(manager);
+        sampleNoteTab.setManager(manager);
         recurrenceTab.setManager(manager);
         fillTab.setManager(manager);
 
-        organizationTab.draw();
-        auxDataTab.draw();
-        containerTab.draw();
-        itemTab.draw();
-        shipNoteTab.draw();
-        custNoteTab.draw();
-        internalNoteTab.draw();
-        recurrenceTab.draw();
-        fillTab.draw();
+        drawAllTabs();
 
         if (manager.getOrder().getId() != null)
             setState(State.DISPLAY);
         else 
             setState(State.DEFAULT);
         DataChangeEvent.fire(this);
+    }
+    
+    public ArrayList<QueryData> getQueryFields() {
+        int i;
+        ArrayList<QueryData> fields, auxFields;
+        QueryData field;
+
+        fields = super.getQueryFields();
+
+        // add aux data values if necessary
+        auxFields = auxDataTab.getQueryFields();
+
+        // add the type
+        field = new QueryData();
+        field.key = OrderMeta.getType();
+        field.query = OrderManager.TYPE_SEND_OUT;
+        field.type = QueryData.Type.STRING;
+        //fields.add(field);
+        
+        if (auxFields.size() > 0) {
+            // add ref table
+            field = new QueryData();
+            field.key = OrderMeta.getAuxDataReferenceTableId();
+            field.type = QueryData.Type.INTEGER;
+            field.query = String.valueOf(ReferenceTable.ORDER);
+            fields.add(field);
+
+            // add aux fields
+            for (i = 0; i < auxFields.size(); i++ ) {                
+                fields.add(auxFields.get(i));            
+            } 
+        }
+
+        return fields;
     }
 
     /*
@@ -1218,16 +1268,7 @@ public class SendoutOrderScreen extends Screen {
         setState(State.QUERY);
         DataChangeEvent.fire(this);
 
-        // clear all the tabs
-        organizationTab.draw();
-        auxDataTab.draw();
-        containerTab.draw();
-        itemTab.draw();
-        shipNoteTab.draw();
-        custNoteTab.draw();
-        internalNoteTab.draw();
-        recurrenceTab.draw();
-        fillTab.draw();
+        drawAllTabs();
 
         setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
@@ -1275,6 +1316,14 @@ public class SendoutOrderScreen extends Screen {
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
             setFocus(neededInDays);   
+            
+            //
+            // these tabs are loaded here to make sure that the on-screen validation
+            // and the validation done at the back end doesn't suffer from
+            // errorneous conclusions about the data because of the lack of some
+            // subset of it
+            //
+            drawAllTabs();
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
@@ -1296,8 +1345,6 @@ public class SendoutOrderScreen extends Screen {
             return;
         }
 
-        data = null;
-        prevStatusId = null;
         if (state == State.QUERY) {
             queryFields = getQueryFields();
             query = new Query();
@@ -1306,8 +1353,10 @@ public class SendoutOrderScreen extends Screen {
             nav.setQuery(query);
         } else if (state == State.ADD) {
             window.setBusy(consts.get("adding"));
+            data = manager.getOrder();
+            prevStatusId = data.getStatusId();
             try {
-                data = manager.getOrder();
+                removeNotReportableAnalytes();
                 orec = manager.getRecurrence();
                 /*
                  * if the user entered data in the fields for recurrence but didn't
@@ -1322,19 +1371,106 @@ public class SendoutOrderScreen extends Screen {
                 if ("Y".equals(orec.getIsActive()) && !statusRecurringId.equals(prevStatusId))  
                     data.setStatusId(statusRecurringId);
                 
+                manager.validate();
                 manager = manager.add();
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
                 window.setDone(consts.get("addingComplete"));
             } catch (ValidationErrorsList e) {
                 showErrors(e);
+                if ( !e.hasErrors() && e.hasWarnings()) {
+                    showWarningsDialog(e);
+                } else {
+                    /*
+                     * if the status of the order was set to recurring in this
+                     * method and the data couldn't get committed because of
+                     * errors in validation, the status gets set back to what it
+                     * was before committing, so that if the user commits with
+                     * an inactive interval later, the status doesn't remain
+                     * recurring, as the status is set to recurring only if the
+                     * interval is active
+                     */
+                    data.setStatusId(prevStatusId);
+                }
+            } catch (Exception e) {
+                Window.alert("commitAdd(): " + e.getMessage());
+                window.clearStatus();
+            }
+        } else if (state == State.UPDATE) {
+            window.setBusy(consts.get("updating"));
+            
+            data = manager.getOrder();
+            prevStatusId = data.getStatusId();
+            try {
+                removeNotReportableAnalytes();
+                orec = manager.getRecurrence();
                 /*
-                 * if the status of the order was set to recurring in this method
-                 * and the data couldn't get committed because of errors in validation,
-                 * the status gets set back to what it was before committing,
-                 * so that if the user commits with an inactive interval later,
-                 * the status doesn't remain recurring, as the status is set to
-                 * recurring only if the interval is active
+                 * if the user entered data in the fields for recurrence but didn't
+                 * click on the "active" checkbox, this code will make sure that
+                 * a record in the table for recurrence isn't attempted to be
+                 * created for this order with null in that field because that
+                 * field is required    
+                 */
+                if (orec.getIsActive() == null && !isRecurrenceEmpty(orec)) 
+                    orec.setIsActive("N");                
+                if ("Y".equals(orec.getIsActive()) && !statusRecurringId.equals(prevStatusId))  
+                    data.setStatusId(statusRecurringId);
+                
+                manager.validate();
+                manager = manager.update();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.setDone(consts.get("updatingComplete"));
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+                if ( !e.hasErrors() && e.hasWarnings()) {
+                    showWarningsDialog(e);
+                } else {
+                    /*
+                     * if the status of the order was set to recurring in this
+                     * method and the data couldn't get committed because of
+                     * errors in validation, the status gets set back to what it
+                     * was before committing, so that if the user commits with
+                     * an inactive interval later, the status doesn't remain
+                     * recurring, as the status is set to recurring only if the
+                     * interval is active
+                     */
+                    data.setStatusId(prevStatusId);
+                }
+            } catch (Exception e) {
+                Window.alert("commitUpdate(): " + e.getMessage());
+                window.clearStatus();
+            }
+        }
+    }
+    
+    protected void commitWithWarnings() {
+        OrderViewDO data;
+        Integer prevStatusId;
+        
+        clearErrors();
+
+        data = manager.getOrder();
+        prevStatusId = data.getStatusId();
+        if (state == State.ADD) {
+            window.setBusy(consts.get("adding"));
+            
+            try {
+                manager = manager.add();
+
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.clearStatus();
+            } catch (ValidationErrorsList e) {
+                showErrors(e);
+                /*
+                 * if the status of the order was set to recurring in this
+                 * method and the data couldn't get committed because of
+                 * errors in validation, the status gets set back to what it
+                 * was before committing, so that if the user commits with
+                 * an inactive interval later, the status doesn't remain
+                 * recurring, as the status is set to recurring only if the
+                 * interval is active
                  */
                 data.setStatusId(prevStatusId);
             } catch (Exception e) {
@@ -1344,34 +1480,21 @@ public class SendoutOrderScreen extends Screen {
         } else if (state == State.UPDATE) {
             window.setBusy(consts.get("updating"));
             try {
-                data = manager.getOrder();
-                orec = manager.getRecurrence();
-                prevStatusId = data.getStatusId();
-                /*
-                 * if the user entered data in the fields for recurrence but didn't
-                 * click on the "active" checkbox, this code will make sure that
-                 * a record in the table for recurrence isn't attempted to be
-                 * created for this order with null in that field because that
-                 * field is required    
-                 */
-                if (orec.getIsActive() == null && !isRecurrenceEmpty(orec)) 
-                    orec.setIsActive("N");                
-                if ("Y".equals(orec.getIsActive()) && !statusRecurringId.equals(prevStatusId))  
-                    data.setStatusId(statusRecurringId);
-                
                 manager = manager.update();
+                
                 setState(State.DISPLAY);
                 DataChangeEvent.fire(this);
-                window.setDone(consts.get("updatingComplete"));
+                window.clearStatus();
             } catch (ValidationErrorsList e) {
                 showErrors(e);
                 /*
-                 * if the status of the order was set to recurring in this method
-                 * and the data couldn't get committed because of errors is validation,
-                 * the status gets set back to what it was before committing,
-                 * so that if the user commits with an inactive interval later,
-                 * the status doesn't remain recurring, as the status is set to
-                 * recurring only if the interval is active
+                 * if the status of the order was set to recurring in this
+                 * method and the data couldn't get committed because of
+                 * errors in validation, the status gets set back to what it
+                 * was before committing, so that if the user commits with
+                 * an inactive interval later, the status doesn't remain
+                 * recurring, as the status is set to recurring only if the
+                 * interval is active
                  */
                 data.setStatusId(prevStatusId);
             } catch (Exception e) {
@@ -1583,11 +1706,11 @@ public class SendoutOrderScreen extends Screen {
             
             HistoryScreen.showHistory(consts.get("orderOrganizationHistory"),
                                       ReferenceTable.ORDER_ORGANIZATION, refVoList);
-            window.clearStatus();
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }        
+        window.clearStatus();
     }
 
     protected void itemHistory() {
@@ -1684,6 +1807,7 @@ public class SendoutOrderScreen extends Screen {
                     case SHIP_NOTE:
                     case CUSTOMER_NOTE:                        
                     case INTERNAL_NOTE:
+                    case SAMPLE_NOTE:
                         manager = OrderManager.fetchWithNotes(id);
                         break;
                     case RECURRENCE:
@@ -1709,40 +1833,6 @@ public class SendoutOrderScreen extends Screen {
         window.clearStatus();
 
         return true;
-    }
-
-    public ArrayList<QueryData> getQueryFields() {
-        int i;
-        ArrayList<QueryData> fields, auxFields;
-        QueryData field;
-
-        fields = super.getQueryFields();
-
-        // add aux data values if necessary
-        auxFields = auxDataTab.getQueryFields();
-
-        // add the type
-        field = new QueryData();
-        field.key = OrderMeta.getType();
-        field.query = OrderManager.TYPE_SEND_OUT;
-        field.type = QueryData.Type.STRING;
-        //fields.add(field);
-        
-        if (auxFields.size() > 0) {
-            // add ref table
-            field = new QueryData();
-            field.key = OrderMeta.getAuxDataReferenceTableId();
-            field.type = QueryData.Type.INTEGER;
-            field.query = String.valueOf(ReferenceTable.ORDER);
-            fields.add(field);
-
-            // add aux fields
-            for (i = 0; i < auxFields.size(); i++ ) {                
-                fields.add(auxFields.get(i));            
-            } 
-        }
-
-        return fields;
     }
 
     private void drawTabs() {
@@ -1771,6 +1861,9 @@ public class SendoutOrderScreen extends Screen {
             case INTERNAL_NOTE:
                 internalNoteTab.draw();
                 break;
+            case SAMPLE_NOTE:
+                sampleNoteTab.draw();
+                break;
             case RECURRENCE:
                 recurrenceTab.draw();
                 break;    
@@ -1780,110 +1873,6 @@ public class SendoutOrderScreen extends Screen {
         }
     }
 
-    private void addAuxGroupsFromPanel(Integer panelId) {
-        int                            i, j, k;
-        ArrayList<AuxFieldValueViewDO> values;
-        ArrayList<IdVO>                auxIds;
-        AuxDataManager                 adMan;
-        AuxDataViewDO                  dataDO;
-        AuxFieldManager                afMan;
-        AuxFieldViewDO                 fieldDO;
-        AuxFieldValueViewDO            defaultDO, valueDO;
-        Integer                        validId;
-        ResultValidator                validator;
-        ValidationErrorsList           errorsList;
-
-        errorsList = new ValidationErrorsList();
-
-        try {
-            adMan  = manager.getAuxData();
-            auxIds = panelService.callList("fetchAuxIdsByPanelId", panelId);
-            for (i = 0; i < auxIds.size(); i++) {
-                try {
-                    afMan = AuxFieldManager.fetchByGroupIdWithValues(auxIds.get(i).getId());
-                    for (j = 0; j < afMan.count(); j++) {
-                        fieldDO = afMan.getAuxFieldAt(j);
-                        if ("Y".equals(fieldDO.getIsActive())) {
-                            values = afMan.getValuesAt(j).getValues();
-                            defaultDO = afMan.getValuesAt(j).getDefaultValue();
-        
-                            dataDO = new AuxDataViewDO();
-                            dataDO.setAuxFieldId(fieldDO.getId());
-                            dataDO.setIsReportable(fieldDO.getIsReportable());
-                            dataDO.setGroupId(fieldDO.getAuxFieldGroupId());
-                            
-                            validator = getValidatorForValues(values);
-                            if (defaultDO != null) {
-                                try {
-                                    validId = validator.validate(null, defaultDO.getValue());
-                                    for (k = 0; k < values.size(); k++) {
-                                        valueDO = values.get(k);
-                                        if (valueDO.getId().equals(validId)) {
-                                            if (auxDictionaryId.equals(valueDO.getTypeId())) {
-                                                dataDO.setTypeId(valueDO.getTypeId());
-                                                dataDO.setValue(valueDO.getValue());
-                                                dataDO.setDictionary(valueDO.getDictionary());
-                                            } else {
-                                                dataDO.setTypeId(valueDO.getTypeId());
-                                                dataDO.setValue(defaultDO.getValue());
-                                            }
-                                            break;
-                                        }
-                                    }
-                                } catch (ParseException parE) {
-                                    errorsList.add(new FormErrorWarning("illegalDefaultValueForAuxFieldException",
-                                                                        defaultDO.getValue(),
-                                                                        fieldDO.getAnalyteName()));
-                                }
-                            } else {
-                                dataDO.setTypeId(auxAlphaMixedId);
-                            }
-        
-                            adMan.addAuxDataFieldAndValues(dataDO, fieldDO, values);
-                        }
-                    }
-                } catch (Exception anyE2) {
-                    errorsList.add(anyE2);
-                }
-            }
-            
-            
-        } catch (Exception anyE) {
-            Window.alert(anyE.getMessage());
-        }
-        
-        if (errorsList.size() > 0)
-            showErrors(errorsList);
-    }
-
-    private ResultValidator getValidatorForValues(ArrayList<AuxFieldValueViewDO> values) {
-        AuxFieldValueViewDO  af;
-        DictionaryDO         dict;
-        ResultValidator      rv;
-        ResultValidator.Type type;
-        String               dictEntry;
-        
-        rv = new ResultValidator();
-        try {
-            for (int i = 0; i < values.size(); i++ ) {
-                af = values.get(i);
-                dictEntry = null;
-                rv = new ResultValidator();
-                
-                type = types.get(af.getTypeId());
-                if (type == ResultValidator.Type.DICTIONARY) {
-                    dict = DictionaryCache.getById(new Integer(af.getValue()));
-                    dictEntry = dict.getEntry();
-                }
-                rv.addResult(af.getId(), null, type, null, null, af.getValue(), dictEntry);                    
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-                
-        return rv;
-    }
-    
     private void showShippingScreen(ShippingManager manager, State state) throws Exception {
         ScreenWindow modal;
         
@@ -1908,5 +1897,31 @@ public class SendoutOrderScreen extends Screen {
            return true;
         
        return false;
+    }
+    
+    private void drawAllTabs() {
+        organizationTab.draw();
+        auxDataTab.draw();
+        testTab.draw();
+        containerTab.draw();
+        itemTab.draw();
+        shipNoteTab.draw();
+        custNoteTab.draw();
+        internalNoteTab.draw();
+        sampleNoteTab.draw();
+        recurrenceTab.draw();
+        fillTab.draw();
+    }
+    
+    private void removeNotReportableAnalytes() throws Exception {
+        OrderTestManager man;
+        /*
+         * The analytes that are not marked as reportable are deleted. Since on 
+         * the screen an analytes can be checked or unchecked several times, it
+         * can't be deleted as soon as it's unchecked. Thus that is done here.
+         */
+        man = manager.getTests();
+        for (int i = 0; i < man.count(); i++) 
+            man.removeNotReportableAnalytesAt(i);        
     }
 }

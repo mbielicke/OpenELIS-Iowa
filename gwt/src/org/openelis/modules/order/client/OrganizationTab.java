@@ -40,6 +40,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -91,10 +92,17 @@ public class OrganizationTab extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                table.enable(EnumSet.of(State.ADD, State.UPDATE, State.QUERY).contains(event.getState()));
+                table.enable(true);
                 table.setQueryMode(event.getState() == State.QUERY);
             }
-        });       
+        });      
+        
+        table.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if((state != State.ADD && state != State.UPDATE)) 
+                        event.cancel();
+            }            
+        });
 
         organizationName = ((AutoComplete<Integer>)table.getColumns().get(2).colWidget);
         organizationName.addGetMatchesHandler(new GetMatchesHandler(){

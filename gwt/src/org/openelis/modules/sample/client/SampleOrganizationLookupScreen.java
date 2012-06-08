@@ -30,6 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
+import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.SampleOrganizationDO;
@@ -133,69 +134,80 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
         final AutoComplete<Integer> organization = ((AutoComplete<Integer>)sampleOrganizationTable.getColumns().get(2).colWidget);
         sampleOrganizationTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
-                int row,col;
+                int r,c;
                 Object val;
+                TableDataRow row;
+                OrganizationDO org;
+                AddressDO addr;
+                SampleOrganizationViewDO data;
                 
-                row = event.getRow();
-                col = event.getCol();
-                
-                SampleOrganizationViewDO orgDO;
+                r = event.getRow();
+                c = event.getCol();
                 
                 try{
-                    orgDO = manager.getOrganizationAt(row);
+                    data = manager.getOrganizationAt(r);
                 }catch(Exception e){
                     Window.alert(e.getMessage());
                     return;
                 }
                     
-                val = sampleOrganizationTable.getObject(row, col);
+                val = sampleOrganizationTable.getObject(r, c);
                 
-                switch (col) {
+                switch (c) {
                     case 0:
-                        sampleOrganizationTable.clearCellExceptions(row, col);
+                        sampleOrganizationTable.clearCellExceptions(r, c);
                         if(reportToId.equals((Integer)val) && !canAddReportTo)
-                            sampleOrganizationTable.setCellException(row, col, new LocalizedException("cantAddReportToException"));
+                            sampleOrganizationTable.setCellException(r, c, new LocalizedException("cantAddReportToException"));
                         
                         else if(billToId.equals((Integer)val) && !canAddBillTo)
-                            sampleOrganizationTable.setCellException(row, col, new LocalizedException("cantAddBillToException"));
+                            sampleOrganizationTable.setCellException(r, c, new LocalizedException("cantAddBillToException"));
                         
                         else if(secondReportToId.equals((Integer)val) && !canAddSecondReportTo)
-                            sampleOrganizationTable.setCellException(row, col, new LocalizedException("cantAddSecondReortToException"));
+                            sampleOrganizationTable.setCellException(r, c, new LocalizedException("cantAddSecondReortToException"));
                         
-                        orgDO.setTypeId((Integer)val);
+                        data.setTypeId((Integer)val);
                         break;
                     case 1:
-                        orgDO.setOrganizationAttention((String)val);
+                        data.setOrganizationAttention((String)val);
                         break;
                     case 2:
-                        TableDataRow selectedRow = organization.getSelection();
-                        Integer id = null;
-                        String city = null;
-                        String state = null;
-
-                        if (selectedRow.key != null) {
-                            id = (Integer)selectedRow.key;
-                            city = (String)selectedRow.cells.get(2).value;
-                            state = (String)selectedRow.cells.get(3).value;
+                        row = (TableDataRow)val;
+                        if (row != null) {
+                            org = (OrganizationDO)row.data;
+                            data.setOrganizationId(org.getId());
+                            data.setOrganizationName(org.getName());
+                            
+                            addr = org.getAddress();
+                            data.setOrganizationMultipleUnit(addr.getMultipleUnit());
+                            data.setOrganizationStreetAddress(addr.getStreetAddress());
+                            data.setOrganizationCity(addr.getCity());
+                            data.setOrganizationState(addr.getState());
+                            data.setOrganizationZipCode(addr.getZipCode());
+                            data.setOrganizationCountry(addr.getCountry());
+                            
+                            sampleOrganizationTable.setCell(r, 3, addr.getMultipleUnit());
+                            sampleOrganizationTable.setCell(r, 4, addr.getStreetAddress());
+                            sampleOrganizationTable.setCell(r, 5, addr.getCity());
+                            sampleOrganizationTable.setCell(r, 6, addr.getState());
+                            sampleOrganizationTable.setCell(r, 7, addr.getZipCode());
+                            sampleOrganizationTable.setCell(r, 8, addr.getCountry());
+                        } else {
+                            data.setOrganizationId(null);
+                            data.setOrganizationName(null);
+                            data.setOrganizationMultipleUnit(null);
+                            data.setOrganizationStreetAddress(null);
+                            data.setOrganizationCity(null);
+                            data.setOrganizationState(null);
+                            data.setOrganizationZipCode(null);
+                            data.setOrganizationCountry(null);
+                            
+                            sampleOrganizationTable.setCell(r, 3, null);
+                            sampleOrganizationTable.setCell(r, 4, null);
+                            sampleOrganizationTable.setCell(r, 5, null);
+                            sampleOrganizationTable.setCell(r, 6, null);
+                            sampleOrganizationTable.setCell(r, 7, null);
+                            sampleOrganizationTable.setCell(r, 8, null);
                         }
-
-                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedRow(),
-                                                        3,
-                                                        city);
-                        sampleOrganizationTable.setCell(sampleOrganizationTable.getSelectedRow(),
-                                                        4,
-                                                        state);
-
-                        orgDO.setOrganizationId(id);
-                        orgDO.setOrganizationName((String)selectedRow.cells.get(0).value);
-                        orgDO.setOrganizationCity(city);
-                        orgDO.setOrganizationState(state);
-                        break;
-                    case 3:
-                        orgDO.setOrganizationCity((String)val);
-                        break;
-                    case 4:
-                        orgDO.setOrganizationState((String)val);
                         break;
                 }
             }
@@ -221,7 +233,7 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                         row.cells.get(1).value = data.getAddress().getStreetAddress();
                         row.cells.get(2).value = data.getAddress().getCity();
                         row.cells.get(3).value = data.getAddress().getState();
-
+                        row.data = data;
                         model.add(row);
                     }
                     organization.showAutoMatches(model);
@@ -290,41 +302,44 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
     
     public void ok() {
         sampleOrganizationTable.finishEditing();
-        if(validate()){
+        if (validate()){
             ActionEvent.fire(this, Action.OK, null);
             window.close();
         }
     }
     
     private ArrayList<TableDataRow> getTableModel() {
-        ArrayList<TableDataRow> model = new ArrayList<TableDataRow>();
-        
-        if(manager == null)
+        ArrayList<TableDataRow> model;
+        SampleOrganizationViewDO data;
+        TableDataRow row;
+
+        model = new ArrayList<TableDataRow>();
+        if (manager == null)
             return model;
-        
-        try 
-        {   
-            for(int iter = 0;iter < manager.count();iter++) {
-                SampleOrganizationViewDO orgDO = (SampleOrganizationViewDO)manager.getOrganizationAt(iter);
-            
-               TableDataRow row = new TableDataRow(5);
-               row.key = orgDO.getId();
-               
-               row.cells.get(0).value = orgDO.getTypeId();
-               row.cells.get(1).value = orgDO.getOrganizationAttention();
-               row.cells.get(2).value = new TableDataRow(orgDO.getOrganizationId(), orgDO.getOrganizationName());
-               row.cells.get(3).value = orgDO.getOrganizationCity();
-               row.cells.get(4).value = orgDO.getOrganizationState();
-               
-               model.add(row);
-               
+
+        try {
+            for (int i = 0; i < manager.count(); i++ ) {
+                data = (SampleOrganizationViewDO)manager.getOrganizationAt(i);
+
+                row = new TableDataRow(9);
+                row.key = data.getId();
+                row.cells.get(0).setValue(data.getTypeId());
+                row.cells.get(1).setValue(data.getOrganizationAttention());
+                row.cells.get(2).setValue(new TableDataRow(data.getOrganizationId(), data.getOrganizationName()));
+                row.cells.get(3).setValue(data.getOrganizationMultipleUnit());
+                row.cells.get(4).setValue(data.getOrganizationStreetAddress());
+                row.cells.get(5).setValue(data.getOrganizationCity());
+                row.cells.get(6).setValue(data.getOrganizationState());
+                row.cells.get(7).setValue(data.getOrganizationZipCode());
+                row.cells.get(8).setValue(data.getOrganizationCountry());
+                
+                model.add(row);
             }
         } catch (Exception e) {
-    
             e.printStackTrace();
             return null;
-        }       
-        
+        }
+
         return model;
     }
     
@@ -353,6 +368,25 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                 model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
             } 
             ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(0).getColumnWidget()).setModel(model);
+            
+
+            model = new ArrayList<TableDataRow>();
+            model.add(new TableDataRow(null, ""));
+            list = CategoryCache.getBySystemName("state");
+            for (DictionaryDO data : list) {
+                if ("Y".equals(data.getIsActive()))
+                    model.add(new TableDataRow(data.getEntry(), data.getEntry()));
+            }
+            ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(6).getColumnWidget()).setModel(model);
+            
+            model = new ArrayList<TableDataRow>();
+            model.add(new TableDataRow(null, ""));
+            list = CategoryCache.getBySystemName("country");
+            for (DictionaryDO data : list) {
+                if ("Y".equals(data.getIsActive()))
+                    model.add(new TableDataRow(data.getEntry(), data.getEntry()));
+            }
+            ((Dropdown<Integer>)sampleOrganizationTable.getColumns().get(8).getColumnWidget()).setModel(model);
             
             //load the type ids
             reportToId = DictionaryCache.getIdBySystemName("org_report_to");

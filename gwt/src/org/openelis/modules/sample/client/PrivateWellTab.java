@@ -91,17 +91,17 @@ public class PrivateWellTab extends Screen {
     private AutoComplete<Integer>          project;
     private AppButton                      projectLookup, billToLookup;
 
+    private PrivateWellTab                 screen;
     private SampleProjectLookupScreen      projectScreen;
     private SampleOrganizationLookupScreen organizationScreen;
 
-    protected ScreenService                orgService;
-    protected ScreenService                projectService;
+    protected ScreenService                projectService, orgService;
 
     private SampleManager                  manager, previousManager;
     private SamplePrivateWellManager       wellManager, previousWellManager;
 
     private Integer                        sampleReleasedId;
-
+    
     protected boolean                      loaded = false;
 
     public PrivateWellTab(ScreenWindowInt window) throws Exception {        
@@ -116,14 +116,16 @@ public class PrivateWellTab extends Screen {
 
         setWindow(window);
 
-        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         projectService = new ScreenService("controller?service=org.openelis.modules.project.server.ProjectService");
+        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
 
         initialize();
         initializeDropdowns();
     }
 
     public void initialize() {
+        screen = this;
+        
         orgName = (AutoComplete<String>)def.getWidget(SampleMeta.getWellOrganizationName());
         addScreenHandler(orgName, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -1159,13 +1161,14 @@ public class PrivateWellTab extends Screen {
             }
 
             public void onValueChange(ValueChangeEvent<String> event) {
-                TableDataRow selectedRow;
+                TableDataRow row;
                 SampleOrganizationViewDO data;
+                OrganizationDO org;
 
-                selectedRow = billTo.getSelection();
+                row = billTo.getSelection();
 
                 try {
-                    if (selectedRow == null || selectedRow.key == null) {
+                    if (row == null || row.key == null) {
                         manager.getOrganizations().removeBillTo();
                         billTo.setSelection(null, "");
                         return;
@@ -1177,14 +1180,11 @@ public class PrivateWellTab extends Screen {
                         manager.getOrganizations().setBillTo(data);
                     }
 
-                    data.setOrganizationId((Integer)selectedRow.key);
-                    data.setOrganizationName((String)selectedRow.cells.get(0).value);
-                    data.setOrganizationCity((String)selectedRow.cells.get(2).value);
-                    data.setOrganizationState((String)selectedRow.cells.get(3).value);
+                    org = (OrganizationDO)row.data;
+                    if (org != null)
+                        getSampleOrganization(org, data);
 
-                    billTo.setSelection(data.getOrganizationId(),
-                                        data.getOrganizationName());
-
+                    billTo.setSelection(data.getOrganizationId(),  data.getOrganizationName());                    
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -1226,10 +1226,7 @@ public class PrivateWellTab extends Screen {
                                 data = new SampleOrganizationViewDO();
                                 man.setBillTo(data);                                
                             }
-                            data.setOrganizationId(prevData.getOrganizationId());
-                            data.setOrganizationName(prevData.getOrganizationName());
-                            data.setOrganizationCity(prevData.getOrganizationCity());
-                            data.setOrganizationState(prevData.getOrganizationState());
+                            getSampleOrganization(prevData, data);
                             billTo.setSelection(data.getOrganizationId(), data.getOrganizationName());     
                         }                        
                     } catch (Exception e) {
@@ -1302,12 +1299,11 @@ public class PrivateWellTab extends Screen {
     private void onProjectLookupClick() {
         try {
             if (projectScreen == null) {
-                final PrivateWellTab env = this;
                 projectScreen = new SampleProjectLookupScreen();
                 projectScreen.addActionHandler(new ActionHandler<SampleProjectLookupScreen.Action>() {
                     public void onAction(ActionEvent<SampleProjectLookupScreen.Action> event) {
                         if (event.getAction() == SampleProjectLookupScreen.Action.OK) {
-                            DataChangeEvent.fire(env, project);
+                            DataChangeEvent.fire(screen, project);
 
                         }
                     }
@@ -1343,6 +1339,7 @@ public class PrivateWellTab extends Screen {
                 data = list.get(i);
 
                 row.key = data.getId();
+                row.data = data;
                 row.cells.get(0).value = data.getName();
                 row.cells.get(1).value = data.getAddress().getStreetAddress();
                 row.cells.get(2).value = data.getAddress().getCity();
@@ -1361,14 +1358,13 @@ public class PrivateWellTab extends Screen {
     private void onOrganizationLookupClick() {
         try {
             if (organizationScreen == null) {
-                final PrivateWellTab well = this;
                 organizationScreen = new SampleOrganizationLookupScreen();
                 organizationScreen.setCanAddReportTo(false);
 
                 organizationScreen.addActionHandler(new ActionHandler<SampleOrganizationLookupScreen.Action>() {
                     public void onAction(ActionEvent<SampleOrganizationLookupScreen.Action> event) {
                         if (event.getAction() == SampleOrganizationLookupScreen.Action.OK) {
-                            DataChangeEvent.fire(well, billTo);
+                            DataChangeEvent.fire(screen, billTo);
                         }
                     }
                 });
@@ -1416,6 +1412,10 @@ public class PrivateWellTab extends Screen {
 
         addressState.setModel(model);
         locationAddrState.setModel(model);
+    }
+    
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
 
     public void showErrors(ValidationErrorsList errors) {
@@ -1496,7 +1496,28 @@ public class PrivateWellTab extends Screen {
         addressFaxPhone.setValue(data.getFaxPhone());
     }
     
-    private boolean canEdit() {
-        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
+    private void getSampleOrganization(OrganizationDO org, SampleOrganizationViewDO data) {
+        AddressDO addr;
+        
+        addr = org.getAddress();
+        data.setOrganizationId(org.getId());
+        data.setOrganizationName(org.getName());
+        data.setOrganizationMultipleUnit(addr.getMultipleUnit());
+        data.setOrganizationStreetAddress(addr.getStreetAddress());
+        data.setOrganizationCity(addr.getCity());
+        data.setOrganizationState(addr.getState());
+        data.setOrganizationZipCode(addr.getZipCode());
+        data.setOrganizationCountry(addr.getCountry());
+    }
+    
+    private void getSampleOrganization(SampleOrganizationViewDO prevData, SampleOrganizationViewDO data) {
+        data.setOrganizationId(prevData.getOrganizationId());
+        data.setOrganizationName(prevData.getOrganizationName());
+        data.setOrganizationMultipleUnit(prevData.getOrganizationMultipleUnit());
+        data.setOrganizationStreetAddress(prevData.getOrganizationStreetAddress());
+        data.setOrganizationCity(prevData.getOrganizationCity());
+        data.setOrganizationState(prevData.getOrganizationState());
+        data.setOrganizationZipCode(prevData.getOrganizationZipCode());
+        data.setOrganizationCountry(prevData.getOrganizationCountry());
     }
 }

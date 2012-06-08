@@ -36,7 +36,7 @@ import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.LocalizedException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
@@ -65,6 +65,7 @@ import org.openelis.manager.AuxFieldManager;
 import org.openelis.manager.HasAuxDataInt;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
+import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.utilcommon.ResultValidator;
 import org.openelis.utilcommon.ResultValidator.Type;
 
@@ -75,16 +76,13 @@ import com.google.gwt.user.client.Window;
 
 public class AuxDataTab extends Screen {
     private boolean                 loaded;
-    private Integer                 sampleReleasedId;
-    private HashMap<Integer, Type>  types;
 
     protected AuxGroupLookupScreen  auxGroupScreen;
     protected TableWidget           auxValsTable;
     protected AppButton             addAuxButton, removeAuxButton;
     protected TextBox               auxMethod, auxUnits, auxDesc;
     protected AutoComplete<Integer> ac, auxField;
-    protected Integer               alphaLowerId, alphaUpperId, alphaMixedId, timeId, numericId,
-                                    dateId, dateTimeId, dictionaryId, defaultId;
+    protected Integer               alphaMixedId, dictionaryId, sampleReleasedId; 
     protected boolean               queryFieldEntered;
     protected HasAuxDataInt         parentMan;
     protected AuxDataManager        manager;
@@ -360,7 +358,7 @@ public class AuxDataTab extends Screen {
                 else
                     row.cells.get(2).setValue(data.getValue());
 
-                validatorItem = getValidatorForRow(values);
+                validatorItem = AuxDataUtil.getValidatorForValues(values);
                 row.data = validatorItem;
 
                 model.add(row);
@@ -373,123 +371,19 @@ public class AuxDataTab extends Screen {
     }
 
     private void groupsSelectedFromLookup(ArrayList<AuxFieldManager> fields) {
-        int                            i, j, k, count;
-        ArrayList<AuxFieldValueViewDO> values;
-        AuxDataViewDO                  dataDO;
-        AuxFieldManager                man;
-        AuxFieldViewDO                 fieldDO;
-        AuxFieldValueViewDO            valueDO, defaultDO;
-        Integer                        validId;
-        ResultValidator                validatorItem;
-        TableDataRow                   row;
-
+        ValidationErrorsList errors;
         try {
-            auxValsTable.fireEvents(false);
-            for (i = 0; i < fields.size(); i++ ) {
-                man = fields.get(i);          
-                count = man.count();
-                if (count > 0) {
-                    fieldDO = man.getAuxFieldAt(0);
-                    if (groupAddedToParent(fieldDO.getAuxFieldGroupId())) {
-                        Window.alert(consts.get("auxGrpAlreadyAddedException")+" '"+fieldDO.getAuxFieldGroupName()+"'");
-                        continue;
-                    }                                       
-                }
-                for (j = 0; j < count; j++ ) {                    
-                    fieldDO = man.getAuxFieldAt(j);
-                        
-                    if ("Y".equals(fieldDO.getIsActive())) {
-                        values = man.getValuesAt(j).getValues();
-                        defaultDO = man.getValuesAt(j).getDefaultValue();
-
-                        dataDO = new AuxDataViewDO();
-                        dataDO.setAuxFieldId(fieldDO.getId());
-                        dataDO.setIsReportable(fieldDO.getIsReportable());
-                        dataDO.setGroupId(fieldDO.getAuxFieldGroupId());
-
-                        row = new TableDataRow(3);
-                        row.cells.get(0).value = fieldDO.getIsReportable();
-                        row.cells.get(1).value = fieldDO.getAnalyteName();
-                        
-                        validatorItem = getValidatorForRow(values);
-                        row.data = validatorItem;
-
-                        if (defaultDO != null && state != State.QUERY) {
-                            try {
-                                validId = validatorItem.validate(null, defaultDO.getValue());
-                                for (k = 0; k < values.size(); k++ ) {
-                                    valueDO = values.get(k);
-                                    if (valueDO.getId().equals(validId)) {
-                                        if (dictionaryId.equals(valueDO.getTypeId())) {
-                                            dataDO.setTypeId(valueDO.getTypeId());
-                                            dataDO.setValue(valueDO.getValue());
-                                            dataDO.setDictionary(valueDO.getDictionary());
-                                            row.cells.get(2).value = valueDO.getDictionary();
-                                        } else {
-                                            dataDO.setTypeId(valueDO.getTypeId());
-                                            dataDO.setValue(defaultDO.getValue());
-                                            row.cells.get(2).value = defaultDO.getValue();
-                                        }
-                                        break;
-                                    }
-                                }
-                            } catch (Exception e) {
-                                row.cells.get(2).addException(new LocalizedException("illegalDefaultValueException"));
-                            }
-                        } else {
-                            dataDO.setTypeId(alphaMixedId);
-                        }
-
-                        manager.addAuxDataFieldAndValues(dataDO, fieldDO, values);
-                        auxValsTable.addRow(row);
-                    }
-                }
-            }
-            auxValsTable.fireEvents(true);
+            //auxValsTable.fireEvents(false);
+            errors = AuxDataUtil.addAuxGroupsFromAuxFields(fields, manager);
+            DataChangeEvent.fire(this); 
+            //auxValsTable.fireEvents(true);
+            if (errors != null && errors.size() > 0)
+                showErrors(errors);
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
     }
-
-    private ResultValidator getValidatorForRow(ArrayList<AuxFieldValueViewDO> values) {
-        AuxFieldValueViewDO af;
-        DictionaryDO        dict;
-        ResultValidator     rv;
-        String              dictEntry;
-        Type                type;
-        
-        rv = new ResultValidator();
-        try {
-            for (int i = 0; i < values.size(); i++ ) {
-                af = values.get(i);
-                dictEntry = null;
-                
-                type = types.get(af.getTypeId());
-                if (type == Type.DICTIONARY) {
-                    dict = DictionaryCache.getById(new Integer(af.getValue()));
-                    dictEntry = dict.getEntry();
-                }
-                rv.addResult(af.getId(), null, type, null, null, af.getValue(), dictEntry);                    
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-                
-        return rv;
-    }
     
-    private boolean groupAddedToParent(Integer groupId) {
-        AuxFieldViewDO data;
-        
-        for (int i = 0; i < manager.count(); i++) {
-            data = manager.getAuxFieldAt(i);
-            if (data.getAuxFieldGroupId().equals(groupId)) 
-                return true;            
-        }
-        
-        return false;
-    }
-
     public ArrayList<QueryData> getQueryFields() {
         ArrayList<QueryData> fieldList;
         AuxFieldViewDO fieldDO;
@@ -523,26 +417,9 @@ public class AuxDataTab extends Screen {
     }
 
     private void initializeDropdowns() {
-        types = new HashMap<Integer, Type>();
         try {
-            alphaLowerId = DictionaryCache.getIdBySystemName("aux_alpha_lower");
-            types.put(alphaLowerId, Type.ALPHA_LOWER);
-            alphaUpperId = DictionaryCache.getIdBySystemName("aux_alpha_upper");
-            types.put(alphaUpperId, Type.ALPHA_UPPER);
             alphaMixedId = DictionaryCache.getIdBySystemName("aux_alpha_mixed");
-            types.put(alphaMixedId, Type.ALPHA_MIXED);
-            timeId = DictionaryCache.getIdBySystemName("aux_time");
-            types.put(timeId, Type.TIME);
-            numericId = DictionaryCache.getIdBySystemName("aux_numeric");
-            types.put(numericId, Type.NUMERIC);
-            dateId = DictionaryCache.getIdBySystemName("aux_date");
-            types.put(dateId, Type.DATE);
-            dateTimeId = DictionaryCache.getIdBySystemName("aux_date_time");
-            types.put(dateTimeId, Type.DATE_TIME);
             dictionaryId = DictionaryCache.getIdBySystemName("aux_dictionary");
-            types.put(dictionaryId, Type.DICTIONARY);
-            defaultId = DictionaryCache.getIdBySystemName("aux_default");
-            types.put(defaultId, Type.DEFAULT);
             sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");            
         } catch (Exception e) {
             Window.alert(e.getMessage());
