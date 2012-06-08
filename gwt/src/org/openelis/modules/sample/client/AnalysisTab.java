@@ -1129,7 +1129,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
         SectionPermission perm;
         SectionViewDO     sectionVDO;
         
-        if (analysis != null) {
+        if (analysis != null && analysis.getId() != null) {
             if (analysis.getSectionId() == null)
                 return true;
             
@@ -1170,7 +1170,6 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
 
                 if (state == State.ADD || state == State.UPDATE)
                     StateChangeEvent.fire(this, State.UPDATE);
-
             } else {
                 analysis = new AnalysisViewDO();
                 sampleItem = new SampleItemViewDO();
