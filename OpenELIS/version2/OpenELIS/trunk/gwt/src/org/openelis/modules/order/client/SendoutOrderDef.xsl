@@ -255,7 +255,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"zipcode")' />:
                 </text>
                 <widget>
-                  <textbox case="UPPER" field="String" key="{meta:getOrganizationAddressZipCode()}" tab = "tabPanel,{meta:getOrganizationAddressState()}" max="30" width="72" />
+                  <textbox field="String" key="{meta:getOrganizationAddressZipCode()}" tab = "tabPanel,{meta:getOrganizationAddressState()}" max="30" width="72" />
                 </widget>
               </row>
             </TablePanel>
@@ -279,16 +279,16 @@ UIRF Software License are applicable instead of those above.
                       </autoComplete>
                     </col>
                     <col key="{meta:getOrderOrganizationOrganizationAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
-                      <textbox field="String" />
+                      <textbox case="UPPER" field="String" />
                     </col>
                     <col key="{meta:getOrderOrganizationOrganizationAddressStreetAddress()}" width="130" header="{resource:getString($constants,'address')}">
-                      <textbox field="String" />
+                      <textbox case="UPPER" field="String" />
                     </col>
                     <col key="{meta:getOrderOrganizationOrganizationAddressCity()}" header="{resource:getString($constants,'city')}" width="110">
-                      <textbox field="String" />
+                      <textbox case="UPPER" field="String" />
                     </col>
                     <col key="{meta:getOrderOrganizationOrganizationAddressState()}" header="{resource:getString($constants,'state')}" width="56">
-                      <dropdown width="40" field="String" />
+                      <dropdown case="UPPER" width="40" field="String" />
                     </col>
                     <col key="{meta:getOrganizationOrganizationAddressZipCode()}" width="70" header="{resource:getString($constants,'zipcode')}">
                       <textbox field="String" />
