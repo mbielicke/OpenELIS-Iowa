@@ -137,10 +137,11 @@ public class SendoutOrderScreen extends Screen {
     private TextBox                                id, neededInDays, numberOfForms, requestedBy,
                                                    organizationAttention, organizationAddressMultipleUnit,
                                                    organizationAddressStreetAddress,
-                                                   organizationAddressCity, organizationAddressState,
+                                                   organizationAddressCity,
                                                    organizationAddressZipCode;
     private CalendarLookUp                         orderedDate;
     private Dropdown<Integer>                      statusId, shipFromId, costCenterId;
+    private Dropdown<String>                       organizationAddressState;
     private AutoComplete<Integer>                  organizationName;
     private AutoComplete<String>                   description;
     private TabPanel                               tabPanel;
@@ -620,7 +621,7 @@ public class SendoutOrderScreen extends Screen {
                          * the option for "Processed" is only enabled for an existing
                          * order and only if it is pending
                          */
-                        r.enabled = (event.getState() != State.ADD) && statusPendingId.equals(status);
+                        r.enabled = manager.getOrder().getId() != null && statusPendingId.equals(status);
                     else
                         r.enabled = false;
                 }
@@ -760,7 +761,7 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        organizationAddressState = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressState());
+        organizationAddressState = (Dropdown<String>)def.getWidget(OrderMeta.getOrganizationAddressState());
         addScreenHandler(organizationAddressState, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 OrderViewDO data;
@@ -1190,6 +1191,17 @@ public class SendoutOrderScreen extends Screen {
         }
 
         shipFromId.setModel(model);
+        
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        list =  CategoryCache.getBySystemName("state");
+        for (DictionaryDO d : list) {
+            row = new TableDataRow(d.getEntry(), d.getEntry());
+            row.enabled = ("Y".equals(d.getIsActive()));
+            model.add(row);
+        }
+
+        organizationAddressState.setModel(model);
         
         try {
             statusPendingId = DictionaryCache.getIdBySystemName("order_status_pending");

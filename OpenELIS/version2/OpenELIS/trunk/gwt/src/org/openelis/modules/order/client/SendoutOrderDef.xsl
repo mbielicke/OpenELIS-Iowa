@@ -225,7 +225,7 @@ UIRF Software License are applicable instead of those above.
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"costCenter")' />:
                 </text>
-                <dropdown case="MIXED" field="Integer" key="{meta:getCostCenterId()}" popWidth="auto" required = "true" tab="{meta:getOrganizationAddressCity()},{meta:getOrganizationAddressStreetAddress()}" width="203"/>
+                <dropdown field="Integer" key="{meta:getCostCenterId()}" popWidth="auto" required = "true" tab="{meta:getOrganizationAddressCity()},{meta:getOrganizationAddressStreetAddress()}" width="203"/>
                 <text style="Prompt">
                   <xsl:value-of select='resource:getString($constants,"city")' />:
                 </text>
@@ -246,7 +246,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"state")' />:
                 </text>
                 <widget>
-                  <textbox case="UPPER" field="String" key="{meta:getOrganizationAddressState()}" tab = "{meta:getOrganizationAddressZipCode()},{meta:getDescription()}" max="30" width="35" />
+                  <dropdown case="UPPER" field="String" key="{meta:getOrganizationAddressState()}" tab = "{meta:getOrganizationAddressZipCode()},{meta:getDescription()}" max="30" width="35" />
                 </widget>
                 <widget>
                   <HorizontalPanel width="10" />
