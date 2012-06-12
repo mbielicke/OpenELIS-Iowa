@@ -109,7 +109,7 @@ public class OrderMeta implements Meta, MetaMap {
 	                               CONT_ID = "_orderContainer.id",
 	                               CONT_ORDER_ID = "_orderContainer.orderId",
 	                               CONT_CONTAINER_ID = "_orderContainer.containerId",
-	                               CONT_ITEM_SEQUENCE = "_orderContainer.numberOfContainers",
+	                               CONT_ITEM_SEQUENCE = "_orderContainer.itemSequence",
 	                               CONT_TYPE_OF_SAMPLE_ID = "_orderContainer.typeOfSampleId",
 	                               
 	                               TEST_ID = "_orderTest.id",
