@@ -36,7 +36,7 @@ public class SampleQaEventManager implements RPC {
 private static final long serialVersionUID = 1L;
     
     protected Integer                           sampleId, qaResultOverrideId;
-    protected ArrayList<SampleQaEventViewDO>       items, deletedList;
+    protected ArrayList<SampleQaEventViewDO>    items, deletedList;
     
     protected transient static SampleQAEventManagerProxy proxy;
 
@@ -95,14 +95,27 @@ private static final long serialVersionUID = 1L;
     }
     
     public boolean hasResultOverrideQA() throws Exception {
-        SampleQaEventViewDO eventDO;
+        SampleQaEventViewDO data;
         
         loadDictionaryEntries();
         
         for(int i=0; i<count(); i++){
-            eventDO = items.get(i);
+            data = items.get(i);
             
-            if(qaResultOverrideId.equals(eventDO.getTypeId()))
+            if(qaResultOverrideId.equals(data.getTypeId()))
+                return true;
+        }
+        
+        return false;
+    }
+    
+    public boolean hasNotBillableQA() {
+        SampleQaEventViewDO data;
+        
+        for(int i=0; i<count(); i++){
+            data = items.get(i);
+            
+            if("N".equals(data.getIsBillable()))
                 return true;
         }
         
@@ -159,9 +172,8 @@ private static final long serialVersionUID = 1L;
     }
 
     private void loadDictionaryEntries() throws Exception {
-        if (qaResultOverrideId == null) {
-            qaResultOverrideId = proxy().getIdFromSystemName("qaevent_override");
-        }
+        if (qaResultOverrideId == null)
+            qaResultOverrideId = proxy().getIdFromSystemName("qaevent_override");        
     }
     
     private static SampleQAEventManagerProxy proxy() {

@@ -112,6 +112,19 @@ public class AnalysisQaEventManager implements RPC {
         
         return false;
     }
+    
+    public boolean hasNotBillableQA() {
+        AnalysisQaEventViewDO data;
+        
+        for(int i=0; i<count(); i++){
+            data = items.get(i);
+            
+            if("N".equals(data.getIsBillable()))
+                return true;
+        }
+        
+        return false;
+    }
 
     public int count() {
         if (items == null)
