@@ -26,90 +26,98 @@ license ("UIRF Software License"), in which case the provisions of a
 UIRF Software License are applicable instead of those above. 
   -->
 <xsl:stylesheet
-  version="1.0"
   extension-element-prefixes="resource"
+  version="1.0"
   xmlns:locale="xalan://java.util.Locale"
+  xmlns:meta="xalan://org.openelis.meta.SampleMeta"
   xmlns:resource="xalan://org.openelis.util.UTFResource"
   xmlns:xalan="http://xml.apache.org/xalan"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
   xsi:noNamespaceSchemaLocation="http://openelis.uhl.uiowa.edu/schema/ScreenSchema.xsd"
-  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd"
-  xmlns:meta="xalan://org.openelis.meta.SampleMeta">
+  xsi:schemaLocation="http://www.w3.org/1999/XSL/Transform http://openelis.uhl.uiowa.edu/schema/XSLTSchema.xsd">
 
   <xsl:template name="QAEventsTab">
-    <VerticalPanel padding="0" spacing="0">
-      <TablePanel height="100%" padding="0" spacing="0" style="TabSubForm">
-        <row>
-          <table key="sampleQATable" width="auto" tab = "analysisQATable,analysisQATable" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-            <col key="{meta:getSampleSubQaName()}" width="172" header="{resource:getString($constants,'sampleQAEvent')}">
-              <label field="String" />
-            </col>
-            <col key="{meta:getSampleQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
-              <dropdown width="90" field="Integer" />
-            </col>
-            <col key="{meta:getSampleQaIsBillable()}" width="61" header="{resource:getString($constants,'billable')}">
-              <check />
-            </col>
-          </table>
-          <widget rowspan="3">
-            <AbsolutePanel style="Divider" />
-          </widget>
-          <table key="analysisQATable" width="auto"  tab = "sampleQATable,sampleQATable" maxRows="8" showScroll="ALWAYS" style="ScreenTableWithSides" title="">
-            <col key="{meta:getAnalysisSubQaName()}" width="172" header="{resource:getString($constants,'analysisQAEvent')}">
-              <label field="String" />
-            </col>
-            <col key="{meta:getAnalysisQaTypeId()}" width="90" header="{resource:getString($constants,'type')}">
-              <dropdown width="90" field="Integer" />
-            </col>
-            <col key="{meta:getAnalysisQaIsBillable()}" width="60" header="{resource:getString($constants,'billable')}">
-              <check />
-            </col>
-          </table>
-        </row>
-        <row>
-          <widget style="TableButtonFooter">
-            <HorizontalPanel>
-              <appButton key="removeSampleQAButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="sampleQAPicker" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="PickerButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'qaEvents')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-            </HorizontalPanel>
-          </widget>
-          <widget style="TableButtonFooter">
-            <HorizontalPanel>
-              <appButton key="removeAnalysisQAButton" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="RemoveRowButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-              <appButton key="analysisQAPicker" style="Button">
-                <HorizontalPanel>
-                  <AbsolutePanel style="PickerButtonImage" />
-                  <text>
-                    <xsl:value-of select="resource:getString($constants,'qaEvents')" />
-                  </text>
-                </HorizontalPanel>
-              </appButton>
-            </HorizontalPanel>
-          </widget>
-        </row>
-      </TablePanel>
-    </VerticalPanel>
+    <HorizontalPanel padding="0" spacing="0">
+      <VerticalPanel>
+        <table key="sampleQATable" maxRows="6" showScroll="ALWAYS" style="ScreenTableWithSides" tab="analysisQATable,analysisQATable" title="" width="auto">
+          <col header="{resource:getString($constants,'sampleQAEvent')}" key="{meta:getSampleSubQaName()}" width="172">
+            <label field="String" />
+          </col>
+          <col header="{resource:getString($constants,'type')}" key="{meta:getSampleQaTypeId()}" width="90">
+            <dropdown field="Integer" width="90" />
+          </col>
+          <col key="{meta:getSampleQaIsBillable()}" width="61" header="{resource:getString($constants,'billable')}">
+            <check />
+          </col>
+        </table>        
+        <widget style="TableButtonFooter">
+          <HorizontalPanel>
+            <appButton key="removeSampleQAButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel style="RemoveRowButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+            <appButton key="sampleQAPicker" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel style="PickerButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'qaEvents')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+          </HorizontalPanel>
+        </widget>
+        <VerticalPanel height = "5"/>
+        <TablePanel style="TabSubForm">
+          <row>
+            <text key = "sampleBillableLabel" style="WarningLabel" width = "320" wordwrap = "true"/>
+          </row>
+        </TablePanel>
+      </VerticalPanel>
+      <HorizontalPanel width="10" />
+      <VerticalPanel>
+        <table key="analysisQATable" maxRows="6" showScroll="ALWAYS" style="ScreenTableWithSides" tab="sampleQATable,sampleQATable" title="" width="auto">
+          <col header="{resource:getString($constants,'analysisQAEvent')}" key="{meta:getAnalysisSubQaName()}" width="172">
+            <label field="String" />
+          </col>
+          <col header="{resource:getString($constants,'type')}" key="{meta:getAnalysisQaTypeId()}" width="90">
+            <dropdown field="Integer" width="90" />
+          </col>
+          <col key="{meta:getAnalysisQaIsBillable()}" width="60" header="{resource:getString($constants,'billable')}">
+            <check />
+          </col>
+        </table>
+        <widget style="TableButtonFooter">
+          <HorizontalPanel>
+            <appButton key="removeAnalysisQAButton" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel style="RemoveRowButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+            <appButton key="analysisQAPicker" style="Button">
+              <HorizontalPanel>
+                <AbsolutePanel style="PickerButtonImage" />
+                <text>
+                  <xsl:value-of select="resource:getString($constants,'qaEvents')" />
+                </text>
+              </HorizontalPanel>
+            </appButton>
+          </HorizontalPanel>
+        </widget>
+        <VerticalPanel height = "5"/>
+        <TablePanel style="TabSubForm">
+          <row>
+            <text key = "analysisBillableLabel" style="WarningLabel" width = "330" wordwrap = "true"/>
+          </row>
+        </TablePanel>
+      </VerticalPanel>
+    </HorizontalPanel>
   </xsl:template>
 </xsl:stylesheet>

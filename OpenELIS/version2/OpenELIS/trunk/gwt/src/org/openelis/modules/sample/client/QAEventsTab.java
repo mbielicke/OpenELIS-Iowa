@@ -74,6 +74,7 @@ import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Label;
 
 public class QAEventsTab extends Screen {
     private boolean                  loaded;
@@ -84,13 +85,14 @@ public class QAEventsTab extends Screen {
     protected AutoComplete<Integer>  sampleQaEvent, analysisQaEvent;
     protected AppButton              removeAnalysisQAButton, removeSampleQAButton,
                                      sampleQAPicker, analysisQAPicker;
+    protected Label                  sampleBillableLabel, analysisBillableLabel;
     protected SampleQaEventManager   sampleQAManager;
     protected AnalysisQaEventManager analysisQAManager;
     protected SampleManager          sampleManager;
     protected AnalysisManager        analysisManager;
     protected AnalysisViewDO         analysis, emptyAnalysis;
-    protected Integer                analysisCancelledId, analysisReleasedId, sampleReleasedId;
-	protected Integer				 qaInternal, qaWarning, qaOverride;
+    protected Integer                analysisCancelledId, analysisReleasedId, sampleReleasedId, 
+                                     qaInternal, qaWarning, qaOverride;
 
     protected QaeventLookupScreen    qaEventScreen;
 
@@ -103,14 +105,15 @@ public class QAEventsTab extends Screen {
         initializeDropdowns();
     }
 
-    private void initialize() {
-    	/*
-    	 * sample qa
-    	 */
+    private void initialize() { 
+
+        sampleBillableLabel = (Label)def.getWidget("sampleBillableLabel");
+        
         sampleQATable = (TableWidget)def.getWidget("sampleQATable");
         addScreenHandler(sampleQATable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 sampleQATable.load(getSampleQAEventTableModel());
+                showSampleBillableMessage();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -168,6 +171,7 @@ public class QAEventsTab extends Screen {
 	                        break;
 	                    case 2:
 	                        data.setIsBillable((String)val);
+	                        showSampleBillableMessage();
 	                        break;
 	                }
                 }
@@ -178,6 +182,7 @@ public class QAEventsTab extends Screen {
             public void onRowDeleted(RowDeletedEvent event) {
                 sampleQAManager.removeSampleQAAt(event.getIndex());
                 removeSampleQAButton.enable(false);
+                showSampleBillableMessage();
             }
         });
 
@@ -220,13 +225,13 @@ public class QAEventsTab extends Screen {
             }
         });
 
-        /*
-         * analysis qa
-         */
+        analysisBillableLabel = (Label)def.getWidget("analysisBillableLabel");
+        
         analysisQATable = (TableWidget)def.getWidget("analysisQATable");
         addScreenHandler(analysisQATable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
                 analysisQATable.load(getAnalysisQAEventTableModel());
+                showAnalysisBillableMessage();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -286,6 +291,7 @@ public class QAEventsTab extends Screen {
 	                        break;
 	                    case 2:
 	                        data.setIsBillable((String)val);
+	                        showAnalysisBillableMessage();
 	                        break;
 	                }
                 }
@@ -296,6 +302,7 @@ public class QAEventsTab extends Screen {
             public void onRowDeleted(RowDeletedEvent event) {
                 analysisQAManager.removeAnalysisQAAt(event.getIndex());
                 removeAnalysisQAButton.enable(false);
+                showAnalysisBillableMessage();
             }
         });
 
@@ -427,6 +434,7 @@ public class QAEventsTab extends Screen {
 	                            sampleQAManager.addSampleQA(qaEvent);
 	                            sampleQATable.addRow(row);
 		                        sampleQATable.fireEvents(true);
+		                        showSampleBillableMessage();
 		                    } else {
 		                    	AnalysisQaEventViewDO qaEvent;
 		                    	
@@ -438,6 +446,7 @@ public class QAEventsTab extends Screen {
 	                            analysisQAManager.addAnalysisQA(qaEvent);
 	                            analysisQATable.addRow(row);
 		                        analysisQATable.fireEvents(true);
+		                        showAnalysisBillableMessage();
 		                    }
 	                    }
 	                    if (nonInte)
@@ -564,5 +573,19 @@ public class QAEventsTab extends Screen {
                 Window.alert(e.getMessage());
             }
         }
+    }
+    
+    private void showSampleBillableMessage() {
+        if (sampleQAManager != null && sampleQAManager.hasNotBillableQA()) 
+            sampleBillableLabel.setText(consts.get("sampleNotBillable"));
+        else
+            sampleBillableLabel.setText("");
+    }
+    
+    private void showAnalysisBillableMessage() {
+        if (analysisQAManager != null && analysisQAManager.hasNotBillableQA()) 
+            analysisBillableLabel.setText(consts.get("analysisNotBillable"));
+        else
+            analysisBillableLabel.setText("");
     }
 }
