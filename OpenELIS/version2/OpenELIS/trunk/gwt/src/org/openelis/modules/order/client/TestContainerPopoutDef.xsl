@@ -104,8 +104,8 @@ UIRF Software License are applicable instead of those above.
                 <col align="left" header="{resource:getString($constants,'container')}" key="{meta:getContainerContainerId()}" width="302">
                   <dropdown field="Integer" popWidth="340" required="true" width="340" />
                 </col>
-                <col align="left" header="{resource:getString($constants,'sampleType')}" key="{meta:getContainerTypeOfSampleId()}" width="231">
-                  <dropdown field="Integer" popWidth="250" width="241" />
+                <col align="left" header="{resource:getString($constants,'sampleType')}" key="{meta:getContainerTypeOfSampleId()}" width="84">
+                  <dropdown field="Integer" popWidth="200" width="191" />
                 </col>
               </table>
             </widget>
