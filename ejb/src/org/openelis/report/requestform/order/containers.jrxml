@@ -9,7 +9,7 @@
 		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select sum(number_of_containers) n_container
+		<![CDATA[select count(id) n_container
 from order_container
 where order_id = $P{ORDER_ID}]]>
 	</queryString>

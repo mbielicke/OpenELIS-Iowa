@@ -13,9 +13,14 @@
 		<defaultValueExpression><![CDATA[65]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[select * from order where id = $P{ORDER_ID} and type = "S"]]>
+		<![CDATA[select o.*, oo1.organization_id report_to_id, oo1.organization_attention report_to_attention, oo2.organization_id bill_to_id, oo2.organization_attention bill_to_attention
+from order o, outer order_organization oo1, outer order_organization oo2
+where o.id = $P{ORDER_ID} and type = "S" and oo1.order_id = o.id and
+      oo1.type_id = (select id from dictionary where system_name = 'org_report_to') and
+      oo2.order_id = o.id and oo2.type_id = (select id from dictionary where system_name = 'org_bill_to')]]>
 	</queryString>
 	<field name="id" class="java.lang.Integer"/>
+	<field name="parent_order_id" class="java.lang.Integer"/>
 	<field name="description" class="java.lang.String"/>
 	<field name="status_id" class="java.lang.Integer"/>
 	<field name="ordered_date" class="java.sql.Date"/>
@@ -26,11 +31,12 @@
 	<field name="organization_attention" class="java.lang.String"/>
 	<field name="type" class="java.lang.String"/>
 	<field name="external_order_number" class="java.lang.String"/>
+	<field name="ship_from_id" class="java.lang.Integer"/>
+	<field name="number_of_forms" class="java.lang.Integer"/>
 	<field name="report_to_id" class="java.lang.Integer"/>
 	<field name="report_to_attention" class="java.lang.String"/>
 	<field name="bill_to_id" class="java.lang.Integer"/>
 	<field name="bill_to_attention" class="java.lang.String"/>
-	<field name="ship_from_id" class="java.lang.Integer"/>
 	<background>
 		<band height="756">
 			<line direction="BottomUp">
