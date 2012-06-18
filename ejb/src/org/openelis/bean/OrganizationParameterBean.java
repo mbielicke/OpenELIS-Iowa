@@ -93,7 +93,7 @@ public class OrganizationParameterBean implements OrganizationParameterLocal {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("OrganizationParameter.FetchByDictionarySystemName");
+        query = manager.createNamedQuery("OrganizationParameter.FetchByOrgIdDictSystemName");
         query.setParameter("id", id);
         query.setParameter("systemName", systemName);
 
