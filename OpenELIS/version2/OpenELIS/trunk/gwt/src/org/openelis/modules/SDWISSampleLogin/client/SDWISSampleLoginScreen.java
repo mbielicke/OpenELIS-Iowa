@@ -36,6 +36,7 @@ import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.StandardNoteDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -72,9 +73,9 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
@@ -89,6 +90,7 @@ import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
+import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.sample.client.SampleSDWISImportOrder;
 import org.openelis.modules.sample.client.StorageTab;
 
@@ -149,7 +151,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     private SampleSDWISImportOrder    sdwisOrderImport;
     private SendoutOrderScreen        sendoutOrderScreen;
     private StandardNoteDO            autoNote;
-    private ScreenService             standardNoteService, testService;
+    private ScreenService             standardNoteService;
 
     private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
@@ -160,7 +162,6 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
         super((ScreenDefInt)GWT.create(SDWISSampleLoginDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
         standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
         
         userPermission = UserCache.getPermission().getModule("samplesdwis");
         if (userPermission == null)
@@ -1450,7 +1451,11 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     
     
     private void importOrder(Integer orderId) {
+        Integer orgId;
+        ArrayList<Integer> orgIds; 
         OrderManager man;
+        SampleOrganizationManager sorgMan;
+        SampleOrganizationViewDO data;
         ValidationErrorsList errors;        
         
         if (orderId == null) {
@@ -1504,6 +1509,21 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             if (errors != null && errors.size() > 0)
                 showErrors(errors);
 
+            /*
+             * check to see if any of the sample organizations has been marked for
+             * holding or refusing samples from 
+             */                       
+            sorgMan = manager.getOrganizations();
+            orgIds = new ArrayList<Integer>();
+            for (int i = 0; i < sorgMan.count(); i++) {
+                data = sorgMan.getOrganizationAt(i);
+                orgId = data.getOrganizationId();
+                if (!orgIds.contains(orgId)) {
+                    if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
+                        Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ data.getOrganizationName()+"'");
+                    orgIds.add(orgId);
+                }
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.clearStatus();

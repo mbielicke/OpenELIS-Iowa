@@ -246,7 +246,7 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"state")' />:
                 </text>
                 <widget>
-                  <dropdown case="UPPER" field="String" key="{meta:getOrganizationAddressState()}" tab = "{meta:getOrganizationAddressZipCode()},{meta:getDescription()}" max="30" width="35" />
+                  <dropdown case="UPPER" field="String" key="{meta:getOrganizationAddressState()}" tab = "{meta:getOrganizationAddressZipCode()},{meta:getDescription()}" width="35" />
                 </widget>
                 <widget>
                   <HorizontalPanel width="10" />
@@ -268,7 +268,7 @@ UIRF Software License are applicable instead of those above.
                       <dropdown field="Integer" width="125" />
                     </col>
                     <col key="{meta:getOrderOrganizationAttention()}" header="{resource:getString($constants,'attention')}" width="180">
-                      <textbox case="UPPER" field="String" />
+                      <textbox case="UPPER" max = "30" field="String" />
                     </col>
                     <col key="{meta:getOrderOrganizationOrganizationName()}" header="{resource:getString($constants,'name')}" width="220">
                       <autoComplete case="UPPER" field="Integer" required="true" width="130">

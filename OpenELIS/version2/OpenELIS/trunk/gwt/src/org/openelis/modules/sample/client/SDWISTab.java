@@ -53,7 +53,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -611,9 +610,9 @@ public class SDWISTab extends Screen {
                     if (org != null)
                         getSampleOrganization(org, data);
 
-                    reportTo.setSelection(data.getOrganizationId(),
-                                        data.getOrganizationName());
-
+                    reportTo.setSelection(data.getOrganizationId(), data.getOrganizationName());
+                    
+                    showHoldRefuseWarning(data.getOrganizationId(), data.getOrganizationName());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -722,6 +721,7 @@ public class SDWISTab extends Screen {
 
                     billTo.setSelection(data.getOrganizationId(), data.getOrganizationName());
 
+                    showHoldRefuseWarning(data.getOrganizationId(), data.getOrganizationName());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -1078,5 +1078,10 @@ public class SDWISTab extends Screen {
         data.setOrganizationState(prevData.getOrganizationState());
         data.setOrganizationZipCode(prevData.getOrganizationZipCode());
         data.setOrganizationCountry(prevData.getOrganizationCountry());
+    }
+    
+    private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
+        if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
+            Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ name+"'");
     }
 }

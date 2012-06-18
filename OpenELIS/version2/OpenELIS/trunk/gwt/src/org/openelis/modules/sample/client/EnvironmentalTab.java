@@ -36,6 +36,7 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
@@ -59,6 +60,7 @@ import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.manager.OrganizationParameterManager;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
@@ -453,7 +455,8 @@ public class EnvironmentalTab extends Screen {
             public void onValueChange(ValueChangeEvent<String> event) {
                 TableDataRow row;
                 SampleOrganizationViewDO data;    
-                OrganizationDO org;                
+                OrganizationDO org;    
+                Integer orgId;                
 
                 row = reportTo.getSelection();
                 try {
@@ -472,9 +475,11 @@ public class EnvironmentalTab extends Screen {
                     org = (OrganizationDO)row.data;
                     if (org != null)
                         getSampleOrganization(org, data);
+                    
+                    orgId = data.getOrganizationId();
+                    reportTo.setSelection(orgId, data.getOrganizationName());
 
-                    reportTo.setSelection(data.getOrganizationId(), data.getOrganizationName());
-
+                    showHoldRefuseWarning(data.getOrganizationId(), data.getOrganizationName());                    
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -582,6 +587,7 @@ public class EnvironmentalTab extends Screen {
                     
                     billTo.setSelection(data.getOrganizationId(), data.getOrganizationName());
 
+                    showHoldRefuseWarning(data.getOrganizationId(), data.getOrganizationName());
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }
@@ -941,5 +947,10 @@ public class EnvironmentalTab extends Screen {
         data.setOrganizationState(prevData.getOrganizationState());
         data.setOrganizationZipCode(prevData.getOrganizationZipCode());
         data.setOrganizationCountry(prevData.getOrganizationCountry());
+    }
+    
+    private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
+        if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
+            Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ name+"'");
     }
 }

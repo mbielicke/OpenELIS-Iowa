@@ -165,7 +165,15 @@ public class PrivateWellTab extends Screen {
                     wellDO.setOrganization(orgDO);
                     wellDO.setReportToName(null);
                     
-                    enableAddressValues = false;                    
+                    enableAddressValues = false;   
+                    
+                    try {
+                        if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgDO.getId())) 
+                            Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ orgDO.getName()+"'");
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        e.printStackTrace();
+                    }
                 } else if (selectedRow != null) { 
                     //
                     // it's a free text entry we only want to clear out the
@@ -1184,7 +1192,10 @@ public class PrivateWellTab extends Screen {
                     if (org != null)
                         getSampleOrganization(org, data);
 
-                    billTo.setSelection(data.getOrganizationId(),  data.getOrganizationName());                    
+                    billTo.setSelection(data.getOrganizationId(),  data.getOrganizationName());
+                    
+                    if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(data.getOrganizationId())) 
+                        Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ data.getOrganizationName()+"'");
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                 }

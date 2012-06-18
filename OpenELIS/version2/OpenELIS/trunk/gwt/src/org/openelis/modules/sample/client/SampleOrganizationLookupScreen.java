@@ -78,9 +78,10 @@ import com.google.gwt.user.client.Window;
 public class SampleOrganizationLookupScreen  extends Screen implements HasActionHandlers<SampleOrganizationLookupScreen.Action> {
 
     private SampleOrganizationManager manager;
-    protected AppButton organizationRemoveButton;
-    private boolean canAddReportTo, canAddBillTo, canAddSecondReportTo;
-    private Integer reportToId, billToId, secondReportToId;
+    protected AppButton               organizationRemoveButton;
+    private boolean                   canAddReportTo, canAddBillTo, canAddSecondReportTo;
+    private Integer                   reportToId, billToId, secondReportToId;
+    protected ScreenService           orgService;
     
     public enum Action {
         OK
@@ -90,7 +91,9 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
     
     public SampleOrganizationLookupScreen() throws Exception {
         super((ScreenDefInt)GWT.create(SampleOrganizationLookupDef.class));
+        
         service = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
+        orgService = new ScreenService("controller?service=org.openelis.modules.organization.server.OrganizationService");
         
         setCanAddReportTo(true);
         setCanAddBillTo(true);
@@ -207,6 +210,15 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
                             sampleOrganizationTable.setCell(r, 6, null);
                             sampleOrganizationTable.setCell(r, 7, null);
                             sampleOrganizationTable.setCell(r, 8, null);
+                        }
+                        
+                        try {
+                            if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(data.getOrganizationId()))
+                                Window.alert(consts.get("orgMarkedAsHoldRefuseSample") + "'" +
+                                             data.getOrganizationName() + "'");
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            e.printStackTrace();
                         }
                         break;
                 }
@@ -392,7 +404,6 @@ public class SampleOrganizationLookupScreen  extends Screen implements HasAction
             reportToId = DictionaryCache.getIdBySystemName("org_report_to");
             billToId = DictionaryCache.getIdBySystemName("org_bill_to");
             secondReportToId = DictionaryCache.getIdBySystemName("org_second_report_to");
-        
         }catch(Exception e){
             Window.alert("initializedropdowns: "+e.getMessage());
         }

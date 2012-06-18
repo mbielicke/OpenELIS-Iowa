@@ -26,7 +26,7 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId," +
                         "p.typeId,p.value)"
                       + " from OrganizationParameter p where p.organizationId = :id"),
-    @NamedQuery( name = "OrganizationParameter.FetchByDictionarySystemName",
+    @NamedQuery( name = "OrganizationParameter.FetchByOrgIdDictSystemName",
                 query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId," +
                         "p.typeId,p.value)"
                       + " from OrganizationParameter p, Dictionary d where p.organizationId = :id and"

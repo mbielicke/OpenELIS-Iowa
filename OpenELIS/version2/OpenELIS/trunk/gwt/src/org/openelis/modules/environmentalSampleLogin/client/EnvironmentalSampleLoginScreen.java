@@ -27,22 +27,19 @@ package org.openelis.modules.environmentalSampleLogin.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
+import java.util.HashSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
@@ -58,7 +55,6 @@ import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.DataChangeHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -74,14 +70,12 @@ import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderTestManager;
+import org.openelis.manager.OrganizationParameterManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleEnvironmentalManager;
-import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
-import org.openelis.manager.TestManager;
+import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
@@ -97,9 +91,8 @@ import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
-import org.openelis.modules.sample.client.SampleTreeUtility;
+import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.sample.client.StorageTab;
-import org.openelis.modules.sample.client.TestPrepUtility;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
@@ -162,7 +155,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
     private SampleEnvironmentalImportOrder envOrderImport;
     private StandardNoteDO                 autoNote;     
-    private ScreenService                  standardNoteService, testService;
+    private ScreenService                  standardNoteService;
     
     private enum Tabs {
         SAMPLE_ITEM, ANALYSIS, TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS,
@@ -173,7 +166,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         super((ScreenDefInt)GWT.create(EnvironmentalSampleLoginDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
         standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         userPermission = UserCache.getPermission().getModule("sampleenvironmental");
         if (userPermission == null)
@@ -202,7 +194,8 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                                            "user_action", "type_of_sample", 
                                            "source_of_sample", "sample_container", 
                                            "unit_of_measure", "qaevent_type", 
-                                           "aux_field_value_type", "organization_type", "worksheet_status");             
+                                           "aux_field_value_type", "organization_type", 
+                                           "worksheet_status", "parameter_type");             
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1373,23 +1366,17 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
 
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
-        // preload dictionary models and single entries, close the window if an
-        // error is found
-        try {
-            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-            // sample status dropdown
-            model = new ArrayList<TableDataRow>();
-            model.add(new TableDataRow(null, ""));
-            for (DictionaryDO d : CategoryCache.getBySystemName("sample_status"))
-                model.add(new TableDataRow(d.getId(), d.getEntry()));
+        
+        // sample status dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : CategoryCache.getBySystemName("sample_status"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
 
-            statusId.setModel(model);            
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
+        statusId.setModel(model);          
         
         try {
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
             autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_environmental");
         } catch (NotFoundException nfE) {
             // ignore not found exception, as this domain may not have a default note
@@ -1477,7 +1464,11 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
     }
     
     private void importOrder(Integer orderId) {
+        Integer orgId;
+        ArrayList<Integer> orgIds; 
         OrderManager man;
+        SampleOrganizationManager sorgMan;
+        SampleOrganizationViewDO data;
         ValidationErrorsList errors;  
         
         if (orderId == null) {
@@ -1523,9 +1514,9 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
                 envOrderImport = new SampleEnvironmentalImportOrder();
             
             errors = envOrderImport.importOrderInfo(orderId, manager);    
-            
+                        
             setDataInTabs();
-            DataChangeEvent.fire(screen);
+            DataChangeEvent.fire(screen);                       
             window.clearStatus();
             
             ActionEvent.fire(screen, AnalysisTab.Action.ORDER_LIST_ADDED, null);            
@@ -1533,6 +1524,21 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
             if (errors != null && errors.size() > 0)
                 showErrors(errors);
 
+            /*
+             * check to see if any of the sample organizations has been marked for
+             * holding or refusing samples from 
+             */
+            sorgMan = manager.getOrganizations();
+            orgIds = new ArrayList<Integer>();
+            for (int i = 0; i < sorgMan.count(); i++) {
+                data = sorgMan.getOrganizationAt(i);
+                orgId = data.getOrganizationId();
+                if (!orgIds.contains(orgId)) {
+                    if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
+                        Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ data.getOrganizationName()+"'");
+                    orgIds.add(orgId);
+                }
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.clearStatus();

@@ -34,13 +34,12 @@ import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.NoteViewDO;
-import org.openelis.domain.OrderTestViewDO;
 import org.openelis.domain.ReferenceTable;
+import org.openelis.domain.SampleOrganizationViewDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.StandardNoteDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
@@ -72,9 +71,10 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrderTestManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleManager;
+import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
@@ -89,6 +89,7 @@ import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
 import org.openelis.modules.sample.client.SampleNotesTab;
+import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.sample.client.SamplePrivateWellImportOrder;
 import org.openelis.modules.sample.client.StorageTab;
 
@@ -150,7 +151,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     private ModulePermission                  userPermission;
     private SendoutOrderScreen                sendoutOrderScreen;
     private StandardNoteDO                    autoNote;
-    private ScreenService                     standardNoteService, testService;
+    private ScreenService                     standardNoteService;
 
     protected SamplePrivateWellImportOrder    wellOrderImport;
 
@@ -163,7 +164,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         super((ScreenDefInt)GWT.create(PrivateWellWaterSampleLoginDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
         standardNoteService = new ScreenService("controller?service=org.openelis.modules.standardnote.server.StandardNoteService");
-        testService = new ScreenService("controller?service=org.openelis.modules.test.server.TestService");
 
         userPermission = UserCache.getPermission().getModule("sampleprivatewell");
         if (userPermission == null)
@@ -996,9 +996,6 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
         };
 
-        //
-        // screen fields
-        //
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
             public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE, State.DELETE).contains(state)) {
@@ -1363,28 +1360,20 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
-        // preload dictionary models and single entries, close the window if an
-        // error is found
+        // sample status dropdown
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO d : CategoryCache.getBySystemName("sample_status"))
+            model.add(new TableDataRow(d.getId(), d.getEntry()));
+
+        statusId.setModel(model);
+
         try {
             sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
-
-            // sample status dropdown
-            model = new ArrayList<TableDataRow>();
-            model.add(new TableDataRow(null, ""));
-            for (DictionaryDO d : CategoryCache.getBySystemName("sample_status"))
-                model.add(new TableDataRow(d.getId(), d.getEntry()));
-
-            statusId.setModel(model);
-
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
-        
-        try {
             autoNote = standardNoteService.call("fetchBySystemVariableName", "auto_comment_private_well");
         } catch (NotFoundException nfE) {
-            // ignore not found exceptions since this domain may not have a default note
+            // ignore not found exceptions since this domain may not have a
+            // default note
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1541,8 +1530,13 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
     
     private void importOrder(Integer orderId) {
+        Integer orgId;
+        ArrayList<Integer> orgIds; 
         OrderManager man;
+        SampleOrganizationManager sorgMan;
+        SampleOrganizationViewDO data;
         ValidationErrorsList errors;
+        SamplePrivateWellViewDO well;
 
         if (orderId == null) {
             manager.getSample().setOrderId(orderId);
@@ -1596,7 +1590,28 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             
             if (errors != null && errors.size() > 0)
                 showErrors(errors);
-
+            
+            /*
+             * check to see if any of the sample organizations has been marked for
+             * holding or refusing samples from 
+             */ 
+            orgIds = new ArrayList<Integer>();
+            well = ((SamplePrivateWellManager)manager.getDomainManager()).getPrivateWell();
+            orgId = well.getOrganizationId();
+            if (orgId != null) {
+                showHoldRefuseWarning(orgId, well.getOrganization().getName());
+                orgIds.add(orgId);
+            }
+            
+            sorgMan = manager.getOrganizations();
+            for (int i = 0; i < sorgMan.count(); i++) {
+                data = sorgMan.getOrganizationAt(i);
+                orgId = data.getOrganizationId();
+                if (!orgIds.contains(orgId)) {
+                    showHoldRefuseWarning(orgId, data.getOrganizationName());
+                    orgIds.add(orgId);
+                }
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.clearStatus();
@@ -1634,5 +1649,10 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
         qaEventsTab.setData(null);
         qaEventsTab.setManager(manager);
         auxDataTab.setManager(manager);
+    }
+    
+    private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
+        if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
+            Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ name+"'");
     }
 }
