@@ -112,14 +112,14 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean              closeWindow, isPopup, successfulLoad;
+    private boolean              closeWindow, isPopup, successfulLoad, tableLoaded;
     private Integer              statusWorking, statusFailedRun, origStatus;
     private ScreenService        instrumentService, sysVarService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
-    private AppButton         lookupWorksheetButton, printButton, updateButton,
-                              commitButton, abortButton, editWorksheetButton, loadFromEditButton,
+    private AppButton         lookupWorksheetButton, updateButton, commitButton,
+                              abortButton, editWorksheetButton, loadFromEditButton,
                               loadFilePopupButton;
     private NotesTab          noteTab;
     private TestPrepUtility   testPrepUtil;
@@ -221,18 +221,6 @@ public class WorksheetCompletionScreen extends Screen {
      */
     @SuppressWarnings("unchecked")
     private void initialize() {
-        printButton = (AppButton)def.getWidget("print");
-        addScreenHandler(printButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                print();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-//                printButton.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
-                printButton.enable(Boolean.FALSE);
-            }
-        });
-
         updateButton = (AppButton)def.getWidget("update");
         addScreenHandler(updateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -469,7 +457,8 @@ public class WorksheetCompletionScreen extends Screen {
         table = (TableWidget)def.getWidget("worksheetItemTable");
         addScreenHandler(table, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                table.load(getTableModel());
+                tableLoaded = false;
+                drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -583,7 +572,8 @@ public class WorksheetCompletionScreen extends Screen {
     private void drawTabs() {
         switch (tab) {
             case WORKSHEET:
-                table.load(getTableModel());
+                if (!tableLoaded)
+                    table.load(getTableModel());
                 break;
                 
             case NOTE:
@@ -626,10 +616,6 @@ public class WorksheetCompletionScreen extends Screen {
             Window.alert("error: " + e.getMessage());
             return;
         }
-    }
-    
-    protected void print() {
-        // TODO: Add worksheet printing code
     }
     
     protected void update() {
@@ -1116,6 +1102,8 @@ public class WorksheetCompletionScreen extends Screen {
             if (row.cells.get(3).value != null)
                 row.cells.get(3).value = qcLinkMap.get(row.cells.get(3).value);
         }
+        
+        tableLoaded = true;
         return model;
     }
 }

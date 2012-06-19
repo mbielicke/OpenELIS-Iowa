@@ -47,11 +47,6 @@ UIRF Software License are applicable instead of those above.
       <VerticalPanel padding="0" spacing="0">
         <AbsolutePanel spacing="0" style="ButtonPanelContainer">
           <HorizontalPanel>
-            <xsl:call-template name="printButton">
-              <xsl:with-param name="language">
-                <xsl:value-of select="language" />
-              </xsl:with-param>
-            </xsl:call-template>
             <xsl:call-template name="updateButton">
               <xsl:with-param name="language">
                 <xsl:value-of select="language" />

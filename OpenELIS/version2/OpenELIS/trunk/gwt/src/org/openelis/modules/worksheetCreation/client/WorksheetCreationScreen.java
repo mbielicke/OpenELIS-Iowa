@@ -412,10 +412,14 @@ public class WorksheetCreationScreen extends Screen {
                     for (i = 0; i < worksheetItemTable.numRows(); i++) {
                         tempRow = worksheetItemTable.getRow(i);
                         if (tempRow != dataRow && tempRow.cells.get(3).getValue() != null) {
-                            if (tempRow.cells.get(3).getValue() instanceof ArrayList)
-                                tempKey = (Integer)((ArrayList<Object>)tempRow.cells.get(3).getValue()).get(0);
-                            else
+                            if (tempRow.cells.get(3).getValue() instanceof ArrayList) {
+                                if (((ArrayList<Object>)tempRow.cells.get(3).getValue()).size() > 0)
+                                    tempKey = (Integer)((ArrayList<Object>)tempRow.cells.get(3).getValue()).get(0);
+                                else
+                                    tempKey = null;
+                            } else {
                                 tempKey = (Integer)tempRow.cells.get(3).getValue();
+                            }
                             
                             if (((Integer)dataRow.key).equals(tempKey)) {
                                 Window.alert(consts.get("oneOrMoreQcLinkOnRemove"));
