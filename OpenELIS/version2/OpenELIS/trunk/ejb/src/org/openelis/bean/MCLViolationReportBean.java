@@ -265,7 +265,6 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                                     }
                                 } catch (NumberFormatException numE) {
                                     log.error("Value is not parseable as a number", numE);
-                                    throw numE;
                                 }
                                 break;
                             }
