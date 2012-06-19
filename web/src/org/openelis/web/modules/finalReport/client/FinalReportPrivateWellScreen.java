@@ -85,8 +85,8 @@ public class FinalReportPrivateWellScreen extends Screen {
     private AbsolutePanel                     ap;
     private TableWidget                       sampleEntTable;
     private Label<String>                     queryDeckLabel, numSampleSelected;
-    private AppButton                         getSamplesButton, resetButton, runReportButton,
-                                              resettButton, backButton, selectAllButton;
+    private AppButton                         getSamplesButton, resetButton, backButton,
+                                              selectAllButton,unselectButton, runReportButton;
     private ArrayList<FinalReportWebVO> results;
 
     private enum Decks {
@@ -393,44 +393,10 @@ public class FinalReportPrivateWellScreen extends Screen {
             }
         });
 
-        selectAllButton = (AppButton)def.getWidget("selectAllButton");
-        addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                for (int i = 0; i < sampleEntTable.numRows(); i++ )
-                    sampleEntTable.setCell(i, 0, "Y");
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                selectAllButton.enable(true);
-            }
-        });
-
         numSampleSelected = (Label<String>)def.getWidget("numSampleSelected");
         addScreenHandler(numSampleSelected, new ScreenEventHandler<String>() {
             public void onStateChange(StateChangeEvent<State> event) {
                 numSampleSelected.enable(EnumSet.of(State.ADD).contains(event.getState()));
-            }
-        });
-
-        runReportButton = (AppButton)def.getWidget("runReportButton");
-        addScreenHandler(runReportButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                runReport();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                runReportButton.enable(true);
-            }
-        });
-
-        resettButton = (AppButton)def.getWidget("resettButton");
-        addScreenHandler(resettButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                resetSampleList();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                resettButton.enable(true);
             }
         });
         
@@ -442,6 +408,40 @@ public class FinalReportPrivateWellScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 backButton.enable(true);
+            }
+        });
+
+        selectAllButton = (AppButton)def.getWidget("selectAllButton");
+        addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                for (int i = 0; i < sampleEntTable.numRows(); i++ )
+                    sampleEntTable.setCell(i, 0, "Y");
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                selectAllButton.enable(true);
+            }
+        });
+        
+        unselectButton = (AppButton)def.getWidget("unselectButton");
+        addScreenHandler(unselectButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                resetSampleList();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                unselectButton.enable(true);
+            }
+        });
+
+        runReportButton = (AppButton)def.getWidget("runReportButton");
+        addScreenHandler(runReportButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                runReport();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                runReportButton.enable(true);
             }
         });
 
