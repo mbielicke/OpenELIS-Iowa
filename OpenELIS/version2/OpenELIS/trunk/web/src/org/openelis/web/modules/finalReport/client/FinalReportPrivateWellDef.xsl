@@ -248,7 +248,7 @@ UIRF Software License are applicable instead of those above.
                 </appButton>
               </widget>
               <widget halign="left">
-                <appButton key="resettButton" style="Button">
+                <appButton key="unselectButton" style="Button">
                   <HorizontalPanel>
                     <AbsolutePanel style="Unchecked" />
                     <text>

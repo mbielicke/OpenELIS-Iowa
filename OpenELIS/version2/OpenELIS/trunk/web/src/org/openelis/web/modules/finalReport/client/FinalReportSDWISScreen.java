@@ -84,8 +84,8 @@ public class FinalReportSDWISScreen extends Screen {
     private AbsolutePanel               ap;
     private TableWidget                 sampleEntTable;
     private Label<String>               queryDeckLabel, numSampleSelected;
-    private AppButton                   getSamplesButton, resetButton, runReportButton,
-                                        backButton, selectAllButton;
+    private AppButton                   getSamplesButton, resetButton, backButton,
+                                        selectAllButton, unselectButton, runReportButton;
     private ArrayList<FinalReportWebVO> results;
     
     private enum Decks {
@@ -344,7 +344,7 @@ public class FinalReportSDWISScreen extends Screen {
                 getSamplesButton.enable(true);
             }
         });
-
+        
         resetButton = (AppButton)def.getWidget("resetButton");
         addScreenHandler(resetButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -376,6 +376,27 @@ public class FinalReportSDWISScreen extends Screen {
             }
         });      
                 
+        numSampleSelected = (Label<String>)def.getWidget("numSampleSelected");
+        addScreenHandler(numSampleSelected, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {                
+             }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                numSampleSelected.enable(EnumSet.of(State.ADD).contains(event.getState()));
+            }
+        });
+
+        backButton = (AppButton)def.getWidget("backButton");
+        addScreenHandler(backButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+               loadDeck(null);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                backButton.enable(true);
+            }
+        });
+
         selectAllButton = (AppButton)def.getWidget("selectAllButton");
         addScreenHandler(selectAllButton, new ScreenEventHandler<Object>() {            
             
@@ -389,17 +410,17 @@ public class FinalReportSDWISScreen extends Screen {
             }
         });
         
-        numSampleSelected = (Label<String>)def.getWidget("numSampleSelected");
-        addScreenHandler(numSampleSelected, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {                
-             }
+        unselectButton = (AppButton)def.getWidget("unselectButton");
+        addScreenHandler(unselectButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                reset();
+            }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                numSampleSelected.enable(EnumSet.of(State.ADD).contains(event.getState()));
+                unselectButton.enable(true);
             }
         });
-
-
+        
         runReportButton = (AppButton)def.getWidget("runReportButton");
         addScreenHandler(runReportButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -408,17 +429,6 @@ public class FinalReportSDWISScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 runReportButton.enable(true);
-            }
-        });
-        
-        backButton = (AppButton)def.getWidget("backButton");
-        addScreenHandler(backButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-               loadDeck(null);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                backButton.enable(true);
             }
         });
         
