@@ -40,6 +40,8 @@ import org.openelis.local.CategoryCacheLocal;
 import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.ExchangeExternalTermLocal;
+import org.openelis.local.ExchangeLocalTermLocal;
 import org.openelis.local.HistoryLocal;
 import org.openelis.local.InstrumentLocal;
 import org.openelis.local.InstrumentLogLocal;
@@ -169,7 +171,15 @@ public class EJBFactory {
 
     public static DictionaryLocal getDictionary() {
         return (DictionaryLocal)lookup("DictionaryBean!org.openelis.local.DictionaryLocal");
-    }    
+    }  
+    
+    public static ExchangeLocalTermLocal getExchangeLocalTerm() {
+        return (ExchangeLocalTermLocal)lookup("ExchangeLocalTermBean!org.openelis.local.ExchangeLocalTermLocal");
+    }
+    
+    public static ExchangeExternalTermLocal getExchangeExternalTerm() {
+        return (ExchangeExternalTermLocal)lookup("ExchangeExternalTermBean!org.openelis.local.ExchangeExternalTermLocal");
+    }
     
     public static HistoryLocal getHistory() {
         return (HistoryLocal)lookup("HistoryBean!org.openelis.local.HistoryLocal");

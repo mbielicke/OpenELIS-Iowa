@@ -25,39 +25,33 @@
 */
 package org.openelis.domain;
 
-import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
-
 /**
- *  The class is used to return the data to be shown as the result of querying
- *  the records in the table analyte_parameter. The fields are considered read/display
- *  and do not get committed to the database.
+ * Class represents the fields in database table exchange_local_term
  */
-public class ReferenceIdTableIdNameVO implements RPC {
+
+public class ExchangeLocalTermDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer         referenceId, referenceTableId;
 
-    protected String          referenceName, referenceDescription;
+    protected Integer         id, referenceTableId, referenceId;
     
-    public ReferenceIdTableIdNameVO() {
+    public ExchangeLocalTermDO() {
     }
     
-    public ReferenceIdTableIdNameVO(Integer referenceId, Integer referenceTableId,
-                                    String referenceName, String referenceDescription) {
-        setReferenceId(referenceId);
+    public ExchangeLocalTermDO(Integer  id, Integer referenceTableId, Integer referenceId) {
+        setId(id);
         setReferenceTableId(referenceTableId);
-        setReferenceName(referenceName);     
-        setReferenceDescription(referenceDescription);
-    }
-    
-    public Integer getReferenceId() {
-        return referenceId;
+        setReferenceId(referenceId);
+        _changed = false;
     }
 
-    public void setReferenceId(Integer referenceId) {
-        this.referenceId = referenceId;
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+        _changed = true;
     }
 
     public Integer getReferenceTableId() {
@@ -66,22 +60,15 @@ public class ReferenceIdTableIdNameVO implements RPC {
 
     public void setReferenceTableId(Integer referenceTableId) {
         this.referenceTableId = referenceTableId;
+        _changed = true;
     }
 
-    public String getReferenceName() {
-        return referenceName;
+    public Integer getReferenceId() {
+        return referenceId;
     }
 
-    public void setReferenceName(String referenceName) {
-        this.referenceName = DataBaseUtil.trim(referenceName);
+    public void setReferenceId(Integer referenceId) {
+        this.referenceId = referenceId;
+        _changed = true;
     }
-
-    public String getReferenceDescription() {
-        return referenceDescription;
-    }
-
-    public void setReferenceDescription(String referenceDescription) {
-        this.referenceDescription = DataBaseUtil.trim(referenceDescription);
-    }
-
 }

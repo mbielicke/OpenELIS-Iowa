@@ -49,6 +49,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.completeRelease.CompleteRelease"/>
     <inherits name="org.openelis.modules.cron.Cron"/>
     <inherits name="org.openelis.modules.dictionary.Dictionary"/>
+    <inherits name="org.openelis.modules.exchangeVocabularyMap.ExchangeVocabularyMap"/>
     <inherits name="org.openelis.modules.environmentalSampleLogin.EnvironmentalSampleLogin"/>
     <inherits name="org.openelis.modules.favorites.Favorites"/>
     <inherits name="org.openelis.modules.history.History"/>

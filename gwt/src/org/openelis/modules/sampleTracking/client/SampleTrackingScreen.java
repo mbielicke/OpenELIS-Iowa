@@ -2513,9 +2513,20 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         }
     }
     
+    /**
+     * If the status of the sample showing on the screen is changed from Released to
+     * something else and on changing the state, the status stays Released and the
+     *  widgets in the tabs stay disabled. Also, if the status changes from something
+     * else to Released, the widgets are not disabled. This is because the data 
+     * in the tabs is set in their handlers of DataChangeEvent which is fired after
+     * StateChangeEvent and the handlers of the latter in the widgets are responsible
+     * for enabling or disabling the widgets. That is why we need to set the data
+     * in the tabs before changing the state.
+     */
     private void setDataInTabs() {
         TreeDataItem selectedRow;
         SampleDataBundle bundle;
+        String domain;
 
         environmentalTab.setData(null);
         wellTab.setData(null);
@@ -2536,40 +2547,28 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             return;
         
         bundle = (SampleDataBundle)selectedRow.data;
-        
-        if ("sample".equals(selectedRow.leafType) &&
-                        SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) 
-            environmentalTab.setData(manager);
-        
-        if ("sample".equals(selectedRow.leafType) &&
-                        SampleManager.WELL_DOMAIN_FLAG.equals(manager.getSample().getDomain())) 
-            wellTab.setData(manager);
-        
-        if ("sample".equals(selectedRow.leafType) &&
-                        SampleManager.SDWIS_DOMAIN_FLAG.equals(manager.getSample().getDomain())) 
-            sdwisTab.setData(manager);
-        
-        if ("sample".equals(selectedRow.leafType) &&
-                        SampleManager.QUICK_ENTRY.equals(manager.getSample().getDomain())) 
-            quickEntryTab.setData(manager);
-        
-        if ("sampleItem".equals(selectedRow.leafType)) 
+        domain = manager.getSample().getDomain();
+        if ("sample".equals(selectedRow.leafType)) {
+            if (SampleManager.ENVIRONMENTAL_DOMAIN_FLAG.equals(domain)) 
+                environmentalTab.setData(manager);
+            else if (SampleManager.WELL_DOMAIN_FLAG.equals(domain)) 
+                wellTab.setData(manager);
+            else if (SampleManager.SDWIS_DOMAIN_FLAG.equals(domain)) 
+                sdwisTab.setData(manager);
+            else if (SampleManager.QUICK_ENTRY.equals(domain)) 
+                quickEntryTab.setData(manager);
+        } else if ("sampleItem".equals(selectedRow.leafType)) { 
             sampleItemTab.setData(bundle);
-            
-        if ("result".equals(selectedRow.leafType)) 
+        } else if ("result".equals(selectedRow.leafType)) { 
             analysisTab.setData(bundle);           
-            
-        if ("analysis".equals(selectedRow.leafType))
+        } else if ("analysis".equals(selectedRow.leafType)) {
             testResultsTab.setData(bundle);
-        
-        if (bundle != null && "note".equals(selectedRow.leafType) &&
-                        SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())) 
+        } else if ("note".equals(selectedRow.leafType) && bundle != null &&  
+                        SampleDataBundle.Type.ANALYSIS.equals(bundle.getType())) { 
             analysisNotesTab.setData(bundle);
-        
-        if ("storage".equals(selectedRow.leafType))
+        } else if ("storage".equals(selectedRow.leafType)) {
             storageTab.setData(bundle);
-            
-        if ("qaevent".equals(selectedRow.leafType)) {
+        } else if ("qaevent".equals(selectedRow.leafType)) {
             /* 
              * we need to make sure that any qa events previously shown
              * in the tab for any analyses get cleared out if we are showing

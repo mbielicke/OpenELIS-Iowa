@@ -203,6 +203,7 @@ UIRF Software License are applicable instead of those above.
                   <html>&lt;hr/&gt;</html>
                   <menuItem description="{resource:getString($constants,'analyteDescription')}" enable="false" icon="analyteIcon" key="analyte" label="{resource:getString($constants,'analyte')}" />
                   <menuItem description="{resource:getString($constants,'dictionaryDescription')}" enable="false" icon="dictionaryIcon" key="dictionary" label="{resource:getString($constants,'dictionary')}" />
+                  <menuItem description="{resource:getString($constants,'exchangeVocabularyMapDescription')}" enable="false" icon="dictionaryIcon" key="exchangeVocabularyMap" label="{resource:getString($constants,'exchangeVocabularyMap')}" />
                   <menuItem description="{resource:getString($constants,'auxiliaryPromptDescription')}" enable="false" icon="auxiliaryPromptIcon" key="auxiliaryPrompt" label="{resource:getString($constants,'auxiliaryPrompt')}" />
                   <html>&lt;hr/&gt;</html>
                   <menuItem description="{resource:getString($constants,'labelDescription')}" enable="false" icon="labelIcon" key="label" label="{resource:getString($constants,'label')}" />

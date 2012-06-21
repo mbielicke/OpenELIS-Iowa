@@ -51,6 +51,8 @@ import org.openelis.remote.CronRemote;
 import org.openelis.remote.DataViewRemote;
 import org.openelis.remote.DictionaryCacheRemote;
 import org.openelis.remote.DictionaryRemote;
+import org.openelis.remote.ExchangeLocalTermManagerRemote;
+import org.openelis.remote.ExchangeLocalTermRemote;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.remote.FinalReportWebRemote;
 import org.openelis.remote.HistoryRemote;
@@ -200,6 +202,14 @@ public class EJBFactory {
 
     public static CategoryManagerRemote getCategoryManager() {
         return (CategoryManagerRemote)lookup("CategoryManagerBean!org.openelis.remote.CategoryManagerRemote");
+    }
+    
+    public static ExchangeLocalTermRemote getExchangeLocalTerm() {
+        return (ExchangeLocalTermRemote)lookup("ExchangeLocalTermBean!org.openelis.remote.ExchangeLocalTermRemote");
+    }
+    
+    public static ExchangeLocalTermManagerRemote getExchangeLocalTermManager() {
+        return (ExchangeLocalTermManagerRemote)lookup("ExchangeLocalTermManagerBean!org.openelis.remote.ExchangeLocalTermManagerRemote");
     }
     
     public static HistoryRemote getHistory() {
