@@ -46,6 +46,7 @@ import org.openelis.modules.cron.client.CronScreen;
 import org.openelis.modules.report.dataView.client.DataViewScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
+import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.instrument.client.InstrumentScreen;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentScreen;
@@ -1001,6 +1002,26 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new DictionaryScreen(), "dictionary");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addClickHandler("exchangeVocabularyMap", "exchangevocabularymap", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new ExchangeVocabularyMapScreen(), "exchangeVocabularyMap");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

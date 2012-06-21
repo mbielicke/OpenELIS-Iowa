@@ -134,5 +134,7 @@ public class ReferenceTable {
     						CRON =                          109,
     						ORDER_ORGANIZATION =            110,
                             ORDER_TEST_ANALYTE =            111,
-                            ORDER_SAMPLE_NOTE =             112;  
+                            ORDER_SAMPLE_NOTE =             112,
+                            EXCHANGE_LOCAL_TERM =           113,
+                            EXCHANGE_EXTERNAL_TERM =        114;  
 }

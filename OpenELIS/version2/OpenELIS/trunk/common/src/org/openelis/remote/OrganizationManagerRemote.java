@@ -34,5 +34,4 @@ public interface OrganizationManagerRemote {
     public OrganizationContactManager fetchContactByOrganizationId(Integer id) throws Exception;
 
     public OrganizationParameterManager fetchParameterByOrganizationId(Integer id) throws Exception;
-
 }

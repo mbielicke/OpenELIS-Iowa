@@ -26,46 +26,28 @@
 package org.openelis.domain;
 
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.RPC;
 
 /**
- *  The class is used to return the data to be shown as the result of querying
- *  the records in the table analyte_parameter. The fields are considered read/display
- *  and do not get committed to the database.
+ * The class extends exchange external term DO and carries the field reference name.
+ * The additional field is for read/display only and do not get committed to
+ * the database. Note: isChanged will reflect any changes to read/display fields.
  */
-public class ReferenceIdTableIdNameVO implements RPC {
+
+public class ExchangeLocalTermViewDO extends ExchangeLocalTermDO {
 
     private static final long serialVersionUID = 1L;
-    
-    protected Integer         referenceId, referenceTableId;
 
     protected String          referenceName, referenceDescription;
-    
-    public ReferenceIdTableIdNameVO() {
+
+    public ExchangeLocalTermViewDO() {
     }
     
-    public ReferenceIdTableIdNameVO(Integer referenceId, Integer referenceTableId,
-                                    String referenceName, String referenceDescription) {
-        setReferenceId(referenceId);
-        setReferenceTableId(referenceTableId);
-        setReferenceName(referenceName);     
+    public ExchangeLocalTermViewDO(Integer  id, Integer referenceTableId,
+                                   Integer referenceId, String referenceName,
+                                   String referenceDescription) {
+        super(id, referenceTableId, referenceId);    
+        setReferenceName(referenceName);
         setReferenceDescription(referenceDescription);
-    }
-    
-    public Integer getReferenceId() {
-        return referenceId;
-    }
-
-    public void setReferenceId(Integer referenceId) {
-        this.referenceId = referenceId;
-    }
-
-    public Integer getReferenceTableId() {
-        return referenceTableId;
-    }
-
-    public void setReferenceTableId(Integer referenceTableId) {
-        this.referenceTableId = referenceTableId;
     }
 
     public String getReferenceName() {
@@ -75,7 +57,7 @@ public class ReferenceIdTableIdNameVO implements RPC {
     public void setReferenceName(String referenceName) {
         this.referenceName = DataBaseUtil.trim(referenceName);
     }
-
+    
     public String getReferenceDescription() {
         return referenceDescription;
     }
@@ -83,5 +65,4 @@ public class ReferenceIdTableIdNameVO implements RPC {
     public void setReferenceDescription(String referenceDescription) {
         this.referenceDescription = DataBaseUtil.trim(referenceDescription);
     }
-
 }

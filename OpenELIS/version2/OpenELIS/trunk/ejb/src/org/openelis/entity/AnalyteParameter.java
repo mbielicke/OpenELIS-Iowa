@@ -147,7 +147,7 @@ public class AnalyteParameter implements Auditable, Cloneable {
         return id;
     }
 
-    public void setId(Integer id) {
+    protected void setId(Integer id) {
         if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
