@@ -199,8 +199,18 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                 TestSectionViewDO  tsVDO;
                 
                 reflexTestTree.finishEditing();
+                
+                sectionId = null;
                 selection = reflexTestTree.getSelection();
-                sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                if (selection.cells.get(1).getValue() != null) {
+                    if (selection.cells.get(1).getValue() instanceof ArrayList) {
+                        if (((ArrayList<Object>)selection.cells.get(1).getValue()).size() > 0)
+                            sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                    } else {
+                        sectionId = (Integer) selection.cells.get(1).getValue();
+                    }
+                }
+
                 if (sectionId == null) {
                     Window.alert("Cannot copy blank section");
                 } else {
@@ -209,8 +219,10 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                         if (item.leafType == "reflexTest") {
                             if (item.cells.get(1).getValue() != null) {
                                 if (item.cells.get(1).getValue() instanceof ArrayList) {
-                                    if (((ArrayList<Object>)item.cells.get(1).getValue()).get(0) != null)
-                                        continue;
+                                    if (((ArrayList<Object>)item.cells.get(1).getValue()).size() > 0) {
+                                        if (((ArrayList<Object>)item.cells.get(1).getValue()).get(0) != null)
+                                            continue;
+                                    }
                                 } else {
                                     continue;
                                 }
@@ -245,8 +257,18 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                 TestSectionViewDO  tsVDO;
                 
                 reflexTestTree.finishEditing();
+                
+                sectionId = null;
                 selection = reflexTestTree.getSelection();
-                sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                if (selection.cells.get(1).getValue() != null) {
+                    if (selection.cells.get(1).getValue() instanceof ArrayList) {
+                        if (((ArrayList<Object>)selection.cells.get(1).getValue()).size() > 0)
+                            sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                    } else {
+                        sectionId = (Integer) selection.cells.get(1).getValue();
+                    }
+                }
+                
                 if (sectionId == null) {
                     Window.alert("Cannot copy blank section");
                 } else {
@@ -287,6 +309,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
     @SuppressWarnings("unchecked")
     private void ok() {
         int                          i;
+        Integer                      sectionId;
         ArrayList<Object>            selectedRow;
         ArrayList<ArrayList<Object>> selectedBundles;
         ValidationErrorsList         errorsList;
@@ -301,7 +324,19 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                     continue;
                 
                 if ("Y".equals(item.cells.get(2).getValue())) {
-                    if (item.cells.get(1).value == null) {
+                    sectionId = null;
+                    if (item.cells.get(1).getValue() != null) {
+                        if (item.cells.get(1).getValue() instanceof ArrayList) {
+                            if (((ArrayList<Object>)item.cells.get(1).getValue()).size() > 0) {
+                                if (((ArrayList<Object>)item.cells.get(1).getValue()).get(0) != null)
+                                    sectionId = (Integer) ((ArrayList<Object>)item.cells.get(1).getValue()).get(0);
+                            }
+                        } else {
+                            sectionId = (Integer) item.cells.get(1).getValue();
+                        }
+                    }
+                    
+                    if (sectionId == null) {
                         errorsList.add(new FormErrorException("reflexTestNeedsSection",
                                                               (String)item.cells.get(0).getValue()));
                     } else {
@@ -309,7 +344,7 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                         selectedRow.add(item.parent.data);
                         selectedRow.add((ResultViewDO)((ArrayList<Object>)item.data).get(0));
                         selectedRow.add((TestReflexViewDO)((ArrayList<Object>)item.data).get(1));
-                        selectedRow.add(item.cells.get(1).getValue());
+                        selectedRow.add(sectionId);
                         selectedBundles.add(selectedRow);
                     }
                 }

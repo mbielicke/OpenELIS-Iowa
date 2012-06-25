@@ -202,8 +202,18 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 TestSectionViewDO  tsVDO;
                 
                 prepTestTree.finishEditing();
+
+                sectionId = null;
                 selection = prepTestTree.getSelection();
-                sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                if (selection.cells.get(1).getValue() != null) {
+                    if (selection.cells.get(1).getValue() instanceof ArrayList) {
+                        if (((ArrayList<Object>)selection.cells.get(1).getValue()).size() > 0)
+                            sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                    } else {
+                        sectionId = (Integer) selection.cells.get(1).getValue();
+                    }
+                }
+                                
                 if (sectionId == null) {
                     Window.alert("Cannot copy blank section");
                 } else {
@@ -212,8 +222,10 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                         if (item.leafType == "reflexTest") {
                             if (item.cells.get(1).getValue() != null) {
                                 if (item.cells.get(1).getValue() instanceof ArrayList) {
-                                    if (((ArrayList<Object>)item.cells.get(1).getValue()).get(0) != null)
-                                        continue;
+                                    if (((ArrayList<Object>)item.cells.get(1).getValue()).size() > 0) {
+                                        if (((ArrayList<Object>)item.cells.get(1).getValue()).get(0) != null)
+                                            continue;
+                                    }
                                 } else {
                                     continue;
                                 }
@@ -248,8 +260,18 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                 TestSectionViewDO  tsVDO;
                 
                 prepTestTree.finishEditing();
+                
+                sectionId = null;
                 selection = prepTestTree.getSelection();
-                sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                if (selection.cells.get(1).getValue() != null) {
+                    if (selection.cells.get(1).getValue() instanceof ArrayList) {
+                        if (((ArrayList<Object>)selection.cells.get(1).getValue()).size() > 0)
+                            sectionId = (Integer) ((ArrayList<Object>)selection.cells.get(1).getValue()).get(0);
+                    } else {
+                        sectionId = (Integer) selection.cells.get(1).getValue();
+                    }
+                }
+                
                 if (sectionId == null) {
                     Window.alert("Cannot copy blank section");
                 } else {
@@ -453,6 +475,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                                         ArrayList<ArrayList<Object>> selectedBundles,
                                         ValidationErrorsList errorsList, int index) {
         int               depth;
+        Integer           sectionId;
         ArrayList<Object> selectedRow;
         TreeDataItem      item;
 
@@ -462,7 +485,19 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
             if (item.depth < depth) {
                 break;
             } else if (item.depth == depth && "Y".equals(item.cells.get(2).getValue())) {
-                if (item.cells.get(1).value == null) {
+                sectionId = null;
+                if (item.cells.get(1).getValue() != null) {
+                    if (item.cells.get(1).getValue() instanceof ArrayList) {
+                        if (((ArrayList<Object>)item.cells.get(1).getValue()).size() > 0) {
+                            if (((ArrayList<Object>)item.cells.get(1).getValue()).get(0) != null)
+                                sectionId = (Integer) ((ArrayList<Object>)item.cells.get(1).getValue()).get(0);
+                        }
+                    } else {
+                        sectionId = (Integer) item.cells.get(1).getValue();
+                    }
+                }
+                
+                if (sectionId == null) {
                     errorsList.add(new FormErrorException("prepTestNeedsSection",
                                                           (String)item.cells.get(0).getValue()));
                     break;
@@ -470,7 +505,7 @@ public class TestPrepLookupScreen extends Screen implements HasActionHandlers<Te
                     selectedRow = new ArrayList<Object>(3);
                     selectedRow.add(parentBundle);
                     selectedRow.add(((TestPrepViewDO)((ArrayList<Object>)item.data).get(0)).getPrepTestId());
-                    selectedRow.add(item.cells.get(1).getValue());
+                    selectedRow.add(sectionId);
                     selectedBundles.add(selectedRow);
                     if (item.hasChildren())
                         addPrepTestToSelection(item, selectedRow, selectedBundles,
