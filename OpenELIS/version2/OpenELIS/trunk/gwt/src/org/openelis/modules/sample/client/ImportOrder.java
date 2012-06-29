@@ -49,6 +49,7 @@ import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.TestViewDO;
+import org.openelis.exception.MultipleNoteException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -73,6 +74,8 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.TestManager;
 
+import com.google.gwt.user.client.Window;
+
 public abstract class ImportOrder {
     protected OrderManager         orderMan;
     
@@ -80,7 +83,7 @@ public abstract class ImportOrder {
     
     protected int                  lastAuxFieldIndex;  
     
-    protected Integer              reportToId, billToId, secondReportToId;
+    protected Integer              reportToId, billToId, secondReportToId, supplementalId;
     
     protected static final String  AUX_DATA_SERVICE_URL = "org.openelis.modules.auxData.server.AuxDataService",
                                    PROJECT_SERVICE_URL = "org.openelis.modules.project.server.ProjectService",
@@ -96,6 +99,7 @@ public abstract class ImportOrder {
         reportToId = DictionaryCache.getIdBySystemName("org_report_to");
         billToId = DictionaryCache.getIdBySystemName("org_bill_to");
         secondReportToId = DictionaryCache.getIdBySystemName("org_second_report_to");
+        supplementalId = DictionaryCache.getIdBySystemName("test_analyte_suplmtl");
     }   
     
     protected ValidationErrorsList importOrderInfo(Integer orderId, SampleManager manager,
@@ -128,7 +132,7 @@ public abstract class ImportOrder {
         loadOrganizations(orderId, manager);
         loadSampleItems(orderId, manager);
         loadAnalyses(orderId,  manager, errors);       
-        loadNotes(orderId, manager);
+        loadNotes(orderId, manager, errors);
         
         return errors;
     }
@@ -296,7 +300,7 @@ public abstract class ImportOrder {
         }
     }
     
-    protected void loadNotes(Integer orderId, SampleManager man) throws Exception {
+    protected void loadNotes(Integer orderId, SampleManager man, ValidationErrorsList errors) throws Exception {
         NoteViewDO note;
         NoteManager ordNoteMan, samNoteMan;
         
@@ -315,7 +319,12 @@ public abstract class ImportOrder {
         note.setSystemUser(UserCache.getName());
         note.setSubject(Screen.consts.get("orderNoteSubject"));
         note.setText(ordNoteMan.getNoteAt(0).getText());
-        samNoteMan.addNote(note);        
+        
+        try {
+            samNoteMan.addNote(note);
+        } catch (MultipleNoteException e) {
+            errors.add(new FormErrorException("multipleInternalNoteException"));
+        }
     }
     
     protected DictionaryDO getDictionaryByKey(String key, String categorySystemName) {
@@ -470,7 +479,7 @@ public abstract class ImportOrder {
         /*
          * set the defaults e.g. section and unit and load the results
          */
-        anaMan.setTestAt(testMan, anaIndex);
+        anaMan.setTestAt(testMan, anaIndex, true);
         /*
          * set the row analytes under the analysis repotable if they were added
          * to this test in the order 
@@ -482,7 +491,7 @@ public abstract class ImportOrder {
     private void setAnalytesReportable(OrderTestAnalyteManager analyteMan, 
                                        AnalysisResultManager resultMan) {
         int i;
-        String reportable;
+        boolean reportable;
         HashSet<Integer> anaSet;
         ResultViewDO data;
         
@@ -491,16 +500,27 @@ public abstract class ImportOrder {
         
         anaSet = new HashSet<Integer>(); 
         for (i = 0; i < analyteMan.count(); i++) 
-            anaSet.add(analyteMan.getAnalyteAt(i).getAnalyteId());
+            anaSet.add(analyteMan.getAnalyteAt(i).getAnalyteId()); 
         
-        for (i = 0; i < resultMan.rowCount(); i++) {
+        i = 0;
+        while (i < resultMan.rowCount()) {
             data = resultMan.getResultAt(i, 0);
             /*
              * if this analyte was added to the test in the order, then mark it 
-             * as reportable under this analysis otherwise mark it as not reportable  
+             * as reportable under this analysis otherwise mark it not reportable  
              */
-            reportable = anaSet.contains(data.getAnalyteId()) ? "Y" : "N";
-            data.setIsReportable(reportable);
-        }        
+            reportable = anaSet.contains(data.getAnalyteId());
+            
+            if (supplementalId.equals(data.getTestAnalyteTypeId()) && !reportable) {
+                /* 
+                 * supplemental analytes are only shown if they are marked reportable  
+                 *                
+                 */
+                resultMan.removeRowAt(i);
+                continue;
+            }
+            data.setIsReportable(reportable ? "Y" : "N");
+            i++;
+        }
     }
 }

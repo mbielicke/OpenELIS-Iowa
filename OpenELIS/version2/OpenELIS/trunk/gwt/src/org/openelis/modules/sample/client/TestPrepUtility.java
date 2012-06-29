@@ -236,7 +236,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                 else
                     addedIndex = anMan.addAnalysis();
 
-                anMan.setTestAt(testMan, addedIndex);
+                anMan.setTestAt(testMan, addedIndex, false);
                 if (sectionVDO != null)
                     anMan.getAnalysisAt(addedIndex).setSectionId(sectionVDO.getSectionId());
 
@@ -390,7 +390,7 @@ public class TestPrepUtility extends Screen implements HasActionHandlers<TestPre
                     addedIndex = anMan.addPreAnalysis(parentIndex);
                     indexLinks.put(prepBundle, addedIndex);
                     anDO = anMan.getAnalysisAt(addedIndex);
-                    anMan.setTestAt(testMan, addedIndex);
+                    anMan.setTestAt(testMan, addedIndex, false);
                     anDO.setSectionId(tsVDO.getSectionId());
                     bundles.add(anMan.getBundleAt(addedIndex));
                 } catch (Exception e) {

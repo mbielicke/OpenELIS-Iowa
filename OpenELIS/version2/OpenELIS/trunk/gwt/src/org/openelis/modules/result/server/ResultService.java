@@ -60,6 +60,14 @@ public class ResultService {
         }
     }
     
+    public AnalysisResultManager fetchByTestIdForOrderImport(AnalysisDO anDO) throws Exception {
+        try {
+            return EJBFactory.getResultManager().fetchByTestIdForOrderImport(anDO.getTestId(), anDO.getUnitOfMeasureId());
+        } catch (RuntimeException e) {
+            throw new DatabaseException(e);
+        }
+    }
+    
     public AnalysisResultManager merge(AnalysisResultManager manager) throws Exception {
         try {
             return EJBFactory.getResultManager().merge(manager);
