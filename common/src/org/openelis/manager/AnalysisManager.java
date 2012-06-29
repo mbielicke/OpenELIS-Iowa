@@ -799,7 +799,7 @@ public class AnalysisManager implements RPC {
     }
 
     // test
-    public void setTestAt(TestManager testMan, int index) throws Exception {
+    public void setTestAt(TestManager testMan, int index, boolean forOrderImport) throws Exception {
         TestViewDO test;
         AnalysisViewDO data, prevData;
         ArrayList<TestTypeOfSampleDO> units;
@@ -843,17 +843,28 @@ public class AnalysisManager implements RPC {
             prevData.setPreAnalysisTest(test.getName());
             prevData.setPreAnalysisMethod(test.getMethodName());
         }
-
-        /*
-         * merge the analysis if same test but different method; wipe & reload
-         * the results if not saved analysis test and method both changed
-         */
-        if ( !DataBaseUtil.isSame(data.getTestName(), oldTestName) ||
-            getItemAt(index).analysisResult == null)
-            getItemAt(index).analysisResult = AnalysisResultManager.fetchByTestId(data.getTestId(),
-                                                                                  data.getUnitOfMeasureId());
-        else if ( !DataBaseUtil.isSame(data.getMethodName(), oldMethodName))
-            mergeAt(index, data.getTestId());
+        
+        if ( !forOrderImport) {
+            /*
+             * merge the analysis if same test but different method; wipe &
+             * reload the results if not saved analysis test and method both
+             * changed
+             */
+            if ( !DataBaseUtil.isSame(data.getTestName(), oldTestName) ||
+                getItemAt(index).analysisResult == null)
+                getItemAt(index).analysisResult = AnalysisResultManager.fetchByTestId(data.getTestId(),
+                                                                                      data.getUnitOfMeasureId());
+            else if ( !DataBaseUtil.isSame(data.getMethodName(), oldMethodName))
+                mergeAt(index, data.getTestId());
+        } else {
+            /*
+             * When the results for a test added from an order, there are no previous
+             * results with which they can be merged. Also, the results included 
+             * supplemental analytes.
+             */
+            getItemAt(index).analysisResult = AnalysisResultManager.fetchByTestIdForOrderImport(data.getTestId(),
+                                                                                          data.getUnitOfMeasureId());
+        }
     }
 
     public void removeTestAt(int index) {

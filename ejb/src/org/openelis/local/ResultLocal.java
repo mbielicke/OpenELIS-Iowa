@@ -45,6 +45,13 @@ public interface ResultLocal {
 			HashMap<Integer, AnalyteDO> analyteList,
 			HashMap<Integer, TestAnalyteListItem> testAnalyteList,
 			ArrayList<ResultValidator> resultValidators) throws Exception;
+	
+    public void fetchByTestIdNoResultsForOrderImport(Integer testId, Integer unitId,
+            ArrayList<ArrayList<ResultViewDO>> results,
+            HashMap<Integer, TestResultDO> testResultList,
+            HashMap<Integer, AnalyteDO> analyteList,
+            HashMap<Integer, TestAnalyteListItem> testAnalyteList,
+            ArrayList<ResultValidator> resultValidators) throws Exception;
 
 	public void fetchByAnalysisIdForDisplay(Integer analysisId,
 			ArrayList<ArrayList<ResultViewDO>> results) throws Exception;
