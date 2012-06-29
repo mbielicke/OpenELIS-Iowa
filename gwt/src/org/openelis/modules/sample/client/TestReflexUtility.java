@@ -221,7 +221,7 @@ public class TestReflexUtility extends Screen implements
                 anMan = itemMan.getAnalysisAt(anaBundle.getSampleItemIndex());
                 anVDO = anMan.getAnalysisAt(anaBundle.getAnalysisIndex());
                 addedIndex = anMan.addReflexAnalysis(anVDO.getId(), rVDO.getId());
-                anMan.setTestAt(testMan, addedIndex);
+                anMan.setTestAt(testMan, addedIndex, false);
                 anVDO.setSectionId(tsVDO.getSectionId());
                 bundles.add(anMan.getBundleAt(addedIndex));
             }

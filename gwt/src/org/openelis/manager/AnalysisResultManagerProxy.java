@@ -73,6 +73,16 @@ public class AnalysisResultManagerProxy {
 
         return service.call("fetchByTestId", data);
     }
+    
+    public AnalysisResultManager fetchByTestIdForOrderImport(Integer testId, Integer unitId) throws Exception {
+        AnalysisDO data;
+
+        data = new AnalysisDO();
+        data.setTestId(testId);
+        data.setUnitOfMeasureId(unitId);
+
+        return service.call("fetchByTestIdForOrderImport", data);
+    }
 
     public AnalysisResultManager add(AnalysisResultManager man) throws Exception {
         assert false : "not supported";

@@ -38,7 +38,6 @@ import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationDO;
-import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -68,6 +67,7 @@ import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox.Case;
@@ -85,6 +85,7 @@ import org.openelis.manager.ExchangeExternalTermManager;
 import org.openelis.manager.ExchangeLocalTermManager;
 import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.ExchangeLocalTermMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -93,7 +94,6 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.visualization.client.visualizations.Table;
 
 public class ExchangeVocabularyMapScreen extends Screen {
     private ExchangeLocalTermManager    manager;
@@ -105,7 +105,8 @@ public class ExchangeVocabularyMapScreen extends Screen {
     private AppButton                   queryButton, previousButton, nextButton, 
                                         addButton, updateButton, commitButton, 
                                         abortButton, addExternalTermButton,
-                                        removeExternalTermButton;   
+                                        removeExternalTermButton;  
+    private MenuItem                    localTermHistory, externalTermHistory;
     private AutoComplete<Integer>       referenceName; 
     private Dropdown<Integer>           referenceTableId;   
     private TableWidget                 atozTable, termMappingTable;
@@ -244,6 +245,28 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 abortButton.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+            }
+        });
+        
+        localTermHistory = (MenuItem)def.getWidget("localTermHistory");
+        addScreenHandler(localTermHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                localTermHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                localTermHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        externalTermHistory = (MenuItem)def.getWidget("externalTermHistory");
+        addScreenHandler(externalTermHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                externalTermHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                externalTermHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
 
@@ -724,6 +747,39 @@ public class ExchangeVocabularyMapScreen extends Screen {
         } else {
             window.clearStatus();
         }        
+    }
+    
+    protected void localTermHistory() {
+        IdNameVO hist;
+        
+        hist = new IdNameVO(manager.getExchangeLocalTerm().getId(), manager.getExchangeLocalTerm().getReferenceName());
+        HistoryScreen.showHistory(consts.get("localTermHistory"),
+                                  ReferenceTable.EXCHANGE_LOCAL_TERM, hist);  
+        
+    }
+    
+    protected void externalTermHistory() {
+        int i, count;
+        IdNameVO refVoList[];
+        ExchangeExternalTermManager man;
+        ExchangeExternalTermDO data;
+
+        try {
+            man = manager.getExternalTerms();
+            count = man.count();
+            refVoList = new IdNameVO[count];
+            for (i = 0; i < count; i++ ) {
+                data = man.getExternalTermAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getExternalTerm());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+            return;
+        }
+
+        HistoryScreen.showHistory(consts.get("externalTermHistory"),
+                                  ReferenceTable.EXCHANGE_EXTERNAL_TERM, refVoList);
     }
     
     protected boolean fetchById(Integer id) {
