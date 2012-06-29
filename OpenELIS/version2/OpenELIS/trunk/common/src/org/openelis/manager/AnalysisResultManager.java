@@ -131,6 +131,11 @@ public class AnalysisResultManager implements RPC {
     public static AnalysisResultManager fetchByTestId(Integer testId, Integer unitId) throws Exception {
         return proxy().fetchByTestId(testId, unitId);
     }
+    
+    public static AnalysisResultManager fetchByTestIdForOrderImport(Integer testId,
+                                                              Integer unitId) throws Exception {
+        return proxy().fetchByTestIdForOrderImport(testId, unitId);
+    }
 
     public AnalysisResultManager add() throws Exception {
         return proxy().add(this);

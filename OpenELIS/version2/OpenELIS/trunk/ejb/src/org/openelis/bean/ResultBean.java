@@ -223,6 +223,127 @@ public class ResultBean implements ResultLocal {
                 suppRow = true;
         }
     }
+    
+    public void fetchByTestIdNoResultsForOrderImport(Integer testId, Integer unitId,
+                                                     ArrayList<ArrayList<ResultViewDO>> results,
+                                                     HashMap<Integer, TestResultDO> testResultList,
+                                                     HashMap<Integer, AnalyteDO> analyteList,
+                                                     HashMap<Integer, TestAnalyteListItem> testAnalyteList,
+                                                     ArrayList<ResultValidator> resultValidators) throws Exception {
+        List<AnalyteDO> analytes;
+        List<TestResultDO> testResults;
+        List<TestAnalyteViewDO> testAnalytes;
+        int i, k;
+        Integer j, rg;
+        Integer rowGroup;
+        TestAnalyteViewDO data;
+        AnalyteDO analyte;
+        TestAnalyteListItem taLI;
+        ArrayList<ResultViewDO> ar;
+        TestResultDO testResult;
+        ArrayList<TestAnalyteViewDO> tmpList;
+        boolean includeRow;
+
+        // get test_analytes by test id
+        Query query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
+        query.setParameter("testId", testId);
+        testAnalytes = query.getResultList();
+
+        // get analytes for test
+        query = manager.createNamedQuery("Analyte.FetchByTest");
+        query.setParameter("testId", testId);
+        analytes = query.getResultList();
+
+        // get test_results by test id
+        query = manager.createNamedQuery("TestResult.FetchByTestId");
+        query.setParameter("testId", testId);
+        testResults = query.getResultList();
+
+        // convert the lists to hashmaps
+        analyteList.clear();
+
+        for (k = 0; k < analytes.size(); k++ ) {
+            analyte = analytes.get(k);
+            analyteList.put(analyte.getId(), analyte);
+        }
+
+        rowGroup = -1;
+        tmpList = null;
+        for (k = 0; k < testAnalytes.size(); k++ ) {
+            data = testAnalytes.get(k);
+            if ( !rowGroup.equals(data.getRowGroup())) {
+                rowGroup = data.getRowGroup();
+                taLI = new TestAnalyteListItem();
+                tmpList = new ArrayList<TestAnalyteViewDO>();
+
+                taLI.testAnalytes = tmpList;
+                testAnalyteList.put(rowGroup, taLI);
+            }
+
+            tmpList.add(data);
+        }
+
+        testResultList.clear();
+
+        for (k = 0; k < testResults.size(); k++ ) {
+            testResult = testResults.get(k);
+            testResultList.put(testResult.getId(), testResult);
+        }
+
+        createTestResultHash(testResults, resultValidators);
+
+        // build the grid
+        j = -1;
+        ar = null;
+        results.clear();
+
+        if (testAnalyteList == null || testAnalyteList.size() == 0)
+            throw new NotFoundException();
+
+        includeRow = true;
+        for (i = 0; i < testAnalytes.size(); i++ ) {
+            data = testAnalytes.get(i);
+
+            /*
+             * Supplemental analytes could be shown if the test is imported from 
+             * an order. That is why they are added to the grid so that the decision
+             * as to whether to show them or not can be made based on the order's 
+             * data.
+             */
+            ResultViewDO resultDO = new ResultViewDO();
+            resultDO.setTestAnalyteId(data.getId());
+            resultDO.setTestAnalyteTypeId(data.getTypeId());
+            resultDO.setIsColumn(data.getIsColumn());
+            resultDO.setIsReportable(data.getIsReportable());
+            resultDO.setAnalyteId(data.getAnalyteId());
+            resultDO.setAnalyte(data.getAnalyteName());
+            resultDO.setResultGroup(data.getResultGroup());
+
+            rg = data.getRowGroup();
+            resultDO.setRowGroup(rg);
+
+            // we need to set the default
+            resultDO.setValue(resultValidators.get(resultDO.getResultGroup() - 1)
+                                              .getDefault(unitId));
+
+            if ( !DataBaseUtil.isSame(j, rg)) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(resultDO);
+                results.add(ar);
+                if (rg != null)
+                    j = rg;
+                continue;
+            }
+            if ("N".equals(data.getIsColumn())) {
+                ar = new ArrayList<ResultViewDO>(1);
+                ar.add(resultDO);
+                results.add(ar);
+                continue;
+            }
+
+            ar.add(resultDO);
+        }
+    }
 
     public void fetchByAnalysisIdForDisplay(Integer analysisId, ArrayList<ArrayList<ResultViewDO>> results) throws Exception {
         int i;

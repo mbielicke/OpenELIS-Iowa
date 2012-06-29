@@ -117,8 +117,36 @@ public class AnalysisResultManagerProxy {
         testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
         resultValidators = new ArrayList<ResultValidator>();
 
+            
         EJBFactory.getResult().fetchByTestIdNoResults(testId, unitId, results, testResultList, analyteList,
-                                       testAnalyteList, resultValidators);
+                                                          testAnalyteList, resultValidators);
+        man = AnalysisResultManager.getInstance();
+        man.setResults(results);
+        man.setTestResultList(testResultList);
+        man.setAnalyteList(analyteList);
+        man.setTestAnalyteList(testAnalyteList);
+        man.setResultValidators(resultValidators);
+
+        return man;
+    }
+    
+    public AnalysisResultManager fetchByTestIdForOrderImport(Integer testId, Integer unitId) throws Exception {
+        ArrayList<ArrayList<ResultViewDO>> results;
+        HashMap<Integer, TestResultDO> testResultList;
+        HashMap<Integer, AnalyteDO> analyteList;
+        HashMap<Integer, TestAnalyteListItem> testAnalyteList;
+        ArrayList<ResultValidator> resultValidators;
+        AnalysisResultManager man;
+
+        results = new ArrayList<ArrayList<ResultViewDO>>();
+        testResultList = new HashMap<Integer, TestResultDO>();
+        analyteList = new HashMap<Integer, AnalyteDO>();
+        testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
+        resultValidators = new ArrayList<ResultValidator>();
+
+            
+        EJBFactory.getResult().fetchByTestIdNoResultsForOrderImport(testId, unitId, results, testResultList, analyteList,
+                                                          testAnalyteList, resultValidators);
         man = AnalysisResultManager.getInstance();
         man.setResults(results);
         man.setTestResultList(testResultList);
@@ -304,6 +332,37 @@ public class AnalysisResultManagerProxy {
         
         data = EJBFactory.getDictionary().fetchBySystemName(systemName);
         return data.getId();
+    }
+    
+    private AnalysisResultManager fetchByTestId(Integer testId, Integer unitId, boolean forOrder) throws Exception {
+        ArrayList<ArrayList<ResultViewDO>> results;
+        HashMap<Integer, TestResultDO> testResultList;
+        HashMap<Integer, AnalyteDO> analyteList;
+        HashMap<Integer, TestAnalyteListItem> testAnalyteList;
+        ArrayList<ResultValidator> resultValidators;
+        AnalysisResultManager man;
+
+        results = new ArrayList<ArrayList<ResultViewDO>>();
+        testResultList = new HashMap<Integer, TestResultDO>();
+        analyteList = new HashMap<Integer, AnalyteDO>();
+        testAnalyteList = new HashMap<Integer, TestAnalyteListItem>();
+        resultValidators = new ArrayList<ResultValidator>();
+
+        if (forOrder) {
+            EJBFactory.getResult().fetchByTestIdNoResultsForOrderImport(testId, unitId, results, testResultList, analyteList,
+                                       testAnalyteList, resultValidators);
+        } else {
+            EJBFactory.getResult().fetchByTestIdNoResults(testId, unitId, results, testResultList, analyteList,
+                                                          testAnalyteList, resultValidators);
+        }
+        man = AnalysisResultManager.getInstance();
+        man.setResults(results);
+        man.setTestResultList(testResultList);
+        man.setAnalyteList(analyteList);
+        man.setTestAnalyteList(testAnalyteList);
+        man.setResultValidators(resultValidators);
+
+        return man;
     }
 
     private void mergeResultGrid(ArrayList<ArrayList<ResultViewDO>> oldGrid,
