@@ -25,29 +25,28 @@
  */
 package org.openelis.utilcommon;
 
-public class MathUtil {
-    /**
-     * This functions returns true if the arguments satisfy the following
-     * equation, value = base ^ n; such that n is a natural number.
-     */
-    public static boolean isPowerOf(int value, int base) {
-        double dv, db, quotient;
-        
-        dv = Math.log(value);
-        db = Math.log(base);
-        //
-        // we can't use the operator "%" here because, for floating point 
-        // numbers, the result of the operation may not be zero even if the result
-        // of using the "/" on the same numbers has significant digits
-        // only to the left of the decimal point
-        //
-        quotient = dv/db;
-        
-        //
-        // for a number like 5.34 or 5.0 the method Math.floor(double) returns 5,
-        // so if the following test succeeds then we know that "dv" is a multiple  
-        // of "db" 
-        //
-        return Math.floor(quotient) == quotient;
+/**
+ * This enum represents all the operations that can be performed for auditing.
+ */
+
+public enum AuditActivity {
+
+    // string representation and the database column value for the operation
+    ADD("ADD", 1), UPDATE("UPDATE", 2), DELETE("DELETE", 3), VIEW("VIEW", 4);
+
+    protected final String key;
+    protected final int    value;
+
+    private AuditActivity(String key, int value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public int getValue() {
+        return value;
     }
 }
