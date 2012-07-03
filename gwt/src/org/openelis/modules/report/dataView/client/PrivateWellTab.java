@@ -18,7 +18,9 @@ public class PrivateWellTab extends Screen {
 
     private DataViewVO data;
     private CheckBox   wellOwner, wellCollector, wellWellNumber, wellReportToAddressWorkPhone,
-                       wellReportToAddressFaxPhone, wellLocation, wellLocationAddrCity;
+                       wellReportToAddressFaxPhone, wellLocation, wellLocationMultiUnit,
+                       wellLocationAddrStreetAddr, wellLocationAddrCity, wellLocationAddrState,
+                       wellLocationZipCode;
     private boolean    loaded;
     private int        checkCount;
 
@@ -134,6 +136,40 @@ public class PrivateWellTab extends Screen {
                 wellLocation.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
+        
+        wellLocationMultiUnit = (CheckBox)def.getWidget(SampleWebMeta.getWellLocationAddrMultipleUnit());
+        addScreenHandler(wellLocationMultiUnit, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                wellLocationMultiUnit.setValue(data.getSamplePrivateWellLocationAddressMultipleUnit());
+                changeCount(data.getSamplePrivateWellLocationAddressMultipleUnit(), false);
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSamplePrivateWellLocationAddressMultipleUnit(event.getValue());
+                changeCount(event.getValue(), true);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                wellLocationMultiUnit.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        wellLocationAddrStreetAddr = (CheckBox)def.getWidget(SampleWebMeta.getWellLocationAddrStreetAddress());
+        addScreenHandler(wellLocationAddrStreetAddr, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                wellLocationAddrStreetAddr.setValue(data.getSamplePrivateWellLocationAddressStreetAddress());
+                changeCount(data.getSamplePrivateWellLocationAddressStreetAddress(), false);
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSamplePrivateWellLocationAddressStreetAddress(event.getValue());
+                changeCount(event.getValue(), true);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                wellLocationAddrStreetAddr.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
 
         wellLocationAddrCity = (CheckBox)def.getWidget(SampleWebMeta.getWellLocationAddrCity());
         addScreenHandler(wellLocationAddrCity, new ScreenEventHandler<String>() {
@@ -149,6 +185,40 @@ public class PrivateWellTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 wellLocationAddrCity.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        wellLocationAddrState = (CheckBox)def.getWidget(SampleWebMeta.getWellLocationAddrState());
+        addScreenHandler(wellLocationAddrState, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                wellLocationAddrState.setValue(data.getSamplePrivateWellLocationAddressState());
+                changeCount(data.getSamplePrivateWellLocationAddressState(), false);
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSamplePrivateWellLocationAddressState(event.getValue());
+                changeCount(event.getValue(), true);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                wellLocationAddrState.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        wellLocationZipCode = (CheckBox)def.getWidget(SampleWebMeta.getWellLocationAddrZipCode());
+        addScreenHandler(wellLocationZipCode, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                wellLocationZipCode.setValue(data.getSamplePrivateWellLocationAddressZipCode());
+                changeCount(data.getSamplePrivateWellLocationAddressZipCode(), false);
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setSamplePrivateWellLocationAddressZipCode(event.getValue());
+                changeCount(event.getValue(), true);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                wellLocationZipCode.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
     }

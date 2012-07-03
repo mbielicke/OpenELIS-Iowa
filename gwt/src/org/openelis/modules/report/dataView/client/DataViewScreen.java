@@ -1143,7 +1143,11 @@ public class DataViewScreen extends Screen {
         data.setSamplePrivateWellReportToAddressWorkPhone("N");
         data.setSamplePrivateWellReportToAddressFaxPhone("N");
         data.setSamplePrivateWellLocation("N");
+        data.setSamplePrivateWellLocationAddressMultipleUnit("N");
+        data.setSamplePrivateWellLocationAddressStreetAddress("N");        
         data.setSamplePrivateWellLocationAddressCity("N");
+        data.setSamplePrivateWellLocationAddressState("N");
+        data.setSamplePrivateWellLocationAddressZipCode("N");
         data.setSampleSDWISPwsId("N");
         data.setSampleSDWISPwsName("N");
         data.setSampleSDWISStateLabId("N"); 

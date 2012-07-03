@@ -87,7 +87,11 @@ public class SampleWebMeta implements Meta, MetaMap {
                     WELL_LOCATION_ADDR_WORK_PHONE = "_wellLocationAddress.workPhone", 
 
                     WELL_LOCATION_ADDR_ID = "_wellLocationAddress.id",
+                    WELL_LOCATION_ADDR_MULTIPLE_UNIT = "_wellLocationAddress.multipleUnit",
+                    WELL_LOCATION_ADDR_STREET_ADDRESS = "_wellLocationAddress.streetAddress", 
                     WELL_LOCATION_ADDR_CITY = "_wellLocationAddress.city",
+                    WELL_LOCATION_ADDR_STATE = "_wellLocationAddress.state", 
+                    WELL_LOCATION_ADDR_ZIP_CODE = "_wellLocationAddress.zipCode",
 
                     // sample sdwis
                     SDWIS_ID = "_sampleSDWIS.id",
@@ -238,7 +242,11 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   WELL_REPORT_TO_ADDR_CITY,
                                                   WELL_REPORT_TO_ADDR_FAX_PHONE,
                                                   WELL_LOCATION_ADDR_WORK_PHONE,
+                                                  WELL_LOCATION_ADDR_MULTIPLE_UNIT,
+                                                  WELL_LOCATION_ADDR_STREET_ADDRESS, 
                                                   WELL_LOCATION_ADDR_CITY,
+                                                  WELL_LOCATION_ADDR_STATE, 
+                                                  WELL_LOCATION_ADDR_ZIP_CODE,
                                                   SDWIS_ID,
                                                   SDWIS_SAMPLE_ID,
                                                   SDWIS_PWS_ID,
@@ -526,8 +534,24 @@ public class SampleWebMeta implements Meta, MetaMap {
         return WELL_LOCATION_ADDR_ID;
     }
 
+    public static String getWellLocationAddrMultipleUnit() {
+        return WELL_LOCATION_ADDR_MULTIPLE_UNIT;
+    }
+    
+    public static String getWellLocationAddrStreetAddress() {
+        return WELL_LOCATION_ADDR_STREET_ADDRESS;
+    }
+    
     public static String getWellLocationAddrCity() {
         return WELL_LOCATION_ADDR_CITY;
+    }
+    
+    public static String getWellLocationAddrState() {
+        return WELL_LOCATION_ADDR_STATE;
+    }
+    
+    public static String getWellLocationAddrZipCode() {
+        return WELL_LOCATION_ADDR_ZIP_CODE;
     }
 
     public static String getSDWISId() {

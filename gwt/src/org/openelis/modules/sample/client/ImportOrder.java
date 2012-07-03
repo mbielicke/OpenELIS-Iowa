@@ -323,6 +323,14 @@ public abstract class ImportOrder {
         try {
             samNoteMan.addNote(note);
         } catch (MultipleNoteException e) {
+            /*
+             * This exception can be thrown if the sample manager alreayd has an
+             * internal note and the imported order has a sample note and 
+             * NoteManager doesn't allow adding the new note because a sample can
+             * only have one new internal note. If this exception is thrown by
+             * this method then the whole process of importing the order could be
+             * abandoned. 
+             */
             errors.add(new FormErrorException("multipleInternalNoteException"));
         }
     }

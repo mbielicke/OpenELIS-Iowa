@@ -639,10 +639,42 @@ UIRF Software License are applicable instead of those above.
                   <widget>
                     <HorizontalPanel width="60" />
                   </widget>
+                  <check key="{meta:getWellLocationAddrMultipleUnit()}" />
+                  <text style="LeftAlignPrompt">
+                    <xsl:value-of select='resource:getString($constants,"locationAptSuite")' />
+                  </text>
+                  <widget>
+                    <HorizontalPanel width="42" />
+                  </widget>
+                  <check key="{meta:getWellLocationAddrStreetAddress()}" />
+                  <text style="LeftAlignPrompt">
+                    <xsl:value-of select='resource:getString($constants,"locationAddress")' />
+                  </text>
+                </row>
+                <row>
+                  <widget>
+                    <HorizontalPanel width="60" />
+                  </widget>
                   <check key="{meta:getWellLocationAddrCity()}" />
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select='resource:getString($constants,"locationCity")' />
                   </text>
+                  <widget>
+                    <HorizontalPanel width="42" />
+                  </widget>
+                  <check key="{meta:getWellLocationAddrState()}" />
+                  <text style="LeftAlignPrompt">
+                    <xsl:value-of select='resource:getString($constants,"locationState")' />
+                  </text>
+                </row>
+                <row>
+                  <widget>
+                    <HorizontalPanel width="60" />
+                  </widget>
+                  <check key="{meta:getWellLocationAddrZipCode()}" />
+                  <text style="LeftAlignPrompt">
+                    <xsl:value-of select='resource:getString($constants,"locationZipCode")' />
+                  </text>                  
                 </row>
               </TablePanel>
             </VerticalPanel>

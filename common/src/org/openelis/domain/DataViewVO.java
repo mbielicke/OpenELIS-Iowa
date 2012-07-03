@@ -71,7 +71,12 @@ public class DataViewVO implements RPC {
                                            samplePrivateWellCollector, samplePrivateWellWellNumber,
                                            samplePrivateWellReportToAddressWorkPhone,
                                            samplePrivateWellReportToAddressFaxPhone,
-                                           samplePrivateWellLocation, samplePrivateWellLocationAddressCity,
+                                           samplePrivateWellLocation, 
+                                           samplePrivateWellLocationAddressMultipleUnit,
+                                           samplePrivateWellLocationAddressStreetAddress,
+                                           samplePrivateWellLocationAddressCity,
+                                           samplePrivateWellLocationAddressState,
+                                           samplePrivateWellLocationAddressZipCode,
                                            sampleSDWISPwsId, sampleSDWISPwsName,
                                            sampleSDWISStateLabId, sampleSDWISFacilityId,
                                            sampleSDWISSampleTypeId, sampleSDWISSampleCategoryId,
@@ -562,12 +567,44 @@ public class DataViewVO implements RPC {
         this.samplePrivateWellLocation = DataBaseUtil.trim(samplePrivateWellLocation);
     }
 
+    public String getSamplePrivateWellLocationAddressMultipleUnit() {
+        return samplePrivateWellLocationAddressMultipleUnit;
+    }
+
+    public void setSamplePrivateWellLocationAddressMultipleUnit(String samplePrivateWellLocationAddressMultipleUnit) {
+        this.samplePrivateWellLocationAddressMultipleUnit = DataBaseUtil.trim(samplePrivateWellLocationAddressMultipleUnit);
+    }
+
+    public String getSamplePrivateWellLocationAddressStreetAddress() {
+        return samplePrivateWellLocationAddressStreetAddress;
+    }
+
+    public void setSamplePrivateWellLocationAddressStreetAddress(String samplePrivateWellLocationAddressStreetAddress) {
+        this.samplePrivateWellLocationAddressStreetAddress = DataBaseUtil.trim(samplePrivateWellLocationAddressStreetAddress);
+    }
+    
     public String getSamplePrivateWellLocationAddressCity() {
         return samplePrivateWellLocationAddressCity;
     }
 
     public void setSamplePrivateWellLocationAddressCity(String samplePrivateWellLocationAddressCity) {
         this.samplePrivateWellLocationAddressCity = DataBaseUtil.trim(samplePrivateWellLocationAddressCity);
+    }
+
+    public String getSamplePrivateWellLocationAddressState() {
+        return samplePrivateWellLocationAddressState;
+    }
+
+    public void setSamplePrivateWellLocationAddressState(String samplePrivateWellLocationAddressState) {
+        this.samplePrivateWellLocationAddressState = DataBaseUtil.trim(samplePrivateWellLocationAddressState);
+    }
+
+    public String getSamplePrivateWellLocationAddressZipCode() {
+        return samplePrivateWellLocationAddressZipCode;
+    }
+
+    public void setSamplePrivateWellLocationAddressZipCode(String samplePrivateWellLocationAddressZipCode) {
+        this.samplePrivateWellLocationAddressZipCode = DataBaseUtil.trim(samplePrivateWellLocationAddressZipCode);
     }
 
     public String getSampleSDWISPwsId() {
