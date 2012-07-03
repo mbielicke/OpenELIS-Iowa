@@ -1849,8 +1849,16 @@ public class DataViewBean implements DataViewRemote {
             headers.add(resource.getString("faxNumber"));
         if ("Y".equals(data.getSamplePrivateWellLocation()))
             headers.add(resource.getString("location"));
+        if ("Y".equals(data.getSamplePrivateWellLocationAddressMultipleUnit()))
+            headers.add(resource.getString("locationAptSuite"));
+        if ("Y".equals(data.getSamplePrivateWellLocationAddressStreetAddress()))
+            headers.add(resource.getString("locationAddress"));
         if ("Y".equals(data.getSamplePrivateWellLocationAddressCity()))
             headers.add(resource.getString("locationCity"));
+        if ("Y".equals(data.getSamplePrivateWellLocationAddressState()))
+            headers.add(resource.getString("locationState"));
+        if ("Y".equals(data.getSamplePrivateWellLocationAddressZipCode()))
+            headers.add(resource.getString("locationZipCode"));
         
         return headers;            
     }
@@ -1986,9 +1994,6 @@ public class DataViewBean implements DataViewRemote {
         AddressDO addr;
         
         org = spw.getOrganization();
-        addr = null;
-        if (org != null)
-            addr = org.getAddress();
                 
         if ("Y".equals(data.getOrganizationId())) {
             cell = row.createCell(startCol++);
@@ -1997,13 +2002,15 @@ public class DataViewBean implements DataViewRemote {
         }             
         if ("Y".equals(data.getOrganizationName())) {
             cell = row.createCell(startCol++);
-            if (org != null)
-                cell.setCellValue(org.getName());
+            cell.setCellValue(org != null ? org.getName() : spw.getReportToName());
         }             
         if ("Y".equals(data.getOrganizationAttention())) {
             cell = row.createCell(startCol++);
             cell.setCellValue(spw.getReportToAttention());
         }       
+        
+        addr = (org != null ? org.getAddress() : spw.getReportToAddress());
+        
         if ("Y".equals(data.getOrganizationAddressMultipleUnit())) {
             cell = row.createCell(startCol++);
             if (addr != null)
@@ -2261,7 +2268,7 @@ public class DataViewBean implements DataViewRemote {
                                        SamplePrivateWellViewDO well) {
         Integer wn;
         Cell cell;    
-        AddressDO repTo;
+        AddressDO repTo, loc;
         
         /*
          * the SamplePrivateWellViewDO can be null if a sample is not a private
@@ -2289,9 +2296,10 @@ public class DataViewBean implements DataViewRemote {
             }
         }
         
-        repTo = null;
-        if (well != null)            
-            repTo = well.getReportToAddress();
+        repTo = null;        
+        if (well != null)
+            repTo = well.getReportToAddress();        
+        
         if ("Y".equals(data.getSamplePrivateWellReportToAddressWorkPhone())) {
             cell = row.createCell(startCol++ );          
             if (repTo != null)
@@ -2307,10 +2315,35 @@ public class DataViewBean implements DataViewRemote {
             if (well != null)
                 cell.setCellValue(well.getLocation());
         }
+        
+        loc = null;        
+        if (well != null)
+            loc = well.getLocationAddress();
+        
+        if ("Y".equals(data.getSamplePrivateWellLocationAddressMultipleUnit())) {
+            cell = row.createCell(startCol++ );
+            if (loc != null)
+                cell.setCellValue(loc.getMultipleUnit());
+        }
+        if ("Y".equals(data.getSamplePrivateWellLocationAddressStreetAddress())) {
+            cell = row.createCell(startCol++ );
+            if (loc != null)
+                cell.setCellValue(loc.getStreetAddress());
+        }
         if ("Y".equals(data.getSamplePrivateWellLocationAddressCity())) {
             cell = row.createCell(startCol++ );
-            if (well != null)
-                cell.setCellValue(well.getLocationAddress().getCity());
+            if (loc != null)
+                cell.setCellValue(loc.getCity());
+        }
+        if ("Y".equals(data.getSamplePrivateWellLocationAddressState())) {
+            cell = row.createCell(startCol++ );
+            if (loc != null)
+                cell.setCellValue(loc.getState());
+        }
+        if ("Y".equals(data.getSamplePrivateWellLocationAddressZipCode())) {
+            cell = row.createCell(startCol++ );
+            if (loc != null)
+                cell.setCellValue(loc.getZipCode());
         }
     }
     
