@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -58,11 +59,11 @@ import org.openelis.utils.Auditable;
                       + " from OrganizationContact c where c.organizationId = :id")})
 @Entity
 @Table(name = "organization_contact")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class OrganizationContact implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer             id;
 
@@ -84,16 +85,13 @@ public class OrganizationContact implements Auditable, Cloneable {
 
     @Transient
     private OrganizationContact original;
-    
-    @Transient
-    private boolean             auditAddressId;
 
     public Integer getId() {
         return id;
     }
 
     protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id,this.id))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
 
@@ -102,7 +100,7 @@ public class OrganizationContact implements Auditable, Cloneable {
     }
 
     public void setOrganizationId(Integer organizationId) {
-        if (DataBaseUtil.isDifferent(organizationId,this.organizationId))
+        if (DataBaseUtil.isDifferent(organizationId, this.organizationId))
             this.organizationId = organizationId;
     }
 
@@ -111,7 +109,7 @@ public class OrganizationContact implements Auditable, Cloneable {
     }
 
     public void setContactTypeId(Integer contactTypeId) {
-        if (DataBaseUtil.isDifferent(contactTypeId,this.contactTypeId))
+        if (DataBaseUtil.isDifferent(contactTypeId, this.contactTypeId))
             this.contactTypeId = contactTypeId;
     }
 
@@ -120,7 +118,7 @@ public class OrganizationContact implements Auditable, Cloneable {
     }
 
     public void setName(String name) {
-        if (DataBaseUtil.isDifferent(name,this.name))
+        if (DataBaseUtil.isDifferent(name, this.name))
             this.name = name;
     }
 
@@ -129,7 +127,7 @@ public class OrganizationContact implements Auditable, Cloneable {
     }
 
     public void setAddressId(Integer addressId) {
-        if (DataBaseUtil.isDifferent(addressId,this.addressId))
+        if (DataBaseUtil.isDifferent(addressId, this.addressId))
             this.addressId = addressId;
     }
 
@@ -140,13 +138,6 @@ public class OrganizationContact implements Auditable, Cloneable {
     public void setAddressTable(Address addressTable) {
         this.address = addressTable;
     }
-    
-    /*
-     * Audit support
-     */
-    public void setAuditAddressId(boolean changed) {
-        auditAddressId = changed;
-    }
 
     public void setClone() {
         try {
@@ -156,21 +147,19 @@ public class OrganizationContact implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ORGANIZATION_CONTACT);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("organization_id", organizationId, original.organizationId)
                  .setField("contact_type_id", contactTypeId, original.contactTypeId, ReferenceTable.DICTIONARY)
-                 .setField("name", name, original.name)
-                 .setField("address_id", (auditAddressId ? null : addressId), original.addressId,
-                           ReferenceTable.ADDRESS);
+                 .setField("name", name, original.name) 
+                 .setField("address_id", addressId, original.addressId, ReferenceTable.ADDRESS);
 
         return audit;
     }
-    
 }

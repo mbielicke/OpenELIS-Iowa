@@ -35,16 +35,17 @@ import org.openelis.gwt.common.DataBaseUtil;
 /**
  * Preferences Entity POJO for database
  */
+
 @Entity
 @Table(name = "preferences")
 public class Preferences {
 
     @Id
     @Column(name = "system_user_id")
-    private Integer     systemUserId;
+    private Integer systemUserId;
 
     @Column(name = "text")
-    private String      text;
+    private String  text;
 
     public Integer getSystemUserId() {
         return systemUserId;

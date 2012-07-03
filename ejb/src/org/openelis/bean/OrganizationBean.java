@@ -183,10 +183,8 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         entity.setName(data.getName());
         entity.setParentOrganizationId(data.getParentOrganizationId());
 
-        if (data.getAddress().isChanged()) {
-            entity.setAuditAddressId(true);
+        if (data.getAddress().isChanged())
             address.update(data.getAddress());
-        }
         
         return data;
     }

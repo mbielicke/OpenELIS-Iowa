@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -61,7 +62,7 @@ import org.openelis.local.TestLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.HistoryRemote;
 import org.openelis.util.XMLUtil;
-import org.openelis.utils.JasperUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -138,23 +139,20 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public HistoryVO add(HistoryVO data) {
+    public void add(Integer referenceId, Integer referenceTableId, AuditActivity activity, String changes) throws Exception {
         History entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
         entity = new History();
-        entity.setReferenceId(data.getReferenceId());
-        entity.setReferenceTableId(data.getReferenceTableId());
-        entity.setTimestamp(data.getTimestamp());
-        entity.setActivityId(data.getActivityId());
-        entity.setSystemUserId(data.getSystemUserId());
-        entity.setChanges(data.getChanges());
+        entity.setReferenceId(referenceId);
+        entity.setReferenceTableId(referenceTableId);
+        entity.setTimestamp(new Date());
+        entity.setActivityId(activity.getValue());
+        entity.setSystemUserId(userCache.getId());
+        entity.setChanges(changes);
 
         manager.persist(entity);
-        data.setId(entity.getId());
-        
-        return data;
     }
     
     private String getChangesWithLabels(String changes, HashMap<Integer, HashMap<Integer, String>> refTableMap) {

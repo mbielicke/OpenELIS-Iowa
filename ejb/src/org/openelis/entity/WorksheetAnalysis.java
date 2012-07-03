@@ -23,6 +23,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -70,13 +71,14 @@ import org.openelis.utils.Auditable;
                         " qa.analyteId = a.id and qa.isTrendable = 'Y' and d.id = w.formatId and wa.id in (:ids) " + 
                         "order by w.createdDate")})      
 
+
 @Entity
 @Table(name = "worksheet_analysis")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class WorksheetAnalysis implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer           id;
 
@@ -100,14 +102,14 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
 
     @Column(name = "qc_started_date")
     private Date              qcStartedDate;
-    
+
     @Column(name = "is_from_other")
     private String            isFromOther;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_item_id", insertable = false, updatable = false)
     private WorksheetItem     worksheetItem;
-    
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
     private Analysis          analysis;
@@ -218,10 +220,10 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.WORKSHEET_ANALYSIS);
         audit.setReferenceId(getId());
         if (original != null)

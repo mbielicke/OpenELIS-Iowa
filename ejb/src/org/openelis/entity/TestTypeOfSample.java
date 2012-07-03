@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -55,11 +56,11 @@ import org.openelis.utils.Auditable;
                       + " from TestTypeOfSample ts where ts.testId = :id")})
 @Entity
 @Table(name = "test_type_of_sample")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class TestTypeOfSample implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer          id;
 
@@ -102,7 +103,7 @@ public class TestTypeOfSample implements Auditable, Cloneable {
     }
 
     public void setTypeOfSampleId(Integer typeOfSampleId) {
-        if (DataBaseUtil.isDifferent(typeOfSampleId,this.typeOfSampleId))
+        if (DataBaseUtil.isDifferent(typeOfSampleId, this.typeOfSampleId))
             this.typeOfSampleId = typeOfSampleId;
     }
 
@@ -111,7 +112,7 @@ public class TestTypeOfSample implements Auditable, Cloneable {
     }
 
     public void setUnitOfMeasureId(Integer unitOfMeasureId) {
-        if (DataBaseUtil.isDifferent(unitOfMeasureId,this.unitOfMeasureId))
+        if (DataBaseUtil.isDifferent(unitOfMeasureId, this.unitOfMeasureId))
             this.unitOfMeasureId = unitOfMeasureId;
     }
 
@@ -122,19 +123,19 @@ public class TestTypeOfSample implements Auditable, Cloneable {
     public void setDictionary(Dictionary dictionary) {
         this.dictionary = dictionary;
     }
-    
+
     public void setClone() {
         try {
             original = (TestTypeOfSample)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }        
+    }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.TEST_TYPE_OF_SAMPLE);
         audit.setReferenceId(getId());
         if (original != null)

@@ -48,6 +48,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -80,11 +81,11 @@ import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "storage")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Storage implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer         id;
 
@@ -118,7 +119,7 @@ public class Storage implements Auditable, Cloneable {
     }
 
     protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id,this.id))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
 
@@ -127,7 +128,7 @@ public class Storage implements Auditable, Cloneable {
     }
 
     public void setReferenceId(Integer referenceId) {
-        if (DataBaseUtil.isDifferent(referenceId,this.referenceId))
+        if (DataBaseUtil.isDifferent(referenceId, this.referenceId))
             this.referenceId = referenceId;
     }
 
@@ -136,7 +137,7 @@ public class Storage implements Auditable, Cloneable {
     }
 
     public void setReferenceTableId(Integer referenceTableId) {
-        if (DataBaseUtil.isDifferent(referenceTableId,this.referenceTableId))
+        if (DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
             this.referenceTableId = referenceTableId;
     }
 
@@ -145,7 +146,7 @@ public class Storage implements Auditable, Cloneable {
     }
 
     public void setStorageLocationId(Integer storageLocationId) {
-        if (DataBaseUtil.isDifferent(storageLocationId,this.storageLocationId))
+        if (DataBaseUtil.isDifferent(storageLocationId, this.storageLocationId))
             this.storageLocationId = storageLocationId;
     }
 
@@ -154,7 +155,7 @@ public class Storage implements Auditable, Cloneable {
     }
 
     public void setCheckin(Datetime checkin) {
-        if (DataBaseUtil.isDifferentYM(checkin,this.checkin))
+        if (DataBaseUtil.isDifferentYM(checkin, this.checkin))
             this.checkin = DataBaseUtil.toDate(checkin);
     }
 
@@ -163,7 +164,7 @@ public class Storage implements Auditable, Cloneable {
     }
 
     public void setCheckout(Datetime checkout) {
-        if (DataBaseUtil.isDifferentYM(checkout,this.checkout))
+        if (DataBaseUtil.isDifferentYM(checkout, this.checkout))
             this.checkout = DataBaseUtil.toDate(checkout);
     }
 
@@ -172,10 +173,10 @@ public class Storage implements Auditable, Cloneable {
     }
 
     public void setSystemUserId(Integer systemUserId) {
-        if (DataBaseUtil.isDifferent(systemUserId,this.systemUserId))
+        if (DataBaseUtil.isDifferent(systemUserId, this.systemUserId))
             this.systemUserId = systemUserId;
     }
-    
+
     public StorageLocation getStorageLocation() {
         return storageLocation;
     }
@@ -192,10 +193,10 @@ public class Storage implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.STORAGE);
         audit.setReferenceId(getId());
         if (original != null)

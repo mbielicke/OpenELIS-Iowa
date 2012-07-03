@@ -44,6 +44,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -53,11 +54,11 @@ import org.openelis.utils.Auditable;
                   + " from TestWorksheetAnalyte twa left join twa.testAnalyte ta left join ta.analyte a where twa.testId = :testId order by ta.sortOrder ")
 @Entity
 @Table(name = "test_worksheet_analyte")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class TestWorksheetAnalyte implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer              id;
 
@@ -124,7 +125,7 @@ public class TestWorksheetAnalyte implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(flagId, this.flagId))
             this.flagId = flagId;
     }
-    
+
     TestAnalyte getTestAnalyte() {
         return testAnalyte;
     }
@@ -141,10 +142,10 @@ public class TestWorksheetAnalyte implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.TEST_WORKSHEET_ANALYTE);
         audit.setReferenceId(getId());
         if (original != null)

@@ -20,6 +20,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -54,11 +55,11 @@ import org.openelis.utils.Auditable;
                      + " where s.id = :id and aq.dictionary.systemName = 'qaevent_override'")})
 @Entity
 @Table(name = "analysis_qaevent")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class AnalysisQaevent implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer         id;
 
@@ -73,18 +74,18 @@ public class AnalysisQaevent implements Auditable, Cloneable {
 
     @Column(name = "is_billable")
     private String          isBillable;
-    
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
-    private Analysis         analysis;
-    
+    private Analysis        analysis;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qaevent_id", insertable = false, updatable = false)
     private QaEvent         qaEvent;
-    
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id", insertable = false, updatable = false)
-    private Dictionary    dictionary;
+    private Dictionary      dictionary;
 
     @Transient
     private AnalysisQaevent original;
@@ -121,7 +122,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     }
 
     public void setTypeId(Integer typeId) {
-        if (DataBaseUtil.isDifferent(typeId, this.typeId))            
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
             this.typeId = typeId;
     }
 
@@ -133,7 +134,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(isBillable, this.isBillable))
             this.isBillable = isBillable;
     }
-    
+
     public Analysis getAnalysis() {
         return analysis;
     }
@@ -149,7 +150,7 @@ public class AnalysisQaevent implements Auditable, Cloneable {
     public void setQaEvent(QaEvent qaEvent) {
         this.qaEvent = qaEvent;
     }
-    
+
     public Dictionary getDictionary() {
         return dictionary;
     }
@@ -166,10 +167,10 @@ public class AnalysisQaevent implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ANALYSIS_QAEVENT);
         audit.setReferenceId(getId());
         if (original != null)
@@ -181,5 +182,4 @@ public class AnalysisQaevent implements Auditable, Cloneable {
 
         return audit;
     }
-
 }

@@ -149,8 +149,8 @@ public class Lock {
 
         public boolean equals(Object arg) {
             return (arg instanceof PK &&
-                    !DataBaseUtil.isDifferent(((PK)arg).referenceTableId, referenceTableId) && 
-                    !DataBaseUtil.isDifferent( ((PK)arg).referenceId, referenceId));
+                    !DataBaseUtil.isDifferent( ((PK)arg).referenceTableId, referenceTableId) && !DataBaseUtil.isDifferent( ((PK)arg).referenceId,
+                                                                                                                          referenceId));
         }
     }
 }

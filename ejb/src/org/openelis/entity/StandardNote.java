@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -65,88 +66,91 @@ import org.openelis.utils.Auditable;
             
     
 @Entity
-@Table(name="standard_note")
+@Table(name = "standard_note")
 @EntityListeners({AuditUtil.class})
 public class StandardNote implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="name")
-  private String name;             
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer      id;
 
-  @Column(name="description")
-  private String description;             
+    @Column(name = "name")
+    private String       name;
 
-  @Column(name="type_id")
-  private Integer typeId;             
+    @Column(name = "description")
+    private String       description;
 
-  @Column(name="text")
-  private String text;             
+    @Column(name = "type_id")
+    private Integer      typeId;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "type_id", insertable = false, updatable = false)
-  private Dictionary dictionary;
-  
-  @Transient
-  private StandardNote original;
+    @Column(name = "text")
+    private String       text;
 
-  
-  public Integer getId() {
-    return id;
-  }
-  protected void setId(Integer id) {
-    if(DataBaseUtil.isDifferent(id,this.id))
-      this.id = id;
-  }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id", insertable = false, updatable = false)
+    private Dictionary   dictionary;
 
-  public String getName() {
-    return name;
-  }
-  public void setName(String name) {
-    if(DataBaseUtil.isDifferent(name,this.name))
-      this.name = name;
-  }
+    @Transient
+    private StandardNote original;
 
-  public String getDescription() {
-    return description;
-  }
-  
-  public void setDescription(String description) {
-    if(DataBaseUtil.isDifferent(description,this.description))
-      this.description = description;
-  }
-
-  public Integer getTypeId() {
-    return typeId;
-  }
-  public void setTypeId(Integer typeId) {
-    if(DataBaseUtil.isDifferent(typeId,this.typeId))
-      this.typeId = typeId;
-  }
-
-  public String getText() {
-    return text;
-  }
-  public void setText(String text) {
-    if(DataBaseUtil.isDifferent(text,this.text))
-      this.text = text;
-  }
-  
-  public void setClone() {
-    try {
-        original = (StandardNote)this.clone();
-    }catch(Exception e){
-        e.printStackTrace();
+    public Integer getId() {
+        return id;
     }
-  }
-  
-  public Audit getAudit() {
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (DataBaseUtil.isDifferent(name, this.name))
+            this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        if (DataBaseUtil.isDifferent(description, this.description))
+            this.description = description;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
+            this.typeId = typeId;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        if (DataBaseUtil.isDifferent(text, this.text))
+            this.text = text;
+    }
+
+    public void setClone() {
+        try {
+            original = (StandardNote)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.STANDARD_NOTE);
         audit.setReferenceId(getId());
         if (original != null)

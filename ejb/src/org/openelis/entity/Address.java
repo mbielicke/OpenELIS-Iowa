@@ -42,6 +42,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -53,10 +54,10 @@ import org.openelis.utils.Auditable;
                       + " from Address a where a.id = :id")})
 @Entity
 @Table(name = "address")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Address implements Auditable, Cloneable {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
@@ -211,13 +212,13 @@ public class Address implements Auditable, Cloneable {
             e.printStackTrace();
         }
     }
-    
-    public Audit getAudit() {
+
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ADDRESS);
-        audit.setReferenceId(getId());        
+        audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("multiple_unit", multipleUnit, original.multipleUnit)

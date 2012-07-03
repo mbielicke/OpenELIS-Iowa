@@ -34,12 +34,13 @@ import org.openelis.gwt.common.Datetime;
                         " p.activityStatusCd, p.dPrinCitySvdNm, p.dPrinCntySvdNm,p.dPopulationCount, p.dPwsStTypeCd," +
                         " p.activityRsnTxt, p.startDay, p.startMonth, p.endDay, p.endMonth, p.effBeginDt, p.effEndDt)"
                       + " from PWS p where p.number0 = :number0")})                 
+
 @Entity
 @Table(name = "pws")
 public class PWS {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
@@ -226,12 +227,12 @@ public class PWS {
             this.endMonth = endMonth;
     }
 
-    public Datetime getEffBeginDt() {      
+    public Datetime getEffBeginDt() {
         return DataBaseUtil.toYD(effBeginDt);
     }
 
     public void setEffBeginDt(Datetime eff_begin_dt) {
-        if (DataBaseUtil.isDifferentYD(eff_begin_dt,this.effBeginDt))
+        if (DataBaseUtil.isDifferentYD(eff_begin_dt, this.effBeginDt))
             this.effBeginDt = DataBaseUtil.toDate(eff_begin_dt);
     }
 
@@ -240,7 +241,7 @@ public class PWS {
     }
 
     public void setEffEndDt(Datetime eff_end_dt) {
-        if (DataBaseUtil.isDifferentYD(eff_end_dt,this.effEndDt))
+        if (DataBaseUtil.isDifferentYD(eff_end_dt, this.effEndDt))
             this.effEndDt = DataBaseUtil.toDate(eff_end_dt);
-    }   
+    }
 }

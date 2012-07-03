@@ -50,6 +50,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -102,12 +103,12 @@ import org.openelis.utils.Auditable;
                       + " where a.sampleItemId = si.id and si.sampleId = s.id and ss.sampleId = s.id and ss.pwsId = p.id and ss.sampleTypeId = d1.id and so.sampleId = s.id and so.organizationId = o.id and a.testId = t.id and a.unitOfMeasureId = d2.id and"
                       + " so.typeId = d3.id and d3.systemName = 'org_report_to' and a.releasedDate between :startDate and :endDate order by s.accessionNumber, a.releasedDate")})
 @Entity
-@Table(name="analysis")
+@Table(name = "analysis")
 @EntityListeners({AuditUtil.class})
 public class Analysis implements Auditable, Cloneable {
-  
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                     id;
 
@@ -176,10 +177,10 @@ public class Analysis implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
     private Collection<AnalysisQaevent> analysisQAEvent;
-    
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
-    private Collection<Result>          result;   
+    private Collection<Result>          result;
 
     @Transient
     private Analysis                    original;
@@ -327,14 +328,14 @@ public class Analysis implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferentYM(printedDate, this.printedDate))
             this.printedDate = DataBaseUtil.toDate(printedDate);
     }
-    
+
     public SampleItem getSampleItem() {
         return sampleItem;
     }
 
     public void setSampleItem(SampleItem sampleItem) {
         this.sampleItem = sampleItem;
-    }    
+    }
 
     public Analysis getPreAnalysis() {
         return preAnalysis;
@@ -351,7 +352,7 @@ public class Analysis implements Auditable, Cloneable {
     public void setTest(Test test) {
         this.test = test;
     }
-    
+
     public Section getSection() {
         return section;
     }
@@ -375,7 +376,7 @@ public class Analysis implements Auditable, Cloneable {
     public void setResult(Collection<Result> result) {
         this.result = result;
     }
-    
+
     public void setClone() {
         try {
             original = (Analysis)this.clone();
@@ -383,11 +384,11 @@ public class Analysis implements Auditable, Cloneable {
             e.printStackTrace();
         }
     }
- 
-  public Audit getAudit() {
+
+  public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ANALYSIS);
         audit.setReferenceId(getId());
         if (original != null)

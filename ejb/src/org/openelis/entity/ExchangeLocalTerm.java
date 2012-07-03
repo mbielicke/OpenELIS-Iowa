@@ -48,9 +48,10 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utils.Auditable;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
+import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "ExchangeLocalTerm.FetchById",
@@ -101,10 +102,10 @@ public class ExchangeLocalTerm implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "exchange_local_term_id")
     private Collection<ExchangeExternalTerm> exchangeExternalTerm;
-    
+
     @Transient
-    private ExchangeLocalTerm original;
-    
+    private ExchangeLocalTerm                original;
+
     public Integer getId() {
         return id;
     }
@@ -113,7 +114,7 @@ public class ExchangeLocalTerm implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
-    
+
     public Integer getReferenceTableId() {
         return referenceTableId;
     }
@@ -188,17 +189,17 @@ public class ExchangeLocalTerm implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.EXCHANGE_LOCAL_TERM);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("reference_id", referenceId, original.referenceId)
                  .setField("reference_table_id", referenceTableId, original.referenceTableId);
-            
-        return audit;        
+
+        return audit;
     }
 }

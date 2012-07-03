@@ -25,40 +25,40 @@ import org.openelis.utils.AuditUtil;
                  + " from PWSMonitor p where p.tinwsysIsNumber = :tinwsysIsNumber")
 @Entity
 @Table(name = "pws_monitor")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class PWSMonitor {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer    id;
+    private Integer id;
 
     @Column(name = "tinwsys_is_number")
-    private Integer    tinwsysIsNumber;
+    private Integer tinwsysIsNumber;
 
     @Column(name = "st_asgn_ident_cd")
-    private String     stAsgnIdentCd;
+    private String  stAsgnIdentCd;
 
     @Column(name = "name")
-    private String     name;
+    private String  name;
 
     @Column(name = "tiaanlgp_tiaanlyt_name")
-    private String     tiaanlgpTiaanlytName;
+    private String  tiaanlgpTiaanlytName;
 
     @Column(name = "number_samples")
-    private Integer    numberSamples;
+    private Integer numberSamples;
 
     @Column(name = "comp_begin_date")
-    private Date       compBeginDate;
+    private Date    compBeginDate;
 
     @Column(name = "comp_end_date")
-    private Date       compEndDate;
+    private Date    compEndDate;
 
     @Column(name = "frequency_name")
-    private String     frequencyName;
+    private String  frequencyName;
 
     @Column(name = "period_name")
-    private String     periodName;
+    private String  periodName;
 
     public Integer getId() {
         return id;
@@ -148,5 +148,5 @@ public class PWSMonitor {
     public void setPeriodName(String periodName) {
         if (DataBaseUtil.isDifferent(periodName, this.periodName))
             this.periodName = periodName;
-    }        
+    }
 }

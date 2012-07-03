@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -60,13 +61,14 @@ import org.openelis.utils.Auditable;
                 query = "select labelId from Test t where t.labelId = :id ")   
 })                     
 
+
 @Entity
 @Table(name = "label")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Label implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer   id;
 
@@ -133,7 +135,7 @@ public class Label implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(scriptletId, this.scriptletId))
             this.scriptletId = scriptletId;
     }
-    
+
     public Scriptlet getScriptlet() {
         return scriptlet;
     }
@@ -149,11 +151,11 @@ public class Label implements Auditable, Cloneable {
             e.printStackTrace();
         }
     }
-    
-    public Audit getAudit() {
+
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.LABEL);
         audit.setReferenceId(getId());
         if (original != null)
@@ -162,8 +164,7 @@ public class Label implements Auditable, Cloneable {
                  .setField("description", description, original.description)
                  .setField("printer_type_id", printerTypeId, original.printerTypeId, ReferenceTable.DICTIONARY)
                  .setField("scriptlet_id", scriptletId, original.scriptletId, ReferenceTable.SCRIPTLET);
-        
+
         return audit;
     }
-
 }

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.util.XMLUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -41,14 +42,16 @@ import org.w3c.dom.Element;
 public class Audit {
 
     protected class Field {
-        boolean changed;
-        Integer linkedTableId;
-        String  name;
-        Object  value;
+        String link, name, value;
     }
 
-    protected Integer          referenceId, referenceTableId; 
     protected ArrayList<Field> fields;
+    protected AuditActivity   operation;
+    protected Integer          referenceId, referenceTableId;
+
+    public Audit(AuditActivity operation) {
+        this.operation = operation;
+    }
 
     /**
      * Get the primary key for the current record that is being archived.
@@ -81,40 +84,41 @@ public class Audit {
     }
 
     /**
-     * Adds a field given by field name and current and original values 
-     * to the list of xml elements, that can later retrieved through getXML(boolean)  
+     * Adds a field given by field name and current and original values to the
+     * list of xml elements, that can later retrieved through getXML(boolean)
      */
     public Audit setField(String fieldName, Object currentValue, Object originalValue) {
         return setField(fieldName, currentValue, originalValue, null);
     }
 
     /**
-     * Adds a field given by field name, current and original values, and the reference table id
-     * to the list of xml elements. The linked table id is used to specify the referenced table id
-     * that the field value points to.
+     * Adds a field given by field name, current and original values, and the
+     * reference table id to the list of xml elements. The linked table id is
+     * used to specify the referenced table id that the field value points to.
      */
-    public Audit setField(String fieldName, Object currentValue, Object originalValue, Integer linkedTableId) {
+    public Audit setField(String fieldName, Object currentValue, Object originalValue,
+                          Integer linkedTableId) {
         Field f;
 
-        f = new Field();
-        f.changed = isDifferent(originalValue, currentValue);
-        f.linkedTableId = linkedTableId;
-        f.name = fieldName;
-        f.value = originalValue;
-
-        if (fields == null)
-            fields = new ArrayList<Field>();
-        fields.add(f);
-
+        if ( (operation == AuditActivity.UPDATE && isDifferent(originalValue, currentValue)) ||
+            operation == AuditActivity.DELETE) {
+            f = new Field();
+            f.name = fieldName;
+            f.value = (originalValue == null) ? "" : originalValue.toString();
+            f.link = (linkedTableId == null) ? "" : linkedTableId.toString();
+            if (fields == null)
+                fields = new ArrayList<Field>();
+            fields.add(f);
+        }
         return this;
     }
 
     /**
-     * This method creates a list of xml elements that represent the changes made to 
-     * certain fields. The withDifferences flag indicates that elements should be
-     * created regardless of whether or not the field was changed.
+     * This method creates a list of xml elements that represent the changes
+     * made to certain fields. The withDifferences flag indicates that elements
+     * should be created regardless of whether or not the field was changed.
      */
-    public String getXML(boolean allNodes) {
+    public String getXML() {
         Document doc;
         Element root, elem;
 
@@ -124,15 +128,12 @@ public class Audit {
                 root = doc.getDocumentElement();
 
                 for (Field f : fields) {
-                    if (f.changed || allNodes) {
-                        elem = doc.createElement(f.name);
-                        if (f.linkedTableId != null)
-                            elem.setAttribute("refTable", f.linkedTableId.toString());
-                        elem.appendChild(doc.createTextNode((f.value==null)?"":f.value.toString()));
-                        doc.getDocumentElement().appendChild(elem);
-                    }
+                    elem = doc.createElement(f.name);
+                    if (! "".equals(f.link))
+                        elem.setAttribute("refTable", f.link);
+                    elem.appendChild(doc.createTextNode(f.value));
+                    root.appendChild(elem);
                 }
-
                 if (root.hasChildNodes())
                     return XMLUtil.toString(doc);
             } catch (Exception e) {
@@ -141,14 +142,14 @@ public class Audit {
         }
         return null;
     }
-    
+
     /*
-     * Overridden because the string value from the original clone contains trailing
-     * spaces, thus trimming. 
+     * Overridden because the string value from the original clone contains
+     * trailing spaces, thus trimming.
      */
     private boolean isDifferent(Object a, Object b) {
         if (b instanceof String)
             return DataBaseUtil.isDifferent(a, ((String)b).trim());
-        return DataBaseUtil.isDifferent(a,b);
+        return DataBaseUtil.isDifferent(a, b);
     }
 }

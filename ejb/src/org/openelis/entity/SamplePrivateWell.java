@@ -41,6 +41,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -55,65 +56,62 @@ import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "sample_private_well")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class SamplePrivateWell implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer             id;
+    private Integer           id;
 
     @Column(name = "sample_id")
-    private Integer             sampleId;
+    private Integer           sampleId;
 
     @Column(name = "organization_id")
-    private Integer              organizationId;
-    
+    private Integer           organizationId;
+
     @Column(name = "report_to_name")
-    private String              reportToName;
-    
+    private String            reportToName;
+
     @Column(name = "report_to_attention")
-    private String              reportToAttention;
+    private String            reportToAttention;
 
     @Column(name = "report_to_address_id")
-    private Integer             reportToAddressId;
+    private Integer           reportToAddressId;
 
     @Column(name = "location")
-    private String              location;
+    private String            location;
 
     @Column(name = "location_address_id")
-    private Integer              locationAddressId;
+    private Integer           locationAddressId;
 
     @Column(name = "owner")
-    private String              owner;
+    private String            owner;
 
     @Column(name = "collector")
-    private String             collector;
+    private String            collector;
 
     @Column(name = "well_number")
-    private Integer             wellNumber;
-    
+    private Integer           wellNumber;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "location_address_id", insertable = false, updatable = false)
-    private Address             locationAddress;
-    
+    private Address           locationAddress;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "report_to_address_id", insertable = false, updatable = false)
-    private Address             reportToAddress;
-    
+    private Address           reportToAddress;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", insertable = false, updatable = false)
-    private Organization             organization;
+    private Organization      organization;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sample_id", insertable = false, updatable = false)
-    private Sample              sample;
+    private Sample            sample;
 
     @Transient
     private SamplePrivateWell original;
-    
-    @Transient
-    private boolean           auditLocationAddressId, auditReportToAddressId;
 
     public Integer getId() {
         return id;
@@ -132,16 +130,16 @@ public class SamplePrivateWell implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(sampleId, this.sampleId))
             this.sampleId = sampleId;
     }
-    
+
     public Integer getOrganizationId() {
         return organizationId;
     }
-    
+
     public void setOrganizationId(Integer organizationId) {
         if (DataBaseUtil.isDifferent(organizationId, this.organizationId))
             this.organizationId = organizationId;
     }
-    
+
     public String getReportToName() {
         return reportToName;
     }
@@ -150,7 +148,7 @@ public class SamplePrivateWell implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(reportToName, this.reportToName))
             this.reportToName = reportToName;
     }
-    
+
     public String getReportToAttention() {
         return reportToAttention;
     }
@@ -168,7 +166,7 @@ public class SamplePrivateWell implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(reportToAddressId, this.reportToAddressId))
             this.reportToAddressId = reportToAddressId;
     }
-    
+
     public String getLocation() {
         return location;
     }
@@ -204,7 +202,7 @@ public class SamplePrivateWell implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(collector, this.collector))
             this.collector = collector;
     }
-    
+
     public Integer getWellNumber() {
         return wellNumber;
     }
@@ -233,17 +231,6 @@ public class SamplePrivateWell implements Auditable, Cloneable {
         return reportToAddress;
     }
 
-    /*
-     * Audit support
-     */
-    public void setAuditLocationAddressId(boolean changed) {
-        auditLocationAddressId = changed;
-    }
-    
-    public void setAuditReportToAddressId(boolean changed) {
-        auditReportToAddressId = changed;
-    }
-    
     public void setClone() {
         try {
             original = (SamplePrivateWell)this.clone();
@@ -252,10 +239,10 @@ public class SamplePrivateWell implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.SAMPLE_PRIVATE_WELL);
         audit.setReferenceId(getId());
         if (original != null)
@@ -264,16 +251,12 @@ public class SamplePrivateWell implements Auditable, Cloneable {
                  .setField("organization_id", organizationId, original.organizationId, ReferenceTable.ORGANIZATION)
                  .setField("report_to_name", reportToName, original.reportToName)
                  .setField("report_to_attention", reportToAttention, original.reportToAttention)
-                 .setField("report_to_address_id", (auditReportToAddressId ? null : reportToAddressId), original.reportToAddressId,
-                           ReferenceTable.ADDRESS)
+                 .setField("report_to_address_id", reportToAddressId, original.reportToAddressId, ReferenceTable.ADDRESS)
                  .setField("location", location, original.location)
-                 .setField("location_address_id", (auditLocationAddressId ? null : locationAddressId), original.locationAddressId,
-                           ReferenceTable.ADDRESS)
+                 .setField("location_address_id", locationAddressId, original.locationAddressId, ReferenceTable.ADDRESS)
                  .setField("owner", owner, original.owner)
                  .setField("collector", collector, original.collector)
                  .setField("well_number", wellNumber, original.wellNumber);
-
-
 
         return audit;
     }

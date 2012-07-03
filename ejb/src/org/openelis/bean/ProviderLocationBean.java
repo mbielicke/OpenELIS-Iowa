@@ -78,10 +78,8 @@ public class ProviderLocationBean implements ProviderLocationLocal {
         entity.setLocation(data.getLocation());
         entity.setExternalId(data.getExternalId());
 
-        if (data.getAddress().isChanged()) {
-            entity.setAuditAddressId(true);
+        if (data.getAddress().isChanged())
             addressBean.update(data.getAddress());
-        }
 
         return data;
     }

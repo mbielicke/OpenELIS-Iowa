@@ -23,46 +23,46 @@ import org.openelis.utils.AuditUtil;
                  + " from PWSAddress p where p.tinwsysIsNumber = :tinwsysIsNumber")
 @Entity
 @Table(name = "pws_address")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class PWSAddress {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer    id;
+    private Integer id;
 
     @Column(name = "tinwsys_is_number")
-    private Integer    tinwsysIsNumber;
+    private Integer tinwsysIsNumber;
 
     @Column(name = "type_code")
-    private String     typeCode;
+    private String  typeCode;
 
     @Column(name = "active_ind_cd")
-    private String     activeIndCd;
+    private String  activeIndCd;
 
     @Column(name = "name")
-    private String     name;
+    private String  name;
 
     @Column(name = "addr_line_one_txt")
-    private String     addrLineOneTxt;
+    private String  addrLineOneTxt;
 
     @Column(name = "addr_line_two_txt")
-    private String     addrLineTwoTxt;
+    private String  addrLineTwoTxt;
 
     @Column(name = "address_city_name")
-    private String     addressCityName;
+    private String  addressCityName;
 
     @Column(name = "address_state_code")
-    private String     addressStateCode;
+    private String  addressStateCode;
 
     @Column(name = "address_zip_code")
-    private String     addressZipCode;
+    private String  addressZipCode;
 
     @Column(name = "state_fips_code")
-    private String     stateFipsCode;
+    private String  stateFipsCode;
 
     @Column(name = "phone_number")
-    private String     phoneNumber;
+    private String  phoneNumber;
 
     public Integer getId() {
         return id;

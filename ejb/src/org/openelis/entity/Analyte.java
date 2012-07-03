@@ -48,6 +48,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -81,13 +82,14 @@ import org.openelis.utils.Auditable;
                                                            + "UNION "
                                                            + "select analyte_id as ANALYTE_ID from worksheet_analyte where analyte_id = :id ", resultSetMapping = "Analyte.ReferenceCheckMapping")
 @SqlResultSetMapping(name = "Analyte.ReferenceCheckMapping", columns = {@ColumnResult(name = "ANALYTE_ID")})
+
 @Entity
 @Table(name = "analyte")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Analyte implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
@@ -171,21 +173,19 @@ public class Analyte implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ANALYTE);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("name", name, original.name)
                  .setField("is_active", isActive, original.isActive)
-                 .setField("parent_analyte_id", parentAnalyteId, original.parentAnalyteId,
-                           ReferenceTable.ANALYTE)
+                 .setField("parent_analyte_id", parentAnalyteId, original.parentAnalyteId, ReferenceTable.ANALYTE)
                  .setField("external_id", externalId, original.externalId);
 
         return audit;
     }
-
 }

@@ -50,6 +50,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -72,13 +73,14 @@ import org.openelis.utils.Auditable;
                        "s.shippedMethodId,s.shippedDate,s.numberOfPackages,s.cost)" 
                      + " from Shipping s left join s.shippingItem i where i.referenceTableId = org.openelis.domain.ReferenceTable.SAMPLE_ITEM "
                      + " and i.referenceId in (select id from SampleItem si where si.sampleId = :sampleId)")})                
+
 @Entity
 @Table(name = "shipping")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Shipping implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                      id;
 
@@ -90,9 +92,9 @@ public class Shipping implements Auditable, Cloneable {
 
     @Column(name = "shipped_to_id")
     private Integer                      shippedToId;
-    
+
     @Column(name = "shipped_to_attention")
-    private String                      shippedToAttention;
+    private String                       shippedToAttention;
 
     @Column(name = "processed_by")
     private String                       processedBy;
@@ -119,7 +121,7 @@ public class Shipping implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_id", insertable = false, updatable = false)
     private Collection<ShippingItem>     shippingItem;
-    
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipping_id", insertable = false, updatable = false)
     private Collection<ShippingTracking> shippingTracking;
@@ -162,7 +164,7 @@ public class Shipping implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(shippedToId, this.shippedToId))
             this.shippedToId = shippedToId;
     }
-    
+
     public String getShippedToAttention() {
         return shippedToAttention;
     }
@@ -225,7 +227,7 @@ public class Shipping implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(cost, this.cost))
             this.cost = cost;
     }
-    
+
     public Collection<ShippingItem> getShippingItem() {
         return shippingItem;
     }
@@ -258,10 +260,10 @@ public class Shipping implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.SHIPPING);
         audit.setReferenceId(getId());
         if (original != null)

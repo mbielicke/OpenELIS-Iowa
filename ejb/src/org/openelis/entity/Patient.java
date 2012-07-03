@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -94,9 +95,6 @@ public class Patient implements Auditable, Cloneable {
     @Transient
     private Patient original;
     
-    @Transient
-    private boolean auditAddressId;
-
     public Integer getId() {
         return id;
     }
@@ -187,13 +185,6 @@ public class Patient implements Auditable, Cloneable {
             this.ethnicityId = ethnicityId;
     }
     
-    /*
-     * Audit support
-     */
-    public void setAuditAddressId(boolean changed) {
-        auditAddressId = changed;
-    }
-
     public void setClone() {
         try {
             original = (Patient)this.clone();
@@ -202,10 +193,10 @@ public class Patient implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.PATIENT);
         audit.setReferenceId(getId());
         if (original != null)
@@ -213,8 +204,7 @@ public class Patient implements Auditable, Cloneable {
                  .setField("last_name", lastName, original.lastName)
                  .setField("first_name", firstName, original.firstName)
                  .setField("middle_name", middleName, original.middleName)
-                 .setField("address_id", (auditAddressId ? null : addressId), original.addressId,
-                           ReferenceTable.ADDRESS)
+                 .setField("address_id", addressId, original.addressId, ReferenceTable.ADDRESS)
                  .setField("birth_date", birthDate, original.birthDate)
                  .setField("birth_time", birthTime, original.birthTime)
                  .setField("gender_id", genderId, original.genderId, ReferenceTable.DICTIONARY)

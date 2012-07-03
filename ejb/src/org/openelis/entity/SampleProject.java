@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -62,11 +63,11 @@ import org.openelis.utils.Auditable;
                       + " where sp.projectId = p.id and sp.isPermanent = 'Y' order by p.name")})
 @Entity
 @Table(name = "sample_project")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class SampleProject implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer       id;
 
@@ -150,10 +151,10 @@ public class SampleProject implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.SAMPLE_PROJECT);
         audit.setReferenceId(getId());
         if (original != null)

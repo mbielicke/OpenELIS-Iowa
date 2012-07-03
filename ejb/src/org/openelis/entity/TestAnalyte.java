@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -69,11 +70,11 @@ import org.openelis.utils.Auditable;
                       + " from TestAnalyte ta left join ta.scriptlet s left join ta.analyte a where ta.testId = :testId and ta.isColumn = 'N' order by ta.sortOrder ")})
 @Entity
 @Table(name = "test_analyte")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class TestAnalyte implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer     id;
 
@@ -142,7 +143,7 @@ public class TestAnalyte implements Auditable, Cloneable {
     }
 
     public void setRowGroup(Integer rowGroup) {
-        if (DataBaseUtil.isDifferent(rowGroup,this.rowGroup))
+        if (DataBaseUtil.isDifferent(rowGroup, this.rowGroup))
             this.rowGroup = rowGroup;
     }
 
@@ -151,7 +152,7 @@ public class TestAnalyte implements Auditable, Cloneable {
     }
 
     public void setResultGroup(Integer resultGroup) {
-        if (DataBaseUtil.isDifferent(resultGroup,this.resultGroup))
+        if (DataBaseUtil.isDifferent(resultGroup, this.resultGroup))
             this.resultGroup = resultGroup;
     }
 
@@ -160,7 +161,7 @@ public class TestAnalyte implements Auditable, Cloneable {
     }
 
     public void setSortOrder(Integer sortOrder) {
-        if (DataBaseUtil.isDifferent(sortOrder,this.sortOrder))
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
             this.sortOrder = sortOrder;
     }
 
@@ -169,7 +170,7 @@ public class TestAnalyte implements Auditable, Cloneable {
     }
 
     public void setTypeId(Integer typeId) {
-        if (DataBaseUtil.isDifferent(typeId,this.typeId))
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
             this.typeId = typeId;
     }
 
@@ -178,7 +179,7 @@ public class TestAnalyte implements Auditable, Cloneable {
     }
 
     public void setAnalyteId(Integer analyteId) {
-        if (DataBaseUtil.isDifferent(analyteId,this.analyteId))
+        if (DataBaseUtil.isDifferent(analyteId, this.analyteId))
             this.analyteId = analyteId;
     }
 
@@ -187,7 +188,7 @@ public class TestAnalyte implements Auditable, Cloneable {
     }
 
     public void setIsReportable(String isReportable) {
-        if (DataBaseUtil.isDifferent(isReportable,this.isReportable))
+        if (DataBaseUtil.isDifferent(isReportable, this.isReportable))
             this.isReportable = isReportable;
     }
 
@@ -196,7 +197,7 @@ public class TestAnalyte implements Auditable, Cloneable {
     }
 
     public void setIsColumn(String isColumn) {
-        if (DataBaseUtil.isDifferent(isColumn,this.isColumn))
+        if (DataBaseUtil.isDifferent(isColumn, this.isColumn))
             this.isColumn = isColumn;
     }
 
@@ -205,10 +206,10 @@ public class TestAnalyte implements Auditable, Cloneable {
     }
 
     public void setScriptletId(Integer scriptletId) {
-        if (DataBaseUtil.isDifferent(scriptletId,this.scriptletId))
+        if (DataBaseUtil.isDifferent(scriptletId, this.scriptletId))
             this.scriptletId = scriptletId;
     }
-    
+
     public Analyte getAnalyte() {
         return analyte;
     }
@@ -241,10 +242,10 @@ public class TestAnalyte implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.TEST_ANALYTE);
         audit.setReferenceId(getId());
         if (original != null)

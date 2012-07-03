@@ -25,76 +25,56 @@
  */
 package org.openelis.utils;
 
-import java.util.Date;
-
 import javax.persistence.PostLoad;
 import javax.persistence.PostPersist;
 import javax.persistence.PostRemove;
 import javax.persistence.PostUpdate;
 
-import org.openelis.domain.HistoryVO;
+import org.openelis.utilcommon.AuditActivity;
 
 public class AuditUtil {
-    
-    public AuditUtil() {
-    }
-
     @PostLoad
     void postLoad(Object entity) {
         if (entity instanceof Auditable)
             ((Auditable)entity).setClone();
     }
-    
-    @PostPersist
-    void postCreate(Object entity) {
-        Audit audit;
-        HistoryVO data;
-        
-        if (entity instanceof Auditable) {
-            audit = ((Auditable)entity).getAudit();
 
-            data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
-                                 new Date(), 1, getSystemUserId(), null);
-            EJBFactory.getHistory().add(data);
+    @PostPersist
+    void postCreate(Object entity) throws Exception {
+        Audit audit;
+
+        if (entity instanceof Auditable) {
+            audit = ((Auditable)entity).getAudit(AuditActivity.ADD);
+            EJBFactory.getHistory().add(audit.getReferenceId(),
+                                        audit.getReferenceTableId(),
+                                        AuditActivity.ADD,
+                                        audit.getXML());
         }
     }
 
     @PostUpdate
-    void postUpdate(Object entity) {
+    void postUpdate(Object entity) throws Exception {
         Audit audit;
-        HistoryVO data;
 
         if (entity instanceof Auditable) {
-            audit = ((Auditable)entity).getAudit();
-
-            data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
-                                 new Date(), 2, getSystemUserId(), audit.getXML(false));
-            EJBFactory.getHistory().add(data);
+            audit = ((Auditable)entity).getAudit(AuditActivity.UPDATE);
+            EJBFactory.getHistory().add(audit.getReferenceId(),
+                                        audit.getReferenceTableId(),
+                                        AuditActivity.UPDATE,
+                                        audit.getXML());
         }
     }
 
     @PostRemove
-    void postRemove(Object entity) {
+    void postRemove(Object entity) throws Exception {
         Audit audit;
-        HistoryVO data;
 
         if (entity instanceof Auditable) {
-            audit = ((Auditable)entity).getAudit();
-
-            data = new HistoryVO(null, audit.getReferenceId(), audit.getReferenceTableId(),
-                                 new Date(), 3, getSystemUserId(), audit.getXML(true));
-            EJBFactory.getHistory().add(data);
-        }
-    }
-
-    /*
-     * Returns the user id within this transaction. 
-     */
-    private Integer getSystemUserId() {
-        try {
-            return EJBFactory.getUserCache().getId();
-        } catch (Exception e) {
-            return null;
+            audit = ((Auditable)entity).getAudit(AuditActivity.DELETE);
+            EJBFactory.getHistory().add(audit.getReferenceId(),
+                                        audit.getReferenceTableId(),
+                                        AuditActivity.DELETE,
+                                        audit.getXML());
         }
     }
 }

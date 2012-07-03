@@ -40,17 +40,18 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "sample_animal")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class SampleAnimal implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer      id;
 
@@ -77,9 +78,6 @@ public class SampleAnimal implements Auditable, Cloneable {
 
     @Transient
     private SampleAnimal original;
-    
-    @Transient
-    private boolean      auditAddressId;
 
     public Integer getId() {
         return id;
@@ -152,14 +150,6 @@ public class SampleAnimal implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(addressId, this.addressId))
             this.addressId = addressId;
     }
-    
-    /*
-     * Audit support
-     */
-    public void setAuditAddressId(boolean changed) {
-        auditAddressId = changed;
-    }
-
     public void setClone() {
         try {
             original = (SampleAnimal)this.clone();
@@ -168,23 +158,21 @@ public class SampleAnimal implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.SAMPLE_ANIMAL);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
                  .setField("sample_id", sampleId, original.sampleId, ReferenceTable.SAMPLE)
                  .setField("animal_common_name_id", animalCommonNameId, original.animalCommonNameId, ReferenceTable.DICTIONARY)
-                 .setField("animal_scientific_name_id", animalScientificNameId,
-                           original.animalScientificNameId, ReferenceTable.DICTIONARY)
+                 .setField("animal_scientific_name_id", animalScientificNameId, original.animalScientificNameId, ReferenceTable.DICTIONARY)
                  .setField("collector", collector, original.collector)
                  .setField("collector_phone", collectorPhone, original.collectorPhone)
                  .setField("sampling_location", samplingLocation, original.samplingLocation)
-                 .setField("address_id", (auditAddressId ? null : addressId), original.addressId,
-                           ReferenceTable.ADDRESS);
+                 .setField("address_id", addressId, original.addressId, ReferenceTable.ADDRESS);
 
         return audit;
     }

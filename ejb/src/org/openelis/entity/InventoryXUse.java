@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 
 @NamedQueries({
@@ -61,7 +62,7 @@ import org.openelis.utils.Audit;
 public class InventoryXUse {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer           id;
 
@@ -81,7 +82,7 @@ public class InventoryXUse {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
     private InventoryLocation inventoryLocation;
-    
+
     @Transient
     private InventoryXUse     original;
 
@@ -128,15 +129,15 @@ public class InventoryXUse {
     public InventoryLocation getInventoryLocation() {
         return inventoryLocation;
     }
-    
-    public Audit getAudit() {
+
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.INVENTORY_X_USE);
         audit.setReferenceId(getId());
         if (original != null)
-            audit.setField("id", id, original.id)                 
+            audit.setField("id", id, original.id)
                  .setField("inventory_location_id", inventoryLocationId, original.inventoryLocationId, ReferenceTable.INVENTORY_LOCATION)
                  .setField("order_item_id", orderItemId, original.orderItemId, ReferenceTable.ORDER_ITEM)
                  .setField("quantity", quantity, original.quantity);

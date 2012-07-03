@@ -19,6 +19,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -28,11 +29,11 @@ import org.openelis.utils.Auditable;
                   + " from TestSection ts left join ts.section s where ts.testId = :testId")
 @Entity
 @Table(name = "test_section")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class TestSection implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer     id;
 
@@ -87,7 +88,7 @@ public class TestSection implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(flagId, this.flagId))
             this.flagId = flagId;
     }
-    
+
     public Section getSection() {
         return section;
     }
@@ -104,10 +105,10 @@ public class TestSection implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.TEST_SECTION);
         audit.setReferenceId(getId());
         if (original != null)
@@ -118,5 +119,4 @@ public class TestSection implements Auditable, Cloneable {
 
         return audit;
     }
-
 }

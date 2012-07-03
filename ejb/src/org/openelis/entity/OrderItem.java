@@ -48,6 +48,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -65,13 +66,14 @@ import org.openelis.utils.Auditable;
                 query = "select distinct new org.openelis.domain.OrderItemViewDO(o.id,o.orderId,o.inventoryItemId," +
                         "o.quantity,o.catalogNumber,o.unitCost,i.name,i.storeId,i.productUri)"
                       + " from OrderItem o left join o.inventoryItem i where o.orderId in (:ids)")})                      
+
 @Entity
 @Table(name = "order_item")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class OrderItem implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                      id;
 
@@ -166,7 +168,7 @@ public class OrderItem implements Auditable, Cloneable {
     public Order getOrder() {
         return order;
     }
-    
+
     public void setOrder(Order order) {
         this.order = order;
     }
@@ -203,10 +205,10 @@ public class OrderItem implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ORDER_ITEM);
         audit.setReferenceId(getId());
         if (original != null)

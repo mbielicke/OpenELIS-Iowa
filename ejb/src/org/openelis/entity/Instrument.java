@@ -50,6 +50,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -75,11 +76,11 @@ import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "instrument")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Instrument implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                   id;
 
@@ -129,7 +130,7 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id,this.id))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
 
@@ -138,7 +139,7 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     public void setName(String name) {
-        if (DataBaseUtil.isDifferent(name,this.name))
+        if (DataBaseUtil.isDifferent(name, this.name))
             this.name = name;
     }
 
@@ -147,7 +148,7 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     public void setDescription(String description) {
-        if (DataBaseUtil.isDifferent(description,this.description))
+        if (DataBaseUtil.isDifferent(description, this.description))
             this.description = description;
     }
 
@@ -156,7 +157,7 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     public void setModelNumber(String modelNumber) {
-        if (DataBaseUtil.isDifferent(modelNumber,this.modelNumber))
+        if (DataBaseUtil.isDifferent(modelNumber, this.modelNumber))
             this.modelNumber = modelNumber;
     }
 
@@ -165,7 +166,7 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     public void setSerialNumber(String serialNumber) {
-        if (DataBaseUtil.isDifferent(serialNumber,this.serialNumber))
+        if (DataBaseUtil.isDifferent(serialNumber, this.serialNumber))
             this.serialNumber = serialNumber;
     }
 
@@ -174,7 +175,7 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     public void setTypeId(Integer typeId) {
-        if (DataBaseUtil.isDifferent(typeId,this.typeId))
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
             this.typeId = typeId;
     }
 
@@ -183,7 +184,7 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     public void setLocation(String location) {
-        if (DataBaseUtil.isDifferent(location,this.location))
+        if (DataBaseUtil.isDifferent(location, this.location))
             this.location = location;
     }
 
@@ -192,7 +193,7 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     public void setIsActive(String isActive) {
-        if (DataBaseUtil.isDifferent(isActive,this.isActive))
+        if (DataBaseUtil.isDifferent(isActive, this.isActive))
             this.isActive = isActive;
     }
 
@@ -201,8 +202,8 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     public void setActiveBegin(Datetime activeBegin) {
-        if (DataBaseUtil.isDifferentYD(activeBegin,this.activeBegin)) 
-            this.activeBegin = DataBaseUtil.toDate(activeBegin);        
+        if (DataBaseUtil.isDifferentYD(activeBegin, this.activeBegin))
+            this.activeBegin = DataBaseUtil.toDate(activeBegin);
     }
 
     public Datetime getActiveEnd() {
@@ -210,8 +211,8 @@ public class Instrument implements Auditable, Cloneable {
     }
 
     public void setActiveEnd(Datetime activeEnd) {
-        if (DataBaseUtil.isDifferentYD(activeEnd, this.activeEnd)) 
-            this.activeEnd = DataBaseUtil.toDate(activeEnd);       
+        if (DataBaseUtil.isDifferentYD(activeEnd, this.activeEnd))
+            this.activeEnd = DataBaseUtil.toDate(activeEnd);
     }
 
     public Integer getScriptletId() {
@@ -246,11 +247,11 @@ public class Instrument implements Auditable, Cloneable {
             e.printStackTrace();
         }
     }
-    
-    public Audit getAudit() {
+
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.INSTRUMENT);
         audit.setReferenceId(getId());
         if (original != null)
@@ -269,5 +270,4 @@ public class Instrument implements Auditable, Cloneable {
         return audit;
 
     }
-
 }
