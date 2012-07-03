@@ -54,22 +54,22 @@ public class AnalysisReportFlags {
 
     @Id
     @Column(name = "analysis_id")
-    private Integer               analysisId;
+    private Integer analysisId;
 
     @Column(name = "notified_received")
-    private String                notifiedReceived;
+    private String  notifiedReceived;
 
     @Column(name = "notified_released")
-    private String                notifiedReleased;
+    private String  notifiedReleased;
 
     @Column(name = "billed_date")
-    private Date                  billedDate;
+    private Date    billedDate;
 
     @Column(name = "billed_analytes")
-    private Integer               billedAnalytes;
+    private Integer billedAnalytes;
 
     @Column(name = "billed_zero")
-    private String                billedZero;
+    private String  billedZero;
 
     public Integer getAnalysisId() {
         return analysisId;

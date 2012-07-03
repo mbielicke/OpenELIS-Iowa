@@ -110,7 +110,6 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
             }
         } else {
             if (data.getLocationAddress().isChanged()) {
-                entity.setAuditLocationAddressId(true);
                 if (data.getLocationAddress().getId() != null)
                     addressBean.update(data.getLocationAddress());
                 else

@@ -49,6 +49,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -124,9 +125,6 @@ public class Organization implements Auditable, Cloneable {
     @Transient
     private Organization original;
     
-    @Transient
-    private boolean auditAddressId;
-
     public Integer getId() {
         return id;
     }
@@ -203,13 +201,6 @@ public class Organization implements Auditable, Cloneable {
         return address;
     }
 
-    /*
-     * Audit support
-     */
-    public void setAuditAddressId(boolean changed) {
-        auditAddressId = changed;
-    }
-    
     public void setClone() {
         try {
             original = (Organization)this.clone();
@@ -218,20 +209,18 @@ public class Organization implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ORGANIZATION);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-                 .setField("parent_organization_id", parentOrganizationId,
-                           original.parentOrganizationId,ReferenceTable.ORGANIZATION)
+                 .setField("parent_organization_id", parentOrganizationId, original.parentOrganizationId,ReferenceTable.ORGANIZATION)
                  .setField("name", name, original.name)
                  .setField("is_active", isActive, original.isActive)
-                 .setField("address_id", (auditAddressId ? null : addressId), original.addressId,
-                           ReferenceTable.ADDRESS);
+                 .setField("address_id", addressId, original.addressId, ReferenceTable.ADDRESS);
 
         return audit;
     }

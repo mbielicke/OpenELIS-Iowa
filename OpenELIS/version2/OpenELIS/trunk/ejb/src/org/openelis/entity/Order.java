@@ -50,6 +50,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -78,83 +79,83 @@ import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "order")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Order implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer               id;
-    
+    private Integer                       id;
+
     @Column(name = "parent_order_id")
-    private Integer               parentOrderId;
+    private Integer                       parentOrderId;
 
     @Column(name = "description")
-    private String                description;
+    private String                        description;
 
     @Column(name = "status_id")
-    private Integer               statusId;
+    private Integer                       statusId;
 
     @Column(name = "ordered_date")
-    private Date                  orderedDate;
+    private Date                          orderedDate;
 
     @Column(name = "needed_in_days")
-    private Integer               neededInDays;
+    private Integer                       neededInDays;
 
     @Column(name = "requested_by")
-    private String                requestedBy;
+    private String                        requestedBy;
 
     @Column(name = "cost_center_id")
-    private Integer               costCenterId;
+    private Integer                       costCenterId;
 
     @Column(name = "organization_id")
-    private Integer               organizationId;
-    
+    private Integer                       organizationId;
+
     @Column(name = "organization_attention")
-    private String               organizationAttention;
+    private String                        organizationAttention;
 
     @Column(name = "type")
-    private String                type;
+    private String                        type;
 
     @Column(name = "external_order_number")
-    private String                externalOrderNumber;
+    private String                        externalOrderNumber;
 
     @Column(name = "ship_from_id")
-    private Integer               shipFromId;
-    
+    private Integer                       shipFromId;
+
     @Column(name = "number_of_forms")
-    private Integer               numberOfForms;
+    private Integer                       numberOfForms;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", insertable = false, updatable = false)
-    private Organization          organization;       
-    
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
-    private Collection<OrderOrganization> orderOrganization; 
+    private Organization                  organization;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Collection<OrderItem> orderItem;
-    
+    private Collection<OrderOrganization> orderOrganization;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Collection<OrderContainer> orderContainer;
-    
+    private Collection<OrderItem>         orderItem;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Collection<OrderTest> orderTest;
-    
+    private Collection<OrderContainer>    orderContainer;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id")
+    private Collection<OrderTest>         orderTest;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "reference_id")
-    private Collection<AuxData> auxData;
-    
+    private Collection<AuxData>           auxData;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
-    private Collection<OrderRecurrence> orderRecurrence;    
+    private Collection<OrderRecurrence>   orderRecurrence;
 
     @Transient
-    private Order                 original;
+    private Order                         original;
 
     public Integer getId() {
         return id;
@@ -236,15 +237,14 @@ public class Order implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(organizationId, this.organizationId))
             this.organizationId = organizationId;
     }
-    
-    
-    public String getOrganizationAttention() {        
+
+    public String getOrganizationAttention() {
         return organizationAttention;
     }
 
     public void setOrganizationAttention(String organizationAttention) {
         if (DataBaseUtil.isDifferent(organizationAttention, this.organizationAttention))
-        this.organizationAttention = organizationAttention;
+            this.organizationAttention = organizationAttention;
     }
 
     public String getType() {
@@ -273,7 +273,7 @@ public class Order implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(shipFromId, this.shipFromId))
             this.shipFromId = shipFromId;
     }
-    
+
     public Integer getNumberOfForms() {
         return numberOfForms;
     }
@@ -286,7 +286,7 @@ public class Order implements Auditable, Cloneable {
     public Organization getOrganization() {
         return organization;
     }
-    
+
     public Collection<OrderOrganization> getOrderOrganization() {
         return orderOrganization;
     }
@@ -302,7 +302,7 @@ public class Order implements Auditable, Cloneable {
     public void setOrderItem(Collection<OrderItem> orderItem) {
         this.orderItem = orderItem;
     }
-    
+
     public Collection<OrderContainer> getOrderContainer() {
         return orderContainer;
     }
@@ -318,14 +318,14 @@ public class Order implements Auditable, Cloneable {
     public void setOrderTest(Collection<OrderTest> orderTest) {
         this.orderTest = orderTest;
     }
-    
+
     public Collection<AuxData> getAuxData() {
         return auxData;
     }
-    
+
     public void setAuxData(Collection<AuxData> auxData) {
         this.auxData = auxData;
-    }  
+    }
 
     public Collection<OrderRecurrence> getOrderRecurrence() {
         return orderRecurrence;
@@ -343,10 +343,10 @@ public class Order implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ORDER);
         audit.setReferenceId(getId());
         if (original != null)

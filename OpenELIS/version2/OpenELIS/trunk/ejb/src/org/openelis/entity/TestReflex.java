@@ -46,6 +46,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -64,11 +65,11 @@ import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "test_reflex")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class TestReflex implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer     id;
 
@@ -115,7 +116,7 @@ public class TestReflex implements Auditable, Cloneable {
     }
 
     protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id,this.id))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
 
@@ -124,7 +125,7 @@ public class TestReflex implements Auditable, Cloneable {
     }
 
     public void setTestId(Integer testId) {
-        if (DataBaseUtil.isDifferent(testId,this.testId))
+        if (DataBaseUtil.isDifferent(testId, this.testId))
             this.testId = testId;
     }
 
@@ -133,7 +134,7 @@ public class TestReflex implements Auditable, Cloneable {
     }
 
     public void setTestAnalyteId(Integer testAnalyteId) {
-        if (DataBaseUtil.isDifferent(testAnalyteId,this.testAnalyteId))
+        if (DataBaseUtil.isDifferent(testAnalyteId, this.testAnalyteId))
             this.testAnalyteId = testAnalyteId;
     }
 
@@ -142,7 +143,7 @@ public class TestReflex implements Auditable, Cloneable {
     }
 
     public void setTestResultId(Integer testResultId) {
-        if (DataBaseUtil.isDifferent(testResultId,this.testResultId))
+        if (DataBaseUtil.isDifferent(testResultId, this.testResultId))
             this.testResultId = testResultId;
     }
 
@@ -151,7 +152,7 @@ public class TestReflex implements Auditable, Cloneable {
     }
 
     public void setFlagsId(Integer flagsId) {
-        if (DataBaseUtil.isDifferent(flagsId,this.flagsId))
+        if (DataBaseUtil.isDifferent(flagsId, this.flagsId))
             this.flagsId = flagsId;
     }
 
@@ -160,10 +161,10 @@ public class TestReflex implements Auditable, Cloneable {
     }
 
     public void setAddTestId(Integer addTestId) {
-        if (DataBaseUtil.isDifferent(addTestId,this.addTestId))
+        if (DataBaseUtil.isDifferent(addTestId, this.addTestId))
             this.addTestId = addTestId;
     }
-    
+
     public Dictionary getDictionary() {
         return dictionary;
     }
@@ -212,10 +213,10 @@ public class TestReflex implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.TEST_REFLEX);
         audit.setReferenceId(getId());
         if (original != null)

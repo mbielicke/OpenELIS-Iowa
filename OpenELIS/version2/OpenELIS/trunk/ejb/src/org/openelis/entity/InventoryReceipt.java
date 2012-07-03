@@ -50,6 +50,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -66,11 +67,11 @@ import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "inventory_receipt")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class InventoryReceipt implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                   id;
 
@@ -111,7 +112,7 @@ public class InventoryReceipt implements Auditable, Cloneable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_item_id", insertable = false, updatable = false)
-    private OrderItem orderItem;
+    private OrderItem                 orderItem;
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
@@ -221,9 +222,9 @@ public class InventoryReceipt implements Auditable, Cloneable {
     public Organization getOrganization() {
         return organization;
     }
-    
+
     public void setInventoryXPut(Collection<InventoryXPut> inventoryXPut) {
-         this.inventoryXPut = inventoryXPut;
+        this.inventoryXPut = inventoryXPut;
     }
 
     public Collection<InventoryXPut> getInventoryXPut() {
@@ -246,10 +247,10 @@ public class InventoryReceipt implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.INVENTORY_RECEIPT);
         audit.setReferenceId(getId());
         if (original != null)

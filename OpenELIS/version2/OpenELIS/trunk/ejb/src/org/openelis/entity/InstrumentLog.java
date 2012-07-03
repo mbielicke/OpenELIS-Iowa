@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -58,13 +59,13 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.InstrumentLogDO(il.id,il.instrumentId,il.typeId," + 
                         "il.worksheetId,il.eventBegin,il.eventEnd,il.text)"
                       + " from InstrumentLog il where il.instrumentId = :id and il.worksheetId = :wId")})
-@Entity 
+@Entity
 @Table(name = "instrument_log")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class InstrumentLog implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer       id;
 
@@ -94,7 +95,7 @@ public class InstrumentLog implements Auditable, Cloneable {
     }
 
     protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id,this.id))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
 
@@ -103,7 +104,7 @@ public class InstrumentLog implements Auditable, Cloneable {
     }
 
     public void setInstrumentId(Integer instrumentId) {
-        if (DataBaseUtil.isDifferent(instrumentId,this.instrumentId))
+        if (DataBaseUtil.isDifferent(instrumentId, this.instrumentId))
             this.instrumentId = instrumentId;
     }
 
@@ -112,7 +113,7 @@ public class InstrumentLog implements Auditable, Cloneable {
     }
 
     public void setTypeId(Integer typeId) {
-        if (DataBaseUtil.isDifferent(typeId,this.typeId))
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
             this.typeId = typeId;
     }
 
@@ -121,7 +122,7 @@ public class InstrumentLog implements Auditable, Cloneable {
     }
 
     public void setWorksheetId(Integer worksheetId) {
-        if (DataBaseUtil.isDifferent(worksheetId,this.worksheetId))
+        if (DataBaseUtil.isDifferent(worksheetId, this.worksheetId))
             this.worksheetId = worksheetId;
     }
 
@@ -130,8 +131,8 @@ public class InstrumentLog implements Auditable, Cloneable {
     }
 
     public void setEventBegin(Datetime event_begin) {
-        if (DataBaseUtil.isDifferentYM(event_begin,this.eventBegin)) 
-            this.eventBegin = DataBaseUtil.toDate(event_begin);        
+        if (DataBaseUtil.isDifferentYM(event_begin, this.eventBegin))
+            this.eventBegin = DataBaseUtil.toDate(event_begin);
     }
 
     public Datetime getEventEnd() {
@@ -139,8 +140,8 @@ public class InstrumentLog implements Auditable, Cloneable {
     }
 
     public void setEventEnd(Datetime event_end) {
-        if (DataBaseUtil.isDifferentYM(event_end, this.eventEnd))             
-            this.eventEnd = DataBaseUtil.toDate(event_end);        
+        if (DataBaseUtil.isDifferentYM(event_end, this.eventEnd))
+            this.eventEnd = DataBaseUtil.toDate(event_end);
     }
 
     public String getText() {
@@ -148,7 +149,7 @@ public class InstrumentLog implements Auditable, Cloneable {
     }
 
     public void setText(String text) {
-        if (DataBaseUtil.isDifferent(text,this.text))
+        if (DataBaseUtil.isDifferent(text, this.text))
             this.text = text;
     }
 
@@ -160,10 +161,10 @@ public class InstrumentLog implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.INSTRUMENT_LOG);
         audit.setReferenceId(getId());
         if (original != null)
@@ -177,5 +178,4 @@ public class InstrumentLog implements Auditable, Cloneable {
 
         return audit;
     }
-
 }

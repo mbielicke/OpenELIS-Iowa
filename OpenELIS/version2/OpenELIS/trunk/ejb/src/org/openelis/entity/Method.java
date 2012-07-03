@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -66,11 +67,11 @@ import org.openelis.utils.Auditable;
                       + " from Method m where m.name like :name and m.isActive = 'Y' order by m.name ")})
 @Entity
 @Table(name = "method")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Method implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
@@ -140,7 +141,7 @@ public class Method implements Auditable, Cloneable {
             this.isActive = isActive;
     }
 
-    public Datetime getActiveBegin() {        
+    public Datetime getActiveBegin() {
         return DataBaseUtil.toYD(activeBegin);
     }
 
@@ -149,7 +150,7 @@ public class Method implements Auditable, Cloneable {
             this.activeBegin = DataBaseUtil.toDate(activeBegin);
     }
 
-    public Datetime getActiveEnd() {        
+    public Datetime getActiveEnd() {
         return DataBaseUtil.toYD(activeEnd);
     }
 
@@ -166,10 +167,10 @@ public class Method implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.METHOD);
         audit.setReferenceId(getId());
         if (original != null)

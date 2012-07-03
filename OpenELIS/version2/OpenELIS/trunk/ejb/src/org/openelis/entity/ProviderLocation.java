@@ -44,6 +44,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -54,13 +55,14 @@ import org.openelis.utils.Auditable;
 		    		"a.cellPhone,a.faxPhone,a.email,a.country)"
 		    	  + " from ProviderLocation pl left join pl.address a where pl.providerId = :id order by pl.location") 
 
+
 @Entity
 @Table(name = "provider_location")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class ProviderLocation implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer          id;
 
@@ -82,9 +84,6 @@ public class ProviderLocation implements Auditable, Cloneable {
 
     @Transient
     private ProviderLocation original;
-    
-    @Transient
-    private boolean          auditAddressId;
 
     public Integer getId() {
         return id;
@@ -139,13 +138,6 @@ public class ProviderLocation implements Auditable, Cloneable {
         this.address = address;
     }
 
-    /*
-     * Audit support
-     */
-    public void setAuditAddressId(boolean changed) {
-        auditAddressId = changed;
-    }
-
     public void setClone() {
         try {
             original = (ProviderLocation)this.clone();
@@ -154,10 +146,10 @@ public class ProviderLocation implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.PROVIDER_LOCATION);
         audit.setReferenceId(getId());
         if (original != null)
@@ -165,8 +157,7 @@ public class ProviderLocation implements Auditable, Cloneable {
                  .setField("location", location, original.location)
                  .setField("external_id", externalId, original.externalId)
                  .setField("provider_id", providerId, original.providerId)
-                 .setField("address_id", (auditAddressId ? null : addressId), original.addressId,
-                           ReferenceTable.ADDRESS);
+                 .setField("address_id", addressId, original.addressId, ReferenceTable.ADDRESS);
 
         return audit;
     }

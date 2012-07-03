@@ -41,6 +41,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -76,11 +77,11 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
     private String               externalDescription;
 
     @Column(name = "external_coding_system")
-    private String               externalCodingSystem; 
-    
+    private String               externalCodingSystem;
+
     @Transient
     private ExchangeExternalTerm original;
-    
+
     public Integer getId() {
         return id;
     }
@@ -89,7 +90,7 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
-    
+
     public Integer getExchangeLocalTermId() {
         return exchangeLocalTermId;
     }
@@ -113,7 +114,7 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
     }
 
     public void setIsActive(String isActive) {
-        if (DataBaseUtil.isDifferent(isActive, this.isActive)) 
+        if (DataBaseUtil.isDifferent(isActive, this.isActive))
             this.isActive = isActive;
     }
 
@@ -122,7 +123,7 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
     }
 
     public void setExternalTerm(String externalTerm) {
-        if (DataBaseUtil.isDifferent(externalTerm, this.externalTerm)) 
+        if (DataBaseUtil.isDifferent(externalTerm, this.externalTerm))
             this.externalTerm = externalTerm;
     }
 
@@ -131,8 +132,8 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
     }
 
     public void setExternalDescription(String externalDescription) {
-        if (DataBaseUtil.isDifferent(externalDescription, this.externalDescription)) 
-           this.externalDescription = externalDescription;
+        if (DataBaseUtil.isDifferent(externalDescription, this.externalDescription))
+            this.externalDescription = externalDescription;
     }
 
     public String getExternalCodingSystem() {
@@ -141,7 +142,7 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
 
     public void setExternalCodingSystem(String externalCodingSystem) {
         if (DataBaseUtil.isDifferent(externalCodingSystem, this.externalCodingSystem))
-        this.externalCodingSystem = externalCodingSystem;
+            this.externalCodingSystem = externalCodingSystem;
     }
 
     public void setClone() {
@@ -152,10 +153,10 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.EXCHANGE_EXTERNAL_TERM);
         audit.setReferenceId(getId());
         if (original != null)
@@ -166,8 +167,7 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
                  .setField("external_term", externalTerm, original.externalTerm)
                  .setField("external_description", externalDescription, original.externalDescription)
                  .setField("external_coding_system", externalCodingSystem, original.externalCodingSystem);
-            
+
         return audit;
     }
-
 }

@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -57,11 +58,11 @@ import org.openelis.utils.Auditable;
                       + " from SampleEnvironmental s LEFT JOIN s.locationAddress a where s.sampleId = :id")})
 @Entity
 @Table(name = "sample_environmental")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class SampleEnvironmental implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer             id;
 
@@ -70,9 +71,9 @@ public class SampleEnvironmental implements Auditable, Cloneable {
 
     @Column(name = "is_hazardous")
     private String              isHazardous;
-    
+
     @Column(name = "priority")
-    private Integer              priority;
+    private Integer             priority;
 
     @Column(name = "description")
     private String              description;
@@ -99,9 +100,6 @@ public class SampleEnvironmental implements Auditable, Cloneable {
 
     @Transient
     private SampleEnvironmental original;
-    
-    @Transient
-    private boolean             auditLocationAddressId;
 
     public Integer getId() {
         return id;
@@ -129,7 +127,7 @@ public class SampleEnvironmental implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(isHazardous, this.isHazardous))
             this.isHazardous = isHazardous;
     }
-    
+
     public Integer getPriority() {
         return priority;
     }
@@ -190,7 +188,7 @@ public class SampleEnvironmental implements Auditable, Cloneable {
 
     public void setLocationAddress(Address locationAddress) {
         this.locationAddress = locationAddress;
-    }        
+    }
 
     public Sample getSample() {
         return sample;
@@ -200,13 +198,6 @@ public class SampleEnvironmental implements Auditable, Cloneable {
         this.sample = sample;
     }
 
-    /*
-     * Audit support
-     */
-    public void setAuditLocationAddressId(boolean changed) {
-        auditLocationAddressId = changed;
-    }
-    
     public void setClone() {
         try {
             original = (SampleEnvironmental)this.clone();
@@ -215,10 +206,10 @@ public class SampleEnvironmental implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.SAMPLE_ENVIRONMENTAL);
         audit.setReferenceId(getId());
         if (original != null)
@@ -230,8 +221,7 @@ public class SampleEnvironmental implements Auditable, Cloneable {
                  .setField("collector", collector, original.collector)
                  .setField("collector_phone", collectorPhone, original.collectorPhone)
                  .setField("location", location, original.location)
-                 .setField("address_id", (auditLocationAddressId ? null : locationAddressId), original.locationAddressId,
-                           ReferenceTable.ADDRESS);
+                 .setField("address_id", locationAddressId, original.locationAddressId, ReferenceTable.ADDRESS);
 
         return audit;
     }

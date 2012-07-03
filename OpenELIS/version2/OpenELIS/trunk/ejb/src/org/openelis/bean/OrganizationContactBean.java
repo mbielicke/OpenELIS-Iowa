@@ -101,10 +101,9 @@ public class OrganizationContactBean implements OrganizationContactLocal {
         entity.setContactTypeId(data.getContactTypeId());
         entity.setName(data.getName());
 
-        if (data.getAddress().isChanged()) {
-            entity.setAuditAddressId(true);
+        if (data.getAddress().isChanged())
             addressBean.update(data.getAddress());
-        }
+
         return data;
     }
 

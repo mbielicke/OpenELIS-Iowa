@@ -45,13 +45,11 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@Entity
-@Table(name = "qaevent")
-@EntityListeners( {AuditUtil.class})
 @NamedQueries({
     @NamedQuery( name = "QaEvent.FetchById",
                 query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId," +
@@ -94,10 +92,13 @@ import org.openelis.utils.Auditable;
                        + " where sq.sampleId = :id and d.id not in"
                        + " (select d1.id from Dictionary d1 where d1.systemName = 'qaevent_internal') order by sq.id")})
 
+@Entity
+@Table(name = "qaevent")
+@EntityListeners( {AuditUtil.class})
 public class QaEvent implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
@@ -217,10 +218,10 @@ public class QaEvent implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.QAEVENT);
         audit.setReferenceId(getId());
         if (original != null)

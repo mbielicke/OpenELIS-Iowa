@@ -49,6 +49,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -64,43 +65,43 @@ import org.openelis.utils.Auditable;
                                   + " from Section s left join s.organization o left join s.parentSection ps where s.id = :id")})
 @Entity
 @Table(name = "section")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Section implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer      id;
+    private Integer                      id;
 
     @Column(name = "parent_section_id")
-    private Integer      parentSectionId;
+    private Integer                      parentSectionId;
 
     @Column(name = "name")
-    private String       name;
+    private String                       name;
 
     @Column(name = "description")
-    private String       description;
+    private String                       description;
 
     @Column(name = "is_external")
-    private String       isExternal;
+    private String                       isExternal;
 
     @Column(name = "organization_id")
-    private Integer      organizationId;
+    private Integer                      organizationId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organization_id", insertable = false, updatable = false)
-    private Organization organization;
+    private Organization                 organization;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_section_id", insertable = false, updatable = false)
-    private Section      parentSection;
-    
+    private Section                      parentSection;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "section_id")
     private Collection<SectionParameter> sectionParameter;
 
     @Transient
-    private Section      original;
+    private Section                      original;
 
     public Integer getId() {
         return id;
@@ -171,7 +172,7 @@ public class Section implements Auditable, Cloneable {
     public void setParentSection(Section parentSection) {
         this.parentSection = parentSection;
     }
-    
+
     public Collection<SectionParameter> getSectionParameter() {
         return sectionParameter;
     }
@@ -188,10 +189,10 @@ public class Section implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.SECTION);
         audit.setReferenceId(getId());
         if (original != null)

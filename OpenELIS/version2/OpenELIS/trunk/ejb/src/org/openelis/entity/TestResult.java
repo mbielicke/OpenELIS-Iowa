@@ -42,6 +42,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -66,11 +67,11 @@ import org.openelis.utils.Auditable;
    
 @Entity
 @Table(name = "test_result")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class TestResult implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer    id;
 
@@ -127,7 +128,7 @@ public class TestResult implements Auditable, Cloneable {
     }
 
     public void setSortOrder(Integer sortOrder) {
-        if (DataBaseUtil.isDifferent(sortOrder,this.sortOrder))
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
             this.sortOrder = sortOrder;
     }
 
@@ -136,7 +137,7 @@ public class TestResult implements Auditable, Cloneable {
     }
 
     public void setResultGroup(Integer resultGroup) {
-        if (DataBaseUtil.isDifferent(resultGroup,this.resultGroup))
+        if (DataBaseUtil.isDifferent(resultGroup, this.resultGroup))
             this.resultGroup = resultGroup;
     }
 
@@ -145,7 +146,7 @@ public class TestResult implements Auditable, Cloneable {
     }
 
     public void setFlagsId(Integer flagsId) {
-        if (DataBaseUtil.isDifferent(flagsId,this.flagsId))
+        if (DataBaseUtil.isDifferent(flagsId, this.flagsId))
             this.flagsId = flagsId;
     }
 
@@ -154,7 +155,7 @@ public class TestResult implements Auditable, Cloneable {
     }
 
     public void setTypeId(Integer typeId) {
-        if (DataBaseUtil.isDifferent(typeId,this.typeId))
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
             this.typeId = typeId;
     }
 
@@ -163,7 +164,7 @@ public class TestResult implements Auditable, Cloneable {
     }
 
     public void setValue(String value) {
-        if (DataBaseUtil.isDifferent(value,this.value))
+        if (DataBaseUtil.isDifferent(value, this.value))
             this.value = value;
     }
 
@@ -172,7 +173,7 @@ public class TestResult implements Auditable, Cloneable {
     }
 
     public void setRoundingMethodId(Integer roundingMethodId) {
-        if (DataBaseUtil.isDifferent(roundingMethodId,this.roundingMethodId))
+        if (DataBaseUtil.isDifferent(roundingMethodId, this.roundingMethodId))
             this.roundingMethodId = roundingMethodId;
     }
 
@@ -181,7 +182,7 @@ public class TestResult implements Auditable, Cloneable {
     }
 
     public void setSignificantDigits(Integer significantDigits) {
-        if (DataBaseUtil.isDifferent(significantDigits,this.significantDigits))
+        if (DataBaseUtil.isDifferent(significantDigits, this.significantDigits))
             this.significantDigits = significantDigits;
     }
 
@@ -190,7 +191,7 @@ public class TestResult implements Auditable, Cloneable {
     }
 
     public void setUnitOfMeasureId(Integer unitOfMeasureId) {
-        if (DataBaseUtil.isDifferent(unitOfMeasureId,this.unitOfMeasureId))
+        if (DataBaseUtil.isDifferent(unitOfMeasureId, this.unitOfMeasureId))
             this.unitOfMeasureId = unitOfMeasureId;
     }
 
@@ -202,10 +203,10 @@ public class TestResult implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.TEST_RESULT);
         audit.setReferenceId(getId());
         if (original != null)

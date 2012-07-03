@@ -50,6 +50,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -76,11 +77,11 @@ import org.openelis.utils.Auditable;
     
 @Entity
 @Table(name = "aux_field")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class AuxField implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                   id;
 
@@ -116,8 +117,8 @@ public class AuxField implements Auditable, Cloneable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "aux_field_group_id", insertable = false, updatable = false)
-    private AuxFieldGroup                auxFieldGroup;
-    
+    private AuxFieldGroup             auxFieldGroup;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "aux_field_id", insertable = false, updatable = false)
     private Collection<AuxFieldValue> auxFieldValue;
@@ -146,16 +147,16 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id,this.id))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
-    
+
     public Integer getAuxFieldGroupId() {
         return auxFieldGroupId;
     }
 
     public void setAuxFieldGroupId(Integer auxFieldGroupId) {
-        if (DataBaseUtil.isDifferent(auxFieldGroupId,this.auxFieldGroupId))
+        if (DataBaseUtil.isDifferent(auxFieldGroupId, this.auxFieldGroupId))
             this.auxFieldGroupId = auxFieldGroupId;
     }
 
@@ -164,7 +165,7 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     public void setSortOrder(Integer sortOrder) {
-        if (DataBaseUtil.isDifferent(sortOrder,this.sortOrder))
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
             this.sortOrder = sortOrder;
     }
 
@@ -173,7 +174,7 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     public void setAnalyteId(Integer analyteId) {
-        if (DataBaseUtil.isDifferent(analyteId,this.analyteId))
+        if (DataBaseUtil.isDifferent(analyteId, this.analyteId))
             this.analyteId = analyteId;
     }
 
@@ -182,7 +183,7 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     public void setDescription(String description) {
-        if (DataBaseUtil.isDifferent(description,this.description))
+        if (DataBaseUtil.isDifferent(description, this.description))
             this.description = description;
     }
 
@@ -191,7 +192,7 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     public void setMethodId(Integer methodId) {
-        if (DataBaseUtil.isDifferent(methodId,this.methodId))
+        if (DataBaseUtil.isDifferent(methodId, this.methodId))
             this.methodId = methodId;
     }
 
@@ -200,7 +201,7 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     public void setUnitOfMeasureId(Integer unitOfMeasureId) {
-        if (DataBaseUtil.isDifferent(unitOfMeasureId,this.unitOfMeasureId))
+        if (DataBaseUtil.isDifferent(unitOfMeasureId, this.unitOfMeasureId))
             this.unitOfMeasureId = unitOfMeasureId;
     }
 
@@ -209,7 +210,7 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     public void setIsRequired(String isRequired) {
-        if (DataBaseUtil.isDifferent(isRequired,this.isRequired))
+        if (DataBaseUtil.isDifferent(isRequired, this.isRequired))
             this.isRequired = isRequired;
     }
 
@@ -218,7 +219,7 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     public void setIsActive(String isActive) {
-        if (DataBaseUtil.isDifferent(isActive,this.isActive))
+        if (DataBaseUtil.isDifferent(isActive, this.isActive))
             this.isActive = isActive;
     }
 
@@ -227,7 +228,7 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     public void setIsReportable(String isReportable) {
-        if (DataBaseUtil.isDifferent(isReportable,this.isReportable))
+        if (DataBaseUtil.isDifferent(isReportable, this.isReportable))
             this.isReportable = isReportable;
     }
 
@@ -236,7 +237,7 @@ public class AuxField implements Auditable, Cloneable {
     }
 
     public void setScriptletId(Integer scriptletId) {
-        if (DataBaseUtil.isDifferent(scriptletId,this.scriptletId))
+        if (DataBaseUtil.isDifferent(scriptletId, this.scriptletId))
             this.scriptletId = scriptletId;
     }
 
@@ -255,7 +256,7 @@ public class AuxField implements Auditable, Cloneable {
     public Method getMethod() {
         return method;
     }
-    
+
     public Collection<AuxFieldValue> getAuxFieldValue() {
         return auxFieldValue;
     }
@@ -279,7 +280,7 @@ public class AuxField implements Auditable, Cloneable {
     public void setUnitOfMeasure(Dictionary unitOfMeasure) {
         this.unitOfMeasure = unitOfMeasure;
     }
-    
+
     public AuxFieldGroup getAuxFieldGroup() {
         return auxFieldGroup;
     }
@@ -295,11 +296,11 @@ public class AuxField implements Auditable, Cloneable {
             e.printStackTrace();
         }
     }
-    
-    public Audit getAudit() {
+
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.AUX_FIELD);
         audit.setReferenceId(getId());
         if (original != null)
@@ -317,5 +318,4 @@ public class AuxField implements Auditable, Cloneable {
 
         return audit;
     }
-
 }

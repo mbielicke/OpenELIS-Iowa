@@ -45,8 +45,10 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
+import org.openelis.utils.Auditable;
 
 @NamedQueries( {
     @NamedQuery( name="Cron.FetchById",
@@ -55,115 +57,115 @@ import org.openelis.utils.AuditUtil;
     @NamedQuery( name="Cron.FetchActive",
     		     query="from Cron where isActive = 'Y'")
 })
+
 @Entity
 @Table(name = "cron")
-@EntityListeners( {AuditUtil.class})
-public class Cron {
-	
+@EntityListeners({AuditUtil.class})
+public class Cron implements Auditable, Cloneable {
+
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer                id;
-    
-    @Column(name="cron_tab")
-    private String                 cronTab;
-    
-    @Column(name="name")
-    private String                 name;
-    
-    @Column(name="is_active")
-    private String                 isActive;
-    
-    @Column(name="bean")
-    private String 				   bean;
-    
-    @Column(name="method")
-    private String 				   method;
-    
-    @Column(name="parameters")
-    private String 	               parameters;
-    
-    @Column(name="last_run")       
-    private Date                   lastRun;
+    private Integer id;
+
+    @Column(name = "cron_tab")
+    private String  cronTab;
+
+    @Column(name = "name")
+    private String  name;
+
+    @Column(name = "is_active")
+    private String  isActive;
+
+    @Column(name = "bean")
+    private String  bean;
+
+    @Column(name = "method")
+    private String  method;
+
+    @Column(name = "parameters")
+    private String  parameters;
+
+    @Column(name = "last_run")
+    private Date    lastRun;
 
     @Transient
-    private Cron original;
-    
-	public Integer getId() {
-		return id;
-	}
+    private Cron    original;
 
-	public String getCronTab() {
-		return cronTab;
-	}
-	
+    public Integer getId() {
+        return id;
+    }
 
-	public void setCronTab(String cronTab) {
-		if(DataBaseUtil.isDifferent(cronTab, this.cronTab))
-			this.cronTab = cronTab;
-	}
-	
-	public String getName() {
-		return name;
-	}
-	
-	public void setName(String name) {
-		if(DataBaseUtil.isDifferent(name,this.name))
-			this.name = name;
-	}
-	
-	public String getIsActive() {
-		return isActive;
-	}
-	
-	public void setIsActive(String isActive) {
-		if(DataBaseUtil.isDifferent(isActive, this.isActive))
-			this.isActive = isActive;
-	}
+    public String getCronTab() {
+        return cronTab;
+    }
 
-	public String getBean() {
-		return bean;
-	}
+    public void setCronTab(String cronTab) {
+        if (DataBaseUtil.isDifferent(cronTab, this.cronTab))
+            this.cronTab = cronTab;
+    }
 
-	public void setBean(String bean) {
-		if(DataBaseUtil.isDifferent(bean, this.bean))
-			this.bean = bean;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getMethod() {
-		return method;
-	}
+    public void setName(String name) {
+        if (DataBaseUtil.isDifferent(name, this.name))
+            this.name = name;
+    }
 
-	public void setMethod(String method) {
-		if(DataBaseUtil.isDifferent(method, this.method))
-			this.method = method;
-	}
+    public String getIsActive() {
+        return isActive;
+    }
 
-	public String getParameters() {
-		return parameters;
-	}
+    public void setIsActive(String isActive) {
+        if (DataBaseUtil.isDifferent(isActive, this.isActive))
+            this.isActive = isActive;
+    }
 
-	public void setParameters(String parameters) {
-		if(DataBaseUtil.isDifferent(parameters, this.parameters))
-			this.parameters = parameters;
-	}
-	
-	public Datetime getLastRun() {
-		return DataBaseUtil.toYM(lastRun);
-	}
-	
-	public void setLastRun(Datetime lastRun) {
-		if(DataBaseUtil.isDifferentYM(lastRun, this.lastRun))
-			this.lastRun = DataBaseUtil.toDate(lastRun);
-	}
-    
+    public String getBean() {
+        return bean;
+    }
+
+    public void setBean(String bean) {
+        if (DataBaseUtil.isDifferent(bean, this.bean))
+            this.bean = bean;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        if (DataBaseUtil.isDifferent(method, this.method))
+            this.method = method;
+    }
+
+    public String getParameters() {
+        return parameters;
+    }
+
+    public void setParameters(String parameters) {
+        if (DataBaseUtil.isDifferent(parameters, this.parameters))
+            this.parameters = parameters;
+    }
+
+    public Datetime getLastRun() {
+        return DataBaseUtil.toYM(lastRun);
+    }
+
+    public void setLastRun(Datetime lastRun) {
+        if (DataBaseUtil.isDifferentYM(lastRun, this.lastRun))
+            this.lastRun = DataBaseUtil.toDate(lastRun);
+    }
+
     public Cron getOriginal() {
         return original;
     }
 
     public void setOriginal(Cron original) {
-    	if(DataBaseUtil.isDifferent(original, this.original))
-    		this.original = original;
+        if (DataBaseUtil.isDifferent(original, this.original))
+            this.original = original;
     }
 
     public void setClone() {
@@ -173,20 +175,20 @@ public class Cron {
             e.printStackTrace();
         }
     }
-    
-    public Audit getAudit() {
+
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.CRON);
         audit.setReferenceId(getId());
         if (original != null)
             audit.setField("id", id, original.id)
-            	 .setField("cron", cronTab, original.cronTab)
-            	 .setField("bean", bean, original.bean)
-        		 .setField("method", method, original.method)
-        		 .setField("parameters", parameters, original.parameters);
-        
+                 .setField("cron", cronTab, original.cronTab)
+                 .setField("bean", bean, original.bean)
+                 .setField("method", method, original.method)
+                 .setField("parameters", parameters, original.parameters);
+
         return audit;
-    }	
+    }
 }

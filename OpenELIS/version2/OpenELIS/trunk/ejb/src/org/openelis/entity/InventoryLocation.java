@@ -48,6 +48,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -94,13 +95,14 @@ import org.openelis.utils.Auditable;
                       + " from InventoryLocation i left join i.storageLocation s" 
                       + " where i.inventoryItem.isActive='Y' and i.inventoryItem.name like :name and i.inventoryItem.storeId = :id and i.quantityOnhand > 0" )})                                                                                                    
 
+
 @Entity
 @Table(name = "inventory_location")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class InventoryLocation implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer           id;
 
@@ -204,10 +206,10 @@ public class InventoryLocation implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.INVENTORY_LOCATION);
         audit.setReferenceId(getId());
         if (original != null)

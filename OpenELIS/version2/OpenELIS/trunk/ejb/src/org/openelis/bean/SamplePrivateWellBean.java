@@ -132,7 +132,6 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
             }
         } else {
             if (data.getLocationAddress().isChanged()) {
-                entity.setAuditLocationAddressId(true);
                 if (data.getLocationAddress().getId() != null)
                     address.update(data.getLocationAddress());
                 else
@@ -157,7 +156,6 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
                 }
             } else {
                 if (data.getReportToAddress().isChanged()) {
-                    entity.setAuditReportToAddressId(true);
                     if (data.getReportToAddress().getId() != null)
                         address.update(data.getReportToAddress());
                     else

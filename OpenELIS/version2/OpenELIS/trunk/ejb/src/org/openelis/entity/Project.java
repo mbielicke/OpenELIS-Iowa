@@ -55,6 +55,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -95,51 +96,51 @@ import org.openelis.utils.Auditable;
     @SqlResultSetMapping(name="Project.FetchForSampleStatusReport",
                          columns={@ColumnResult(name="p_id"),  @ColumnResult(name="p_name")})})
 @Entity
-@Table(name="project")
+@Table(name = "project")
 @EntityListeners({AuditUtil.class})
 public class Project implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="name")
-  private String name;             
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer                      id;
 
-  @Column(name="description")
-  private String description;             
+    @Column(name = "name")
+    private String                       name;
 
-  @Column(name="started_date")
-  private Date startedDate;             
+    @Column(name = "description")
+    private String                       description;
 
-  @Column(name="completed_date")
-  private Date completedDate;             
+    @Column(name = "started_date")
+    private Date                         startedDate;
 
-  @Column(name="is_active")
-  private String isActive;             
+    @Column(name = "completed_date")
+    private Date                         completedDate;
 
-  @Column(name="reference_to")
-  private String referenceTo;             
+    @Column(name = "is_active")
+    private String                       isActive;
 
-  @Column(name="owner_id")
-  private Integer ownerId;             
+    @Column(name = "reference_to")
+    private String                       referenceTo;
 
-  @Column(name="scriptlet_id")
-  private Integer scriptletId;             
+    @Column(name = "owner_id")
+    private Integer                      ownerId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "scriptlet_id",insertable = false, updatable = false)
-  private Scriptlet scriptlet;
+    @Column(name = "scriptlet_id")
+    private Integer                      scriptletId;
 
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinColumn(name = "project_id")
-  private Collection<ProjectParameter> projectParameter;
-  
-  @Transient
-  private Project original;
-  
-  public Integer getId() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "scriptlet_id", insertable = false, updatable = false)
+    private Scriptlet                    scriptlet;
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
+    private Collection<ProjectParameter> projectParameter;
+
+    @Transient
+    private Project                      original;
+
+    public Integer getId() {
         return id;
     }
 
@@ -244,10 +245,10 @@ public class Project implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.PROJECT);
         audit.setReferenceId(getId());
         if (original != null)

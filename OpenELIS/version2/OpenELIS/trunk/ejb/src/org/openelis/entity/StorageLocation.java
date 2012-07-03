@@ -51,6 +51,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -85,11 +86,11 @@ import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "storage_location")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class StorageLocation implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                     id;
 
@@ -122,11 +123,11 @@ public class StorageLocation implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "storage_unit_id", insertable = false, updatable = false)
     private StorageUnit                 storageUnit;
-    
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "storage_location_id", insertable = false, updatable = false)
     private Collection<Storage>         storage;
-    
+
     @Transient
     private StorageLocation             original;
 
@@ -135,7 +136,7 @@ public class StorageLocation implements Auditable, Cloneable {
     }
 
     protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id,this.id))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
 
@@ -144,7 +145,7 @@ public class StorageLocation implements Auditable, Cloneable {
     }
 
     public void setSortOrder(Integer sortOrder) {
-        if (DataBaseUtil.isDifferent(sortOrder,this.sortOrder))
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
             this.sortOrder = sortOrder;
     }
 
@@ -153,7 +154,7 @@ public class StorageLocation implements Auditable, Cloneable {
     }
 
     public void setName(String name) {
-        if (DataBaseUtil.isDifferent(name,this.name))
+        if (DataBaseUtil.isDifferent(name, this.name))
             this.name = name;
     }
 
@@ -162,7 +163,7 @@ public class StorageLocation implements Auditable, Cloneable {
     }
 
     public void setLocation(String location) {
-        if (DataBaseUtil.isDifferent(location,this.location))
+        if (DataBaseUtil.isDifferent(location, this.location))
             this.location = location;
     }
 
@@ -171,7 +172,7 @@ public class StorageLocation implements Auditable, Cloneable {
     }
 
     public void setParentStorageLocationId(Integer parentStorageLocationId) {
-        if (DataBaseUtil.isDifferent(parentStorageLocationId,this.parentStorageLocationId))
+        if (DataBaseUtil.isDifferent(parentStorageLocationId, this.parentStorageLocationId))
             this.parentStorageLocationId = parentStorageLocationId;
     }
 
@@ -180,7 +181,7 @@ public class StorageLocation implements Auditable, Cloneable {
     }
 
     public void setStorageUnitId(Integer storageUnitId) {
-        if (DataBaseUtil.isDifferent(storageUnitId,this.storageUnitId))
+        if (DataBaseUtil.isDifferent(storageUnitId, this.storageUnitId))
             this.storageUnitId = storageUnitId;
     }
 
@@ -189,10 +190,10 @@ public class StorageLocation implements Auditable, Cloneable {
     }
 
     public void setIsAvailable(String isAvailable) {
-        if (DataBaseUtil.isDifferent(isAvailable,this.isAvailable))
+        if (DataBaseUtil.isDifferent(isAvailable, this.isAvailable))
             this.isAvailable = isAvailable;
     }
-    
+
     public Collection<StorageLocation> getChildStorageLocation() {
         return childStorageLocation;
     }
@@ -216,7 +217,7 @@ public class StorageLocation implements Auditable, Cloneable {
     public void setParentStorageLocation(StorageLocation parentStorageLocation) {
         this.parentStorageLocation = parentStorageLocation;
     }
-    
+
     public void setStorage(Collection<Storage> storage) {
         this.storage = storage;
     }
@@ -233,10 +234,10 @@ public class StorageLocation implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.STORAGE_LOCATION);
         audit.setReferenceId(getId());
         if (original != null)

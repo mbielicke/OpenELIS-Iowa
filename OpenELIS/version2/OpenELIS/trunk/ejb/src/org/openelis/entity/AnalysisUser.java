@@ -42,6 +42,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -56,11 +57,11 @@ import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "analysis_user")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class AnalysisUser implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer      id;
 
@@ -90,7 +91,7 @@ public class AnalysisUser implements Auditable, Cloneable {
     }
 
     public void setAnalysisId(Integer analysisId) {
-        if (DataBaseUtil.isDifferent(analysisId,this.analysisId))
+        if (DataBaseUtil.isDifferent(analysisId, this.analysisId))
             this.analysisId = analysisId;
     }
 
@@ -99,7 +100,7 @@ public class AnalysisUser implements Auditable, Cloneable {
     }
 
     public void setSystemUserId(Integer systemUserId) {
-        if (DataBaseUtil.isDifferent(systemUserId,this.systemUserId))
+        if (DataBaseUtil.isDifferent(systemUserId, this.systemUserId))
             this.systemUserId = systemUserId;
     }
 
@@ -108,7 +109,7 @@ public class AnalysisUser implements Auditable, Cloneable {
     }
 
     public void setActionId(Integer actionId) {
-        if (DataBaseUtil.isDifferent(actionId,this.actionId))
+        if (DataBaseUtil.isDifferent(actionId, this.actionId))
             this.actionId = actionId;
     }
 
@@ -120,10 +121,10 @@ public class AnalysisUser implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ANALYSIS_USER);
         audit.setReferenceId(getId());
         if (original != null)
@@ -134,5 +135,4 @@ public class AnalysisUser implements Auditable, Cloneable {
 
         return audit;
     }
-
 }

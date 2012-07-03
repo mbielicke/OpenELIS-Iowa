@@ -40,90 +40,93 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @Entity
-@Table(name="attachment")
+@Table(name = "attachment")
 @EntityListeners({AuditUtil.class})
 public class Attachment implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="type_id")
-  private Integer typeId;             
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer    id;
 
-  @Column(name="filename")
-  private String filename;             
+    @Column(name = "type_id")
+    private Integer    typeId;
 
-  @Column(name="description")
-  private String description;             
+    @Column(name = "filename")
+    private String     filename;
 
-  @Column(name="storage_reference")
-  private String storageReference;             
+    @Column(name = "description")
+    private String     description;
 
+    @Column(name = "storage_reference")
+    private String     storageReference;
 
-  @Transient
-  private Attachment original;
+    @Transient
+    private Attachment original;
 
-  
-  public Integer getId() {
-    return id;
-  }
-  protected void setId(Integer id) {
-      if (DataBaseUtil.isDifferent(id, this.id))
-          this.id = id;
-  }
-
-  public Integer getTypeId() {
-    return typeId;
-  }
-  public void setTypeId(Integer typeId) {
-    if(DataBaseUtil.isDifferent(typeId,this.typeId))
-      this.typeId = typeId;
-  }
-
-  public String getFilename() {
-    return filename;
-  }
-  public void setFilename(String filename) {
-    if(DataBaseUtil.isDifferent(filename,this.filename))
-      this.filename = filename;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-  public void setDescription(String description) {
-    if(DataBaseUtil.isDifferent(description,this.description))
-      this.description = description;
-  }
-
-  public String getStorageReference() {
-    return storageReference;
-  }
-  public void setStorageReference(String storageReference) {
-    if(DataBaseUtil.isDifferent(storageReference,this.storageReference))
-      this.storageReference = storageReference;
-  }
-
-  
-  public void setClone() {
-    try {
-        original = (Attachment)this.clone();
-    }catch(Exception e){
-        e.printStackTrace();
+    public Integer getId() {
+        return id;
     }
-  }
-  
-  public Audit getAudit() {
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
+            this.typeId = typeId;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        if (DataBaseUtil.isDifferent(filename, this.filename))
+            this.filename = filename;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        if (DataBaseUtil.isDifferent(description, this.description))
+            this.description = description;
+    }
+
+    public String getStorageReference() {
+        return storageReference;
+    }
+
+    public void setStorageReference(String storageReference) {
+        if (DataBaseUtil.isDifferent(storageReference, this.storageReference))
+            this.storageReference = storageReference;
+    }
+
+    public void setClone() {
+        try {
+            original = (Attachment)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ATTACHMENT);
         audit.setReferenceId(getId());
         if (original != null)
@@ -134,6 +137,5 @@ public class Attachment implements Auditable, Cloneable {
                  .setField("storage_reference", storageReference, original.storageReference);
 
         return audit;
-  }
-  
-}   
+    }
+}

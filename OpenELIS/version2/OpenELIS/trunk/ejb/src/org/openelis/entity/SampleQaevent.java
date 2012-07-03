@@ -20,6 +20,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -42,13 +43,13 @@ import org.openelis.utils.Auditable;
    @NamedQuery( name = "SampleQaevent.FetchResultOverrideBySampleId",
                query = "select new org.openelis.domain.SampleQaEventDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable)"
                      + " from SampleQaevent sq where sq.sampleId = :id and sq.dictionary.systemName = 'qaevent_override'")})
-@Entity 
+@Entity
 @Table(name = "sample_qaevent")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class SampleQaevent implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer       id;
 
@@ -67,7 +68,7 @@ public class SampleQaevent implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "qaevent_id", insertable = false, updatable = false)
     private QaEvent       qaEvent;
-    
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id", insertable = false, updatable = false)
     private Dictionary    dictionary;
@@ -135,7 +136,7 @@ public class SampleQaevent implements Auditable, Cloneable {
     public void setDictionary(Dictionary dictionary) {
         this.dictionary = dictionary;
     }
-    
+
     public void setClone() {
         try {
             original = (SampleQaevent)this.clone();
@@ -144,10 +145,10 @@ public class SampleQaevent implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.SAMPLE_QAEVENT);
         audit.setReferenceId(getId());
         if (original != null)

@@ -42,9 +42,10 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
-import org.openelis.utils.Auditable;
 import org.openelis.utils.AuditUtil;
+import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "SectionParameter.FetchBySectionId",
@@ -56,41 +57,41 @@ import org.openelis.utils.AuditUtil;
                       
 @Entity
 @Table(name = "section_parameter")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class SectionParameter implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer                         id;
-    
+    private Integer          id;
+
     @Column(name = "section_id")
-    private Integer                         sectionId;
-    
+    private Integer          sectionId;
+
     @Column(name = "type_id")
-    private Integer                         typeId;
-    
+    private Integer          typeId;
+
     @Column(name = "value")
-    private String                          value;
-    
+    private String           value;
+
     @Transient
-    private SectionParameter                original;
-    
+    private SectionParameter original;
+
     public Integer getId() {
         return id;
     }
 
     protected void setId(Integer id) {
-        if (DataBaseUtil.isDifferent(id,this.id))
+        if (DataBaseUtil.isDifferent(id, this.id))
             this.id = id;
     }
-    
+
     public Integer getSectionId() {
         return sectionId;
     }
 
     public void setSectionId(Integer sectionId) {
-        if (DataBaseUtil.isDifferent(sectionId,this.sectionId))
+        if (DataBaseUtil.isDifferent(sectionId, this.sectionId))
             this.sectionId = sectionId;
     }
 
@@ -99,7 +100,7 @@ public class SectionParameter implements Auditable, Cloneable {
     }
 
     public void setTypeId(Integer typeId) {
-        if (DataBaseUtil.isDifferent(typeId,this.typeId))
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
             this.typeId = typeId;
     }
 
@@ -108,22 +109,22 @@ public class SectionParameter implements Auditable, Cloneable {
     }
 
     public void setValue(String value) {
-        if (DataBaseUtil.isDifferent(value,this.value))
+        if (DataBaseUtil.isDifferent(value, this.value))
             this.value = value;
     }
-        
+
     public void setClone() {
         try {
             original = (SectionParameter)this.clone();
         } catch (Exception e) {
             e.printStackTrace();
-        }    
+        }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.SECTION_PARAMETER);
         audit.setReferenceId(getId());
         if (original != null)

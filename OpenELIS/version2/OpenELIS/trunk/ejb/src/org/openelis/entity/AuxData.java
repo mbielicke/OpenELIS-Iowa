@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -79,135 +80,135 @@ import org.openelis.utils.Auditable;
                       +	" and a.value != null order by an.name")})
                     
 @Entity
-@Table(name="aux_data")
+@Table(name = "aux_data")
 @EntityListeners({AuditUtil.class})
 public class AuxData implements Auditable, Cloneable {
-  
-  @Id
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
-  @Column(name="id")
-  private Integer id;             
 
-  @Column(name="sort_order")
-  private Integer sortOrder;             
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer  id;
 
-  @Column(name="aux_field_id")
-  private Integer auxFieldId;             
+    @Column(name = "sort_order")
+    private Integer  sortOrder;
 
-  @Column(name="reference_id")
-  private Integer referenceId;             
+    @Column(name = "aux_field_id")
+    private Integer  auxFieldId;
 
-  @Column(name="reference_table_id")
-  private Integer referenceTableId;             
+    @Column(name = "reference_id")
+    private Integer  referenceId;
 
-  @Column(name="is_reportable")
-  private String isReportable;             
+    @Column(name = "reference_table_id")
+    private Integer  referenceTableId;
 
-  @Column(name="type_id")
-  private Integer typeId;             
+    @Column(name = "is_reportable")
+    private String   isReportable;
 
-  @Column(name="value")
-  private String value; 
- 
-  @Transient
-  private AuxData original;
+    @Column(name = "type_id")
+    private Integer  typeId;
 
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "aux_field_id", insertable = false, updatable = false)
-  private AuxField auxField;
-  
-  public Integer getId() {
-    return id;
-  }
-  
-  protected void setId(Integer id) {
-    if(DataBaseUtil.isDifferent(id, this.id))
-      this.id = id;
-  }
+    @Column(name = "value")
+    private String   value;
 
-  public Integer getSortOrder() {
-    return sortOrder;
-  }
-  
-  public void setSortOrder(Integer sortOrder) {
-    if(DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
-      this.sortOrder = sortOrder;
-  }
+    @Transient
+    private AuxData  original;
 
-  public Integer getAuxFieldId() {
-    return auxFieldId;
-  }
-  
-  public void setAuxFieldId(Integer auxFieldId) {
-    if(DataBaseUtil.isDifferent(auxFieldId, this.auxFieldId))
-      this.auxFieldId = auxFieldId;
-  }
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aux_field_id", insertable = false, updatable = false)
+    private AuxField auxField;
 
-  public Integer getReferenceId() {
-    return referenceId;
-  }
-  
-  public void setReferenceId(Integer referenceId) {
-    if(DataBaseUtil.isDifferent(referenceId, this.referenceId))
-      this.referenceId = referenceId;
-  }
-
-  public Integer getReferenceTableId() {
-    return referenceTableId;
-  }
-  
-  public void setReferenceTableId(Integer referenceTableId) {
-    if(DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
-      this.referenceTableId = referenceTableId;
-  }
-
-  public String getIsReportable() {
-    return isReportable;
-  }
-  
-  public void setIsReportable(String isReportable) {
-    if(DataBaseUtil.isDifferent(isReportable, this.isReportable))
-      this.isReportable = isReportable;
-  }
-
-  public Integer getTypeId() {
-    return typeId;
-  }
-  
-  public void setTypeId(Integer typeId) {
-    if(DataBaseUtil.isDifferent(typeId, this.typeId))
-      this.typeId = typeId;
-  }
-
-  public String getValue() {
-    return value;
-  }
-  
-  public void setValue(String value) {
-    if(DataBaseUtil.isDifferent(value, this.value))
-      this.value = value;
-  }
-  
-  public AuxField getAuxField() {
-      return auxField;
-  }
-
-  public void setAuxField(AuxField auxField) {
-      this.auxField = auxField;
-  }
-  
-  public void setClone() {
-    try {
-        original = (AuxData)this.clone();
-    }catch(Exception e){
-        e.printStackTrace();
+    public Integer getId() {
+        return id;
     }
-  }
-  
-  public Audit getAudit() {
+
+    protected void setId(Integer id) {
+        if (DataBaseUtil.isDifferent(id, this.id))
+            this.id = id;
+    }
+
+    public Integer getSortOrder() {
+        return sortOrder;
+    }
+
+    public void setSortOrder(Integer sortOrder) {
+        if (DataBaseUtil.isDifferent(sortOrder, this.sortOrder))
+            this.sortOrder = sortOrder;
+    }
+
+    public Integer getAuxFieldId() {
+        return auxFieldId;
+    }
+
+    public void setAuxFieldId(Integer auxFieldId) {
+        if (DataBaseUtil.isDifferent(auxFieldId, this.auxFieldId))
+            this.auxFieldId = auxFieldId;
+    }
+
+    public Integer getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(Integer referenceId) {
+        if (DataBaseUtil.isDifferent(referenceId, this.referenceId))
+            this.referenceId = referenceId;
+    }
+
+    public Integer getReferenceTableId() {
+        return referenceTableId;
+    }
+
+    public void setReferenceTableId(Integer referenceTableId) {
+        if (DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
+            this.referenceTableId = referenceTableId;
+    }
+
+    public String getIsReportable() {
+        return isReportable;
+    }
+
+    public void setIsReportable(String isReportable) {
+        if (DataBaseUtil.isDifferent(isReportable, this.isReportable))
+            this.isReportable = isReportable;
+    }
+
+    public Integer getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(Integer typeId) {
+        if (DataBaseUtil.isDifferent(typeId, this.typeId))
+            this.typeId = typeId;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        if (DataBaseUtil.isDifferent(value, this.value))
+            this.value = value;
+    }
+
+    public AuxField getAuxField() {
+        return auxField;
+    }
+
+    public void setAuxField(AuxField auxField) {
+        this.auxField = auxField;
+    }
+
+    public void setClone() {
+        try {
+            original = (AuxData)this.clone();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.AUX_DATA);
         audit.setReferenceId(getId());
         if (original != null)
@@ -221,6 +222,5 @@ public class AuxData implements Auditable, Cloneable {
                  .setField("value", value, original.value);
 
         return audit;
-  }
-  
-}   
+    }
+}

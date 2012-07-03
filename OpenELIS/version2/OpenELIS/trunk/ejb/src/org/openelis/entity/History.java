@@ -68,7 +68,7 @@ public class History {
 
     @Column(name = "system_user_id")
     private Integer systemUserId;
-    
+
     @Lob
     @Column(name = "changes")
     private String  changes;
@@ -103,6 +103,10 @@ public class History {
 
     public void setTimestamp(Datetime timestamp) {
         this.timestamp = DataBaseUtil.toDate(timestamp);
+    }
+
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
     }
 
     public Integer getActivityId() {

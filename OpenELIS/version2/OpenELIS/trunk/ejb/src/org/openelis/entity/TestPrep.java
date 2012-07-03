@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -58,11 +59,11 @@ import org.openelis.utils.Auditable;
                       + " from TestPrep tp left join tp.test t left join t.method m where tp.prepTestId = :testId and t.isActive = 'Y' ")})
 @Entity
 @Table(name = "test_prep")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class TestPrep implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer  id;
 
@@ -109,7 +110,7 @@ public class TestPrep implements Auditable, Cloneable {
     }
 
     public void setPrepTestId(Integer prepTestId) {
-        if (DataBaseUtil.isDifferent(prepTestId,this.prepTestId))
+        if (DataBaseUtil.isDifferent(prepTestId, this.prepTestId))
             this.prepTestId = prepTestId;
     }
 
@@ -118,10 +119,10 @@ public class TestPrep implements Auditable, Cloneable {
     }
 
     public void setIsOptional(String isOptional) {
-        if (DataBaseUtil.isDifferent(isOptional,this.isOptional))
+        if (DataBaseUtil.isDifferent(isOptional, this.isOptional))
             this.isOptional = isOptional;
     }
-    
+
     public Test getTest() {
         return test;
     }
@@ -146,10 +147,10 @@ public class TestPrep implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.TEST_PREP);
         audit.setReferenceId(getId());
         if (original != null)

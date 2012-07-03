@@ -48,6 +48,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -90,7 +91,7 @@ import org.openelis.utils.Auditable;
 public class AnalyteParameter implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer          id;
 
@@ -139,7 +140,7 @@ public class AnalyteParameter implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analyte_id", insertable = false, updatable = false)
     private Analyte          analyte;
-    
+
     @Transient
     private AnalyteParameter original;
 
@@ -241,7 +242,7 @@ public class AnalyteParameter implements Auditable, Cloneable {
         if (DataBaseUtil.isDifferent(p3, this.p3))
             this.p3 = p3;
     }
-    
+
     public Test getTest() {
         return test;
     }
@@ -265,7 +266,7 @@ public class AnalyteParameter implements Auditable, Cloneable {
     public void setProvider(Provider provider) {
         this.provider = provider;
     }
-    
+
     public Analyte getAnalyte() {
         return analyte;
     }
@@ -282,10 +283,10 @@ public class AnalyteParameter implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ANALYTE_PARAMETER);
         audit.setReferenceId(getId());
         if (original != null)
@@ -300,7 +301,7 @@ public class AnalyteParameter implements Auditable, Cloneable {
                  .setField("p1", p1, original.p1)
                  .setField("p2", p2, original.p2)
                  .setField("p3", p3, original.p3);
-            
-        return audit;        
+
+        return audit;
     }
 }

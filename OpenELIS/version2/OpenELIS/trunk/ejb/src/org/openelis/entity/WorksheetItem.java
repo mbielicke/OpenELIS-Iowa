@@ -23,6 +23,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -36,11 +37,11 @@ import org.openelis.utils.Auditable;
                         "from WorksheetItem wi where wi.worksheetId = :id")})
 @Entity
 @Table(name = "worksheet_item")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class WorksheetItem implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                       id;
 
@@ -53,7 +54,7 @@ public class WorksheetItem implements Auditable, Cloneable {
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_item_id")
     private Collection<WorksheetAnalysis> worksheetAnalysis;
-    
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_id", insertable = false, updatable = false)
     private Worksheet                     worksheet;
@@ -112,10 +113,10 @@ public class WorksheetItem implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.WORKSHEET_ITEM);
         audit.setReferenceId(getId());
         if (original != null)

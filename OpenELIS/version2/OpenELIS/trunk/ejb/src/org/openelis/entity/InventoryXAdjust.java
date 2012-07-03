@@ -46,6 +46,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -59,11 +60,11 @@ import org.openelis.utils.Auditable;
                       + " left join il.storageLocation s left join s.storageUnit su where trans.inventoryAdjustmentId = :id ORDER BY il.id ")})
 @Entity
 @Table(name = "inventory_x_adjust")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class InventoryXAdjust implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer           id;
 
@@ -143,10 +144,10 @@ public class InventoryXAdjust implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.INVENTORY_X_ADJUST);
         audit.setReferenceId(getId());
         if (original != null)

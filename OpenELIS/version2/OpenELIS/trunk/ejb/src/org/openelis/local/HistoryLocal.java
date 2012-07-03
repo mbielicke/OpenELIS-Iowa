@@ -27,10 +27,11 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.HistoryVO;
+import org.openelis.utilcommon.AuditActivity;
 
 @Local
 public interface HistoryLocal {
 
-    public HistoryVO add(HistoryVO data);
+    public void add(Integer referenceId, Integer referenceTableId, AuditActivity activity,
+                    String changes) throws Exception;
 }

@@ -41,6 +41,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -56,47 +57,47 @@ import org.openelis.utils.Auditable;
                        
 @Entity
 @Table(name = "sample_sdwis")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class SampleSDWIS implements Auditable, Cloneable {
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id;
-    
+    private Integer     id;
+
     @Column(name = "sample_id")
-    private Integer sampleId;
-    
+    private Integer     sampleId;
+
     @Column(name = "pws_id")
-    private Integer pwsId;
-    
+    private Integer     pwsId;
+
     @Column(name = "state_lab_id")
-    private Integer stateLabId;
-    
+    private Integer     stateLabId;
+
     @Column(name = "facility_id")
-    private String facilityId;
-    
+    private String      facilityId;
+
     @Column(name = "sample_type_id")
-    private Integer sampleTypeId;
-    
+    private Integer     sampleTypeId;
+
     @Column(name = "sample_category_id")
-    private Integer sampleCategoryId;
-    
+    private Integer     sampleCategoryId;
+
     @Column(name = "sample_point_id")
-    private String samplePointId;
-    
+    private String      samplePointId;
+
     @Column(name = "location")
-    private String location;
-    
+    private String      location;
+
     @Column(name = "collector")
-    private String collector;
-    
+    private String      collector;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pws_id", insertable = false, updatable = false)
-    private PWS pws;
+    private PWS         pws;
 
     @Transient
     private SampleSDWIS original;
-    
+
     public Integer getId() {
         return id;
     }
@@ -203,10 +204,10 @@ public class SampleSDWIS implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.SAMPLE_SDWIS);
         audit.setReferenceId(getId());
         if (original != null)
@@ -220,7 +221,7 @@ public class SampleSDWIS implements Auditable, Cloneable {
                  .setField("sample_point_id", samplePointId, original.samplePointId)
                  .setField("location", location, original.location)
                  .setField("collector", collector, original.collector);
-                 
+
         return audit;
     }
 }

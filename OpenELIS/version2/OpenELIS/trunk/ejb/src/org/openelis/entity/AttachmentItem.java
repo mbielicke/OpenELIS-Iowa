@@ -40,17 +40,18 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "attachment_item")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class AttachmentItem implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer        id;
 
@@ -89,7 +90,7 @@ public class AttachmentItem implements Auditable, Cloneable {
     }
 
     public void setReferenceTableId(Integer referenceTableId) {
-        if (DataBaseUtil.isDifferent(referenceTableId,this.referenceTableId))
+        if (DataBaseUtil.isDifferent(referenceTableId, this.referenceTableId))
             this.referenceTableId = referenceTableId;
     }
 
@@ -98,7 +99,7 @@ public class AttachmentItem implements Auditable, Cloneable {
     }
 
     public void setAttachmentId(Integer attachmentId) {
-        if (DataBaseUtil.isDifferent(attachmentId,this.attachmentId))
+        if (DataBaseUtil.isDifferent(attachmentId, this.attachmentId))
             this.attachmentId = attachmentId;
     }
 
@@ -110,10 +111,10 @@ public class AttachmentItem implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.ATTACHMENT_ITEM);
         audit.setReferenceId(getId());
         if (original != null)
@@ -125,5 +126,4 @@ public class AttachmentItem implements Auditable, Cloneable {
         return audit;
 
     }
-
 }

@@ -23,43 +23,43 @@ import org.openelis.utils.AuditUtil;
                  + " from PWSFacility p where p.tinwsysIsNumber = :tinwsysIsNumber")
 @Entity
 @Table(name = "pws_facility")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class PWSFacility implements Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer     id;
+    private Integer id;
 
     @Column(name = "tinwsys_is_number")
-    private Integer     tinwsysIsNumber;
+    private Integer tinwsysIsNumber;
 
     @Column(name = "name")
-    private String      name;
+    private String  name;
 
     @Column(name = "type_code")
-    private String      typeCode;
+    private String  typeCode;
 
     @Column(name = "st_asgn_ident_cd")
-    private String      stAsgnIdentCd;
+    private String  stAsgnIdentCd;
 
     @Column(name = "activity_status_cd")
-    private String      activityStatusCd;
+    private String  activityStatusCd;
 
     @Column(name = "water_type_code")
-    private String      waterTypeCode;
+    private String  waterTypeCode;
 
     @Column(name = "availability_code")
-    private String      availabilityCode;
+    private String  availabilityCode;
 
     @Column(name = "identification_cd")
-    private String      identificationCd;
+    private String  identificationCd;
 
     @Column(name = "description_text")
-    private String      descriptionText;
+    private String  descriptionText;
 
     @Column(name = "source_type_code")
-    private String      sourceTypeCode;    
+    private String  sourceTypeCode;
 
     public Integer getId() {
         return id;

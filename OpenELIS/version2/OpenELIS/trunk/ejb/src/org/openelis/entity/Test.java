@@ -50,6 +50,7 @@ import javax.persistence.Transient;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -98,11 +99,11 @@ import org.openelis.utils.Auditable;
 
 @Entity
 @Table(name = "test")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class Test implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer                          id;
 
@@ -237,7 +238,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setName(String name) {
-        if (DataBaseUtil.isDifferent(name,this.name))
+        if (DataBaseUtil.isDifferent(name, this.name))
             this.name = name;
     }
 
@@ -246,7 +247,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setDescription(String description) {
-        if (DataBaseUtil.isDifferent(description,this.description))
+        if (DataBaseUtil.isDifferent(description, this.description))
             this.description = description;
     }
 
@@ -255,7 +256,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setReportingDescription(String reportingDescription) {
-        if (DataBaseUtil.isDifferent(reportingDescription,this.reportingDescription))
+        if (DataBaseUtil.isDifferent(reportingDescription, this.reportingDescription))
             this.reportingDescription = reportingDescription;
     }
 
@@ -264,7 +265,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setMethodId(Integer methodId) {
-        if (DataBaseUtil.isDifferent(methodId,this.methodId))
+        if (DataBaseUtil.isDifferent(methodId, this.methodId))
             this.methodId = methodId;
     }
 
@@ -273,7 +274,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setIsActive(String isActive) {
-        if (DataBaseUtil.isDifferent(isActive,this.isActive))
+        if (DataBaseUtil.isDifferent(isActive, this.isActive))
             this.isActive = isActive;
     }
 
@@ -282,8 +283,8 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setActiveBegin(Datetime active_begin) {
-        if (DataBaseUtil.isDifferentYD(active_begin,this.activeBegin))
-            this.activeBegin = active_begin.getDate();        
+        if (DataBaseUtil.isDifferentYD(active_begin, this.activeBegin))
+            this.activeBegin = active_begin.getDate();
     }
 
     public Datetime getActiveEnd() {
@@ -291,7 +292,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setActiveEnd(Datetime active_end) {
-        if (DataBaseUtil.isDifferentYD(active_end,this.activeEnd))
+        if (DataBaseUtil.isDifferentYD(active_end, this.activeEnd))
             this.activeEnd = active_end.getDate();
     }
 
@@ -300,7 +301,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setIsReportable(String isReportable) {
-        if (DataBaseUtil.isDifferent(isReportable,this.isReportable))
+        if (DataBaseUtil.isDifferent(isReportable, this.isReportable))
             this.isReportable = isReportable;
     }
 
@@ -309,7 +310,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeTransit(Integer timeTransit) {
-        if (DataBaseUtil.isDifferent(timeTransit,this.timeTransit))
+        if (DataBaseUtil.isDifferent(timeTransit, this.timeTransit))
             this.timeTransit = timeTransit;
     }
 
@@ -318,7 +319,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeHolding(Integer timeHolding) {
-        if (DataBaseUtil.isDifferent(timeHolding,this.timeHolding))
+        if (DataBaseUtil.isDifferent(timeHolding, this.timeHolding))
             this.timeHolding = timeHolding;
     }
 
@@ -327,7 +328,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeTaAverage(Integer timeTaAverage) {
-        if (DataBaseUtil.isDifferent(timeTaAverage,this.timeTaAverage))
+        if (DataBaseUtil.isDifferent(timeTaAverage, this.timeTaAverage))
             this.timeTaAverage = timeTaAverage;
     }
 
@@ -336,7 +337,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeTaWarning(Integer timeTaWarning) {
-        if (DataBaseUtil.isDifferent(timeTaWarning,this.timeTaWarning))
+        if (DataBaseUtil.isDifferent(timeTaWarning, this.timeTaWarning))
             this.timeTaWarning = timeTaWarning;
     }
 
@@ -345,7 +346,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTimeTaMax(Integer timeTaMax) {
-        if (DataBaseUtil.isDifferent(timeTaMax,this.timeTaMax))
+        if (DataBaseUtil.isDifferent(timeTaMax, this.timeTaMax))
             this.timeTaMax = timeTaMax;
     }
 
@@ -354,7 +355,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setLabelId(Integer labelId) {
-        if (DataBaseUtil.isDifferent(labelId,this.labelId))
+        if (DataBaseUtil.isDifferent(labelId, this.labelId))
             this.labelId = labelId;
     }
 
@@ -363,7 +364,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setLabelQty(Integer labelQty) {
-        if (DataBaseUtil.isDifferent(labelQty,this.labelQty))
+        if (DataBaseUtil.isDifferent(labelQty, this.labelQty))
             this.labelQty = labelQty;
     }
 
@@ -372,7 +373,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTestTrailerId(Integer testTrailerId) {
-        if (DataBaseUtil.isDifferent(testTrailerId,this.testTrailerId))
+        if (DataBaseUtil.isDifferent(testTrailerId, this.testTrailerId))
             this.testTrailerId = testTrailerId;
     }
 
@@ -381,7 +382,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setScriptletId(Integer scriptletId) {
-        if (DataBaseUtil.isDifferent(scriptletId,this.scriptletId))
+        if (DataBaseUtil.isDifferent(scriptletId, this.scriptletId))
             this.scriptletId = scriptletId;
     }
 
@@ -390,7 +391,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setTestFormatId(Integer testFormatId) {
-        if (DataBaseUtil.isDifferent(testFormatId,this.testFormatId))
+        if (DataBaseUtil.isDifferent(testFormatId, this.testFormatId))
             this.testFormatId = testFormatId;
     }
 
@@ -399,7 +400,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setRevisionMethodId(Integer revisionMethodId) {
-        if (DataBaseUtil.isDifferent(revisionMethodId,this.revisionMethodId))
+        if (DataBaseUtil.isDifferent(revisionMethodId, this.revisionMethodId))
             this.revisionMethodId = revisionMethodId;
     }
 
@@ -408,7 +409,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setReportingMethodId(Integer reportingMethodId) {
-        if (DataBaseUtil.isDifferent(reportingMethodId,this.reportingMethodId))
+        if (DataBaseUtil.isDifferent(reportingMethodId, this.reportingMethodId))
             this.reportingMethodId = reportingMethodId;
     }
 
@@ -417,7 +418,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setSortingMethodId(Integer sortingMethodId) {
-        if (DataBaseUtil.isDifferent(sortingMethodId,this.sortingMethodId))
+        if (DataBaseUtil.isDifferent(sortingMethodId, this.sortingMethodId))
             this.sortingMethodId = sortingMethodId;
     }
 
@@ -426,7 +427,7 @@ public class Test implements Auditable, Cloneable {
     }
 
     public void setReportingSequence(Integer reportingSequence) {
-        if (DataBaseUtil.isDifferent(reportingSequence,this.reportingSequence))
+        if (DataBaseUtil.isDifferent(reportingSequence, this.reportingSequence))
             this.reportingSequence = reportingSequence;
     }
 
@@ -534,10 +535,10 @@ public class Test implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.TEST);
         audit.setReferenceId(getId());
         if (original != null)
@@ -564,9 +565,7 @@ public class Test implements Auditable, Cloneable {
                  .setField("reporting_method_id", reportingMethodId, original.reportingMethodId, ReferenceTable.DICTIONARY)
                  .setField("sorting_method_id", sortingMethodId, original.sortingMethodId, ReferenceTable.DICTIONARY)
                  .setField("reporting_sequence", reportingSequence, original.reportingSequence);
-                 
 
         return audit;
-
     }
 }

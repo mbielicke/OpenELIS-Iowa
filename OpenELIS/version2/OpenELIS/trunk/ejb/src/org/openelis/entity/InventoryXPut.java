@@ -46,6 +46,7 @@ import javax.persistence.Transient;
 
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.utilcommon.AuditActivity;
 import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
@@ -69,11 +70,11 @@ import org.openelis.utils.Auditable;
                       + " from InventoryXPut tr left join tr.inventoryReceipt ir left join ir.orderItem oi left join tr.inventoryLocation il left join il.inventoryItem ii left join il.storageLocation s left join s.storageUnit su where oi.orderId = :id")})
 @Entity
 @Table(name = "inventory_x_put")
-@EntityListeners( {AuditUtil.class})
+@EntityListeners({AuditUtil.class})
 public class InventoryXPut implements Auditable, Cloneable {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer           id;
 
@@ -89,10 +90,10 @@ public class InventoryXPut implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_location_id", insertable = false, updatable = false)
     private InventoryLocation inventoryLocation;
-    
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_receipt_id", insertable = false, updatable = false)
-    private InventoryReceipt inventoryReceipt;
+    private InventoryReceipt  inventoryReceipt;
 
     @Transient
     private InventoryXPut     original;
@@ -136,7 +137,7 @@ public class InventoryXPut implements Auditable, Cloneable {
     public InventoryLocation getInventoryLocation() {
         return inventoryLocation;
     }
-    
+
     public InventoryReceipt getInventoryReceipt() {
         return inventoryReceipt;
     }
@@ -153,10 +154,10 @@ public class InventoryXPut implements Auditable, Cloneable {
         }
     }
 
-    public Audit getAudit() {
+    public Audit getAudit(AuditActivity activity) {
         Audit audit;
 
-        audit = new Audit();
+        audit = new Audit(activity);
         audit.setReferenceTableId(ReferenceTable.INVENTORY_X_PUT);
         audit.setReferenceId(getId());
         if (original != null)
@@ -167,5 +168,4 @@ public class InventoryXPut implements Auditable, Cloneable {
 
         return audit;
     }
-
 }
