@@ -762,6 +762,7 @@ public class DataViewBean implements DataViewRemote {
                                                      HashMap<Integer, HashMap<String, String>> analyteResultMap,
                                                      DataViewVO data) throws Exception {
         boolean excludeResults;
+        ArrayList<String> orderBy;
         Query query;
         ArrayList<QueryData> fields;
 
@@ -770,15 +771,16 @@ public class DataViewBean implements DataViewRemote {
 
         if (excludeResults) {
             builder.setSelect("distinct new org.openelis.domain.DataViewResultFetchVO(" +
-                              SampleWebMeta.getAccessionNumber() + ", " + SampleWebMeta.getId() +
-                              ", " + SampleWebMeta.getDomain() + ", " + SampleWebMeta.getItemId() +
-                              ", " + SampleWebMeta.getAnalysisId() + ")");
+                              SampleWebMeta.getAccessionNumber() + ", " + SampleWebMeta.getId() + ", " +
+                              SampleWebMeta.getDomain() + ", " + SampleWebMeta.getItemId() + ", " +
+                              SampleWebMeta.getAnalysisId() + ")");
         } else {
             builder.setSelect("distinct new org.openelis.domain.DataViewResultFetchVO(" +
                               SampleWebMeta.getAccessionNumber() + ", " +
-                              SampleWebMeta.getResultAnalyteName() + ", " + SampleWebMeta.getId() +
-                              ", " + SampleWebMeta.getDomain() + ", " + SampleWebMeta.getItemId() +
-                              ", " + SampleWebMeta.getResultAnalysisid() + ", " +
+                              SampleWebMeta.getResultAnalysisid() + ", " + 
+                              SampleWebMeta.getResultAnalyteName() + ", " +
+                              SampleWebMeta.getId() + ", " + SampleWebMeta.getDomain() + ", " +
+                              SampleWebMeta.getItemId() + ", " + 
                               SampleWebMeta.getResultIsColumn() + ", " +
                               SampleWebMeta.getResultAnalyteId() + ", " +
                               SampleWebMeta.getResultTypeId() + ", " +
@@ -802,16 +804,19 @@ public class DataViewBean implements DataViewRemote {
 
         builder.addWhere(SampleWebMeta.getItemId() + "=" + SampleWebMeta.getAnalysisSampleItemId());
 
+        orderBy = new ArrayList<String>();
+        orderBy.add(SampleWebMeta.getAccessionNumber());
         if ( !excludeResults) {
             builder.addWhere(SampleWebMeta.getResultIsReportable() + "=" + "'Y'");
             builder.addWhere(SampleWebMeta.getResultIsColumn() + "=" + "'N'");
             builder.addWhere(SampleWebMeta.getResultValue() + "!=" + "null");
             builder.addWhere(SampleWebMeta.getResultAnalyteId() +
                              getListParam(analyteResultMap.keySet()) + ")");
+            orderBy.add(SampleWebMeta.getResultAnalysisid());
+            orderBy.add(SampleWebMeta.getResultAnalyteName());
         }
-
-        builder.setOrderBy(SampleWebMeta.getAccessionNumber() +
-                           (excludeResults ? "" : ", " + SampleWebMeta.getResultAnalyteName()));
+        
+        builder.setOrderBy(DataBaseUtil.concatWithSeparator(orderBy, ", "));
         query = manager.createQuery(builder.getEJBQL());
         builder.setQueryParams(query, fields);
         return query.getResultList();
@@ -987,42 +992,30 @@ public class DataViewBean implements DataViewRemote {
                     auxSamId = aux.getSampleId();
 
                     /*
-                     * Find out if this result's accession number is less than
-                     * this aux data's and if it is then add a row for this
-                     * result, otherwise add a row for the aux data if its
-                     * accession number is smaller. If both accession numbers
-                     * are equal then add a row for the result first and then
-                     * for the aux data. Every time a row for a result is added
-                     * the index keeping track of the next item in that list is
-                     * incremented and the same is done for the corresponding
-                     * index for aux data if a row for it is added. We compare
-                     * accession numbers instead of sample ids because the
-                     * former is the field shown in the sheet and not the
-                     * latter.
+                     * If this result's accession number is less than or equal to
+                     * this aux data's then add a row for this result, otherwise
+                     * add a row for the aux data. This makes sure that the results
+                     * for a sample are shown before the aux data. Every time a 
+                     * row for a result is added the index keeping track of the
+                     * next item in that list is incremented and the same is done
+                     * for the corresponding index for aux data if a row for it 
+                     * is added. We compare accession numbers instead of sample 
+                     * ids because the former is the field shown in the sheet and not the latter.
                      */
-                    if (resAccNum < auxAccNum) {
+                    if (resAccNum <= auxAccNum) {
                         addResultRow = true;
                         addAuxDataRow = false;
-                        resIndex++ ;
+                        resIndex++;
                         sampleId = resSamId;
                         domain = res.getSampleDomain();
                         itemId = res.getSampleItemId();
                         analysisId = res.getAnalysisId();
-                    } else if (resAccNum > auxAccNum) {
+                    } else {
                         addAuxDataRow = true;
                         addResultRow = false;
                         auxIndex++ ;
                         sampleId = auxSamId;
                         domain = aux.getSampleDomain();
-                    } else {
-                        addResultRow = true;
-                        addAuxDataRow = true;
-                        resIndex++ ;
-                        auxIndex++ ;
-                        sampleId = resSamId;
-                        domain = res.getSampleDomain();
-                        itemId = res.getSampleItemId();
-                        analysisId = res.getAnalysisId();
                     }
                 } else if (resIndex < numResults) {
                     addResultRow = true;
@@ -2650,37 +2643,48 @@ public class DataViewBean implements DataViewRemote {
             int diff;
             DataViewResultFetchVO res1, res2;
             DataViewAuxDataFetchVO aux1, aux2;
-            Integer accNum1, accNum2;
-            String anaName1, anaName2;
+            Integer accNum1, accNum2, analysisId1, analysisId2;
+            String analyte1, analyte2;
 
             accNum1 = accNum2 = 0;
-            anaName1 = anaName2 = null;
+            analysisId1 = analysisId2 = null;
+            analyte1 = analyte2 = null;
+            
             if (dv1 instanceof DataViewResultFetchVO && dv2 instanceof DataViewResultFetchVO) {
                 res1 = (DataViewResultFetchVO) dv1;
                 res2 = (DataViewResultFetchVO) dv2;
                 accNum1 = res1.getSampleAccessionNumber();
                 accNum2 = res2.getSampleAccessionNumber();
-                anaName1 = res1.getAnalyteName();
-                anaName2 = res2.getAnalyteName();
+                analysisId1 = res1.getAnalysisId();
+                analysisId2 = res2.getAnalysisId();
+                analyte1 = res1.getAnalyteName();
+                analyte2 = res2.getAnalyteName();
             } else if (dv1 instanceof DataViewAuxDataFetchVO && dv2 instanceof DataViewAuxDataFetchVO) {
                 aux1 = (DataViewAuxDataFetchVO) dv1;
                 aux2 = (DataViewAuxDataFetchVO) dv2;
                 accNum1 = aux1.getSampleAccessionNumber();
                 accNum2 = aux2.getSampleAccessionNumber();
-                anaName1 = aux1.getAnalyteName();
-                anaName2 = aux2.getAnalyteName();
+                analyte1 = aux1.getAnalyteName();
+                analyte2 = aux2.getAnalyteName();
             }            
 
             /*
              * If the accession numbers are different then we don't compare the
-             * names of the analytes. If the numbers are the same then comparison
-             * by String is used for the names
+             * names of the analytes. If the numbers are the same then the ids of
+             * the analyses are compared so that the analytes can be grouped by 
+             * analysis and if they turn out to be the same then a comparison by
+             * String is used for the names.
              */
             diff = accNum1 - accNum2;
             if (diff != 0) {
                 return diff;
             } else {
-                return compare(anaName1, anaName2);
+                if ((analysisId1 != null && analysisId2 != null)) {
+                    diff = analysisId1.compareTo(analysisId2);
+                    return (diff != 0) ? diff : compare(analyte1, analyte2);
+                } else { 
+                    return compare(analyte1, analyte2);
+                }
             }
         }
 
