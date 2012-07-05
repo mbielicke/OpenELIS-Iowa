@@ -8,7 +8,6 @@ import java.util.Collection;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -19,14 +18,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
-import org.openelis.utils.Audit;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetItem.FetchById",
@@ -37,8 +30,7 @@ import org.openelis.utils.Auditable;
                         "from WorksheetItem wi where wi.worksheetId = :id")})
 @Entity
 @Table(name = "worksheet_item")
-@EntityListeners({AuditUtil.class})
-public class WorksheetItem implements Auditable, Cloneable {
+public class WorksheetItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -58,9 +50,6 @@ public class WorksheetItem implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "worksheet_id", insertable = false, updatable = false)
     private Worksheet                     worksheet;
-
-    @Transient
-    private WorksheetItem                 original;
 
     public Integer getId() {
         return id;
@@ -103,27 +92,5 @@ public class WorksheetItem implements Auditable, Cloneable {
 
     public void setWorksheet(Worksheet worksheet) {
         this.worksheet = worksheet;
-    }
-
-    public void setClone() {
-        try {
-            original = (WorksheetItem)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit(AuditActivity activity) {
-        Audit audit;
-
-        audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.WORKSHEET_ITEM);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("worksheet_id", worksheetId, original.worksheetId)
-                 .setField("position", position, original.position);
-
-        return audit;
     }
 }
