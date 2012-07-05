@@ -40,7 +40,6 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -58,6 +57,7 @@ import org.openelis.gwt.widget.table.event.RowAddedHandler;
 import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.OrderManager;
+import org.openelis.modules.sample.client.SampleOrganizationUtility;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
@@ -208,6 +208,15 @@ public class OrganizationTab extends Screen {
                             table.setCell(r, 6, null);
                             table.setCell(r, 7, null);
                             table.setCell(r, 8, null);
+                        }
+                        
+                        try {
+                            if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(data.getOrganizationId()))
+                                Window.alert(consts.get("orgMarkedAsHoldRefuseSample") + "'" +
+                                             data.getOrganizationName() + "'");
+                        } catch (Exception e) {
+                            Window.alert(e.getMessage());
+                            e.printStackTrace();
                         }
                         break;
                 }

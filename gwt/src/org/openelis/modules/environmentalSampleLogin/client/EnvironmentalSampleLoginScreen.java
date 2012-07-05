@@ -27,7 +27,6 @@ package org.openelis.modules.environmentalSampleLogin.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
@@ -71,7 +70,6 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
-import org.openelis.manager.OrganizationParameterManager;
 import org.openelis.manager.SampleDataBundle;
 import org.openelis.manager.SampleEnvironmentalManager;
 import org.openelis.manager.SampleManager;
