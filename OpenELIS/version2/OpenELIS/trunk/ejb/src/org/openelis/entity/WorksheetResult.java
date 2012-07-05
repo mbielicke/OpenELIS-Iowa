@@ -6,7 +6,6 @@ package org.openelis.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,14 +15,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.utilcommon.AuditActivity;
-import org.openelis.utils.Audit;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetResult.FetchByWorksheetAnalysisId",
@@ -39,8 +32,7 @@ import org.openelis.utils.Auditable;
                         " where wr.worksheetAnalysisId = :id order by wr.resultRow")})
 @Entity
 @Table(name = "worksheet_result")
-@EntityListeners({AuditUtil.class})
-public class WorksheetResult implements Auditable, Cloneable {
+public class WorksheetResult {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -162,9 +154,6 @@ public class WorksheetResult implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_analyte_id", insertable = false, updatable = false)
     private TestAnalyte     testAnalyte;
-
-    @Transient
-    private WorksheetResult original;
 
     public Integer getId() {
         return id;
@@ -513,61 +502,5 @@ public class WorksheetResult implements Auditable, Cloneable {
 
     public void setTestAnalyte(TestAnalyte testAnalyte) {
         this.testAnalyte = testAnalyte;
-    }
-
-    public void setClone() {
-        try {
-            original = (WorksheetResult)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit(AuditActivity activity) {
-        Audit audit;
-
-        audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.WORKSHEET_RESULT);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId, ReferenceTable.WORKSHEET_ANALYSIS)
-                 .setField("test_analyte_id", testAnalyteId, original.testAnalyteId, ReferenceTable.TEST_ANALYTE)
-                 .setField("test_result_id", testResultId, original.testResultId, ReferenceTable.TEST_RESULT)
-                 .setField("result_row", resultRow, original.resultRow)
-                 .setField("analyte_id", analyteId, original.analyteId, ReferenceTable.ANALYTE)
-                 .setField("type_id", typeId, original.typeId, ReferenceTable.DICTIONARY)
-                 .setField("value_1", value1, original.value1)
-                 .setField("value_2", value2, original.value2)
-                 .setField("value_3", value3, original.value3)
-                 .setField("value_4", value4, original.value4)
-                 .setField("value_5", value5, original.value5)
-                 .setField("value_6", value6, original.value6)
-                 .setField("value_7", value7, original.value7)
-                 .setField("value_8", value8, original.value8)
-                 .setField("value_9", value9, original.value9)
-                 .setField("value_10", value10, original.value10)
-                 .setField("value_11", value11, original.value11)
-                 .setField("value_12", value12, original.value12)
-                 .setField("value_13", value13, original.value13)
-                 .setField("value_14", value14, original.value14)
-                 .setField("value_15", value15, original.value15)
-                 .setField("value_16", value16, original.value16)
-                 .setField("value_17", value17, original.value17)
-                 .setField("value_18", value18, original.value18)
-                 .setField("value_19", value19, original.value19)
-                 .setField("value_20", value20, original.value20)
-                 .setField("value_21", value21, original.value21)
-                 .setField("value_22", value22, original.value22)
-                 .setField("value_23", value23, original.value23)
-                 .setField("value_24", value24, original.value24)
-                 .setField("value_25", value25, original.value25)
-                 .setField("value_26", value26, original.value26)
-                 .setField("value_27", value27, original.value27)
-                 .setField("value_28", value28, original.value28)
-                 .setField("value_29", value29, original.value29)
-                 .setField("value_30", value30, original.value30);
-
-        return audit;
     }
 }

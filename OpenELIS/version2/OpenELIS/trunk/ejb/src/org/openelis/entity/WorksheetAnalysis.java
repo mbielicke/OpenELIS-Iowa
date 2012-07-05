@@ -8,7 +8,6 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,15 +17,9 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
-import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.utilcommon.AuditActivity;
-import org.openelis.utils.Audit;
-import org.openelis.utils.AuditUtil;
-import org.openelis.utils.Auditable;
 
 @NamedQueries({
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetItemId",
@@ -71,11 +64,9 @@ import org.openelis.utils.Auditable;
                         " qa.analyteId = a.id and qa.isTrendable = 'Y' and d.id = w.formatId and wa.id in (:ids) " + 
                         "order by w.createdDate")})      
 
-
 @Entity
 @Table(name = "worksheet_analysis")
-@EntityListeners({AuditUtil.class})
-public class WorksheetAnalysis implements Auditable, Cloneable {
+public class WorksheetAnalysis {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -113,9 +104,6 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
     private Analysis          analysis;
-
-    @Transient
-    private WorksheetAnalysis original;
 
     public Integer getId() {
         return id;
@@ -210,33 +198,5 @@ public class WorksheetAnalysis implements Auditable, Cloneable {
 
     public void setAnalysis(Analysis analysis) {
         this.analysis = analysis;
-    }
-
-    public void setClone() {
-        try {
-            original = (WorksheetAnalysis)this.clone();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Audit getAudit(AuditActivity activity) {
-        Audit audit;
-
-        audit = new Audit(activity);
-        audit.setReferenceTableId(ReferenceTable.WORKSHEET_ANALYSIS);
-        audit.setReferenceId(getId());
-        if (original != null)
-            audit.setField("id", id, original.id)
-                 .setField("worksheet_item_id", worksheetItemId, original.worksheetItemId, ReferenceTable.WORKSHEET_ITEM)
-                 .setField("accession_number", accessionNumber, original.accessionNumber)
-                 .setField("analysis_id", analysisId, original.analysisId, ReferenceTable.ANALYSIS)
-                 .setField("qc_id", qcId, original.qcId, ReferenceTable.QC)
-                 .setField("worksheet_analysis_id", worksheetAnalysisId, original.worksheetAnalysisId, ReferenceTable.WORKSHEET_ANALYSIS)
-                 .setField("qc_system_user_id", qcSystemUserId, original.qcSystemUserId)
-                 .setField("qc_started_date", qcStartedDate, original.qcStartedDate)
-                 .setField("is_from_other", isFromOther, original.isFromOther);
-
-        return audit;
     }
 }
