@@ -265,7 +265,7 @@ UIRF Software License are applicable instead of those above.
                 <VerticalPanel padding="0" spacing="0">
                   <table key="organizationTable" maxRows="11" showScroll="ALWAYS" tab="organizationTable,organizationTable" title="" width="697">
                     <col key="{meta:getOrderOrganizationTypeId()}" header="{resource:getString($constants,'type')}" width="125">
-                      <dropdown field="Integer" width="125" />
+                      <dropdown field="Integer" required="true" width="125" />
                     </col>
                     <col key="{meta:getOrderOrganizationAttention()}" header="{resource:getString($constants,'attention')}" width="180">
                       <textbox case="UPPER" max = "30" field="String" />

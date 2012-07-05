@@ -92,6 +92,7 @@ import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.report.orderRequestForm.client.OrderRequestFormReportScreen;
 import org.openelis.modules.sample.client.AuxDataTab;
+import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.shipping.client.ShippingScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -523,6 +524,13 @@ public class SendoutOrderScreen extends Screen {
                     organizationAddressCity.setValue(data.getAddress().getCity());
                     organizationAddressState.setValue(data.getAddress().getState());
                     organizationAddressZipCode.setValue(data.getAddress().getZipCode());
+                    
+                    try {
+                        showHoldRefuseWarning(data.getId(), data.getName());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        e.printStackTrace();
+                    }
                 } else {
                     manager.getOrder().setOrganizationId(null);
                     manager.getOrder().setOrganization(null);
@@ -1935,5 +1943,10 @@ public class SendoutOrderScreen extends Screen {
         man = manager.getTests();
         for (int i = 0; i < man.count(); i++) 
             man.removeNotReportableAnalytesAt(i);        
+    }
+    
+    private void showHoldRefuseWarning(Integer orgId, String name) throws Exception {
+        if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
+            Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ name+"'");
     }
 }
