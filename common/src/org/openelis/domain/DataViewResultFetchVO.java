@@ -46,18 +46,17 @@ public class DataViewResultFetchVO implements RPC {
     protected String          sampleDomain, analyteName, resultIsColumn,
                               value, auxDataAuxFieldValue;                              
 
-    public DataViewResultFetchVO(Integer sampleAccessionNumber, String analyteName,
-                           Integer sampleId, String sampleDomain, Integer sampleItemId,
-                           Integer analysisId, String resultIsColumn, 
-                           Integer analyteId, Integer typeId,
-                           String value, Integer resultSortOrder,
-                           Integer resultTestAnalyteRowGroup) {
+    public DataViewResultFetchVO(Integer sampleAccessionNumber, Integer analysisId,
+                                 String analyteName, Integer sampleId, String sampleDomain,
+                                 Integer sampleItemId, String resultIsColumn,
+                                 Integer analyteId, Integer typeId, String value,
+                                 Integer resultSortOrder, Integer resultTestAnalyteRowGroup) {
         setSampleAccessionNumber(sampleAccessionNumber);
+        setAnalysisId(analysisId);
         setAnalyteName(analyteName);
         setSampleId(sampleId);
         setSampleDomain(sampleDomain);
         setSampleItemId(sampleItemId);
-        setAnalysisId(analysisId);
         setResultIsColumn(resultIsColumn);
         setAnalyteId(analyteId);
         setTypeId(typeId);
