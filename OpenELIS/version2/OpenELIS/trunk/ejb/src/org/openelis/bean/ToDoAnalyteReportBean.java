@@ -94,7 +94,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
     private static final Logger log = Logger.getLogger(ToDoAnalyteReportBean.class);
 
     /*
-     * Returns the prompt for To DO Analyte Report
+     * Returns the prompt for To-Do Analyte Report
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
         ArrayList<OptionListItem> prn, orderBy;
