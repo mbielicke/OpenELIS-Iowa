@@ -452,8 +452,8 @@ public class QcChartReportBean implements QcChartReportRemote {
                     vo.setUCL(apVDO.getP2());
                     vo.setLCL(apVDO.getP1());
                 }
-            } catch (NotFoundException e) {
-                log.error("analyte parameters not found for the analysis");
+            } catch (NotFoundException ignE) {
+                // ignore not found exception
             } catch (Exception e) {
                 log.error("Error retrieving analyte parameters for an analysis on worksheet", e);
             }
