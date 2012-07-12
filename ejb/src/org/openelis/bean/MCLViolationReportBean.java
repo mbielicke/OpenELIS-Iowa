@@ -355,7 +355,16 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         body.append("\r\n")
             .append("PWSID ").append(analysis.getPwsId()).append("<br>\r\n")
             .append("PWSID Name ").append(analysis.getPwsName()).append("<br>\r\n")
-            .append("Lab ID ").append(analysis.getStateLabId()).append("<br>\r\n")
+            .append("Lab ID ");
+        
+        if (analysis.getSectionName().endsWith("-ank"))
+            body.append("397");
+        else if (analysis.getSectionName().endsWith("-ic"))
+            body.append("27");
+        else if (analysis.getSectionName().endsWith("-lk"))
+            body.append("393");
+
+        body.append("<br>\r\n")
             .append("Facility ID ");
         
         if (analysis.getFacilityId() != null)
