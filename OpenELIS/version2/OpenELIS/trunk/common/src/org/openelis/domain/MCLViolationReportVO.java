@@ -45,7 +45,7 @@ public class MCLViolationReportVO implements RPC {
     protected Datetime        collectionDate, collectionTime, anaStartedDate, anaReleasedDate;
     protected String          facilityId, sampleType, samplePointId, location, pwsId,
                               pwsName, fieldOffice, organizationName, testName, 
-                              methodName, unitDescription;
+                              methodName, unitDescription, sectionName;
 
     public MCLViolationReportVO() {
     }
@@ -55,8 +55,9 @@ public class MCLViolationReportVO implements RPC {
                                 String sampleType, String samplePointId, String location,
                                 String pwsId, String pwsName, String fieldOffice,
                                 String organizationName, Integer analysisId, Integer sectionId,
-                                Integer unitOfMeasureId, Date anaStartedDate, Date anaReleasedDate,
-                                String unitDescription, String testName, String methodName) {
+                                String sectionName, Integer unitOfMeasureId, Date anaStartedDate,
+                                Date anaReleasedDate, String unitDescription, String testName,
+                                String methodName) {
         setSampleId(sampleId);
         setAccessionNumber(accessionNumber);
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
@@ -72,6 +73,7 @@ public class MCLViolationReportVO implements RPC {
         setOrganizationName(organizationName);
         setAnalysisId(analysisId);
         setSectionId(sectionId);
+        setSectionName(sectionName);
         setUnitOfMeasureId(unitOfMeasureId);
         setAnaStartedDate(DataBaseUtil.toYM(anaStartedDate));        
         setAnaReleasedDate(DataBaseUtil.toYM(anaReleasedDate));
@@ -198,6 +200,14 @@ public class MCLViolationReportVO implements RPC {
 
     public void setSectionId(Integer sectionId) {
         this.sectionId = sectionId;
+    }
+
+    public String getSectionName() {
+        return sectionName;
+    }
+
+    public void setSectionName(String sectionName) {
+        this.sectionName = DataBaseUtil.trim(sectionName);
     }
 
     public Integer getUnitOfMeasureId() {
