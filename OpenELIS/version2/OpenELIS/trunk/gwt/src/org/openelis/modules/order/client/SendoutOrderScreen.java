@@ -642,9 +642,14 @@ public class SendoutOrderScreen extends Screen {
             public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {                
                 TableDataRow r;
                 
-                r = event.getItem().row;                
-                if (!r.enabled)
-                    event.cancel();
+                /*
+                 * no options are to be disabled in Query state
+                 */
+                if (state != State.QUERY) {
+                    r = event.getItem().row;                
+                    if (!r.enabled)
+                        event.cancel();
+                }
             }
         });
 
