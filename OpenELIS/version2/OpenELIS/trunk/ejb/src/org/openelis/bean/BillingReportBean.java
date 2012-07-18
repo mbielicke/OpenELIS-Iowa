@@ -147,7 +147,7 @@ public class BillingReportBean implements BillingReportLocal {
     public void runReport() throws Exception {        
         String poAnalyteName, billDir;
         ArrayList<Object[]> resultList;
-        Date lastRunDate, currentDate;
+        Date lastRunDate, currentDate, currentRunDate;
         SystemVariableDO lastRun;
         Calendar cal;
         SimpleDateFormat df;
@@ -176,8 +176,15 @@ public class BillingReportBean implements BillingReportLocal {
         }        
         
         cal = Calendar.getInstance();
+        /*
+         * this is the time at which the current run is being executed and it will 
+         * be used as the last run time for the next run 
+         */
+        currentRunDate = cal.getTime();
+        
         cal.add(Calendar.MINUTE, -1);
         currentDate = cal.getTime();                  
+        
         if (lastRunDate.compareTo(currentDate) >= 0) {
             log.error("Start Date should be earlier than End Date");
             systemVariable.abortUpdate(lastRun.getId());
@@ -198,7 +205,7 @@ public class BillingReportBean implements BillingReportLocal {
             outputBilling(out, currentDate, poAnalyteName, resultList);  
             out.close();
             
-            lastRun.setValue(df.format(currentDate));
+            lastRun.setValue(df.format(currentRunDate));
             systemVariable.update(lastRun);        
         } catch (Exception e) {
             if (out != null) 
