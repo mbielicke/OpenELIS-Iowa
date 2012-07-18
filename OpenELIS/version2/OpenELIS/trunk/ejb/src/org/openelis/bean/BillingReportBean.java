@@ -147,7 +147,7 @@ public class BillingReportBean implements BillingReportLocal {
     public void runReport() throws Exception {        
         String poAnalyteName, billDir;
         ArrayList<Object[]> resultList;
-        Date lastRunDate, currentDate, currentRunDate;
+        Date lastRunDate, currentRunDate, now;
         SystemVariableDO lastRun;
         Calendar cal;
         SimpleDateFormat df;
@@ -180,18 +180,18 @@ public class BillingReportBean implements BillingReportLocal {
          * this is the time at which the current run is being executed and it will 
          * be used as the last run time for the next run 
          */
-        currentRunDate = cal.getTime();
+        now = cal.getTime();
         
         cal.add(Calendar.MINUTE, -1);
-        currentDate = cal.getTime();                  
+        currentRunDate = cal.getTime();                  
         
-        if (lastRunDate.compareTo(currentDate) >= 0) {
+        if (lastRunDate.compareTo(currentRunDate) >= 0) {
             log.error("Start Date should be earlier than End Date");
             systemVariable.abortUpdate(lastRun.getId());
             return;
         }
             
-        resultList = sample.fetchForBillingReport(lastRunDate, currentDate);        
+        resultList = sample.fetchForBillingReport(lastRunDate, currentRunDate);        
         log.info("Considering "+ resultList.size()+ " cases to run");        
         if (resultList.size() == 0) {
             systemVariable.abortUpdate(lastRun.getId());
@@ -202,10 +202,10 @@ public class BillingReportBean implements BillingReportLocal {
         try {
             tempFile = File.createTempFile("billingReport", ".txt", new File(billDir));
             out = new FileWriter(tempFile);
-            outputBilling(out, currentDate, poAnalyteName, resultList);  
+            outputBilling(out, currentRunDate, poAnalyteName, resultList);  
             out.close();
             
-            lastRun.setValue(df.format(currentRunDate));
+            lastRun.setValue(df.format(now));
             systemVariable.update(lastRun);        
         } catch (Exception e) {
             if (out != null) 
