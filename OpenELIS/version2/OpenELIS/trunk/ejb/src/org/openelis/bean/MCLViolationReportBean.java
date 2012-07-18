@@ -50,7 +50,6 @@ import org.openelis.domain.SampleQaEventDO;
 import org.openelis.domain.SectionParameterDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
@@ -154,8 +153,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         ArrayList<ArrayList<ResultViewDO>> results;
         AuxDataManager adMan;
         Calendar cal;
-        Date startDate, endDate;
-        Datetime currDateTime;
+        Date lastRunDate, currentRunDate, now;
         MCLViolationReportVO analysis;
         ReportStatus status;
         ResultViewDO rowResult, colResult;
@@ -170,25 +168,25 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         session.setAttribute("MCLViolationReport", status);
 
         cal = Calendar.getInstance();
+        now = cal.getTime();
         /*
          * subtracting 1 minute from the current time for end date
          */
         cal.add(Calendar.MINUTE, -1);
-        endDate = cal.getTime();
-        currDateTime = Datetime.getInstance(Datetime.YEAR , Datetime.MINUTE, endDate);
+        currentRunDate = cal.getTime();
 
         lastRun = null;
         toEmail = "";
         try {
             dnrEmail = sysVarBean.fetchByName("mcl_violation_email").getValue();
             lastRun = sysVarBean.fetchForUpdateByName("last_mcl_violation_report_run");
-            startDate = format.parse(lastRun.getValue());
+            lastRunDate = format.parse(lastRun.getValue());
 
-            if (startDate.compareTo(endDate) > 0)
+            if (lastRunDate.compareTo(currentRunDate) > 0)
                 throw new Exception("Start Date should be earlier than End Date");
 
             try {
-                analysisList = analysisBean.fetchForMCLViolationReport(startDate, endDate);
+                analysisList = analysisBean.fetchForMCLViolationReport(lastRunDate, currentRunDate);
             } catch (NotFoundException nfE) {
                 analysisList = new ArrayList<MCLViolationReportVO>();
             }
@@ -284,7 +282,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                 }
             }
             
-            lastRun.setValue(currDateTime.toString());
+            lastRun.setValue(format.format(now));
             sysVarBean.updateAsSystem(lastRun);
         } catch (Exception e) {
             if (lastRun != null)
