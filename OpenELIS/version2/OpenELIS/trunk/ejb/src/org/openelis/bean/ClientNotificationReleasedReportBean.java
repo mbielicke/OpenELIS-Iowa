@@ -74,7 +74,7 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
     @TransactionTimeout(600)
     public void runReport() throws Exception {
         String from;
-        Date startReceive, endReceive;
+        Date lastRunDate, currentRunDate, now;
         SystemVariableDO lastRun;
         Calendar cal;
         DateFormat df;
@@ -85,28 +85,29 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
          */
         df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         cal = Calendar.getInstance();
+        now = cal.getTime();
         cal.add(Calendar.MINUTE, -1);
-        endReceive = cal.getTime();
+        currentRunDate = cal.getTime();
 
         lastRun = null;
         try {
             lastRun = systemVariable.fetchForUpdateByName("last_released_report_run");
             log.debug("last_receivable_report_run = " + lastRun);
-            startReceive = df.parse(lastRun.getValue());
-            if (startReceive.compareTo(endReceive) >= 0)
+            lastRunDate = df.parse(lastRun.getValue());
+            if (lastRunDate.compareTo(currentRunDate) >= 0)
                 throw new InconsistencyException("Start Date should be earlier than End Date");
 
             from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");
             if (from == null)
                 throw new InconsistencyException("System variable 'do_not_reply_email_address' not present.");
             
-            resultList = sample.fetchForClientEmailReleasedReport(startReceive, endReceive);
+            resultList = sample.fetchForClientEmailReleasedReport(lastRunDate, currentRunDate);
             log.debug("Considering " + resultList.size() + " cases to run");
 
             if (resultList.size() > 0)
                 generateEmail(resultList, from);
 
-            lastRun.setValue(df.format(endReceive));
+            lastRun.setValue(df.format(now));
             systemVariable.updateAsSystem(lastRun);
         } catch (Exception e) {
             log.error(e);

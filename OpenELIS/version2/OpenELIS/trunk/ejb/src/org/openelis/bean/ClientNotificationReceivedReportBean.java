@@ -49,7 +49,7 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
     @TransactionTimeout(600)
     public void runReport() throws Exception {
         String from;
-        Date startEntered, endEntered;
+        Date lastRunDate, currentRunDate;
         Calendar cal;
         DateFormat df;
         SystemVariableDO runBackDays;
@@ -64,17 +64,17 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
              */
             df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             cal = Calendar.getInstance();
-            endEntered = cal.getTime();
-            log.info("Receivable Notification End Date: " + df.format(endEntered));
+            currentRunDate = cal.getTime();
+            log.info("Receivable Notification End Date: " + df.format(currentRunDate));
             cal.add(Calendar.DAY_OF_MONTH, -Integer.valueOf(runBackDays.getValue()));
-            startEntered = cal.getTime();
-            log.info("Receivable Notification Start Date: " + df.format(startEntered));
+            lastRunDate = cal.getTime();
+            log.info("Receivable Notification Start Date: " + df.format(lastRunDate));
 
             from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");            
             if (from == null) 
                 throw new InconsistencyException("System variable 'do_not_reply_email_address' not present.");
 
-            resultList = sample.fetchForClientEmailReceivedReport(startEntered, endEntered);
+            resultList = sample.fetchForClientEmailReceivedReport(lastRunDate, currentRunDate);
             log.debug("Considering " + resultList.size() + " cases to run");
             if (resultList.size() > 0)
                 generateEmail(resultList, from);
