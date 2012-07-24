@@ -53,11 +53,11 @@ import org.openelis.utils.Auditable;
 @NamedQueries({
     @NamedQuery( name = "QcAnalyte.FetchById",
                 query = "select new org.openelis.domain.QcAnalyteViewDO(qca.id,qca.qcId,qca.sortOrder,qca.analyteId," +
-                		"qca.typeId,qca.value,qca.isTrendable,a.name,'')"
+                		"qca.typeId,qca.value,qca.isTrendable,a.name)"
                       + " from QcAnalyte qca left join qca.analyte a where qca.id = :id"),
     @NamedQuery( name = "QcAnalyte.FetchByQcId",
                 query = "select new org.openelis.domain.QcAnalyteViewDO(qca.id,qca.qcId,qca.sortOrder,qca.analyteId," +
-                        "qca.typeId,qca.value,qca.isTrendable,a.name,'')"
+                        "qca.typeId,qca.value,qca.isTrendable,a.name)"
                       + " from QcAnalyte qca left join qca.analyte a where qca.qcId = :id order by qca.sortOrder")})
 @Entity
 @Table(name = "qc_analyte")

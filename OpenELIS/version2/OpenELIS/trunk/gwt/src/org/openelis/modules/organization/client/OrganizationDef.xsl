@@ -213,6 +213,21 @@ UIRF Software License are applicable instead of those above.
                     <col key="{meta:getContactName()}" width="130" header="{resource:getString($constants,'contactName')}">
                       <textbox max="40" field="String" required="true" />
                     </col>
+                    <col key="{meta:getContactAddressWorkPhone()}" width="100" header="{resource:getString($constants,'workNumber')}">
+                      <textbox max="21" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" field="String" />
+                    </col>
+                    <col key="{meta:getContactAddressHomePhone()}" width="90" header="{resource:getString($constants,'homeNumber')}">
+                      <textbox max="16" mask="{resource:getString($constants,'phonePattern')}" field="String"/>
+                    </col>
+                    <col key="{meta:getContactAddressCellPhone()}" width="90" header="{resource:getString($constants,'cellNumber')}">
+                      <textbox max="16" mask="{resource:getString($constants,'phonePattern')}" field="String"/>
+                    </col>
+                    <col key="{meta:getContactAddressFaxPhone()}" width="90" header="{resource:getString($constants,'faxNumber')}">
+                      <textbox max="16" field="String" mask="{resource:getString($constants,'phonePattern')}"/>
+                    </col>
+                    <col key="{meta:getContactAddressEmail()}" width="150" header="{resource:getString($constants,'email')}">
+                      <textbox max="80" field="String" />
+                    </col>
                     <col key="{meta:getContactAddressMultipleUnit()}" width="130" header="{resource:getString($constants,'aptSuite')}">
                       <textbox case="UPPER" max="30" field="String" />
                     </col>
@@ -230,21 +245,6 @@ UIRF Software License are applicable instead of those above.
                     </col>
                     <col key="{meta:getContactAddressCountry()}" width="126" header="{resource:getString($constants,'country')}">
                       <dropdown width="110" field="String" />
-                    </col>
-                    <col key="{meta:getContactAddressWorkPhone()}" width="100" header="{resource:getString($constants,'workNumber')}">
-                      <textbox max="21" mask="{resource:getString($constants,'phoneWithExtensionPattern')}" field="String" />
-                    </col>
-                    <col key="{meta:getContactAddressHomePhone()}" width="90" header="{resource:getString($constants,'homeNumber')}">
-                      <textbox max="16" mask="{resource:getString($constants,'phonePattern')}" field="String"/>
-                    </col>
-                    <col key="{meta:getContactAddressCellPhone()}" width="90" header="{resource:getString($constants,'cellNumber')}">
-                      <textbox max="16" mask="{resource:getString($constants,'phonePattern')}" field="String"/>
-                    </col>
-                    <col key="{meta:getContactAddressFaxPhone()}" width="90" header="{resource:getString($constants,'faxNumber')}">
-                      <textbox max="16" field="String" mask="{resource:getString($constants,'phonePattern')}"/>
-                    </col>
-                    <col key="{meta:getContactAddressEmail()}" width="150" header="{resource:getString($constants,'email')}">
-                      <textbox max="80" field="String" />
                     </col>
                   </table>
                   <widget style="TableButtonFooter">
