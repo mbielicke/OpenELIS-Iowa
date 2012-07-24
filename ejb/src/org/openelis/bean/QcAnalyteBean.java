@@ -27,11 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.annotation.PostConstruct;
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -40,8 +36,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.QcAnalyteDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.entity.QcAnalyte;
@@ -50,7 +44,6 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.meta.QcMeta;
 
@@ -62,41 +55,14 @@ public class QcAnalyteBean implements QcAnalyteLocal {
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;
 
-    @EJB
-    private DictionaryLocal     dictionary;
-
-    private static int          typeDict;
-    private static final Logger log  = Logger.getLogger(QcAnalyteBean.class.getName());
-    
-    @PostConstruct
-    public void init() {
-        DictionaryDO data;
-
-        try {
-            data = dictionary.fetchBySystemName("qc_analyte_dictionary");
-            typeDict = data.getId();
-        } catch (Throwable e) {
-            typeDict = 0;
-            log.log(Level.SEVERE,
-                    "Failed to lookup dictionary entry by system name='qc_analyte_dictionary'", e);
-        }
-    }
-        
-
     public QcAnalyteViewDO fetchById(Integer id) throws Exception {
         Query query;
         QcAnalyteViewDO data;
-        DictionaryViewDO dict;      
         
         query = manager.createNamedQuery("QcAnalyte.FetchById");
         query.setParameter("id", id);
         try {
             data = (QcAnalyteViewDO)query.getSingleResult();
-            if (typeDict == data.getTypeId()) {
-                dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
-                if (dict != null)
-                    data.setDictionary(dict.getEntry());
-            }
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -109,8 +75,6 @@ public class QcAnalyteBean implements QcAnalyteLocal {
     public ArrayList<QcAnalyteViewDO> fetchByQcId(Integer id) throws Exception {
         Query query;
         List list;
-        QcAnalyteViewDO data;
-        DictionaryViewDO dict;      
 
         query = manager.createNamedQuery("QcAnalyte.FetchByQcId");
         query.setParameter("id", id);
@@ -119,25 +83,7 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         if (list.isEmpty())
             throw new NotFoundException();
 
-        list = DataBaseUtil.toArrayList(list);
-        //
-        // for entries that are dictionary, we want to fetch the dictionary
-        // text and set it for display
-        //
-        try {                       
-            for (int i = 0 ; i < list.size(); i++) {
-                data = (QcAnalyteViewDO)list.get(i);                
-                if (typeDict == data.getTypeId()) {
-                    dict = dictionary.fetchById(Integer.parseInt(data.getValue()));
-                    if (dict != null)
-                        data.setDictionary(dict.getEntry());
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return (ArrayList) list;
+        return DataBaseUtil.toArrayList(list);
     }
 
     public QcAnalyteViewDO add(QcAnalyteViewDO data) throws Exception {

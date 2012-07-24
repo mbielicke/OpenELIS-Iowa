@@ -38,10 +38,8 @@ import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
-import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
@@ -76,6 +74,8 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
 import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.table.event.RowAddedEvent;
@@ -84,12 +84,9 @@ import org.openelis.gwt.widget.table.event.RowDeletedEvent;
 import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
-import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.history.client.HistoryScreen;
-import org.openelis.utilcommon.ResultRangeNumeric;
-import org.openelis.utilcommon.ResultRangeTiter;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -116,18 +113,14 @@ public class QcScreen extends Screen {
     private CheckBox                    isActive;
     private TableWidget                 qcAnalyteTable;
 
-    private Integer                     typeDict, typeNumeric, typeTiter, typeDefault;
     private DictionaryLookupScreen      dictLookup;
-    private ScreenService               analyteService, inventoryService, dictionaryService;
-    private ResultRangeNumeric          rangeNumeric;
-    private ResultRangeTiter            rangeTiter;
+    private ScreenService               analyteService, inventoryService;
 
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
         analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
         inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
-        dictionaryService = new ScreenService("controller?service=org.openelis.modules.dictionary.server.DictionaryService");
 
         userPermission = UserCache.getPermission().getModule("qc");
         if (userPermission == null)
@@ -544,13 +537,17 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                qcAnalyteTable.enable(EnumSet.of(State.ADD, State.UPDATE).contains(event.getState()));                
+                qcAnalyteTable.enable(true);                
+            }
+        });
+        
+        qcAnalyteTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if (state != State.ADD && state != State.UPDATE)
+                    event.cancel();
             }
         });
 
-        rangeNumeric = new ResultRangeNumeric();
-        rangeTiter   = new ResultRangeTiter();
-        
         qcAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
             public void onCellUpdated(CellEditedEvent event) {
                 int r, c;
@@ -574,24 +571,13 @@ public class QcScreen extends Screen {
                         data.setAnalyteName(analyte.getTextBoxDisplay());
                         break;
                     case 1:
-                        data.setTypeId((Integer)val);
-                        qcAnalyteTable.clearCellExceptions(r, 3);
-                        try {
-                            validateValue(data, (String)qcAnalyteTable.getObject(r, 3));
-                        } catch (LocalizedException e) {
-                            qcAnalyteTable.setCellException(r, 3, e);
-                        }
+                        data.setTypeId((Integer)val);                        
                         break;
                     case 2:
                         data.setIsTrendable((String)val);
                         break;
                     case 3:
-                        qcAnalyteTable.clearCellExceptions(r, c);
-                        try {
-                            validateValue(data, (String)val);
-                        } catch (LocalizedException e) {
-                            qcAnalyteTable.setCellException(r, c, e);
-                        }
+                        data.setValue((String)val);                        
                         break;
                 }
             }
@@ -660,7 +646,6 @@ public class QcScreen extends Screen {
                 addAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE)
                                                .contains(event.getState()));
             }
-
         });
 
         removeAnalyteButton = (AppButton)def.getWidget("removeAnalyteButton");
@@ -814,16 +799,6 @@ public class QcScreen extends Screen {
         }
 
         analyteTypeId.setModel(model);
-
-        try {
-            typeDict    = DictionaryCache.getIdBySystemName("qc_analyte_dictionary");
-            typeNumeric = DictionaryCache.getIdBySystemName("qc_analyte_numeric");
-            typeTiter   = DictionaryCache.getIdBySystemName("qc_analyte_titer");
-            typeDefault = DictionaryCache.getIdBySystemName("qc_analyte_default");
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            window.close();
-        }
     }
 
     /*
@@ -1030,87 +1005,15 @@ public class QcScreen extends Screen {
         try {
             for (i = 0; i < manager.getAnalytes().count(); i++ ) {
                 data = manager.getAnalytes().getAnalyteAt(i);
-                // either show them the value or the dictionary entry
-                value = data.getValue();
-                if (data.getDictionary() != null)
-                    value = data.getDictionary();
                 model.add(new TableDataRow(null, 
                                            new TableDataRow(data.getAnalyteId(),data.getAnalyteName()),
-                                           data.getTypeId(), data.getIsTrendable(), value));
+                                           data.getTypeId(), data.getIsTrendable(), data.getValue()));
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
         return model;
-    }
-
-    private IdNameVO getDictionary(String entry) {
-        ArrayList<IdNameVO> list;
-        Query query;  
-        QueryData field;
-        
-        entry = DataBaseUtil.trim(entry); 
-        if (entry == null)
-            return null;
-        
-        query = new Query();
-        field = new QueryData();
-        field.key = CategoryMeta.getDictionaryEntry();
-        field.type = QueryData.Type.STRING;
-        field.query = entry;
-        query.setFields(field);       
-        
-        field = new QueryData();
-        field.key = CategoryMeta.getIsSystem();
-        field.type = QueryData.Type.STRING;
-        field.query = "N";
-        query.setFields(field); 
-        
-        try {
-            list = dictionaryService.callList("fetchByEntry", query);
-            if (list.size() == 1)
-                return list.get(0);
-            else if (list.size() > 1)                
-                showDictionary(entry,list);
-        } catch(NotFoundException e){
-            return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert(e.getMessage());
-        }
-        return null;
-    }
-    
-    private void validateValue(QcAnalyteViewDO data, String value) throws LocalizedException {
-        IdNameVO dict;
-
-        try {
-            if (typeDict.equals(data.getTypeId())) {
-                dict = getDictionary((String)value);
-                if (dict != null) {
-                    data.setValue(dict.getId().toString());
-                    data.setDictionary(dict.getName());
-                } else {
-                    data.setDictionary(null);
-                    throw new LocalizedException("qc.invalidValueException");
-                }
-            } else if (typeNumeric.equals(data.getTypeId())) {
-                rangeNumeric.setRange((String)value);
-                data.setValue(rangeNumeric.toString());
-            } else if (typeTiter.equals(data.getTypeId())) {
-                rangeTiter.setRange((String)value);
-                data.setValue(rangeTiter.toString());
-            } else if (typeDefault.equals(data.getTypeId())) {
-                data.setValue((String)value);
-            } else {
-                throw new LocalizedException("qc.invalidValueException");
-            }
-        } catch (LocalizedException e) {
-            data.setValue(null);
-            data.setDictionary(null);
-            throw e;
-        }
     }
 
     private void showDictionary(String entry,ArrayList<IdNameVO> list) {
@@ -1143,11 +1046,8 @@ public class QcScreen extends Screen {
                             entry = list.get(0);
                             try {
                                 data = manager.getAnalytes().getAnalyteAt(r);
-                                data.setValue(entry.getId().toString());
-                                data.setDictionary(entry.getName());
-                                data.setTypeId(typeDict);
-                                qcAnalyteTable.setCell(r, 1, typeDict);
-                                qcAnalyteTable.setCell(r, 3, data.getDictionary());
+                                data.setValue(entry.getName());
+                                qcAnalyteTable.setCell(r, 3, entry.getName());
                                 qcAnalyteTable.clearCellExceptions(r, 3);
                             } catch (Exception e) {
                                 e.printStackTrace();

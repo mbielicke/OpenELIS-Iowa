@@ -13,7 +13,6 @@ import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
@@ -91,37 +90,37 @@ public class ContactTab extends Screen {
                         data.setName((String)val);
                         break;
                     case 2:
-                        data.getAddress().setMultipleUnit((String)val);
-                        break;
-                    case 3:
-                        data.getAddress().setStreetAddress((String)val);
-                        break;
-                    case 4:
-                        data.getAddress().setCity((String)val);
-                        break;
-                    case 5:
-                        data.getAddress().setState((String)val);
-                        break;
-                    case 6:
-                        data.getAddress().setZipCode((String)val);
-                        break;
-                    case 7:
-                        data.getAddress().setCountry((String)val);
-                        break;
-                    case 8:
                         data.getAddress().setWorkPhone((String)val);
                         break;
-                    case 9:
+                    case 3:
                         data.getAddress().setHomePhone((String)val);
                         break;
-                    case 10:
+                    case 4:
                         data.getAddress().setCellPhone((String)val);
                         break;
-                    case 11:
+                    case 5:
                         data.getAddress().setFaxPhone((String)val);
                         break;
-                    case 12:
+                    case 6:
                         data.getAddress().setEmail((String)val);
+                        break;
+                    case 7:
+                        data.getAddress().setMultipleUnit((String)val);
+                        break;
+                    case 8:
+                        data.getAddress().setStreetAddress((String)val);
+                        break;
+                    case 9:
+                        data.getAddress().setCity((String)val);
+                        break;
+                    case 10:
+                        data.getAddress().setState((String)val);
+                        break;
+                    case 11:
+                        data.getAddress().setZipCode((String)val);
+                        break;
+                    case 12:
+                        data.getAddress().setCountry((String)val);
                         break;
                 }
             }
@@ -206,7 +205,7 @@ public class ContactTab extends Screen {
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        state = ((Dropdown<String>)table.getColumns().get(5).getColumnWidget());
+        state = ((Dropdown<String>)table.getColumns().get(10).getColumnWidget());
         state.setModel(model);
 
         model = new ArrayList<TableDataRow>();
@@ -217,7 +216,7 @@ public class ContactTab extends Screen {
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
         }
-        country = ((Dropdown<String>)table.getColumns().get(7).getColumnWidget());
+        country = ((Dropdown<String>)table.getColumns().get(12).getColumnWidget());
         country.setModel(model);
     }
     
@@ -236,19 +235,19 @@ public class ContactTab extends Screen {
                 data = (OrganizationContactDO)manager.getContacts().getContactAt(i);
 
                 row = new TableDataRow(13);
-                row.cells.get(0).value = data.getContactTypeId();
-                row.cells.get(1).value = data.getName();
-                row.cells.get(2).value = data.getAddress().getMultipleUnit();
-                row.cells.get(3).value = data.getAddress().getStreetAddress();
-                row.cells.get(4).value = data.getAddress().getCity();
-                row.cells.get(5).value = data.getAddress().getState();
-                row.cells.get(6).value = data.getAddress().getZipCode();
-                row.cells.get(7).value = data.getAddress().getCountry();
-                row.cells.get(8).value = data.getAddress().getWorkPhone();
-                row.cells.get(9).value = data.getAddress().getHomePhone();
-                row.cells.get(10).value = data.getAddress().getCellPhone();
-                row.cells.get(11).value = data.getAddress().getFaxPhone();
-                row.cells.get(12).value = data.getAddress().getEmail();
+                row.cells.get(0).setValue(data.getContactTypeId());
+                row.cells.get(1).setValue(data.getName());
+                row.cells.get(2).setValue(data.getAddress().getWorkPhone());
+                row.cells.get(3).setValue(data.getAddress().getHomePhone());
+                row.cells.get(4).setValue(data.getAddress().getCellPhone());
+                row.cells.get(5).setValue(data.getAddress().getFaxPhone());
+                row.cells.get(6).setValue(data.getAddress().getEmail());
+                row.cells.get(7).setValue(data.getAddress().getMultipleUnit());
+                row.cells.get(8).setValue(data.getAddress().getStreetAddress());
+                row.cells.get(9).setValue(data.getAddress().getCity());
+                row.cells.get(10).setValue(data.getAddress().getState());
+                row.cells.get(11).setValue(data.getAddress().getZipCode());
+                row.cells.get(12).setValue(data.getAddress().getCountry());
                 model.add(row);
             }
         } catch (Exception e) {

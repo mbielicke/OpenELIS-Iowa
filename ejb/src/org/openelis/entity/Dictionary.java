@@ -210,10 +210,7 @@ import org.openelis.utils.Auditable;
                   resultSetMapping="Dictionary.ReferenceCheckForIdMapping"),
                   @NamedNativeQuery(name = "Dictionary.ReferenceCheckForValue",     
                               query = "select value as VALUE from test_result tr,dictionary d where value = :value and " +
-                              		  " tr.type_id = d.id and d.system_name = 'test_res_type_dictionary' " +
-                                      " UNION " +
-                                      "select value as VALUE from qc_analyte qca,dictionary d where value = :value and" +
-                                      " qca.type_id = d.id and d.system_name = 'qc_analyte_dictionary' " +
+                              		  " tr.type_id = d.id and d.system_name = 'test_res_type_dictionary' " +                                                                           
                                       " UNION " +
                                       "select value as VALUE from aux_field_value afv,dictionary d where value = :value and" +
                                       " afv.type_id = d.id and d.system_name = 'aux_dictionary' ",                          

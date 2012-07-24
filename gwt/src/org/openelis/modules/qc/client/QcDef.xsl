@@ -242,7 +242,7 @@ UIRF Software License are applicable instead of those above.
                   </autoComplete>
                 </col>
                 <col key="{meta:getQcAnalyteTypeId()}" width="55" align="left" header="{resource:getString($constants,'type')}">
-                  <dropdown width="55" field="Integer" required="true" />
+                  <dropdown width="90" field="Integer" required="true" />
                 </col>
                 <col key="{meta:getQcAnalyteIsTrendable()}" width="55" align="center" header="{resource:getString($constants,'trendable')}">
                   <check />
