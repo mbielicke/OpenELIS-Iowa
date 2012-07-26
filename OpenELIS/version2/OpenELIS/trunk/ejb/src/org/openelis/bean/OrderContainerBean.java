@@ -50,8 +50,8 @@ import org.openelis.meta.OrderMeta;
 public class OrderContainerBean implements OrderContainerLocal {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                    manager;
-    private static final Integer   MAX_QUANTITY = 50;
+    private              EntityManager manager;
+    private static final Integer       MAX_QUANTITY = 99;
 
     @SuppressWarnings("unchecked")
     public ArrayList<OrderContainerDO> fetchByOrderId(Integer id) throws Exception {
