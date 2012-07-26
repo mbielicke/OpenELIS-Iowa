@@ -94,6 +94,7 @@ public class OrderFillManagerProxy {
     }
 
     public void validate(OrderFillManager man) throws Exception {
+        boolean isChanged;
         int j;
         Integer sum, locationId;
         ValidationErrorsList list;
@@ -103,6 +104,22 @@ public class OrderFillManagerProxy {
         ArrayList<String[]> names;
         String[] name;
 
+        //
+        // When updating an order that has been processed we do not want to 
+        // re-validate the quantities on hand if the fill records have not been
+        // changed.
+        // 
+        isChanged = false;
+        for (j = 0; j < man.count(); j++ ) {
+            if (man.getFillAt(j).isChanged()) {
+                isChanged = true;
+                break;
+            }
+        }
+
+        if (!isChanged)
+            return;
+        
         list = new ValidationErrorsList();
         locationSumMap = new HashMap<Integer, Integer>();
         names = new ArrayList<String[]>();
