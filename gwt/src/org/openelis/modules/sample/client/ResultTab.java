@@ -39,6 +39,7 @@ import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.SectionPermission;
+import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
@@ -147,13 +148,30 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
         testResultsTable = (TableWidget)def.getWidget("testResultsTable");
         addScreenHandler(testResultsTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
+                SectionPermission perm;
+                SectionViewDO section;
+                
                 testResultsTable.load(getTableModel());
 
                 if (testResultsTable.numRows() > 0) {
                     popoutTable.enable(true);
-                    if (state == State.ADD || state == State.UPDATE) {
-                        checkAllButton.enable(true);
-                        uncheckAllButton.enable(true);
+                    if (analysis.getSectionId() != null) {
+                        try {
+                            /*
+                             * the user must have assign permission for the specified 
+                             * section on the analysis to be able to change the
+                             * reportable flag via checkAllButton and uncheckAllButton
+                             */
+                            section = SectionCache.getById(analysis.getSectionId());
+                            perm = UserCache.getPermission().getSection(section.getName());
+                            if ((state == State.ADD || state == State.UPDATE) && perm.hasAssignPermission()) {
+                                checkAllButton.enable(true);
+                                uncheckAllButton.enable(true);
+                            }
+                        } catch (Exception e) {
+                            section = null;
+                            perm = null;
+                        }
                     }
                 }
             }
@@ -247,8 +265,17 @@ public class ResultTab extends Screen implements HasActionHandlers<ResultTab.Act
 					window.setError(consts.get("noSectionsForTest"));
                     event.cancel();
                     enableButton = false;
-                } else if (perm == null || !perm.hasCompletePermission()) {
-                	window.setError(consts.get("noCompleteTestPermission"));
+                } else if (perm == null || (!perm.hasAssignPermission() && c == 0)) {
+                    /*
+                     * the user must have assign permission for the specified 
+                     * section on the analysis to be able to change the reportable
+                     * flag 
+                     */
+                	window.setError(consts.get("noAssignTestPermission"));
+                    event.cancel();
+                    enableButton = false;
+                } else if (perm == null || (!perm.hasCompletePermission() && c > 0)) {
+                    window.setError(consts.get("noCompleteTestPermission"));
                     event.cancel();
                     enableButton = false;
                 } else if (!canEditAnalysis()) {
