@@ -303,18 +303,6 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                     testPanelId = Integer.valueOf(value.substring(1, sepIndex));
                     sampleType = Integer.valueOf(value.substring(sepIndex + 1));
                     try {
-                        //
-                        // Add container so we can set the sample type to it
-                        //
-                        //TODO find out what the following code is for
-                        /*orderContainerTable.addRow();
-                        r = orderContainerTable.numRows() - 1;
-                        oData = manager.getContainers().getContainerAt(r);
-                        oData.setTypeOfSampleId(sampleType);
-                        orderContainerTable.load(getContainerTableModel());
-                        orderContainerTable.selectRow(r);
-                        orderContainerTable.scrollToSelection();*/
-
                         row = new TableDataRow(3);
                         tmData = new TestMethodVO();
                         if ("t".equals(flag)) {

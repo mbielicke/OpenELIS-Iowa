@@ -1,28 +1,28 @@
-/** Exhibit A - UIRF Open-source Based Public Software License.
-* 
-* The contents of this file are subject to the UIRF Open-source Based
-* Public Software License(the "License"); you may not use this file except
-* in compliance with the License. You may obtain a copy of the License at
-* openelis.uhl.uiowa.edu
-* 
-* Software distributed under the License is distributed on an "AS IS"
-* basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
-* License for the specific language governing rights and limitations
-* under the License.
-* 
-* The Original Code is OpenELIS code.
-* 
-* The Initial Developer of the Original Code is The University of Iowa.
-* Portions created by The University of Iowa are Copyright 2006-2008. All
-* Rights Reserved.
-* 
-* Contributor(s): ______________________________________.
-* 
-* Alternatively, the contents of this file marked
-* "Separately-Licensed" may be used under the terms of a UIRF Software
-* license ("UIRF Software License"), in which case the provisions of a
-* UIRF Software License are applicable instead of those above. 
-*/
+/**
+ * Exhibit A - UIRF Open-source Based Public Software License.
+ * 
+ * The contents of this file are subject to the UIRF Open-source Based Public
+ * Software License(the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * openelis.uhl.uiowa.edu
+ * 
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License for
+ * the specific language governing rights and limitations under the License.
+ * 
+ * The Original Code is OpenELIS code.
+ * 
+ * The Initial Developer of the Original Code is The University of Iowa.
+ * Portions created by The University of Iowa are Copyright 2006-2008. All
+ * Rights Reserved.
+ * 
+ * Contributor(s): ______________________________________.
+ * 
+ * Alternatively, the contents of this file marked "Separately-Licensed" may be
+ * used under the terms of a UIRF Software license ("UIRF Software License"), in
+ * which case the provisions of a UIRF Software License are applicable instead
+ * of those above.
+ */
 package org.openelis.modules.orderFill.client;
 
 import java.util.ArrayList;
@@ -43,6 +43,8 @@ import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.gwt.event.ActionEvent;
+import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -50,11 +52,13 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -71,7 +75,10 @@ import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
 import org.openelis.manager.OrderFillManager;
 import org.openelis.manager.OrderItemManager;
 import org.openelis.manager.OrderManager;
+import org.openelis.manager.StorageLocationManager;
 import org.openelis.meta.OrderMeta;
+import org.openelis.modules.order.client.TestContainerPopoutLookup;
+import org.openelis.modules.order.client.TestTab.Action;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -80,197 +87,216 @@ import com.google.gwt.user.client.Window;
 public class ItemTab extends Screen {
 
     private OrderManager                   manager;
-    private OrderFillScreen                orderFillScreen;
+    private ItemTab                        screen;  
     private TreeWidget                     itemsTree;
     private Dropdown<Integer>              costCenterId;
-    private TextBox                        organizationAttention,
-                                           organizationAddressMultipleUnit, organizationAddressStreetAddress,
-                                           organizationAddressCity, organizationAddressState, organizationAddressZipCode;
+    private TextBox                        organizationAttention, organizationAddressMultipleUnit,
+                                           organizationAddressStreetAddress, organizationAddressCity,
+                                           organizationAddressState, organizationAddressZipCode;
     private AutoComplete<Integer>          storageLocationName;
     private AppButton                      removeItemButton, addItemButton;
 
     private boolean                        loaded;
-    private HashMap<Integer, OrderManager> combinedMap;   
-    private ScreenService                  inventoryLocationService;                 
-    
-    public ItemTab(ScreenDefInt def, ScreenWindowInt window, OrderFillScreen orderFillScreen) {
-        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");              
-        this.orderFillScreen = orderFillScreen;
+    private HashMap<Integer, OrderManager> combinedMap;
+    private ScreenService                  inventoryLocationService;
+    private AppButton                      popoutButton;
+    private ItemTreePopoutLookup           popoutLookup;
+
+    public ItemTab(ScreenDefInt def, ScreenWindowInt window) {
+        inventoryLocationService = new ScreenService("controller?service=org.openelis.modules.inventoryReceipt.server.InventoryLocationService");
         setDefinition(def);
         setWindow(window);
         initialize();
-        
+
         initializeDropdowns();
     }
 
     private void initialize() {
+        screen = this;
+        
         costCenterId = (Dropdown)def.getWidget(OrderMeta.getCostCenterId());
-        addScreenHandler(costCenterId, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                if(manager != null)
-                    costCenterId.setSelection(manager.getOrder().getCostCenterId());
-            }
+        if (costCenterId != null) {
+            addScreenHandler(costCenterId, new ScreenEventHandler<Integer>() {
+                public void onDataChange(DataChangeEvent event) {
+                    if (manager != null)
+                        costCenterId.setSelection(manager.getOrder().getCostCenterId());
+                }
 
-            public void onValueChange(ValueChangeEvent<Integer> event) {               
-                manager.getOrder().setCostCenterId(event.getValue());
-            }
+                public void onValueChange(ValueChangeEvent<Integer> event) {
+                    manager.getOrder().setCostCenterId(event.getValue());
+                }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                costCenterId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));                
-            }
-        });
+                public void onStateChange(StateChangeEvent<State> event) {
+                    costCenterId.enable(EnumSet.of(State.UPDATE).contains(event.getState()));
+                }
+            });
+        }
 
         organizationAttention = (TextBox)def.getWidget(OrderMeta.getOrganizationAttention());
-        addScreenHandler(organizationAttention, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                if(manager != null)
-                    organizationAttention.setValue(manager.getOrder().getOrganizationAttention());
-            }
+        if (organizationAttention != null) {
+            addScreenHandler(organizationAttention, new ScreenEventHandler<String>() {
+                public void onDataChange(DataChangeEvent event) {
+                    if (manager != null)
+                        organizationAttention.setValue(manager.getOrder().getOrganizationAttention());
+                }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getOrder().setOrganizationAttention(event.getValue());
-            }
+                public void onValueChange(ValueChangeEvent<String> event) {
+                    manager.getOrder().setOrganizationAttention(event.getValue());
+                }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                organizationAttention.enable(EnumSet.of(State.UPDATE).contains(event.getState()));                
-            }
-        });
+                public void onStateChange(StateChangeEvent<State> event) {
+                    organizationAttention.enable(EnumSet.of(State.UPDATE)
+                                                        .contains(event.getState()));
+                }
+            });
+        }
 
         organizationAddressMultipleUnit = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressMultipleUnit());
-        addScreenHandler(organizationAddressMultipleUnit, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                OrganizationDO data;
-                if(manager != null) {
-                    data = manager.getOrder().getOrganization();
-                    if(data != null)
-                        organizationAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
-                    else 
-                        organizationAddressMultipleUnit.setValue(null);
+        if (organizationAddressMultipleUnit != null) {
+            addScreenHandler(organizationAddressMultipleUnit, new ScreenEventHandler<String>() {
+                public void onDataChange(DataChangeEvent event) {
+                    OrganizationDO data;
+                    if (manager != null) {
+                        data = manager.getOrder().getOrganization();
+                        if (data != null)
+                            organizationAddressMultipleUnit.setValue(data.getAddress().getMultipleUnit());
+                        else
+                            organizationAddressMultipleUnit.setValue(null);
+                    }
                 }
-            }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                // this is a read only and the value will not change
-            }
+                public void onValueChange(ValueChangeEvent<String> event) {
+                    // this is a read only and the value will not change
+                }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressMultipleUnit.enable(false);
-                organizationAddressMultipleUnit.setQueryMode(false);
-            }
-        });
+                public void onStateChange(StateChangeEvent<State> event) {
+                    organizationAddressMultipleUnit.enable(false);
+                    organizationAddressMultipleUnit.setQueryMode(false);
+                }
+            });
+        }
 
         organizationAddressStreetAddress = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressStreetAddress());
-        addScreenHandler(organizationAddressStreetAddress, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                OrganizationDO data;
-                
-                if (manager != null) {
-                    data = manager.getOrder().getOrganization();
-                    if (data != null)
-                        organizationAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
-                    else 
-                        organizationAddressStreetAddress.setValue(null);
+        if (organizationAddressStreetAddress != null) {
+            addScreenHandler(organizationAddressStreetAddress, new ScreenEventHandler<String>() {
+                public void onDataChange(DataChangeEvent event) {
+                    OrganizationDO data;
+
+                    if (manager != null) {
+                        data = manager.getOrder().getOrganization();
+                        if (data != null)
+                            organizationAddressStreetAddress.setValue(data.getAddress().getStreetAddress());
+                        else
+                            organizationAddressStreetAddress.setValue(null);
+                    }
                 }
-            }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                // this is a read only and the value will not change
-            }
+                public void onValueChange(ValueChangeEvent<String> event) {
+                    // this is a read only and the value will not change
+                }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressStreetAddress.enable(false);
-                organizationAddressStreetAddress.setQueryMode(false);
-            }
-        });
+                public void onStateChange(StateChangeEvent<State> event) {
+                    organizationAddressStreetAddress.enable(false);
+                    organizationAddressStreetAddress.setQueryMode(false);
+                }
+            });
+        }
 
         organizationAddressCity = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressCity());
-        addScreenHandler(organizationAddressCity, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                OrganizationDO data;
-                
-                if (manager != null) {
-                    data = manager.getOrder().getOrganization();
-                    if (data != null)
-                        organizationAddressCity.setValue(data.getAddress().getCity());
-                    else
-                        organizationAddressCity.setValue(null);
+        if (organizationAddressCity != null) {
+            addScreenHandler(organizationAddressCity, new ScreenEventHandler<String>() {
+                public void onDataChange(DataChangeEvent event) {
+                    OrganizationDO data;
+
+                    if (manager != null) {
+                        data = manager.getOrder().getOrganization();
+                        if (data != null)
+                            organizationAddressCity.setValue(data.getAddress().getCity());
+                        else
+                            organizationAddressCity.setValue(null);
+                    }
                 }
-            }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                // this is a read only and the value will not change
-            }
+                public void onValueChange(ValueChangeEvent<String> event) {
+                    // this is a read only and the value will not change
+                }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressCity.enable(false);
-                organizationAddressCity.setQueryMode(false);
-            }
-        });
+                public void onStateChange(StateChangeEvent<State> event) {
+                    organizationAddressCity.enable(false);
+                    organizationAddressCity.setQueryMode(false);
+                }
+            });
+        }
 
         organizationAddressState = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressState());
-        addScreenHandler(organizationAddressState, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                OrganizationDO data;
-                
-                if (manager != null) {
-                    data = manager.getOrder().getOrganization();
-                    if (data != null)
-                        organizationAddressState.setValue(data.getAddress().getState());
-                    else 
-                        organizationAddressState.setValue(null);
+        if (organizationAddressState != null) {
+            addScreenHandler(organizationAddressState, new ScreenEventHandler<String>() {
+                public void onDataChange(DataChangeEvent event) {
+                    OrganizationDO data;
+
+                    if (manager != null) {
+                        data = manager.getOrder().getOrganization();
+                        if (data != null)
+                            organizationAddressState.setValue(data.getAddress().getState());
+                        else
+                            organizationAddressState.setValue(null);
+                    }
                 }
-            }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                // this is a read only and the value will not change
-            }
+                public void onValueChange(ValueChangeEvent<String> event) {
+                    // this is a read only and the value will not change
+                }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressState.enable(false);
-                organizationAddressState.setQueryMode(false);
-            }
-        });
+                public void onStateChange(StateChangeEvent<State> event) {
+                    organizationAddressState.enable(false);
+                    organizationAddressState.setQueryMode(false);
+                }
+            });
+        }
 
         organizationAddressZipCode = (TextBox)def.getWidget(OrderMeta.getOrganizationAddressZipCode());
-        addScreenHandler(organizationAddressZipCode, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                OrganizationDO data;
-                
-                if (manager != null) {
-                    data = manager.getOrder().getOrganization();
-                    if (data != null)
-                        organizationAddressZipCode.setValue(data.getAddress().getZipCode());
-                    else
-                        organizationAddressZipCode.setValue(null);
+        if (organizationAddressZipCode != null) {
+            addScreenHandler(organizationAddressZipCode, new ScreenEventHandler<String>() {
+                public void onDataChange(DataChangeEvent event) {
+                    OrganizationDO data;
+
+                    if (manager != null) {
+                        data = manager.getOrder().getOrganization();
+                        if (data != null)
+                            organizationAddressZipCode.setValue(data.getAddress().getZipCode());
+                        else
+                            organizationAddressZipCode.setValue(null);
+                    }
                 }
-            }
 
-            public void onValueChange(ValueChangeEvent<String> event) {
-                // this is a read only and the value will not change
-            }
+                public void onValueChange(ValueChangeEvent<String> event) {
+                    // this is a read only and the value will not change
+                }
 
-            public void onStateChange(StateChangeEvent<State> event) {
-                organizationAddressZipCode.enable(false);
-                organizationAddressZipCode.setQueryMode(false);
-            }            
-        });
+                public void onStateChange(StateChangeEvent<State> event) {
+                    organizationAddressZipCode.enable(false);
+                    organizationAddressZipCode.setQueryMode(false);
+                }
+            });
+        }
         
         itemsTree = (TreeWidget)def.getWidget("itemsTree");
         addScreenHandler(itemsTree, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
                 boolean present;
-                
+
                 itemsTree.finishEditing();
-                itemsTree.load(getTreeModel());                 
-                if(state == State.UPDATE) {
+                itemsTree.load(getTreeModel());
+                if (state == State.UPDATE) {
                     //
-                    // we don't allow users to add or remove items to or from 
-                    // the tree if the order represented by manager isn't selected
-                    // to be processed  
+                    // we don't allow users to add or remove items to or from
+                    // the tree if the order represented by manager isn't
+                    // selected
+                    // to be processed
                     //
-                    present = combinedMap.containsKey(manager.getOrder().getId());                    
+                    present = combinedMap.containsKey(manager.getOrder().getId());
                     removeItemButton.enable(present);
-                    addItemButton.enable(present);                    
+                    addItemButton.enable(present);
                 }
             }
 
@@ -278,7 +304,7 @@ public class ItemTab extends Screen {
                 itemsTree.enable(true);
             }
         });
-        
+
         itemsTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
             public void onBeforeCellEdited(BeforeCellEditedEvent event) {
                 TreeDataItem item;
@@ -286,31 +312,31 @@ public class ItemTab extends Screen {
                 OrderManager man;
                 int c;
 
-                if(state != State.UPDATE) {
+                if (state != State.UPDATE) {
                     event.cancel();
                     return;
                 }
-                
+
                 item = itemsTree.getSelection();
                 c = event.getCol();
-                
-                if("top".equals(item.leafType)) {
+
+                if ("top".equals(item.leafType)) {
                     data = (OrderItemViewDO)item.key;
-                    if(combinedMap == null) {                     
+                    if (combinedMap == null) {
                         event.cancel();
-                    } else { 
+                    } else {
                         man = combinedMap.get(data.getOrderId());
-                        if(c != 1 || man == null)
+                        if (c != 1 || man == null)
                             event.cancel();
                     }
-                } else if(c != 1 && c != 3){
+                } else if (c != 1 && c != 3) {
                     event.cancel();
-                }                                            
-            }            
+                }
+            }
         });
-        
-        itemsTree.addCellEditedHandler(new CellEditedHandler(){
-            public void onCellUpdated(CellEditedEvent event) {                
+
+        itemsTree.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
                 TableDataRow row;
                 InventoryLocationViewDO loc;
                 InventoryXUseViewDO fill;
@@ -322,17 +348,17 @@ public class ItemTab extends Screen {
                 c = event.getCol();
                 r = itemsTree.getSelectedRow();
                 child = itemsTree.getRow(event.getRow());
-                
-                if ("orderItem".equals(child.leafType)) {                    
+
+                if ("orderItem".equals(child.leafType)) {
                     fill = (InventoryXUseViewDO)child.data;
                     parent = child.parent;
                     item = (OrderItemViewDO)parent.key;
 
                     if (c == 1) {
                         qty = (Integer)child.cells.get(1).getValue();
-                        fill.setQuantity(qty);                        
-                        validateLocationRow(child, r);                        
-                        
+                        fill.setQuantity(qty);
+                        validateLocationRow(child, r);
+
                         itemsTree.refreshRow(child);
                     } else {
                         row = (TableDataRow)child.cells.get(3).getValue();
@@ -343,21 +369,28 @@ public class ItemTab extends Screen {
                             fill.setInventoryItemId(item.getInventoryItemId());
                             fill.setStorageLocationId(loc.getStorageLocationId());
                             fill.setStorageLocationName(loc.getStorageLocationName());
+                            fill.setStorageLocationUnitDescription(loc.getStorageLocationUnitDescription());
+                            fill.setStorageLocationLocation(loc.getStorageLocationLocation());
                             fill.setInventoryLocationId(loc.getId());
                             fill.setInventoryLocationLotNumber(loc.getLotNumber());
-                            fill.setInventoryLocationQuantityOnhand(loc.getQuantityOnhand());                            
+                            fill.setInventoryLocationQuantityOnhand(loc.getQuantityOnhand());
+                            fill.setInventoryLocationExpirationDate(loc.getExpirationDate());
                         } else {
                             child.cells.get(4).setValue(null);
                             child.cells.get(5).setValue(null);
                             fill.setInventoryItemId(null);
                             fill.setStorageLocationId(null);
                             fill.setStorageLocationName(null);
+                            fill.setStorageLocationName(null);
+                            fill.setStorageLocationUnitDescription(null);
+                            fill.setStorageLocationLocation(null);
                             fill.setInventoryLocationId(null);
                             fill.setInventoryLocationLotNumber(null);
                             fill.setInventoryLocationQuantityOnhand(null);
+                            fill.setInventoryLocationExpirationDate(null);
                         }
-                        
-                        validateLocationRow(child, r);                        
+
+                        validateLocationRow(child, r);
                         itemsTree.refreshRow(child);
                     }
                 } else if (c == 1) {
@@ -367,20 +400,20 @@ public class ItemTab extends Screen {
                     validateItemRow(child, r);
                     itemsTree.refreshRow(child);
                 }
-            }            
+            }
         });
-        
+
         itemsTree.addBeforeLeafOpenHandler(new BeforeLeafOpenHandler() {
             public void onBeforeLeafOpen(BeforeLeafOpenEvent event) {
                 TreeDataItem item;
-                
-                item = event.getItem();         
-                
-                if("top".equals(item.leafType) && item.data == null) 
-                    loadChildItems(item);                                                           
-            }            
-        });      
-        
+
+                item = event.getItem();
+
+                if ("top".equals(item.leafType) && item.data == null)
+                    loadChildItems(item);
+            }
+        });
+
         itemsTree.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 OrderManager man;
@@ -389,44 +422,47 @@ public class ItemTab extends Screen {
                 OrderFillManager fills;
                 TreeDataItem row, parent;
                 Integer sum, quantity, difference;
-                
+
                 row = (TreeDataItem)event.getRow();
                 parent = row.parent;
-                item = (OrderItemViewDO)parent.key;                
+                item = (OrderItemViewDO)parent.key;
                 man = combinedMap.get(item.getOrderId());
-                
+
                 try {
                     sum = getSumOfFillQuantityForItem(parent);
-                    
+
                     fills = man.getFills();
                     fill = fills.getFillAt(fills.addFill());
-                    
+
                     quantity = item.getQuantity();
-                    if(quantity != null && quantity >= sum)
+                    if (quantity != null && quantity >= sum)
                         difference = quantity - sum;
-                    else 
+                    else
                         difference = 0;
-                    
-                    fill.setQuantity(difference);                    
+
+                    fill.setQuantity(difference);
                     fill.setInventoryItemId(item.getInventoryItemId());
                     fill.setInventoryItemName(item.getInventoryItemName());
                     fill.setOrderItemId(item.getId());
                     fill.setOrderItemOrderId(item.getOrderId());
-                    
-                    row.data = fill;        
-                    
+
+                    row.data = fill;
+
                     row.cells.get(1).setValue(difference);
                     parent.cells.get(1).clearExceptions();
                     itemsTree.refreshRow(row);
-                    itemsTree.refreshRow(parent);                                                       
+                    itemsTree.refreshRow(parent);
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert(e.toString());
                 }
-            }            
+            }
         });
-        
-        storageLocationName = (AutoComplete<Integer>)itemsTree.getColumns().get("orderItem").get(3).getColumnWidget();
+
+        storageLocationName = (AutoComplete<Integer>)itemsTree.getColumns()
+                                                              .get("orderItem")
+                                                              .get(3)
+                                                              .getColumnWidget();
         storageLocationName.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
                 TableDataRow row;
@@ -437,70 +473,73 @@ public class ItemTab extends Screen {
                 ArrayList<QueryData> fields;
                 Query query;
                 QueryData field;
-                OrderItemViewDO key;                
-                
+                OrderItemViewDO key;
+
                 fields = new ArrayList<QueryData>();
                 query = new Query();
-                                
+
                 field = new QueryData();
                 field.query = QueryFieldUtil.parseAutocomplete(event.getMatch());
                 fields.add(field);
-                
+
                 item = itemsTree.getSelection();
                 key = (OrderItemViewDO)item.parent.key;
-                
+
                 field = new QueryData();
                 field.query = Integer.toString(key.getInventoryItemId());
                 fields.add(field);
-                
+
                 query.setFields(fields);
 
                 window.setBusy();
                 try {
-                    
-                    list = inventoryLocationService.callList("fetchByLocationNameInventoryItemId", query);
+
+                    list = inventoryLocationService.callList("fetchByLocationNameInventoryItemId",
+                                                             query);
                     model = new ArrayList<TableDataRow>();
                     for (int i = 0; i < list.size(); i++ ) {
                         row = new TableDataRow(4);
                         data = list.get(i);
 
                         row.key = data.getId();
-                        row.cells.get(0).setValue(data.getStorageLocationName() +", "+ 
-                                                  data.getStorageLocationUnitDescription()+" "+
-                                                  data.getStorageLocationLocation());
+                        row.cells.get(0)
+                                 .setValue(data.getStorageLocationName() +
+                                                           ", " +
+                                                           data.getStorageLocationUnitDescription() +
+                                                           " " + data.getStorageLocationLocation());
                         row.cells.get(1).setValue(data.getLotNumber());
                         row.cells.get(2).setValue(data.getQuantityOnhand());
                         row.cells.get(3).setValue(data.getExpirationDate());
-                                                
+
                         row.data = data;
-                        
+
                         model.add(row);
                     }
-                    
+
                     storageLocationName.showAutoMatches(model);
                 } catch (Throwable e) {
                     e.printStackTrace();
                     Window.alert(e.getMessage());
                 }
                 window.clearStatus();
-                
-            }            
+
+            }
         });
-        
+
         removeItemButton = (AppButton)def.getWidget("removeItemButton");
         addScreenHandler(removeItemButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 TreeDataItem item, parent;
-                InventoryXUseViewDO data;     
+                InventoryXUseViewDO data;
                 OrderManager man;
                 OrderFillManager fills;
-                
+
                 item = itemsTree.getSelection();
-                
-                if(item == null) 
+
+                if (item == null)
                     return;
-                
-                if("top".equals(item.leafType)) {                    
+
+                if ("top".equals(item.leafType)) {
                     window.setStatus(consts.get("qtyAdjustedItemNotRemoved"), "");
                 } else {
                     data = (InventoryXUseViewDO)item.data;
@@ -514,12 +553,12 @@ public class ItemTab extends Screen {
                         Window.alert(e.getMessage());
                     }
                     parent = item.parent;
-                    validateItemRow(parent,-1); 
-                    if(parent.getItems().size() > 0) 
+                    validateItemRow(parent, -1);
+                    if (parent.getItems().size() > 0)
                         parent.checkForChildren(false);
-                    
+
                     itemsTree.refreshRow(parent);
-                }                                
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -534,81 +573,98 @@ public class ItemTab extends Screen {
                 OrderItemViewDO data;
                 InventoryItemDO invItem;
                 int row;
-                                
+
                 item = itemsTree.getSelection();
                 invItem = null;
-                
-                if(item == null) 
-                    return;           
-                
+
+                if (item == null)
+                    return;
+
                 itemsTree.finishEditing();
-                if("top".equals(item.leafType)) {
-                    data = (OrderItemViewDO)item.key;                  
+                if ("top".equals(item.leafType)) {
+                    data = (OrderItemViewDO)item.key;
                     try {
                         invItem = InventoryItemCache.getById(data.getInventoryItemId());
                     } catch (Exception e) {
                         Window.alert(e.getMessage());
                         e.printStackTrace();
                     }
-                    if(!item.open)
+                    if ( !item.open)
                         itemsTree.toggle(item);
-                    
+
                     if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
                         Window.alert(consts.get("itemFlagDontInvCantBeFilled"));
                         return;
                     }
-                                                            
-                    child = createAndAddChildToParent((OrderItemViewDO)item.key, item);                    
-                    itemsTree.select(child);    
-                    row = itemsTree.getSelectedRow();
-                    validateLocationRow(child, row);
-                    itemsTree.startEditing(row, 3);        
-                } else {
-                    parent = item.parent;
-                    child  = createAndAddChildToParent((OrderItemViewDO)parent.key, parent);
+
+                    child = createAndAddChildToParent((OrderItemViewDO)item.key, item);
                     itemsTree.select(child);
                     row = itemsTree.getSelectedRow();
                     validateLocationRow(child, row);
-                    itemsTree.startEditing(row, 3);                    
-                }                                               
+                    itemsTree.startEditing(row, 3);
+                } else {
+                    parent = item.parent;
+                    child = createAndAddChildToParent((OrderItemViewDO)parent.key, parent);
+                    itemsTree.select(child);
+                    row = itemsTree.getSelectedRow();
+                    validateLocationRow(child, row);
+                    itemsTree.startEditing(row, 3);
+                }
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
                 addItemButton.enable(false);
             }
         });
-    }
         
+        popoutButton = (AppButton)def.getWidget("testPopoutButton");
+        if (popoutButton != null) {
+            addScreenHandler(popoutButton, new ScreenEventHandler<Object>() {
+                public void onClick(ClickEvent event) {
+                    itemsTree.finishEditing();
+                    showPopout();
+                }
+
+                public void onStateChange(StateChangeEvent<State> event) {
+                    popoutButton.enable(EnumSet.of(State.ADD, State.UPDATE, State.DISPLAY)
+                                               .contains(event.getState()));
+                }
+            });
+        }
+    }
+
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
         ArrayList<DictionaryDO> list;
         TableDataRow row;
-        
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("cost_centers"); 
-        for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
-            model.add(row);
+
+        if (costCenterId != null) {
+            model = new ArrayList<TableDataRow>();
+            model.add(new TableDataRow(null, ""));
+            list = CategoryCache.getBySystemName("cost_centers");
+            for (DictionaryDO d : list) {
+                row = new TableDataRow(d.getId(), d.getEntry());
+                row.enabled = ("Y".equals(d.getIsActive()));
+                model.add(row);
+            }
+
+            costCenterId.setModel(model);
         }
-        
-        costCenterId.setModel(model);
     }
-    
-    public void setManager(OrderManager manager, HashMap<Integer, OrderManager> combinedMap) {        
+
+    public void setManager(OrderManager manager, HashMap<Integer, OrderManager> combinedMap) {
         this.manager = manager;
-        this.combinedMap = combinedMap;        
+        this.combinedMap = combinedMap;
         loaded = false;
     }
 
     public void draw() {
-        if ( !loaded) 
-            DataChangeEvent.fire(this);        
+        if ( !loaded)
+            DataChangeEvent.fire(this);
 
         loaded = true;
     }
-    
+
     public boolean validate() {
         TreeDataItem parent, child;
         ArrayList<TreeDataItem> model, items;
@@ -617,14 +673,14 @@ public class ItemTab extends Screen {
         Integer quantity;
         boolean validate;
         int i;
-        
+
         validate = true;
         invItem = null;
-        
+
         if (combinedMap != null && combinedMap.get(manager.getOrder().getId()) != null) {
             itemsTree.finishEditing();
             model = itemsTree.getData();
-                        
+
             for (i = 0; i < model.size(); i++ ) {
                 parent = model.get(i);
                 item = (OrderItemViewDO)parent.key;
@@ -634,14 +690,14 @@ public class ItemTab extends Screen {
                     Window.alert(e.getMessage());
                     e.printStackTrace();
                 }
-                
-                if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) 
+
+                if (invItem != null && "Y".equals(invItem.getIsNotInventoried()))
                     continue;
-                
+
                 if ( !parent.open)
                     itemsTree.toggle(parent);
 
-                items = parent.getItems();                                
+                items = parent.getItems();
                 quantity = item.getQuantity();
 
                 if (items != null && items.size() > 0) {
@@ -662,59 +718,66 @@ public class ItemTab extends Screen {
         }
         return validate;
     }
-    
+
     private ArrayList<TreeDataItem> getTreeModel() {
         ArrayList<TreeDataItem> model;
         TreeDataItem item;
         OrderManager man;
-        OrderItemManager itemMan;        
+        OrderItemManager itemMan;
         OrderItemViewDO data, key;
         HashMap<Integer, Boolean> itemPresentMap;
-        Boolean itemPresent;        
-        Set<Integer> set; 
+        Boolean itemPresent;
+        Set<Integer> set;
         Iterator<Integer> iter;
-        int count, i, j;        
-        
-        if(combinedMap == null)
+        int count, i, j;
+
+        if (combinedMap == null)
             return new ArrayList<TreeDataItem>();
-        
+
         man = combinedMap.get(manager.getOrder().getId());
         model = new ArrayList<TreeDataItem>();
-        
-        try {            
-            if(man == null) {                    
-                organizationAttention.enable(false);
-                costCenterId.enable(false);
-                
+
+        try {
+            if (man == null) {
+                if (organizationAttention != null)
+                    organizationAttention.enable(false);
+                if (costCenterId != null)
+                    costCenterId.enable(false);
+
                 itemMan = manager.getItems();
-                count = itemMan.count();                
+                count = itemMan.count();
                 for (i = 0; i < count; i++ ) {
                     data = itemMan.getItemAt(i);
                     item = getTopLevelItem(data);
                     model.add(item);
-                }                          
-                return model;                
-            }           
+                }
+                return model;
+            }
 
             //
-            // we have to make sure that "manager" belongs to the list of  managers 
-            // being processed before allowing users to edit the data in these two
-            // widgets, because only then the record represented by "manager" will             
-            // have been locked 
+            // we have to make sure that "manager" belongs to the list of
+            // managers
+            // being processed before allowing users to edit the data in these
+            // two
+            // widgets, because only then the record represented by "manager"
+            // will
+            // have been locked
             //
-            organizationAttention.enable(true);
-            costCenterId.enable(true);
-            
+            if (organizationAttention != null)
+                organizationAttention.enable(true);
+            if (costCenterId != null)
+                costCenterId.enable(true);
+
             set = combinedMap.keySet();
             iter = set.iterator();
             itemPresent = true;
-            
-            while (iter.hasNext())  {                              
-                itemPresentMap = new HashMap<Integer, Boolean>();                
-                
+
+            while (iter.hasNext()) {
+                itemPresentMap = new HashMap<Integer, Boolean>();
+
                 man = combinedMap.get(iter.next());
                 itemMan = man.getItems();
-                count = itemMan.count();                
+                count = itemMan.count();
 
                 for (j = 0; j < model.size(); j++ ) {
                     item = model.get(j);
@@ -728,98 +791,101 @@ public class ItemTab extends Screen {
 
                 for (i = 0; i < count; i++ ) {
                     data = itemMan.getItemAt(i);
-                    if (!itemPresent.equals(itemPresentMap.get(data.getId()))) {
-                        item = getTopLevelItem(data);                        
-                        model.add(item);   
+                    if ( !itemPresent.equals(itemPresentMap.get(data.getId()))) {
+                        item = getTopLevelItem(data);
+                        model.add(item);
                     }
                 }
-            } 
+            }
         } catch (Exception e) {
             e.printStackTrace();
             Window.alert(e.toString());
         }
 
         return model;
-    }    
-    
-    private void loadChildItems(TreeDataItem item) {  
-        OrderFillManager fills;       
+    }
+
+    private void loadChildItems(TreeDataItem item) {
+        String location;
+        OrderFillManager fills;
         InventoryXUseViewDO fill;
-        ArrayList<InventoryXUseViewDO> list;       
+        ArrayList<InventoryXUseViewDO> list;
         TreeDataItem child;
         OrderManager man;
         OrderItemViewDO data;
-        
+
         list = new ArrayList<InventoryXUseViewDO>();
-        
-        window.setBusy();        
+
+        window.setBusy();
         try {
-            data = (OrderItemViewDO)item.key;            
+            data = (OrderItemViewDO)item.key;
             man = combinedMap.get(data.getOrderId());
-            
-            if(man == null)
+
+            if (man == null)
                 man = manager;
-            
+
             fills = man.getFills();
-            
+
             for (int i = 0; i < fills.count(); i++ ) {
                 fill = fills.getFillAt(i);
-                if(fill.getOrderItemId().equals(data.getId())) {
-                    child = new TreeDataItem(6);                
+                if (fill.getOrderItemId().equals(data.getId())) {
+                    child = new TreeDataItem(6);
                     child.leafType = "orderItem";
                     child.cells.get(1).setValue(fill.getQuantity());
-                    child.cells.get(3).setValue(new TableDataRow(fill.getStorageLocationId(),
-                                                                 fill.getStorageLocationName()));
+                    location = StorageLocationManager.getLocationForDisplay(fill.getStorageLocationName(), 
+                                                                            fill.getStorageLocationUnitDescription(), 
+                                                                            fill.getStorageLocationLocation());
+                    child.cells.get(3).setValue(new TableDataRow(fill.getStorageLocationId(),location));
                     child.cells.get(4).setValue(fill.getInventoryLocationLotNumber());
                     child.cells.get(5).setValue(fill.getInventoryLocationExpirationDate());
                     child.checkForChildren(false);
-    
+
                     child.data = fill;
-                    item.addItem(child);   
+                    item.addItem(child);
                     list.add(fill);
                 }
-            }                                  
+            }
         } catch (NotFoundException e) {
-            // ignore       
+            // ignore
         } catch (Throwable e) {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
-        
-        window.clearStatus(); 
-                
+
+        window.clearStatus();
+
         item.checkForChildren(false);
-        
-        item.data = list;                      
+
+        item.data = list;
     }
-    
+
     private TreeDataItem getTopLevelItem(OrderItemViewDO data) {
         TreeDataItem item;
-        
+
         item = new TreeDataItem(3);
         item.leafType = "top";
         item.close();
         item.key = data;
         item.cells.get(0).setValue(data.getOrderId());
-        item.cells.get(1).setValue(data.getQuantity());        
+        item.cells.get(1).setValue(data.getQuantity());
         item.cells.get(2).setValue(new TableDataRow(data.getInventoryItemId(),
                                                     data.getInventoryItemName()));
 
-        item.checkForChildren(true);        
-        
+        item.checkForChildren(true);
+
         return item;
-    }    
-    
+    }
+
     private TreeDataItem createAndAddChildToParent(OrderItemViewDO data, TreeDataItem parent) {
         TreeDataItem child;
-        
+
         child = new TreeDataItem(6);
         child.leafType = "orderItem";
         itemsTree.addChildItem(parent, child);
         return child;
     }
-    
-    /** 
+
+    /**
      * This method calculates the sum of the quantities specified in the
      * inventory-x-use records associated with an order item
      */
@@ -829,22 +895,22 @@ public class ItemTab extends Screen {
         TreeDataItem child;
         int i, count, sum;
         Integer quantity;
-        
+
         sum = 0;
-        
+
         try {
             items = parent.getItems();
-            if(items == null)
+            if (items == null)
                 return sum;
-            
+
             count = items.size();
-            
-            for(i = 0; i < count; i++) {
+
+            for (i = 0; i < count; i++ ) {
                 child = items.get(i);
                 data = (InventoryXUseViewDO)child.data;
-                if(data != null) {
+                if (data != null) {
                     quantity = data.getQuantity();
-                    if(quantity != null)
+                    if (quantity != null)
                         sum += quantity;
                 }
             }
@@ -852,17 +918,17 @@ public class ItemTab extends Screen {
             e.printStackTrace();
             Window.alert(e.getMessage());
         }
-         
+
         return sum;
     }
-    
+
     private boolean validateItemRow(TreeDataItem item, int r) {
         int sum;
         boolean valid;
         Integer qty;
         OrderItemViewDO data;
         InventoryItemDO invItem;
-        
+
         invItem = null;
         data = (OrderItemViewDO)item.key;
         try {
@@ -872,40 +938,45 @@ public class ItemTab extends Screen {
             e.printStackTrace();
         }
         qty = data.getQuantity();
-        
+
         item.cells.get(1).clearExceptions();
-        
+
         if (invItem != null && "Y".equals(invItem.getIsNotInventoried())) {
             if (qty == null || qty < 0) {
                 if (r > -1)
-                    itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+                    itemsTree.setCellException(r, 1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
                 else
-                    item.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));         
+                    item.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
                 return false;
-            }      
+            }
             return true;
         }
-        
+
         sum = getSumOfFillQuantityForItem(item);
         valid = true;
-                        
-        if (qty == null || sum > qty) {    
-            if(r > -1)
-                itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
-            else 
+
+        if (qty == null || sum > qty) {
+            if (r > -1)
+                itemsTree.setCellException(r, 1, new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+            else
                 item.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
             valid = false;
-        } else if(sum < qty) {
-            if(r > -1)
-                itemsTree.setCellException(r,1, new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+        } else if (sum < qty) {
+            if (r > -1)
+                itemsTree.setCellException(r,
+                                           1,
+                                           new LocalizedException(
+                                                                  "sumOfQtyLessThanQtyOrderedException"));
             else
-                item.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+                item.cells.get(1)
+                          .addException(new LocalizedException(
+                                                               "sumOfQtyLessThanQtyOrderedException"));
             valid = false;
         }
-        
+
         return valid;
     }
-    
+
     private boolean validateLocationRow(TreeDataItem child, int row) {
         InventoryXUseViewDO fill;
         OrderItemViewDO item;
@@ -913,7 +984,7 @@ public class ItemTab extends Screen {
         Integer qty, qtyOnHand, qtyOrdered, difference, invLocationId;
         int sum;
         boolean valid;
-        
+
         fill = (InventoryXUseViewDO)child.data;
         qtyOnHand = fill.getInventoryLocationQuantityOnhand();
         parent = child.parent;
@@ -921,63 +992,102 @@ public class ItemTab extends Screen {
         qtyOrdered = item.getQuantity();
         invLocationId = fill.getInventoryLocationId();
         difference = null;
-        
+
         qty = (Integer)child.cells.get(1).getValue();
         if (qty == null) {
-            if(row > -1)
-                itemsTree.setCellException(row, 1,new LocalizedException("fieldRequiredException"));
+            if (row > -1)
+                itemsTree.setCellException(row, 1, new LocalizedException("fieldRequiredException"));
             else
-                child.cells.get(1).addException(new LocalizedException("fieldRequiredException")); 
-            
+                child.cells.get(1).addException(new LocalizedException("fieldRequiredException"));
+
             return false;
         }
 
-        valid = true; 
+        valid = true;
         child.cells.get(1).clearExceptions();
-                
-        if(qty < 1) {
-            if(row > -1)
-                itemsTree.setCellException(row, 1,new LocalizedException("invalidLocationQuantityException"));
+
+        if (qty < 1) {
+            if (row > -1)
+                itemsTree.setCellException(row, 1, new LocalizedException("invalidLocationQuantityException"));
             else
-                child.cells.get(1).addException(new LocalizedException("invalidLocationQuantityException"));  
-            
+                child.cells.get(1).addException(new LocalizedException("invalidLocationQuantityException"));
+
             valid = false;
         }
-        
-        if(invLocationId == null) {
-            if(row > -1) {
-                itemsTree.setCellException(row,1, new LocalizedException("noLocationSelectedForRowException"));                                         
+
+        if (invLocationId == null) {
+            if (row > -1) {
+                itemsTree.setCellException(row,
+                                           1,
+                                           new LocalizedException(
+                                                                  "noLocationSelectedForRowException"));
             } else {
-                child.cells.get(1).addException(new LocalizedException("noLocationSelectedForRowException"));
+                child.cells.get(1)
+                           .addException(new LocalizedException("noLocationSelectedForRowException"));
                 child.cells.get(3).addException(new LocalizedException("fieldRequiredException"));
             }
-            
+
             valid = false;
         } else {
             if (qtyOnHand != null)
                 difference = qtyOnHand - qty;
 
-            if (difference == null || difference < 0) {  
-                if(row > -1)
-                    itemsTree.setCellException(row,1 ,new LocalizedException("qtyMoreThanQtyOnhandException"));
+            if (difference == null || difference < 0) {
+                if (row > -1)
+                    itemsTree.setCellException(row,
+                                               1,
+                                               new LocalizedException(
+                                                                      "qtyMoreThanQtyOnhandException"));
                 else
-                    child.cells.get(1).addException(new LocalizedException("qtyMoreThanQtyOnhandException"));
-                
+                    child.cells.get(1)
+                               .addException(new LocalizedException("qtyMoreThanQtyOnhandException"));
+
                 valid = false;
             }
         }
-        
+
         sum = getSumOfFillQuantityForItem(parent);
         parent.cells.get(1).clearExceptions();
-        
+
         if (qtyOrdered == null || sum > qtyOrdered) {
-            parent.cells.get(1).addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
+            parent.cells.get(1)
+                        .addException(new LocalizedException("sumOfQtyMoreThanQtyOrderedException"));
             valid = false;
-        } else if(sum < qtyOrdered) {
-            parent.cells.get(1).addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
+        } else if (sum < qtyOrdered) {
+            parent.cells.get(1)
+                        .addException(new LocalizedException("sumOfQtyLessThanQtyOrderedException"));
             valid = false;
         }
-                
+
         return valid;
-    }        
+    }
+    
+    private void showPopout() {
+       ScreenWindow modal;
+        
+        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
+        if (popoutLookup == null) {
+            try {                
+                popoutLookup = new ItemTreePopoutLookup(modal);
+                
+                popoutLookup.addActionHandler(new ActionHandler<ItemTreePopoutLookup.Action>() {
+                    public void onAction(ActionEvent<ItemTreePopoutLookup.Action> event) {
+                        if (event.getAction() == ItemTreePopoutLookup.Action.OK &&
+                                        (state == State.ADD || state == State.UPDATE)) {
+                            DataChangeEvent.fire(screen);
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("ItemTreePopoutLookup error: " + e.getMessage());
+                return;
+            }
+        }
+        modal.setName(consts.get("items"));
+        modal.setContent(popoutLookup);
+        popoutLookup.setScreenState(state);
+        popoutLookup.setManager(manager, combinedMap);
+        
+    }
 }
