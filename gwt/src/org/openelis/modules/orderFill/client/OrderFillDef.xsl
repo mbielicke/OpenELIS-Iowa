@@ -144,6 +144,19 @@ UIRF Software License are applicable instead of those above.
           </widget>
           <VerticalPanel style="WhiteContentPanel">
             <TabPanel key="tabPanel" width="880" height="200">
+               <tab key="noteTab" tab="notesPanel, notesPanel" text="{resource:getString($constants,'orderShippingNotes')}">
+                <VerticalPanel padding="0" spacing="0">
+                  <notes key="notesPanel" width="880" height="170" />
+                  <appButton key="standardNoteButton" style="Button">
+                    <HorizontalPanel>
+                      <AbsolutePanel style="StandardNoteButtonImage" />
+                      <text>
+                        <xsl:value-of select="resource:getString($constants,'addNote')" />
+                      </text>
+                    </HorizontalPanel>
+                  </appButton>
+                </VerticalPanel>
+              </tab>
               <tab key="itemTab" text="{resource:getString($constants,'items')}">
                 <HorizontalPanel>
                   <VerticalPanel style="subform">
@@ -164,7 +177,7 @@ UIRF Software License are applicable instead of those above.
                           <xsl:value-of select='resource:getString($constants,"attention")' />:
                         </text>
                         <widget colspan="5">
-                          <textbox key="{meta:getOrganizationAttention()}" width="186" max="30" field="String" />
+                          <textbox key="{meta:getOrganizationAttention()}" width="186" case="UPPER" max="30" field="String" />
                         </widget>
                       </row>
                       <row>
@@ -285,22 +298,17 @@ UIRF Software License are applicable instead of those above.
                           </text>
                         </HorizontalPanel>
                       </appButton>
+                      <appButton key="testPopoutButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="popoutButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'popout')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
                     </HorizontalPanel>
                   </VerticalPanel>
                 </HorizontalPanel>
-              </tab>
-              <tab key="noteTab" tab="notesPanel, notesPanel" text="{resource:getString($constants,'orderShippingNotes')}">
-                <VerticalPanel padding="0" spacing="0">
-                  <notes key="notesPanel" width="880" height="170" />
-                  <appButton key="standardNoteButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="StandardNoteButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addNote')" />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </VerticalPanel>
               </tab>
               <tab key="customerNote" tab="customerNotesPanel, customerNotesPanel" text="{resource:getString($constants,'customerNotes')}">
                 <VerticalPanel padding="0" spacing="0">

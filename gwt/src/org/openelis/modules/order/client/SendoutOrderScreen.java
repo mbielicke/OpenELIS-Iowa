@@ -140,7 +140,7 @@ public class SendoutOrderScreen extends Screen {
                                                    organizationAddressCity,
                                                    organizationAddressZipCode;
     private CalendarLookUp                         orderedDate;
-    private Dropdown<Integer>                      statusId, shipFromId, costCenterId;
+    private Dropdown<Integer>                      status, shipFrom, costCenter;
     private Dropdown<String>                       organizationAddressState;
     private AutoComplete<Integer>                  organizationName;
     private AutoComplete<String>                   description;
@@ -152,7 +152,8 @@ public class SendoutOrderScreen extends Screen {
     private TestContainerPopoutUtil                popoutUtil;
     
     private Integer                                statusPendingId, statusRecurringId,
-                                                   statusProcessedId, statusOnHoldId;
+                                                   statusProcessedId, statusOnHoldId,
+                                                   statusCancelledId;
                                                   
     private String                                 descQuery;
     
@@ -461,10 +462,10 @@ public class SendoutOrderScreen extends Screen {
             }
         });
         
-        shipFromId = (Dropdown)def.getWidget(OrderMeta.getShipFromId());
-        addScreenHandler(shipFromId, new ScreenEventHandler<Integer>() {
+        shipFrom = (Dropdown)def.getWidget(OrderMeta.getShipFromId());
+        addScreenHandler(shipFrom, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                shipFromId.setSelection(manager.getOrder().getShipFromId());
+                shipFrom.setSelection(manager.getOrder().getShipFromId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -472,9 +473,9 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                shipFromId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                shipFrom.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                          .contains(event.getState()));
-                shipFromId.setQueryMode(event.getState() == State.QUERY);
+                shipFrom.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -583,10 +584,10 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        statusId = (Dropdown)def.getWidget(OrderMeta.getStatusId());
-        addScreenHandler(statusId, new ScreenEventHandler<Integer>() {
+        status = (Dropdown)def.getWidget(OrderMeta.getStatusId());
+        addScreenHandler(status, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                statusId.setSelection(manager.getOrder().getStatusId());
+                status.setSelection(manager.getOrder().getStatusId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -597,7 +598,7 @@ public class SendoutOrderScreen extends Screen {
                     if (!statusProcessedId.equals(event.getValue()) || manager.getItems().count() == 0) {
                         manager.getOrder().setStatusId(event.getValue());
                      } else {
-                        statusId.setValue(manager.getOrder().getStatusId());
+                        status.setValue(manager.getOrder().getStatusId());
                         Window.alert(consts.get("onlyProcessOrdersWithNoItems"));
                      }
                 } catch (Exception e) {
@@ -607,19 +608,30 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                Integer status;
+                boolean queryMode;
+                Integer statusId;
 
                 ArrayList<TableDataRow> model;
 
-                status = manager.getOrder().getStatusId();
+                statusId = manager.getOrder().getStatusId();
 
                 if ( (event.getState() != State.ADD && event.getState() != State.UPDATE)) {
-                    statusId.setQueryMode(event.getState() == State.QUERY);
-                    statusId.enable(event.getState() == State.QUERY);
+                    queryMode = event.getState() == State.QUERY;
+                    
+                    /*
+                     * no options are to be disabled in Query state
+                     */
+                    if (queryMode) {
+                        for (TableDataRow r : status.getData())                                       
+                            r.enabled = true;
+                    }
+                    
+                    status.setQueryMode(queryMode);
+                    status.enable(queryMode);
                     return;
                 }
                 
-                model = statusId.getData();
+                model = status.getData();
                 for (TableDataRow r : model) {
                     if (statusPendingId.equals(r.key) || statusOnHoldId.equals(r.key))
                         r.enabled = true;
@@ -628,27 +640,30 @@ public class SendoutOrderScreen extends Screen {
                          * the option for "Processed" is only enabled for an existing
                          * order and only if it is pending
                          */
-                        r.enabled = manager.getOrder().getId() != null && statusPendingId.equals(status);
+                        r.enabled = manager.getOrder().getId() != null && statusPendingId.equals(statusId);
+                    else if (statusCancelledId.equals(r.key))
+                        /*
+                         * the option for "Cancelled" is only enabled for an existing
+                         * order and only if it is pending or on hold
+                         */
+                        r.enabled = manager.getOrder().getId() != null && 
+                        (statusPendingId.equals(statusId) || statusOnHoldId.equals(statusId));
                     else
                         r.enabled = false;
                 }
 
-                statusId.enable(!statusProcessedId.equals(status) && !statusRecurringId.equals(status));
+                status.enable(!statusProcessedId.equals(statusId) && !statusRecurringId.equals(statusId) &&
+                              !statusCancelledId.equals(statusId));
             }
         });
         
-        statusId.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {           
+        status.addBeforeSelectionHandler(new BeforeSelectionHandler<TableRow>() {           
             public void onBeforeSelection(BeforeSelectionEvent<TableRow> event) {                
                 TableDataRow r;
-                
-                /*
-                 * no options are to be disabled in Query state
-                 */
-                if (state != State.QUERY) {
-                    r = event.getItem().row;                
-                    if (!r.enabled)
-                        event.cancel();
-                }
+                                
+                r = event.getItem().row;                
+                if (!r.enabled)
+                    event.cancel();
             }
         });
 
@@ -756,10 +771,10 @@ public class SendoutOrderScreen extends Screen {
             }
         });
 
-        costCenterId = (Dropdown)def.getWidget(OrderMeta.getCostCenterId());
-        addScreenHandler(costCenterId, new ScreenEventHandler<Integer>() {
+        costCenter = (Dropdown)def.getWidget(OrderMeta.getCostCenterId());
+        addScreenHandler(costCenter, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                costCenterId.setSelection(manager.getOrder().getCostCenterId());
+                costCenter.setSelection(manager.getOrder().getCostCenterId());
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -767,9 +782,9 @@ public class SendoutOrderScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                costCenterId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                costCenter.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
                                            .contains(event.getState()));
-                costCenterId.setQueryMode(event.getState() == State.QUERY);
+                costCenter.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
@@ -1180,7 +1195,7 @@ public class SendoutOrderScreen extends Screen {
             model.add(row);
         }
 
-        statusId.setModel(model);
+        status.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -1191,7 +1206,7 @@ public class SendoutOrderScreen extends Screen {
             model.add(row);
         }
 
-        costCenterId.setModel(model);
+        costCenter.setModel(model);
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -1202,7 +1217,7 @@ public class SendoutOrderScreen extends Screen {
             model.add(row);
         }
 
-        shipFromId.setModel(model);
+        shipFrom.setModel(model);
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
@@ -1220,6 +1235,7 @@ public class SendoutOrderScreen extends Screen {
             statusRecurringId = DictionaryCache.getIdBySystemName("order_status_recurring");
             statusProcessedId = DictionaryCache.getIdBySystemName("order_status_processed");
             statusOnHoldId = DictionaryCache.getIdBySystemName("order_status_on_hold"); 
+            statusCancelledId = DictionaryCache.getIdBySystemName("order_status_cancelled"); 
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -1331,11 +1347,25 @@ public class SendoutOrderScreen extends Screen {
         window.setDone(consts.get("enterInformationPressCommit"));
     }
 
-    protected void update() {       
+    protected void update() {    
+        if (statusCancelledId.equals(manager.getOrder().getStatusId())) {
+            Window.alert(consts.get("cancelledOrderCantBeUpdated"));
+            return;
+        }
+        
         window.setBusy(consts.get("lockForUpdate"));
 
         try {
-            manager = manager.fetchForUpdate();   
+            manager = manager.fetchForUpdate();  
+            
+            if (statusCancelledId.equals(manager.getOrder().getStatusId())) {
+                Window.alert(consts.get("cancelledOrderCantBeUpdated"));
+                manager = manager.abortUpdate();
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(this);
+                window.clearStatus();
+                return;
+            }
             
             setState(State.UPDATE);
             DataChangeEvent.fire(this);
@@ -1667,40 +1697,6 @@ public class SendoutOrderScreen extends Screen {
         } catch (Exception e) {
             Window.alert(e.getMessage());
             e.printStackTrace();
-        }
-    }
-    
-    private void process() {
-        OrderItemManager man;
-        OrderViewDO data;
-
-        window.setBusy(consts.get("lockForUpdate"));
-        try {
-            manager = manager.fetchForUpdate();
-            data = manager.getOrder();
-            if ( !statusPendingId.equals(data.getStatusId())) {
-                Window.alert(consts.get("onlyProcessPendingOrders"));
-                manager = manager.abortUpdate();                
-                DataChangeEvent.fire(this);
-                window.clearStatus();
-                return;
-            } 
-            
-            man = manager.getItems();
-            if (man.count() > 0) {
-                Window.alert(consts.get("onlyProcessOrdersWithNoItems"));
-                manager = manager.abortUpdate();                
-                DataChangeEvent.fire(this);
-                window.clearStatus();
-                return;
-            }
-            setState(State.UPDATE);
-            data.setStatusId(statusProcessedId);
-            commit();
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-            window.clearStatus();
         }
     }
 
