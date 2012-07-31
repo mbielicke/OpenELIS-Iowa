@@ -340,7 +340,8 @@ public class DataViewBean implements DataViewRemote {
         builder.setMeta(meta);
         builder.setSelect("distinct " + SampleWebMeta.getAnalysisId() + ", " + SampleWebMeta.getId() + " ");
         /*
-         * If moduleName is not null, then this query is being executed for the web and we need to report only released analysis.
+         * if moduleName is not null, then this query is being executed for the 
+         * web and we need to report only released analysis
          */
         if (moduleName != null) {
             builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + releasedStatusId);
@@ -1800,6 +1801,8 @@ public class DataViewBean implements DataViewRemote {
             headers.add(resource.getString("startedDate"));
         if ("Y".equals(data.getAnalysisPrintedDate()))
             headers.add(resource.getString("printedDate"));
+        if ("Y".equals(data.getAnalysisSectionName()))
+            headers.add(resource.getString("section"));
         
         return headers;            
     }
@@ -2201,6 +2204,12 @@ public class DataViewBean implements DataViewRemote {
                     cell.setCellValue(dt.toString());
             }
         }
+        if ("Y".equals(data.getAnalysisSectionName())) {
+            cell = row.createCell(startCol++);
+            if (analysis != null && analysis.getSectionName() != null) {
+                cell.setCellValue(analysis.getSectionName());
+            }
+        }        
     }
     
     private void addEnvironmentalCells(Row row, int startCol, DataViewVO data, 
