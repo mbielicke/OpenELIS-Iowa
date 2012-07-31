@@ -195,6 +195,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                     ANALYSIS_METHOD_NAME = "_method.name",
                     ANALYSIS_TEST_NAME_HEADER = "_test.nameHeader", 
                     ANALYSIS_METHOD_NAME_HEADER = "_method.nameHeader",
+                    ANALYSIS_SECTION_NAME = "_section.name",
                     
                     RESULT_ANALYTE_NAME = "_result.analyte.name",
                     RESULT_TEST_ANALYTE_ROW_GROUP = "_result.testAnalyte.rowGroup",
@@ -318,6 +319,7 @@ public class SampleWebMeta implements Meta, MetaMap {
                                                   ANALYSIS_METHOD_NAME,
                                                   ANALYSIS_TEST_NAME_HEADER,
                                                   ANALYSIS_METHOD_NAME_HEADER,
+                                                  ANALYSIS_SECTION_NAME,
                                                   RESULT_ANALYTE_NAME, 
                                                   RESULT_TEST_ANALYTE_ROW_GROUP,
                                                   RESULT_TEST_ANALYTE_TYPE_ID,
@@ -885,10 +887,15 @@ public class SampleWebMeta implements Meta, MetaMap {
     public static String getAnalysisMethodName() {
         return ANALYSIS_METHOD_NAME;
     }
+    
     public static String getAnalysisMethodNameHeader() {
         return ANALYSIS_METHOD_NAME_HEADER;
-    }            
-
+    }      
+    
+    public static String getAnalysisSectionName() {
+        return ANALYSIS_SECTION_NAME;
+    } 
+    
     public static String getResultAnalyteName() {
         return RESULT_ANALYTE_NAME;
     }
