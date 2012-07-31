@@ -60,17 +60,18 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
                         "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
                         "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
-                        "t.method.name, t.method.reportingDescription, pat.name, pam.name)"
-                      + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.id = :id"),
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
+                      + " from Analysis a LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.test t"
+                      +	"  where a.id = :id"),
     @NamedQuery( name = "Analysis.UpdatePrintedDateByIds", 
                 query = " update Analysis set printedDate = :printedDate where id in (:ids)"),                  
     @NamedQuery( name = "Analysis.FetchBySampleId",
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
                         "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
                         "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
-                        "t.method.name, t.method.reportingDescription, pat.name, pam.name)"
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat " + 
-                        " LEFT JOIN pat.method pam LEFT JOIN a.test t where si.sampleId = :id order by  si.itemSequence, t.name, t.method.name "),
+                        " LEFT JOIN pat.method pam LEFT JOIN a.section s LEFT JOIN a.test t where si.sampleId = :id order by  si.itemSequence, t.name, t.method.name "),
     @NamedQuery( name = "Analysis.FetchBySampleIdForSDWISUnload",
                  query = "select new org.openelis.domain.SDWISUnloadReportVO(a.id, si.itemSequence, t.name, t.method.name, a.sectionId, se.organizationId, a.isReportable, a.unitOfMeasureId, a.statusId, a.startedDate, a.completedDate)"
                        + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.section se LEFT JOIN a.test t"
@@ -79,8 +80,9 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.AnalysisViewDO(a.id, a.sampleItemId, a.revision," + 
                         "a.testId, a.sectionId, a.preAnalysisId, a.parentAnalysisId, a.parentResultId, a.isReportable, a.unitOfMeasureId, a.statusId," + 
                         "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
-                        "t.method.name, t.method.reportingDescription, pat.name, pam.name)"
-                      + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam LEFT JOIN a.test t where a.sampleItemId = :id order by t.name, t.method.name "),
+                        "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
+                      + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.section s LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam"
+                      +	" LEFT JOIN a.test t where a.sampleItemId = :id order by t.name, t.method.name "),
     @NamedQuery( name = "Analysis.FetchForCachingByStatusId",
                 query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, a.releasedDate, s.id, s.domain, s.accessionNumber," +
                 		"s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name)"

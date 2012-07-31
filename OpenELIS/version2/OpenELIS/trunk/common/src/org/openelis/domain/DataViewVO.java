@@ -56,13 +56,13 @@ public class DataViewVO implements RPC {
                                            sampleItemSourceOther, sampleItemContainerId,
                                            sampleItemContainerReference, sampleItemItemSequence,
                                            analysisTestNameHeader, analysisTestMethodNameHeader,
-                                           analysisStatusIdHeader, analysisRevision, 
+                                           analysisStatusIdHeader, analysisRevision,
                                            analysisIsReportable, analysisIsReportableHeader,
                                            analysisQaName, analysisCompletedDate,
                                            analysisCompletedBy, analysisReleasedDate,
                                            analysisReleasedBy, analysisStartedDate,
-                                           analysisPrintedDate, analysisUnitOfMeasureId,
-                                           sampleEnvironmentalIsHazardous,
+                                           analysisPrintedDate, analysisSectionName,
+                                           analysisUnitOfMeasureId, sampleEnvironmentalIsHazardous,
                                            sampleEnvironmentalPriority, sampleEnvironmentalCollector,
                                            sampleEnvironmentalCollectorPhone, sampleEnvironmentalLocation,
                                            sampleEnvironmentalLocationAddressCity, 
@@ -453,6 +453,14 @@ public class DataViewVO implements RPC {
 
     public void setAnalysisUnitOfMeasureId(String analysisUnitOfMeasureId) {
         this.analysisUnitOfMeasureId = DataBaseUtil.trim(analysisUnitOfMeasureId);
+    }
+    
+    public String getAnalysisSectionName() {
+        return analysisSectionName;
+    }
+
+    public void setAnalysisSectionName(String analysisSectionName) {
+        this.analysisSectionName = DataBaseUtil.trim(analysisSectionName);
     }
     
     public String getSampleEnvironmentalIsHazardous() {
