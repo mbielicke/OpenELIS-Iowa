@@ -503,6 +503,10 @@ UIRF Software License are applicable instead of those above.
                   <text style="LeftAlignPrompt">
                     <xsl:value-of select="resource:getString($constants,'printed')" />
                   </text>
+                  <check key="{meta:getAnalysisSectionName()}" />
+                  <text style="LeftAlignPrompt">
+                    <xsl:value-of select="resource:getString($constants,'section')" />
+                  </text>
                 </row>
               </TablePanel>
             </VerticalPanel>

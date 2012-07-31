@@ -27,7 +27,7 @@ public class CommonTab extends Screen {
                        analysisRevision, analysisIsReportableHeader, analysisUnitOfMeasureId,
                        analysisSubQaName, analysisCompletedDate, analysisCompletedBy,
                        analysisReleasedDate, analysisReleasedBy, analysisStartedDate,
-                       analysisPrintedDate;
+                       analysisPrintedDate, analysisSectionName;
     private boolean    loaded;
     private int        checkCount;
     
@@ -664,6 +664,23 @@ public class CommonTab extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 analysisPrintedDate.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
+            }
+        });
+        
+        analysisSectionName = (CheckBox)def.getWidget(SampleWebMeta.getAnalysisSectionName());
+        addScreenHandler(analysisSectionName, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                analysisSectionName.setValue(data.getAnalysisSectionName());
+                changeCount(data.getAnalysisSectionName(), false);
+            }
+
+            public void onValueChange(ValueChangeEvent<String> event) {
+                data.setAnalysisSectionName(event.getValue());
+                changeCount(event.getValue(), true);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                analysisSectionName.enable(EnumSet.of(State.DEFAULT).contains(event.getState()));
             }
         });
     }   
