@@ -333,13 +333,20 @@ public class SendoutOrderScreen extends Screen {
         
         shippingInfo = (MenuItem)def.getWidget("shippingInfo");
         addScreenHandler(shippingInfo, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                /*
+                 * this menu item is enabled here an not in onStateChange because
+                 * for the cases where the data changes and the state remains the
+                 * same, i.e. on going previous or next in the results returned 
+                 * by a query, StateChangeEvent doesn't get fired, so the widget
+                 * doesn't get a chance to enable or disable itself appropriately 
+                 */
+                shippingInfo.enable((state == State.DISPLAY) &&
+                                    statusProcessedId.equals(manager.getOrder().getStatusId()));
+            }
+            
             public void onClick(ClickEvent event) {
                 shippingInfo();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {  
-                shippingInfo.enable(EnumSet.of(State.DISPLAY).contains(event.getState()) &&
-                                    statusProcessedId.equals(manager.getOrder().getStatusId()));
             }
         });
         
