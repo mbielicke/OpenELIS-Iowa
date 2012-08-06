@@ -161,7 +161,7 @@ public class OrderFillScreen extends Screen {
      * command.
      */
     private void postConstructor() {
-        tab = Tabs.ITEM;
+        tab = Tabs.SHIP_NOTE;
 
         try {
             CategoryCache.getBySystemNames("order_status", "order_ship_from");
@@ -286,8 +286,8 @@ public class OrderFillScreen extends Screen {
                     row.data = fetchById(data);
 
                 man = (OrderManager)row.data;
-                itemTab.setManager(man, combinedMap);
                 shipNoteTab.setManager(man);
+                itemTab.setManager(man, combinedMap);
                 custNoteTab.setManager(man);
 
                 drawTabs();                
@@ -424,8 +424,8 @@ public class OrderFillScreen extends Screen {
                             man = man.abortUpdate();
                             reloadRow(man, row, now);
                             combinedMap.remove(data.getId());
-                            itemTab.setManager(man, combinedMap);
                             shipNoteTab.setManager(man);
+                            itemTab.setManager(man, combinedMap);
                             custNoteTab.setManager(man);
                             window.setDone(consts.get("updateAborted"));
                             drawTabs();
@@ -467,6 +467,18 @@ public class OrderFillScreen extends Screen {
                 window.clearStatus();
             }
         });
+        
+        shipNoteTab = new ShipNoteTab(def, window, "notesPanel", "standardNoteButton");
+        addScreenHandler(shipNoteTab, new ScreenEventHandler<Object>() {
+            public void onDataChange(DataChangeEvent event) {
+                if (tab == Tabs.SHIP_NOTE)
+                    drawTabs();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                shipNoteTab.setState(event.getState());
+            }
+        });
 
         itemTab = new ItemTab(def, window);
         addScreenHandler(itemTab, new ScreenEventHandler<Object>() {
@@ -481,18 +493,6 @@ public class OrderFillScreen extends Screen {
         });
 
         itemsTree = (TreeWidget)def.getWidget("itemsTree");
-
-        shipNoteTab = new ShipNoteTab(def, window, "notesPanel", "standardNoteButton");
-        addScreenHandler(shipNoteTab, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-                if (tab == Tabs.SHIP_NOTE)
-                    drawTabs();
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                shipNoteTab.setState(event.getState());
-            }
-        });
 
         custNoteTab = new CustomerNoteTab(def, window, "customerNotesPanel", "editNoteButton");
         addScreenHandler(custNoteTab, new ScreenEventHandler<Object>() {
@@ -580,12 +580,12 @@ public class OrderFillScreen extends Screen {
         setState(State.QUERY);
         DataChangeEvent.fire(this);
 
-        itemTab.setManager(man, combinedMap);
         shipNoteTab.setManager(man);
+        itemTab.setManager(man, combinedMap);
         custNoteTab.setManager(man);
 
-        itemTab.draw();
         shipNoteTab.draw();
+        itemTab.draw();
         custNoteTab.draw();
 
         orderMap = null;
@@ -674,8 +674,8 @@ public class OrderFillScreen extends Screen {
 
         if (state == State.QUERY) {
             window.setBusy(consts.get("cancelChanges"));
-            itemTab.setManager(man, combinedMap);
             shipNoteTab.setManager(man);
+            itemTab.setManager(man, combinedMap);
             custNoteTab.setManager(man);
 
             setState(State.DEFAULT);
@@ -853,11 +853,11 @@ public class OrderFillScreen extends Screen {
 
     private void drawTabs() {
         switch (tab) {
-            case ITEM:
-                itemTab.draw();
-                break;
             case SHIP_NOTE:
                 shipNoteTab.draw();
+                break;
+            case ITEM:
+                itemTab.draw();
                 break;
             case CUSTOMER_NOTE:
                 custNoteTab.draw();
@@ -1005,8 +1005,8 @@ public class OrderFillScreen extends Screen {
         }
         
         if (man != null) {
-            itemTab.setManager(man, combinedMap);
             shipNoteTab.setManager(man);
+            itemTab.setManager(man, combinedMap);
             custNoteTab.setManager(man);
             drawTabs();
         }
@@ -1165,9 +1165,9 @@ public class OrderFillScreen extends Screen {
         }
 
         if (man != null) {
+            shipNoteTab.setManager(man);
             itemTab.setManager(man, combinedMap);
             custNoteTab.setManager(man);
-            shipNoteTab.setManager(man);
 
             drawTabs();
         }
