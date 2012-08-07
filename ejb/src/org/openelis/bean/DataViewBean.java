@@ -43,6 +43,8 @@ import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
@@ -281,6 +283,7 @@ public class DataViewBean implements DataViewRemote {
     }
     
     @TransactionTimeout(180)
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public DataViewVO fetchAnalyteAndAuxField(DataViewVO data) throws Exception {
         ArrayList<QueryData> fields;
         
@@ -295,6 +298,7 @@ public class DataViewBean implements DataViewRemote {
     }
     
     @TransactionTimeout(180)
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
     public DataViewVO fetchAnalyteAndAuxFieldForWebEnvironmental(DataViewVO data) throws Exception {
         ArrayList<QueryData> fields;
         QueryData field;
@@ -317,6 +321,87 @@ public class DataViewBean implements DataViewRemote {
     }
     
 
+    @RolesAllowed("w_dataview_environmental-select")
+    @TransactionTimeout(600)    
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
+        ArrayList<QueryData> fields;
+        QueryData field;
+        
+        fields = data.getQueryFields();
+        if (fields == null || fields.size() == 0)
+            throw new InconsistencyException("You may not execute an empty query");
+        
+        field = new QueryData();
+        field.key = SampleWebMeta.getDomain();
+        field.query = "E";
+        field.type = QueryData.Type.STRING;
+        
+        fields.add(field);
+        
+        return runReport(data, "w_dataview_environmental", true);
+    }
+
+    @TransactionTimeout(600)
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public ReportStatus runReport(DataViewVO data) throws Exception {
+        return runReport(data, null, false);
+    }
+
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public ReportStatus saveQuery(DataViewVO data) throws Exception {
+        FileOutputStream fos;
+        File tempFile;
+        ReportStatus status;
+        XMLEncoder enc;
+        
+        status = new ReportStatus();
+        status.setMessage("Initializing report");
+        session.setAttribute("DataViewQuery", status);
+        fos = null;
+        enc = null;
+        try {
+            status.setMessage("Saving query").setPercentComplete(20);
+            tempFile = File.createTempFile("query", ".xml", new File("/tmp"));
+            
+            status.setPercentComplete(100);
+
+            fos = new FileOutputStream(tempFile);
+            enc = new XMLEncoder(fos);
+            enc.writeObject(data);
+            /*
+             * the FileOutputStream gets closed by the XMLEncoder, and so we don't
+             * close it explicitly because trying to do so throws an exception  
+             */
+            enc.close();
+            tempFile = ReportUtil.saveForUpload(tempFile);
+            status.setMessage(tempFile.getName())
+                .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
+                .setStatus(ReportStatus.Status.SAVED);            
+        } catch (Exception e) {            
+            if (fos != null) 
+                fos.close();
+            if (enc != null) 
+                enc.close();
+            e.printStackTrace();
+            throw e;
+        } 
+        
+        return status;
+    }   
+    
+    @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+    public DataViewVO loadQuery(String path) throws Exception {
+        DataViewVO data;
+        XMLDecoder dec;
+                
+        dec = new XMLDecoder(new FileInputStream(path));
+        data = (DataViewVO)dec.readObject();        
+        dec.close(); 
+        
+        return data;
+    }
+       
     private DataViewVO fetchAnalyteAndAuxField(DataViewVO data, String moduleName) throws Exception {
         int i;
         boolean excludeOverride, excludeResults, excludeAuxData;
@@ -329,7 +414,7 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<ResultViewDO> resList;
         ArrayList<AuxDataViewDO> auxList;
         Object[] vo;
-
+    
         excludeOverride = "Y".equals(data.getExcludeResultOverride()) ? true : false;
         excludeResults = "Y".equals(data.getExcludeResults()) ? true : false;
         excludeAuxData = "Y".equals(data.getExcludeAuxData()) ? true : false;
@@ -376,7 +461,7 @@ public class DataViewBean implements DataViewRemote {
                 
         if (list.isEmpty())
             throw new NotFoundException();
-
+    
         analysisIds = new ArrayList<Integer>();
         sampleIds = new ArrayList<Integer>();
         prevSamId = null;        
@@ -471,87 +556,10 @@ public class DataViewBean implements DataViewRemote {
         
         if (resList == null && auxList == null)
             throw new NotFoundException();
-
+    
         return data;
     }
-    
-    @RolesAllowed("w_dataview_environmental-select")
-    @TransactionTimeout(600)    
-    public ReportStatus runReportForWebEnvironmental(DataViewVO data) throws Exception {
-        ArrayList<QueryData> fields;
-        QueryData field;
-        
-        fields = data.getQueryFields();
-        if (fields == null || fields.size() == 0)
-            throw new InconsistencyException("You may not execute an empty query");
-        
-        field = new QueryData();
-        field.key = SampleWebMeta.getDomain();
-        field.query = "E";
-        field.type = QueryData.Type.STRING;
-        
-        fields.add(field);
-        
-        return runReport(data, "w_dataview_environmental", true);
-    }
-    
-    @TransactionTimeout(600)
-    public ReportStatus runReport(DataViewVO data) throws Exception {
-        return runReport(data, null, false);
-    }
-    
-    public ReportStatus saveQuery(DataViewVO data) throws Exception {
-        FileOutputStream fos;
-        File tempFile;
-        ReportStatus status;
-        XMLEncoder enc;
-        
-        status = new ReportStatus();
-        status.setMessage("Initializing report");
-        session.setAttribute("DataViewQuery", status);
-        fos = null;
-        enc = null;
-        try {
-            status.setMessage("Saving query").setPercentComplete(20);
-            tempFile = File.createTempFile("query", ".xml", new File("/tmp"));
-            
-            status.setPercentComplete(100);
 
-            fos = new FileOutputStream(tempFile);
-            enc = new XMLEncoder(fos);
-            enc.writeObject(data);
-            /*
-             * the FileOutputStream gets closed by the XMLEncoder, and so we don't
-             * close it explicitly because trying to do so throws an exception  
-             */
-            enc.close();
-            tempFile = ReportUtil.saveForUpload(tempFile);
-            status.setMessage(tempFile.getName())
-                .setPath(ReportUtil.getSystemVariableValue("upload_stream_directory"))
-                .setStatus(ReportStatus.Status.SAVED);            
-        } catch (Exception e) {            
-            if (fos != null) 
-                fos.close();
-            if (enc != null) 
-                enc.close();
-            e.printStackTrace();
-            throw e;
-        } 
-        
-        return status;
-    }   
-    
-    public DataViewVO loadQuery(String path) throws Exception {
-        DataViewVO data;
-        XMLDecoder dec;
-                
-        dec = new XMLDecoder(new FileInputStream(path));
-        data = (DataViewVO)dec.readObject();        
-        dec.close(); 
-        
-        return data;
-    }
-       
     private ReportStatus runReport(DataViewVO data, String moduleName, boolean showReportableColumnsOnly) throws Exception {
         boolean excludeResults, excludeAuxData, runForWeb, addSampleCells,  addOrgCells,
                 addItemCells, addAnalysisCells, addEnvCells, addWellCells, addSDWISCells;
@@ -577,8 +585,8 @@ public class DataViewBean implements DataViewRemote {
         
         fields = data.getQueryFields();
         
-        excludeResults = "Y".equals(data.getExcludeResults()) ? true : false;
-        excludeAuxData = "Y".equals(data.getExcludeAuxData()) ? true : false;
+        excludeResults = "Y".equals(data.getExcludeResults());
+        excludeAuxData = "Y".equals(data.getExcludeAuxData());
         
         builder = new QueryBuilderV2();
         builder.setMeta(meta);     
@@ -908,9 +916,9 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<AnalysisUserViewDO> anaUserList;    
         ArrayList<ResultViewDO> rowGrpResList;  
         
-        excludeOverride = "Y".equals(data.getExcludeResultOverride()) ? true : false;
-        excludeResults = "Y".equals(data.getExcludeResults()) ? true : false;
-        excludeAuxData = "Y".equals(data.getExcludeAuxData()) ? true : false;        
+        excludeOverride = "Y".equals(data.getExcludeResultOverride());
+        excludeResults = "Y".equals(data.getExcludeResults());
+        excludeAuxData = "Y".equals(data.getExcludeAuxData());        
         
         wb = new HSSFWorkbook();
         sheet = wb.createSheet();       
@@ -1042,7 +1050,64 @@ public class DataViewBean implements DataViewRemote {
                     sampleId = aux.getSampleId();
                     domain = aux.getSampleDomain();
                 }
-            }            
+            }     
+            
+            /*
+             * skip showing any data for this sample if ths user asked to exclude
+             * samples/analyses with results overriden and this sample has such 
+             * a qa event  
+             */
+            if (!sampleId.equals(prevSamId)) {
+                if (excludeOverride) {
+                    try {
+                        sampleQaEvent.fetchResultOverrideBySampleId(sampleId);
+                        sampleOverriden = true;
+                        prevSamId = sampleId;
+                        continue;
+                    } catch (NotFoundException e) {
+                        sampleOverriden = false;
+                    }
+                }
+                sam = null;
+                proj = null;        
+                org = null;
+                env = null;
+                well = null;
+                sdwis = null;
+                collDateTime = null;
+            } else if (sampleOverriden) {
+                continue;
+            }
+            
+            if (addResultRow) {
+                /*
+                 * skip showing any data for this analysis if ths user asked to
+                 * exclude samples/analyses with results overriden and this
+                 * analysis has such a qa event
+                 */
+                if ( !analysisId.equals(prevAnalysisId)) {
+                    anaOverriden = false;
+                    aqeList = null;
+                    if (excludeOverride) {
+                        try {
+                            aqeList = analysisQaEvent.fetchByAnalysisId(analysisId);
+                            for (i = 0; i < aqeList.size(); i++ ) {
+                                aqe = aqeList.get(i);
+                                if (qaResultOverrideTypeId.equals(aqe.getTypeId())) {
+                                    anaOverriden = true;
+                                    addResultRow = false;
+                                    prevAnalysisId = analysisId;
+                                    break;
+                                }
+                            }
+                        } catch (NotFoundException e) {
+                            anaOverriden = false;
+                        }
+                    }
+                } else if (anaOverriden) {
+                    addResultRow = false;
+                }
+            }
             
             resRow = null;
             if (addResultRow) {
@@ -1074,66 +1139,7 @@ public class DataViewBean implements DataViewRemote {
             
             noResAuxRow = null;
             if (addNoResAuxRow) 
-                currRow = noResAuxRow = sheet.createRow(rowIndex++);            
-            
-            /*
-             * skip showing any data for this sample if ths user asked to exclude
-             * samples/analyses with results overriden and this sample has such 
-             * a qa event  
-             */
-            if (!sampleId.equals(prevSamId)) {
-                if (excludeOverride) {
-                    try {
-                        sampleQaEvent.fetchResultOverrideBySampleId(sampleId);
-                        sampleOverriden = true;
-                        prevSamId = sampleId;
-                        continue;
-                    } catch (NotFoundException e) {
-                        sampleOverriden = false;
-                    }
-                }
-                sam = null;
-                proj = null;        
-                org = null;
-                env = null;
-                well = null;
-                sdwis = null;
-                collDateTime = null;
-            } else if (sampleOverriden) {
-                prevSamId = sampleId;
-                continue;
-            }
-            
-            if (addResultRow) {
-                /*
-                 * skip showing any data for this analysis if ths user asked to
-                 * exclude samples/analyses with results overriden and this
-                 * analysis has such a qa event
-                 */
-                if ( !analysisId.equals(prevAnalysisId)) {
-                    anaOverriden = false;
-                    aqeList = null;
-                    if (excludeOverride) {
-                        try {
-                            aqeList = analysisQaEvent.fetchByAnalysisId(analysisId);
-                            for (i = 0; i < aqeList.size(); i++ ) {
-                                aqe = aqeList.get(i);
-                                if (qaResultOverrideTypeId.equals(aqe.getTypeId())) {
-                                    anaOverriden = true;
-                                    addResultRow = false;
-                                    prevAnalysisId = analysisId;
-                                    break;
-                                }
-                            }
-                        } catch (NotFoundException e) {
-                            anaOverriden = false;
-                        }
-                    }
-                } else if (anaOverriden) {
-                    prevAnalysisId = analysisId;
-                    addResultRow = false;
-                }
-            }
+                currRow = noResAuxRow = sheet.createRow(rowIndex++);                                   
             
             if (addNoResAuxRow && !analysisId.equals(prevAnalysisId))
                 aqeList = null;
