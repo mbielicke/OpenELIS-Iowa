@@ -27,7 +27,7 @@
 		<variableExpression><![CDATA[$V{PAGE_COUNTER}]]></variableExpression>
 		<initialValueExpression><![CDATA[new org.openelis.report.finalreport.PageCounter("B")]]></initialValueExpression>
 	</variable>
-	<variable name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList">
+	<variable name="UNIT_LIST" class="org.openelis.report.finalreport.AnalysisUnitList" resetType="Group" resetGroup="Sample_Organization">
 		<variableExpression><![CDATA[$V{UNIT_LIST}]]></variableExpression>
 		<initialValueExpression><![CDATA[new org.openelis.report.finalreport.AnalysisUnitList()]]></initialValueExpression>
 	</variable>
