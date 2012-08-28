@@ -87,12 +87,14 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
     }
 
     public void onRemoveRowButtonClick() {
-        final TreeDataItem selectedTreeRow;
+        Integer key;
+        final TreeDataItem selectedTreeRow;        
 
         try {
             selectedTreeRow = itemsTree.getSelection();
             if ("analysis".equals(selectedTreeRow.leafType)) {
-                if (selectedTreeRow.key != null) {
+                key = (Integer)selectedTreeRow.key; 
+                if (key != null && key > 0) {
                     if (cancelAnalysisConfirm == null) {
                         cancelAnalysisConfirm = new Confirm(Confirm.Type.QUESTION,
                                                             parentScreen.consts.get("cancelAnalysisCaption"),
@@ -126,7 +128,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
     public void testLookupFinished(ArrayList<SampleDataBundle> bundles) {
         window.setBusy();
         TreeDataItem itemRow, newRow;
-
+        
         itemRow = itemsTree.getSelection().parent;
 
         // try once to get an item row

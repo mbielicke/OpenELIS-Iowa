@@ -74,8 +74,6 @@ import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.TestManager;
 
-import com.google.gwt.user.client.Window;
-
 public abstract class ImportOrder {
     protected OrderManager         orderMan;
     
@@ -476,7 +474,6 @@ public abstract class ImportOrder {
 
         anaMan = itemMan.getAnalysisAt(sequence);
         anaIndex = anaMan.addAnalysis();
-        anaMan.setDefaultsAt(anaIndex);
 
         testId = orderTest.getTestId();
         testMan = testMap.get(testId);
