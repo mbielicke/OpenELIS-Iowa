@@ -28,7 +28,6 @@ package org.openelis.manager;
 import java.util.ArrayList;
 
 import org.openelis.cache.DictionaryCache;
-import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -121,10 +120,8 @@ public class SampleManagerProxy {
     }
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
-        boolean internalNoteAdded;
         SampleDomainInt domMan;
         SampleDO data;
-        NoteViewDO note;
         NoteManager noteMan;      
 
         data = man.getSample();
@@ -138,13 +135,13 @@ public class SampleManagerProxy {
             errorsList.add(new FieldErrorWarning("receivedDateRequiredException",
                                                  SampleMeta.getReceivedDate()));
         else if (data.getEnteredDate() != null &&
-                 data.getReceivedDate().before(data.getEnteredDate().add( -180)))
+                 data.getReceivedDate().before(data.getEnteredDate().add(-180)))
             // received can't be more than 180 days before entered
             errorsList.add(new FieldErrorWarning("receivedTooOldWarning",
                                                  SampleMeta.getReceivedDate()));
 
         if (data.getEnteredDate() != null && data.getCollectionDate() != null &&
-            data.getCollectionDate().before(data.getEnteredDate().add( -180)))
+            data.getCollectionDate().before(data.getEnteredDate().add(-180)))
             errorsList.add(new FieldErrorException("collectedTooOldException",
                                                    SampleMeta.getCollectionDate()));
 

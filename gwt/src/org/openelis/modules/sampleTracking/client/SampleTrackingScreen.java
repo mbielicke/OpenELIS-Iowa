@@ -156,7 +156,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private SampleTreeUtility        treeUtil;
     private SampleHistoryUtility     historyUtility;
 
-    private Integer                  analysisLoggedInId, sampleReleasedId;
+    private Integer                  analysisLoggedInId, analysisReleasedId, sampleReleasedId;
     private Query                    query;
 
     private ScreenService            finalReportService;
@@ -597,14 +597,14 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
         trackingTree.addBeforeDragStartHandler(new BeforeDragStartHandler<TreeRow>() {
             public void onBeforeDragStart(BeforeDragStartEvent<TreeRow> event) {
-                TreeDataItem treeItem;
                 Label label;
+                TreeDataItem treeItem;
 
                 try {
                     treeItem = event.getDragObject().item;
-                    if ( !treeItem.leafType.equals("analysis"))
+                    if (!treeItem.leafType.equals("analysis")) {
                         event.cancel();
-                    else {
+                    } else {
                         label = new Label(treeItem.cells.get(0).value + " | " +
                                           DictionaryCache.getById((Integer)treeItem.cells.get(1).value).getEntry());
                         label.setStyleName("ScreenLabel");
@@ -621,7 +621,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
                 AnalysisManager am;
                 TreeDataItem dragItem, dropTarget;
-                SampleDataBundle dragKey, dropKey, newBundle;
+                SampleDataBundle dragKey, dropKey;
 
                 dragItem = event.getDragObject().dragItem;
                 dragKey = (SampleDataBundle)dragItem.data;
@@ -629,16 +629,19 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 dropKey = (SampleDataBundle)dropTarget.data;
 
                 try {
-                    manager.getSampleItems().moveAnalysis(dragKey, dropKey);
-
-                    // reset the dropped row data bundle, and its children
-                    am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
-                    newBundle = am.getBundleAt(am.count()-1);
-                    dragItem.data = newBundle;
-                    
-                    for(int i=0; i<dragItem.getItems().size(); i++)
-                        dragItem.getItem(i).data = newBundle;
-                                        
+                    if (analysisReleasedId.equals(dragKey.getSampleManager().getSampleItems()
+                                                  .getAnalysisAt(dragKey.getSampleItemIndex())
+                                                  .getAnalysisAt(dragKey.getAnalysisIndex())
+                                                  .getStatusId())) {
+                        Window.alert(consts.get("noMoveReleasedAnalysis"));
+                        event.cancel();
+                    } else {
+                        manager.getSampleItems().moveAnalysis(dragKey, dropKey);
+    
+                        // reset the dropped row data bundle, and its children
+                        am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
+                        dragItem.data = am.getBundleAt(am.count()-1);
+                    }                                            
                 } catch (Exception e) {
                     e.printStackTrace();
                     Window.alert("Move failed: " + e.getMessage());
@@ -1326,6 +1329,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         // error is found
         try {
             analysisLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
+            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
             domainMap = new HashMap<String, Integer>();
             id = DictionaryCache.getIdBySystemName("environmental");
             domainMap.put(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG, id);

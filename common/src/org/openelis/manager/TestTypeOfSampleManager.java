@@ -98,14 +98,14 @@ public class TestTypeOfSampleManager implements RPC {
         }
     }
     
-    public ArrayList<TestTypeOfSampleDO> getTypesBySampleType(Integer type){
+    public ArrayList<TestTypeOfSampleDO> getTypesBySampleType(Integer type) {
         ArrayList<TestTypeOfSampleDO> returnList;
         TestTypeOfSampleDO typeDO;
         
         returnList = new ArrayList<TestTypeOfSampleDO>();
         
-        if(type != null){
-            for(int i=0; i<count(); i++){
+        if (type != null) {
+            for (int i = 0; i < count(); i++) {
                 typeDO = types.get(i); 
         
                 if (type.equals(typeDO.getTypeOfSampleId()))
@@ -117,24 +117,36 @@ public class TestTypeOfSampleManager implements RPC {
         
     }
 
-    public boolean hasType(Integer type){
+    public boolean hasType(Integer type) {
         TestTypeOfSampleDO typeDO;
-        for(int i=0; i<count(); i++){
+        
+        for (int i = 0; i < count(); i++) {
             typeDO = getTypeAt(i);
-            
-            if(typeDO.getTypeOfSampleId().equals(type))
+            if (typeDO.getTypeOfSampleId().equals(type))
                 return true;
         }
         
         return false;
     }
     
-    public boolean hasUnit(Integer unitId, Integer typeId){
+    public boolean hasUnit(Integer unitId, Integer typeId) {
         TestTypeOfSampleDO typeDO;
-        for(int i=0; i<count(); i++){
+        
+        for (int i = 0; i < count(); i++) {
             typeDO = getTypeAt(i);
-            
-            if(typeDO.getTypeOfSampleId().equals(typeId) && typeDO.getUnitOfMeasureId().equals(unitId))
+            if (typeDO.getTypeOfSampleId().equals(typeId) && typeDO.getUnitOfMeasureId().equals(unitId))
+                return true;
+        }
+        
+        return false;
+    }
+    
+    public boolean hasEmptyUnit() {
+        TestTypeOfSampleDO typeDO;
+        
+        for (int i = 0; i < count(); i++) {
+            typeDO = getTypeAt(i);
+            if (typeDO.getUnitOfMeasureId() == null)
                 return true;
         }
         

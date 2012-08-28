@@ -26,6 +26,7 @@
 package org.openelis.manager;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.openelis.domain.AnalysisCacheVO;
@@ -37,7 +38,7 @@ import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
-import org.openelis.domain.SampleProjectViewDO;
+//import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
@@ -442,6 +443,8 @@ public class SampleManagerProxy {
 
     public void validate(SampleManager man, ValidationErrorsList errorsList) throws Exception {
         boolean quickEntry;
+        Calendar cal;
+        Datetime collectionDateTime;
         SampleDO data;
 
         // revalidate accession number
@@ -451,12 +454,23 @@ public class SampleManagerProxy {
         data = man.getSample();
         quickEntry = SampleManager.QUICK_ENTRY.equals(data.getDomain());
 
-        if (data.getCollectionDate() != null && data.getReceivedDate() != null) {
-            if (data.getCollectionDate().compareTo(data.getReceivedDate()) == 1)
-                errorsList.add(new FieldErrorException("collectedDateInvalidError",
-                                                       SampleMeta.getReceivedDate()));
+        if (data.getCollectionDate() != null) {
+            cal = Calendar.getInstance();
+            cal.setTime(data.getCollectionDate().getDate());
+            if (data.getCollectionTime() != null) {
+                cal.add(Calendar.HOUR_OF_DAY, data.getCollectionTime().get(Datetime.HOUR));
+                cal.add(Calendar.MINUTE, data.getCollectionTime().get(Datetime.MINUTE));
+            }
+            collectionDateTime = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
+        } else {
+            collectionDateTime = null;
         }
 
+        if (collectionDateTime != null && data.getReceivedDate() != null &&
+            collectionDateTime.compareTo(data.getReceivedDate()) == 1)
+            errorsList.add(new FieldErrorException("collectedDateInvalidError",
+                                                   SampleMeta.getReceivedDate()));
+        
         if (man.domainManager != null)
             man.getDomainManager().validate(errorsList);
             

@@ -89,8 +89,9 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
             }
 
             public void onStateChange(StateChangeEvent<State> event) {                
-                typeOfSampleId.enable(event.getState() == State.QUERY  || (canEdit() && EnumSet.of(State.ADD, State.UPDATE)
-                                                          .contains(event.getState())));
+                typeOfSampleId.enable(event.getState() == State.QUERY  ||
+                                      (canEdit() && !itemHasReleasedAnalyses() &&
+                                       EnumSet.of(State.ADD, State.UPDATE).contains(event.getState())));
                 typeOfSampleId.setQueryMode(event.getState() == State.QUERY);
             }
         });
@@ -289,6 +290,20 @@ public class SampleItemTab extends Screen implements HasActionHandlers<SampleIte
     private boolean canEdit() {
         return (bundle != null && bundle.getSampleManager() != null &&
                 !sampleReleasedId.equals(bundle.getSampleManager().getSample().getStatusId()));
+    }
+    
+    private boolean itemHasReleasedAnalyses() {
+        boolean hasReleased = true;
+        
+        try {
+            if (bundle != null && bundle.getSampleManager() != null)
+                hasReleased = bundle.getSampleManager().getSampleItems()
+                                    .getAnalysisAt(bundle.getSampleItemIndex()).hasReleasedAnalysis();
+        } catch (Exception anyE) {
+            Window.alert("sampleItemTab itemHasReleasedAnalyses: "+anyE.getMessage());
+        }
+        
+        return hasReleased;
     }
 
     public HandlerRegistration addActionHandler(ActionHandler<Action> handler) {
