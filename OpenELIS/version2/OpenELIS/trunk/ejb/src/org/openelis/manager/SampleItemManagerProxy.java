@@ -77,7 +77,8 @@ public class SampleItemManagerProxy {
                 man.getAnalysisAt(i).setSampleItemId(data.getId());
         }
 
-        addAnalyses(man);
+//        addAnalyses(man);
+        updateAnalyses(man);
 
         return man;
     }
@@ -153,30 +154,22 @@ public class SampleItemManagerProxy {
         }
     }
 
-    private void addAnalyses(SampleItemManager man) throws Exception {
-        HashMap<Integer, Integer> idHash;
-        int numOfUnresolved;
-
-        idHash = new HashMap<Integer, Integer>();
-        numOfUnresolved = 0;
-        do {
-            for (int i = 0; i < man.count(); i++ )
-                numOfUnresolved = numOfUnresolved + man.getAnalysisAt(i).add(idHash);
-
-        } while (numOfUnresolved != 0);
-    }
-
     private void updateAnalyses(SampleItemManager man) throws Exception {
+        int lastUnresolved, unresolved;
         HashMap<Integer, Integer> idHash;
-        int numOfUnresolved;
 
         idHash = new HashMap<Integer, Integer>();
-        numOfUnresolved = 0;
+        lastUnresolved = 0;
         do {
+            unresolved = 0;
             for (int i = 0; i < man.count(); i++ )
-                numOfUnresolved = numOfUnresolved + man.getAnalysisAt(i).update(idHash);
+                unresolved += man.getAnalysisAt(i).update(idHash);
 
-        } while (numOfUnresolved != 0);
+            if (unresolved != 0 && unresolved == lastUnresolved)
+                throw new Exception("Cannot resolve ids when analysis is linked to itself");
+            
+            lastUnresolved = unresolved;
+        } while (unresolved != 0);
     }
 
     protected Datetime getCurrentDatetime(byte begin, byte end) throws Exception {

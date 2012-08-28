@@ -586,6 +586,7 @@ public class QuickEntryScreen extends Screen {
         }
         entry.setValue(null);
         recDate.exceptions = null;
+        setFocus(entry);
     }
 
     public void analysisTestChanged(Integer id,

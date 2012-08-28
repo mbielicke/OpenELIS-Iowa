@@ -537,10 +537,6 @@ public class AnalysisManager implements RPC {
     }
 
     // service methods
-    public int add(HashMap<Integer, Integer> idHash) throws Exception {
-        return proxy().add(this, idHash);
-    }
-
     public int update(HashMap<Integer, Integer> idHash) throws Exception {
         return proxy().update(this, idHash);
     }
@@ -1053,7 +1049,7 @@ public class AnalysisManager implements RPC {
         return deletedList.get(i);
     }
 
-    boolean hasReleasedAnalysis() {
+    public boolean hasReleasedAnalysis() {
         boolean released;
         AnalysisViewDO an;
 

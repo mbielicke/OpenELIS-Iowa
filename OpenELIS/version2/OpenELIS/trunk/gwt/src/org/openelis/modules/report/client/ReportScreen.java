@@ -432,23 +432,27 @@ public class ReportScreen extends Screen {
 	 * Resets the dropdown to prompt specified value
 	 */
 	protected void resetDropdown(Prompt p, ArrayList<TableDataRow> l, Dropdown<String> d) throws Exception {
-		String defaultPrinter,defaultBarcodePrinter;
+		String defaultPrinter,defaultBarcodePrinter,location;
 
 		defaultPrinter = null;
 		defaultBarcodePrinter = null;
+		location = null;
 		
 		preferences =  Preferences.userRoot();
 		if (preferences != null) {
 		    defaultPrinter = preferences.get("default_printer", null);
 		    defaultBarcodePrinter = preferences.get("default_bar_code_printer", null);
+		    location = preferences.get("location", null);
 		}
-		if (p.getDefaultValue() != null)
+		if (p.getDefaultValue() != null) {
 			d.setValue(p.getDefaultValue());
-		else if ("PRINTER".equals(p.getName()) && defaultPrinter != null)
+		} else if ("PRINTER".equals(p.getName()) && defaultPrinter != null) {
 			d.setValue(defaultPrinter);
-		else if ("BARCODE".equals(p.getName()) && defaultBarcodePrinter != null)
+		} else if ("BARCODE".equals(p.getName()) && defaultBarcodePrinter != null) {
 			d.setValue(defaultBarcodePrinter);
-		else {
+        } else if ("LOCATION".equals(p.getName()) && location != null) {
+            d.setValue(location);
+		} else {
 			if (l.size() > 0)
 				d.setValue((String) l.get(0).key);
 		}

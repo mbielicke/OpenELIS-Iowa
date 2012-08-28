@@ -79,11 +79,6 @@ public class AnalysisManagerProxy {
         return service.call("fetchBySampleItemId", sampleItemId);
     }
 
-    public int add(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
-        assert false : "not supported";
-        return -1;
-    }
-
     public int update(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
         assert false : "not supported";
         return -1;
@@ -125,6 +120,12 @@ public class AnalysisManagerProxy {
                                                       analysisDO.getTestName(),
                                                       analysisDO.getMethodName()));
 
+            // validate the sample type
+            if (analysisDO.getTestId() != null &&
+                !testMan.getSampleTypes().hasType(sampleTypeId))
+                errorsList.add(new FormErrorWarning("sampleTypeInvalid", analysisDO.getTestName(),
+                                                    analysisDO.getMethodName()));
+
             // if unit is not null, it needs to be validated
             if (analysisDO.getTestId() != null &&
                 analysisDO.getUnitOfMeasureId() != null &&
@@ -132,12 +133,21 @@ public class AnalysisManagerProxy {
                 errorsList.add(new FormErrorWarning("analysisUnitInvalid",
                                                     analysisDO.getTestName(),
                                                     analysisDO.getMethodName()));
-
-            // validate the sample type
+            
+            // if unit is null, check the test definition to see if all sample types
+            // have units defined. if so, require the user to enter units
             if (analysisDO.getTestId() != null &&
-                !testMan.getSampleTypes().hasType(sampleTypeId))
-                errorsList.add(new FormErrorWarning("sampleTypeInvalid", analysisDO.getTestName(),
-                                                    analysisDO.getMethodName()));
+                analysisDO.getUnitOfMeasureId() == null &&
+                !testMan.getSampleTypes().hasEmptyUnit())
+                errorsList.add(new FormErrorException("analysisUnitRequired",
+                                                      analysisDO.getTestName(),
+                                                      analysisDO.getMethodName()));
+
+            if (analysisDO.getStartedDate() != null && analysisDO.getCompletedDate() != null &&
+                analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
+                errorsList.add(new FormErrorException("startedDateInvalidError",
+                                                      analysisDO.getTestName(),
+                                                      analysisDO.getMethodName()));
 
             item = man.getItemAt(i);
             // validate the children

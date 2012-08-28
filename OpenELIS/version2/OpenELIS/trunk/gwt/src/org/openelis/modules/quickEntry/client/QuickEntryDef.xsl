@@ -78,7 +78,7 @@ UIRF Software License are applicable instead of those above.
           		<text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'entry')" />:
               </text>
-              <textbox key="entry" width="158px" max="20" case="UPPER" field="String" tab="entry, entry"/>
+              <textbox key="entry" width="158px" max="20" case="UPPER" field="String" tab="receivedDate, receivedDate"/>
               <text style="Prompt">
                 <xsl:value-of select="resource:getString($constants,'accessionNum')" />:
               </text>

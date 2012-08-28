@@ -70,6 +70,8 @@ import com.google.gwt.user.client.Window;
 public class SampleItemsPopoutTreeLookup extends Screen {
     protected SampleTreeUtility treeUtil;
     protected TreeWidget        sampleTreePopout;
+    
+    private Integer             analysisReleasedId;
     private SampleManager       manager;
 
     public SampleItemsPopoutTreeLookup() throws Exception {
@@ -138,21 +140,21 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         
         sampleTreePopout.addBeforeDragStartHandler(new BeforeDragStartHandler<TreeRow>() {
             public void onBeforeDragStart(BeforeDragStartEvent<TreeRow> event) {
-                TreeDataItem treeItem;
                 Label label;
+                TreeDataItem treeItem;
                 
-                try{
+                try {
                     treeItem = event.getDragObject().item;
-                    if(!treeItem.leafType.equals("analysis"))
+                    if (!treeItem.leafType.equals("analysis")) {
                         event.cancel();
-                    else{
+                    } else {
                         label = new Label(treeItem.cells.get(0).value + " | " + 
                                           DictionaryCache.getById((Integer)treeItem.cells.get(1).value).getEntry());
                         label.setStyleName("ScreenLabel");
                         label.setWordWrap(false);
                         event.setProxy(label);
                     }
-                }catch(Exception e){
+                } catch(Exception e) {
                     Window.alert("tree beforeDragStart: "+e.getMessage());
                 }
             }
@@ -160,26 +162,29 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         
         sampleTreePopout.addBeforeDropHandler(new BeforeDropHandler<TreeRow>() {
             public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
-                AnalysisViewDO anDO;
                 AnalysisManager am;
-                TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
-                TreeDataItem dragItem = event.getDragObject().dragItem;
-                SampleDataBundle dragKey = (SampleDataBundle)dragItem.data;
-                SampleDataBundle dropKey = (SampleDataBundle)dropTarget.data;
+                SampleDataBundle dragKey, dropKey;
+                TreeDataItem dragItem, dropTarget;
+
+                dragItem = event.getDragObject().dragItem;
+                dragKey = (SampleDataBundle)dragItem.data;
+                dropTarget = ((TreeRow)event.getDropTarget()).item;
+                dropKey = (SampleDataBundle)dropTarget.data;
+
                 try {
-                    anDO = manager.getSampleItems()
-                                  .getAnalysisAt(dragKey.getSampleItemIndex())
-                                  .getAnalysisAt(dragKey.getAnalysisIndex());
-                    
-                    if(anDO.getPreAnalysisId() != null)
-                        manager.getSampleItems().getAnalysisAt(dragKey.getSampleItemIndex()).unlinkPrepTest(dragKey.getAnalysisIndex());
-                    
-                    manager.getSampleItems().moveAnalysis(dragKey,dropKey);
-                    
-                    //reset the dropped row data bundle
-                    am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
-                    dragItem.data = am.getBundleAt(am.count()-1);
-                    
+                    if (analysisReleasedId.equals(dragKey.getSampleManager().getSampleItems()
+                                                  .getAnalysisAt(dragKey.getSampleItemIndex())
+                                                  .getAnalysisAt(dragKey.getAnalysisIndex())
+                                                  .getStatusId())) {
+                        Window.alert(consts.get("noMoveReleasedAnalysis"));
+                        event.cancel();
+                    } else {
+                        manager.getSampleItems().moveAnalysis(dragKey,dropKey);
+                        
+                        //reset the dropped row data bundle
+                        am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
+                        dragItem.data = am.getBundleAt(am.count()-1);
+                    }
                 }catch(Exception e) {
                     e.printStackTrace();
                     Window.alert("Move failed: "+e.getMessage());
@@ -261,6 +266,12 @@ public class SampleItemsPopoutTreeLookup extends Screen {
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
 
+        try {
+            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
         // analysis status dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));

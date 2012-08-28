@@ -92,181 +92,56 @@ public class AnalysisManagerProxy {
         return man;
     }
 
-    public int add(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
-        int numOfUnresolved;
-        AnalysisViewDO analysisDO;
-
-        numOfUnresolved = 0;
-        for (int i = 0; i < man.count(); i++ ) {
-            analysisDO = man.getAnalysisAt(i);
-
-            if (analysisDO.getPreAnalysisId() == null && analysisDO.getParentAnalysisId() == null) {
-                if ( !idHash.containsKey(analysisDO.getId())) {
-                    Integer oldId = analysisDO.getId();
-                    add(man, analysisDO, i);
-
-                    idHash.put(oldId, analysisDO.getId());
-                    idHash.put(analysisDO.getId(), null);
-                }
-            } else if (analysisDO.getPreAnalysisId() != null && analysisDO.getPreAnalysisId() < 0) {
-                Integer prepId;
-
-                prepId = idHash.get(analysisDO.getPreAnalysisId());
-
-                if (prepId != null) {
-                    Integer oldId = analysisDO.getId();
-                    analysisDO.setPreAnalysisId(prepId);
-
-                    // make sure parent analysis id isnt negative
-                    if (analysisDO.getParentAnalysisId() == null ||
-                        (analysisDO.getParentAnalysisId() != null && analysisDO.getParentAnalysisId() > 0)) {
-                        add(man, analysisDO, i);
-
-                        if (idHash.containsKey(oldId))
-                            numOfUnresolved-- ;
-
-                        idHash.put(oldId, analysisDO.getId());
-                    } else
-                        numOfUnresolved++ ;
-
-                    idHash.put(analysisDO.getId(), null);
-                } else {
-                    idHash.put(analysisDO.getId(), null);
-                    numOfUnresolved++ ;
-                }
-            } else if (analysisDO.getParentAnalysisId() != null &&
-                       analysisDO.getParentAnalysisId() < 0) {
-                Integer parentAnId;
-
-                parentAnId = idHash.get(analysisDO.getParentAnalysisId());
-
-                if (parentAnId != null) {
-                    Integer oldId = analysisDO.getId();
-                    analysisDO.setParentAnalysisId(parentAnId);
-
-                    add(man, analysisDO, i);
-
-                    if (idHash.containsKey(oldId))
-                        numOfUnresolved-- ;
-
-                    idHash.put(oldId, analysisDO.getId());
-                    idHash.put(analysisDO.getId(), null);
-                } else {
-                    idHash.put(analysisDO.getId(), null);
-                    numOfUnresolved++ ;
-                }
-
-            } else if ( !idHash.containsKey(analysisDO.getId())) {
-                Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
-                if (prepId == null) {
-                    Integer oldId = analysisDO.getId();
-
-                    add(man, analysisDO, i);
-
-                    idHash.put(oldId, analysisDO.getId());
-
-                    if ( !oldId.equals(analysisDO.getId()))
-                        idHash.put(analysisDO.getId(), null);
-                }
-            }
-        }
-
-        return numOfUnresolved;
-    }
-
     public int update(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
-        int numOfUnresolved;
+        boolean        iUnresolved;
+        int            unresolved;
+        Integer        oldId, parentId, prepId;
         AnalysisViewDO analysisDO;
 
-        numOfUnresolved = 0;
+        unresolved = 0;
         for (int i = 0; i < man.count(); i++ ) {
+            iUnresolved = false;
             analysisDO = man.getAnalysisAt(i);
 
-            if (analysisDO.getPreAnalysisId() == null && analysisDO.getParentAnalysisId() == null) {
-                if ( !idHash.containsKey(analysisDO.getId())) {
-                    Integer oldId = analysisDO.getId();
-
-                    if (oldId != null && oldId > 0)
-                        update(man, analysisDO, i);
-                    else
-                        add(man, analysisDO, i);
-
-                    idHash.put(oldId, analysisDO.getId());
-                    idHash.put(analysisDO.getId(), null);
-                }
-            } else if (analysisDO.getPreAnalysisId() != null && analysisDO.getPreAnalysisId() < 0) {
-                Integer prepId;
-
+            // try to resolve a negative prep analysis id
+            if (analysisDO.getPreAnalysisId() != null && analysisDO.getPreAnalysisId() < 0) {
                 prepId = idHash.get(analysisDO.getPreAnalysisId());
-
                 if (prepId != null) {
-                    Integer oldId = analysisDO.getId();
                     analysisDO.setPreAnalysisId(prepId);
-
-                    // make sure parent analysis id isnt negative
-                    if (analysisDO.getParentAnalysisId() == null ||
-                        (analysisDO.getParentAnalysisId() != null && analysisDO.getParentAnalysisId() > 0)) {
-                        if (oldId != null && oldId > 0)
-                            update(man, analysisDO, i);
-                        else
-                            add(man, analysisDO, i);
-
-                        if (idHash.containsKey(oldId))
-                            numOfUnresolved-- ;
-
-                        idHash.put(oldId, analysisDO.getId());
-                    } else
-                        numOfUnresolved++ ;
-
-                    idHash.put(analysisDO.getId(), null);
                 } else {
-                    idHash.put(analysisDO.getId(), null);
-                    numOfUnresolved++ ;
-                }
-            } else if (analysisDO.getParentAnalysisId() != null &&
-                       analysisDO.getParentAnalysisId() < 0) {
-                Integer parentAnId;
-
-                parentAnId = idHash.get(analysisDO.getParentAnalysisId());
-
-                if (parentAnId != null) {
-                    Integer oldId = analysisDO.getId();
-                    analysisDO.setParentAnalysisId(parentAnId);
-
-                    if (oldId != null && oldId > 0)
-                        update(man, analysisDO, i);
-                    else
-                        add(man, analysisDO, i);
-
-                    if (idHash.containsKey(oldId))
-                        numOfUnresolved-- ;
-
-                    idHash.put(oldId, analysisDO.getId());
-                    idHash.put(analysisDO.getId(), null);
-                } else {
-                    idHash.put(analysisDO.getId(), null);
-                    numOfUnresolved++ ;
-                }
-
-            } else if ( !idHash.containsKey(analysisDO.getId())) {
-                Integer prepId = idHash.get(analysisDO.getPreAnalysisId());
-                if (prepId == null) {
-                    Integer oldId = analysisDO.getId();
-
-                    if (oldId != null && oldId > 0)
-                        update(man, analysisDO, i);
-                    else
-                        add(man, analysisDO, i);
-
-                    idHash.put(oldId, analysisDO.getId());
-
-                    if ( !oldId.equals(analysisDO.getId()))
-                        idHash.put(analysisDO.getId(), null);
+                    iUnresolved = true;
                 }
             }
-        }
 
-        return numOfUnresolved;
+            // try to resolve a negative parent analysis id
+            if (analysisDO.getParentAnalysisId() != null && analysisDO.getParentAnalysisId() < 0) {
+                parentId = idHash.get(analysisDO.getParentAnalysisId());
+                if (parentId != null) {
+                    analysisDO.setParentAnalysisId(parentId);
+                } else {
+                    iUnresolved = true;
+                }
+            }
+            
+            // if both the prep and parent ids are resolved, then add/update the
+            // analysis and set the mappings in the hash, otherwise skip
+            if (!iUnresolved) {
+                if (!idHash.containsKey(analysisDO.getId())) {
+                    oldId = analysisDO.getId();
+                    if (oldId < 0) {
+                        add(man, analysisDO, i);
+                        idHash.put(oldId, analysisDO.getId());
+                    } else {
+                        update(man, analysisDO, i);
+                    }
+                    idHash.put(analysisDO.getId(), null);
+                }
+            } else {
+                unresolved++;
+            }
+        }
+        
+        return unresolved;
     }
 
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
@@ -387,12 +262,14 @@ public class AnalysisManagerProxy {
                          ValidationErrorsList errorsList) throws Exception {
         AnalysisListItem item;
         AnalysisViewDO analysisDO;
+        TestManager testMan;
         boolean quickEntry;
 
         quickEntry = SampleManager.QUICK_ENTRY.equals(sampleDomain);
 
         for (int i = 0; i < man.count(); i++ ) {
             analysisDO = man.getAnalysisAt(i);
+            testMan = man.getTestAt(i);
 
             //
             // We do NOT need to validate analyses that are in cancelled or released
@@ -407,6 +284,21 @@ public class AnalysisManagerProxy {
 
             if (analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
                 errorsList.add(new FormErrorException("analysisSectionIdMissing",
+                                                      analysisDO.getTestName(),
+                                                      analysisDO.getMethodName()));
+
+            // if unit is null, check the test definition to see if all sample types
+            // have units defined. if so, require the user to enter units
+            if (analysisDO.getTestId() != null &&
+                analysisDO.getUnitOfMeasureId() == null &&
+                !testMan.getSampleTypes().hasEmptyUnit())
+                errorsList.add(new FormErrorException("analysisUnitRequired",
+                                                      analysisDO.getTestName(),
+                                                      analysisDO.getMethodName()));
+
+            if (analysisDO.getStartedDate() != null && analysisDO.getCompletedDate() != null &&
+                analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
+                errorsList.add(new FormErrorException("startedDateInvalidError",
                                                       analysisDO.getTestName(),
                                                       analysisDO.getMethodName()));
 

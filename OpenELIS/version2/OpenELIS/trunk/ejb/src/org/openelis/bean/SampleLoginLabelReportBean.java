@@ -11,6 +11,7 @@ import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
@@ -19,6 +20,8 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
+import org.openelis.local.CategoryCacheLocal;
+import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.LabelReportLocal;
 import org.openelis.local.SampleLocal;
@@ -33,21 +36,27 @@ import org.openelis.utils.ReportUtil;
 public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote {
 
     @EJB
-    private SessionCacheLocal   session;
+    private CategoryCacheLocal   category;
 
     @EJB
-    private SystemVariableLocal sysvar;
+    private DictionaryCacheLocal dictionary;
 
     @EJB
-    private SampleLocal         sample;
+    private SessionCacheLocal    session;
 
     @EJB
-    private PrinterCacheLocal   printer;
+    private SystemVariableLocal  sysvar;
 
     @EJB
-    private LabelReportLocal    labelReport;
+    private SampleLocal          sample;
 
-    private static final Logger log = Logger.getLogger(SampleLoginLabelReportBean.class);
+    @EJB
+    private PrinterCacheLocal    printer;
+
+    @EJB
+    private LabelReportLocal     labelReport;
+
+    private static final Logger  log = Logger.getLogger(SampleLoginLabelReportBean.class);
 
     /*
      * Returns the prompt for new setup accession login labels
@@ -77,14 +86,9 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
                                                                                        .toString())
                                                               .setRequired(true));
 
-            l = new ArrayList<OptionListItem>();
-            l.add(new OptionListItem("I", "Iowa City"));
-            l.add(new OptionListItem("A", "Ankeny"));
-            l.add(new OptionListItem("L", "Lakeside"));
-
             p.add(new Prompt("LOCATION", Prompt.Type.ARRAY).setPrompt("Location:")
                                                            .setWidth(120)
-                                                           .setOptionList(l)
+                                                           .setOptionList(getLocations())
                                                            .setRequired(true));
 
             prn = printer.getListByType("zpl");
@@ -107,9 +111,10 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
     public ReportStatus runReport(ArrayList<QueryData> paramList) throws Exception {
         int i, j, samples, containers, laccession;
         File tempFile;
-        String received, location, printer, printstat;
+        String received, location, locationId, printer, printstat;
         ReportStatus status;
         HashMap<String, QueryData> param;
+        DictionaryDO locationDO;
         SystemVariableDO data;
         PrintStream ps;
 
@@ -137,12 +142,21 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
                 throw new InconsistencyException("Number of sample labels or container labels\ncan not exceed 300 and 50 respectively");
         }
         received = ReportUtil.getSingleParameter(param, "RECEIVED");
-        location = ReportUtil.getSingleParameter(param, "LOCATION");
+        locationId = ReportUtil.getSingleParameter(param, "LOCATION");
         printer = ReportUtil.getSingleParameter(param, "BARCODE");
 
-        if (DataBaseUtil.isEmpty(received) || DataBaseUtil.isEmpty(location) ||
+        if (DataBaseUtil.isEmpty(received) || DataBaseUtil.isEmpty(locationId) ||
             DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify # of samples, # of continers, date received,\nlocation, and printer for this report");
+
+        location = "";
+        try {
+            locationDO = dictionary.getById(Integer.valueOf(locationId));
+            location = locationDO.getEntry().substring(0, 1);
+        } catch (Exception e) {
+            log.error("Error looking up dictionary for location", e);
+            throw e;
+        }
 
         status.setMessage("Outputing report").setPercentComplete(0);
 
@@ -161,7 +175,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
                 sysvar.abortUpdate(data.getId());
             throw e;
         }
-
+        
         log.info("Starting at accession # "+laccession+" for "+samples+" labels");
 
         status.setPercentComplete(50);
@@ -209,14 +223,9 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
                                                               .setDatetimeEndCode(Prompt.Datetime.MINUTE)
                                                               .setRequired(false));
 
-            l = new ArrayList<OptionListItem>();
-            l.add(new OptionListItem("I", "Iowa City"));
-            l.add(new OptionListItem("A", "Ankeny"));
-            l.add(new OptionListItem("L", "Lakeside"));
-
             p.add(new Prompt("LOCATION", Prompt.Type.ARRAY).setPrompt("Location:")
                                                            .setWidth(120)
-                                                           .setOptionList(l)
+                                                           .setOptionList(getLocations())
                                                            .setRequired(true));
 
             prn = printer.getListByType("zpl");
@@ -237,9 +246,10 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
     @RolesAllowed("r_loginlabelrep-select")
     public ReportStatus runAdditionalReport(ArrayList<QueryData> paramList) throws Exception {
         int i, accession, starting, containers, laccession;
-        String accStr, received, location, printer, printstat, parts[];
+        String accStr, received, location, locationId, printer, printstat, parts[];
         ReportStatus status;
         HashMap<String, QueryData> param;
+        DictionaryDO locationDO;
         SampleDO samdata;
         SystemVariableDO sysdata;
         PrintStream ps;
@@ -268,10 +278,10 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
                 throw new InconsistencyException("Number of requested container lables 50");
         }
         received = ReportUtil.getSingleParameter(param, "RECEIVED");
-        location = ReportUtil.getSingleParameter(param, "LOCATION");
+        locationId = ReportUtil.getSingleParameter(param, "LOCATION");
         printer = ReportUtil.getSingleParameter(param, "BARCODE");
 
-        if (DataBaseUtil.isEmpty(accStr) || DataBaseUtil.isEmpty(location) ||
+        if (DataBaseUtil.isEmpty(accStr) || DataBaseUtil.isEmpty(locationId) ||
             DataBaseUtil.isEmpty(printer))
             throw new InconsistencyException("You must specify accession number, location, and printer for this report");
 
@@ -287,6 +297,15 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
                 starting = 0;
         } catch (Exception e) {
             throw new InconsistencyException("Accession number must be in format 12345 or 12345-01\nwhere 01 is the starting container");
+        }
+
+        location = "";
+        try {
+            locationDO = dictionary.getById(Integer.valueOf(locationId));
+            location = locationDO.getEntry().substring(0, 1);
+        } catch (Exception e) {
+            log.error("Error looking up dictionary for location", e);
+            
         }
 
         status.setMessage("Outputing report").setPercentComplete(0);
@@ -329,4 +348,20 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         return status;
     }
 
+    private ArrayList<OptionListItem> getLocations() {
+        ArrayList<DictionaryDO> d;
+        ArrayList<OptionListItem> l;
+
+        l = new ArrayList<OptionListItem>();
+        l.add(new OptionListItem("", ""));
+        try {
+            d = category.getBySystemName("order_ship_from").getDictionaryList();
+            for (DictionaryDO e : d)
+                l.add(new OptionListItem(e.getId().toString(), e.getEntry()));
+        } catch (Exception anyE) {
+            anyE.printStackTrace();
+        }
+
+        return l;
+    }
 }
