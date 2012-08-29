@@ -72,7 +72,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class FinalReportPrivateWellScreen extends Screen {
 
-    private FinalReportFormVO                     data;
+    private FinalReportFormVO                 data;
     private ModulePermission                  userPermission;
     private CalendarLookUp                    releasedFrom, releasedTo, collectedFrom, collectedTo;
     private TextBox                           collectorName, accessionFrom, accessionTo,
@@ -337,6 +337,7 @@ public class FinalReportPrivateWellScreen extends Screen {
         });
 
         projectCode = (Dropdown)def.getWidget(SampleWebMeta.getProjectId());
+        projectCode.setMultiSelect(true);
         addScreenHandler(projectCode, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 projectCode.setSelection(data.getProjectCode());
@@ -457,8 +458,8 @@ public class FinalReportPrivateWellScreen extends Screen {
     
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
-        ArrayList<IdNameVO> list;
-        ArrayList<DictionaryDO> lst;
+        ArrayList<IdNameVO> projects;
+        ArrayList<DictionaryDO> entries;
         TableDataRow row;
         /*
          * Initializing the project code drop down
@@ -467,11 +468,11 @@ public class FinalReportPrivateWellScreen extends Screen {
         model.add(new TableDataRow(null, ""));
 
         try {
-            list = service.callList("getPrivateWellProjectList");
-            for (int counter = 0; counter < list.size(); counter++ ) {
-                row = new TableDataRow(list.get(counter).getId(), list.get(counter).getName());
+            projects = service.callList("getPrivateWellProjectList");
+            for (IdNameVO p : projects) {
+                row = new TableDataRow(p.getId(), p.getName());
                 model.add(row);
-            } 
+            }
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }       
@@ -481,8 +482,8 @@ public class FinalReportPrivateWellScreen extends Screen {
          * status.
          */
         model = new ArrayList<TableDataRow>();
-        lst = CategoryCache.getBySystemName("sample_status");
-        for (DictionaryDO d : lst) {
+        entries = CategoryCache.getBySystemName("sample_status");
+        for (DictionaryDO d : entries) {
             row = new TableDataRow(d.getId(), d.getEntry());
             model.add(row);
         }
@@ -604,18 +605,18 @@ public class FinalReportPrivateWellScreen extends Screen {
             return;
         }
         try {
+            window.setBusy(consts.get("genReportMessage"));
             st = service.call("runReportForWeb", query);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "report?file=" + st.getMessage();
 
                 Window.open(URL.encode(url), "FinalReport", null);
-                window.setStatus("Generated file " + st.getMessage(), "");
-            } else {
-                window.setStatus(st.getMessage(), "");
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
+        
+        window.clearStatus();
     }
 
     private ArrayList<TableDataRow> getTableModel() {

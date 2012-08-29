@@ -32,6 +32,7 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.FinalReportWebVO;
+import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission;
@@ -70,13 +71,14 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class FinalReportSDWISScreen extends Screen {
 
-    private FinalReportFormVO               data;
+    private FinalReportFormVO           data;
     private ModulePermission            userPermission;
     private CalendarLookUp              releasedFrom, releasedTo, collectedFrom, 
                                         collectedTo;
     private TextBox                     collectorName, accessionFrom, accessionTo, 
                                         clientReference, collectionSite, pwsId,
                                         facilityId;
+    private Dropdown<Integer>           projectCode;
     private ReportScreenUtility         util;
     private DeckPanel                   deckpanel;
     private Decks                       deck;
@@ -334,6 +336,22 @@ public class FinalReportSDWISScreen extends Screen {
             }            
         }); 
         
+        projectCode = (Dropdown)def.getWidget(SampleWebMeta.getProjectId());
+        projectCode.setMultiSelect(true);
+        addScreenHandler(projectCode, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                projectCode.setSelection(data.getProjectCode());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                data.setProjectCode(event.getValue());
+            }
+            
+            public void onStateChange(StateChangeEvent<State> event) {
+                projectCode.enable(EnumSet.of(State.ADD).contains(event.getState()));
+            }
+        });
+        
         getSamplesButton = (AppButton)def.getWidget("getSampleListButton");
         addScreenHandler(getSamplesButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -444,13 +462,31 @@ public class FinalReportSDWISScreen extends Screen {
     
     private void initializeDropdowns() {
         ArrayList<TableDataRow> model;
-        ArrayList<DictionaryDO> list;
+        ArrayList<IdNameVO> projects;
+        ArrayList<DictionaryDO> entries;
         TableDataRow row;
+        
+        /*
+         * Initializing the project code drop down
+         */
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+
+        try {
+            projects = service.callList("getSDWISProjectList");
+            for (IdNameVO p : projects) {
+                row = new TableDataRow(p.getId(), p.getName());
+                model.add(row);
+            } 
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+        }       
+        projectCode.setModel(model);
 
         model = new ArrayList<TableDataRow>();        
         
-        list = CategoryCache.getBySystemName("sample_status");
-        for (DictionaryDO d : list) {         
+        entries = CategoryCache.getBySystemName("sample_status");
+        for (DictionaryDO d : entries) {         
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
             model.add(row);
@@ -571,18 +607,17 @@ public class FinalReportSDWISScreen extends Screen {
             return;
         }
         try {
+            window.setBusy(consts.get("genReportMessage"));
             st = service.call("runReportForWeb", query);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "report?file=" + st.getMessage();
-
                 Window.open(URL.encode(url), "FinalReport", null);
-                window.setStatus("Generated file " + st.getMessage(), "");
-            } else {
-                window.setStatus(st.getMessage(), "");
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
+        
+        window.clearStatus();
     }
 
     private ArrayList<TableDataRow> getTableModel() {

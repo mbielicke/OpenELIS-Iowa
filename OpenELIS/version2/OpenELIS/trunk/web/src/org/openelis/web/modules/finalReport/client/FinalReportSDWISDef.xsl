@@ -140,6 +140,14 @@ UIRF Software License are applicable instead of those above.
                       <textbox field="String" key="{meta:getSDWISFacilityId()}" max="60" tab="{meta:getReleasedDateFrom()},{meta:getPwsNumber0()}" width="202" />
                     </widget>
                   </row>
+                  <row>
+                    <text style="Prompt">
+                      <xsl:value-of select='resource:getString($constants,"projectCode")' />:
+                    </text>
+                    <widget colspan="4">
+                      <dropdown field="Integer" key="{meta:getProjectId()}" tab="{meta:getReleasedDateFrom()},{meta:getSDWISFacilityId()}" width="202" />
+                    </widget>
+                  </row>
                 </TablePanel>
               </VerticalPanel>
               <TablePanel style="HorizontalDivider" width="100%">
