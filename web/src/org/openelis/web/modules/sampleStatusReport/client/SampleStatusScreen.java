@@ -237,6 +237,7 @@ public class SampleStatusScreen extends Screen {
         });
 
         projectCode = (Dropdown)def.getWidget(SampleWebMeta.getProjectId());
+        projectCode.setMultiSelect(true);
         addScreenHandler(projectCode, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 projectCode.setSelection(data.getProjectCode());

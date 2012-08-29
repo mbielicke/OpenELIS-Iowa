@@ -71,7 +71,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 
 public class FinalReportEnvironmentalScreen extends Screen {
 
-    private FinalReportFormVO               data;
+    private FinalReportFormVO           data;
     private ModulePermission            userPermission;
     private CalendarLookUp              releasedFrom, releasedTo, collectedFrom, 
                                         collectedTo;
@@ -326,6 +326,7 @@ public class FinalReportEnvironmentalScreen extends Screen {
         });
 
         projectCode = (Dropdown)def.getWidget(SampleWebMeta.getProjectId());
+        projectCode.setMultiSelect(true);
         addScreenHandler(projectCode, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
                 projectCode.setSelection(data.getProjectCode());
@@ -591,18 +592,17 @@ public class FinalReportEnvironmentalScreen extends Screen {
             return;
         }
         try {
+            window.setBusy(consts.get("genReportMessage"));
             st = service.call("runReportForWeb", query);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "report?file=" + st.getMessage();
-
                 Window.open(URL.encode(url), "FinalReport", null);
-                window.setStatus("Generated file " + st.getMessage(), "");
-            } else {
-                window.setStatus(st.getMessage(), "");
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
+        
+        window.clearStatus();
     }
 
     private ArrayList<TableDataRow> getTableModel() {

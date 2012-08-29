@@ -1155,6 +1155,7 @@ public class DataViewEnvironmentalScreen extends Screen {
         
         query.setFields(queryList);
         data.setQueryFields(query.getFields());
+        
         window.setBusy(consts.get("querying"));
 
         try {
@@ -1235,18 +1236,17 @@ public class DataViewEnvironmentalScreen extends Screen {
             }
         }
         try {
+            window.setBusy(consts.get("genReportMessage"));
             st = service.call("runReportForWebEnvironmental", data);
             if (st.getStatus() == ReportStatus.Status.SAVED) {
                 url = "report?file=" + st.getMessage();
-
                 Window.open(URL.encode(url), "FinalReport", null);
-                window.setStatus("Generated file " + st.getMessage(), "");
-            } else {
-                window.setStatus(st.getMessage(), "");
             }
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
+        
+        window.clearStatus();
     }
 
     private ArrayList<TableDataRow> getAnalyteTableModel() {
