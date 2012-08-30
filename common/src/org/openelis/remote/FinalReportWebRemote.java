@@ -19,5 +19,7 @@ public interface FinalReportWebRemote {
     
     public ArrayList<IdNameVO> getEnvironmentalProjectList() throws Exception;
     
-    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception;    
+    public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception;
+
+    public ArrayList<IdNameVO> getSDWISProjectList() throws Exception;   
 }

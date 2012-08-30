@@ -366,4 +366,22 @@ public class FinalReportWebBean implements FinalReportWebRemote {
 
         return new ArrayList<IdNameVO>();
     }
+    
+    public ArrayList<IdNameVO> getSDWISProjectList() throws Exception {
+        String clause;
+
+        clause = EJBFactory.getUserCache()
+                           .getPermission()
+                           .getModule("w_final_sdwis")
+                           .getClause();
+
+        /*
+         * if clause is null, then the previous method returns an empty HashMap,
+         * so we need to check if the list is empty or not.
+         */
+        if (clause != null)
+            return project.fetchForOrganizations(clause);
+
+        return new ArrayList<IdNameVO>();
+    }
 }

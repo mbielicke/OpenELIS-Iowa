@@ -118,4 +118,8 @@ public class FinalReportService {
     public ArrayList<IdNameVO> getPrivateWellProjectList() throws Exception {        
         return EJBFactory.getFinalReportWeb().getPrivateWellProjectList();
     }
+    
+    public ArrayList<IdNameVO> getSDWISProjectList() throws Exception {        
+        return EJBFactory.getFinalReportWeb().getSDWISProjectList();
+    }
 }
