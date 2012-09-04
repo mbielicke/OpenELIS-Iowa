@@ -27,7 +27,7 @@ public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote {
     protected ArrayList<Printer>       printerList;
     protected HashMap<String, Printer> printerHash;
     
-    private static final Logger log = Logger.getLogger(CronSchedulerBean.class);
+    private static final Logger log = Logger.getLogger(PrinterCacheBean.class);
 
     /**
      * Constructor
