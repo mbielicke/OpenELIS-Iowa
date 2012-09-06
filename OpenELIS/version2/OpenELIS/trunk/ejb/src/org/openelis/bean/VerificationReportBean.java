@@ -208,7 +208,7 @@ public class VerificationReportBean implements VerificationReportRemote {
             status.setPercentComplete(100);
 
             if (ReportUtil.isPrinter(printer)) {
-                printstat = ReportUtil.print(tempFile, printer, 1);
+                printstat = ReportUtil.print(tempFile, printer, 1, "sides=two-sided-long-edge");
                 status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
             } else {
                 tempFile = ReportUtil.saveForUpload(tempFile);
