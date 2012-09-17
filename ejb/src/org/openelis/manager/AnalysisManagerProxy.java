@@ -279,29 +279,36 @@ public class AnalysisManagerProxy {
                 (anReleasedId.equals(analysisDO.getStatusId()) && analysisDO.getReleasedDate() != null))
                 continue;
                             
-            if (analysisDO.getTestId() == null)
-                errorsList.add(new FormErrorException("analysisTestIdMissing", sampleItemSequence));
-
-            if (analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
-                errorsList.add(new FormErrorException("analysisSectionIdMissing",
-                                                      analysisDO.getTestName(),
-                                                      analysisDO.getMethodName()));
-
-            // if unit is null, check the test definition to see if all sample types
-            // have units defined. if so, require the user to enter units
-            if (analysisDO.getTestId() != null &&
-                analysisDO.getUnitOfMeasureId() == null &&
-                !testMan.getSampleTypes().hasEmptyUnit())
-                errorsList.add(new FormErrorException("analysisUnitRequired",
-                                                      analysisDO.getTestName(),
-                                                      analysisDO.getMethodName()));
-
-            if (analysisDO.getStartedDate() != null && analysisDO.getCompletedDate() != null &&
-                analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
-                errorsList.add(new FormErrorException("startedDateInvalidError",
-                                                      analysisDO.getTestName(),
-                                                      analysisDO.getMethodName()));
-
+            //
+            // Only validate the analysis if it has changed, so we don't cause
+            // problems when a user updates one analysis on a sample and another
+            // one has unrelated validation errors
+            //
+            if (analysisDO.isChanged()) {
+                if (analysisDO.getTestId() == null)
+                    errorsList.add(new FormErrorException("analysisTestIdMissing", sampleItemSequence));
+    
+                if (analysisDO.getTestId() != null && analysisDO.getSectionId() == null)
+                    errorsList.add(new FormErrorException("analysisSectionIdMissing",
+                                                          analysisDO.getTestName(),
+                                                          analysisDO.getMethodName()));
+    
+                // if unit is null, check the test definition to see if all sample types
+                // have units defined. if so, require the user to enter units
+                if (analysisDO.getTestId() != null &&
+                    analysisDO.getUnitOfMeasureId() == null &&
+                    !testMan.getSampleTypes().hasEmptyUnit())
+                    errorsList.add(new FormErrorException("analysisUnitRequired",
+                                                          analysisDO.getTestName(),
+                                                          analysisDO.getMethodName()));
+    
+                if (analysisDO.getStartedDate() != null && analysisDO.getCompletedDate() != null &&
+                    analysisDO.getStartedDate().compareTo(analysisDO.getCompletedDate()) == 1)
+                    errorsList.add(new FormErrorException("startedDateInvalidError",
+                                                          analysisDO.getTestName(),
+                                                          analysisDO.getMethodName()));
+            }
+            
             item = man.getItemAt(i);
             // validate the children
 
