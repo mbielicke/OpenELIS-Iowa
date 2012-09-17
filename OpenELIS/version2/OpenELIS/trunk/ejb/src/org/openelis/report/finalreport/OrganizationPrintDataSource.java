@@ -42,7 +42,7 @@ public class OrganizationPrintDataSource implements JRDataSource {
     public boolean next() throws JRException {
         while (iter != null && iter.hasNext()) {
             i++;
-log.info("Processed "+i+" records in report");
+            log.debug("Processed "+i+" records in report");
             op = (OrganizationPrint) iter.next();
             if ((Type.PRINT.equals(type) && DataBaseUtil.isEmpty(op.getFaxNumber())) ||
                 (Type.FAX.equals(type) && !DataBaseUtil.isEmpty(op.getFaxNumber()))) {
