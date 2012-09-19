@@ -415,9 +415,9 @@ public class DataViewBean implements DataViewRemote {
         ArrayList<AuxDataViewDO> auxList;
         Object[] vo;
     
-        excludeOverride = "Y".equals(data.getExcludeResultOverride()) ? true : false;
-        excludeResults = "Y".equals(data.getExcludeResults()) ? true : false;
-        excludeAuxData = "Y".equals(data.getExcludeAuxData()) ? true : false;
+        excludeOverride = "Y".equals(data.getExcludeResultOverride());
+        excludeResults = "Y".equals(data.getExcludeResults());
+        excludeAuxData = "Y".equals(data.getExcludeAuxData());
         
         fields = data.getQueryFields();
                 
@@ -1057,25 +1057,26 @@ public class DataViewBean implements DataViewRemote {
              * samples/analyses with results overriden and this sample has such 
              * a qa event  
              */
-            if (!sampleId.equals(prevSamId)) {
-                if (excludeOverride) {
-                    try {
-                        sampleQaEvent.fetchResultOverrideBySampleId(sampleId);
-                        sampleOverriden = true;
+            if ( !sampleId.equals(prevSamId)) {
+                try {
+                    sampleQaEvent.fetchResultOverrideBySampleId(sampleId);
+                    sampleOverriden = true;
+                    if (excludeOverride) {
                         prevSamId = sampleId;
                         continue;
-                    } catch (NotFoundException e) {
-                        sampleOverriden = false;
                     }
+                } catch (NotFoundException e) {
+                    sampleOverriden = false;
                 }
+
                 sam = null;
-                proj = null;        
+                proj = null;
                 org = null;
                 env = null;
                 well = null;
                 sdwis = null;
                 collDateTime = null;
-            } else if (sampleOverriden) {
+            } else if (sampleOverriden && excludeOverride) {
                 continue;
             }
             
@@ -1085,26 +1086,26 @@ public class DataViewBean implements DataViewRemote {
                  * exclude samples/analyses with results overriden and this
                  * analysis has such a qa event
                  */
-                if ( !analysisId.equals(prevAnalysisId)) {
+                if (!analysisId.equals(prevAnalysisId)) {
                     anaOverriden = false;
                     aqeList = null;
-                    if (excludeOverride) {
-                        try {
-                            aqeList = analysisQaEvent.fetchByAnalysisId(analysisId);
-                            for (i = 0; i < aqeList.size(); i++ ) {
-                                aqe = aqeList.get(i);
-                                if (qaResultOverrideTypeId.equals(aqe.getTypeId())) {
-                                    anaOverriden = true;
+                    try {
+                        aqeList = analysisQaEvent.fetchByAnalysisId(analysisId);
+                        for (i = 0; i < aqeList.size(); i++ ) {
+                            aqe = aqeList.get(i);
+                            if (qaResultOverrideTypeId.equals(aqe.getTypeId())) {
+                                anaOverriden = true;
+                                if (excludeOverride) {
                                     addResultRow = false;
                                     prevAnalysisId = analysisId;
-                                    break;
                                 }
+                                break;
                             }
-                        } catch (NotFoundException e) {
-                            anaOverriden = false;
                         }
+                    } catch (NotFoundException e) {
+                        anaOverriden = false;
                     }
-                } else if (anaOverriden) {
+                } else if (anaOverriden && excludeOverride) {
                     addResultRow = false;
                 }
             }
@@ -1411,9 +1412,15 @@ public class DataViewBean implements DataViewRemote {
                 // set the analyte's name and the result's value 
                 //
                 cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
-                cell.setCellValue(res.getAnalyteName());
+                cell.setCellValue(res.getAnalyteName());                
                 cell = resRow.createCell(resRow.getPhysicalNumberOfCells());
-                cell.setCellValue(resultVal);
+                
+                /*
+                 * results for an analysis are not shown if it or the sample
+                 * that it belongs to has a qa event of type "result override" 
+                 */
+                if (!anaOverriden && !sampleOverriden)
+                    cell.setCellValue(resultVal);
                 
                 sortOrder = (Integer)res.getResultSortOrder();
                 rowGroup = (Integer)res.getResultTestAnalyteRowGroup();      
@@ -1499,15 +1506,13 @@ public class DataViewBean implements DataViewRemote {
                             
                             resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId());
                             cell = resRow.createCell(anaIndex);
-                            cell.setCellValue(resultVal);    
                         } else if (anaIndex == currColumn) {   
                             /*
                              * we set the value in this cell if this result's analyte
                              * is shown in this column
                              */
-                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId());
+                            resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId());                            
                             cell = resRow.createCell(currColumn++);
-                            cell.setCellValue(resultVal);
                         } else {
                             /*
                              * if this result's analyte is not shown in this column
@@ -1515,12 +1520,20 @@ public class DataViewBean implements DataViewRemote {
                              */
                             resultVal = getValue(rvdo.getValue(), resultDictId, rvdo.getTypeId());
                             cell = resRow.createCell(anaIndex);
-                            cell.setCellValue(resultVal);                            
                         }
+                        
+                        /*
+                         * results for an analysis are not shown if it or the sample
+                         * that it belongs to has a qa event of type "result override" 
+                         */
+                        if (!anaOverriden && !sampleOverriden)
+                            cell.setCellValue(resultVal);
+                        
                         prevSortOrder = currSortOrder;
                     }                   
                 }
             }
+            
             if (addAuxDataRow) { 
                 //
                 // set the analyte's name and the aux data's value                
