@@ -19,6 +19,7 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -189,11 +190,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         changeDomainPermission = UserCache.getPermission().getModule("sampledomainchange");
         if (changeDomainPermission == null)
             changeDomainPermission = new ModulePermission();
-        /*
-         * this is done here in order to make sure that if the screen is brought
-         * up from some other screen (i.e. window != null) then its widgets are
-         * initialized before the constructor ends execution
-         */
 
         DeferredCommand.addCommand(new Command() {
             public void execute() {
@@ -1981,11 +1977,20 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         HasField field;
 
         formErrors = new ArrayList<LocalizedException>();
+        
         for (Exception ex : errors.getErrorList()) {
             if (ex instanceof TableFieldErrorException) {
                 tableE = (TableFieldErrorException)ex;
                 tableWid = (TableWidget)def.getWidget(tableE.getTableKey());
                 tableWid.setCellException(tableE.getRowIndex(), tableE.getFieldName(), tableE);
+                
+                /*
+                 * FormErrorExceptions are added even when the exceptions are for 
+                 * table cells to make it possible to show  the errors even when
+                 * the tables are not visible, because their tab not being shown
+                 * on the screen presently.
+                 */
+                formErrors.add(new FormErrorException(tableE.getKey(), tableE.getParams()));
             } else if (ex instanceof FormErrorException) {
                 formE = (FormErrorException)ex;
                 formErrors.add(formE);
@@ -1993,8 +1998,17 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 fieldE = (FieldErrorException)ex;
                 field = (HasField)def.getWidget(fieldE.getFieldName());
 
-                if (field != null)
+                if (field != null) {
                     field.addException(fieldE);
+                    
+                    /*
+                     * FormErrorExceptions are added even when the exceptions are 
+                     * for individual fields to make it possible to show the errors 
+                     * even when the fields are not visible, because their tab not 
+                     * being shown on the screen presently.
+                     */
+                    formErrors.add(new FormErrorException(fieldE.getKey(), fieldE.getParams()));
+                }
 
                 if (ex instanceof FieldErrorWarning)
                     formErrors.add(new FormErrorWarning(fieldE.getKey(), fieldE.getParams()));
@@ -2003,11 +2017,11 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         }
 
-        if (formErrors.size() == 0)
+        if (formErrors.size() == 0) {
             window.setError(consts.get("correctErrors"));
-        else if (formErrors.size() == 1)
+        } else if (formErrors.size() == 1) {
             window.setError(formErrors.get(0).getMessage());
-        else {
+        } else {
             window.setError("(Error 1 of " + formErrors.size() + ") " +
                             formErrors.get(0).getMessage());
             window.setMessagePopup(formErrors, "ErrorPanel");

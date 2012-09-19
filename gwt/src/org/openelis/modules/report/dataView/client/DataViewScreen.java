@@ -279,7 +279,7 @@ public class DataViewScreen extends Screen {
         analysisReleasedDateFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getAnalysisReleasedDateFrom());
         addScreenHandler(analysisReleasedDateFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisReleasedDateFrom.setValue(DataBaseUtil.toYD(data.getAnalysisReleasedDateFrom()));
+                analysisReleasedDateFrom.setValue(DataBaseUtil.toYM(data.getAnalysisReleasedDateFrom()));
             }
             
             public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -294,7 +294,7 @@ public class DataViewScreen extends Screen {
         analysisReleasedDateTo = (CalendarLookUp)def.getWidget(SampleWebMeta.getAnalysisReleasedDateTo());
         addScreenHandler(analysisReleasedDateTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                analysisReleasedDateTo.setValue(DataBaseUtil.toYD(data.getAnalysisReleasedDateTo()));
+                analysisReleasedDateTo.setValue(DataBaseUtil.toYM(data.getAnalysisReleasedDateTo()));
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -399,7 +399,7 @@ public class DataViewScreen extends Screen {
         receivedDateFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getReceivedDateFrom());
         addScreenHandler(receivedDateFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                receivedDateFrom.setValue(DataBaseUtil.toYD(data.getReceivedDateFrom()));
+                receivedDateFrom.setValue(DataBaseUtil.toYM(data.getReceivedDateFrom()));
             }
             
             public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -414,7 +414,7 @@ public class DataViewScreen extends Screen {
         receivedDateTo = (CalendarLookUp)def.getWidget(SampleWebMeta.getReceivedDateTo());
         addScreenHandler(receivedDateTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                receivedDateTo.setValue(DataBaseUtil.toYD(data.getReceivedDateTo()));
+                receivedDateTo.setValue(DataBaseUtil.toYM(data.getReceivedDateTo()));
             }
             
             public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -429,7 +429,7 @@ public class DataViewScreen extends Screen {
         enteredDateFrom = (CalendarLookUp)def.getWidget(SampleWebMeta.getEnteredDateFrom());
         addScreenHandler(enteredDateFrom, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                enteredDateFrom.setValue(DataBaseUtil.toYD(data.getEnteredDateFrom()));
+                enteredDateFrom.setValue(DataBaseUtil.toYM(data.getEnteredDateFrom()));
             }       
             
             public void onValueChange(ValueChangeEvent<Datetime> event) {
@@ -444,7 +444,7 @@ public class DataViewScreen extends Screen {
         enteredDateTo = (CalendarLookUp)def.getWidget(SampleWebMeta.getEnteredDateTo());
         addScreenHandler(enteredDateTo, new ScreenEventHandler<Datetime>() {
             public void onDataChange(DataChangeEvent event) {
-                enteredDateTo.setValue(DataBaseUtil.toYD(data.getEnteredDateTo()));
+                enteredDateTo.setValue(DataBaseUtil.toYM(data.getEnteredDateTo()));
             }
 
             public void onValueChange(ValueChangeEvent<Datetime> event) {
