@@ -93,14 +93,14 @@ public class AnalysisManagerProxy {
     }
 
     public int update(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
-        boolean        iUnresolved;
-        int            unresolved;
+        boolean        unresolved;
+        int            numUnresolved;
         Integer        oldId, parentId, prepId;
         AnalysisViewDO analysisDO;
 
-        unresolved = 0;
+        numUnresolved = 0;
         for (int i = 0; i < man.count(); i++ ) {
-            iUnresolved = false;
+            unresolved = false;
             analysisDO = man.getAnalysisAt(i);
 
             // try to resolve a negative prep analysis id
@@ -109,7 +109,7 @@ public class AnalysisManagerProxy {
                 if (prepId != null) {
                     analysisDO.setPreAnalysisId(prepId);
                 } else {
-                    iUnresolved = true;
+                    unresolved = true;
                 }
             }
 
@@ -119,13 +119,13 @@ public class AnalysisManagerProxy {
                 if (parentId != null) {
                     analysisDO.setParentAnalysisId(parentId);
                 } else {
-                    iUnresolved = true;
+                    unresolved = true;
                 }
             }
             
             // if both the prep and parent ids are resolved, then add/update the
             // analysis and set the mappings in the hash, otherwise skip
-            if (!iUnresolved) {
+            if (!unresolved) {
                 if (!idHash.containsKey(analysisDO.getId())) {
                     oldId = analysisDO.getId();
                     if (oldId < 0) {
@@ -137,11 +137,11 @@ public class AnalysisManagerProxy {
                     idHash.put(analysisDO.getId(), null);
                 }
             } else {
-                unresolved++;
+                numUnresolved++;
             }
         }
         
-        return unresolved;
+        return numUnresolved;
     }
 
     private void add(AnalysisManager man, AnalysisViewDO analysisDO, int i) throws Exception {
