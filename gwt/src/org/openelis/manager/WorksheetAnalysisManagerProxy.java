@@ -42,9 +42,9 @@ public class WorksheetAnalysisManagerProxy {
         return service.call("fetchWorksheetAnalysisByWorksheetItemId", worksheetItemId);
     }
 
-    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
+    public int add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
         assert false : "not supported";
-        return null;
+        return -1;
     }
 
     public WorksheetAnalysisManager update(WorksheetAnalysisManager manager) throws Exception {

@@ -61,6 +61,10 @@ public class WorksheetService {
         return EJBFactory.getWorksheetManager().fetchWithItemsAndNotes(id);
     }
 
+    public WorksheetManager fetchWithAllData(Integer id) throws Exception {
+        return EJBFactory.getWorksheetManager().fetchWithAllData(id);
+    }
+
     public WorksheetManager add(WorksheetManager manager) throws Exception {
         return EJBFactory.getWorksheetManager().add(manager);
     }

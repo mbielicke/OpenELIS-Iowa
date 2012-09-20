@@ -38,6 +38,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
 
 import org.openelis.cache.CategoryCache;
@@ -48,6 +49,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
@@ -62,6 +64,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
+//import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -82,6 +85,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
+import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
@@ -104,6 +108,7 @@ import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
 import org.openelis.meta.WorksheetCompletionMeta;
+import org.openelis.modules.history.client.HistoryScreen;
 import org.openelis.modules.note.client.EditNoteScreen;
 import org.openelis.modules.note.client.NotesTab;
 import org.openelis.modules.sample.client.TestPrepUtility;
@@ -112,9 +117,9 @@ import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
 
 public class WorksheetCompletionScreen extends Screen {
 
-    private boolean              closeWindow, isPopup, successfulLoad, tableLoaded;
+    private boolean              closeWindow, isPopup, successfulLoad, tableLoaded;//, commitDone;
     private Integer              statusWorking, statusFailedRun, origStatus;
-    private ScreenService        instrumentService, sysVarService;
+    private ScreenService        instrumentService, sysVarService, worksheetService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
@@ -135,6 +140,7 @@ public class WorksheetCompletionScreen extends Screen {
     protected Confirm                   worksheetExitConfirm, worksheetEditConfirm;
     protected Dropdown<Integer>         statusId;
     protected EditNoteScreen            editNote;
+    protected MenuItem                  worksheetHistory;
     protected NoteViewDO                failedRunNote;
     protected TextBox<Integer>          worksheetId, relatedWorksheetId;
     protected WorksheetFileUploadScreen wFileUploadScreen;
@@ -162,6 +168,7 @@ public class WorksheetCompletionScreen extends Screen {
         service           = new ScreenService("controller?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
         sysVarService     = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
+        worksheetService  = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
         
         userPermission = UserCache.getPermission().getModule("worksheet");
         if (userPermission == null)
@@ -264,6 +271,17 @@ public class WorksheetCompletionScreen extends Screen {
             }
         });
 
+        worksheetHistory = (MenuItem)def.getWidget("worksheetHistory");
+        addScreenHandler(worksheetHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                worksheetHistory();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                worksheetHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+                
         worksheetId = (TextBox)def.getWidget(WorksheetCompletionMeta.getId());
         addScreenHandler(worksheetId, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
@@ -535,38 +553,36 @@ public class WorksheetCompletionScreen extends Screen {
         ((Dropdown<Integer>)instrumentId.getColumns().get(2).getColumnWidget()).setModel(model);
     }
     
-    protected boolean fetchById(Integer id) {
+    protected void fetchById(Integer id) {
         if (id == null) {
             manager = WorksheetManager.getInstance();
             setState(State.DEFAULT);
+            DataChangeEvent.fire(this);
+            window.clearStatus();
         } else {
             window.setBusy(consts.get("fetching"));
-            try {
-                switch (tab) {
-                    case WORKSHEET:
-                        manager = WorksheetManager.fetchWithItems(id);
-                        break;
-                        
-                    case NOTE:
-                        manager = WorksheetManager.fetchWithNotes(id);
-                        break;
+            final WorksheetCompletionScreen wcs = this;
+//            worksheetService.call("fetchWithItemsAndNotes", id, new AsyncCallback<WorksheetManager>() {
+            worksheetService.call("fetchWithAllData", id, new AsyncCallback<WorksheetManager>() {
+                public void onSuccess(WorksheetManager newMan) {
+                    manager = newMan;
+                    setState(State.DISPLAY);
+                    DataChangeEvent.fire(wcs);
+                    window.clearStatus();
                 }
-                setState(State.DISPLAY);
-            } catch (NotFoundException e) {
-                fetchById(null);
-                window.setDone(consts.get("noRecordsFound"));
-                return false;
-            } catch (Exception e) {
-                fetchById(null);
-                e.printStackTrace();
-                Window.alert(consts.get("fetchFailed") + e.getMessage());
-                return false;
-            }
+                
+                public void onFailure(Throwable error) {
+                    if (error instanceof NotFoundException ) {
+                        fetchById(null);
+                        window.setDone(consts.get("noRecordsFound"));
+                    } else {
+                        fetchById(null);
+                        error.printStackTrace();
+                        Window.alert(consts.get("fetchFailed") + error.getMessage());
+                    }
+                }
+            });
         }
-        DataChangeEvent.fire(this);
-        window.clearStatus();
-
-        return true;
     }
     
     private void drawTabs() {
@@ -607,7 +623,7 @@ public class WorksheetCompletionScreen extends Screen {
                     }
                 });
             }
-            
+
             modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
             modal.setName(consts.get("worksheetLookup"));
             modal.setContent(wLookupScreen);
@@ -620,21 +636,29 @@ public class WorksheetCompletionScreen extends Screen {
     
     protected void update() {
         window.setBusy(consts.get("lockForUpdate"));
-
-        try {
-            manager = manager.fetchForUpdate();
-
-            origStatus = manager.getWorksheet().getStatusId();
-            setState(State.UPDATE);
-            DataChangeEvent.fire(this);
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-        }
-        window.clearStatus();
+        final WorksheetCompletionScreen wcs = this;
+        worksheetService.call("fetchForUpdate", manager.getWorksheet().getId(), new AsyncCallback<WorksheetManager>() {
+            public void onSuccess(WorksheetManager newMan) {
+                manager = newMan;
+                origStatus = manager.getWorksheet().getStatusId();
+                setState(State.UPDATE);
+                DataChangeEvent.fire(wcs);
+                window.clearStatus();
+            }
+            
+            public void onFailure(Throwable error) {
+                Window.alert(error.getMessage());
+                window.clearStatus();
+            }
+        });
     }
 
     protected void commit() {
-        setFocus(null);
+//        long t0, t1;
+//        AsyncCallback<ReportStatus> cb;
+        
+//        commitDone = false;
+//        setFocus(null);
 
         if (!validate()) {
             Window.alert(consts.get("correctErrors"));
@@ -642,18 +666,49 @@ public class WorksheetCompletionScreen extends Screen {
         }
 
         window.setBusy(consts.get("updating"));
-        try {
-            manager = manager.update();
-            setState(State.DISPLAY);
-            DataChangeEvent.fire(this);
-            window.setDone(consts.get("updatingComplete"));
-            successfulLoad = false;
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-        } catch (Exception e) {
-            Window.alert("save(): " + e.getMessage());
-            window.clearStatus();
-        }
+        final WorksheetCompletionScreen wcs = this;
+        worksheetService.call("update", manager, new AsyncCallback<WorksheetManager>() {
+            public void onSuccess(WorksheetManager newMan) {
+                manager = newMan;
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(wcs);
+                window.setDone(consts.get("updatingComplete"));
+                successfulLoad = false;
+//                commitDone = true;
+            }
+            
+            public void onFailure(Throwable error) {
+                if (error instanceof ValidationErrorsList) {
+                    showErrors((ValidationErrorsList)error);
+                } else {
+                    Window.alert("save(): " + error.getMessage());
+                    window.clearStatus();
+                }
+//                commitDone = true;
+            }
+        });
+        
+//        cb = new AsyncCallback<ReportStatus>() {
+//            public void onSuccess(ReportStatus status) {
+//                if (ReportStatus.Status.RUNNING.equals(status.getStatus())) {
+//                    window.setBusy(consts.get("updating")+" - "+status.getPercentComplete()+"%");
+//                    window.setProgress(status.getPercentComplete());
+//                }
+//            }
+//            
+//            public void onFailure(Throwable error) {
+//                window.setBusy(consts.get("updating")+" - ERROR");
+//            }
+//        };
+        
+//        do {
+//            service.call("getUpdateStatus", cb);
+//            t0 = System.currentTimeMillis();
+//            do {
+//                t1 = System.currentTimeMillis();
+//            } while (t1 - t0 > 1000);
+//        } while (!commitDone);
+//        window.setProgress(-1);
     }
 
     protected void abort() {
@@ -662,53 +717,62 @@ public class WorksheetCompletionScreen extends Screen {
         window.setBusy(consts.get("cancelChanges"));
 
         if (state == State.UPDATE) {
-            try {
-                manager = manager.abortUpdate();
-                setState(State.DISPLAY);
-                DataChangeEvent.fire(this);
-            } catch (Exception e) {
-                Window.alert(e.getMessage());
-                fetchById(null);
-            }
-            window.setDone(consts.get("updateAborted"));
+            final WorksheetCompletionScreen wcs = this;
+            worksheetService.call("abortUpdate", manager.getWorksheet().getId(), new AsyncCallback<WorksheetManager>() {
+                public void onSuccess(WorksheetManager newMan) {
+                    manager = newMan;
+                    setState(State.DISPLAY);
+                    DataChangeEvent.fire(wcs);
+                    window.setDone(consts.get("updateAborted"));
+                    successfulLoad = false;
+                }
+                
+                public void onFailure(Throwable error) {
+                    Window.alert(error.getMessage());
+                    fetchById(null);
+                    window.setDone(consts.get("updateAborted"));
+                    successfulLoad = false;
+                }
+            });
         } else {
             window.clearStatus();
+            successfulLoad = false;
         }
-        successfulLoad = false;
     }
 
-    protected void editWorksheet() {
-        SystemUserVO userVO;
+    protected void worksheetHistory() {
+        IdNameVO hist;
         
+        hist = new IdNameVO(manager.getWorksheet().getId(), manager.getWorksheet().getId().toString());
+        HistoryScreen.showHistory(consts.get("worksheetHistory"), ReferenceTable.WORKSHEET, hist);        
+    }
+    
+    protected void editWorksheet() {
         window.setBusy("Saving worksheet for editing");
-        try {
-            service.call("saveForEdit", manager);
-
-            userVO = null;
-            try {
-                userVO = UserCache.getSystemUser(manager.getWorksheet().getSystemUserId());
-            } catch (Exception anyE1) {
-                throw new Exception("Error retrieving username for worksheet: "+anyE1.getMessage());
+        service.call("saveForEdit", manager, new AsyncCallback<WorksheetManager>() {
+            public void onSuccess(WorksheetManager wMan) {
+                SystemUserVO userVO;
+                
+                userVO = null;
+                try {
+                    userVO = UserCache.getSystemUser(manager.getWorksheet().getSystemUserId());
+                    window.setDone(consts.get("worksheetCompletionEditConfirm")+
+                                   " "+displayFileDirectory+manager.getWorksheet().getId()+
+                                   "_"+userVO.getLoginName()+".xls");
+                } catch (Exception anyE) {
+                    Window.alert("Error retrieving username for worksheet: "+anyE.getMessage());
+                    window.clearStatus();
+                }
             }
             
-            window.setDone(consts.get("worksheetCompletionEditConfirm")+
-                                      " "+displayFileDirectory+manager.getWorksheet().getId()+
-                                      "_"+userVO.getLoginName()+".xls");
-        } catch (Exception anyE) {
-            Window.alert(anyE.getMessage());
-            window.clearStatus();
-        }
+            public void onFailure(Throwable error) {
+                Window.alert("editWorksheet(): " + error.getMessage());
+                window.clearStatus();
+            }
+        });
     }
 
     protected void loadFromEdit() {
-        int                          i;
-        ArrayList<Object>            tempBundle;
-        ArrayList<ResultViewDO>      reflexResults;
-        ArrayList<SampleDataBundle>  reflexBundles;
-        ArrayList<ArrayList<Object>> bundles;
-        HashMap<SampleDataBundle,ArrayList<ResultViewDO>> reflexMap;
-        SampleDataBundle             bundle;
-        
         if (successfulLoad) {
             Window.alert(consts.get("oneWorksheetLoadPerCommit"));
             return;
@@ -717,62 +781,80 @@ public class WorksheetCompletionScreen extends Screen {
         final WorksheetCompletionScreen wcs = this;
         
         window.setBusy("Loading worksheet from edited file");
-        try {
-            manager = service.call("loadFromEdit", manager);
-            DataChangeEvent.fire(this);
+        service.call("loadFromEdit", manager, new AsyncCallback<WorksheetManager>() {
+            public void onSuccess(WorksheetManager newMan) {
+                int                          i;
+                ArrayList<Object>            tempBundle;
+                ArrayList<ResultViewDO>      reflexResults;
+                ArrayList<SampleDataBundle>  reflexBundles;
+                ArrayList<ArrayList<Object>> bundles;
+                HashMap<SampleDataBundle,ArrayList<ResultViewDO>> reflexMap;
+                SampleDataBundle             bundle;
+                
+                manager = newMan;
+                DataChangeEvent.fire(wcs);
 
-            if (testReflexUtil == null) {
-                testReflexUtil = new TestReflexUtility();
+                if (testReflexUtil == null) {
+                    testReflexUtil = new TestReflexUtility();
 
-                testReflexUtil.addActionHandler(new ActionHandler<TestReflexUtility.Action>() {
-                    @SuppressWarnings("unchecked")
-                    public void onAction(ActionEvent<TestReflexUtility.Action> event) {
-                        if (testPrepUtil == null) {
-                            testPrepUtil = new TestPrepUtility();
-                            testPrepUtil.setScreen(wcs);
+                    testReflexUtil.addActionHandler(new ActionHandler<TestReflexUtility.Action>() {
+                        @SuppressWarnings("unchecked")
+                        public void onAction(ActionEvent<TestReflexUtility.Action> event) {
+                            if (testPrepUtil == null) {
+                                testPrepUtil = new TestPrepUtility();
+                                testPrepUtil.setScreen(wcs);
 
-                            testPrepUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
-                                public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
-                                    window.setDone("Worksheet loaded");
-                                }
-                            });
+                                testPrepUtil.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
+                                    public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
+                                        window.setDone("Worksheet loaded");
+                                    }
+                                });
+                            }
+
+                            try {
+                                testPrepUtil.lookup((ArrayList<SampleDataBundle>)event.getData());
+                            } catch (Exception e) {
+                                Window.alert("loadFromEdit: " + e.getMessage());
+                            }
                         }
-
-                        try {
-                            testPrepUtil.lookup((ArrayList<SampleDataBundle>)event.getData());
-                        } catch (Exception e) {
-                            Window.alert("loadFromEdit: " + e.getMessage());
-                        }
-                    }
-                });
-            }
-
-            testReflexUtil.setScreen(this);
-            
-            bundles = manager.getReflexBundles();
-            reflexBundles = new ArrayList<SampleDataBundle>();
-            reflexMap = new HashMap<SampleDataBundle,ArrayList<ResultViewDO>>();
-            for (i = 0; i < bundles.size(); i++) {
-                tempBundle = bundles.get(i);
-                bundle = (SampleDataBundle) tempBundle.get(0);
-                reflexResults = reflexMap.get(bundle);
-                if (reflexResults == null) {
-                    reflexResults = new ArrayList<ResultViewDO>();
-                    reflexBundles.add(bundle);
+                    });
                 }
-                reflexResults.add((ResultViewDO)tempBundle.get(1));
-                reflexMap.put(bundle, reflexResults);
+
+                testReflexUtil.setScreen(wcs);
+                
+                bundles = manager.getReflexBundles();
+                reflexBundles = new ArrayList<SampleDataBundle>();
+                reflexMap = new HashMap<SampleDataBundle,ArrayList<ResultViewDO>>();
+                for (i = 0; i < bundles.size(); i++) {
+                    tempBundle = bundles.get(i);
+                    bundle = (SampleDataBundle) tempBundle.get(0);
+                    reflexResults = reflexMap.get(bundle);
+                    if (reflexResults == null) {
+                        reflexResults = new ArrayList<ResultViewDO>();
+                        reflexBundles.add(bundle);
+                    }
+                    reflexResults.add((ResultViewDO)tempBundle.get(1));
+                    reflexMap.put(bundle, reflexResults);
+                }
+                try {
+                    testReflexUtil.resultsEntered(reflexBundles, reflexMap);
+                } catch (Exception anyE) {
+                    Window.alert(anyE.getMessage());
+                }                    
+                successfulLoad = true;
+                manager.getReflexBundles().clear();
             }
-            testReflexUtil.resultsEntered(reflexBundles, reflexMap);
-            successfulLoad = true;
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-        } catch (Exception anyE) {
-            Window.alert(anyE.getMessage());
-            window.clearStatus();
-        } finally {
-            manager.getReflexBundles().clear();
-        }
+            
+            public void onFailure(Throwable error) {
+                if (error instanceof ValidationErrorsList) {
+                    showErrors((ValidationErrorsList)error);
+                } else {
+                    Window.alert(error.getMessage());
+                    window.clearStatus();
+                }
+                manager.getReflexBundles().clear();
+            }
+        });
     }
 
     private void openWorksheetLookup() {
@@ -954,7 +1036,7 @@ public class WorksheetCompletionScreen extends Screen {
         for (i = 0; i < headers.size(); i++)
             headerLabels[i] = headers.get(i).getName();
         table.view.header.setHeaders(headerLabels);
-        
+
         qcLinkMap = new HashMap<Integer,String>();
         try {
             for (i = 0; i < manager.getItems().count(); i++) {
