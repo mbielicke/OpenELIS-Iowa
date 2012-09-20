@@ -32,7 +32,9 @@ import java.util.HashMap;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.ValidationErrorsList;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.WorksheetItemLocal;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetItemManager.WorksheetItemListItem;
@@ -57,8 +59,7 @@ public class WorksheetItemManagerProxy {
     }
     
     public WorksheetItemManager add(WorksheetItemManager manager) throws Exception {
-        boolean                  notDone;
-        int                      i;
+        int                      i, lastUnresolved, unresolved;
         HashMap<Integer,Integer> idHash;
         WorksheetItemDO          item;
         WorksheetItemLocal       local;
@@ -71,27 +72,35 @@ public class WorksheetItemManagerProxy {
         }
         
         idHash = new HashMap<Integer,Integer>();
+        lastUnresolved = 0;
         do {
-            notDone = false;
+            unresolved = 0;
             for (i = 0; i < manager.count(); i++) {
                 item = manager.getWorksheetItemAt(i);
                 manager.getWorksheetAnalysisAt(i).setWorksheet(manager.getWorksheet());
                 manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-                manager.getWorksheetAnalysisAt(i).add(idHash);
-                if (manager.getWorksheetAnalysisAt(i).getNotDone())
-                    notDone = true;
+                unresolved = manager.getWorksheetAnalysisAt(i).add(idHash);
             }
-        } while (notDone);
+            
+            if (unresolved != 0 && unresolved == lastUnresolved)
+                throw new Exception("Cannot resolve ids when worksheet analysis is linked to itself");
+
+            lastUnresolved = unresolved;
+        } while (unresolved != 0);
 
         return manager;
     }
 
     public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
         int                i, j;
+        ReportStatus       status;
+        SessionCacheLocal  session;
         WorksheetItemDO    item;
         WorksheetItemLocal local;
         
         local = EJBFactory.getWorksheetItem();
+        session = EJBFactory.getSessionCache();
+        status = (ReportStatus) session.getAttribute("WorksheetUpdateStatus");
         for (j = 0; j < manager.deleteCount(); j++)
             local.delete(manager.getDeletedAt(j).worksheetItem);
         
@@ -107,6 +116,9 @@ public class WorksheetItemManagerProxy {
             manager.getWorksheetAnalysisAt(i).setWorksheet(manager.getWorksheet());
             manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
             manager.getWorksheetAnalysisAt(i).update();
+            
+            status.setPercentComplete((i / manager.count()) * 50 + 5);
+            session.setAttribute("WorksheetUpdateStatus", status);
         }
 
         return manager;

@@ -155,14 +155,14 @@ public class SampleItemManagerProxy {
     }
 
     private void updateAnalyses(SampleItemManager man) throws Exception {
-        int lastUnresolved, unresolved;
+        int i, lastUnresolved, unresolved;
         HashMap<Integer, Integer> idHash;
 
         idHash = new HashMap<Integer, Integer>();
         lastUnresolved = 0;
         do {
             unresolved = 0;
-            for (int i = 0; i < man.count(); i++ )
+            for (i = 0; i < man.count(); i++ )
                 unresolved += man.getAnalysisAt(i).update(idHash);
 
             if (unresolved != 0 && unresolved == lastUnresolved)
