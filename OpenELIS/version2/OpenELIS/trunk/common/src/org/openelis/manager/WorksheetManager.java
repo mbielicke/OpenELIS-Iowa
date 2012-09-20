@@ -100,6 +100,10 @@ public class WorksheetManager implements RPC, HasNotesInt {
         return proxy().fetchWithItemsAndNotes(id);
     }
 
+    public static WorksheetManager fetchWithAllData(Integer id) throws Exception {
+        return proxy().fetchWithAllData(id);
+    }
+
     public WorksheetManager add() throws Exception {
         return proxy().add(this);
     }

@@ -2,6 +2,7 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
@@ -19,6 +20,8 @@ public interface WorksheetManagerRemote {
     
     public WorksheetManager fetchWithItemsAndNotes(Integer id) throws Exception;
     
+    public WorksheetManager fetchWithAllData(Integer id) throws Exception;
+    
     public WorksheetManager add(WorksheetManager man) throws Exception;
     
     public WorksheetManager update(WorksheetManager man) throws Exception;
@@ -34,4 +37,6 @@ public interface WorksheetManagerRemote {
     public WorksheetResultManager fetchWorksheetResultByWorksheetAnalysisId(Integer id) throws Exception;
 
     public WorksheetQcResultManager fetchWorksheetQcResultByWorksheetAnalysisId(Integer id) throws Exception;
+    
+    public ReportStatus getUpdateStatus();
 }
