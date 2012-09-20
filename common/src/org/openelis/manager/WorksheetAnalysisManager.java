@@ -38,8 +38,7 @@ import org.openelis.gwt.common.ValidationErrorsList;
 
 public class WorksheetAnalysisManager implements RPC {
     
-    private static final long                      serialVersionUID = 1L;
-    boolean                                        notDone;
+    private static final long                    serialVersionUID = 1L;
     protected Integer                              worksheetItemId;
     protected WorksheetViewDO                      worksheet;
     protected ArrayList<WorksheetAnalysisListItem> analyses, deleted;
@@ -205,7 +204,7 @@ public class WorksheetAnalysisManager implements RPC {
         return proxy().fetchByWorksheetItemId(id);
     }
 
-    public WorksheetAnalysisManager add(HashMap<Integer,Integer> idHash) throws Exception {
+    public int add(HashMap<Integer,Integer> idHash) throws Exception {
         return proxy().add(this, idHash);
     }
     
@@ -256,14 +255,6 @@ public class WorksheetAnalysisManager implements RPC {
     
     void setAnalysisSections(HashMap<Integer,SectionViewDO> sections) {
         this.analysisSections = sections;
-    }
-    
-    boolean getNotDone() {
-        return notDone;
-    }
-     
-    void setNotDone(boolean nd) {
-        notDone = nd;
     }
     
     int deleteCount() {
