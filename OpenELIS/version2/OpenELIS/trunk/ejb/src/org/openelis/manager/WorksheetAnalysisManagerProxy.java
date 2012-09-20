@@ -110,36 +110,41 @@ public class WorksheetAnalysisManagerProxy {
         return waManager;
     }
     
-    public WorksheetAnalysisManager add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
-        int                 i;
+    public int add(WorksheetAnalysisManager manager, HashMap<Integer,Integer> idHash) throws Exception {
+        boolean             unresolved;
+        int                 i, numUnresolved;
         Integer             oldId, qcLinkId;
         WorksheetAnalysisDO analysis;
 
-        manager.setNotDone(false);
+        numUnresolved = 0;
         for (i = 0; i < manager.count(); i++) {
+            unresolved = false;
             analysis = manager.getWorksheetAnalysisAt(i);
-            
-            if (analysis.getId() < 0) {
-                oldId = analysis.getId();
-                
-                if (analysis.getWorksheetAnalysisId() != null) {
-                    if (analysis.getWorksheetAnalysisId() < 0) {
-                        qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
-                        if (qcLinkId != null) {
-                            analysis.setWorksheetAnalysisId(qcLinkId);
-                        } else {
-                            manager.setNotDone(true);
-                            continue;
-                        }
-                    }
-                }
 
-                add(manager, analysis, i);
-                idHash.put(oldId, analysis.getId());
+            // try to resolve a negative related analysis id
+            if (analysis.getWorksheetAnalysisId() != null && analysis.getWorksheetAnalysisId() < 0) {
+                qcLinkId = idHash.get(analysis.getWorksheetAnalysisId());
+                if (qcLinkId != null) {
+                    analysis.setWorksheetAnalysisId(qcLinkId);
+                } else {
+                    unresolved = true;
+                }
+            }
+            
+            // if both the related analysis id is resolved, then add/update the
+            // analysis and set the mappings in the hash, otherwise skip
+            if (!unresolved) {
+                if (!idHash.containsKey(analysis.getId())) {
+                    oldId = analysis.getId();
+                    add(manager, analysis, i);
+                    idHash.put(oldId, analysis.getId());
+                }
+            } else {
+                numUnresolved++;
             }
         }
 
-        return manager;
+        return numUnresolved;
     }
 
     public void add(WorksheetAnalysisManager manager, WorksheetAnalysisDO analysis, int i) throws Exception {

@@ -30,9 +30,11 @@ import java.util.Iterator;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.utils.EJBFactory;
 
 public class WorksheetManagerProxy {
@@ -95,6 +97,27 @@ public class WorksheetManagerProxy {
         return manager;
     }
 
+    public WorksheetManager fetchWithAllData(Integer id) throws Exception {
+        int i, j;
+        WorksheetManager manager;
+        WorksheetItemManager wiMan;
+        WorksheetAnalysisManager waMan;
+
+        manager = fetchById(id);
+        wiMan = manager.getItems();
+        for (i = 0; i < wiMan.count(); i++) {
+            waMan = wiMan.getWorksheetAnalysisAt(i);
+            for (j = 0; j < waMan.count(); j++) {
+                waMan.getBundleAt(j);
+                waMan.getWorksheetResultAt(j);
+                waMan.getWorksheetQcResultAt(j);
+            }
+        }
+        manager.getNotes();
+
+        return manager;
+    }
+
     public WorksheetManager add(WorksheetManager manager) throws Exception {
         Integer                 id;
         Iterator<SampleManager> iter;
@@ -131,11 +154,16 @@ public class WorksheetManagerProxy {
     }
 
     public WorksheetManager update(WorksheetManager manager) throws Exception {
+        int                     sManIndex, sManCount;
         Integer                 id;
         Iterator<SampleManager> iter;
         LockLocal               lock;
+        ReportStatus            status;
         SampleManager           sManager;
+        SessionCacheLocal       session;
 
+        session = EJBFactory.getSessionCache();
+        
         EJBFactory.getWorksheet().update(manager.getWorksheet());
         id = manager.getWorksheet().getId();
         
@@ -143,8 +171,11 @@ public class WorksheetManagerProxy {
         if (manager.items != null) {
             manager.getItems().setWorksheet(manager.getWorksheet());
             manager.getItems().update();
-            
+
             iter = manager.getSampleManagers().values().iterator();
+            sManCount = manager.getSampleManagers().values().size();
+            sManIndex = 0;
+            status = (ReportStatus) session.getAttribute("WorksheetUpdateStatus");
             while (iter.hasNext()) {
                 sManager = (SampleManager) iter.next();
                 if (manager.getLockedManagers().containsKey(sManager.getSample().getAccessionNumber())) {
@@ -153,6 +184,8 @@ public class WorksheetManagerProxy {
                     lock.unlock(ReferenceTable.SAMPLE, sManager.getSample().getId());  
                     manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
                 }
+                status.setPercentComplete((++sManIndex / sManCount) * 40 + 55);
+                session.setAttribute("WorksheetUpdateStatus", status);
             }
         }
         

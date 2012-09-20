@@ -65,7 +65,6 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
@@ -86,16 +85,19 @@ import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.AnalyteLocal;
 import org.openelis.local.AnalyteParameterLocal;
+import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
 import org.openelis.local.QcLocal;
 import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SectionLocal;
+import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.manager.AnalysisManager;
@@ -128,6 +130,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     @EJB
     DictionaryLocal dictionaryLocal;
     @EJB
+    DictionaryCacheLocal dictionaryCacheLocal;
+    @EJB
     QcLocal qcLocal;
     @EJB
     QcAnalyteLocal qcAnalyteLocal;
@@ -136,13 +140,16 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     @EJB
     SectionLocal sectionLocal;
     @EJB
+    SessionCacheLocal session;    
+    @EJB
     SystemVariableLocal systemVariableLocal;
     @EJB
     WorksheetAnalysisLocal worksheetAnalysisLocal;
 
-    private static final Logger          log  = Logger.getLogger(WorksheetCompletionBean.class);
+    private static final Logger       log  = Logger.getLogger(WorksheetCompletionBean.class);
 
-    private HashMap<String,CellStyle>    styles;
+    private Integer                   resultTypeDictionary;
+    private HashMap<String,CellStyle> styles;
 
     @TransactionTimeout(600)
     public WorksheetManager saveForEdit(WorksheetManager manager) throws Exception {
@@ -156,9 +163,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         HashMap<Integer,String>  statusMap;
         HashMap<String,String>   tCellNames;
         Cell                     cell;
-        CellRangeAddressList     statusColumn, reportableColumn, dateTimeColumn;
-        DVConstraint             statusConstraint, reportableConstraint, dateTimeConstraint;
-        HSSFDataValidation       statusValidation, reportableValidation, dateTimeValidation;
+        CellRangeAddressList     statusColumn, reportableColumn;
+        DVConstraint             statusConstraint, reportableConstraint;
+        HSSFDataValidation       statusValidation, reportableValidation;
         HSSFSheet                resultSheet, overrideSheet;
         HSSFWorkbook             wb;
         Name                     cellName;
@@ -166,8 +173,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         AnalysisManager          aManager;
         AnalysisResultManager    arManager;
         AnalysisViewDO           aVDO;
-        DictionaryViewDO         formatVDO;
+        DictionaryDO             formatDO;
         QcViewDO                 qcVDO;
+        ReportStatus             status;
         SampleDataBundle         bundle;
         SampleDomainInt          sDomain;
         SampleItemManager        siManager;
@@ -180,6 +188,15 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetItemDO          wiDO;
         WorksheetQcResultManager wqrManager;
         WorksheetResultManager   wrManager;
+        
+        status = new ReportStatus();
+        session.setAttribute("WorksheetSaveExcelStatus", status);
+
+        try {
+            resultTypeDictionary = dictionaryCacheLocal.getIdBySystemName("test_res_type_dictionary");
+        } catch (Exception anyE) {
+            throw new Exception("Error loading test_res_type_dictionary: "+anyE.getMessage());
+        }
 
         outFileName = getWorksheetOutputFileName(manager.getWorksheet().getId(),
                                                  manager.getWorksheet().getSystemUserId());
@@ -188,17 +205,17 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             throw new Exception("An Excel file for this worksheet already exists, please delete it before trying to export");
 
         try {
-            formatVDO = dictionaryLocal.fetchById(manager.getWorksheet().getFormatId());
+            formatDO = dictionaryCacheLocal.getById(manager.getWorksheet().getFormatId());
         } catch (NotFoundException nfE) {
-            formatVDO = new DictionaryViewDO();
-            formatVDO.setEntry("DefaultTotal");
-            formatVDO.setSystemName("wf_total");
+            formatDO = new DictionaryDO();
+            formatDO.setEntry("DefaultTotal");
+            formatDO.setSystemName("wf_total");
         } catch (Exception anyE) {
             throw new Exception("Error retrieving worksheet format: "+anyE.getMessage());
         }
 
         try {
-            in = new FileInputStream(getWorksheetTemplateFileName(formatVDO));
+            in = new FileInputStream(getWorksheetTemplateFileName(formatDO));
         } catch (FileNotFoundException fnfE) {
             throw new Exception("Error loading template file: "+fnfE.getMessage());
         }
@@ -221,6 +238,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         resultSheet.removeRow(tRow);
         
         overrideSheet = wb.getSheet("Overrides");
+
+        status.setPercentComplete(5);
+        session.setAttribute("WorksheetSaveExcelStatus", status);
 
         r = 1;
         o = 1;
@@ -544,6 +564,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     o++;
                 }
             }
+            
+            status.setPercentComplete((i / manager.getItems().count()) * 90 + 5);
+            session.setAttribute("WorksheetSaveExcelStatus", status);
         }
         
         //
@@ -563,12 +586,6 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         reportableValidation = new HSSFDataValidation(reportableColumn,reportableConstraint);
         reportableValidation.setSuppressDropDownArrow(false);
         resultSheet.addValidationData(reportableValidation);
-
-//        dateTimeColumn = new CellRangeAddressList(1,overrideSheet.getPhysicalNumberOfRows()-1,6,7);
-//        dateTimeConstraint = DVConstraint.createDateConstraint(DVConstraint.OperatorType.IGNORED, "1900-01-01 00:00", "2099-12-31 23:59", "yyyy-MM-dd HH:mm");
-//        dateTimeValidation = new HSSFDataValidation(dateTimeColumn,dateTimeConstraint);
-//        dateTimeValidation.setEmptyCellAllowed(true);
-//        overrideSheet.addValidationData(dateTimeValidation);
 
         //
         // Auto resize columns on result sheet and override sheet
@@ -590,6 +607,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         } catch (Exception anyE) {
             throw new Exception("Error writing Excel file: "+anyE.getMessage());
         }
+
+        status.setPercentComplete(100);
+        session.setAttribute("WorksheetSaveExcelStatus", status);
 
         return manager;
     }
@@ -620,6 +640,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         AnalysisViewDO           aVDO;
         AnalyteDO                aDO;
         DictionaryDO             statusDO;
+        ReportStatus             status;
         ResultViewDO             rVDO;
         SampleDataBundle         bundle, newBundle;
         SampleItemManager        siManager;
@@ -637,17 +658,20 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         WorksheetResultManager   wrManager;
         WorksheetResultViewDO    wrVDO;
         
+        status = new ReportStatus();
+        session.setAttribute("WorksheetLoadExcelStatus", status);
+
         blankIndicator = "!BLANK!";
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         
-        anCancelledId = dictionaryLocal.fetchBySystemName("analysis_cancelled").getId();
-        anCompletedId = dictionaryLocal.fetchBySystemName("analysis_completed").getId();
-        anInitiatedId = dictionaryLocal.fetchBySystemName("analysis_initiated").getId();
-        anInPrepId = dictionaryLocal.fetchBySystemName("analysis_inprep").getId();
-        anLoggedInId = dictionaryLocal.fetchBySystemName("analysis_logged_in").getId();
-        anOnHoldId = dictionaryLocal.fetchBySystemName("analysis_on_hold").getId();
-        anRequeueId = dictionaryLocal.fetchBySystemName("analysis_requeue").getId();
-        anReleasedId = dictionaryLocal.fetchBySystemName("analysis_released").getId();
+        anCancelledId = dictionaryCacheLocal.getIdBySystemName("analysis_cancelled");
+        anCompletedId = dictionaryCacheLocal.getIdBySystemName("analysis_completed");
+        anInitiatedId = dictionaryCacheLocal.getIdBySystemName("analysis_initiated");
+        anInPrepId = dictionaryCacheLocal.getIdBySystemName("analysis_inprep");
+        anLoggedInId = dictionaryCacheLocal.getIdBySystemName("analysis_logged_in");
+        anOnHoldId = dictionaryCacheLocal.getIdBySystemName("analysis_on_hold");
+        anRequeueId = dictionaryCacheLocal.getIdBySystemName("analysis_requeue");
+        anReleasedId = dictionaryCacheLocal.getIdBySystemName("analysis_released");
         
         errorList = new ValidationErrorsList();
         file = new File(getWorksheetOutputFileName(manager.getWorksheet().getId(),
@@ -656,6 +680,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         wb         = new HSSFWorkbook(in);
         statusList = getStatuses();
         statusMap  = getStatusMap();
+
+        status.setPercentComplete(5);
+        session.setAttribute("WorksheetLoadExcelStatus", status);
 
         r = 0;
         rowIndex = 1;
@@ -920,6 +947,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             // last analysis or there were no analyses for this item
             if (r == 0)
                 rowIndex++;
+
+            status.setPercentComplete((i / wiManager.count()) * 90 + 5);
+            session.setAttribute("WorksheetLoadExcelStatus", status);
         }
         
         if (errorList.getErrorList().size() > 0) {
@@ -936,6 +966,9 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         
         file.delete();
         
+        status.setPercentComplete(100);
+        session.setAttribute("WorksheetLoadExcelStatus", status);
+
         return manager;
     }
 
@@ -943,7 +976,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     public ArrayList<IdNameVO> getHeaderLabelsForScreen(WorksheetManager manager) throws Exception {
         int                 i;
         ArrayList<IdNameVO> headers;
-        DictionaryViewDO    formatVDO;
+        DictionaryDO        formatDO;
         FileInputStream     in;
         HSSFWorkbook        wb;
         Row                 hRow;
@@ -951,16 +984,16 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         headers = new ArrayList<IdNameVO>();
         
         try {
-            formatVDO = dictionaryLocal.fetchById(manager.getWorksheet().getFormatId());
+            formatDO = dictionaryCacheLocal.getById(manager.getWorksheet().getFormatId());
         } catch (NotFoundException nfE) {
-            formatVDO = new DictionaryViewDO();
-            formatVDO.setEntry("DefaultTotal");
+            formatDO = new DictionaryDO();
+            formatDO.setEntry("DefaultTotal");
         } catch (Exception anyE) {
             throw new Exception("Error retrieving worksheet format: "+anyE.getMessage());
         }
 
         try {
-            in = new FileInputStream(getWorksheetTemplateFileName(formatVDO));
+            in = new FileInputStream(getWorksheetTemplateFileName(formatDO));
         } catch (FileNotFoundException fnfE) {
             throw new Exception("Error loading template file: "+fnfE.getMessage());
         }
@@ -1035,26 +1068,17 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                            boolean isEditable) {
         boolean                queriedAP;
         int                    c, i, r;
-        Integer                resultTypeDictionary;
         String                 cellNameIndex, name;
         Cell                   cell, tCell;
         Name                   cellName;
         AnalyteDO              aDO;
         AnalyteParameterViewDO apVDO;
-        DictionaryViewDO       dVDO;
+        DictionaryDO           dVDO;
         ResultViewDO           rVDO;
         WorksheetResultViewDO  wrVDO;
         
         r = row.getRowNum();
         
-        try {
-            resultTypeDictionary = dictionaryLocal.fetchBySystemName("test_res_type_dictionary").getId();
-        } catch (Exception anyE) {
-            // TODO: Code proper exception handling
-            anyE.printStackTrace();
-            return r;
-        }
-
         for (i = 0; i < wrManager.count(); i++, r++) {
             wrVDO = wrManager.getWorksheetResultAt(i);
             if (i != 0) {
@@ -1151,7 +1175,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         cell = getCellForName(sheet, cellName.getNameName());
                         if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
                             if (resultTypeDictionary.equals(rVDO.getTypeId())) {
-                                dVDO = dictionaryLocal.fetchById(Integer.valueOf(rVDO.getValue()));
+                                dVDO = dictionaryCacheLocal.getById(Integer.valueOf(rVDO.getValue()));
                                 cell.setCellValue(dVDO.getEntry());
                             } else {
                                 setCellValue(cell, rVDO.getValue());
@@ -1398,7 +1422,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         return dirName+worksheetNumber+"_"+userVO.getLoginName()+".xls";
     }
     
-    private String getWorksheetTemplateFileName(DictionaryViewDO formatVDO) throws Exception {
+    private String getWorksheetTemplateFileName(DictionaryDO formatDO) throws Exception {
         ArrayList<SystemVariableDO> sysVars;
         String                      dirName;
         
@@ -1411,7 +1435,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
             throw new Exception("Error retrieving temp directory variable: "+anyE.getMessage());
         }
 
-        return dirName+"OEWorksheet"+formatVDO.getEntry()+".xls";
+        return dirName+"OEWorksheet"+formatDO.getEntry()+".xls";
     }
     
     private String formatTooltip(String ranges[]) {

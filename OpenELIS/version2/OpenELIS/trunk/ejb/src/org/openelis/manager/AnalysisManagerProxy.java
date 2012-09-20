@@ -94,12 +94,12 @@ public class AnalysisManagerProxy {
 
     public int update(AnalysisManager man, HashMap<Integer, Integer> idHash) throws Exception {
         boolean        unresolved;
-        int            numUnresolved;
+        int            i, numUnresolved;
         Integer        oldId, parentId, prepId;
         AnalysisViewDO analysisDO;
 
         numUnresolved = 0;
-        for (int i = 0; i < man.count(); i++ ) {
+        for (i = 0; i < man.count(); i++ ) {
             unresolved = false;
             analysisDO = man.getAnalysisAt(i);
 
