@@ -28,6 +28,7 @@ package org.openelis.modules.worksheetCompletion.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
+import org.openelis.gwt.common.ReportStatus;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.server.EJBFactory;
 
@@ -45,4 +46,7 @@ public class WorksheetCompletionService {
         return EJBFactory.getWorksheetCompletion().getHeaderLabelsForScreen(manager);
     }
     
+    public ReportStatus getUpdateStatus() {
+        return EJBFactory.getWorksheetManager().getUpdateStatus();
+    }
 }

@@ -36,6 +36,7 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
@@ -850,29 +851,36 @@ public class WorksheetCreationScreen extends Screen {
             }
         }
         
-        try {
-            manager = manager.add();
+        final WorksheetCreationScreen wcs = this;
+        worksheetService.call("add", manager, new AsyncCallback<WorksheetManager>() {
+            public void onSuccess(WorksheetManager newMan) {
+                manager = newMan;
 
-            setState(State.DISPLAY);
-            DataChangeEvent.fire(this);
-            window.setDone(consts.get("savingComplete"));
+                setState(State.DISPLAY);
+                DataChangeEvent.fire(wcs);
+                window.setDone(consts.get("savingComplete"));
+                
+                isSaved = true;
+                saveButton.enable(false);
+                insertAnalysisWorksheetButton.enable(false);
+                insertQCLookupButton.enable(false);
+                instrumentId.enable(false);
+                lookupWorksheetButton.enable(false);
+                removeRowButton.enable(false);
+                worksheetItemTable.enable(false);
+            }
             
-            isSaved = true;
-            saveButton.enable(false);
-            insertAnalysisWorksheetButton.enable(false);
-            insertQCLookupButton.enable(false);
-            instrumentId.enable(false);
-            lookupWorksheetButton.enable(false);
-            removeRowButton.enable(false);
-            worksheetItemTable.enable(false);
-        } catch (ValidationErrorsList e) {
-            showErrors(e);
-            manager = WorksheetManager.getInstance();
-        } catch (Exception e) {
-            Window.alert("save(): " + e.getMessage());
-            window.clearStatus();
-            manager = WorksheetManager.getInstance();
-        }
+            public void onFailure(Throwable error) {
+                if (error instanceof ValidationErrorsList) {
+                    showErrors((ValidationErrorsList)error);
+                    manager = WorksheetManager.getInstance();
+                } else {
+                    Window.alert("save(): " + error.getMessage());
+                    window.clearStatus();
+                    manager = WorksheetManager.getInstance();
+                }
+            }
+        });
     }
 
     protected void exit() {
