@@ -108,9 +108,12 @@ public class WorksheetManagerProxy {
         for (i = 0; i < wiMan.count(); i++) {
             waMan = wiMan.getWorksheetAnalysisAt(i);
             for (j = 0; j < waMan.count(); j++) {
-                waMan.getBundleAt(j);
-                waMan.getWorksheetResultAt(j);
-                waMan.getWorksheetQcResultAt(j);
+                if (waMan.getWorksheetAnalysisAt(j).getAnalysisId() != null) {
+                    waMan.getBundleAt(j);
+                    waMan.getWorksheetResultAt(j);
+                }
+                if (waMan.getWorksheetAnalysisAt(j).getQcId() != null)
+                    waMan.getWorksheetQcResultAt(j);
             }
         }
         manager.getNotes();
