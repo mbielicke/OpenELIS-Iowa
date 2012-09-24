@@ -77,14 +77,6 @@ public class QcChartReportViewVO implements RPC {
     }
     
     public static class Value implements RPC {
-        public Integer getwId() {
-            return wId;
-        }
-
-        public void setwId(Integer wId) {
-            this.wId = wId;
-        }
-
         private static final long serialVersionUID = 1L;
         
         protected Integer         qcId, wId, analyteId;
@@ -116,7 +108,6 @@ public class QcChartReportViewVO implements RPC {
         public void setAnalyteId(Integer analyteId) {
             this.analyteId = analyteId;
         }
-
         
         public String getAccessionNumber() {
             return accessionNumber;

@@ -599,7 +599,6 @@ public class QcChartScreen extends Screen {
             window.setError(consts.get("noSampleSelectedError"));
             return;
         }
-        window.setBusy(consts.get("genReportMessage"));
         try {
             if (qcChartReportScreen == null)
                 qcChartReportScreen = new QcChartReportScreen(window);
@@ -612,7 +611,6 @@ public class QcChartScreen extends Screen {
             Window.alert(e.getMessage());
             e.printStackTrace();
         }
-        window.clearStatus();
     }
 
     private ArrayList<TableDataRow> getTableModel() {
