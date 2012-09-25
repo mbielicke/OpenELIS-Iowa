@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
@@ -81,6 +82,10 @@ public class OrganizationService {
             throw new DatabaseException(e);
         }
         return list;
+    }
+    
+    public ArrayList<OrganizationParameterDO> fetchParametersByDictionarySystemName(String systemName) throws Exception {
+        return EJBFactory.getOrganization().fetchParametersByDictionarySystemName(systemName);
     }
 
     public OrganizationManager fetchWithContacts(Integer id) throws Exception {

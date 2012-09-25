@@ -566,23 +566,23 @@ public class ExchangeVocabularyMapScreen extends Screen {
         model.add(new TableDataRow(null, ""));
         list = CategoryCache.getBySystemName("exchange_local_type");   
         for (DictionaryDO d : list) {
-            if ("exchange_analyte".equals(d.getSystemName())) {
+            if ("local_type_analyte".equals(d.getSystemName())) {
                 row = new TableDataRow(ReferenceTable.ANALYTE, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);
-            } else if ("exchange_dictionary".equals(d.getSystemName())) {
+            } else if ("local_type_dictionary".equals(d.getSystemName())) {
                 row = new TableDataRow(ReferenceTable.DICTIONARY, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);  
-            } else if ("exchange_method".equals(d.getSystemName())) {
+            } else if ("local_type_method".equals(d.getSystemName())) {
                 row = new TableDataRow(ReferenceTable.METHOD, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);  
-            } else if ("exchange_organization".equals(d.getSystemName())) {
+            } else if ("local_type_organization".equals(d.getSystemName())) {
                 row = new TableDataRow(ReferenceTable.ORGANIZATION, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);  
-            } else if ("exchange_test".equals(d.getSystemName())) {
+            } else if ("local_type_test".equals(d.getSystemName())) {
                 row = new TableDataRow(ReferenceTable.TEST, d.getEntry());
                 row.enabled = ("Y".equals(d.getIsActive()));
                 model.add(row);  

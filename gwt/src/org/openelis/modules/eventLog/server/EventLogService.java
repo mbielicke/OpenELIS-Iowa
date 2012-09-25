@@ -23,37 +23,19 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.eventLog.server;
 
-import org.openelis.gwt.services.ScreenService;
+import java.util.ArrayList;
 
-public class PanelItemManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.panel.server.PanelService";
-    protected ScreenService       service;
+import org.openelis.domain.EventLogDO;
+import org.openelis.gwt.common.data.Query;
+import org.openelis.server.EJBFactory;
 
-    public PanelItemManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
-    }
-
-    public PanelItemManager fetchByPanelId(Integer id) throws Exception {
-        return service.call("fetchItemByPanelId", id);
-    }
-
-    public PanelItemManager add(PanelItemManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-
-    public PanelItemManager update(PanelItemManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
+public class EventLogService {
     
-    public PanelItemManager delete(PanelItemManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public void validate(PanelItemManager man) throws Exception {
+    public ArrayList<EventLogDO> query(Query query) throws Exception {            
+        return EJBFactory.getEventLog().query(query.getFields(),
+                                              query.getPage() * query.getRowsPerPage(),
+                                              query.getRowsPerPage());
     }
 }

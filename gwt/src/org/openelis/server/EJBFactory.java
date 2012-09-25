@@ -48,6 +48,7 @@ import org.openelis.remote.CategoryManagerRemote;
 import org.openelis.remote.CategoryRemote;
 import org.openelis.remote.CompleteReleaseRemote;
 import org.openelis.remote.CronRemote;
+import org.openelis.remote.DataExchangeReportRemote;
 import org.openelis.remote.DataViewRemote;
 import org.openelis.remote.DictionaryCacheRemote;
 import org.openelis.remote.DictionaryRemote;
@@ -127,6 +128,9 @@ import org.openelis.remote.WorksheetCompletionRemote;
 import org.openelis.remote.WorksheetCreationRemote;
 import org.openelis.remote.WorksheetManagerRemote;
 import org.openelis.remote.WorksheetRemote;
+import org.openelis.remote.ExchangeCriteriaManagerRemote;
+import org.openelis.remote.ExchangeCriteriaRemote;
+import org.openelis.remote.EventLogRemote;
 import org.openelis.util.SessionManager;
 
 public class EJBFactory {
@@ -195,13 +199,17 @@ public class EJBFactory {
     public static CategoryRemote getCategory() {
         return (CategoryRemote)lookup("CategoryBean!org.openelis.remote.CategoryRemote");
     }
+    
+    public static CategoryManagerRemote getCategoryManager() {
+        return (CategoryManagerRemote)lookup("CategoryManagerBean!org.openelis.remote.CategoryManagerRemote");
+    }
 
     public static DictionaryRemote getDictionary() {
         return (DictionaryRemote)lookup("DictionaryBean!org.openelis.remote.DictionaryRemote");
     }
 
-    public static CategoryManagerRemote getCategoryManager() {
-        return (CategoryManagerRemote)lookup("CategoryManagerBean!org.openelis.remote.CategoryManagerRemote");
+    public static DataExchangeReportRemote getDataExchangeReport() {
+        return (DataExchangeReportRemote)lookup("DataExchangeReportBean!org.openelis.remote.DataExchangeReportRemote");
     }
     
     public static ExchangeLocalTermRemote getExchangeLocalTerm() {
@@ -210,6 +218,18 @@ public class EJBFactory {
     
     public static ExchangeLocalTermManagerRemote getExchangeLocalTermManager() {
         return (ExchangeLocalTermManagerRemote)lookup("ExchangeLocalTermManagerBean!org.openelis.remote.ExchangeLocalTermManagerRemote");
+    }
+    
+    public static ExchangeCriteriaManagerRemote getExchangeCriteriaManager() {
+        return (ExchangeCriteriaManagerRemote)lookup("ExchangeCriteriaManagerBean!org.openelis.remote.ExchangeCriteriaManagerRemote");
+    }
+    
+    public static ExchangeCriteriaRemote getExchangeCriteria() {
+        return (ExchangeCriteriaRemote)lookup("ExchangeCriteriaBean!org.openelis.remote.ExchangeCriteriaRemote");
+    }
+    
+    public static EventLogRemote getEventLog() {
+        return (EventLogRemote)lookup("EventLogBean!org.openelis.remote.EventLogRemote");
     }
     
     public static HistoryRemote getHistory() {

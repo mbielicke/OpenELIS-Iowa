@@ -27,33 +27,32 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-public class PanelItemManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.panel.server.PanelService";
+public class ExchangeProfileManagerProxy {
+    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.exchangeDataSelection.server.ExchangeDataSelectionService";
     protected ScreenService       service;
 
-    public PanelItemManagerProxy() {
+    public ExchangeProfileManagerProxy() {
         service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
-    public PanelItemManager fetchByPanelId(Integer id) throws Exception {
-        return service.call("fetchItemByPanelId", id);
+    public ExchangeProfileManager fetchByExchangeCriteriaId(Integer id) throws Exception {
+        return service.call("fetchProfileByExchangeCriteriaId", id);
     }
 
-    public PanelItemManager add(PanelItemManager man) throws Exception {
+    public ExchangeProfileManager add(ExchangeProfileManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
 
-    public PanelItemManager update(PanelItemManager man) throws Exception {
+    public ExchangeProfileManager update(ExchangeProfileManager man) throws Exception {
         assert false : "not supported";
         return null;
     }
     
-    public PanelItemManager delete(PanelItemManager man) throws Exception {
+    public void delete(ExchangeProfileManager man) throws Exception {
         assert false : "not supported";
-        return null;
     }
     
-    public void validate(PanelItemManager man) throws Exception {
+    public void validate(ExchangeProfileManager man) throws Exception {
     }
 }
