@@ -202,9 +202,11 @@ UIRF Software License are applicable instead of those above.
                   <menuItem description="{resource:getString($constants,'labSectionDescription')}" enable="false" icon="labSectionIcon" key="labSection" label="{resource:getString($constants,'labSection')}" />
                   <html>&lt;hr/&gt;</html>
                   <menuItem description="{resource:getString($constants,'analyteDescription')}" enable="false" icon="analyteIcon" key="analyte" label="{resource:getString($constants,'analyte')}" />
-                  <menuItem description="{resource:getString($constants,'dictionaryDescription')}" enable="false" icon="dictionaryIcon" key="dictionary" label="{resource:getString($constants,'dictionary')}" />
-                  <menuItem description="{resource:getString($constants,'exchangeVocabularyMapDescription')}" enable="false" icon="dictionaryIcon" key="exchangeVocabularyMap" label="{resource:getString($constants,'exchangeVocabularyMap')}" />
+                  <menuItem description="{resource:getString($constants,'dictionaryDescription')}" enable="false" icon="dictionaryIcon" key="dictionary" label="{resource:getString($constants,'dictionary')}" />                  
                   <menuItem description="{resource:getString($constants,'auxiliaryPromptDescription')}" enable="false" icon="auxiliaryPromptIcon" key="auxiliaryPrompt" label="{resource:getString($constants,'auxiliaryPrompt')}" />
+                  <html>&lt;hr/&gt;</html>
+                  <menuItem description="{resource:getString($constants,'exchangeVocabularyMapDescription')}" enable="false" icon="dictionaryIcon" key="exchangeVocabularyMap" label="{resource:getString($constants,'exchangeVocabularyMap')}" />
+                  <menuItem description="{resource:getString($constants,'exchangeDataSelectionDescription')}" enable="false" icon="dictionaryIcon" key="exchangeDataSelection" label="{resource:getString($constants,'exchangeDataSelection')}" />
                   <html>&lt;hr/&gt;</html>
                   <menuItem description="{resource:getString($constants,'labelDescription')}" enable="false" icon="labelIcon" key="label" label="{resource:getString($constants,'label')}" />
                   <menuItem description="{resource:getString($constants,'standardNoteDescription')}" enable="false" icon="standardNoteIcon" key="standardNote" label="{resource:getString($constants,'standardNote')}" />

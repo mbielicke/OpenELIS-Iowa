@@ -84,6 +84,10 @@ public class TestService {
         return EJBFactory.getTest().fetchTestMethodSampleTypeList();
     }
 
+    public ArrayList<TestMethodVO> fetchList() throws Exception {
+        return EJBFactory.getTest().fetchList();
+    }
+    
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception {
         return EJBFactory.getTestManager().fetchSampleTypeByTestId(testId);
     }

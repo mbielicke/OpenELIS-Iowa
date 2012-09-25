@@ -23,37 +23,9 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.manager;
+package org.openelis.modules.exchangeDataSelection.client;
 
-import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-public class PanelItemManagerProxy {
-    protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.panel.server.PanelService";
-    protected ScreenService       service;
-
-    public PanelItemManagerProxy() {
-        service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
-    }
-
-    public PanelItemManager fetchByPanelId(Integer id) throws Exception {
-        return service.call("fetchItemByPanelId", id);
-    }
-
-    public PanelItemManager add(PanelItemManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-
-    public PanelItemManager update(PanelItemManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public PanelItemManager delete(PanelItemManager man) throws Exception {
-        assert false : "not supported";
-        return null;
-    }
-    
-    public void validate(PanelItemManager man) throws Exception {
-    }
+public interface ExchangeDataSelectionDef extends ScreenDefInt {
 }
