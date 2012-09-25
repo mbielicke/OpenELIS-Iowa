@@ -108,6 +108,7 @@ public class LockBean implements LockLocal {
                                                     user.getLoginName(),
                                                     new Date(lock.getExpires()).toString());
                 }
+                manager.flush();
             } catch (ConstraintViolationException e) {
                 throw new EntityLockedException("entityLockException",
                                                 "unknown",
