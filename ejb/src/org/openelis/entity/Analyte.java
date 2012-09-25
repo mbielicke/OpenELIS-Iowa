@@ -54,22 +54,26 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-
-                @NamedQuery(name = "Analyte.FetchById", query = "select new org.openelis.domain.AnalyteViewDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId,p.name) from "
-                                                                + " Analyte a left join a.parentAnalyte p where a.id = :id"),
-
-                @NamedQuery(name = "Analyte.FetchByParentId", query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
-
-                @NamedQuery(name = "Analyte.FetchByName", query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) "
-                                                                  + " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
-
-                @NamedQuery(name = "Analyte.FetchByExternalId", query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) "
-                                                                       + " from Analyte a where a.externalId like :extId order by a.name"),
-
-                @NamedQuery(name = "Analyte.FetchAliases", query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) "
-                                                                   + " from Analyte a where a.parentAnalyteId = :id and a.isActive = 'Y' order by a.name"),
-                @NamedQuery(name = "Analyte.FetchByTest", query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId)"
-                                                                  + " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")})
+                @NamedQuery( name = "Analyte.FetchById",
+                            query = "select new org.openelis.domain.AnalyteViewDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId,p.name)"
+                                  + " from Analyte a left join a.parentAnalyte p where a.id = :id"),               
+                @NamedQuery( name = "Analyte.FetchByIds",
+                            query = "select new org.openelis.domain.AnalyteViewDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId,p.name)"                                
+                                 +  " from Analyte a left join a.parentAnalyte p where a.id in (:ids)"),                                                                    
+                @NamedQuery( name = "Analyte.FetchByParentId",
+                            query = "select a.id from Analyte a where a.parentAnalyteId = :id"),
+                @NamedQuery( name = "Analyte.FetchByName",
+                            query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) "
+                                  + " from Analyte a where a.name like :name and a.isActive = 'Y' order by a.name"),
+                @NamedQuery( name = "Analyte.FetchByExternalId",
+                            query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) "
+                                  + " from Analyte a where a.externalId like :extId order by a.name"),
+                @NamedQuery( name = "Analyte.FetchAliases",
+                            query = "select new org.openelis.domain.AnalyteDO(a.id, a.name, a.isActive, a.parentAnalyteId, a.externalId) "
+                                  + " from Analyte a where a.parentAnalyteId = :id and a.isActive = 'Y' order by a.name"),
+                @NamedQuery( name = "Analyte.FetchByTest",
+                            query = "select distinct new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId)"
+                                  + " from TestAnalyte ta left join ta.analyte a where ta.testId = :testId")})
 @NamedNativeQuery(name = "Analyte.ReferenceCheck", query = "select parent_analyte_id as ANALYTE_ID from analyte where parent_analyte_id = :id "
                                                            + "UNION "
                                                            + "select analyte_id as ANALYTE_ID from result where analyte_id = :id "

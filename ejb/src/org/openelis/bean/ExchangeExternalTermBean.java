@@ -26,6 +26,9 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -36,6 +39,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ExchangeExternalTermDO;
+import org.openelis.domain.ExchangeExternalTermViewDO;
 import org.openelis.entity.ExchangeExternalTerm;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
@@ -64,6 +68,68 @@ public class ExchangeExternalTermBean implements ExchangeExternalTermLocal {
             throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(list);
+    }
+    
+    public ArrayList<ExchangeExternalTermViewDO> fetchByReferenceTableIdReferenceIdsProfileIds(Integer referenceTableId,
+                                                                                           Collection<Integer> referenceIds,
+                                                                                           Collection<Integer> profileIds) throws Exception {
+        int i;
+        Integer referenceId;
+        Query query;
+        ExchangeExternalTermViewDO existing;
+        List<ExchangeExternalTermViewDO> results;
+        HashMap<Integer, ExchangeExternalTermViewDO> refIdExtTermMap;
+        HashMap<Integer, Integer> profIndexMap;
+        ArrayList<ExchangeExternalTermViewDO> returnList;
+        Iterator<ExchangeExternalTermViewDO> iter;
+
+        query = manager.createNamedQuery("ExchangeExternalTerm.FetchByReferenceTableIdReferenceIdsProfileIds");
+        query.setParameter("referenceTableId", referenceTableId);
+        query.setParameter("referenceIds", referenceIds);
+        query.setParameter("profileIds", profileIds);
+
+        results = query.getResultList();
+        if (results.isEmpty())
+            throw new NotFoundException();       
+        
+        profIndexMap = new HashMap<Integer, Integer>();
+        /*
+         * This mapping is created to make it easy to determine the order of precedence
+         * of the profiles. The profile with the lower number as the value in the
+         * map is of a higher precedence. 
+         */
+        i = 0;
+        for (Integer id : profileIds) 
+            profIndexMap.put(id, i++);        
+        
+        refIdExtTermMap = new HashMap<Integer, ExchangeExternalTermViewDO>();
+        for (ExchangeExternalTermViewDO current : results) {
+            referenceId = current.getExchangeLocalTermReferenceId();
+            existing = refIdExtTermMap.get(referenceId);
+                
+            if (existing == null) {
+                refIdExtTermMap.put(referenceId, current);
+            } else {
+                /*
+                 * Only the DOs with the priority with the highest precedence defined
+                 * for any reference id are kept in the map; i.e. if the priority
+                 * with the highest possible precdence is not defined for a reference,
+                 * then DO with the next highest is searched for and so on. The 
+                 * precedence is determined by order in the list of profile ids
+                 * passed to the method.
+                 */
+                if (profIndexMap.get(current.getProfileId()) < profIndexMap.get(existing.getProfileId())) 
+                    refIdExtTermMap.put(referenceId, current);
+            }
+        }
+        
+        returnList = new ArrayList<ExchangeExternalTermViewDO>();
+        iter = refIdExtTermMap.values().iterator();
+        
+        while (iter.hasNext()) 
+            returnList.add(iter.next());        
+        
+        return returnList;
     }
 
     public ExchangeExternalTermDO add(ExchangeExternalTermDO data) throws Exception {

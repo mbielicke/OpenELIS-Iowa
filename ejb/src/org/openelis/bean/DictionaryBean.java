@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -116,6 +117,15 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         }
 
         return data;
+    }
+    
+    public ArrayList<DictionaryViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Dictionary.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public ArrayList<IdNameVO> fetchByEntry(ArrayList<QueryData> fields) throws Exception {

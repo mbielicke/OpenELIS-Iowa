@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -78,6 +79,14 @@ public class TestBean implements TestRemote, TestLocal {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    public ArrayList<TestViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("Test.FetchByIds");
+        query.setParameter("ids", ids);
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public ArrayList<TestMethodVO> fetchByName(String name, int max) throws Exception{

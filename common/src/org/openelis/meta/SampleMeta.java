@@ -231,7 +231,11 @@ public class SampleMeta implements Meta, MetaMap {
                     AUX_DATA_VALUE = "_auxData.value",
 
                     ANALYSIS_TEST_NAME = "_test.name", 
-                    ANALYSIS_METHOD_NAME = "_method.name";
+                    ANALYSIS_METHOD_NAME = "_method.name",
+                    
+                    ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID = "_testResult.flagsId",
+                    
+                    ORG_PARAM_VALUE = "_organizationParameter.value";
 
     private static HashSet<String> names;
 
@@ -317,7 +321,9 @@ public class SampleMeta implements Meta, MetaMap {
                                                   AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID,
                                                   AUX_DATA_REFERENCE_ID, AUX_DATA_REFERENCE_TABLE_ID,
                                                   AUX_DATA_IS_REPORTABLE, AUX_DATA_TYPE_ID,
-                                                  AUX_DATA_VALUE, ANALYSIS_TEST_NAME, ANALYSIS_METHOD_NAME));
+                                                  AUX_DATA_VALUE, ANALYSIS_TEST_NAME,
+                                                  ANALYSIS_METHOD_NAME, ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID,
+                                                  ORG_PARAM_VALUE));
     }
 
     public static String getId() {
@@ -1025,6 +1031,14 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getAnalysisMethodName() {
         return ANALYSIS_METHOD_NAME;
     }
+    
+    public static String getAnalysisResultTestResultFlagsId() {
+        return ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID;
+    }
+
+    public static String getOrgParamValue() {
+        return ORG_PARAM_VALUE;
+    }
 
     public boolean hasColumn(String columnName) {
         return names.contains(columnName);
@@ -1063,11 +1077,14 @@ public class SampleMeta implements Meta, MetaMap {
             from += ", IN (_sampleProject.project) _project ";
         }
         
-        if(where.indexOf("_organization.") > -1){
+        if (where.indexOf("_organization.") > -1 || where.indexOf("_organizationParameter.") > -1) {
             from += ", IN (_sample.sampleOrganization) _sampleOrganization ";
             from += ", IN (_sampleOrganization.organization) _organization ";
         }
 
+        if (where.indexOf("_organizationParameter.") > -1)
+            from += ", IN (_organization.organizationParameter) _organizationParameter ";        
+        
         if (where.indexOf("sampleItem.") > -1 || where.indexOf("analysis.") > -1 || where.indexOf("test.") > -1 || 
                         where.indexOf("method.") > -1|| where.indexOf("analysisQaevent.") > -1 || 
                         where.indexOf("aQaevent.") > -1)
@@ -1075,7 +1092,7 @@ public class SampleMeta implements Meta, MetaMap {
 
         if (where.indexOf("analysis.") > -1 || where.indexOf("test.") > -1 || 
                         where.indexOf("method.") > -1 || where.indexOf("analysisQaevent.") > -1 || 
-                        where.indexOf("aQaevent.") > -1)
+                        where.indexOf("aQaevent.") > -1 || where.indexOf("testResult.") > -1)
             from += ", IN (_sampleItem.analysis) _analysis ";
         
         if (where.indexOf("test.") > -1 || where.indexOf("method.") > -1)
@@ -1083,6 +1100,11 @@ public class SampleMeta implements Meta, MetaMap {
         
         if (where.indexOf("method.") > -1)
             from += ", IN (_test.method) _method ";
+        
+        if (where.indexOf("testResult.") > -1) {
+            from += ", IN (_analysis.result) _result ";
+            from += ", IN (_result.testResult) _testResult ";
+        }
         
         if(where.indexOf("sampleQaevent.") > -1 || where.indexOf("sQaevent.") > -1)
             from += ", IN(_sample.sampleQAEvent) _sampleQaevent";

@@ -68,6 +68,10 @@ import org.openelis.utils.Auditable;
     		    query = "select new org.openelis.domain.ProjectViewDO(p.id, p.name, " + 
                         "p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name, '')" 
                       + " from Project p left join p.scriptlet s where p.id = :id "),
+    @NamedQuery( name = "Project.FetchByIds", 
+                query = "select new org.openelis.domain.ProjectViewDO(p.id, p.name, " + 
+                        "p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id,s.name, '')" 
+                      + " from Project p left join p.scriptlet s where p.id in (:ids) "),                  
     @NamedQuery( name = "Project.FetchByName", 
                 query = "select new org.openelis.domain.ProjectDO(p.id, p.name," + 
                         "p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id)" 
@@ -75,11 +79,7 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Project.FetchActiveByName",
     		    query = "select new org.openelis.domain.ProjectDO(p.id, p.name," + 
                 	    "p.description, p.startedDate, p.completedDate, p.isActive, p.referenceTo, p.ownerId, s.id)" 
-    			      + " from Project p left join p.scriptlet s where p.name like :name and p.isActive = 'Y' order by p.name"),
-    @NamedQuery( name = "Project.FetchByIds", 
-    			query = "select new org.openelis.domain.IdNameVO(p.id, p.name)" 
-    			      + " from Project p where p.id in ( :ids ) ")})
-
+    			      + " from Project p left join p.scriptlet s where p.name like :name and p.isActive = 'Y' order by p.name")})    			      
 @NamedNativeQueries({
      @NamedNativeQuery(name = "Project.FetchForSampleStatusReport",
            query = "select p.id p_id, CAST(p.name AS varchar(20)) p_name" +

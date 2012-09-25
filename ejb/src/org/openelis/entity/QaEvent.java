@@ -55,6 +55,10 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId," +
                 		"q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
                       + " from QaEvent q left join q.test t left join q.test.method m where q.id = :id"),
+    @NamedQuery( name = "QaEvent.FetchByIds",
+                query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId," +
+                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
+                      + " from QaEvent q left join q.test t left join q.test.method m where q.id in (:ids)"),
     @NamedQuery( name = "QaEvent.FetchByName",
                 query = "select new org.openelis.domain.QaEventVO(q.id,q.name,q.description,q.testId," +
                         "q.typeId,q.isBillable,q.reportingSequence,t.name,m.name)"

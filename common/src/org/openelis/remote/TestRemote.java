@@ -49,4 +49,6 @@ public interface TestRemote {
     public ArrayList<TestMethodVO> fetchByPanelId(Integer panelId) throws Exception;
     
     public ArrayList<TestMethodSampleTypeVO> fetchTestMethodSampleTypeList() throws Exception;
+
+    public ArrayList<TestMethodVO> fetchList() throws Exception;
 }

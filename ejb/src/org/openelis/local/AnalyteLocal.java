@@ -26,6 +26,7 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.Local;
 
@@ -35,5 +36,8 @@ import org.openelis.domain.AnalyteViewDO;
 @Local
 public interface AnalyteLocal {
     public AnalyteViewDO fetchById(Integer id) throws Exception;
+    
+    public ArrayList<AnalyteViewDO> fetchByIds(Collection<Integer> analyteIds)  throws Exception;
+    
     public ArrayList<AnalyteDO> fetchByExternalId(String extId, int maxRows) throws Exception;
 }

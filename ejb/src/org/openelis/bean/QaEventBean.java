@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -86,6 +87,15 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<QaEventViewDO> fetchByIds(Collection<Integer> ids) {
+        Query query;
+
+        query = manager.createNamedQuery("QaEvent.FetchByIds");
+        query.setParameter("ids", ids);
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
     
     @SuppressWarnings("unchecked")

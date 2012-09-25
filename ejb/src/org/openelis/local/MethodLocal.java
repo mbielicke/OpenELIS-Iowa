@@ -25,6 +25,9 @@
 */
 package org.openelis.local;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.ejb.Local;
 
 import org.openelis.domain.MethodDO;
@@ -32,4 +35,6 @@ import org.openelis.domain.MethodDO;
 @Local
 public interface MethodLocal {
     public MethodDO fetchById(Integer id) throws Exception;
+
+    public ArrayList<MethodDO> fetchByIds(Collection<Integer> ids) throws Exception;
 }

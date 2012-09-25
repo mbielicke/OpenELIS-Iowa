@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -67,6 +68,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
     
     private static final SampleWebMeta webMeta = new SampleWebMeta();
 
+    @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> fetchList() throws Exception {
         Query query;
         
@@ -96,6 +98,26 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<ProjectViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
+        Query query;
+        List<ProjectViewDO> list;
+        SystemUserVO user;
+
+        query = manager.createNamedQuery("Project.FetchByIds");
+        query.setParameter("ids", ids);
+        list = query.getResultList(); 
+        
+        for (ProjectViewDO data :list) {
+            if (data.getOwnerId() != null) {
+                user = EJBFactory.getUserCache().getSystemUser(data.getOwnerId());
+                if (user != null)
+                    data.setOwnerName(user.getLoginName());
+            }
+        }
+        return DataBaseUtil.toArrayList(list);
     }
 
     @SuppressWarnings("unchecked")

@@ -7,12 +7,17 @@ import javax.ejb.Local;
 
 import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.FinalReportVO;
+import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleStatusWebReportVO;
+import org.openelis.gwt.common.data.QueryData;
 
 @Local
 public interface SampleLocal {
 	public SampleDO fetchById(Integer sampleId) throws Exception;
+	
+    public ArrayList<IdAccessionVO> fetchSamplesByLastRunDate(ArrayList<QueryData> fields, 
+                                                            Date lastRunDate) throws Exception;
 
 	public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception;
 

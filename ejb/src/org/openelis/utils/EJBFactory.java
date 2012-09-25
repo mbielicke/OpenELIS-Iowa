@@ -31,6 +31,7 @@ import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.AnalysisReportFlagsLocal;
 import org.openelis.local.AnalysisUserLocal;
+import org.openelis.local.AnalyteLocal;
 import org.openelis.local.AnalyteParameterLocal;
 import org.openelis.local.AuxDataLocal;
 import org.openelis.local.AuxFieldGroupLocal;
@@ -40,8 +41,11 @@ import org.openelis.local.CategoryCacheLocal;
 import org.openelis.local.CategoryLocal;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.EventLogLocal;
+import org.openelis.local.ExchangeCriteriaLocal;
 import org.openelis.local.ExchangeExternalTermLocal;
 import org.openelis.local.ExchangeLocalTermLocal;
+import org.openelis.local.ExchangeProfileLocal;
 import org.openelis.local.HistoryLocal;
 import org.openelis.local.InstrumentLocal;
 import org.openelis.local.InstrumentLogLocal;
@@ -55,6 +59,7 @@ import org.openelis.local.InventoryXAdjustLocal;
 import org.openelis.local.InventoryXPutLocal;
 import org.openelis.local.InventoryXUseLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.MethodLocal;
 import org.openelis.local.NoteLocal;
 import org.openelis.local.OrderContainerLocal;
 import org.openelis.local.OrderItemLocal;
@@ -145,6 +150,10 @@ public class EJBFactory {
         return (AnalysisUserLocal)lookup("AnalysisUserBean!org.openelis.local.AnalysisUserLocal");
     }
     
+    public static AnalyteLocal getAnalyte() {
+        return (AnalyteLocal)lookup("AnalyteBean!org.openelis.local.AnalyteLocal");
+    }
+    
     public static AnalyteParameterLocal getAnalyteParameter() {
         return (AnalyteParameterLocal)lookup("AnalyteParameterBean!org.openelis.local.AnalyteParameterLocal");
     }
@@ -179,6 +188,18 @@ public class EJBFactory {
     
     public static ExchangeExternalTermLocal getExchangeExternalTerm() {
         return (ExchangeExternalTermLocal)lookup("ExchangeExternalTermBean!org.openelis.local.ExchangeExternalTermLocal");
+    }
+    
+    public static ExchangeCriteriaLocal getExchangeCriteria() {
+        return (ExchangeCriteriaLocal)lookup("ExchangeCriteriaBean!org.openelis.local.ExchangeCriteriaLocal");        
+    }
+    
+    public static ExchangeProfileLocal getExchangeProfile() {
+        return (ExchangeProfileLocal)lookup("ExchangeProfileBean!org.openelis.local.ExchangeProfileLocal");
+    }
+    
+    public static EventLogLocal getEventLog() {
+        return (EventLogLocal)lookup("EventLogBean!org.openelis.local.EventLogLocal");
     }
     
     public static HistoryLocal getHistory() {
@@ -227,6 +248,10 @@ public class EJBFactory {
     
     public static LockLocal getLock() {
         return (LockLocal)lookup("LockBean!org.openelis.local.LockLocal");
+    }
+    
+    public static MethodLocal getMethod() {
+        return (MethodLocal)lookup("MethodBean!org.openelis.local.MethodLocal");
     }
 
     public static NoteLocal getNote() {

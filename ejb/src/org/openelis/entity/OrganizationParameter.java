@@ -31,7 +31,11 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId," +
                         "p.typeId,p.value)"
                       + " from OrganizationParameter p, Dictionary d where p.organizationId = :id and"
-                      +	" p.typeId = d.id and d.systemName = :systemName")})
+                      +	" p.typeId = d.id and d.systemName = :systemName"),
+    @NamedQuery( name = "OrganizationParameter.FetchByDictionarySystemName",
+                query = "select new org.openelis.domain.OrganizationParameterDO(p.id,p.organizationId," +
+                        "p.typeId,p.value)"
+                      + " from OrganizationParameter p, Dictionary d where p.typeId = d.id and d.systemName = :systemName")})
 
 @Entity
 @Table(name = "organization_parameter")

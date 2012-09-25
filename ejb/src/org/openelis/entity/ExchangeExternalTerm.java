@@ -32,10 +32,14 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -46,10 +50,17 @@ import org.openelis.utils.Audit;
 import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
-@NamedQuery( name = "ExchangeExternalTerm.FetchByExchangeLocalTermId",
-            query = "select new org.openelis.domain.ExchangeExternalTermDO(et.id, et.exchangeLocalTermId," +
-                    "et.profileId, et.isActive, et.externalTerm, et.externalDescription, et.externalCodingSystem)"
-                  + " from ExchangeExternalTerm et where et.exchangeLocalTermId = :id")
+@NamedQueries({
+    @NamedQuery( name = "ExchangeExternalTerm.FetchByExchangeLocalTermId",
+                query = "select new org.openelis.domain.ExchangeExternalTermDO(et.id, et.exchangeLocalTermId," +
+                        "et.profileId, et.isActive, et.externalTerm, et.externalDescription, et.externalCodingSystem)"
+                      + " from ExchangeExternalTerm et where et.exchangeLocalTermId = :id"),                         
+    @NamedQuery( name = "ExchangeExternalTerm.FetchByReferenceTableIdReferenceIdsProfileIds",
+                query = "select new org.openelis.domain.ExchangeExternalTermViewDO(et.id, et.exchangeLocalTermId," +
+                        "et.profileId, et.isActive, et.externalTerm, et.externalDescription, et.externalCodingSystem," +
+                        "e.referenceTableId, e.referenceId)"
+                      + " from ExchangeExternalTerm et left join et.exchangeLocalTerm e where e.referenceTableId = :referenceTableId"
+                      + " and e.referenceId in (:referenceIds) and et.profileId in (:profileIds)")})                  
 
 @Entity
 @Table(name = "exchange_external_term")
@@ -78,6 +89,10 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
 
     @Column(name = "external_coding_system")
     private String               externalCodingSystem;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "exchange_local_term_id", insertable = false, updatable = false)
+    private ExchangeLocalTerm    exchangeLocalTerm;
 
     @Transient
     private ExchangeExternalTerm original;
@@ -143,6 +158,14 @@ public class ExchangeExternalTerm implements Auditable, Cloneable {
     public void setExternalCodingSystem(String externalCodingSystem) {
         if (DataBaseUtil.isDifferent(externalCodingSystem, this.externalCodingSystem))
             this.externalCodingSystem = externalCodingSystem;
+    }
+
+    public ExchangeLocalTerm getExchangeLocalTerm() {
+        return exchangeLocalTerm;
+    }
+
+    public void setExchangeLocalTerm(ExchangeLocalTerm exchangeLocalTerm) {
+        this.exchangeLocalTerm = exchangeLocalTerm;
     }
 
     public void setClone() {

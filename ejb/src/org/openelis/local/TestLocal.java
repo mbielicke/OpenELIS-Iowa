@@ -26,6 +26,7 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.Local;
 
@@ -34,7 +35,9 @@ import org.openelis.domain.TestViewDO;
 
 @Local
 public interface TestLocal {
-    public TestViewDO fetchById(Integer testId) throws Exception;
+    public TestViewDO fetchById(Integer ids) throws Exception;
+    
+    public ArrayList<TestViewDO> fetchByIds(Collection<Integer> ids) throws Exception;
     
     public ArrayList<TestMethodVO> fetchByName(String name, int max) throws Exception;
     

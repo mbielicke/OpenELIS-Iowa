@@ -136,5 +136,8 @@ public class ReferenceTable {
                             ORDER_TEST_ANALYTE =            111,
                             ORDER_SAMPLE_NOTE =             112,
                             EXCHANGE_LOCAL_TERM =           113,
-                            EXCHANGE_EXTERNAL_TERM =        114;  
+                            EXCHANGE_EXTERNAL_TERM =        114,
+                            EXCHANGE_CRITERIA =             115,
+                            EXCHANGE_PROFILE =              116,
+                            EVENT_LOG =                     117;  
 }
