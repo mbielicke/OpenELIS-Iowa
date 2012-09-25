@@ -26,6 +26,7 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.Local;
 
@@ -37,6 +38,8 @@ import org.openelis.domain.ProjectViewDO;
 public interface ProjectLocal {
 
     public ProjectViewDO fetchById(Integer id) throws Exception;
+    
+    public ArrayList<ProjectViewDO> fetchByIds(Collection<Integer> ids) throws Exception;
 
     public ArrayList<ProjectDO> fetchByName(String name, int maxResults) throws Exception;
 
@@ -51,4 +54,5 @@ public interface ProjectLocal {
     public ArrayList<IdNameVO> fetchForOrganizations(String clause) throws Exception;
     
     public ArrayList<IdNameVO> fetchForSampleStatusReport(ArrayList<Integer> organizationIdList) throws Exception;
+
 }

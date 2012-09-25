@@ -51,6 +51,9 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "TestTrailer.FetchById",
                 query = "select new org.openelis.domain.TestTrailerDO(t.id,t.name,t.description,t.text)"
                       + " from TestTrailer t where t.id = :id"),
+    @NamedQuery( name = "TestTrailer.FetchByIds",
+                query = "select new org.openelis.domain.TestTrailerDO(t.id,t.name,t.description,t.text)"
+                      + " from TestTrailer t where t.id in (:ids)"),                  
     @NamedQuery( name = "TestTrailer.FetchByName",
                 query = "select new org.openelis.domain.IdNameVO(t.id,t.name,t.description)"
                       + " from TestTrailer t where t.name like :name order by name"),

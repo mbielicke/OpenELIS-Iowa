@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -40,6 +41,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestTrailerDO;
+import org.openelis.domain.TestViewDO;
 import org.openelis.entity.TestTrailer;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -87,6 +89,15 @@ public class TestTrailerBean implements TestTrailerRemote, TestTrailerLocal {
             throw new DatabaseException(e);
         }
         return data;
+    }
+    
+    public ArrayList<TestTrailerDO> fetchByIds(Collection<Integer> ids) throws Exception {
+        Query query;
+
+        query = manager.createNamedQuery("TestTrailer.FetchByIds");
+        query.setParameter("ids", ids);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public ArrayList<IdNameVO> fetchByName(String name, int max) throws Exception {

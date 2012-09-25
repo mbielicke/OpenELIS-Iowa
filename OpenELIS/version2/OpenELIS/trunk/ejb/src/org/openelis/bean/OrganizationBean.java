@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.ejb.EJB;
@@ -39,6 +40,7 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.OrganizationParameterDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.entity.Organization;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -88,7 +90,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) {
+    public ArrayList<OrganizationViewDO> fetchByIds(Collection<Integer> ids) {
         Query query;
         
         if (ids.size() == 0)
@@ -124,6 +126,10 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         query.setMaxResults(max);
 
         return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<OrganizationParameterDO> fetchParametersByDictionarySystemName(String systemName) throws Exception {
+        return organizationParameter.fetchByDictionarySystemName(systemName);
     }
 
     @SuppressWarnings("unchecked")
@@ -194,7 +200,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
 
         list = new ValidationErrorsList();
         if (DataBaseUtil.isEmpty(data.getName()))
-            list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getName()));
+            list.add(new FieldErrorException("fieldRequiredException", OrganizationMeta.getName()));                    
 
         if (DataBaseUtil.isEmpty(data.getAddress().getStreetAddress()))
             list.add(new FieldErrorException("fieldRequiredException",

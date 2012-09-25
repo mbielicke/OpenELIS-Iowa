@@ -26,6 +26,7 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.Local;
 
@@ -35,7 +36,7 @@ import org.openelis.domain.OrganizationViewDO;
 public interface OrganizationLocal {
     public OrganizationViewDO fetchById(Integer id) throws Exception;
 
-    public ArrayList<OrganizationViewDO> fetchByIds(ArrayList<Integer> ids) throws Exception;
+    public ArrayList<OrganizationViewDO> fetchByIds(Collection<Integer> ids) throws Exception;
 
     public OrganizationViewDO add(OrganizationViewDO data) throws Exception;
 

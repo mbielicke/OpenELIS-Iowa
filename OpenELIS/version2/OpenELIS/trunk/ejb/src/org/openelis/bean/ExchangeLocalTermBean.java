@@ -41,7 +41,6 @@ import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.domain.ExchangeLocalTermViewDO;
-import org.openelis.domain.IdNameVO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ReferenceTable;

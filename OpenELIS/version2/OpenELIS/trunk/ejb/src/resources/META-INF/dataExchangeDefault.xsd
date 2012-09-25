@@ -1,0 +1,487 @@
+<!--
+Exhibit A - UIRF Open-source Based Public Software License.
+  
+The contents of this file are subject to the UIRF Open-source Based
+Public Software License(the "License"); you may not use this file except
+in compliance with the License. You may obtain a copy of the License at
+openelis.uhl.uiowa.edu
+  
+Software distributed under the License is distributed on an "AS IS"
+basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+License for the specific language governing rights and limitations
+under the License.
+  
+The Original Code is OpenELIS code.
+  
+The Initial Developer of the Original Code is The University of Iowa.
+Portions created by The University of Iowa are Copyright 2006-2008. All
+Rights Reserved.
+  
+Contributor(s): ______________________________________.
+  
+Alternatively, the contents of this file marked
+"Separately-Licensed" may be used under the terms of a UIRF Software
+license ("UIRF Software License"), in which case the provisions of a
+UIRF Software License are applicable instead of those above. 
+  -->
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:element name="message">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="header"/>
+        <xsd:element ref="sample"/>
+      </xsd:sequence>
+      <xsd:attribute name="type" type="xsd:string" use = "required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="header">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="name" minOccurs="0" />
+        <xsd:element name="environment" minOccurs="0" />
+        <xsd:element name="profiles" minOccurs="0" >
+          <xsd:complexType>
+            <xsd:sequence>
+              <xsd:element name="profile" maxOccurs="unbounded" />
+            </xsd:sequence>            
+          </xsd:complexType>
+        </xsd:element> 
+      </xsd:sequence>
+      <xsd:attribute name="include_all_analyses" type="xsd:string" use = "required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="sample">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="received_by" type = "systemUser"/>
+        <xsd:element name="status" type="dictionary"/>
+        <xsd:element name="client_reference" minOccurs="0"/>
+        <!--
+          The type "sampleDomain" used by "sample_domain" is extended by the types 
+          for specific domains like "sampleSDWIS" etc., such that the common fields 
+          among the domains are in "sampleDomain" and the specific fields are in
+          the specific types. This allows the element "sample_domain" to have fields 
+          belonging to different elements at different times and enable the xml 
+          document to stay valid w.r.t the schema. The xml document specifies something 
+          like "xsi:type = 'sampleSDWIS'" to indicate the specific type to use 
+          for validation for the fields specific to a given domain, and the common
+          fields are validated by the type "sampleDomain".         
+         -->        
+        <xsd:element name="sample_domain" type="sampleDomain"/>
+        <xsd:element ref="sample_item" maxOccurs="unbounded"/>
+        <xsd:element ref="sample_project" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="sample_organization" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="note" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="sample_qaevent" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="aux_data" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="accesssion_number" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="collection_date" use = "required"/>
+      <xsd:attribute name="domain" use = "required"/>
+      <xsd:attribute name="entered_date" use = "required"/>
+      <xsd:attribute name="id" use = "required" type="xsd:integer"/>
+      <xsd:attribute name="received_date" use = "required"/>
+      <xsd:attribute name="order_id" type="xsd:integer"/>
+      <xsd:attribute name="collection_time"/>
+      <xsd:attribute name="package_id" type="xsd:integer"/>
+      <xsd:attribute name="released_date"/>
+      <xsd:attribute name="revision" type="xsd:integer"/>
+    </xsd:complexType>
+  </xsd:element>    
+  
+  <xsd:complexType name="sampleDomain" abstract="true">
+    <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+    <xsd:attribute name="sample_id" type="xsd:integer" use = "required"/>
+  </xsd:complexType>
+  
+  <xsd:complexType name="sampleEnvironmental">
+    <xsd:complexContent>
+      <xsd:extension base="sampleDomain">
+        <xsd:sequence>    
+          <xsd:element name="description" minOccurs="0" />
+          <xsd:element name="collector" minOccurs="0" />      
+          <xsd:element name="collector_phone" minOccurs="0" />
+          <xsd:element name="location" minOccurs="0" />
+          <xsd:element name="location_address" type="address" minOccurs="0"/>            
+        </xsd:sequence>
+        <xsd:attribute name="is_hazardous" use = "required"/>
+        <xsd:attribute name="priority" type="xsd:integer"/>
+      </xsd:extension>
+    </xsd:complexContent>    
+  </xsd:complexType>
+  
+  <xsd:complexType name="samplePrivateWell"> 
+    <xsd:complexContent>
+      <xsd:extension base="sampleDomain">     
+        <xsd:sequence>    
+          <xsd:choice>
+            <xsd:element ref="organization"/>
+            <xsd:element name="report_to">          
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="name" minOccurs="0" />
+                  <xsd:element name="attention" minOccurs="0" />
+                  <xsd:element name="address" type="address"/>
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element> 
+          </xsd:choice>
+          <xsd:element name="owner" minOccurs="0"/>
+          <xsd:element name="collector" minOccurs="0"/>
+          <xsd:element name="well_number" minOccurs="0"/>
+          <xsd:element name="location" minOccurs="0"/>
+          <xsd:element name="location_address" type="address" minOccurs="0"/>            
+        </xsd:sequence>    
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+  
+  <xsd:complexType name="sampleSDWIS">
+    <xsd:complexContent>
+      <xsd:extension base="sampleDomain">
+        <xsd:sequence>
+          <xsd:element ref="pws"/>
+          <xsd:element name="facility_id" minOccurs="0" />                 
+          <xsd:element name="sample_type" type="dictionary"/> 
+          <xsd:element name="sample_category" type="dictionary"/>         
+          <xsd:element name="sample_point_id"/>
+          <xsd:element name="location" minOccurs="0"/>
+          <xsd:element name="collector" minOccurs="0"/>        
+        </xsd:sequence>
+        <xsd:attribute name="state_lab_id" type="xsd:integer"/> 
+      </xsd:extension>
+    </xsd:complexContent> 
+  </xsd:complexType>    
+  
+  <xsd:element name="pws">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element name="number0"/>    
+        <xsd:element name="alternate_st_num" minOccurs="0"/> 
+        <xsd:element name="name"/>                 
+        <xsd:element name="activity_status_cd" minOccurs="0"/>          
+        <xsd:element name="d_prin_city_svd_nm" minOccurs="0"/>
+        <xsd:element name="d_prin_cnty_svd_nm" minOccurs="0"/>
+        <xsd:element name="d_population_count" minOccurs="0"/>
+        <xsd:element name="d_pws_st_type_cd" minOccurs="0"/>          
+        <xsd:element name="activity_rsn_txt" minOccurs="0"/>           
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="tinwsys_is_number" type="xsd:integer" use = "required"/>       
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="sample_item">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element name="type_of_sample" type="dictionary"/>
+        <xsd:element name="source_of_sample" minOccurs="0" type="dictionary"/>
+        <xsd:element name="source_other" minOccurs="0" />
+        <xsd:element name="container" minOccurs="0" type="dictionary"/>
+        <xsd:element name="unit_of_measure" minOccurs="0" type="dictionary"/>
+        <xsd:element ref="analysis" maxOccurs="unbounded"/>       
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="sample_id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="sample_item_id" type="xsd:integer" />
+      <xsd:attribute name="item_sequence" type="xsd:integer" />
+      <xsd:attribute name="quantity" type="xsd:integer" />
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="sample_project">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element ref="project"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="sample_id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="is_permanent" use = "required"/>      
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="project">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element name="name"/>          
+        <xsd:element name="description"/>          
+        <xsd:element name="reference_to" minOccurs="0"/>
+        <xsd:element name="owner" minOccurs="0" type = "systemUser"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" use = "required" type="xsd:integer"/>
+      <xsd:attribute name="started_date" use = "required"/>
+      <xsd:attribute name="completed_date" use = "required"/>
+      <xsd:attribute name="is_active"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="sample_organization">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element name="type" type="dictionary"/>
+        <xsd:element ref="organization"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="sample_id" type="xsd:integer" use = "required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="organization">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element name="name" />          
+        <xsd:element name="attention" minOccurs="0"/>          
+        <xsd:element name="address" type="address"/>
+        <xsd:element ref="translation" minOccurs = "0"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use = "required" />
+      <xsd:attribute name="parent_organization_id" type="xsd:integer"/>
+      <xsd:attribute name="is_active"/>
+    </xsd:complexType>
+  </xsd:element>  
+  
+  <xsd:element name="analysis">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element ref="test" />          
+        <xsd:element name="section" />          
+        <xsd:element name="unit_of_measure" minOccurs="0" type="dictionary"/>
+        <xsd:element name="status" type="dictionary"/>
+        <xsd:element ref="analysis_qaevent" minOccurs="0" maxOccurs="unbounded"/>   
+        <xsd:element ref="result" maxOccurs="unbounded"/>
+        <xsd:element ref="analysis_user" maxOccurs="unbounded"/>    
+        <xsd:element ref="note" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" use = "required" type="xsd:integer" />
+      <xsd:attribute name="sample_item_id" type="xsd:integer" use = "required" />
+      <xsd:attribute name="revision" type="xsd:integer" use = "required" />
+      <xsd:attribute name="pre_analysis_id" type="xsd:integer" />
+      <xsd:attribute name="parent_result_id" type="xsd:integer" />
+      <xsd:attribute name="is_reportable" use = "required"/>
+      <xsd:attribute name="available_date"/>
+      <xsd:attribute name="started_date"/>
+      <xsd:attribute name="completed_date"/>
+      <xsd:attribute name="released_date"/>
+      <xsd:attribute name="printed_date"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="test">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element name="name"/>
+        <xsd:element name="description"/>
+        <xsd:element name="reporting_description"/>
+        <xsd:element ref="method"/>
+        <xsd:element name="test_format" type="dictionary"/>          
+        <xsd:element name="revision_method" minOccurs = "0" type="dictionary"/>          
+        <xsd:element name="reporting_method" type="dictionary"/>          
+        <xsd:element name="sorting_method" type="dictionary"/>          
+        <xsd:element ref="test_trailer" minOccurs = "0"/>          
+        <xsd:element ref="translation" minOccurs = "0"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" use = "required" type="xsd:integer"/>
+      <xsd:attribute name="is_active" use = "required"/>
+      <xsd:attribute name="active_begin"/>
+      <xsd:attribute name="active_end"/>
+      <xsd:attribute name="is_reportable" use = "required" />
+      <xsd:attribute name="time_transit" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="time_holding" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="time_ta_average" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="time_ta_warning" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="time_ta_max" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="reporting_sequence" type="xsd:integer"/>
+   </xsd:complexType>
+ </xsd:element>
+  
+ <xsd:element name="method">       
+   <xsd:complexType>
+     <xsd:sequence>    
+       <xsd:element name="name"/> 
+       <xsd:element name="description"/>                 
+       <xsd:element name="reporting_description"/>
+       <xsd:element name="translation" minOccurs = "0"/>
+     </xsd:sequence>
+     <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+     <xsd:attribute name="is_active" use = "required"/>
+     <xsd:attribute name="active_begin" use = "required"/>
+     <xsd:attribute name="active_end" use = "required"/>
+   </xsd:complexType>
+ </xsd:element>
+ 
+ <xsd:element name="test_trailer">       
+   <xsd:complexType>
+     <xsd:sequence>    
+       <xsd:element name="name"/>                 
+       <xsd:element name="description"/>
+       <xsd:element name="text"/>
+     </xsd:sequence>
+     <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+   </xsd:complexType>
+ </xsd:element>
+ 
+ <xsd:element name="analysis_qaevent">       
+   <xsd:complexType>
+     <xsd:sequence>    
+       <xsd:element ref="qaevent"/> 
+       <xsd:element name="type" type="dictionary"/>          
+     </xsd:sequence>
+     <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+     <xsd:attribute name="analysis_id" use = "required"/>
+     <xsd:attribute name="is_billable" use = "required"/>
+   </xsd:complexType>
+ </xsd:element>
+ 
+  <xsd:element name="qaevent">       
+   <xsd:complexType>
+     <xsd:sequence>    
+       <xsd:element name="name"/>                 
+       <xsd:element name="description" minOccurs="0"/>
+       <xsd:element ref="test" minOccurs="0"/>
+       <xsd:element name="type" type="dictionary"/>          
+       <xsd:element name="reporting_text"/>
+     </xsd:sequence>
+     <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+     <xsd:attribute name="is_billable" use = "required"/>
+     <xsd:attribute name="reporting_sequence" type="xsd:integer"/>
+   </xsd:complexType>
+ </xsd:element>
+ 
+ <xsd:element name="result">
+   <xsd:complexType>
+     <xsd:sequence>    
+       <xsd:element name="type" minOccurs="0" type="dictionary"/>
+       <xsd:element name="value" minOccurs="0"/>
+       <xsd:element name="dictionary" minOccurs="0" type="dictionary"/>
+       <xsd:element ref="analyte" minOccurs="0"/>
+     </xsd:sequence>
+     <xsd:attribute name="id" use = "required" type="xsd:integer" />
+     <xsd:attribute name="analysis_id" use = "required" type="xsd:integer" />
+     <xsd:attribute name="test_analyte_id" use = "required" type="xsd:integer" />
+     <xsd:attribute name="test_result_id" type="xsd:integer" />
+     <xsd:attribute name="is_column" use = "required"/>
+     <xsd:attribute name="sort_order" type="xsd:integer"/>
+     <xsd:attribute name="is_reportable" use = "required"/>
+   </xsd:complexType>
+ </xsd:element>
+  
+  <xsd:element name="analysis_user">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element name="system_user" type = "systemUser"/>
+        <xsd:element name="action" minOccurs="0" type="dictionary"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="analysis_id" type="xsd:integer" use = "required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="note">
+    <xsd:complexType>
+      <xsd:sequence>   
+        <xsd:element name="system_user" type = "systemUser"/> 
+        <xsd:element name="subject" minOccurs="0"/>                 
+        <xsd:element name="text" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="reference_id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="reference_table_id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="timestamp" use = "required"/>
+      <xsd:attribute name="is_external" use = "required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:complexType name="systemUser">
+    <xsd:sequence>    
+      <xsd:element name="external_id" minOccurs="0"/>                 
+      <xsd:element name="login_name"/>
+      <xsd:element name="last_name" minOccurs="0"/>
+      <xsd:element name="first_name" minOccurs="0"/>
+      <xsd:element name="initials" minOccurs="0"/>        
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+  </xsd:complexType>
+  
+  <xsd:element name="sample_qaevent">       
+   <xsd:complexType>
+     <xsd:sequence>    
+       <xsd:element ref="qaevent"/> 
+       <xsd:element name="type" type="dictionary"/>          
+     </xsd:sequence>
+     <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+     <xsd:attribute name="sample_id" use = "required"/>
+     <xsd:attribute name="is_billable" use = "required"/>
+   </xsd:complexType>
+ </xsd:element>
+ 
+ <xsd:element name="aux_data">
+   <xsd:complexType>
+     <xsd:sequence>    
+       <xsd:element name="type" minOccurs="0" type="dictionary"/>
+       <xsd:element name="value" minOccurs="0"/>
+       <xsd:element name="dictionary" minOccurs="0" type="dictionary"/>
+       <xsd:element ref="analyte"/>
+     </xsd:sequence>
+     <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+     <xsd:attribute name="sort_order" type="xsd:integer" use = "required"/>
+     <xsd:attribute name="aux_field_id" type="xsd:integer" use = "required"/>
+     <xsd:attribute name="reference_id" type="xsd:integer" use = "required"/>
+     <xsd:attribute name="reference_table_id" type="xsd:integer" use = "required"/>
+     <xsd:attribute name="is_reportable" use = "required"/>
+   </xsd:complexType>
+ </xsd:element>
+   
+ <xsd:complexType name="dictionary">
+   <xsd:sequence>    
+     <xsd:element name="entry"/>                 
+     <xsd:element ref="translation" minOccurs="0"/>
+   </xsd:sequence>
+   <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+ </xsd:complexType>
+ 
+  <xsd:complexType name="address">
+    <xsd:sequence>    
+      <xsd:element name="multiple_unit" minOccurs="0"/>          
+      <xsd:element name="street_address" minOccurs="0"/>  
+      <xsd:element name="city" minOccurs="0"/>  
+      <xsd:element name="state" minOccurs="0"/>  
+      <xsd:element name="zip_code" minOccurs="0"/>  
+      <xsd:element name="home_phone" minOccurs="0"/>  
+      <xsd:element name="cell_phone" minOccurs="0"/>  
+      <xsd:element name="fax_phone" minOccurs="0"/>
+      <xsd:element name="email" minOccurs="0"/>
+      <xsd:element name="country" minOccurs="0"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="xsd:integer" use = "required" />
+  </xsd:complexType>
+  
+  <xsd:element name="analyte">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element name="name"/>                 
+        <xsd:element name="external_id" minOccurs="0"/>
+        <xsd:element ref="translation" minOccurs="0"/>
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="is_active" use = "required"/>
+      <xsd:attribute name="parent_analyte_id"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="translation">
+    <xsd:complexType>
+      <xsd:sequence>    
+        <xsd:element name="profile" />                 
+        <xsd:element name="code" />
+        <xsd:element name="description" />                 
+        <xsd:element name="coding_system" />
+        <xsd:element name="version" />
+      </xsd:sequence>
+      <xsd:attribute name="id" type="xsd:integer" use = "required"/>
+      <xsd:attribute name="reference_id" type="xsd:integer" use = "required"/>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

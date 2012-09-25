@@ -11,6 +11,7 @@
 		<mkdir dir="build"/>
 		<delete file="build/openelis.jar" />
 		<copy file="src/resources/META-INF/ehcache.xml" todir="bin" overwrite="true" />
+        <copy file="src/resources/META-INF/dataExchangeDefault.xsl" todir="bin" overwrite="true" />
 		<jar jarfile="build/openelis.jar">
 			<fileset dir="bin">
 				<include name="org/openelis/bean/*.class" />
@@ -21,6 +22,7 @@
 				<include name="org/openelis/utils/*.class" />
 				<exclude name="org/openelis/report/**/*.jrxml"/>
 				<include name="ehcache.xml" />
+                <include name="dataExchangeDefault.xsl" />
 			</fileset>
 			<fileset dir="${src.resources}/">
 				<include name="META-INF/persistence.xml" />

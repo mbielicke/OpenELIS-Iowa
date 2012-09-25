@@ -25,13 +25,16 @@
  */
 package org.openelis.local;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.ejb.Local;
 
 import org.openelis.domain.TestTrailerDO;
 
 @Local
 public interface TestTrailerLocal {
-
     public TestTrailerDO fetchById(Integer id) throws Exception;
-
+    
+    public ArrayList<TestTrailerDO> fetchByIds(Collection<Integer> ids) throws Exception;
 }

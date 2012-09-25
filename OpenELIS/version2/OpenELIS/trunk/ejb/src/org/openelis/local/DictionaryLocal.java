@@ -26,6 +26,7 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.Local;
 
@@ -41,6 +42,8 @@ public interface DictionaryLocal {
     public DictionaryDO fetchBySystemName(String systemName) throws Exception;
     
     public DictionaryViewDO fetchById(Integer id) throws Exception;    
+    
+    public ArrayList<DictionaryViewDO> fetchByIds(Collection<Integer> ids) throws Exception;
     
     public DictionaryViewDO add(DictionaryViewDO data) throws Exception;
     

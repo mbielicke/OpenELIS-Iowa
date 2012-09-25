@@ -106,6 +106,10 @@ public class Result implements Auditable, Cloneable {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_analyte_id", insertable = false, updatable = false)
     private TestAnalyte testAnalyte;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_result_id", insertable = false, updatable = false)
+    private TestResult  testResult;
 
     @Transient
     private Result      original;
@@ -214,6 +218,14 @@ public class Result implements Auditable, Cloneable {
 
     public void setTestAnalyte(TestAnalyte testAnalyte) {
         this.testAnalyte = testAnalyte;
+    }
+
+    public TestResult getTestResult() {
+        return testResult;
+    }
+
+    public void setTestResult(TestResult testResult) {
+        this.testResult = testResult;
     }
 
     public Analysis getAnalysis() {

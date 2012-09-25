@@ -25,11 +25,15 @@
  */
 package org.openelis.bean;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -37,6 +41,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.FinalReportVO;
@@ -50,8 +55,10 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.widget.QueryFieldUtil;
+import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.meta.SampleMeta;
+import org.openelis.meta.SampleWebMeta;
 import org.openelis.remote.SampleRemote;
 import org.openelis.util.QueryBuilderV2;
 
@@ -62,10 +69,17 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
+    
+    @EJB
+    private DictionaryLocal                dictionary;
 
-    private static final SampleMeta meta = new SampleMeta();
+    private static final SampleMeta        meta = new SampleMeta();
+    
+    private static final Logger            log  = Logger.getLogger(SampleBean.class);
     
     private static HashMap<String, String> wellOrgFieldMap, reportToAddressFieldMap;
+    
+    private static Integer                 reportToTypeId, sampleErrorStatusId, analysisReleasedStatusId;
 
     static {
         wellOrgFieldMap = new HashMap<String, String>();
@@ -100,6 +114,19 @@ public class SampleBean implements SampleLocal, SampleRemote {
                                     SampleMeta.getAddressWorkPhone());
         reportToAddressFieldMap.put(SampleMeta.getAddressFaxPhone(),
                                     SampleMeta.getAddressFaxPhone());
+    }    
+    
+    @PostConstruct
+    public void init() {
+        if (reportToTypeId == null) {
+            try {
+                reportToTypeId = dictionary.fetchBySystemName("org_report_to").getId();
+                sampleErrorStatusId = dictionary.fetchBySystemName("sample_error").getId();
+                analysisReleasedStatusId = dictionary.fetchBySystemName("analysis_released").getId();
+            } catch (Throwable e) {
+                log.error("Failed to lookup constants for dictionary entries", e);
+            }
+        }
     }
 
     public ArrayList<IdAccessionVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
@@ -155,6 +182,47 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
         return (ArrayList<IdAccessionVO>)list;
     }
+    
+    
+    public ArrayList<IdAccessionVO> dataExchangeQuery(ArrayList<QueryData> fields) throws Exception {
+        boolean orgPresent;
+        Query query;
+        List results;
+        QueryBuilderV2 builder;
+
+        
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
+                          "," + SampleMeta.getAccessionNumber() + ") ");
+        builder.constructWhere(fields);     
+        
+        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + analysisReleasedStatusId);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleErrorStatusId);
+        
+        orgPresent = false;
+        for (QueryData f : fields) {
+            if (SampleMeta.getOrgId().equals(f.key)) {
+                orgPresent = true;
+                continue;
+            }
+        }
+        
+        if (orgPresent)
+            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" +reportToTypeId);
+        
+        builder.setOrderBy(SampleMeta.getAccessionNumber());
+        query = manager.createQuery(builder.getEJBQL());
+
+        builder.setQueryParams(query, fields);
+
+        results = query.getResultList();
+
+        if (results.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(results);
+    }   
 
     public SampleDO fetchById(Integer sampleId) throws Exception {
         Query query = manager.createNamedQuery("Sample.FetchById");
@@ -166,7 +234,6 @@ public class SampleBean implements SampleLocal, SampleRemote {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-
     }
 
     public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception {
@@ -367,6 +434,110 @@ public class SampleBean implements SampleLocal, SampleRemote {
             returnList.add(vo);
         }
         return returnList;
+    }
+    
+    public ArrayList<IdAccessionVO> fetchSamplesByLastRunDate(ArrayList<QueryData> fields,
+                                                              Date lastRunDate) throws Exception {
+        boolean orgPresent;
+        String lrdStr, crdStr, queryStr;
+        ArrayList<String> dateClause;
+        SimpleDateFormat dateFormat;
+        List results;
+        Query query;
+        QueryData field;
+        QueryBuilderV2 builder;
+        Calendar cal;
+        Date currentRunDate;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
+                          "," + SampleMeta.getAccessionNumber() + ") ");
+
+        builder.constructWhere(fields);
+        builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleErrorStatusId);
+
+        orgPresent = false;
+        for (QueryData f : fields) {
+            if (SampleMeta.getOrgId().equals(f.key)) {
+                orgPresent = true;
+                continue;
+            }
+        }
+
+        if (orgPresent)
+            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" + reportToTypeId);
+
+        dateClause = new ArrayList<String>();
+
+        /*
+         * create the clause for restricting the list of accession numbers to the 
+         * samples that were released between the last run date and the current 
+         * time minus one minute or that have at least one analysis that was released
+         * during that time 
+         */
+        dateClause.add("(");
+        dateClause.add(SampleMeta.getReleasedDate());
+        dateClause.add("between");
+        dateClause.add(":dt00");
+        dateClause.add("and");
+        dateClause.add(":dt01");
+        dateClause.add(")");
+        dateClause.add("or");
+        dateClause.add("(");
+        dateClause.add(SampleMeta.getAnalysisReleasedDate());
+        dateClause.add("between");
+        dateClause.add(":dt100");
+        dateClause.add("and");
+        dateClause.add(":dt101");
+        dateClause.add(")");
+
+        builder.addWhere(DataBaseUtil.concatWithSeparator(dateClause, " "));
+
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        lrdStr = dateFormat.format(lastRunDate);
+
+        cal = Calendar.getInstance();
+        cal.add(Calendar.MINUTE, -1);
+        currentRunDate = cal.getTime();
+
+        crdStr = dateFormat.format(currentRunDate);
+
+        queryStr = DataBaseUtil.concatWithSeparator(lrdStr, "..", crdStr);
+
+        /*
+         * set the values of the parameters created in the clause above
+         */
+        field = new QueryData();
+        field.key = "dt";
+        field.query = queryStr;
+        field.type = QueryData.Type.DATE;
+        fields.add(field);
+
+        field = new QueryData();
+        field.key = "dt1";
+        field.query = queryStr;
+        field.type = QueryData.Type.DATE;
+        
+        /*
+         * these fields were not added to the list passed to constructWhere() because
+         * they aren't part of the where clause but only added to specify the values
+         * of the parameters
+         */
+        fields.add(field);
+
+        builder.setOrderBy(SampleMeta.getAccessionNumber());
+        query = manager.createQuery(builder.getEJBQL());
+
+        builder.setQueryParams(query, fields);
+
+        results = query.getResultList();
+
+        if (results.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(results);
     }
     
     public SampleDO add(SampleDO data) {

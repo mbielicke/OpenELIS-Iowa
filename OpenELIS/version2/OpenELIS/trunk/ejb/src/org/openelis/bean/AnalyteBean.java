@@ -26,9 +26,9 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -70,7 +70,7 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
     @EJB
     private LockLocal                   lock;
 
-    private static final AnalyteMeta meta = new AnalyteMeta();
+    private static final AnalyteMeta    meta = new AnalyteMeta();
 
     public AnalyteViewDO fetchById(Integer analyteId) throws Exception {
         Query query;
@@ -87,7 +87,17 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         }
         return data;
     }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<AnalyteViewDO> fetchByIds(Collection<Integer> ids) throws Exception {
+        Query query;
 
+        query = manager.createNamedQuery("Analyte.FetchByIds");
+        query.setParameter("ids", ids);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     @SuppressWarnings("unchecked")
     public ArrayList<AnalyteDO> fetchByName(String name, int maxResults) {
         Query query = null;

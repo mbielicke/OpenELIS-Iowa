@@ -26,14 +26,20 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.Local;
 
 import org.openelis.domain.ExchangeExternalTermDO;
+import org.openelis.domain.ExchangeExternalTermViewDO;
 
 @Local
 public interface ExchangeExternalTermLocal {
     public ArrayList<ExchangeExternalTermDO> fetchByExchangeLocalTermId(Integer id) throws Exception;
+    
+    public ArrayList<ExchangeExternalTermViewDO> fetchByReferenceTableIdReferenceIdsProfileIds(Integer referenceTableId,
+                                                                                                                        Collection<Integer> referenceIds,
+                                                                                                                        Collection<Integer> profileIds) throws Exception;
 
     public ExchangeExternalTermDO add(ExchangeExternalTermDO data) throws Exception;
 

@@ -26,6 +26,7 @@
 package org.openelis.local;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.ejb.Local;
 
@@ -35,6 +36,8 @@ import org.openelis.domain.QaEventViewDO;
 @Local
 public interface QaeventLocal {
     public QaEventViewDO fetchById(Integer id) throws Exception;
+    
+    public ArrayList<QaEventViewDO> fetchByIds(Collection<Integer> ids) throws Exception;
     
     public ArrayList<QaEventDO> fetchBySampleId(Integer sampleId);
     
