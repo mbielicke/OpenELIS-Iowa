@@ -269,7 +269,11 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
         if (uri.startsWith(FILE_PREFIX)) {
             try {
                 uri = uri.replaceAll(FILE_PREFIX, "");
-                dir = new File(uri);
+                
+                if (!uri.startsWith(File.separator))
+                    uri = File.separator + uri;  
+                
+                dir = new File(uri);                
                 
                 loader = Thread.currentThread().getContextClassLoader();
                 
@@ -308,7 +312,6 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
                 if (status != null)
                     status.setMessage("Exported xml for specified samples to the location");
             } catch (Exception e) {
-                e.printStackTrace();
                 throw e;                
             } finally {
                 if (writer != null)
