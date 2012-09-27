@@ -225,7 +225,7 @@ UIRF Software License are applicable instead of those above.
                          <HorizontalPanel>
                            <table key="reportToTable" maxRows="5" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{sampleMeta:getOrgParamValue()},{sampleMeta:getAnalysisTestId()}" width="auto">
                              <col header="" width="227">
-                               <autoComplete case="UPPER" field="Integer" key="{sampleMeta:getOrgId()}" popWidth="auto" required = "true" width="227">
+                               <autoComplete case="UPPER" field="Integer" key="{sampleMeta:getOrgId()}" popWidth="auto" width="227">
                                 <col header="{resource:getString($constants,'name')}" width="180" />
                                 <col header="{resource:getString($constants,'street')}" width="110" />
                                 <col header="{resource:getString($constants,'city')}" width="100" />

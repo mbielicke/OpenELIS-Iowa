@@ -627,7 +627,7 @@ public class ExchangeDataSelectionScreen extends Screen {
                  * being blank. Thus the autocomplete is made required based on
                  * the state. 
                  */
-                reportToOrganizationName.getField().required = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
+                //reportToOrganizationName.getField().required = EnumSet.of(State.ADD, State.UPDATE).contains(event.getState());
                 
                 reportToTable.enable(true);
             }
@@ -1065,8 +1065,24 @@ public class ExchangeDataSelectionScreen extends Screen {
         
         profile = ((Dropdown<Integer>)profileTable.getColumns().get(0).getColumnWidget());
         profile.setModel(model);
-    }
+    }   
     
+    private boolean reportToHasEmptyRows() {
+        ArrayList<TableDataRow> model;
+        
+        model = reportToTable.getData();
+        
+        if (model == null || model.size() == 0)
+            return false;
+        
+        for (TableDataRow r : model) {
+            if (r.key == null)
+                return true;
+        }
+        
+        return false;
+    }
+
     /*
      * basic button methods
      */
@@ -1135,6 +1151,11 @@ public class ExchangeDataSelectionScreen extends Screen {
     protected void commit() {
         setFocus(null);
 
+        if (state != State.QUERY && reportToHasEmptyRows()) {
+            Window.alert(consts.get("removeEmptyReportToRows"));
+            return;
+        }
+        
          if ( !validate()) {
             window.setError(consts.get("correctErrors"));
             return;
@@ -1438,11 +1459,10 @@ public class ExchangeDataSelectionScreen extends Screen {
             
             /*
              * this is done so that after the accession numbers fetched from the 
-             * back-end are set in the text-area, the user can select some  
+             * back-end are set in the text-area, the user can select a row in the
+             * table showing the log entries  
              */
             lastRunTable.clearSelections();
-            //if (lastRunTable.getSelectedRow() > -1)
-              //  lastRunTable.unselect(lastRunTable.getSelectedRow());
             
             window.clearStatus();
         } catch (NotFoundException e) {
