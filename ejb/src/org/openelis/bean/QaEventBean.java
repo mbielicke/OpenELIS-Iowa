@@ -40,7 +40,6 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QaEventDO;
-import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.QaEvent;
@@ -99,7 +98,7 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
     }
     
     @SuppressWarnings("unchecked")
-    public ArrayList<QaEventVO> fetchByName(String name) throws Exception {
+    public ArrayList<QaEventViewDO> fetchByName(String name) throws Exception {
         Query query;
     
         query = manager.createNamedQuery("QaEvent.FetchByName");
@@ -108,7 +107,7 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<QaEventVO> fetchByTestId(Integer id) throws Exception {
+    public ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception {
         Query query;
         
         query = manager.createNamedQuery("QaEvent.FetchByTestId");
@@ -117,7 +116,7 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
     }
 
     @SuppressWarnings("unchecked")
-    public ArrayList<QaEventVO> fetchByCommon() throws Exception {
+    public ArrayList<QaEventDO> fetchByCommon() throws Exception {
         Query query;
 
         query = manager.createNamedQuery("QaEvent.FetchByCommon");
@@ -257,7 +256,7 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
 
     public void validate(QaEventDO data) throws Exception {
         ValidationErrorsList list;
-        ArrayList<QaEventVO> dups;
+        ArrayList<QaEventViewDO> dups;
 
         list = new ValidationErrorsList();
 
@@ -270,7 +269,7 @@ public class QaEventBean implements QaEventRemote, QaeventLocal {
             //
             try {
                 dups = fetchByName(data.getName());
-                for (QaEventVO dup : dups) {
+                for (QaEventViewDO dup : dups) {
                     if (DataBaseUtil.isDifferent(data.getId(), dup.getId()) &&
                         !DataBaseUtil.isDifferent(data.getName(), dup.getName()) &&
                         !DataBaseUtil.isDifferent(data.getTestId(), dup.getTestId()))

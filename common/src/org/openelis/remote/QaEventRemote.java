@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.QaEventVO;
+import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
@@ -39,11 +39,11 @@ public interface QaEventRemote {
    
     public QaEventViewDO fetchById(Integer id) throws Exception;
 
-    public ArrayList<QaEventVO> fetchByName(String name) throws Exception;
+    public ArrayList<QaEventViewDO> fetchByName(String name) throws Exception;
 
-    public ArrayList<QaEventVO> fetchByTestId(Integer id) throws Exception;
+    public ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception;
 
-    public ArrayList<QaEventVO> fetchByCommon() throws Exception;
+    public ArrayList<QaEventDO> fetchByCommon() throws Exception;
     
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 

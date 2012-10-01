@@ -71,7 +71,7 @@ public class OrderMeta implements Meta, MetaMap {
 	                               ORDER_ORG_ID = "_orderOrganization.id",
 	                               ORDER_ORG_ORDER_ID = "_orderOrganization.orderId",
 	                               ORDER_ORG_ORGANIZATION_ID = "_orderOrganization.organizationId",
-	                               ORDER_ORG_ATTENTION = "_orderOrganization.attention",
+	                               ORDER_ORG_ORGANIZATION_ATTENTION = "_orderOrganization.organizationAttention",
 	                               ORDER_ORG_TYPE_ID = "_orderOrganization.typeId",
 	                               
 	                               ORDER_ORG_ORGANIZATION_ADDRESS_ID = "_orderOrganization.organization.addressId",	   
@@ -162,7 +162,7 @@ public class OrderMeta implements Meta, MetaMap {
                                                   ORGANIZATION_ADDRESS_EMAIL, ORGANIZATION_ADDRESS_COUNTRY,
                                                   
                                                   ORDER_ORG_ID, ORDER_ORG_ORDER_ID, ORDER_ORG_ORGANIZATION_ID,
-                                                  ORDER_ORG_TYPE_ID, ORDER_ORG_ATTENTION,
+                                                  ORDER_ORG_TYPE_ID, ORDER_ORG_ORGANIZATION_ATTENTION,
                                                   
                                                   ORDER_ORG_ORGANIZATION_NAME,  ORDER_ORG_ORGANIZATION_ADDRESS_ID,                                                       
                                                   
@@ -332,8 +332,8 @@ public class OrderMeta implements Meta, MetaMap {
         return ORDER_ORG_ORGANIZATION_ID;
     }
     
-    public static String getOrderOrganizationAttention() {
-        return ORDER_ORG_ATTENTION;
+    public static String getOrderOrganizationOrganizationAttention() {
+        return ORDER_ORG_ORGANIZATION_ATTENTION;
     }
     
     public static String getOrderOrganizationTypeId() {
