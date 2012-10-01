@@ -28,7 +28,7 @@ package org.openelis.modules.qaevent.server;
 import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.QaEventVO;
+import org.openelis.domain.QaEventDO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.server.EJBFactory;
@@ -39,11 +39,11 @@ public class QaEventService {
         return EJBFactory.getQaEvent().fetchById(id);
     }
 
-    public ArrayList<QaEventVO> fetchByTestId(Integer id) throws Exception {
+    public ArrayList<QaEventDO> fetchByTestId(Integer id) throws Exception {
         return EJBFactory.getQaEvent().fetchByTestId(id);
     }
 
-    public ArrayList<QaEventVO> fetchByCommon() throws Exception {
+    public ArrayList<QaEventDO> fetchByCommon() throws Exception {
         return EJBFactory.getQaEvent().fetchByCommon();
     }
 

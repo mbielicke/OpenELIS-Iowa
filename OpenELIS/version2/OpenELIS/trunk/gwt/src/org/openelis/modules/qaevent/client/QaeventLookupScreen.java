@@ -30,7 +30,7 @@ import java.util.EnumSet;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QaEventVO;
+import org.openelis.domain.QaEventDO;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -90,7 +90,7 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
 	 */
 	public void draw() {
 		TableDataRow row;
-		ArrayList<QaEventVO> list;
+		ArrayList<QaEventDO> list;
 
 		try {
 			if (type == Type.ANALYSIS && testId != null)
@@ -102,7 +102,7 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
 			 * load the model
 			 */
 			model = new ArrayList<TableDataRow>();
-			for (QaEventVO data: list) {
+			for (QaEventDO data: list) {
 				row = new TableDataRow(data.getId(), data.getName(), data.getDescription(),
 									   data.getTypeId(), data.getIsBillable());
 				row.data = data;
@@ -111,7 +111,7 @@ public class QaeventLookupScreen extends Screen implements HasActionHandlers<Qae
 		} catch (Throwable e) {
 			e.printStackTrace();
 			Window.alert(e.getMessage());
-			model = new ArrayList<TableDataRow>();
+			model.clear();
 		}
 
 		DataChangeEvent.fire(this);
