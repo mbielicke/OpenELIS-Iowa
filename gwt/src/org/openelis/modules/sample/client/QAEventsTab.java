@@ -35,7 +35,7 @@ import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.QaEventVO;
+import org.openelis.domain.QaEventDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.SectionPermission;
@@ -401,7 +401,7 @@ public class QAEventsTab extends Screen {
 	            qaEventScreen.addActionHandler(new ActionHandler<QaeventLookupScreen.Action>() {
 	            	public void onAction(ActionEvent<QaeventLookupScreen.Action> event) {
 	                	boolean nonInte, canEdit;
-	                	QaEventVO data;
+	                	QaEventDO data;
 	                	TableDataRow row;
 	                    ArrayList<TableDataRow> list;
 	                    
@@ -416,7 +416,7 @@ public class QAEventsTab extends Screen {
 	                    	
 	                    list = (ArrayList<TableDataRow>)event.getData();
 	                    for (TableDataRow r: list) {
-	                    	data = (QaEventVO) r.data;
+	                    	data = (QaEventDO) r.data;
 	                    	if (!canEdit && data.getTypeId() != qaInternal) {
 	                    		nonInte = true;
 	                    		continue;

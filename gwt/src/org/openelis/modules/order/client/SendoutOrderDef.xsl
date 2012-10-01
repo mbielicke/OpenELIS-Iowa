@@ -267,7 +267,7 @@ UIRF Software License are applicable instead of those above.
                     <col key="{meta:getOrderOrganizationTypeId()}" header="{resource:getString($constants,'type')}" width="125">
                       <dropdown field="Integer" required="true" width="125" />
                     </col>
-                    <col key="{meta:getOrderOrganizationAttention()}" header="{resource:getString($constants,'attention')}" width="180">
+                    <col key="{meta:getOrderOrganizationOrganizationAttention()}" header="{resource:getString($constants,'attention')}" width="180">
                       <textbox case="UPPER" max = "30" field="String" />
                     </col>
                     <col key="{meta:getOrderOrganizationOrganizationName()}" header="{resource:getString($constants,'name')}" width="220">

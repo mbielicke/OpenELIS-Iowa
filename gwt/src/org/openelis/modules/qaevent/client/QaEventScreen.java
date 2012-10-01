@@ -33,7 +33,6 @@ import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.QaEventVO;
 import org.openelis.domain.QaEventViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestMethodVO;
@@ -423,8 +422,8 @@ public class QaEventScreen extends Screen {
                 window.setBusy(consts.get("querying"));
 
                 query.setRowsPerPage(14);
-                service.callList("query", query, new AsyncCallback<ArrayList<QaEventVO>>() {
-                    public void onSuccess(ArrayList<QaEventVO> result) {
+                service.callList("query", query, new AsyncCallback<ArrayList<QaEventViewDO>>() {
+                    public void onSuccess(ArrayList<QaEventViewDO> result) {
                         setQueryResult(result);
                     }
 
