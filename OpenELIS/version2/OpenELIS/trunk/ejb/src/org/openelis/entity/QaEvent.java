@@ -60,18 +60,18 @@ import org.openelis.utils.Auditable;
                         "q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
                       + " from QaEvent q left join q.test t left join q.test.method m where q.id in (:ids)"),
     @NamedQuery( name = "QaEvent.FetchByName",
-                query = "select new org.openelis.domain.QaEventVO(q.id,q.name,q.description,q.testId," +
-                        "q.typeId,q.isBillable,q.reportingSequence,t.name,m.name)"
+                query = "select new org.openelis.domain.QaEventViewDO(q.id,q.name,q.description,q.testId," +
+                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText,t.name,m.name)"
                       + " from QaEvent q left join q.test t left join q.test.method m where q.name = :name"),
     @NamedQuery( name = "QaEvent.FetchByTestId",
-                query = "select new org.openelis.domain.QaEventVO(q.id,q.name,q.description,q.testId," +
-                		"q.typeId,q.isBillable,q.reportingSequence,t.name,m.name)"
+                query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
+                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
                       + " from QaEvent q left join q.test t left join t.method m where q.testId = :testId" +
                       		" or (q.testId is null and q.name not in " +
                       		    "(select q2.name from QaEvent q2 where q2.testId=q.testId)) order by q.name"),
     @NamedQuery( name = "QaEvent.FetchByCommon",
-                query = "select new org.openelis.domain.QaEventVO(q.id,q.name,q.description,q.testId," +
-                		"q.typeId,q.isBillable,q.reportingSequence,'','')"
+                query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
+                        "q.typeId,q.isBillable,q.reportingSequence,q.reportingText)"
                       + " from QaEvent q where q.testId is null order by q.name"),
     @NamedQuery( name = "QaEvent.FetchByAnalysisId",
                  query = "select new org.openelis.domain.QaEventDO(q.id,q.name,q.description,q.testId," +
