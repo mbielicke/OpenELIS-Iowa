@@ -1,6 +1,7 @@
 package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.SampleItemViewDO;
@@ -28,13 +29,18 @@ import com.google.gwt.user.client.Window;
 
 public abstract class SampleTreeUtility extends Screen implements HasActionHandlers, HasDataChangeHandlers {
 
-    protected TestPrepUtility testPrep;
-    private Screen            parentScreen;
-    private SampleManager     manager;
-    private ScreenWindowInt   window;
-    private TreeWidget        itemsTree;
-    private Confirm           cancelAnalysisConfirm;
+    protected TestPrepUtility     testPrep;
+    private Screen                parentScreen;
+    private SampleManager         manager;
+    private ScreenWindowInt       window;
+    private TreeWidget            itemsTree;
+    private TestPrepActionHandler testPrepActionHandler;
+    private Confirm               cancelAnalysisConfirm;
 
+    private enum ACTION {
+        ORDER, PREP, REFLEX
+    }
+    
     public SampleTreeUtility(ScreenWindowInt window, TreeWidget itemsTree, Screen parentScreen) {
         this.window = window;
         this.itemsTree = itemsTree;
@@ -126,9 +132,9 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
     }
 
     public void testLookupFinished(ArrayList<SampleDataBundle> bundles) {
-        window.setBusy();
-        TreeDataItem itemRow, newRow;
+        TreeDataItem itemRow, newRow;        
         
+        window.setBusy();
         itemRow = itemsTree.getSelection().parent;
 
         // try once to get an item row
@@ -233,12 +239,9 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
         if (testPrep == null) {
             testPrep = new TestPrepUtility();
             testPrep.setScreen(parentScreen);
-
-            testPrep.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
-                public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
-                    testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
-                }
-            });
+            
+            testPrepActionHandler = new TestPrepActionHandler();
+            testPrep.addActionHandler(testPrepActionHandler);
         }
 
         if (panel)
@@ -254,6 +257,7 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
                 assert "analysis".equals(selectedRow.leafType) : "can't find analysis tree row";
             }
             analysisBundle = (SampleDataBundle)selectedRow.data;
+            testPrepActionHandler.action = SampleTreeUtility.ACTION.PREP;
             testPrep.lookup(analysisBundle, type, id);
         } catch (Exception e) {
             Window.alert("analysisTestChanged: " + e.getMessage());             
@@ -265,42 +269,29 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
             testPrep = new TestPrepUtility();
             testPrep.setScreen(parentScreen);
 
-            testPrep.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
-                public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
-                    testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
-                }
-            });
+            testPrepActionHandler = new TestPrepActionHandler();
+            testPrep.addActionHandler(testPrepActionHandler);            
         }
 
         try {
+            testPrepActionHandler.action = SampleTreeUtility.ACTION.REFLEX;
             testPrep.lookup(analysisBundleList);
-
         } catch (Exception e) {
             Window.alert("importReflexTestList: " + e.getMessage());
         }
-
     }
 
     public void importOrderCheckPrep() {
         SampleItemManager itemMan;        
         AnalysisManager anaMan;
         ArrayList<SampleDataBundle> bundles;
-        final SampleTreeUtility inst; 
         
         if (testPrep == null) {
             testPrep = new TestPrepUtility();
             testPrep.setScreen(parentScreen);
 
-            inst = this;
-            testPrep.addActionHandler(new ActionHandler<TestPrepUtility.Action>() {
-                public void onAction(ActionEvent<org.openelis.modules.sample.client.TestPrepUtility.Action> event) {
-                    /*
-                     * notify the parent screen that it needs to refresh the tree 
-                     * showing the analyses
-                     */
-                    DataChangeEvent.fire(inst, parentScreen);
-                }
-            });
+            testPrepActionHandler = new TestPrepActionHandler();
+            testPrep.addActionHandler(testPrepActionHandler);            
         }        
         
         try {
@@ -316,6 +307,10 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
                 for (int j = 0; j < anaMan.count(); j++)
                     bundles.add(anaMan.getBundleAt(j));                
             }
+            
+            testPrepActionHandler.parentScreen = parentScreen;
+            testPrepActionHandler.utility = this;
+            testPrepActionHandler.action = SampleTreeUtility.ACTION.ORDER;
             testPrep.lookup(bundles);
         } catch (Exception e) {
             e.printStackTrace();
@@ -413,5 +408,26 @@ public abstract class SampleTreeUtility extends Screen implements HasActionHandl
 
     public HandlerRegistration addActionHandler(ActionHandler handler) {
         return addHandler(handler, ActionEvent.getType());
+    }
+
+    private class TestPrepActionHandler implements ActionHandler<TestPrepUtility.Action>{
+
+        private SampleTreeUtility.ACTION action;
+        private SampleTreeUtility        utility;
+        private Screen                   parentScreen;
+        
+        @Override
+        public void onAction(ActionEvent<TestPrepUtility.Action> event) {
+            if (SampleTreeUtility.ACTION.ORDER == action) {
+                /*
+                 * notify the parent screen that it needs to refresh the tree 
+                 * showing the analyses
+                 */
+                DataChangeEvent.fire(utility, parentScreen);
+            } else if (EnumSet.of(SampleTreeUtility.ACTION.PREP, SampleTreeUtility.ACTION.REFLEX)
+                            .contains(action)) {
+                testLookupFinished((ArrayList<SampleDataBundle>)event.getData());
+            }            
+        }        
     }
 }
