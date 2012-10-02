@@ -33,6 +33,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import javax.validation.ConstraintViolationException;
 
@@ -105,14 +106,18 @@ public class LockBean implements LockLocal {
                 } else {
                     user = userCache.getSystemUser(lock.getSystemUserId());
                     throw new EntityLockedException("entityLockException",
-                                                    user.getLoginName(),
-                                                    new Date(lock.getExpires()).toString());
+                                                     user.getLoginName(),
+                                                     new Date(lock.getExpires()).toString());
                 }
                 manager.flush();
             } catch (ConstraintViolationException e) {
                 throw new EntityLockedException("entityLockException",
-                                                "unknown",
-                                                new Date(lockTimeMillis + timeMillis).toString());
+                                                 "unknown",
+                                                 new Date(lockTimeMillis + timeMillis).toString());
+            } catch (PersistenceException e) {
+                throw new EntityLockedException("entityLockException",
+                                                 "unknown",
+                                                 new Date(lockTimeMillis + timeMillis).toString());
             } catch (Exception e) {
                 throw e;
             }
