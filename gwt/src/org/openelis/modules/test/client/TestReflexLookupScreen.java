@@ -406,7 +406,10 @@ public class TestReflexLookupScreen extends Screen implements HasActionHandlers<
                 aRow.leafType = "analysis";
                 aRow.toggle();
                 aRow.key = anDO.getId();
-                aRow.cells.get(0).setValue(sDO.getAccessionNumber()+": "+anDO.getTestName()+", "+anDO.getMethodName());
+                if (sDO.getAccessionNumber() != null)
+                    aRow.cells.get(0).setValue(sDO.getAccessionNumber()+": "+anDO.getTestName()+", "+anDO.getMethodName());
+                else
+                    aRow.cells.get(0).setValue("NEW: "+anDO.getTestName()+", "+anDO.getMethodName());
                 aRow.data = bundle;
 
                 anaReflexCount = 0;
