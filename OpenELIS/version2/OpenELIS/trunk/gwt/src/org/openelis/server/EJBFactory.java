@@ -121,6 +121,7 @@ import org.openelis.remote.TestTrailerRemote;
 import org.openelis.remote.ToDoAnalyteReportRemote;
 import org.openelis.remote.ToDoCacheRemote;
 import org.openelis.remote.TurnaroundReportRemote;
+import org.openelis.remote.TurnaroundStatisticReportRemote;
 import org.openelis.remote.UserCacheRemote;
 import org.openelis.remote.VerificationReportRemote;
 import org.openelis.remote.VolumeReportRemote;
@@ -542,6 +543,10 @@ public class EJBFactory {
     
     public static ToDoAnalyteReportRemote getToDoAnalyteReport() {
         return (ToDoAnalyteReportRemote)lookup("ToDoAnalyteReportBean!org.openelis.remote.ToDoAnalyteReportRemote");
+    }
+    
+    public static TurnaroundStatisticReportRemote getTurnaroundStatisticReport() {
+        return (TurnaroundStatisticReportRemote)lookup("TurnaroundStatisticReportBean!org.openelis.remote.TurnaroundStatisticReportRemote");
     }
           
     public static Object lookup(String bean) {
