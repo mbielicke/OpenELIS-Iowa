@@ -215,7 +215,7 @@
 	<detail>
 		<band height="13" splitType="Stretch">
 			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
-				<reportElement positionType="Float" x="0" y="0" width="48" height="12"/>
+				<reportElement positionType="Float" x="0" y="0" width="59" height="12"/>
 				<textElement>
 					<font size="8" pdfFontName="Times-Roman"/>
 				</textElement>
