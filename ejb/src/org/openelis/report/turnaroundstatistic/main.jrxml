@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TurnaroundStatisticReport" printOrder="Horizontal" pageWidth="791" pageHeight="612" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="755" leftMargin="18" rightMargin="18" topMargin="24" bottomMargin="18">
+	<property name="com.jasperassistant.designer.GridWidth" value="6"/>
+	<property name="com.jasperassistant.designer.GridHeight" value="12"/>
+	<property name="com.jasperassistant.designer.DataSource" value="phims"/>
+	<property name="com.jasperassistant.designer.SnapToGrid" value="true"/>
+	<property name="com.jasperassistant.designer.Grid" value="true"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<import value="org.openelis.domain.TurnAroundReportViewVO"/>
+	<import value="org.openelis.domain.TurnAroundReportViewVO.StatisticType"/>
+	<reportFont name="FieldData" isDefault="false" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="FieldLabel" isDefault="false" size="10" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="SectionHeaderLabel" isDefault="false" size="12" isBold="true" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="ColumnHeading" isDefault="false" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Qaevent" isDefault="false" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Comment" isDefault="false" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<reportFont name="Trailer" isDefault="false" size="8" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+	<parameter name="LOGNAME" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["uhl"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FROM_DATE" class="java.lang.String"/>
+	<parameter name="TO_DATE" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/auto/home/abasu/workspace/OpenELIS-EJB/src/org/openelis/report/turnaroundstatistic/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TURNAROUND_DATASOURCE" class="org.openelis.report.turnaroundstatistic.TurnaroundDataSource" isForPrompting="false"/>
+	<parameter name="INTERVAL_TYPE" class="java.lang.String"/>
+	<field name="PAGES" class="java.lang.Integer"/>
+	<field name="PLOT_DATE" class="java.lang.String"/>
+	<field name="TEST" class="java.lang.String"/>
+	<field name="METHOD" class="java.lang.String"/>
+	<field name="MIN" class="java.lang.Float"/>
+	<field name="MAX" class="java.lang.Float"/>
+	<field name="AVG" class="java.lang.Float"/>
+	<field name="SD" class="java.lang.Float"/>
+	<field name="NUMBER_TESTED" class="java.lang.Integer"/>
+	<field name="STAT_1" class="org.openelis.domain.TurnAroundReportViewVO.Value.Stat"/>
+	<field name="STAT_2" class="org.openelis.domain.TurnAroundReportViewVO.Value.Stat"/>
+	<field name="STAT_3" class="org.openelis.domain.TurnAroundReportViewVO.Value.Stat"/>
+	<field name="STAT_4" class="org.openelis.domain.TurnAroundReportViewVO.Value.Stat"/>
+	<field name="STAT_5" class="org.openelis.domain.TurnAroundReportViewVO.Value.Stat"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<variable name="NUMBER_OF_PAGES" class="java.lang.Integer" calculation="Sum">
+		<variableExpression><![CDATA[$F{PAGES}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="STAT" class="org.openelis.domain.TurnAroundReportViewVO" calculation="System">
+		<variableExpression><![CDATA[$V{STAT}]]></variableExpression>
+		<initialValueExpression><![CDATA[]]></initialValueExpression>
+	</variable>
+	<variable name="LABEL_VALUE_AXIS" class="java.lang.String" resetType="Group" resetGroup="TestMethodGroupHeader">
+		<initialValueExpression><![CDATA["Days.Hours"]]></initialValueExpression>
+	</variable>
+	<variable name="LABEL_CATEGORY_AXIS" class="java.lang.String" resetType="Group" resetGroup="TestMethodGroupHeader">
+		<initialValueExpression><![CDATA["Charted" + " "+ $P{INTERVAL_TYPE}]]></initialValueExpression>
+	</variable>
+	<group name="TestMethodGroupHeader" isStartNewPage="true" isReprintHeaderOnEachPage="true" keepTogether="true">
+		<groupExpression><![CDATA[$F{TEST}+", "+$F{METHOD}]]></groupExpression>
+		<groupHeader>
+			<band/>
+		</groupHeader>
+	</group>
+	<pageHeader>
+		<band height="228" splitType="Stretch">
+			<textField pattern="">
+				<reportElement key="headerLogname" mode="Opaque" x="652" y="12" width="100" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGNAME}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMM dd, yyyy">
+				<reportElement x="0" y="0" width="100" height="12"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm:ss">
+				<reportElement x="0" y="12" width="100" height="12"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="650" y="0" width="77" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + " of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report" pattern="">
+				<reportElement x="730" y="0" width="22" height="12"/>
+				<textElement>
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Group" evaluationGroup="TestMethodGroupHeader" pattern="">
+				<reportElement x="168" y="12" width="419" height="12"/>
+				<textElement textAlignment="Center">
+					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{TEST},", ",$F{METHOD})]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Group" evaluationGroup="TestMethodGroupHeader" pattern="">
+				<reportElement x="168" y="0" width="419" height="12"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="true" isItalic="false" isUnderline="false" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Turnaround Chart for the period " + $P{FROM_DATE}+" to "+$P{TO_DATE}]]></textFieldExpression>
+			</textField>
+			<lineChart>
+				<chart customizerClass="org.openelis.report.turnaroundstatistic.TurnaroundCustomizer">
+					<reportElement x="12" y="24" width="738" height="194"/>
+					<chartTitle/>
+					<chartSubtitle/>
+					<chartLegend position="Right"/>
+				</chart>
+				<categoryDataset>
+					<dataset resetType="None"/>
+				</categoryDataset>
+				<linePlot>
+					<plot labelRotation="-60.0"/>
+					<categoryAxisLabelExpression><![CDATA[$V{LABEL_CATEGORY_AXIS}]]></categoryAxisLabelExpression>
+					<categoryAxisFormat labelRotation="-60.0">
+						<axisFormat verticalTickLabels="true">
+							<labelFont>
+								<font size="8"/>
+							</labelFont>
+							<tickLabelFont>
+								<font size="8"/>
+							</tickLabelFont>
+						</axisFormat>
+					</categoryAxisFormat>
+					<valueAxisLabelExpression><![CDATA[$V{LABEL_VALUE_AXIS}]]></valueAxisLabelExpression>
+					<valueAxisFormat>
+						<axisFormat>
+							<labelFont/>
+							<tickLabelFont/>
+						</axisFormat>
+					</valueAxisFormat>
+				</linePlot>
+			</lineChart>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="24">
+			<staticText>
+				<reportElement key="date" positionType="Float" x="0" y="12" width="48" height="12" printWhenGroupChanges="TestMethodGroupHeader"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
+				</box>
+				<textElement>
+					<font reportFont="FieldLabel" isBold="false" pdfFontName="Times-Italic"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<subreport>
+				<reportElement positionType="Float" x="48" y="0" width="138" height="24">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 1]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="TYPE">
+					<subreportParameterExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().get(0).getLabel()]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticType.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="189" y="0" width="138" height="24">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 2]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="TYPE">
+					<subreportParameterExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().get(1).getLabel()]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticType.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="330" y="0" width="138" height="24">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 3]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="TYPE">
+					<subreportParameterExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().get(2).getLabel()]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticType.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="471" y="0" width="138" height="24">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 4]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="TYPE">
+					<subreportParameterExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().get(3).getLabel()]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticType.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement positionType="Float" x="612" y="0" width="138" height="24">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 5]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="TYPE">
+					<subreportParameterExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().get(4).getLabel()]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticType.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="13" splitType="Stretch">
+			<textField pattern="yyyy-MM-dd" isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="0" width="48" height="12"/>
+				<textElement>
+					<font size="8" pdfFontName="Times-Roman"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{PLOT_DATE}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement positionType="Float" x="48" y="0" width="138" height="12">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 1]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="STAT">
+					<subreportParameterExpression><![CDATA[$F{STAT_1}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticTypeDetail.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="189" y="0" width="138" height="12">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 2]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="STAT">
+					<subreportParameterExpression><![CDATA[$F{STAT_2}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticTypeDetail.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="330" y="0" width="138" height="12">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 3]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="STAT">
+					<subreportParameterExpression><![CDATA[$F{STAT_3}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticTypeDetail.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="471" y="0" width="138" height="12">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 4]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="STAT">
+					<subreportParameterExpression><![CDATA[$F{STAT_4}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticTypeDetail.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="612" y="0" width="138" height="12">
+					<printWhenExpression><![CDATA[$P{TURNAROUND_DATASOURCE}.getTypes().size() >= 5]]></printWhenExpression>
+				</reportElement>
+				<subreportParameter name="STAT">
+					<subreportParameterExpression><![CDATA[$F{STAT_5}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "statisticTypeDetail.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="12">
+			<staticText>
+				<reportElement x="3" y="0" width="752" height="12"/>
+				<textElement/>
+				<text><![CDATA[* All values are in days and hours. i.e., 4.09 is 4 days and 9 hours]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>
