@@ -231,7 +231,10 @@ public class SampleMeta implements Meta, MetaMap {
                     AUX_DATA_VALUE = "_auxData.value",
 
                     ANALYSIS_TEST_NAME = "_test.name", 
+                    ANALYSIS_TEST_METHOD_ID = "_test.methodId",
                     ANALYSIS_METHOD_NAME = "_method.name",
+                    ANALYSIS_METHOD_ID = "_method.id",
+                    ANALYSIS_TEST_IS_ACTIVE = "_test.isActive",
                     
                     ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID = "_testResult.flagsId",
                     
@@ -321,8 +324,8 @@ public class SampleMeta implements Meta, MetaMap {
                                                   AUX_DATA_ID, AUX_DATA_AUX_FIELD_ID,
                                                   AUX_DATA_REFERENCE_ID, AUX_DATA_REFERENCE_TABLE_ID,
                                                   AUX_DATA_IS_REPORTABLE, AUX_DATA_TYPE_ID,
-                                                  AUX_DATA_VALUE, ANALYSIS_TEST_NAME,
-                                                  ANALYSIS_METHOD_NAME, ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID,
+                                                  AUX_DATA_VALUE, ANALYSIS_TEST_NAME, ANALYSIS_TEST_METHOD_ID, ANALYSIS_METHOD_NAME, ANALYSIS_METHOD_ID, ANALYSIS_TEST_IS_ACTIVE,
+                                                  ANALYSIS_RESULT_TEST_RESULT_FLAGS_ID,
                                                   ORG_PARAM_VALUE));
     }
 
@@ -1027,9 +1030,22 @@ public class SampleMeta implements Meta, MetaMap {
     public static String getAnalysisTestName() {
         return ANALYSIS_TEST_NAME;
     }
+    
+    public static String getAnalysisTestMethodId() {
+        return ANALYSIS_TEST_METHOD_ID;
+    }
+    
 
     public static String getAnalysisMethodName() {
         return ANALYSIS_METHOD_NAME;
+    }
+    
+    public static String getAnalysisMethodId() {
+        return ANALYSIS_METHOD_ID;
+    }
+    
+    public static String getAnalysisTestIsActive() {
+        return ANALYSIS_TEST_IS_ACTIVE;
     }
     
     public static String getAnalysisResultTestResultFlagsId() {
