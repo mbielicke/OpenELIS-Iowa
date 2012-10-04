@@ -101,6 +101,7 @@ UIRF Software License are applicable instead of those above.
     <inherits name="org.openelis.modules.report.qcChart.QcChart"/>
     <inherits name="org.openelis.modules.report.dataExchange.DataExchange"/>
     <inherits name="org.openelis.modules.todo.ToDo"/>
+    <inherits name="org.openelis.modules.report.turnaroundStatistic.TurnaroundStatistic"/>
     <source path="manager"/>
     <source path="cache"/>
     <source path="common"/>

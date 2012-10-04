@@ -179,13 +179,14 @@ UIRF Software License are applicable instead of those above.
                       <menuItem description="" enable="false" icon="" key="QAByOrganization" label="{resource:getString($constants,'QAByOrganization')}" />
                       <menuItem description="" enable="false" icon="" key="testCountByFacility" label="{resource:getString($constants,'testCountByFacility')}" />
                       <menuItem description="" enable="false" icon="" key="turnaround" label="{resource:getString($constants,'turnaround')}" />
+                      <menuItem description="" enable="false" icon="" key="turnAroundStatisticReport" label="{resource:getString($constants,'turnAroundStatisticReport')}" />
                       <menuItem description="" enable="false" icon="" key="sdwisUnloadReport" label="{resource:getString($constants,'sdwisUnloadReport')}" />
                       <menuItem description="" enable="false" icon="" key="dataView" label="{resource:getString($constants,'dataView')}" />
                       <menuItem description="" enable="false" icon="" key="qcChart" label="{resource:getString($constants,'qcChart')}" />
                       <menuItem description="" enable="false" icon="" key="finalReport" label="{resource:getString($constants,'finalReport')}" />
                       <menuItem description="" enable="false" icon="" key="orderRecurrence" label="{resource:getString($constants,'orderRecurrence')}" />
                       <menuItem description="" enable="false" icon="" key="finalReportBatch" label="{resource:getString($constants,'finalReportBatch')}" />
-                      <menuItem description="" enable="false" icon="" key="finalReportBatchReprint" label="{resource:getString($constants,'finalReportBatchReprint')}" />
+                      <menuItem description="" enable="false" icon="" key="finalReportBatchReprint" label="{resource:getString($constants,'finalReportBatchReprint')}" />                      
                     </menuPanel>
                   </menuItem>
                 </menuPanel>
