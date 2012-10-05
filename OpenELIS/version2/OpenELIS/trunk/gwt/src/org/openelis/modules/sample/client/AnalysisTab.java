@@ -331,6 +331,7 @@ public class AnalysisTab extends Screen implements HasActionHandlers<AnalysisTab
                 fields.add(field);
 
                 query.setFields(fields);
+                query.setRowsPerPage(100);
 
                 try {
                     autoList = panelService.callList("fetchByNameSampleTypeWithTests", query);

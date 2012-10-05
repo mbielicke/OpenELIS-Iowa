@@ -35,7 +35,7 @@ import org.openelis.server.EJBFactory;
 public class WorksheetCreationService {
 
     public ArrayList<WorksheetCreationVO> query(Query query) throws Exception {
-        return EJBFactory.getWorksheetCreation().query(query.getFields(), 0, 100);
+        return EJBFactory.getWorksheetCreation().query(query.getFields(), 0, query.getRowsPerPage());
     }
     
     public ArrayList<IdNameVO> getColumnNames(Integer formatId) throws Exception {
