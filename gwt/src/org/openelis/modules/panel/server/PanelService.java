@@ -51,7 +51,7 @@ public class PanelService {
     
     public ArrayList<TestMethodVO> fetchByNameSampleTypeWithTests(Query query) throws Exception {
         if (query.getFields().size() == 2)
-            return EJBFactory.getPanel().fetchByNameSampleTypeWithTests(query.getFields().get(0).query, new Integer(query.getFields().get(1).query), 100);
+            return EJBFactory.getPanel().fetchByNameSampleTypeWithTests(query.getFields().get(0).query, new Integer(query.getFields().get(1).query), query.getRowsPerPage());
         return null;
     }
 

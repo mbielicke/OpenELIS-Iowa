@@ -38,7 +38,7 @@ import org.openelis.server.EJBFactory;
 
 public class WorksheetService {
     public ArrayList<WorksheetViewDO> query(Query query) throws Exception {
-        return EJBFactory.getWorksheet().query(query.getFields(), 0, 500);
+        return EJBFactory.getWorksheet().query(query.getFields(), 0, query.getRowsPerPage());
     }
 
     public WorksheetManager fetchById(Integer id) throws Exception {
