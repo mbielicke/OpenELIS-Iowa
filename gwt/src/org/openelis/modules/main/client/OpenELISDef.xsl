@@ -186,7 +186,8 @@ UIRF Software License are applicable instead of those above.
                       <menuItem description="" enable="false" icon="" key="finalReport" label="{resource:getString($constants,'finalReport')}" />
                       <menuItem description="" enable="false" icon="" key="orderRecurrence" label="{resource:getString($constants,'orderRecurrence')}" />
                       <menuItem description="" enable="false" icon="" key="finalReportBatch" label="{resource:getString($constants,'finalReportBatch')}" />
-                      <menuItem description="" enable="false" icon="" key="finalReportBatchReprint" label="{resource:getString($constants,'finalReportBatchReprint')}" />                      
+                      <menuItem description="" enable="false" icon="" key="finalReportBatchReprint" label="{resource:getString($constants,'finalReportBatchReprint')}" />
+                      <menuItem description="" enable="false" icon="" key="holdRefuseOrganization" label="{resource:getString($constants,'holdRefuseOrganization')}" />                      
                     </menuPanel>
                   </menuItem>
                 </menuPanel>

@@ -74,6 +74,7 @@ import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
 import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintScreen;
+import org.openelis.modules.report.client.HoldRefuseOrganizationReportScreen;
 import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
 import org.openelis.modules.report.client.RequestformReportScreen;
@@ -1574,6 +1575,26 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new TurnaroundStatisticScreen(), "turnAroundStatisticReport");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addClickHandler("holdRefuseOrganization", "sampletracking", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new HoldRefuseOrganizationReportScreen(), "holdRefuseOrganization");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
