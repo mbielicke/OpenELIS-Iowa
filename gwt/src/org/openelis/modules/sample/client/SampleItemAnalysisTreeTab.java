@@ -83,7 +83,7 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
     protected SampleTreeUtility           treeUtil;
     protected SampleHistoryUtility        historyUtility;
     protected SampleItemAnalysisTreeTab   treeTab;
-    protected SampleItemsPopoutTreeLookup treePopoutScreen;
+    protected SampleItemsPopoutTreeLookup treePopout;
     protected boolean                     loaded = false;
     protected DictionaryDO                dictDrinkingWater;
 
@@ -386,29 +386,31 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
     }
 
     private void onTreePopoutClick() {
-        try {
-            if (treePopoutScreen == null)
-                treePopoutScreen = new SampleItemsPopoutTreeLookup();
-
-            ScreenWindow modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
-            modal.setName(consts.get("itemsAndAnalyses"));
-
-            modal.setContent(treePopoutScreen);
-            treePopoutScreen.setData(manager);
-            treePopoutScreen.setScreenState(state);
-            
-            modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
-               public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
-                   DataChangeEvent.fire(treeTab, itemsTree);
-                   ActionEvent.fire(treeTab, Action.REFRESH_TABS, null);
-                } 
-            });
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            Window.alert("onTreePopoutClick: " + e.getMessage());
-            return;
+        ScreenWindow modal;
+        
+        if (treePopout == null) {
+            try {
+                treePopout = new SampleItemsPopoutTreeLookup();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("SampleItemsPopoutTreeLookup error: " + e.getMessage());
+                return;
+            }
         }
+        
+        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+        modal.setName(consts.get("itemsAndAnalyses"));
+        modal.setContent(treePopout);
+        
+        modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                DataChangeEvent.fire(treeTab, itemsTree);
+                ActionEvent.fire(treeTab, Action.REFRESH_TABS, null);
+             } 
+         });
+        
+        treePopout.setScreenState(state);
+        treePopout.setData(manager);
     }
 
     private void initializeDropdowns() {
@@ -486,7 +488,6 @@ public class SampleItemAnalysisTreeTab extends Screen implements HasActionHandle
                 }
             }
         } catch (Exception e) {
-
             e.printStackTrace();
             return null;
         }

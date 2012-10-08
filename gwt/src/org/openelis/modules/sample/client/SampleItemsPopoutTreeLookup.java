@@ -34,28 +34,20 @@ import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.SampleItemViewDO;
-import org.openelis.gwt.event.BeforeDragStartEvent;
-import org.openelis.gwt.event.BeforeDragStartHandler;
-import org.openelis.gwt.event.BeforeDropEvent;
-import org.openelis.gwt.event.BeforeDropHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.DropEnterEvent;
-import org.openelis.gwt.event.DropEnterHandler;
-import org.openelis.gwt.event.DropEvent;
-import org.openelis.gwt.event.DropHandler;
 import org.openelis.gwt.event.StateChangeEvent;
-import org.openelis.gwt.event.StateChangeHandler;
-import org.openelis.gwt.event.DropEnterEvent.DropPosition;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.Dropdown;
-import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.gwt.widget.table.event.CellEditedEvent;
+import org.openelis.gwt.widget.table.event.CellEditedHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
-import org.openelis.gwt.widget.tree.TreeRow;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.SampleDataBundle;
@@ -63,20 +55,20 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.Window;
 
 public class SampleItemsPopoutTreeLookup extends Screen {
-    protected SampleTreeUtility treeUtil;
-    protected TreeWidget        sampleTreePopout;
-    
-    private Integer             analysisReleasedId;
-    private SampleManager       manager;
+    protected SampleTreeUtility     treeUtil;
+    protected TreeWidget            itemsTestsTree;
+    protected TableWidget           sampleItemTable;
+    protected AppButton             moveButton;
+    private Integer                 analysisReleasedId, analysisCancelledId, sampleReleasedId;
+    private SampleManager           manager;
+    private ArrayList<TreeDataItem> checkedAnaRows;
 
     public SampleItemsPopoutTreeLookup() throws Exception {
         super((ScreenDefInt)GWT.create(SampleItemsPopoutTreeDef.class));
-
         
         initialize();
         initializeDropdowns();
@@ -86,178 +78,257 @@ public class SampleItemsPopoutTreeLookup extends Screen {
     }
 
     private void initialize() {
-        sampleTreePopout = (TreeWidget)def.getWidget("itemsTestsTree");
-        sampleTreePopout.enableDrag(true);
-        sampleTreePopout.enableDrop(true);
+        itemsTestsTree = (TreeWidget)def.getWidget("itemsTestsTree");
         
-        addStateChangeHandler(new StateChangeHandler<State>() {
+        addScreenHandler(itemsTestsTree, new ScreenEventHandler<String>() {
+            public void onDataChange(DataChangeEvent event) {
+                if (checkedAnaRows == null)
+                    checkedAnaRows = new ArrayList<TreeDataItem>();
+                else
+                    checkedAnaRows.clear();
+                itemsTestsTree.load(getTreeModel());
+            }
+
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleTreePopout.enableDrag(EnumSet.of(State.ADD, State.UPDATE).contains(state));
-                sampleTreePopout.enableDrop(EnumSet.of(State.ADD, State.UPDATE).contains(state));
+                itemsTestsTree.enable(true);
             }
         });
         
-        treeUtil = new SampleTreeUtility(window, sampleTreePopout, this){
+        itemsTestsTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
+           public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+               TreeDataItem item;
+               
+               item = itemsTestsTree.getSelection();
+               if ((state != State.ADD && state != State.UPDATE) || !"analysis".equals(item.leafType) 
+                               || event.getCol() != 0 || !canEdit())
+                   event.cancel();
+            } 
+        });
+        
+        itemsTestsTree.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                if ("Y".equals(event.getValue()))
+                    checkedAnaRows.add(itemsTestsTree.getSelection());
+                else
+                    checkedAnaRows.remove(itemsTestsTree.getSelection());
+            }
+        });        
+        
+        treeUtil = new SampleTreeUtility(window, itemsTestsTree, this){
             public TreeDataItem addNewTreeRowFromBundle(TreeDataItem parentRow, SampleDataBundle bundle) {
                 TreeDataItem row;
                 
-                row = new TreeDataItem(2);
+                row = new TreeDataItem(3);
                 row.leafType = "analysis";
                 row.data = bundle;
                 
-                sampleTreePopout.addChildItem(parentRow, row);
+                itemsTestsTree.addChildItem(parentRow, row);
                 
                 return row;
             }
             
             public void selectNewRowFromBundle(TreeDataItem row) {
-                sampleTreePopout.select(row);
-                sampleTreePopout.scrollToVisible();
+                itemsTestsTree.select(row);
+                itemsTestsTree.scrollToVisible();
             }
         };
         
-        addScreenHandler(sampleTreePopout, new ScreenEventHandler<String>() {
+        moveButton = (AppButton)def.getWidget("moveButton");
+        addScreenHandler(moveButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                move();
+            }
+        });
+        
+        sampleItemTable = (TableWidget)def.getWidget("sampleItemTable");
+        addScreenHandler(sampleItemTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {
-                sampleTreePopout.load(getTreeModel());
+                sampleItemTable.load(getTableModel());
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                sampleTreePopout.enable(true);
+                sampleItemTable.enable(true);
             }
         });
         
-        sampleTreePopout.addBeforeSelectionHandler(new BeforeSelectionHandler<TreeDataItem>(){
-            public void onBeforeSelection(BeforeSelectionEvent<TreeDataItem> event) {
-                //nothing
-            }
-        });
-        
-        sampleTreePopout.addBeforeCellEditedHandler(new BeforeCellEditedHandler(){
-           public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-               event.cancel();
-            } 
-        });
-        
-        sampleTreePopout.addBeforeDragStartHandler(new BeforeDragStartHandler<TreeRow>() {
-            public void onBeforeDragStart(BeforeDragStartEvent<TreeRow> event) {
-                Label label;
-                TreeDataItem treeItem;
-                
-                try {
-                    treeItem = event.getDragObject().item;
-                    if (!treeItem.leafType.equals("analysis")) {
-                        event.cancel();
-                    } else {
-                        label = new Label(treeItem.cells.get(0).value + " | " + 
-                                          DictionaryCache.getById((Integer)treeItem.cells.get(1).value).getEntry());
-                        label.setStyleName("ScreenLabel");
-                        label.setWordWrap(false);
-                        event.setProxy(label);
-                    }
-                } catch(Exception e) {
-                    Window.alert("tree beforeDragStart: "+e.getMessage());
-                }
-            }
-        });
-        
-        sampleTreePopout.addBeforeDropHandler(new BeforeDropHandler<TreeRow>() {
-            public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
-                AnalysisManager am;
-                SampleDataBundle dragKey, dropKey;
-                TreeDataItem dragItem, dropTarget;
-
-                dragItem = event.getDragObject().dragItem;
-                dragKey = (SampleDataBundle)dragItem.data;
-                dropTarget = ((TreeRow)event.getDropTarget()).item;
-                dropKey = (SampleDataBundle)dropTarget.data;
-
-                try {
-                    if (analysisReleasedId.equals(dragKey.getSampleManager().getSampleItems()
-                                                  .getAnalysisAt(dragKey.getSampleItemIndex())
-                                                  .getAnalysisAt(dragKey.getAnalysisIndex())
-                                                  .getStatusId())) {
-                        Window.alert(consts.get("noMoveReleasedAnalysis"));
-                        event.cancel();
-                    } else {
-                        manager.getSampleItems().moveAnalysis(dragKey,dropKey);
-                        
-                        //reset the dropped row data bundle
-                        am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
-                        dragItem.data = am.getBundleAt(am.count()-1);
-                    }
-                }catch(Exception e) {
-                    e.printStackTrace();
-                    Window.alert("Move failed: "+e.getMessage());
-                }
-            }
-        });
-        
-        sampleTreePopout.addDropEnterHandler(new DropEnterHandler<TreeRow>() {
-            public void onDropEnter(DropEnterEvent<TreeRow> event) {
-                TreeDataItem dropTarget = ((TreeRow)event.getDropTarget()).item;
-                TreeDataItem dragItem = event.getDragObject().dragItem;
-                
-                if(!dropTarget.leafType.equals("sampleItem") || event.getDropPosition() != DropPosition.ON || 
-                                (dropTarget.leafType.equals("sampleItem") && dropTarget.equals(dragItem.parent)))
+        sampleItemTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                if ((state != State.ADD && state != State.UPDATE) || event.getCol() != 0 || !canEdit())
                     event.cancel();
             }
         });
         
-        sampleTreePopout.addTarget(sampleTreePopout);
-    }
+        sampleItemTable.addCellEditedHandler(new CellEditedHandler() {
+            public void onCellUpdated(CellEditedEvent event) {
+                /*
+                 * if the user checks a row then uncheck all the other rows 
+                 */
+                if ("Y".equals(event.getValue())) {
+                    for (int i = 0; i < sampleItemTable.numRows(); i++) {
+                        if (i != event.getRow())
+                            sampleItemTable.setCell(i, 0, "N");
+                    }
+                }
+            }
+        });
+    }    
     
-    private ArrayList<TreeDataItem> getTreeModel() {
-        int i, j;
+    private void move() {
         AnalysisManager am;
-        SampleItemViewDO itemDO;
-        TreeDataItem tmp;
-        TreeDataItem treeModelItem, row;
-        ArrayList<TreeDataItem> model = new ArrayList<TreeDataItem>();
-
+        AnalysisViewDO ana;
+        SampleDataBundle anaBundle, itemBundle;
+                
+        /*
+         * at least one analysis must be checked
+         */
+        if (checkedAnaRows.size() == 0) {
+            window.setError(consts.get("selectOneOrMoreAnalyses"));
+            return;
+        }
+        
+        itemBundle = null;
+        
+        /*
+         * at least one sample item must be checked
+         */
+        for (TableDataRow row : sampleItemTable.getData()) {
+            if ("Y".equals(row.cells.get(0).getValue())) {
+                itemBundle = (SampleDataBundle)row.data;
+                break;
+            }
+        }
+        
+        if (itemBundle == null) {
+            window.setError(consts.get("selectItem"));
+            return;
+        }
+        
         try {
-            HashMap<Integer, TreeDataItem> keyTable = new HashMap<Integer, TreeDataItem>();
+            for (TableDataRow row : checkedAnaRows) {
+                anaBundle = (SampleDataBundle)row.data;               
+                
+                ana = anaBundle.getSampleManager().getSampleItems()
+                .getAnalysisAt(anaBundle.getSampleItemIndex())
+                .getAnalysisAt(anaBundle.getAnalysisIndex());
+                
+                if (itemBundle.getSampleItemIndex() == anaBundle.getSampleItemIndex()) {
+                    /*
+                     * an analysis can't be moved to its own item
+                     */
+                    window.setError(consts.get("analysisNotMovedToOwnItem"));
+                    return;
+                } else if (analysisReleasedId.equals(ana.getStatusId()) || 
+                                analysisCancelledId.equals(ana.getStatusId())) {
+                    /*
+                     * released and cancelled analyses can't be moved
+                     */
+                    window.setError(consts.get("noMoveReleasedCancelledAnalyses"));
+                    return;                    
+                } 
+            }
+            
+            for (TableDataRow row : checkedAnaRows) {
+                anaBundle = (SampleDataBundle)row.data;
+                manager.getSampleItems().moveAnalysis(anaBundle, itemBundle);
 
-            if (manager == null)
-                return model;
+                // reset the moved row data bundle
+                am = manager.getSampleItems().getAnalysisAt(itemBundle.getSampleItemIndex());
+                row.data = am.getBundleAt(am.count() - 1);
+            }
+            DataChangeEvent.fire(this);
+            window.clearStatus();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert("Move failed: " + e.getMessage());
+        }
+    }
 
-            for (i = 0; i < manager.getSampleItems().count(); i++ ) {
-                SampleItemManager sim = manager.getSampleItems();
-                itemDO = sim.getSampleItemAt(i);
+    private ArrayList<TreeDataItem> getTreeModel() {
+        int i, j;        
+        AnalysisViewDO ana;
+        AnalysisManager anaMan;
+        SampleItemViewDO item;
+        SampleItemManager itemMan;
+        TreeDataItem itemRow, anaRow, tmp;
+        ArrayList<TreeDataItem> model;
+        HashMap<Integer, TreeDataItem> keyTable;
 
-                row = new TreeDataItem(2);
-                row.leafType = "sampleItem";
-                row.toggle();
-                row.key = itemDO.getId();
-                row.data = sim.getBundleAt(i);
-                treeUtil.updateSampleItemRow(row);
+        model = new ArrayList<TreeDataItem>();
+        if (manager == null)
+            return model;
+        
+        try {
+            itemMan = manager.getSampleItems();
+            
+            keyTable = new HashMap<Integer, TreeDataItem>();
+            for (i = 0; i < itemMan.count(); i++ ) {
+                item = itemMan.getSampleItemAt(i);
 
-                tmp = keyTable.get(itemDO.getId());
-                if (itemDO.getId() != null && tmp != null) {
-                    tmp.addItem(row);
+                itemRow = new TreeDataItem(2);
+                itemRow.leafType = "sampleItem";
+                itemRow.toggle();
+                itemRow.key = item.getId();
+                itemRow.data = itemMan.getBundleAt(i);
+                treeUtil.updateSampleItemRow(itemRow);
+
+                tmp = keyTable.get(item.getId());
+                if (item.getId() != null && tmp != null) {
+                    tmp.addItem(itemRow);
                 } else {
-                    keyTable.put(itemDO.getId(), row);
-                    model.add(row);
+                    keyTable.put(item.getId(), itemRow);
+                    model.add(itemRow);
                 }
 
-                am = manager.getSampleItems().getAnalysisAt(i);
+                anaMan = itemMan.getAnalysisAt(i);
 
-                for (j = 0; j < am.count(); j++ ) {
-                    AnalysisViewDO aDO = (AnalysisViewDO)am.getAnalysisAt(j);
+                for (j = 0; j < anaMan.count(); j++ ) {
+                    ana = (AnalysisViewDO)anaMan.getAnalysisAt(j);
 
-                    treeModelItem = new TreeDataItem(2);
-                    treeModelItem.leafType = "analysis";
+                    anaRow = new TreeDataItem(3);
+                    anaRow.leafType = "analysis";
 
-                    treeModelItem.key = aDO.getId();
-                    treeModelItem.data = am.getBundleAt(j);
-                    treeUtil.updateAnalysisRow(treeModelItem);
-
-                    row.addItem(treeModelItem);
+                    anaRow.key = ana.getId();
+                    anaRow.data = anaMan.getBundleAt(j);
+                    anaRow.cells.get(0).setValue("N");
+                    anaRow.cells.get(1).setValue(treeUtil.formatTreeString(ana.getTestName()) + " : " +
+                                                 treeUtil.formatTreeString(ana.getMethodName()));
+                    anaRow.cells.get(2).setValue(ana.getStatusId());
+                    
+                    itemRow.addItem(anaRow);
                 }
             }
         } catch (Exception e) {
-
             e.printStackTrace();
-            return null;
+        }
+
+        return model;
+    }
+    
+    private ArrayList<TableDataRow> getTableModel() {
+        ArrayList<TableDataRow> model;
+        SampleItemViewDO data;
+        TableDataRow row;
+        SampleItemManager itemMan;
+
+        model = new ArrayList<TableDataRow>();
+
+        if (manager == null)
+            return model;
+
+        try {
+            itemMan = manager.getSampleItems();
+
+            for (int i = 0; i < itemMan.count(); i++ ) {
+                data = itemMan.getSampleItemAt(i);
+                row = new TableDataRow(2);
+                row.cells.get(0).setValue("N");
+                row.cells.get(1).setValue(data.getItemSequence());
+                row.data = itemMan.getBundleAt(i);
+                model.add(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
         }
 
         return model;
@@ -268,6 +339,8 @@ public class SampleItemsPopoutTreeLookup extends Screen {
 
         try {
             analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
+            analysisCancelledId = DictionaryCache.getIdBySystemName("analysis_cancelled");
+            sampleReleasedId = DictionaryCache.getIdBySystemName("sample_released");
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -278,8 +351,8 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         for (DictionaryDO d : CategoryCache.getBySystemName("analysis_status"))
             model.add(new TableDataRow(d.getId(), d.getEntry()));
 
-        ((Dropdown<Integer>)sampleTreePopout.getColumns().get("analysis").get(1).colWidget).setModel(model);
-    }
+        ((Dropdown<Integer>)itemsTestsTree.getColumns().get("analysis").get(2).colWidget).setModel(model);
+    }    
     
     public void setScreenState(State state){
         setState(state);
@@ -289,5 +362,15 @@ public class SampleItemsPopoutTreeLookup extends Screen {
         this.manager = manager;
         treeUtil.setManager(manager);
         DataChangeEvent.fire(this);
+        moveButton.enable(canEdit() && EnumSet.of(State.ADD, State.UPDATE).contains(state));
+        
+        /*
+         * this is done to get rid of any old error messages
+         */
+        window.clearStatus();
+    }    
+    
+    private boolean canEdit() {
+        return (manager != null && !sampleReleasedId.equals(manager.getSample().getStatusId()));
     }
 }

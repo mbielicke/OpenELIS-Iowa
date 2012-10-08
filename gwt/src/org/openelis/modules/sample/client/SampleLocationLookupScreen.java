@@ -74,7 +74,6 @@ public class SampleLocationLookupScreen extends Screen implements HasActionHandl
 
         // Initialize Screen
         setState(State.DEFAULT);
-
     }
     
     private void initialize() {

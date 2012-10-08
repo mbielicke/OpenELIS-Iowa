@@ -19,7 +19,6 @@ import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.FieldErrorException;
@@ -41,14 +40,7 @@ import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
-import org.openelis.gwt.event.BeforeDragStartEvent;
-import org.openelis.gwt.event.BeforeDragStartHandler;
-import org.openelis.gwt.event.BeforeDropEvent;
-import org.openelis.gwt.event.BeforeDropHandler;
 import org.openelis.gwt.event.DataChangeEvent;
-import org.openelis.gwt.event.DropEnterEvent;
-import org.openelis.gwt.event.DropEnterEvent.DropPosition;
-import org.openelis.gwt.event.DropEnterHandler;
 import org.openelis.gwt.event.HasActionHandlers;
 import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
@@ -61,7 +53,6 @@ import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.Confirm;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.HasField;
-import org.openelis.gwt.widget.Label;
 import org.openelis.gwt.widget.MenuItem;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TabPanel;
@@ -69,12 +60,9 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
-import org.openelis.gwt.widget.tree.TreeRow;
 import org.openelis.gwt.widget.tree.TreeWidget;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenEvent;
 import org.openelis.gwt.widget.tree.event.BeforeLeafOpenHandler;
@@ -100,6 +88,7 @@ import org.openelis.modules.sample.client.SDWISTab;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
+import org.openelis.modules.sample.client.SampleItemsPopoutTreeLookup;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleTreeUtility;
 import org.openelis.modules.sample.client.StorageTab;
@@ -123,6 +112,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private SampleManager            manager;
     private ModulePermission         userPermission, unreleasePermission, changeDomainPermission;
     private SampleTrackingScreen     trackingScreen;
+    protected SampleItemsPopoutTreeLookup treePopout;
     private EnvironmentalTab         environmentalTab;
     private PrivateWellTab           wellTab;
     private SDWISTab                 sdwisTab;
@@ -141,9 +131,10 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private TextBox<Integer>         accessionNumber, orderNumber;
     private TextBox<Datetime>        collectedTime;
     private Dropdown<Integer>        statusId;
-    private AppButton                prevPage, nextPage, similarButton, expandButton,
-                                     collapseButton, queryButton, updateButton, commitButton, abortButton,
-                                     addTestButton, cancelTestButton;
+    private AppButton                prevPage, nextPage, popoutTree, similarButton, 
+                                     expandButton, collapseButton, queryButton, 
+                                     updateButton, commitButton, abortButton,
+                                     addTestButton, cancelTestButton;    
     private MenuItem                 unreleaseSample, previewFinalReport, changeDomain,
                                      historySample, historySampleSpec, historySampleProject,
                                      historySampleOrganization, historySampleItem, historyAnalysis,
@@ -157,7 +148,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private SampleTreeUtility        treeUtil;
     private SampleHistoryUtility     historyUtility;
 
-    private Integer                  analysisLoggedInId, analysisReleasedId, sampleReleasedId;
+    private Integer                  analysisLoggedInId, sampleReleasedId;
     private Query                    query;
 
     private ScreenService            finalReportService;
@@ -167,7 +158,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
     private ChangeDomainScreen       changeDomainScreen;
 
     private HashMap<String, Integer> domainMap;
-
+    
     public enum Tabs {
         BLANK, ENVIRONMENT, PRIVATE_WELL, SDWIS, QUICK_ENTRY, SAMPLE_ITEM, ANALYSIS, 
         TEST_RESULT, ANALYSIS_NOTES, SAMPLE_NOTES, STORAGE, QA_EVENTS, AUX_DATA
@@ -238,7 +229,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     if ( !row.isLoaded()) {
                         try {
                             man = ((SampleDataBundle)row.data).getSampleManager();
-                            loadSampleItem(man, row);
+                            loadSample(man, row);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -563,8 +554,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 trackingTree.enable(true);
-                trackingTree.enableDrag(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
-                trackingTree.enableDrop(canEdit() && EnumSet.of(State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -572,107 +561,15 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             public void onBeforeLeafOpen(BeforeLeafOpenEvent event) {
                 if (event.getItem().leafType.equals("sample") && !event.getItem().isLoaded()) {
                     try {
-                        loadSampleItem(manager, event.getItem());
+                        loadSample(manager, event.getItem());
                         event.getItem().checkForChildren(false);
                     } catch (Exception e) {
                         Window.alert("leafOpened: " + e.getMessage());
                     }
                 }
             }
-
         });
-
-        trackingTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                event.cancel();
-            }
-        });
-
-        trackingTree.enableDrag(true);
-        trackingTree.enableDrop(true);
-
-        trackingTree.addBeforeDragStartHandler(new BeforeDragStartHandler<TreeRow>() {
-            public void onBeforeDragStart(BeforeDragStartEvent<TreeRow> event) {
-                Label label;
-                TreeDataItem treeItem;
-
-                try {
-                    treeItem = event.getDragObject().item;
-                    if (!treeItem.leafType.equals("analysis")) {
-                        event.cancel();
-                    } else {
-                        label = new Label(treeItem.cells.get(0).value + " | " +
-                                          DictionaryCache.getById((Integer)treeItem.cells.get(1).value).getEntry());
-                        label.setStyleName("ScreenLabel");
-                        label.setWordWrap(false);
-                        event.setProxy(label);
-                    }
-                } catch (Exception e) {
-                    Window.alert("tree beforeDragStart: " + e.getMessage());
-                }
-            }
-        });
-
-        trackingTree.addBeforeDropHandler(new BeforeDropHandler<TreeRow>() {
-            public void onBeforeDrop(BeforeDropEvent<TreeRow> event) {
-                AnalysisManager am;
-                TreeDataItem dragItem, dropTarget;
-                SampleDataBundle dragKey, dropKey;
-
-                dragItem = event.getDragObject().dragItem;
-                dragKey = (SampleDataBundle)dragItem.data;
-                dropTarget = ((TreeRow)event.getDropTarget()).item;
-                dropKey = (SampleDataBundle)dropTarget.data;
-
-                try {
-                    if (analysisReleasedId.equals(dragKey.getSampleManager().getSampleItems()
-                                                  .getAnalysisAt(dragKey.getSampleItemIndex())
-                                                  .getAnalysisAt(dragKey.getAnalysisIndex())
-                                                  .getStatusId())) {
-                        Window.alert(consts.get("noMoveReleasedAnalysis"));
-                        event.cancel();
-                    } else {
-                        manager.getSampleItems().moveAnalysis(dragKey, dropKey);
-    
-                        // reset the dropped row data bundle, and its children
-                        am = manager.getSampleItems().getAnalysisAt(dropKey.getSampleItemIndex());
-                        dragItem.data = am.getBundleAt(am.count()-1);
-                    }                                            
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert("Move failed: " + e.getMessage());
-                }
-            }
-        });
-
-        trackingTree.addDropEnterHandler(new DropEnterHandler<TreeRow>() {
-            public void onDropEnter(DropEnterEvent<TreeRow> event) {
-                TreeDataItem dropTarget, dropTargetParent, dragItem, dragItemParent;
-
-                dragItem = event.getDragObject().dragItem;
-                dropTarget = ((TreeRow)event.getDropTarget()).item;
-                
-                dropTargetParent = dropTarget;
-                while(!"sampleItem".equals(dropTargetParent.leafType))
-                    dropTargetParent = dropTargetParent.parent;
-                
-                dragItemParent = dragItem;
-                while(!"sampleItem".equals(dragItemParent.leafType))
-                    dragItemParent = dragItemParent.parent;
-                
-                if (!dropTarget.leafType.equals("analysis") && !dropTarget.leafType.equals("storage")  ||
-                                (dropTarget.leafType.equals("storage") && "analysis".equals(dropTarget.parent.leafType)) || 
-                                (dropTarget.leafType.equals("analysis") && event.getDropPosition() == DropPosition.ON) ||
-                                (dropTarget.leafType.equals("storage") && (event.getDropPosition() == DropPosition.ON || event.getDropPosition() == DropPosition.BELOW)) || 
-                                dropTargetParent.equals(dragItemParent) || 
-                                !dropTargetParent.parent.equals(dragItemParent.parent))
-                    event.cancel();
-            }
-        });
-
-        trackingTree.addTarget(trackingTree);
-        trackingTree.enableDrag(false);
-        trackingTree.enableDrop(false);
+      
 
         trackingTree.addUnselectionHandler(new UnselectionHandler<TreeDataItem>() {
             public void onUnselection(UnselectionEvent<TreeDataItem> event) {
@@ -730,6 +627,17 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 nextPage.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
+        
+        popoutTree = (AppButton)def.getWidget("popoutTree");
+        addScreenHandler(popoutTree, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                onTreePopoutClick();
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                popoutTree.enable(EnumSet.of(State.DISPLAY, State.ADD, State.UPDATE).contains(event.getState()));
             }
         });
 
@@ -1316,6 +1224,37 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             }
         });
     }
+    
+    private void onTreePopoutClick() {
+        ScreenWindow modal;
+        
+        if (trackingTree.getSelection() == null) 
+            return;
+        
+        if (treePopout == null) {
+            try {
+                treePopout = new SampleItemsPopoutTreeLookup();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Window.alert("SampleItemsPopoutTreeLookup error: " + e.getMessage());
+                return;
+            }
+        }
+        
+        modal = new ScreenWindow(ScreenWindow.Mode.LOOK_UP);
+        modal.setName(consts.get("itemsAndAnalyses"));
+        modal.setContent(treePopout);
+        
+        modal.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>(){
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
+                if (state == State.UPDATE)
+                    refreshSampleItems();
+             }
+         });
+        
+        treePopout.setScreenState(state);
+        treePopout.setData(manager);
+    }
 
     private void initializeDropdowns() {
         Integer id;
@@ -1325,7 +1264,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         // error is found
         try {
             analysisLoggedInId = DictionaryCache.getIdBySystemName("analysis_logged_in");
-            analysisReleasedId = DictionaryCache.getIdBySystemName("analysis_released");
             domainMap = new HashMap<String, Integer>();
             id = DictionaryCache.getIdBySystemName("environmental");
             domainMap.put(SampleManager.ENVIRONMENTAL_DOMAIN_FLAG, id);
@@ -1873,98 +1811,113 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         }
     }
 
-    private void loadSampleItem(SampleManager sm, TreeDataItem row) throws Exception {
-        TreeDataItem item, results, analysis, storage, qaevent, note, aux;
-        SampleItemManager siMan;
+    private void loadSample(SampleManager sampleMan, TreeDataItem row) throws Exception {
+        TreeDataItem qaevent, note, aux;
+        SampleDataBundle bundle;
+
+        bundle = sampleMan.getBundle();
+        loadSampleItem(sampleMan.getSampleItems(), row);
+        
+        note = new TreeDataItem();
+        note.leafType = "note";
+        note.data = bundle;
+        note.cells.add(new TableDataCell(consts.get("notes")));
+        row.addItem(note);
+
+        qaevent = new TreeDataItem();
+        qaevent.leafType = "qaevent";
+        qaevent.data = bundle;
+        qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
+        row.addItem(qaevent);
+
+        aux = new TreeDataItem();
+        aux.leafType = "auxdata";
+        aux.data = bundle;
+        aux.cells.add(new TableDataCell(consts.get("auxData")));
+        row.addItem(aux);
+        row.checkForChildren(false);
+    }
+
+    private void loadSampleItem(SampleItemManager itemMan, TreeDataItem row) throws Exception {
+        TreeDataItem item;
+        TreeDataItem storage;
         SampleItemViewDO itemDO;
-        AnalysisManager anMan;
-        AnalysisViewDO anDO;
-        SampleDataBundle sBundle, siBundle, anBundle;
+        SampleDataBundle bundle;
+        ArrayList<TreeDataItem> analyses;
+        
+        for (int i = 0; i < itemMan.count(); i++ ) {
+            itemDO = itemMan.getSampleItemAt(i);
+            bundle = itemMan.getBundleAt(i);
 
-        if (sm.getSampleItems() != null) {
-            sBundle = sm.getBundle();
-            siMan = sm.getSampleItems();
-            for (int i = 0; i < siMan.count(); i++ ) {
-                itemDO = siMan.getSampleItemAt(i);
-                siBundle = siMan.getBundleAt(i);
+            item = new TreeDataItem();
+            item.open = true;
+            item.leafType = "sampleItem";
+            item.key = itemDO.getId();
+            item.data = bundle;
+            item.cells.add(new TableDataCell(itemDO.getItemSequence() + " - " +
+                                             treeUtil.formatTreeString(itemDO.getContainer())));
+            item.cells.add(new TableDataCell(itemDO.getTypeOfSample()));
 
-                item = new TreeDataItem();
-                item.open = true;
-                item.leafType = "sampleItem";
-                item.key = itemDO.getId();
-                item.data = siBundle;
-                item.cells.add(new TableDataCell(itemDO.getItemSequence() + " - " +
-                                                 treeUtil.formatTreeString(itemDO.getContainer())));
-                item.cells.add(new TableDataCell(itemDO.getTypeOfSample()));
+            analyses = getAnalyses(itemMan.getAnalysisAt(i));    
+            for (TreeDataItem ana : analyses) 
+                item.addItem(ana);
+            
+            storage = new TreeDataItem();
+            storage.leafType = "storage";
+            storage.data = bundle;
+            storage.cells.add(new TableDataCell(consts.get("storage")));
+            item.addItem(storage);
+            row.addItem(item);
+        }
+    }
 
-                anMan = sm.getSampleItems().getAnalysisAt(i);
-                if (anMan != null) {
-                    for (int j = 0; j < anMan.count(); j++ ) {
-                        anDO = anMan.getAnalysisAt(j);
-                        anBundle = anMan.getBundleAt(j);
+    private ArrayList<TreeDataItem> getAnalyses(AnalysisManager analysisMan) {
+        TreeDataItem results, analysis, storage, qaevent, note;
+        AnalysisViewDO data;
+        SampleDataBundle bundle;
+        ArrayList<TreeDataItem> analyses; 
+        
+        analyses = new ArrayList<TreeDataItem>();
+        for (int j = 0; j < analysisMan.count(); j++ ) {
+            data = analysisMan.getAnalysisAt(j);
+            bundle = analysisMan.getBundleAt(j);
+            
+            results = new TreeDataItem();
+            results.leafType = "analysis";
+            results.key = data.getId();
+            results.data = bundle;
+            results.cells.add(new TableDataCell(treeUtil.formatTreeString(data.getTestName()) +
+                                                " : " +
+                                                treeUtil.formatTreeString(data.getMethodName())));
+            results.cells.add(new TableDataCell(data.getStatusId()));
 
-                        results = new TreeDataItem();
-                        results.leafType = "analysis";
-                        results.key = anDO.getId();
-                        results.data = anBundle;
-                        results.cells.add(new TableDataCell(
-                                                            treeUtil.formatTreeString(anDO.getTestName()) +
-                                                                            " : " +
-                                                                            treeUtil.formatTreeString(anDO.getMethodName())));
-                        results.cells.add(new TableDataCell(anDO.getStatusId()));
+            analysis = new TreeDataItem();
+            analysis.leafType = "result";
+            analysis.data = bundle;
+            analysis.cells.add(new TableDataCell(consts.get("analysis")));
+            results.addItem(analysis);
 
-                        analysis = new TreeDataItem();
-                        analysis.leafType = "result";
-                        analysis.data = anBundle;
-                        analysis.cells.add(new TableDataCell(consts.get("analysis")));
-                        results.addItem(analysis);
-
-                        storage = new TreeDataItem();
-                        storage.leafType = "storage";
-                        storage.data = anBundle;
-                        storage.cells.add(new TableDataCell(consts.get("storage")));
-
-                        results.addItem(storage);
-                        qaevent = new TreeDataItem();
-                        qaevent.leafType = "qaevent";
-                        qaevent.data = anBundle;
-                        qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
-                        results.addItem(qaevent);
-
-                        note = new TreeDataItem();
-                        note.leafType = "note";
-                        note.data = anBundle;
-                        note.cells.add(new TableDataCell(consts.get("notes")));
-                        results.addItem(note);
-                        item.addItem(results);
-                    }
-                }
-                storage = new TreeDataItem();
-                storage.leafType = "storage";
-                storage.data = siBundle;
-                storage.cells.add(new TableDataCell(consts.get("storage")));
-                item.addItem(storage);
-                row.addItem(item);
-            }
-            note = new TreeDataItem();
-            note.leafType = "note";
-            note.data = sBundle;
-            note.cells.add(new TableDataCell(consts.get("notes")));
-            row.addItem(note);
-
+            storage = new TreeDataItem();
+            storage.leafType = "storage";
+            storage.data = bundle;
+            storage.cells.add(new TableDataCell(consts.get("storage")));
+            results.addItem(storage);
+            
             qaevent = new TreeDataItem();
             qaevent.leafType = "qaevent";
-            qaevent.data = sBundle;
+            qaevent.data = bundle;
             qaevent.cells.add(new TableDataCell(consts.get("qaEvents")));
-            row.addItem(qaevent);
+            results.addItem(qaevent);
 
-            aux = new TreeDataItem();
-            aux.leafType = "auxdata";
-            aux.data = sBundle;
-            aux.cells.add(new TableDataCell(consts.get("auxData")));
-            row.addItem(aux);
-            row.checkForChildren(false);
+            note = new TreeDataItem();
+            note.leafType = "note";
+            note.data = bundle;
+            note.cells.add(new TableDataCell(consts.get("notes")));
+            results.addItem(note);
+            analyses.add(results);
         }
+        
+        return analyses;
     }
 
     public void showErrors(ValidationErrorsList errors) {
@@ -2106,7 +2059,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         }
         item.getItems().clear();
         try {
-            loadSampleItem(manager, item);
+            loadSample(manager, item);
             while (openItems.size() > 0) {
                 openKey = openItems.remove(0);
                 searchForKey(openKey, item);
@@ -2595,5 +2548,65 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             if (SampleDataBundle.Type.ANALYSIS.equals(bundle.getType()))
                 qaEventsTab.setData(bundle);
         }               
+    }
+    
+    private void refreshSampleItems() {
+        TreeDataItem row, storage;
+        ArrayList<TreeDataItem> items, analyses, children;
+                
+        SampleItemManager itemMan;
+
+        row = trackingTree.getSelection();
+        /*
+         * find the node for the sample
+         */
+        while ( !"sample".equals(row.leafType))
+            row = row.parent;
+
+        try {
+            /*
+             * refresh all the sample items
+             */
+            itemMan = manager.getSampleItems();
+            items = row.getItems();
+            storage = null;
+            
+            for (TreeDataItem item: items) {
+                if ("sampleItem".equals(item.leafType)) {
+                    children = item.getItems();
+                    /*
+                     * keep a link to the node for storage so that it can be added 
+                     * after the nodes for the analyses
+                     */
+                    for (TreeDataItem child : children) {
+                        if ("storage".equals(child.leafType)) { 
+                            storage = child;
+                            break;
+                        }                            
+                    }
+                    /*
+                     * clearing all the children of the sample item and adding
+                     * the new ones as needed is less error prone and easier than
+                     * only changing the nodes for the analyses that were added
+                     * or removed from the item in the pop-out 
+                     */
+                    children.clear();                           
+                    analyses = getAnalyses(itemMan.getAnalysisAt(item.childIndex));
+                    
+                    for (TreeDataItem ana : analyses)
+                        item.addItem(ana);
+                    
+                    item.addItem(storage);
+                    
+                    /*
+                     * this refreshes the item on the screen
+                     */
+                    trackingTree.refreshRow(item);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
     }
 }

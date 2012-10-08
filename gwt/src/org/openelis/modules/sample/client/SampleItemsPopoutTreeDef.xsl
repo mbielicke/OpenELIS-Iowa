@@ -35,28 +35,61 @@
     <xsl:variable name="constants" select="resource:getBundle(string($props),locale:new(string($language)))" />
     <screen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="SampleTreePopout" name="{resource:getString($constants,'itemsAndAnalyses')}">
       <VerticalPanel padding="0" spacing="0">
-        <tree key="itemsTestsTree" width="auto" maxRows="25" showScroll="ALWAYS">
-          <header>
-            <col width="330" header="{resource:getString($constants,'itemAnalyses')}" />
-            <col width="180" header="{resource:getString($constants,'typeStatus')}" />
-          </header>
-          <leaf key="sampleItem">
-            <col>
-              <label field="String" />
-            </col>
-            <col>
-              <label field="String" />
-            </col>
-          </leaf>
-          <leaf key="analysis">
-            <col>
-              <label field="String" />
-            </col>
-            <col>
-              <dropdown width="110" case="LOWER" popWidth="110px" field="String" />
-            </col>
-          </leaf>
-        </tree>
+        <HorizontalPanel style = "WhiteContentPanel">
+          <VerticalPanel>
+            <tree key="itemsTestsTree" style = "ScreenTableWithSides" width="auto" maxRows="25" showScroll="ALWAYS">
+              <header>
+                <col width="30" header=""/>
+                <col width="330" header="{resource:getString($constants,'itemAnalyses')}" />
+                <col width="180" header="{resource:getString($constants,'typeStatus')}" />
+              </header>
+              <leaf key="sampleItem">
+                <col>
+                  <label field="String" />
+                </col>
+                <col>
+                  <label field="String" />
+                </col>
+              </leaf>
+              <leaf key="analysis">
+                <col>
+                  <check/>
+                </col>
+                <col>
+                  <label field="String" />
+                </col>
+                <col>
+                  <dropdown width="50" case="LOWER" popWidth="110" field="String" />
+                </col>                
+              </leaf>
+            </tree>
+          </VerticalPanel>
+          <HorizontalPanel width = "10"/>
+          <VerticalPanel spacing="0">
+            <widget>
+              <table key="sampleItemTable" width="auto" style = "ScreenTableWithSides" maxRows="12" showScroll="ALWAYS" title="">
+                <col key="include" width="30" header="">
+                  <check />
+                </col>
+                <col key="name" width="35" header="{resource:getString($constants,'item')}">
+                  <label width="35" field="String" />
+                </col>
+              </table>              
+            </widget>     
+            <widget style="TableButtonFooter">
+              <HorizontalPanel>
+                <appButton key="moveButton" style="Button">
+                  <HorizontalPanel>
+                    <AbsolutePanel style="refreshButtonImage" />
+                    <text>
+                      <xsl:value-of select="resource:getString($constants,'move')" />
+                    </text>
+                  </HorizontalPanel>
+                </appButton>
+              </HorizontalPanel>
+            </widget>       
+          </VerticalPanel>        
+        </HorizontalPanel>
       </VerticalPanel>
     </screen>
   </xsl:template>
