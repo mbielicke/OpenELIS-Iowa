@@ -162,6 +162,7 @@ UIRF Software License are applicable instead of those above.
                       <menuItem description="" enable="false" icon="" key="verificationReport" label="{resource:getString($constants,'verificationReport')}" />
                       <menuItem description="" enable="false" icon="" key="testRequestFormReport" label="{resource:getString($constants,'TRFReport')}" />
                       <menuItem description="" enable="false" icon="" key="orderRequestForm" label="{resource:getString($constants,'orderRequestForm')}" />
+                      <menuItem description="" enable="false" icon="" key="holdRefuseOrganization" label="{resource:getString($constants,'holdRefuseOrganization')}" />                      
                     </menuPanel>
                   </menuItem>
                   <menuItem description="" icon="" label="{resource:getString($constants,'reference')}" style="TopMenuRowContainer">
@@ -187,7 +188,6 @@ UIRF Software License are applicable instead of those above.
                       <menuItem description="" enable="false" icon="" key="orderRecurrence" label="{resource:getString($constants,'orderRecurrence')}" />
                       <menuItem description="" enable="false" icon="" key="finalReportBatch" label="{resource:getString($constants,'finalReportBatch')}" />
                       <menuItem description="" enable="false" icon="" key="finalReportBatchReprint" label="{resource:getString($constants,'finalReportBatchReprint')}" />
-                      <menuItem description="" enable="false" icon="" key="holdRefuseOrganization" label="{resource:getString($constants,'holdRefuseOrganization')}" />                      
                     </menuPanel>
                   </menuItem>
                 </menuPanel>

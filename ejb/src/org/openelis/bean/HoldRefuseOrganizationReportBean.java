@@ -135,7 +135,7 @@ public class HoldRefuseOrganizationReportBean implements HoldRefuseOrganizationR
             url = ReportUtil.getResourceURL("org/openelis/report/holdRefuseOrganization/main.jasper");
             dir = ReportUtil.getResourcePath(url);
 
-            tempFile = File.createTempFile("test", ".pdf", new File("/tmp"));
+            tempFile = File.createTempFile("holdRefuse", ".pdf", new File("/tmp"));
 
             jparam = new HashMap<String, Object>();
             jparam.put("SUBREPORT_DIR", dir);
