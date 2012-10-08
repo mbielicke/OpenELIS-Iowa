@@ -57,6 +57,7 @@ import org.openelis.remote.ExchangeLocalTermRemote;
 import org.openelis.remote.FinalReportRemote;
 import org.openelis.remote.FinalReportWebRemote;
 import org.openelis.remote.HistoryRemote;
+import org.openelis.remote.HoldRefuseOrganizationReportRemote;
 import org.openelis.remote.InstrumentManagerRemote;
 import org.openelis.remote.InstrumentRemote;
 import org.openelis.remote.InventoryAdjustmentManagerRemote;
@@ -547,6 +548,10 @@ public class EJBFactory {
     
     public static TurnaroundStatisticReportRemote getTurnaroundStatisticReport() {
         return (TurnaroundStatisticReportRemote)lookup("TurnaroundStatisticReportBean!org.openelis.remote.TurnaroundStatisticReportRemote");
+    }
+    
+    public static HoldRefuseOrganizationReportRemote getHoldRefuseOrganizationReport() {
+        return (HoldRefuseOrganizationReportRemote)lookup("HoldRefuseOrganizationReportBean!org.openelis.remote.HoldRefuseOrganizationReportRemote");
     }
           
     public static Object lookup(String bean) {
