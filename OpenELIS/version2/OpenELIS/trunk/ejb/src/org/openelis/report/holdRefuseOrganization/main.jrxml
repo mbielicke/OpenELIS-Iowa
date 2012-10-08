@@ -16,7 +16,7 @@
 		<![CDATA[select distinct o.id, o.name, a.street_address, a.city, a.state, a.zip_code, op.value
 from sample_organization so, organization o, organization_parameter op, dictionary d, address a
 where so. organization_id = o.id and o.id = op.organization_id and op.type_id = d.id and d.system_name = 'org_hold_sample' and o.address_id = a.id
-order by o.name]]>
+order by o.name, a.state, a.city, a.street_address]]>
 	</queryString>
 	<field name="id" class="java.lang.Integer"/>
 	<field name="name" class="java.lang.String"/>
