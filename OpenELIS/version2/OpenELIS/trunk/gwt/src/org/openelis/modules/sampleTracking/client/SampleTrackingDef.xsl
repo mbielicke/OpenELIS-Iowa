@@ -207,13 +207,23 @@ UIRF Software License are applicable instead of those above.
                     </col>
                   </leaf>
                 </tree>
-                <widget halign="center">
+                <widget>
                   <HorizontalPanel>
+                    <HorizontalPanel width = "115"/>
                     <appButton enable="false" key="prevPage" style="Button">
                       <AbsolutePanel style="prevNavIndex" />
                     </appButton>
                     <appButton enable="false" key="nextPage" style="Button">
                       <AbsolutePanel style="nextNavIndex" />
+                    </appButton>
+                    <HorizontalPanel width = "70"/>
+                    <appButton key="popoutTree" style="Button">
+                      <HorizontalPanel>
+                        <AbsolutePanel style="popoutButtonImage" />
+                        <text>
+                          <xsl:value-of select="resource:getString($constants,'popout')" />
+                        </text>
+                      </HorizontalPanel>
                     </appButton>
                   </HorizontalPanel>
                 </widget>

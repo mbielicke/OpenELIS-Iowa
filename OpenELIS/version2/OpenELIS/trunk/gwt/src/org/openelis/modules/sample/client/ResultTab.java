@@ -39,7 +39,6 @@ import org.openelis.domain.TestResultDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.SectionPermission;
-import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.event.ActionEvent;
 import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;

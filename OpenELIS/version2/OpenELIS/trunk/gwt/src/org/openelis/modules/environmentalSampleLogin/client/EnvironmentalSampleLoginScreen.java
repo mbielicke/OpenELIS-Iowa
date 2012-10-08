@@ -763,7 +763,6 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         // Set up tabs to recieve State Change events from the main Screen.
         // analysis tree section of the screen
         treeTab = new SampleItemAnalysisTreeTab(def, window, screen, historyUtility);
-
         addScreenHandler(treeTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
                 treeTab.draw();
@@ -775,7 +774,7 @@ public class EnvironmentalSampleLoginScreen extends Screen implements HasActionH
         });
         
         /*
-         * This handler would be invoked when the tree in the tree tab needs to be
+         * This handler will be invoked when the tree in the tree tab needs to be
          * refreshed due to new prep tests being added e.g. on importing an order.
          * The handler above isn't used for this purpose because it responds to 
          * the DataChangeEvent fired by this screen and not by the tree utility.
