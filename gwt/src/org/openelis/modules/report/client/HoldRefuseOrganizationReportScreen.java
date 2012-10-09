@@ -32,7 +32,7 @@ public class HoldRefuseOrganizationReportScreen extends ReportScreen {
 
     public HoldRefuseOrganizationReportScreen() throws Exception { 
         drawScreen(new ScreenDef());        
-        setName(consts.get("HoldRefuseOrganizationReport"));
+        setName(consts.get("holdRefuseOrganization"));
         service = new ScreenService("controller?service=org.openelis.modules.report.server.HoldRefuseOrganizationReportService");
     }
 }
