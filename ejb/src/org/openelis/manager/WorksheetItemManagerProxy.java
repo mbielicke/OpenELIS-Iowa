@@ -32,6 +32,7 @@ import java.util.HashMap;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SessionCacheLocal;
@@ -83,7 +84,7 @@ public class WorksheetItemManagerProxy {
             }
             
             if (unresolved != 0 && unresolved == lastUnresolved)
-                throw new Exception("Cannot resolve ids when worksheet analysis is linked to itself");
+                throw new FormErrorException("worksheetAnalysisLinkError");
 
             lastUnresolved = unresolved;
         } while (unresolved != 0);
