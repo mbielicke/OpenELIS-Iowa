@@ -658,7 +658,7 @@ public class WorksheetCompletionScreen extends Screen {
 //        AsyncCallback<ReportStatus> cb;
         
 //        commitDone = false;
-//        setFocus(null);
+        setFocus(null);
 
         if (!validate()) {
             Window.alert(consts.get("correctErrors"));
