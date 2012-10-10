@@ -1073,7 +1073,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         Name                   cellName;
         AnalyteDO              aDO;
         AnalyteParameterViewDO apVDO;
-        DictionaryDO           dVDO;
+        DictionaryDO           dDO;
         ResultViewDO           rVDO;
         WorksheetResultViewDO  wrVDO;
         
@@ -1175,8 +1175,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         cell = getCellForName(sheet, cellName.getNameName());
                         if (cell.getCellType() != Cell.CELL_TYPE_FORMULA) {
                             if (resultTypeDictionary.equals(rVDO.getTypeId())) {
-                                dVDO = dictionaryCacheLocal.getById(Integer.valueOf(rVDO.getValue()));
-                                cell.setCellValue(dVDO.getEntry());
+                                dDO = dictionaryCacheLocal.getById(Integer.valueOf(rVDO.getValue()));
+                                cell.setCellValue(dDO.getEntry());
                             } else {
                                 setCellValue(cell, rVDO.getValue());
                             }

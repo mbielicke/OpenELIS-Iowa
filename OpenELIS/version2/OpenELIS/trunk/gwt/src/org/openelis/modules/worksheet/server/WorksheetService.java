@@ -96,5 +96,4 @@ public class WorksheetService {
     public WorksheetQcResultManager fetchWorksheeetQcResultByWorksheetAnalysisId(Integer id) throws Exception {
         return EJBFactory.getWorksheetManager().fetchWorksheetQcResultByWorksheetAnalysisId(id);
     }
-    
 }
