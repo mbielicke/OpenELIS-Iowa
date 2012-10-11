@@ -127,8 +127,8 @@ public class AnalysisManagerProxy {
             // analysis and set the mappings in the hash, otherwise skip
             if (!unresolved) {
                 if (!idHash.containsKey(analysisDO.getId())) {
-                    oldId = analysisDO.getId();
-                    if (oldId < 0) {
+                    if (analysisDO.getId() < 0) {
+                        oldId = analysisDO.getId();
                         add(man, analysisDO, i);
                         idHash.put(oldId, analysisDO.getId());
                     } else {

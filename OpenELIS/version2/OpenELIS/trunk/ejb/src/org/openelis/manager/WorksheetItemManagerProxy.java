@@ -80,7 +80,7 @@ public class WorksheetItemManagerProxy {
                 item = manager.getWorksheetItemAt(i);
                 manager.getWorksheetAnalysisAt(i).setWorksheet(manager.getWorksheet());
                 manager.getWorksheetAnalysisAt(i).setWorksheetItemId(item.getId());
-                unresolved = manager.getWorksheetAnalysisAt(i).add(idHash);
+                unresolved += manager.getWorksheetAnalysisAt(i).add(idHash);
             }
             
             if (unresolved != 0 && unresolved == lastUnresolved)
