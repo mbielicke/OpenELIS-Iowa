@@ -135,9 +135,12 @@ public class WorksheetAnalysisManagerProxy {
             // analysis and set the mappings in the hash, otherwise skip
             if (!unresolved) {
                 if (!idHash.containsKey(analysis.getId())) {
-                    oldId = analysis.getId();
-                    add(manager, analysis, i);
-                    idHash.put(oldId, analysis.getId());
+                    if (analysis.getId() < 0) {
+                        oldId = analysis.getId();
+                        add(manager, analysis, i);
+                        idHash.put(oldId, analysis.getId());
+                    }
+                    idHash.put(analysis.getId(), null);
                 }
             } else {
                 numUnresolved++;
