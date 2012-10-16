@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -589,7 +588,6 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
         HashMap<String, Object> jparam;
         HashMap<String, ArrayList<Value>> map;
 
-        calculateStatistics(data);
         fromDate = data.getFromDate().toString();
         toDate = data.getToDate().toString();
         printer = data.getPrinter();
@@ -611,7 +609,8 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
         values = data.getValues();
         if (values.size() > 1)
             Collections.sort(values, new MyComparator());
-
+        
+        calculateStatistics(data);
         ds = new TurnaroundDataSource();
         ds.setTypes(data.getTypes());
         ds.setValues(values);
