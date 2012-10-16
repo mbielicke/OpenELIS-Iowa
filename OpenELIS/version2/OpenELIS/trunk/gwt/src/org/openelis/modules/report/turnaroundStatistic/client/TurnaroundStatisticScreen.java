@@ -129,6 +129,7 @@ public class TurnaroundStatisticScreen extends Screen {
         initializeDropdowns();
 
         data = new TurnaroundVO();
+        data.setIsShowAnalysis("N");
         DataChangeEvent.fire(this);
     }
 
@@ -342,13 +343,12 @@ public class TurnaroundStatisticScreen extends Screen {
                 row = plotDataTable.getRow(r);
                 data = (TurnAroundReportViewVO.Value)row.data;
                 data.setIsPlot(val);
-                plotData.getValues().get(r).setIsPlot((String)val);
                 /*
                  * when the checkbox for a plot Value is checked or unchecked
                  * the checkboxes for all analytes asscoiated with it need to be
                  * checked or unchecked too.
                  */
-                updateAnalysisForPlotData(r, val);
+                updateAnalysisForPlotData(data, val);
                 DataChangeEvent.fire(screen, analysisTable);
             }
         });
@@ -401,7 +401,7 @@ public class TurnaroundStatisticScreen extends Screen {
                 for (int i = 0; i < plotDataTable.numRows(); i++ ) {
                     plotDataTable.setCell(i, 0, "Y");
                     plotData.getValues().get(i).setIsPlot("Y");
-                    updateAnalysisForPlotData(i,"Y");
+                    updateAnalysisForPlotData(plotData.getValues().get(i),"Y");
                     DataChangeEvent.fire(screen, analysisTable);
                 }
             }
@@ -417,7 +417,7 @@ public class TurnaroundStatisticScreen extends Screen {
                 for (int i = 0; i < plotDataTable.numRows(); i++ ) {
                     plotDataTable.setCell(i, 0, "N");
                     plotData.getValues().get(i).setIsPlot("N");
-                    updateAnalysisForPlotData(i,"N");
+                    updateAnalysisForPlotData(plotData.getValues().get(i),"N");
                     DataChangeEvent.fire(screen, analysisTable);
                 }
             }
@@ -772,11 +772,11 @@ public class TurnaroundStatisticScreen extends Screen {
         return model;
     }
     
-    private void updateAnalysisForPlotData(int index, String val) {
+    private void updateAnalysisForPlotData(Value value, String val) {
         PlotValue analysis;       
         List<PlotValue> plotValues;
                           
-        plotValues = plotData.getValues().get(index).getPlotValues();
+        plotValues = value.getPlotValues();
         for (int i = 0; i < plotValues.size(); i++) {
             analysis = plotValues.get(i);
             analysis.setIsPlot(val);
