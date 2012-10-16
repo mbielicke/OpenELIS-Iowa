@@ -65,7 +65,7 @@ public class TurnaroundCustomizer extends JRAbstractChartCustomizer {
         map = ds.getMap();
         valueList = map.get(testMethodName);
         for (Value value : valueList) {
-            if (value == null)
+            if (value == null || "N".equals(value.getIsPlot()))
                 continue;
             for (StatisticType type : ds.getTypes()) {
                 if (value.getStats(type).getAvg() != null)
