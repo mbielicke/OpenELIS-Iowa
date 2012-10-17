@@ -175,7 +175,7 @@ UIRF Software License are applicable instead of those above.
                   <col key="{meta:getDictionarySystemName()}" width="120" header="{resource:getString($constants,'systemName')}">
                     <textbox case="LOWER" max="30" field="String" />
                   </col>
-                  <col key="{meta:getDictionaryLocalAbbrev()}" width="120" header="{resource:getString($constants,'abbr')}">
+                  <col key="{meta:getDictionaryCode()}" width="120" header="{resource:getString($constants,'code')}">
                     <textbox max="10" field="String" />
                   </col>
                   <col key="{meta:getDictionaryEntry()}" width="180" sort="true" header="{resource:getString($constants,'entry')}">

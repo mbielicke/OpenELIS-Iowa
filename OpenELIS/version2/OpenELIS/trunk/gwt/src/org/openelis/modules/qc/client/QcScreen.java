@@ -31,25 +31,20 @@ import java.util.EnumSet;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.DictionaryCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.QcViewDO;
 import org.openelis.domain.ReferenceTable;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.RPC;
-import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.gwt.event.ActionEvent;
-import org.openelis.gwt.event.ActionHandler;
 import org.openelis.gwt.event.BeforeCloseEvent;
 import org.openelis.gwt.event.BeforeCloseHandler;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -60,12 +55,12 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.ButtonGroup;
-import org.openelis.gwt.widget.CalendarLookUp;
 import org.openelis.gwt.widget.CheckBox;
 import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.MenuItem;
@@ -73,54 +68,51 @@ import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
-import org.openelis.gwt.widget.table.TableWidget;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
-import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.gwt.widget.table.event.CellEditedEvent;
-import org.openelis.gwt.widget.table.event.CellEditedHandler;
-import org.openelis.gwt.widget.table.event.RowAddedEvent;
-import org.openelis.gwt.widget.table.event.RowAddedHandler;
-import org.openelis.gwt.widget.table.event.RowDeletedEvent;
-import org.openelis.gwt.widget.table.event.RowDeletedHandler;
 import org.openelis.manager.QcAnalyteManager;
 import org.openelis.manager.QcManager;
 import org.openelis.meta.QcMeta;
-import org.openelis.modules.dictionary.client.DictionaryLookupScreen;
 import org.openelis.modules.history.client.HistoryScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
+import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.TabPanel;
 
 public class QcScreen extends Screen {
-    private QcManager                   manager;
-    private ModulePermission            userPermission;
+    private QcManager             manager;
+    private ModulePermission      userPermission;
 
-    private AppButton                   queryButton, previousButton, nextButton, addButton,
-                                        updateButton, commitButton, abortButton, addAnalyteButton,
-                                        removeAnalyteButton, dictionaryButton;
-    protected MenuItem                  duplicate,qcHistory, qcAnalyteHistory;
-    private ButtonGroup                 atoz;
-    private ScreenNavigator             nav;
-    private CalendarLookUp              preparedDate, usableDate, expireDate;
-    private AutoComplete<Integer>       inventoryItem, preparedBy, analyte;
-    private Dropdown<Integer>           typeId, preparedUnitId, analyteTypeId;
-    private TextBox                     name, source, lotNumber, preparedVolume;
-    private CheckBox                    isActive;
-    private TableWidget                 qcAnalyteTable;
+    private Tabs                  tab;
+    private AnalyteTab            analyteTab;
+    private LotTab                lotTab;
+    private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
+                    commitButton, abortButton;
+    protected MenuItem            duplicate, qcHistory, qcAnalyteHistory;
+    private ButtonGroup           atoz;
+    private ScreenNavigator       nav;
+    private AutoComplete<Integer> inventoryItem;
+    private Dropdown<Integer>     typeId;
+    private TextBox               name, source;
+    private CheckBox              isActive;
+    private TabPanel              tabPanel;
 
-    private DictionaryLookupScreen      dictLookup;
-    private ScreenService               analyteService, inventoryService;
+    private ScreenService         inventoryService;
+
+    private enum Tabs {
+        ANALYTE, LOT
+    };
 
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
-        analyteService = new ScreenService("controller?service=org.openelis.modules.analyte.server.AnalyteService");
-        inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
+        inventoryService = new ScreenService(
+                                             "controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
         userPermission = UserCache.getPermission().getModule("qc");
         if (userPermission == null)
@@ -139,6 +131,7 @@ public class QcScreen extends Screen {
      * command.
      */
     private void postConstructor() {
+        tab = Tabs.ANALYTE;
         manager = QcManager.getInstance();
 
         initialize();
@@ -244,7 +237,7 @@ public class QcScreen extends Screen {
                                           .contains(event.getState()));
             }
         });
-        
+
         duplicate = (MenuItem)def.getWidget("duplicateRecord");
         addScreenHandler(duplicate, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -256,7 +249,7 @@ public class QcScreen extends Screen {
                                  userPermission.hasAddPermission());
             }
         });
-        
+
         qcHistory = (MenuItem)def.getWidget("qcHistory");
         addScreenHandler(qcHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -267,7 +260,7 @@ public class QcScreen extends Screen {
                 qcHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
-        
+
         qcAnalyteHistory = (MenuItem)def.getWidget("qcAnalyteHistory");
         addScreenHandler(qcAnalyteHistory, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
@@ -329,18 +322,21 @@ public class QcScreen extends Screen {
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                inventoryItem.enable(EnumSet.of(State.QUERY,State.ADD,State.UPDATE).contains(event.getState()));
+                inventoryItem.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
+                                            .contains(event.getState()));
                 inventoryItem.setQueryMode(event.getState() == State.QUERY);
             }
         });
+
         inventoryItem.addGetMatchesHandler(new GetMatchesHandler() {
             public void onGetMatches(GetMatchesEvent event) {
-                DictionaryDO   dict;
+                DictionaryDO dict;
                 ArrayList<InventoryItemDO> list;
                 ArrayList<TableDataRow> model;
 
                 try {
-                    list = inventoryService.callList("fetchActiveByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
+                    list = inventoryService.callList("fetchActiveByName",
+                                                     QueryFieldUtil.parseAutocomplete(event.getMatch()));
                     model = new ArrayList<TableDataRow>();
 
                     for (InventoryItemDO data : list) {
@@ -371,23 +367,6 @@ public class QcScreen extends Screen {
             }
         });
 
-        lotNumber = (TextBox)def.getWidget(QcMeta.getLotNumber());
-        addScreenHandler(lotNumber, new ScreenEventHandler<String>() {
-            public void onDataChange(DataChangeEvent event) {
-                lotNumber.setValue(manager.getQc().getLotNumber());
-            }
-
-            public void onValueChange(ValueChangeEvent<String> event) {
-                manager.getQc().setLotNumber(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                lotNumber.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                        .contains(event.getState()));
-                lotNumber.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
         isActive = (CheckBox)def.getWidget(QcMeta.getIsActive());
         addScreenHandler(isActive, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -400,279 +379,48 @@ public class QcScreen extends Screen {
 
             public void onStateChange(StateChangeEvent<State> event) {
                 isActive.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                          .contains(event.getState()));
+                                       .contains(event.getState()));
                 isActive.setQueryMode(event.getState() == State.QUERY);
             }
         });
 
-        preparedDate = (CalendarLookUp)def.getWidget(QcMeta.getPreparedDate());
-        addScreenHandler(preparedDate, new ScreenEventHandler<Datetime>() {
+        tabPanel = (TabPanel)def.getWidget("tabPanel");
+        tabPanel.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
+            public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
+                int i;
+
+                i = event.getItem().intValue();
+                tab = Tabs.values()[i];
+
+                window.setBusy();
+                drawTabs();
+                window.clearStatus();
+            }
+        });
+
+        analyteTab = new AnalyteTab(def, window);
+        addScreenHandler(analyteTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                preparedDate.setValue(manager.getQc().getPreparedDate());
-            }
-
-            public void onValueChange(ValueChangeEvent<Datetime> event) {
-                manager.getQc().setPreparedDate(event.getValue());
+                analyteTab.setManager(manager);
+                if (tab == Tabs.ANALYTE)
+                    drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                           .contains(event.getState()));
-                preparedDate.setQueryMode(event.getState() == State.QUERY);
+                analyteTab.setState(event.getState());
             }
         });
 
-        preparedVolume = (TextBox)def.getWidget(QcMeta.getPreparedVolume());
-        addScreenHandler(preparedVolume, new ScreenEventHandler<Double>() {
+        lotTab = new LotTab(def, window);
+        addScreenHandler(lotTab, new ScreenEventHandler<Object>() {
             public void onDataChange(DataChangeEvent event) {
-                preparedVolume.setValue(manager.getQc().getPreparedVolume());
-            }
-
-            public void onValueChange(ValueChangeEvent<Double> event) {
-                manager.getQc().setPreparedVolume(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                preparedVolume.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
-                preparedVolume.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        preparedUnitId = (Dropdown)def.getWidget(QcMeta.getPreparedUnitId());
-        addScreenHandler(preparedUnitId, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                preparedUnitId.setSelection(manager.getQc().getPreparedUnitId());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getQc().setPreparedUnitId(event.getValue());
+                lotTab.setManager(manager);
+                if (tab == Tabs.LOT)
+                    drawTabs();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
-                preparedUnitId.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                             .contains(event.getState()));
-                preparedUnitId.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        preparedBy = (AutoComplete)def.getWidget(QcMeta.getPreparedById());
-        addScreenHandler(preparedBy, new ScreenEventHandler<Integer>() {
-            public void onDataChange(DataChangeEvent event) {
-                preparedBy.setSelection(manager.getQc().getPreparedById(),
-                                        manager.getQc().getPreparedByName());
-            }
-
-            public void onValueChange(ValueChangeEvent<Integer> event) {
-                manager.getQc().setPreparedById(event.getValue());
-                manager.getQc().setPreparedByName(preparedBy.getTextBoxDisplay());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                preparedBy.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                         .contains(event.getState()));
-                preparedBy.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        preparedBy.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                ArrayList<SystemUserVO> users;
-                ArrayList<TableDataRow> model;
-
-                try {
-                    users = UserCache.getEmployees(QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<TableDataRow>();
-                    for (SystemUserVO user : users)
-                        model.add(new TableDataRow(user.getId(), user.getLoginName()));
-                    preparedBy.showAutoMatches(model);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    Window.alert(e.toString());
-                }
-            }
-        });
-
-        usableDate = (CalendarLookUp)def.getWidget(QcMeta.getUsableDate());
-        addScreenHandler(usableDate, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-                usableDate.setValue(manager.getQc().getUsableDate());
-            }
-
-            public void onValueChange(ValueChangeEvent<Datetime> event) {
-                manager.getQc().setUsableDate(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                usableDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                         .contains(event.getState()));
-                usableDate.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        expireDate = (CalendarLookUp)def.getWidget(QcMeta.getExpireDate());
-        addScreenHandler(expireDate, new ScreenEventHandler<Datetime>() {
-            public void onDataChange(DataChangeEvent event) {
-                expireDate.setValue(manager.getQc().getExpireDate());
-            }
-
-            public void onValueChange(ValueChangeEvent<Datetime> event) {
-                manager.getQc().setExpireDate(event.getValue());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                expireDate.enable(EnumSet.of(State.QUERY, State.ADD, State.UPDATE)
-                                         .contains(event.getState()));
-                expireDate.setQueryMode(event.getState() == State.QUERY);
-            }
-        });
-
-        qcAnalyteTable = (TableWidget)def.getWidget("QcAnalyteTable");
-        analyte = (AutoComplete<Integer>)qcAnalyteTable.getColumnWidget(QcMeta.getQcAnalyteAnalyteName());
-        analyteTypeId = (Dropdown)qcAnalyteTable.getColumnWidget(QcMeta.getQcAnalyteTypeId());
-        addScreenHandler(qcAnalyteTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
-            public void onDataChange(DataChangeEvent event) {
-                // table is not queried,so it needs to be cleared in query mode
-                qcAnalyteTable.load(getAnalyteTableModel());
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                qcAnalyteTable.enable(true);                
-            }
-        });
-        
-        qcAnalyteTable.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
-            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
-                if (state != State.ADD && state != State.UPDATE)
-                    event.cancel();
-            }
-        });
-
-        qcAnalyteTable.addCellEditedHandler(new CellEditedHandler() {
-            public void onCellUpdated(CellEditedEvent event) {
-                int r, c;
-                Object val;
-                TableDataRow row;
-                QcAnalyteViewDO data;
-
-                r = event.getRow();
-                c = event.getCol();
-                val = qcAnalyteTable.getObject(r, c);
-                try {
-                    data = manager.getAnalytes().getAnalyteAt(r);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                    return;
-                }
-                switch (c) {
-                    case 0:
-                        row = (TableDataRow)val;
-                        data.setAnalyteId((Integer)row.key);
-                        data.setAnalyteName(analyte.getTextBoxDisplay());
-                        break;
-                    case 1:
-                        data.setTypeId((Integer)val);                        
-                        break;
-                    case 2:
-                        data.setIsTrendable((String)val);
-                        break;
-                    case 3:
-                        data.setValue((String)val);                        
-                        break;
-                }
-            }
-        });
-
-        qcAnalyteTable.addRowAddedHandler(new RowAddedHandler() {
-            public void onRowAdded(RowAddedEvent event) {
-                int r;
-                
-                r = event.getIndex();
-                try {
-                    manager.getAnalytes().addAnalyteAt(new QcAnalyteViewDO(), r);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-
-        qcAnalyteTable.addRowDeletedHandler(new RowDeletedHandler() {
-            public void onRowDeleted(RowDeletedEvent event) {
-                try {
-                    manager.getAnalytes().removeAnalyteAt(event.getIndex());
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-
-        analyte.addGetMatchesHandler(new GetMatchesHandler() {
-            public void onGetMatches(GetMatchesEvent event) {
-                AnalyteDO data;
-                ArrayList<AnalyteDO> list;
-                ArrayList<TableDataRow> model;
-
-                try {
-                    list = analyteService.callList("fetchByName", QueryFieldUtil.parseAutocomplete(event.getMatch()));
-                    model = new ArrayList<TableDataRow>();
-
-                    for (int i = 0; i < list.size(); i++ ) {
-                        data = list.get(i);
-                        model.add(new TableDataRow(data.getId(), data.getName()));
-                    }
-                    analyte.showAutoMatches(model);
-                } catch (Exception e) {
-                    Window.alert(e.getMessage());
-                }
-            }
-        });
-
-        addAnalyteButton = (AppButton)def.getWidget("addAnalyteButton");
-        addScreenHandler(addAnalyteButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                int r;
-
-                r = qcAnalyteTable.getSelectedRow() + 1;
-                if (r == 0) {
-                    r = qcAnalyteTable.numRows();
-                }
-                qcAnalyteTable.addRow(r);
-                qcAnalyteTable.selectRow(r);
-                qcAnalyteTable.scrollToSelection();
-                qcAnalyteTable.startEditing(r, 0);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                addAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                               .contains(event.getState()));
-            }
-        });
-
-        removeAnalyteButton = (AppButton)def.getWidget("removeAnalyteButton");
-        addScreenHandler(removeAnalyteButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                int r;
-
-                r = qcAnalyteTable.getSelectedRow();
-                if (r > -1 && qcAnalyteTable.numRows() > 0)
-                    qcAnalyteTable.deleteRow(r);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                removeAnalyteButton.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                                  .contains(event.getState()));
-            }
-        });
-
-        dictionaryButton = (AppButton)def.getWidget("dictionaryButton");
-        addScreenHandler(dictionaryButton, new ScreenEventHandler<Object>() {
-            public void onClick(ClickEvent event) {
-                showDictionary(null,null);
-            }
-
-            public void onStateChange(StateChangeEvent<State> event) {
-                dictionaryButton.enable(EnumSet.of(State.ADD, State.UPDATE)
-                                               .contains(event.getState()));
+                lotTab.setState(event.getState());
             }
         });
 
@@ -717,8 +465,7 @@ public class QcScreen extends Screen {
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();
                     for (IdNameVO entry : result)
-                        model.add(new TableDataRow(entry.getId(), entry.getName(),
-                                                   entry.getDescription()));
+                        model.add(new TableDataRow(entry.getId(), entry.getName()));
                 }
                 return model;
             }
@@ -748,9 +495,9 @@ public class QcScreen extends Screen {
                 nav.setQuery(query);
             }
         });
-        
+
         window.addBeforeClosedHandler(new BeforeCloseHandler<ScreenWindow>() {
-            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {                
+            public void onBeforeClosed(BeforeCloseEvent<ScreenWindow> event) {
                 if (EnumSet.of(State.ADD, State.UPDATE).contains(state)) {
                     event.cancel();
                     window.setError(consts.get("mustCommitOrAbort"));
@@ -767,7 +514,7 @@ public class QcScreen extends Screen {
         // type dropdown
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list =  CategoryCache.getBySystemName("qc_type");
+        list = CategoryCache.getBySystemName("qc_type");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));
@@ -775,42 +522,20 @@ public class QcScreen extends Screen {
         }
 
         typeId.setModel(model);
-
-        // prepareUnit dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("unit_of_measure");
-        for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
-            model.add(row);
-        }
-
-        preparedUnitId.setModel(model);
-
-        // analyte table type dropdown
-        model = new ArrayList<TableDataRow>();
-        model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("qc_analyte_type");
-        for (DictionaryDO d : list) {
-            row = new TableDataRow(d.getId(), d.getEntry());
-            row.enabled = ("Y".equals(d.getIsActive()));
-            model.add(row);
-        }
-
-        analyteTypeId.setModel(model);
     }
 
     /*
      * basic button methods
      */
-
     protected void query() {
         manager = QcManager.getInstance();
 
         setState(State.QUERY);
         DataChangeEvent.fire(this);
-        
+
+        analyteTab.draw();
+        lotTab.draw();
+
         setFocus(name);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
@@ -851,6 +576,13 @@ public class QcScreen extends Screen {
 
     public void commit() {
         setFocus(null);
+
+        /*
+         * this is done to make sure that the errors added from the back-end are
+         * cleaned up before the screen does its validation so that if there are
+         * no errors added on the screen, the data can be committed
+         */
+        lotTab.clearExceptions();
 
         if ( !validate()) {
             window.setError(consts.get("correctErrors"));
@@ -919,29 +651,38 @@ public class QcScreen extends Screen {
             window.clearStatus();
         }
     }
-    
+
     protected void duplicate() {
-        QcViewDO data;
         try {
-            manager = QcManager.fetchById(manager.getQc().getId());            
+            window.setBusy(consts.get("fetching"));
+
+            manager = service.call("duplicate", manager.getQc().getId());
+
+            analyteTab.setManager(manager);
+            lotTab.setManager(manager);
+
+            analyteTab.draw();
+            lotTab.draw();
+
             setState(State.ADD);
             DataChangeEvent.fire(this);
-            data = manager.getQc();
-            data.setId(null);
+
             setFocus(name);
+            window.setDone(consts.get("enterInformationPressCommit"));
         } catch (Exception e) {
+            e.printStackTrace();
             Window.alert(e.getMessage());
+            window.clearStatus();
         }
     }
-    
+
     private void qcHistory() {
         IdNameVO hist;
-        
+
         hist = new IdNameVO(manager.getQc().getId(), manager.getQc().getName());
-        HistoryScreen.showHistory(consts.get("qcHistory"),
-                                  ReferenceTable.QC, hist); 
+        HistoryScreen.showHistory(consts.get("qcHistory"), ReferenceTable.QC, hist);
     }
-    
+
     private void qcAnalyteHistory() {
         int i, count;
         IdNameVO refVoList[];
@@ -953,8 +694,8 @@ public class QcScreen extends Screen {
             count = man.count();
             refVoList = new IdNameVO[count];
             for (i = 0; i < count; i++ ) {
-                data = man.getAnalyteAt(i);                
-                refVoList[i] = new IdNameVO(data.getId(), data.getAnalyteName());                
+                data = man.getAnalyteAt(i);
+                refVoList[i] = new IdNameVO(data.getId(), data.getAnalyteName());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -962,8 +703,8 @@ public class QcScreen extends Screen {
             return;
         }
 
-        HistoryScreen.showHistory(consts.get("qcAnalyteHistory"),
-                                  ReferenceTable.QC_ANALYTE, refVoList);
+        HistoryScreen.showHistory(consts.get("qcAnalyteHistory"), ReferenceTable.QC_ANALYTE,
+                                  refVoList);
     }
 
     protected boolean fetchById(Integer id) {
@@ -973,7 +714,14 @@ public class QcScreen extends Screen {
         } else {
             window.setBusy(consts.get("fetching"));
             try {
-                manager = QcManager.fetchWithAnalytes(id);
+                switch (tab) {
+                    case ANALYTE:
+                        manager = QcManager.fetchWithAnalytes(id);
+                        break;
+                    case LOT:
+                        manager = QcManager.fetchWithLots(id);
+                        break;
+                }
                 setState(State.DISPLAY);
             } catch (NotFoundException e) {
                 fetchById(null);
@@ -992,83 +740,14 @@ public class QcScreen extends Screen {
         return true;
     }
 
-    private ArrayList<TableDataRow> getAnalyteTableModel() {
-        int i;
-        QcAnalyteViewDO data;
-        ArrayList<TableDataRow> model;
-        String value;
-
-        model = new ArrayList<TableDataRow>();
-        if (manager == null)
-            return model;
-
-        try {
-            for (i = 0; i < manager.getAnalytes().count(); i++ ) {
-                data = manager.getAnalytes().getAnalyteAt(i);
-                model.add(new TableDataRow(null, 
-                                           new TableDataRow(data.getAnalyteId(),data.getAnalyteName()),
-                                           data.getTypeId(), data.getIsTrendable(), data.getValue()));
-            }
-        } catch (Exception e) {
-            Window.alert(e.getMessage());
-            e.printStackTrace();
-        }
-        return model;
-    }
-
-    private void showDictionary(String entry,ArrayList<IdNameVO> list) {
-        ScreenWindow modal;
-
-        if (dictLookup == null) {
-            try {
-                dictLookup = new DictionaryLookupScreen();
-            } catch (Exception e) {
-                e.printStackTrace();
-                Window.alert("DictionaryLookup Error: " + e.getMessage());
-                return;
-            }
-        
-            dictLookup.addActionHandler(new ActionHandler<DictionaryLookupScreen.Action>() {
-                public void onAction(ActionEvent<DictionaryLookupScreen.Action> event) {
-                    int r;
-                    IdNameVO entry;
-                    QcAnalyteViewDO data;
-                    ArrayList<IdNameVO> list;
-
-                    if (event.getAction() == DictionaryLookupScreen.Action.OK) {
-                        list = (ArrayList<IdNameVO>)event.getData();
-                        if (list != null) {
-                            r = qcAnalyteTable.getSelectedRow();
-                            if (r == -1) {
-                                window.setError(consts.get("qc.noSelectedRow"));
-                                return;
-                            }
-                            entry = list.get(0);
-                            try {
-                                data = manager.getAnalytes().getAnalyteAt(r);
-                                data.setValue(entry.getName());
-                                qcAnalyteTable.setCell(r, 3, entry.getName());
-                                qcAnalyteTable.clearCellExceptions(r, 3);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                qcAnalyteTable.setCell(r, 3, "");
-                                Window.alert("DictionaryLookup Error: " + e.getMessage());
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("chooseDictEntry"));
-        modal.setContent(dictLookup);
-        dictLookup.setScreenState(State.DEFAULT);
-        if (list != null) {
-            dictLookup.clearFields();
-            dictLookup.setQueryResult(entry, list);
-        } else if (entry != null) {
-            dictLookup.clearFields();
-            dictLookup.executeQuery(entry);
+    private void drawTabs() {
+        switch (tab) {
+            case ANALYTE:
+                analyteTab.draw();
+                break;
+            case LOT:
+                lotTab.draw();
+                break;
         }
     }
 }

@@ -180,7 +180,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
         manager = ShippingManager.getInstance();
         
         try {
-            CategoryCache.getBySystemNames("shipping_status", "order_ship_from",
+            CategoryCache.getBySystemNames("shipping_status", "laboratory_location",
                                                          "shipping_method");
         } catch (Exception e) {
             Window.alert("ShippingSreen: missing dictionary entry; " + e.getMessage());
@@ -835,7 +835,7 @@ public class ShippingScreen extends Screen implements HasActionHandlers<Shipping
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("order_ship_from");
+        list = CategoryCache.getBySystemName("laboratory_location");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

@@ -122,7 +122,8 @@ UIRF Software License are applicable instead of those above.
                   <xsl:value-of select='resource:getString($constants,"name")' />:
                 </text>
                 <autoComplete field="Integer" case = "LOWER" key="{meta:getReferenceName()}" tab = "parameterTree, {meta:getReferenceTableId()}" required = "true" popWidth="auto" width="175">
-                    <col width="175" />
+                    <col width="150" />
+                    <col width="150" />
                 </autoComplete>
               </row>
             </TablePanel>

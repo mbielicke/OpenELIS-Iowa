@@ -47,17 +47,14 @@ UIRF Software License are applicable instead of those above.
       <HorizontalPanel padding="0" spacing="0">
 <!--left table goes here -->
         <CollapsePanel key="collapsePanel" style="LeftSidePanel">
-          <HorizontalPanel width="225">
+          <HorizontalPanel width="175">
             <buttonGroup key="atozButtons">
               <xsl:call-template name="aToZLeftPanelButtons" />
             </buttonGroup>
             <VerticalPanel>
               <table key="atozTable" width="auto" maxRows="20" style="atozTable">
-                <col width="95" header="{resource:getString($constants,'name')}">
+                <col width="145" header="{resource:getString($constants,'name')}">
                   <label field="String" />
-                </col>
-                <col width="95" header="{resource:getString($constants,'lotNumber')}">
-                  <label field="Integer" />
                 </col>
               </table>
               <widget halign="center">
@@ -156,6 +153,14 @@ UIRF Software License are applicable instead of those above.
                 </row>
                 <row>
                   <text style="Prompt">
+                    <xsl:value-of select='resource:getString($constants,"active")' />:
+                  </text>
+                  <check key="{meta:getIsActive()}" tab="{meta:getPreparedDate()},{meta:getLotNumber()}" />
+                </row>
+              </TablePanel>
+              <TablePanel style="Form">
+                <row>
+                  <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'inventoryItem')" />:
                   </text>
                   <widget>
@@ -173,113 +178,114 @@ UIRF Software License are applicable instead of those above.
                     <textbox key="{meta:getSource()}" width="215" max="30" tab="{meta:getLotNumber()},{meta:getInventoryItemName()}" field="String" required="true" />
                   </widget>
                 </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'lotNumber')" />:
-                  </text>
-                  <widget colspan="6">
-                    <textbox key="{meta:getLotNumber()}" width="215" max="30" tab="{meta:getIsActive()},{meta:getSource()}" field="String" case = "UPPER" required="true" />
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"active")' />:
-                  </text>
-                  <check key="{meta:getIsActive()}" tab="{meta:getPreparedDate()},{meta:getLotNumber()}" />
-                </row>
-              </TablePanel>
-              <TablePanel style="Form">
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"preparedDate")' />:
-                  </text>
-                  <calendar key="{meta:getPreparedDate()}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getPreparedVolume()},{meta:getIsActive()}" required="true" />
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'preparedVolume')" />:
-                  </text>
-                  <widget colspan="6">
-                    <textbox key="{meta:getPreparedVolume()}" width="100" tab="{meta:getPreparedUnitId()},{meta:getPreparedDate()}" field="Double" />
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'preparedUnit')" />:
-                  </text>
-                  <dropdown key="{meta:getPreparedUnitId()}" width="150" tab="{meta:getPreparedById()},{meta:getPreparedVolume()}" field="Integer" />
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select="resource:getString($constants,'preparedBy')" />:
-                  </text>
-                  <widget>
-                    <autoComplete key="{meta:getPreparedById()}" width="145" tab="{meta:getUsableDate()},{meta:getPreparedUnitId()}" field="Integer">
-                      <col width="145" />
-                    </autoComplete>
-                  </widget>
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"usableDate")' />:
-                  </text>
-                  <calendar key="{meta:getUsableDate()}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="{meta:getExpireDate()},{meta:getPreparedById()}" required="true" />
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"expireDate")' />:
-                  </text>
-                  <calendar key="{meta:getExpireDate()}" begin="0" end="4" width="140" pattern="{resource:getString($constants,'dateTimePattern')}" tab="QcAnalyteTable,{meta:getUsableDate()}" required="true" />
-                </row>
               </TablePanel>
             </HorizontalPanel>
-            <VerticalPanel height="10" />
-            <VerticalPanel>
-              <table key="QcAnalyteTable" width="625" maxRows="10" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getExpireDate()}">
-                <col key="{meta:getQcAnalyteAnalyteName()}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
-                  <autoComplete width="270" popWidth="310" field="Integer" required="true">
-                    <col width="300" />
-                  </autoComplete>
-                </col>
-                <col key="{meta:getQcAnalyteTypeId()}" width="55" align="left" header="{resource:getString($constants,'type')}">
-                  <dropdown width="90" field="Integer" required="true" />
-                </col>
-                <col key="{meta:getQcAnalyteIsTrendable()}" width="55" align="center" header="{resource:getString($constants,'trendable')}">
-                  <check />
-                </col>
-                <col key="{meta:getQcAnalyteValue()}" width="245" align="left" header="{resource:getString($constants,'expectedValue')}">
-                  <textbox max="80" field="String" />
-                </col>
-              </table>
-              <widget style="TableButtonFooter">
-                <HorizontalPanel>
-                  <appButton key="addAnalyteButton" style="Button">
+            <VerticalPanel height="5" />
+            <TabPanel key="tabPanel" width="660">
+              <tab key="analyteTab" text="{resource:getString($constants,'analyte')}">
+                <VerticalPanel>
+                  <table key="qcAnalyteTable" width="640" maxRows="13" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getExpireDate()}">
+                    <col key="{meta:getQcAnalyteAnalyteName()}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
+                      <autoComplete width="270" popWidth="310" field="Integer" required="true">
+                        <col width="300" />
+                      </autoComplete>
+                    </col>
+                    <col key="{meta:getQcAnalyteTypeId()}" width="55" align="left" header="{resource:getString($constants,'type')}">
+                      <dropdown width="90" field="Integer" required="true" />
+                    </col>
+                    <col key="{meta:getQcAnalyteIsTrendable()}" width="55" align="center" header="{resource:getString($constants,'trendable')}">
+                      <check />
+                    </col>
+                    <col key="{meta:getQcAnalyteValue()}" width="245" align="left" header="{resource:getString($constants,'expectedValue')}">
+                      <textbox max="80" field="String" />
+                    </col>
+                  </table>
+                  <widget style="TableButtonFooter">
                     <HorizontalPanel>
-                      <AbsolutePanel style="AddRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'addRow')" />
-                      </text>
+                      <appButton key="addAnalyteButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="AddRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'addRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                      <appButton key="removeAnalyteButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="RemoveRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                      <appButton key="dictionaryButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="DictionaryButtonImage" />
+                          <text>
+                            <xsl:value-of select='resource:getString($constants,"dictionary")' />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
                     </HorizontalPanel>
-                  </appButton>
-                  <appButton key="removeAnalyteButton" style="Button">
+                  </widget>
+                </VerticalPanel>
+              </tab>
+              <tab key="lotTab" text="{resource:getString($constants,'lotInformation')}">
+                <VerticalPanel>
+                  <table key="qcLotTable" width="640" maxRows="13" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getExpireDate()}">
+                    <col key="{meta:getQcLotIsActive()}" width="40" align="center" header="{resource:getString($constants,'active')}">
+                      <check/>
+                    </col>
+                    <col key="{meta:getQcLotLotNumber()}" width="215" align="left" header="{resource:getString($constants,'lotNumber')}">
+                      <textbox field="String" case = "UPPER" required="true" />
+                    </col>
+                    <col key="{meta:getQcLotLocationId()}" width="80" align="left" header="{resource:getString($constants,'location')}">
+                      <dropdown width="100" field="Integer" required="true" />
+                    </col>
+                    <col key="{meta:getQcLotPreparedDate()}" width="105" align="left"  header="{resource:getString($constants,'preparedDate')}">
+                      <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                    </col>
+                    <col key="{meta:getQcLotPreparedVolume()}" width="105" align="right"  header="{resource:getString($constants,'preparedVolume')}">
+                      <textbox field="Double" required="true" />
+                    </col>
+                    <col key="{meta:getQcLotPreparedUnitId()}" width="100" align="right" header="{resource:getString($constants,'preparedUnit')}">
+                      <dropdown width="150" field="Integer" required="true" />
+                    </col>
+                    <col key="{meta:getQcLotPreparedById()}" width="145" align="left" header="{resource:getString($constants,'preparedBy')}">
+                      <autoComplete width="145" field="Integer">
+                        <col width="145" />
+                      </autoComplete>
+                    </col>
+                    <col key="{meta:getQcLotUsableDate()}" width="105" align="left" header="{resource:getString($constants,'usableDate')}">
+                      <calendar begin="0" end="4" width="105" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" />
+                    </col>
+                    <col key="{meta:getQcLotExpireDate()}" width="105" align="left" header="{resource:getString($constants,'expireDate')}">
+                      <calendar begin="0" end="4" width="105" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" />
+                    </col>
+                  </table>
+                  <widget style="TableButtonFooter">
                     <HorizontalPanel>
-                      <AbsolutePanel style="RemoveRowButtonImage" />
-                      <text>
-                        <xsl:value-of select="resource:getString($constants,'removeRow')" />
-                      </text>
+                      <appButton key="addLotButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="AddRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'addRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                      <appButton key="removeLotButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="RemoveRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
                     </HorizontalPanel>
-                  </appButton>
-                  <appButton key="dictionaryButton" style="Button">
-                    <HorizontalPanel>
-                      <AbsolutePanel style="DictionaryButtonImage" />
-                      <text>
-                        <xsl:value-of select='resource:getString($constants,"dictionary")' />
-                      </text>
-                    </HorizontalPanel>
-                  </appButton>
-                </HorizontalPanel>
-              </widget>
-            </VerticalPanel>
+                  </widget>
+                </VerticalPanel>
+              </tab>
+            </TabPanel>
           </VerticalPanel>
         </VerticalPanel>
       </HorizontalPanel>

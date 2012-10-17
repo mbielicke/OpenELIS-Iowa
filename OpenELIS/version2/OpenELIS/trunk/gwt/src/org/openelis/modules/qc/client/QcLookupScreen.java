@@ -28,6 +28,7 @@ package org.openelis.modules.qc.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.QcDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
@@ -48,7 +49,6 @@ import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.meta.QcMeta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -228,7 +228,6 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
     public void executeQuery(String pattern) {
         ArrayList<QueryData> fields;
         Query                query;
-        QueryData            field;
 
         if (DataBaseUtil.isEmpty(pattern))
             return;              
@@ -236,26 +235,14 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         findTextBox.setText(pattern);
         
         fields = new ArrayList<QueryData>();
-        
-        field = new QueryData();
-        field.key = QcMeta.getName();
-        field.type = QueryData.Type.STRING;
-        field.query = pattern;
-        fields.add(field);
-        
-        field = new QueryData();
-        field.key = QcMeta.getIsActive();
-        field.type = QueryData.Type.STRING;
-        field.query = "Y";
-        fields.add(field);
 
         query = new Query();
         query.setFields(fields);
         
         window.setBusy(consts.get("querying"));
 
-        service.callList("fetchActiveByName", query, new AsyncCallback<ArrayList<QcDO>>() {
-            public void onSuccess(ArrayList<QcDO> result) {
+        service.callList("fetchActiveByName", pattern, new AsyncCallback<ArrayList<QcLotViewDO>>() {
+            public void onSuccess(ArrayList<QcLotViewDO> result) {
                 setQueryResult(result);
             }
 
@@ -271,7 +258,7 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         });                        
     }
     
-    public void setQueryResult(String pattern, ArrayList<QcDO> list) {
+    public void setQueryResult(String pattern, ArrayList<QcLotViewDO> list) {
         if (DataBaseUtil.isEmpty(pattern))
             return;              
 
@@ -279,7 +266,7 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         setQueryResult(list);
     }
 
-    private void setQueryResult(ArrayList<QcDO> list) {
+    private void setQueryResult(ArrayList<QcLotViewDO> list) {
         ArrayList<TableDataRow> model;
         TableDataRow row;
 
@@ -287,8 +274,8 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
 
         model = new ArrayList<TableDataRow>();
         if(list != null) {
-            for (QcDO data : list)   {  
-                row = new TableDataRow(data.getId(), data.getName(), data.getLotNumber(),
+            for (QcLotViewDO data : list)   {  
+                row = new TableDataRow(data.getId(), data.getQcName(), data.getLotNumber(),
                                        data.getUsableDate(), data.getExpireDate());
                 row.data = data;
                 model.add(row);

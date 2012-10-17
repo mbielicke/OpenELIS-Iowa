@@ -27,44 +27,31 @@ package org.openelis.manager;
 
 import org.openelis.gwt.services.ScreenService;
 
-public class QcManagerProxy {
-
+public class QcLotManagerProxy {
     protected static final String MANAGER_SERVICE_URL = "org.openelis.modules.qc.server.QcService";
     protected ScreenService       service;
 
-    public QcManagerProxy() {
+    public QcLotManagerProxy() {
         service = new ScreenService("controller?service=" + MANAGER_SERVICE_URL);
     }
 
-    public QcManager fetchById(Integer id) throws Exception {
-        return service.call("fetchById", id);
-    }
-
-    public QcManager fetchWithAnalytes(Integer id) throws Exception {
-        return service.call("fetchWithAnalytes", id);
-    }
-    
-    public QcManager fetchWithLots(Integer id) throws Exception {
-        return service.call("fetchWithLots", id);
-    }
-
-    public QcManager add(QcManager man) throws Exception {
-        return service.call("add", man);
-    }
-
-    public QcManager update(QcManager man) throws Exception {
-        return service.call("update", man);
-    }
-
-    public QcManager fetchForUpdate(Integer id) throws Exception {
-        return service.call("fetchForUpdate", id);
-    }
-
-    public QcManager abortUpdate(Integer id) throws Exception {
-        return service.call("abortUpdate", id);
+    public QcLotManager fetchByQcId(Integer qcId) throws Exception {
+        return service.call("fetchLotByQcId", qcId);
     }
 
     @SuppressWarnings("unused")
-    public void validate(QcManager man) throws Exception {
+    public QcLotManager add(QcLotManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+
+    @SuppressWarnings("unused")
+    public QcLotManager update(QcLotManager man) throws Exception {
+        assert false : "not supported";
+        return null;
+    }
+    
+    @SuppressWarnings("unused")
+    public void validate(QcLotManager man) throws Exception {
     }
 }

@@ -29,10 +29,12 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.manager.QcAnalyteManager;
+import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
 import org.openelis.server.EJBFactory;
 
@@ -54,18 +56,14 @@ public class QcService {
         }
         return list;
     }
-
-    public ArrayList<QcDO> fetchActiveByName(Query query) throws Exception {
-        return EJBFactory.getQc().fetchActiveByName(query.getFields());
-    }
     
-    public ArrayList<QcDO> fetchActiveByName(String search) throws Exception {
-        ArrayList<QcDO> list;
+    public ArrayList<QcLotViewDO> fetchActiveByName(String search) throws Exception {
+        ArrayList<QcLotViewDO> list;
 
         try {
-            list = EJBFactory.getQc().fetchActiveByName(search, 10);
+            list = EJBFactory.getQc().fetchActiveByName(search + "%", 10);
         } catch (NotFoundException e) {
-            list = new ArrayList<QcDO>(0);
+            list = new ArrayList<QcLotViewDO>(0);
         } catch (RuntimeException e) {
             throw new DatabaseException(e);
         }
@@ -74,6 +72,10 @@ public class QcService {
 
     public QcManager fetchWithAnalytes(Integer id) throws Exception {
         return EJBFactory.getQcManager().fetchWithAnalytes(id);
+    }
+    
+    public QcManager fetchWithLots(Integer id) throws Exception {
+        return EJBFactory.getQcManager().fetchWithLots(id);
     }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
@@ -95,11 +97,19 @@ public class QcService {
     public QcManager abortUpdate(Integer id) throws Exception {
         return EJBFactory.getQcManager().abortUpdate(id);
     }
+    
+    public QcManager duplicate(Integer id) throws Exception {
+        return EJBFactory.getQcManager().duplicate(id);
+    }
 
     //
-    // support for QcAnalyteManager and QcParameterManager
+    // support for QcAnalyteManager and QcLotManager
     //
     public QcAnalyteManager fetchAnalyteByQcId(Integer id) throws Exception {
         return EJBFactory.getQcManager().fetchAnalyteByQcId(id);
+    }
+    
+    public QcLotManager fetchLotByQcId(Integer id) throws Exception {
+        return EJBFactory.getQcManager().fetchLotByQcId(id);
     }
 }

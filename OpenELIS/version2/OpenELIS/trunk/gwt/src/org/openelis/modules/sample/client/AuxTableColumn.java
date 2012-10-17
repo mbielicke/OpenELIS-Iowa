@@ -113,10 +113,10 @@ public class AuxTableColumn extends TableColumn {
         d.setup();
 
         model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
         for (i = 0; i < options.size(); i++) {
             item = options.get(i);
-            row = new TableDataRow(item.getValue(), item.getValue());
-            model.add(row);
+            model.add(new TableDataRow(item.getValue(), item.getValue()));
         }
         d.load(model);
         d.enable(true);
