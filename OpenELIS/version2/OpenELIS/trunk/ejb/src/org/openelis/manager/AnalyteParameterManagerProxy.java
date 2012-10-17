@@ -66,7 +66,7 @@ public class AnalyteParameterManagerProxy {
                 break;
             case ReferenceTable.QC:
                 q = EJBFactory.getQc().fetchById(referenceId);
-                m.setReferenceName(q.getName()+" , "+q.getLotNumber());
+                m.setReferenceName(q.getName());
                 break;
             case ReferenceTable.PROVIDER:
                 break;

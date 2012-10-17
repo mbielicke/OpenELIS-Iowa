@@ -35,6 +35,7 @@ public class QcManager implements RPC {
 
     protected QcViewDO                        qc;
     protected QcAnalyteManager                analytes;
+    protected QcLotManager                    lots;
 
     protected transient static QcManagerProxy proxy;
 
@@ -76,6 +77,10 @@ public class QcManager implements RPC {
     public static QcManager fetchWithAnalytes(Integer id) throws Exception {
         return proxy().fetchWithAnalytes(id);
     }
+    
+    public static QcManager fetchWithLots(Integer id) throws Exception {
+        return proxy().fetchWithLots(id);
+    }
 
     public QcManager add() throws Exception {
         return proxy().add(this);
@@ -115,6 +120,23 @@ public class QcManager implements RPC {
                 analytes = QcAnalyteManager.getInstance();
         }
         return analytes;
+    }
+    
+    public QcLotManager getLots() throws Exception {
+        if (lots == null) {
+            if (qc.getId() != null) {
+                try {
+                    lots = QcLotManager.fetchByQcId(qc.getId());
+                } catch (NotFoundException e) {
+                    // ignore
+                } catch (Exception e) {
+                    throw e;
+                }
+            }
+            if (lots == null)
+                lots = QcLotManager.getInstance();
+        }
+        return lots;
     }
 
     private static QcManagerProxy proxy() {

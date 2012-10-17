@@ -200,8 +200,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
     }
     
     public OrderManager duplicate(Integer id) throws Exception {
-        OrderManager newMan;
-        OrderManager oldMan;
+        OrderManager newMan, oldMan;
         
         oldMan = fetchById(id);
         newMan = OrderManager.getInstance();      
@@ -211,8 +210,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
     }
     
     public void recur(Integer id) throws Exception {
-        OrderManager newMan;
-        OrderManager oldMan;
+        OrderManager newMan, oldMan;
         
         oldMan = fetchById(id);
         newMan = OrderManager.getInstance();      

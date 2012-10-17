@@ -33,15 +33,15 @@ import org.openelis.gwt.common.Datetime;
                       + " from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Analysis a, Test t, Method m, Section s where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and w.statusId = :statusId"
                       +	" and wa.analysisId = a.id and a.testId = t.id and t.methodId = m.id and a.sectionId = s.id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByDateForQcChart",
-                query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, q.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
+                query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, ql.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
                         " wqr.value1,wqr.value2,wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
                         " wqr.value8,wqr.value9,wqr.value10,wqr.value11,wqr.value12," +
                         " wqr.value13,wqr.value14,wqr.value15,wqr.value16,wqr.value17," +
                         " wqr.value18,wqr.value19,wqr.value20,wqr.value21,wqr.value22," +
                         " wqr.value23,wqr.value24,wqr.value25,wqr.value26,wqr.value27," +
                         " wqr.value28,wqr.value29,wqr.value30 ) " +
-                        "from  WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, WorksheetQcResult wqr, Qc q, QcAnalyte qa, Analyte a, Dictionary d " +  
-                        "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wqr.worksheetAnalysisId = wa.id and wa.qcId = q.id and wqr.qcAnalyteId = qa.id and" + 
+                        "from  WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, WorksheetQcResult wqr, Qc q, QcLot ql, QcAnalyte qa, Analyte a, Dictionary d " +  
+                        "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wqr.worksheetAnalysisId = wa.id and wa.qcId = q.id and q.id = ql.qcId and wqr.qcAnalyteId = qa.id and" + 
                         " qa.analyteId = a.id and qa.isTrendable = 'Y' and w.createdDate between :startedDate and :endDate and q.name = :qcName and d.id = w.formatId and" +
                         " w.statusId in (select id from Dictionary where systemName in ('worksheet_complete', 'worksheet_working')) "+ 
                         "order by w.createdDate"),
@@ -52,15 +52,15 @@ import org.openelis.gwt.common.Datetime;
                         " q.name = :qcName and w.statusId in (select id from Dictionary where systemName in ('worksheet_complete', 'worksheet_working')) " + 
                         "order by w.createdDate desc"),
    @NamedQuery( name = "WorksheetAnalysis.FetchAnalytesForQcChart",
-               query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, q.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
+               query = "select distinct new org.openelis.domain.QcChartResultVO(wa.accessionNumber, ql.lotNumber, w.id, q.id, a.id, wa.id, a.name, d.systemName, w.createdDate," +
                         " wqr.value1,wqr.value2,wqr.value3,wqr.value4,wqr.value5,wqr.value6,wqr.value7," +
                         " wqr.value8,wqr.value9,wqr.value10,wqr.value11,wqr.value12," +
                         " wqr.value13,wqr.value14,wqr.value15,wqr.value16,wqr.value17," +
                         " wqr.value18,wqr.value19,wqr.value20,wqr.value21,wqr.value22," +
                         " wqr.value23,wqr.value24,wqr.value25,wqr.value26,wqr.value27," +
                         " wqr.value28,wqr.value29,wqr.value30 ) " +
-                        "from  WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, WorksheetQcResult wqr, Qc q, QcAnalyte qa, Analyte a, Dictionary d " +  
-                        "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wqr.worksheetAnalysisId = wa.id and wa.qcId = q.id and wqr.qcAnalyteId = qa.id and" + 
+                        "from  WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, WorksheetQcResult wqr, Qc q, QcLot ql, QcAnalyte qa, Analyte a, Dictionary d " +  
+                        "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wqr.worksheetAnalysisId = wa.id and wa.qcId = q.id and q.id = ql.qcId and wqr.qcAnalyteId = qa.id and" + 
                         " qa.analyteId = a.id and qa.isTrendable = 'Y' and d.id = w.formatId and wa.id in (:ids) " + 
                         "order by w.createdDate")})      
 

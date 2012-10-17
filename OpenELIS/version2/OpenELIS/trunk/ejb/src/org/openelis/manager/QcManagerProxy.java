@@ -25,12 +25,9 @@
  */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.QcViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.QcLocal;
 import org.openelis.utils.EJBFactory;
 
 public class QcManagerProxy {
@@ -55,6 +52,15 @@ public class QcManagerProxy {
 
         return m;
     }
+    
+    public QcManager fetchWithLots(Integer id) throws Exception {
+        QcManager m;
+
+        m = fetchById(id);
+        m.getLots();
+
+        return m;
+    }
 
     public QcManager add(QcManager man) throws Exception {
         Integer id;
@@ -65,6 +71,11 @@ public class QcManagerProxy {
         if (man.analytes != null) {
             man.getAnalytes().setQcId(id);
             man.getAnalytes().add();
+        }
+        
+        if (man.lots != null) {
+            man.getLots().setQcId(id);
+            man.getLots().add();
         }
 
         return man;
@@ -79,6 +90,11 @@ public class QcManagerProxy {
         if (man.analytes != null) {
             man.getAnalytes().setQcId(id);
             man.getAnalytes().update();
+        }
+        
+        if (man.lots != null) {
+            man.getLots().setQcId(id);
+            man.getLots().update();
         }
 
         return man;
@@ -100,14 +116,23 @@ public class QcManagerProxy {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();
+        
         try {
             EJBFactory.getQc().validate(man.getQc());
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }
+        
         try {
             if (man.analytes != null)
                 man.getAnalytes().validate();
+        } catch (Exception e) {
+            DataBaseUtil.mergeException(list, e);
+        }
+        
+        try {
+            if (man.lots != null)
+                man.getLots().validate();
         } catch (Exception e) {
             DataBaseUtil.mergeException(list, e);
         }

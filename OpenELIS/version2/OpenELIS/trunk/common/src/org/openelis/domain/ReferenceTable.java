@@ -139,5 +139,6 @@ public class ReferenceTable {
                             EXCHANGE_EXTERNAL_TERM =        114,
                             EXCHANGE_CRITERIA =             115,
                             EXCHANGE_PROFILE =              116,
-                            EVENT_LOG =                     117;  
+                            EVENT_LOG =                     117,
+                            QC_LOT =                        118;  
 }

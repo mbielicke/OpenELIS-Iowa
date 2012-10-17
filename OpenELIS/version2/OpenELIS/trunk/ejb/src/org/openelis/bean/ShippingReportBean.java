@@ -8,7 +8,6 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.SessionContext;
@@ -23,13 +22,14 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
@@ -40,6 +40,7 @@ import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.LabelReportLocal;
 import org.openelis.local.OrderItemLocal;
 import org.openelis.local.OrderLocal;
+import org.openelis.local.OrganizationLocal;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.RequestformReportLocal;
 import org.openelis.local.SessionCacheLocal;
@@ -76,27 +77,14 @@ public class ShippingReportBean implements ShippingReportRemote {
 
     @EJB
     private PrinterCacheLocal       printer;
+    
+    @EJB
+    private OrganizationLocal       organization;
 
     private final static String     PRN_PREFIX = "print://";
 
-    private static Integer          shipFromICId, shipFromAnkId;
-
-    private static final Logger     log        = Logger.getLogger(ShippingReportBean.class);
-
     @Resource
     private SessionContext          ctx;
-
-    @PostConstruct
-    public void init() {
-        try {
-            if (shipFromICId == null) {
-                shipFromICId = dictionaryCache.getIdBySystemName("order_ship_from_ic");
-                shipFromAnkId = dictionaryCache.getIdBySystemName("order_ship_from_ank");
-            }
-        } catch (Exception e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
-        }
-    }
 
     /**
      * Returns the prompt for a single re-print
@@ -147,10 +135,8 @@ public class ShippingReportBean implements ShippingReportRemote {
         boolean printManifest, printLabel, printReqform, printInstr;
         Integer shippingId, orderId, prevOrderId, methodId;
         String shippingIdStr, printer, barcodePrinter, manifest, shippingLabel,
-               requestForm, instruction, dir, printstat, itemUri, uriPath, name,
-               method, costCenter, fromStreetAddress1, fromStreetAddress2, fromCity, fromState,
-               fromZip, attention, toStreetAddress1, toAptSuite, toStreetAddress2,
-               toCity, toState, toZip;
+               requestForm, instruction, dir, printstat, itemUri, uriPath, method,
+               costCenter,fromAptSuite, fromStreetAddr, toAptSuite, toStreetAddr;
         URL url;
         File tempFile;
         HashMap<String, Object> jparam;
@@ -164,7 +150,9 @@ public class ShippingReportBean implements ShippingReportRemote {
         ArrayList<Integer> orderIds;
         ArrayList<OrderViewDO> orderList;        
         ArrayList<OrderItemViewDO> itemList;
-        AddressDO address;
+        AddressDO shipFromAddr, shipToAddr;
+        OrganizationViewDO shipFrom;   
+        DictionaryDO labLocDict;
         OrganizationDO shipTo;
         PrintStream ps;
 
@@ -264,45 +252,29 @@ public class ShippingReportBean implements ShippingReportRemote {
                 //
                 // print the barcode labels
                 //
-                if (numpkg > 0) {
-                    //
-                    // initialize all parts of the text to be printed on barcode
-                    // labels
-                    //
-                    name = "State Hygienic Laboratory";
-                    method = "";
-                    methodId = shipData.getShippedMethodId();
-                    if (methodId != null)
-                        method = dictionaryCache.getById(methodId).getEntry();
-                    fromStreetAddress1 = null;
-                    fromStreetAddress2 = null;
-                    fromCity = null;
-                    fromZip = null;
-
-                    if (shipFromICId.equals(shipData.getShippedFromId())) {
-                        fromStreetAddress1 = "University of Iowa Research Park";
-                        fromStreetAddress2 = "2490 Crosspark Rd";
-                        fromCity = "Coralville";
-                        fromZip = "52241-4721";
-                    } else if (shipFromAnkId.equals(shipData.getShippedFromId())) {
-                        fromStreetAddress1 = "Iowa Laboratories Complex";
-                        fromStreetAddress2 = "2220 S. Ankeny Blvd";
-                        fromCity = "Ankeny";
-                        fromZip = "50023";
+                if (numpkg > 0) {                    
+                    labLocDict = dictionaryCache.getById(shipData.getShippedFromId());
+                    
+                    try {
+                        shipFrom = organization.fetchById(Integer.parseInt(labLocDict.getCode()));                        
+                    } catch (Exception e) {
+                        throw new InconsistencyException("Illegal ship from id specified in the dictionary for location "+ labLocDict.getEntry());
                     }
-
-                    fromState = "IA";
-                    attention = shipData.getShippedToAttention();
+                                        
+                    methodId = shipData.getShippedMethodId();
+                    method = methodId != null ? dictionaryCache.getById(methodId).getEntry() : "";
+                    
+                    shipFromAddr = shipFrom.getAddress();
+                    fromAptSuite = shipFromAddr.getMultipleUnit() != null ? shipFromAddr.getMultipleUnit() : "" ;
+                    fromStreetAddr = shipFromAddr.getStreetAddress() != null ? shipFromAddr.getStreetAddress() : "";
+                    
                     shipTo = shipData.getShippedTo();
-                    address = shipTo.getAddress();
-                    toStreetAddress1 = shipTo.getName();
-                    toAptSuite = address.getMultipleUnit();
-                    toStreetAddress2 = address.getStreetAddress();
+                    shipToAddr = shipTo.getAddress();
+                    toAptSuite = shipToAddr.getMultipleUnit();
+                    toStreetAddr = shipToAddr.getStreetAddress();
+                    
                     if (toAptSuite != null)
-                        toStreetAddress2 = toAptSuite + " " + toStreetAddress2;
-                    toCity = address.getCity();
-                    toState = address.getState();
-                    toZip = address.getZipCode();
+                        toStreetAddr = DataBaseUtil.concatWithSeparator(toAptSuite, " ", toStreetAddr);
                     
                     orderList = order.fetchByShippingId(shippingId);
                     orderIds = new ArrayList<Integer>();
@@ -320,11 +292,16 @@ public class ShippingReportBean implements ShippingReportRemote {
                     tempFile = File.createTempFile("shippingAddresslabel", ".txt", new File("/tmp"));
                     ps = new PrintStream(tempFile);
                     for (int i = 0; i < numpkg; i++ ) {
-                        labelReport.shippingAddressLabel(ps, name, method, costCenter,
-                                                         fromStreetAddress1, "SH" + shippingIdStr,
-                                                         fromStreetAddress2, fromCity, fromState,
-                                                         fromZip, attention, toStreetAddress1,
-                                                         toStreetAddress2, toCity, toState, toZip);
+                        labelReport.shippingAddressLabel(ps, shipFrom.getName(), method, costCenter,
+                                                         fromAptSuite, "SH" + shippingIdStr,
+                                                         fromStreetAddr, shipFromAddr.getCity(),
+                                                         shipFromAddr.getState(),
+                                                         shipFromAddr.getZipCode(),
+                                                         shipData.getShippedToAttention(),
+                                                         shipTo.getName(), toStreetAddr,
+                                                         shipToAddr.getCity(),
+                                                         shipToAddr.getState(), 
+                                                         shipToAddr.getZipCode());
                     }
                     ps.close();
                     printstat = ReportUtil.print(tempFile, barcodePrinter, 1);

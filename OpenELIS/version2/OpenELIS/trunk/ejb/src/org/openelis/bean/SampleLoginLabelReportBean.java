@@ -355,7 +355,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
         l = new ArrayList<OptionListItem>();
         l.add(new OptionListItem("", ""));
         try {
-            d = category.getBySystemName("order_ship_from").getDictionaryList();
+            d = category.getBySystemName("laboratory_location").getDictionaryList();
             for (DictionaryDO e : d)
                 l.add(new OptionListItem(e.getId().toString(), e.getEntry()));
         } catch (Exception anyE) {

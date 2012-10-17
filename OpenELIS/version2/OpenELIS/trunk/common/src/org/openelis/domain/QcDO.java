@@ -25,10 +25,7 @@
  */
 package org.openelis.domain;
 
-import java.util.Date;
-
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.gwt.common.Datetime;
 
 /**
  * Class represents the fields in database table qc.
@@ -38,30 +35,20 @@ public class QcDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, typeId, inventoryItemId, preparedUnitId, preparedById;
-    protected String          name, source, lotNumber, preparedByName, isAtive;
-    protected Datetime        preparedDate, usableDate, expireDate;
-    protected Double          preparedVolume;
+    protected Integer         id, typeId, inventoryItemId;
+    protected String          name, source, isActive;
 
     public QcDO() {
     }
 
-    public QcDO(Integer id, String name, Integer typeId, Integer inventoryItemId, String source,
-                String lotNumber, Date preparedDate, Double preparedVolume, Integer preparedUnitId,
-                Integer preparedById, Date usableDate, Date expireDate, String isAtive) {
+    public QcDO(Integer id, String name, Integer typeId, Integer inventoryItemId,
+                String source, String isActive) {
         setId(id);
         setName(name);
         setTypeId(typeId);
         setInventoryItemId(inventoryItemId);
         setSource(source);
-        setLotNumber(lotNumber);
-        setPreparedDate(DataBaseUtil.toYM(preparedDate));
-        setPreparedVolume(preparedVolume);
-        setPreparedUnitId(preparedUnitId);
-        setPreparedById(preparedById);
-        setUsableDate(DataBaseUtil.toYM(usableDate));
-        setExpireDate(DataBaseUtil.toYM(expireDate));
-        setIsActive(isAtive);
+        setIsActive(isActive);
         _changed = false;
     }
 
@@ -110,84 +97,12 @@ public class QcDO extends DataObject {
         _changed = true;
     }
 
-    public String getLotNumber() {
-        return lotNumber;
-    }
-
-    public void setLotNumber(String lotNumber) {
-        this.lotNumber = DataBaseUtil.trim(lotNumber);
-        _changed = true;
-    }
-
-    public Double getPreparedVolume() {
-        return preparedVolume;
-    }
-
-    public void setPreparedVolume(Double preparedVolume) {
-        this.preparedVolume = preparedVolume;
-        _changed = true;
-    }
-
-    public Integer getPreparedUnitId() {
-        return preparedUnitId;
-    }
-
-    public void setPreparedUnitId(Integer preparedUnitId) {
-        this.preparedUnitId = preparedUnitId;
-        _changed = true;
-    }
-
-    public Integer getPreparedById() {
-        return preparedById;
-    }
-
-    public void setPreparedById(Integer preparedById) {
-        this.preparedById = preparedById;
-        _changed = true;
-    }
-
     public String getIsActive() {
-        return isAtive;
+        return isActive;
     }
 
     public void setIsActive(String isAtive) {
-        this.isAtive = DataBaseUtil.trim(isAtive);
-        _changed = true;
-    }
-
-    public Datetime getPreparedDate() {
-        return preparedDate;
-    }
-
-    public void setPreparedDate(Datetime preparedDate) {
-        this.preparedDate = DataBaseUtil.toYM(preparedDate);
-        _changed = true;
-    }
-
-    public Datetime getUsableDate() {
-        return usableDate;
-    }
-
-    public void setUsableDate(Datetime usableDate) {
-        this.usableDate = DataBaseUtil.toYM(usableDate);
-        _changed = true;
-    }
-
-    public Datetime getExpireDate() {
-        return expireDate;
-    }
-
-    public void setExpireDate(Datetime expireDate) {
-        this.expireDate = DataBaseUtil.toYM(expireDate);
-        _changed = true;
-    }
-
-    public String getPreparedByName() {
-        return preparedByName;
-    }
-
-    public void setPreparedByName(String preparedByName) {
-        this.preparedByName = DataBaseUtil.trim(preparedByName);
+        this.isActive = DataBaseUtil.trim(isAtive);
         _changed = true;
     }
 }

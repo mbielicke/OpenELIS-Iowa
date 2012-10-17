@@ -65,6 +65,8 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISDO;
 import org.openelis.domain.SampleSDWISViewDO;
+import org.openelis.domain.SectionDO;
+import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.NotFoundException;
@@ -79,6 +81,7 @@ import org.openelis.local.OrganizationLocal;
 import org.openelis.local.PWSLocal;
 import org.openelis.local.ProjectLocal;
 import org.openelis.local.QaeventLocal;
+import org.openelis.local.SectionCacheLocal;
 import org.openelis.local.TestTrailerLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.manager.AnalysisManager;
@@ -115,7 +118,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
 
     @EJB
     private DictionaryCacheLocal      dictionaryCache;
-
+    
     @EJB
     private MethodLocal               method;
 
@@ -140,11 +143,14 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
     @EJB
     private TestTrailerLocal          testTrailer;
     
+    @EJB
+    private SectionCacheLocal         sectionCache;
+     
     private static Integer            resultDictTypeId, auxDictTypeId, cancelledStatusId, releasedStatusId;
 
     private static SimpleDateFormat   timeFormat;
     
-    private static final String       VERSION = "2.1.8";
+    private static final String       VERSION = "2.1.8", MESSAGE_TYPE = "result-out";
     
     private static final Logger       log = Logger.getLogger(DataExchangeXMLMapperBean.class);
     
@@ -171,7 +177,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         ArrayList<Integer> profileIds;
         ArrayList<QueryData> fields;
         HashSet<Integer> userIds, critTestIds, dictIds, testIds, methodIds, analyteIds, projIds,
-                         orgIds, qaIds, trailerIds;
+                         orgIds, qaIds, trailerIds, sectionIds;
         Document doc;
         Element root, header, profiles, sampleNotes, anaNotes;
         SystemUserVO user;
@@ -203,6 +209,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         AnalysisViewDO analysis;
         AnalysisManager anaMan;
         TestViewDO testDO;
+        SectionViewDO sect;
         ArrayList<TestTrailerDO> trailerList; 
         ArrayList<MethodDO> methodList;        
         ResultViewDO result;
@@ -215,7 +222,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
 
         doc = XMLUtil.createNew("message");
         root = doc.getDocumentElement();
-        root.setAttribute("type","result");
+        root.setAttribute("type", MESSAGE_TYPE);
         
         profileIds = null;
         critTestIds = null;
@@ -319,6 +326,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         methodIds = new HashSet<Integer>();
         analyteIds = new HashSet<Integer>();
         trailerIds = new HashSet<Integer>();
+        sectionIds = new HashSet<Integer>();
         anaNotes = null;
         
         itemMan = manager.getSampleItems();
@@ -380,6 +388,9 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
                 if (analysis.getUnitOfMeasureId() != null)
                     dictIds.add(analysis.getUnitOfMeasureId());
                 dictIds.add(analysis.getStatusId());
+                
+                if (analysis.getSectionId() != null)
+                    sectionIds.add(analysis.getSectionId());
                 
                 /*
                  * create elements for results
@@ -540,6 +551,17 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
                     root.appendChild(getTestTrailer(doc, trailer));
             } catch (Exception e) {
                 log.error("Could not fetch test trailers", e);
+            }
+        }
+        
+        for (Integer id: sectionIds) {
+            try {
+                sect = sectionCache.getById(id);
+                root.appendChild(getSection(doc, sect));
+                if (sect.getOrganizationId() != null)
+                    orgIds.add(sect.getOrganizationId());
+            } catch (Exception e) {
+                log.error("Could not fetch section with id: "+ id, e);
             }
         }
         
@@ -937,7 +959,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
     }
     
     public Element getAnalysis(Document document, AnalysisViewDO analysis) {
-        Element parent, child;
+        Element parent;
         
         if (document == null || analysis == null) 
             return null;
@@ -947,11 +969,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         parent.setAttribute("sample_item_id", analysis.getSampleItemId().toString());
         parent.setAttribute("revision", analysis.getRevision().toString());
         parent.setAttribute("test_id", analysis.getTestId().toString());        
-        
-        child = document.createElement("section");
-        child.setAttribute("id", analysis.getSectionId().toString());
-        child.setTextContent(analysis.getSectionName());
-        parent.appendChild(child);
+        parent.setAttribute("section_id", analysis.getSectionId().toString());
         
         if (analysis.getPreAnalysisId() != null)
             parent.setAttribute("pre_analysis_id", analysis.getPreAnalysisId().toString());  
@@ -1061,6 +1079,34 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         parent.setAttribute("is_active", method.getIsActive());
         parent.setAttribute("active_begin", method.getActiveBegin().toString());
         parent.setAttribute("active_end", method.getActiveEnd().toString());
+        
+        return parent;
+    }
+    
+    public Element getSection(Document document, SectionDO method) {
+        Element parent, child;
+        
+        if (document == null || method == null) 
+            return null;
+        
+        parent = document.createElement("section");
+        parent.setAttribute("id", method.getId().toString());
+        
+        child = document.createElement("name");
+        child.setTextContent(method.getName());
+        parent.appendChild(child);
+        
+        child = document.createElement("description");
+        child.setTextContent(method.getDescription());
+        parent.appendChild(child);
+        
+        if (method.getParentSectionId() != null)
+            parent.setAttribute("parent_section_id", method.getParentSectionId().toString());
+        
+        parent.setAttribute("is_external", method.getIsExternal());
+        
+        if (method.getOrganizationId() != null)
+            parent.setAttribute("organization_id", method.getOrganizationId().toString());
         
         return parent;
     }

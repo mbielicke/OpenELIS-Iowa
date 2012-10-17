@@ -498,8 +498,9 @@ UIRF Software License are applicable instead of those above.
       <test id="{@test_id}">
         <xsl:apply-templates select="//test[@id = $test_id]" />
       </test>
-      <section id="{section/@id}">
-        <xsl:value-of select="section/child::text()" />
+      <xsl:variable name="section_id" select="@section_id" />
+      <section id="{@section_id}">
+        <xsl:apply-templates select="//section[@id = $section_id]" />
       </section>
       <xsl:if test="@unit_of_measure_id[. != '']">
         <xsl:variable name="unit_of_measure_id" select="@unit_of_measure_id" />
@@ -634,6 +635,27 @@ UIRF Software License are applicable instead of those above.
     <xsl:variable name="id" select="@id" />
     <xsl:apply-templates select="//method_translations/translation[@reference_id = $id]" />
   </xsl:template>
+  
+  <xsl:template match="section">
+    <xsl:attribute name="id">
+      <xsl:value-of select="@id" />
+    </xsl:attribute>        
+    <xsl:attribute name="parent_section_id">
+      <xsl:value-of select="@parent_section_id" />
+    </xsl:attribute>
+    <xsl:attribute name="is_external">
+      <xsl:value-of select="@is_external" />
+    </xsl:attribute>
+    <name>
+      <xsl:value-of select="name" />
+    </name>
+    <description>
+      <xsl:value-of select="description" />
+    </description>  
+    <xsl:variable name="organization_id" select="@organization_id" />
+    <xsl:apply-templates select="//organization[@id = $organization_id]" />
+  </xsl:template>
+  
   <xsl:template match="test_trailer">
     <test_trailer>
       <xsl:attribute name="id">

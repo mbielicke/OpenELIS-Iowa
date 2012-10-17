@@ -50,7 +50,7 @@ public class CategoryMeta implements Meta, MetaMap {
                             	DICT_RELATED_ENTRY_ID = "_dictionary.relatedEntryId",
                             	DICT_SYSTEM_NAME = "_dictionary.systemName",
                             	DICT_IS_ACTIVE = "_dictionary.isActive",
-                            	DICT_LOCAL_ABBREV = "_dictionary.localAbbrev",
+                            	DICT_CODE = "_dictionary.code",
                             	DICT_ENTRY = "_dictionary.entry",
                             	
                             	DICT_RELATED_ENTRY_ENTRY = "_dictionary.relatedEntry.entry";
@@ -62,7 +62,7 @@ public class CategoryMeta implements Meta, MetaMap {
                                                   SECTION_ID,IS_SYSTEM,DICT_ID,
                                                   DICT_SORT_ORDER,DICT_CATEGORY_ID,
                                                   DICT_RELATED_ENTRY_ID,DICT_SYSTEM_NAME,
-                                                  DICT_IS_ACTIVE,DICT_LOCAL_ABBREV,
+                                                  DICT_IS_ACTIVE,DICT_CODE,
                                                   DICT_ENTRY,DICT_RELATED_ENTRY_ENTRY));
     }
         
@@ -114,8 +114,8 @@ public class CategoryMeta implements Meta, MetaMap {
         return DICT_IS_ACTIVE;
     } 
 
-    public static String getDictionaryLocalAbbrev() {
-        return DICT_LOCAL_ABBREV;
+    public static String getDictionaryCode() {
+        return DICT_CODE;
     } 
 
     public static String getDictionaryEntry() {

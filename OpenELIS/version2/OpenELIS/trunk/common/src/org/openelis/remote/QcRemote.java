@@ -31,15 +31,14 @@ import javax.ejb.Remote;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.gwt.common.data.QueryData;
 
 @Remote
 public interface QcRemote {
     public ArrayList<QcDO> fetchByName(String name, int max) throws Exception;
 
-    public ArrayList<QcDO> fetchActiveByName(String name, int max) throws Exception;
-
-    public ArrayList<QcDO> fetchActiveByName(ArrayList<QueryData> fields) throws Exception;
+    public ArrayList<QcLotViewDO> fetchActiveByName(String name, int max) throws Exception;
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }
