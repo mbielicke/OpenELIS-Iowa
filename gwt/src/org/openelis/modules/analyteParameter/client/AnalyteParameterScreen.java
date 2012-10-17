@@ -34,7 +34,7 @@ import org.openelis.cache.UserCache;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcAnalyteViewDO;
-import org.openelis.domain.QcDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestAnalyteViewDO;
@@ -872,7 +872,7 @@ public class AnalyteParameterScreen extends Screen {
         try {
             list  = testService.callList("fetchByName", search);
             for (TestMethodVO data: list) 
-                model.add(new TableDataRow(data.getTestId(), data.getTestName()+", "+data.getMethodName()));            
+                model.add(new TableDataRow(data.getTestId(), data.getTestName(), data.getMethodName()));            
         } catch (Exception e) {
             Window.alert(e.getMessage());
         }
@@ -881,33 +881,14 @@ public class AnalyteParameterScreen extends Screen {
     }
     
     private ArrayList<TableDataRow> getQcModel(String search) {
-        Query query;
-        QueryData field;
-        ArrayList<QueryData> fields;
         ArrayList<TableDataRow> model;
-        ArrayList<QcDO> list;
+        ArrayList<QcLotViewDO> list;
         
         model = new ArrayList<TableDataRow>();
-        query = new Query();        
-        fields = new ArrayList<QueryData>();
-        
-        field = new QueryData();
-        field.key = AnalyteParameterMeta.getQcName();
-        field.query = search + "*";
-        field.type = QueryData.Type.STRING;
-        fields.add(field);
-        
-        field = new QueryData();
-        field.key = QcMeta.getIsActive();
-        field.type = QueryData.Type.STRING;
-        field.query = "Y";
-        fields.add(field);
-        
-        query.setFields(fields);
         try {
-            list  = qcService.callList("fetchActiveByName", query);
-            for (QcDO data: list) 
-                model.add(new TableDataRow(data.getId(), data.getName()+", "+ data.getLotNumber()));            
+            list  = qcService.callList("fetchActiveByName", search);
+            for (QcLotViewDO data: list) 
+                model.add(new TableDataRow(data.getQcId(), data.getQcName(), data.getLotNumber()));            
         } catch (NotFoundException e) {
             // do nothing
         } catch (Exception e) {

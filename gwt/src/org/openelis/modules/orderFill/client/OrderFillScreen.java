@@ -164,7 +164,7 @@ public class OrderFillScreen extends Screen {
         tab = Tabs.SHIP_NOTE;
 
         try {
-            CategoryCache.getBySystemNames("order_status", "order_ship_from");
+            CategoryCache.getBySystemNames("order_status", "laboratory_location");
         } catch (Exception e) {
             Window.alert("Order Fill Screen: missing dictionary entry; " + e.getMessage());
             window.close();
@@ -541,7 +541,7 @@ public class OrderFillScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("order_ship_from");
+        list = CategoryCache.getBySystemName("laboratory_location");
         for (DictionaryDO resultDO : list) {
             row = new TableDataRow(resultDO.getId(), resultDO.getEntry());
             row.enabled = ("Y".equals(resultDO.getIsActive()));

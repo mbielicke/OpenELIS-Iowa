@@ -60,6 +60,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataCell;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
+import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
 import org.openelis.gwt.widget.tree.TreeDataItem;
@@ -546,12 +548,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         //
         trackingTree = (TreeWidget)def.getWidget("trackingTree");
         addScreenHandler(trackingTree, new ScreenEventHandler<Object>() {
-            public void onDataChange(DataChangeEvent event) {
-            }
-
-            public void onValueChange(ValueChangeEvent<Object> event) {
-            }
-
             public void onStateChange(StateChangeEvent<State> event) {
                 trackingTree.enable(true);
             }
@@ -605,6 +601,12 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                 setDataInTabs();
                 DataChangeEvent.fire(trackingScreen);
                 window.clearStatus();
+            }
+        });
+        
+        trackingTree.addBeforeCellEditedHandler(new BeforeCellEditedHandler() {
+            public void onBeforeCellEdited(BeforeCellEditedEvent event) {
+                event.cancel();
             }
         });
         
@@ -1340,14 +1342,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
         if (trackingTree.getSelectedRow() == -1) {
             window.setError(consts.get("selectRecordToUpdate"));
             return;
-        }
-        
-//        if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
-//            if (! withUnrelease) {
-//                window.setError(consts.get("cantUpdateReleasedException"));
-//                return;
-//            }
-//        } 
+        }        
 
         window.setBusy(consts.get("lockForUpdate"));
 
@@ -1370,10 +1365,6 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
             if (sampleReleasedId.equals(manager.getSample().getStatusId())) {
                 if (withUnrelease) {
                     manager.unrelease(true);
-//                } else {
-//                    abort();
-//                    window.setError(consts.get("cantUpdateReleasedException"));
-//                    return;
                 }
             } 
             setDataInTabs();

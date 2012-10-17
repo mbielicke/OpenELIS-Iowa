@@ -399,7 +399,7 @@ public class DictionaryScreen extends Screen {
                         data.setSystemName((String)val);
                         break;
                     case 2:
-                        data.setLocalAbbrev((String)val);
+                        data.setCode((String)val);
                         break;
                     case 3:
                         data.setEntry((String)val);
@@ -848,7 +848,7 @@ public class DictionaryScreen extends Screen {
             for (int i = 0; i < manager.getEntries().count(); i++ ) {
                 data = manager.getEntries().getEntryAt(i);
                 row = new TableDataRow(data.getId(), data.getIsActive(), data.getSystemName(),
-                                       data.getLocalAbbrev(), data.getEntry(),
+                                       data.getCode(), data.getEntry(),
                                        new TableDataRow(data.getRelatedEntryId(),
                                                         data.getRelatedEntryName()));
                 row.data = data.getCategoryId();

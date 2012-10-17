@@ -27,13 +27,11 @@ package org.openelis.modules.sample.client;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.HashMap;
 
 import org.openelis.cache.DictionaryCache;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
-import org.openelis.domain.DictionaryDO;
 import org.openelis.exception.ParseException;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
@@ -67,7 +65,6 @@ import org.openelis.manager.SampleManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.auxData.client.AuxDataUtil;
 import org.openelis.utilcommon.ResultValidator;
-import org.openelis.utilcommon.ResultValidator.Type;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.logical.shared.SelectionEvent;

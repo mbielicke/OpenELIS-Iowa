@@ -39,9 +39,9 @@
           <VerticalPanel>
             <tree key="itemsTestsTree" style = "ScreenTableWithSides" width="auto" maxRows="25" showScroll="ALWAYS">
               <header>
-                <col width="30" header=""/>
-                <col width="330" header="{resource:getString($constants,'itemAnalyses')}" />
-                <col width="180" header="{resource:getString($constants,'typeStatus')}" />
+                <col width="150" header="{resource:getString($constants,'items')}"/>
+                <col width="150" header="{resource:getString($constants,'typeAnalyses')}" />
+                <col width="100" header="{resource:getString($constants,'status')}" />
               </header>
               <leaf key="sampleItem">
                 <col>

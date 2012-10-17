@@ -211,7 +211,7 @@ public class SendoutOrderScreen extends Screen {
         try {
             CategoryCache.getBySystemNames("order_status", "cost_centers",
                                            "inventory_store", "inventory_unit",
-                                           "order_ship_from", "sample_container",
+                                           "laboratory_location", "sample_container",
                                            "type_of_sample","aux_field_value_type");
         } catch (Exception e) {
             Window.alert("OrderSreen: missing dictionary entry; " + e.getMessage());
@@ -1217,7 +1217,7 @@ public class SendoutOrderScreen extends Screen {
 
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));
-        list = CategoryCache.getBySystemName("order_ship_from");
+        list = CategoryCache.getBySystemName("laboratory_location");
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
             row.enabled = ("Y".equals(d.getIsActive()));

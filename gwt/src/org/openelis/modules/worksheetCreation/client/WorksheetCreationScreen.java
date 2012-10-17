@@ -47,6 +47,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.QcDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetItemDO;
@@ -909,12 +910,12 @@ public class WorksheetCreationScreen extends Screen {
     }
 
     private void loadQCTemplate() {
-        int                 i, j;
-        ArrayList<Object>   dataList;
-        ArrayList<QcDO>     list;
-        QcDO                qcDO = null;
-        TableDataRow        qcRow;
-        TestWorksheetItemDO twiDO;
+        int                    i, j;
+        ArrayList<Object>      dataList;
+        ArrayList<QcLotViewDO> list;
+        QcLotViewDO            qcDO = null;
+        TableDataRow           qcRow;
+        TestWorksheetItemDO    twiDO;
         
         try {
             if (twManager == null) {
@@ -969,12 +970,12 @@ public class WorksheetCreationScreen extends Screen {
                             qcDO = list.get(0);
                         }
                     } else {
-                        qcDO = new QcDO();
-                        qcDO.setName("Duplicate");
+                        qcDO = new QcLotViewDO();
+                        qcDO.setQcName("Duplicate");
                     }
 
                     qcRow = new TableDataRow(11);
-                    qcRow.cells.get(2).value = qcDO.getName();             // description
+                    qcRow.cells.get(2).value = qcDO.getQcName();             // description
                     
                     dataList = new ArrayList<Object>();
                     dataList.add(twiDO);
@@ -1412,7 +1413,7 @@ public class WorksheetCreationScreen extends Screen {
         }
     }
 
-    private void openQCLookup(String name, ArrayList<QcDO> list) {
+    private void openQCLookup(String name, ArrayList<QcLotViewDO> list) {
         ScreenWindow modal;
         
         try {
@@ -1421,15 +1422,15 @@ public class WorksheetCreationScreen extends Screen {
                 qcLookupScreen.addActionHandler(new ActionHandler<QcLookupScreen.Action>() {
                     @SuppressWarnings("unchecked")
                     public void onAction(ActionEvent<QcLookupScreen.Action> event) {
-                        int                 i, r;
-                        ArrayList<Object>   dataList;
-                        ArrayList<QcDO>     list;
-                        TableDataRow        qcRow;
-                        QcDO                qcDO;
-                        TestWorksheetItemDO twiDO;
+                        int                    i, r;
+                        ArrayList<Object>      dataList;
+                        ArrayList<QcLotViewDO> list;
+                        TableDataRow           qcRow;
+                        QcLotViewDO            qcDO;
+                        TestWorksheetItemDO    twiDO;
 
                         if (event.getAction() == QcLookupScreen.Action.OK) {
-                            list = (ArrayList<QcDO>)event.getData();
+                            list = (ArrayList<QcLotViewDO>)event.getData();
                             if (list != null) {
                                 if (qcStartIndex != 0) {
                                     //
@@ -1444,7 +1445,7 @@ public class WorksheetCreationScreen extends Screen {
                                     qcDO = list.get(0);
 
                                     qcRow = new TableDataRow(11);
-                                    qcRow.cells.get(2).value = qcDO.getName();             // description
+                                    qcRow.cells.get(2).value = qcDO.getQcName();             // description
                                     
                                     dataList = new ArrayList<Object>();
                                     dataList.add(twiDO);
@@ -1481,10 +1482,10 @@ public class WorksheetCreationScreen extends Screen {
                                         twiDO = new TestWorksheetItemDO();
                                         twiDO.setPosition(r+1);
                                         twiDO.setTypeId(typeFixed);
-                                        twiDO.setQcName(qcDO.getName());
+                                        twiDO.setQcName(qcDO.getQcName());
                                         
                                         qcRow = new TableDataRow(11);
-                                        qcRow.cells.get(2).value = qcDO.getName();             // description
+                                        qcRow.cells.get(2).value = qcDO.getQcName();          // description
                                         
                                         dataList = new ArrayList<Object>();
                                         dataList.add(twiDO);

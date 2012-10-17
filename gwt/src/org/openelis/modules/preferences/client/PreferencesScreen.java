@@ -180,7 +180,7 @@ public class PreferencesScreen extends Screen {
 		defaultBarCodePrinter.setModel(model);
 		
 		model = new ArrayList<TableDataRow>();
-        list = CategoryCache.getBySystemName("order_ship_from");
+        list = CategoryCache.getBySystemName("laboratory_location");
         model.add(new TableDataRow(-1,""));
         for (DictionaryDO d : list) {
             row = new TableDataRow(d.getId(), d.getEntry());
