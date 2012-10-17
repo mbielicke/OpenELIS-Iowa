@@ -32,6 +32,18 @@ public class QcMeta implements Meta, MetaMap {
                                   ANA_TYPE_ID = "_qcAnalyte.typeId",
                                   ANA_VALUE = "_qcAnalyte.value",
                                   ANA_IS_TRENDABLE = "_qcAnalyte.isTrendable",
+                                  
+                                  LOT_ID = "_qcLot.id",       
+                                  LOT_QC_ID = "_qcLot.qcId",
+                                  LOT_LOT_NUMBER = "_qcLot.lotNumber",
+                                  LOT_LOCATION_ID = "_qcLot.locationId",
+                                  LOT_PREPARED_DATE = "_qcLot.preparedDate",
+                                  LOT_PREPARED_VOLUME = "_qcLot.preparedVolume",
+                                  LOT_PREPARED_UNIT_ID = "_qcLot.preparedUnitId",
+                                  LOT_PREPARED_BY_ID = "_qcLot.preparedById",
+                                  LOT_USABLE_DATE = "_qcLot.usableDate",
+                                  LOT_EXPIRE_DATE = "_qcLot.expireDate",
+                                  LOT_IS_ACTIVE = "_qcLot.isActive",
 
                                   INVENTORY_ITEM_NAME = "_qc.inventoryItem.name",
                                   ANA_ANALYTE_NAME = "_qcAnalyte.analyte.name";
@@ -43,11 +55,15 @@ public class QcMeta implements Meta, MetaMap {
                                                   SOURCE, LOT_NUMBER, PREPARED_DATE,
                                                   PREPARED_VOLUME, PREPARED_UNIT_ID,
                                                   PREPARED_BY_ID, USABLE_DATE, EXPIRE_DATE,
-                                                  IS_ACTIVE,
-                                                  ANA_ID, ANA_QC_ID, ANA_SORT_ORDER,
-                                                  ANA_ANALYTE_ID, ANA_TYPE_ID, ANA_VALUE,
-                                                  ANA_IS_TRENDABLE,
-                                                  INVENTORY_ITEM_NAME, ANA_ANALYTE_NAME));
+                                                  IS_ACTIVE, ANA_ID, ANA_QC_ID, 
+                                                  ANA_SORT_ORDER, ANA_ANALYTE_ID,
+                                                  ANA_TYPE_ID, ANA_VALUE, ANA_IS_TRENDABLE,
+                                                  LOT_ID, LOT_QC_ID, LOT_LOCATION_ID,
+                                                  LOT_PREPARED_DATE, LOT_PREPARED_VOLUME,
+                                                  LOT_PREPARED_UNIT_ID, LOT_PREPARED_BY_ID,
+                                                  LOT_USABLE_DATE, LOT_EXPIRE_DATE,
+                                                  LOT_IS_ACTIVE, INVENTORY_ITEM_NAME,
+                                                  ANA_ANALYTE_NAME));
     }
 
     public static String getId() {
@@ -129,6 +145,50 @@ public class QcMeta implements Meta, MetaMap {
     public static String getQcAnalyteIsTrendable() {
         return ANA_IS_TRENDABLE;
     }
+    
+    public static String getQcLotId() {
+        return LOT_ID;
+    }
+
+    public static String getQcLotQcId() {
+        return LOT_QC_ID;
+    }
+
+    public static String getQcLotLotNumber() {
+        return LOT_LOT_NUMBER;
+    }
+
+    public static String getQcLotLocationId() {
+        return LOT_LOCATION_ID;
+    }
+
+    public static String getQcLotPreparedDate() {
+        return LOT_PREPARED_DATE;
+    }
+
+    public static String getQcLotPreparedVolume() {
+        return LOT_PREPARED_VOLUME;
+    }
+
+    public static String getQcLotPreparedUnitId() {
+        return LOT_PREPARED_UNIT_ID;
+    }
+
+    public static String getQcLotPreparedById() {
+        return LOT_PREPARED_BY_ID;
+    }
+
+    public static String getQcLotUsableDate() {
+        return LOT_USABLE_DATE;
+    }
+
+    public static String getQcLotExpireDate() {
+        return LOT_EXPIRE_DATE;
+    }
+
+    public static String getQcLotIsActive() {
+        return LOT_IS_ACTIVE;
+    }
 
     public static String getInventoryItemName() {
         return INVENTORY_ITEM_NAME;
@@ -148,6 +208,8 @@ public class QcMeta implements Meta, MetaMap {
         from = "Qc _qc ";
         if (where.indexOf("qcAnalyte.") > -1)
             from += ",IN (_qc.qcAnalyte) _qcAnalyte ";
+        if (where.indexOf("qcLot.") > -1)
+            from += ",IN (_qc.qcLot) _qcLot ";
 
         return from;
     }

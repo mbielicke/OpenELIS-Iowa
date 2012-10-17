@@ -94,7 +94,7 @@ public class QcAnalyteManagerProxy {
             try {
                 cl.validate(man.getAnalyteAt(i));
             } catch (Exception e) {
-                DataBaseUtil.mergeException(list, e, "QcAnalyteTable", i);
+                DataBaseUtil.mergeException(list, e, "qcAnalyteTable", i);
             }
         }
         if (list.size() > 0)

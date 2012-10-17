@@ -25,35 +25,48 @@
  */
 package org.openelis.domain;
 
+import java.util.Date;
+
 import org.openelis.gwt.common.DataBaseUtil;
 
 /**
- * The class extends qc DO and carries a commonly used field inventory_item
- * name. The additional field is for read/display only and does not get
- * committed to the database. Note: isChanged will reflect any changes to
- * read/display fields.
+ * The class extends qc lot DO and carries commonly used fields i.e. qc
+ * name and prepared by name. The additional fields are for read/display only and
+ * do not get committed to the database. Note: isChanged will reflect any changes 
+ * to read/display fields.
  */
 
-public class QcViewDO extends QcDO {
+public class QcLotViewDO extends QcLotDO {
 
     private static final long serialVersionUID = 1L;
 
-    protected String          inventoryItemName;
+    protected String          qcName, preparedByName;
 
-    public QcViewDO() {
+    public QcLotViewDO() {
     }
 
-    public QcViewDO(Integer id, String name, Integer typeId, Integer inventoryItemId,
-                    String source, String isActive, String inventoryItemName) {
-        super(id, name, typeId, inventoryItemId, source, isActive);
-        setInventoryItemName(inventoryItemName);
+    public QcLotViewDO(Integer id, Integer qcId, String lotNumber, Integer locationId,
+                       Date preparedDate,  Double preparedVolume, Integer preparedUnitId,
+                       Integer preparedById, Date usableDate, Date expireDate,
+                       String isActive, String qcName) {
+        super(id, qcId, lotNumber, locationId, preparedDate, preparedVolume,
+              preparedUnitId, preparedById, usableDate, expireDate, isActive);
+        setQcName(qcName);
     }
 
-    public String getInventoryItemName() {
-        return inventoryItemName;
+    public String getQcName() {
+        return qcName;
     }
 
-    public void setInventoryItemName(String inventoryItemName) {
-        this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
+    public void setQcName(String qcName) {
+        this.qcName = DataBaseUtil.trim(qcName);
+    }
+
+    public String getPreparedByName() {
+        return preparedByName;
+    }
+
+    public void setPreparedByName(String preparedByName) {
+        this.preparedByName = DataBaseUtil.trim(preparedByName);
     }
 }

@@ -179,7 +179,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         entity.setCategoryId(data.getCategoryId());
         entity.setEntry(data.getEntry());
         entity.setIsActive(data.getIsActive());
-        entity.setLocalAbbrev(data.getLocalAbbrev());
+        entity.setLocalAbbrev(data.getCode());
         entity.setRelatedEntryId(data.getRelatedEntryId());
         entity.setSystemName(data.getSystemName());
         entity.setSortOrder(data.getSortOrder());
@@ -206,7 +206,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         entity.setCategoryId(data.getCategoryId());
         entity.setEntry(data.getEntry());
         entity.setIsActive(data.getIsActive());
-        entity.setLocalAbbrev(data.getLocalAbbrev());
+        entity.setLocalAbbrev(data.getCode());
         entity.setRelatedEntryId(data.getRelatedEntryId());
         entity.setSystemName(data.getSystemName());
         entity.setSortOrder(data.getSortOrder());

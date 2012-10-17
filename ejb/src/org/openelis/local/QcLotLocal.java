@@ -23,37 +23,28 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.domain;
+package org.openelis.local;
 
-import org.openelis.gwt.common.DataBaseUtil;
+import java.util.ArrayList;
 
-/**
- * The class extends qc DO and carries a commonly used field inventory_item
- * name. The additional field is for read/display only and does not get
- * committed to the database. Note: isChanged will reflect any changes to
- * read/display fields.
- */
+import javax.ejb.Local;
 
-public class QcViewDO extends QcDO {
+import org.openelis.domain.QcLotDO;
+import org.openelis.domain.QcLotViewDO;
 
-    private static final long serialVersionUID = 1L;
+@Local
+public interface QcLotLocal {
+    public ArrayList<QcLotViewDO> fetchByQcId(Integer id) throws Exception;
+    
+    public ArrayList<QcLotViewDO> fetchActiveByQcName(String qcName, int max) throws Exception;
+    
+    public QcLotDO fetchByLotNumber(String systemName) throws Exception;
 
-    protected String          inventoryItemName;
+    public QcLotViewDO add(QcLotViewDO data) throws Exception;
 
-    public QcViewDO() {
-    }
+    public QcLotViewDO update(QcLotViewDO data) throws Exception;
 
-    public QcViewDO(Integer id, String name, Integer typeId, Integer inventoryItemId,
-                    String source, String isActive, String inventoryItemName) {
-        super(id, name, typeId, inventoryItemId, source, isActive);
-        setInventoryItemName(inventoryItemName);
-    }
+    public void delete(QcLotDO data) throws Exception;
 
-    public String getInventoryItemName() {
-        return inventoryItemName;
-    }
-
-    public void setInventoryItemName(String inventoryItemName) {
-        this.inventoryItemName = DataBaseUtil.trim(inventoryItemName);
-    }
+    public void validate(QcLotDO data) throws Exception;
 }

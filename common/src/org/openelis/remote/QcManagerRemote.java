@@ -3,6 +3,7 @@ package org.openelis.remote;
 import javax.ejb.Remote;
 
 import org.openelis.manager.QcAnalyteManager;
+import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
 
 @Remote
@@ -11,6 +12,8 @@ public interface QcManagerRemote {
     public QcManager fetchById(Integer id) throws Exception;
 
     public QcManager fetchWithAnalytes(Integer id) throws Exception;
+    
+    public QcManager fetchWithLots(Integer id) throws Exception;
 
     public QcManager add(QcManager man) throws Exception;
 
@@ -20,5 +23,9 @@ public interface QcManagerRemote {
 
     public QcManager abortUpdate(Integer id) throws Exception;
     
+    public QcManager duplicate(Integer id) throws Exception;
+    
     public QcAnalyteManager fetchAnalyteByQcId(Integer id) throws Exception;
+    
+    public QcLotManager fetchLotByQcId(Integer id) throws Exception;
 }

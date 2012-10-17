@@ -58,27 +58,27 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "Dictionary.FetchByCategoryId",
                 query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder," +
-                   		"d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry, c.name)"
+                   		"d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
                       + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.categoryId = :id order by d.sortOrder "),
     @NamedQuery( name = "Dictionary.FetchBySystemName",
                 query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.localAbbrev, d.entry)"
+                        "d.systemName,d.isActive,  d.code, d.entry)"
                       + " from  Dictionary d where d.systemName = :name "),
     @NamedQuery( name = "Dictionary.FetchById",
                 query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry, c.name)"
+                        "d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
                       + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.id = :id"),
     @NamedQuery( name = "Dictionary.FetchByIds",
                 query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry, c.name)"
+                        "d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
                       + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.id in (:ids)"),                  
     @NamedQuery( name = "Dictionary.FetchByCategorySystemName",
                 query = "select distinct new org.openelis.domain.DictionaryDO(d.id,d.sortOrder, d.categoryId, d.relatedEntryId," +
-                        "d.systemName,d.isActive,  d.localAbbrev, d.entry)"
+                        "d.systemName,d.isActive,  d.code, d.entry)"
                       + " from  Dictionary d left join d.category c where c.systemName = :name order by d.sortOrder "),                                        
     @NamedQuery( name = "Dictionary.FetchByEntry",
                 query = "select distinct new org.openelis.domain.DictionaryViewDO(d.id,d.sortOrder," +
-                        "d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.localAbbrev, d.entry, dre.entry, c.name)"
+                        "d.categoryId, d.relatedEntryId, d.systemName,d.isActive,  d.code, d.entry, dre.entry, c.name)"
                       + " from  Dictionary d left join d.relatedEntry dre left join d.category c where d.entry like :entry")})
                                   
  @NamedNativeQueries({@NamedNativeQuery(name = "Dictionary.ReferenceCheckForId",     
@@ -232,10 +232,6 @@ import org.openelis.utils.Auditable;
 @SqlResultSetMapping(name="Dictionary.ReferenceCheckForEntryMapping",
                      columns={@ColumnResult(name="ENTRY")})})                     
                      
-                     
-                     
-    
-
 @Entity
 @Table(name = "dictionary")
 @EntityListeners({AuditUtil.class})
@@ -261,8 +257,8 @@ public class Dictionary implements Auditable, Cloneable {
     @Column(name = "is_active")
     private String     isActive;
 
-    @Column(name = "local_abbrev")
-    private String     localAbbrev;
+    @Column(name = "code")
+    private String     code;
 
     @Column(name = "entry")
     private String     entry;
@@ -328,13 +324,13 @@ public class Dictionary implements Auditable, Cloneable {
             this.isActive = isActive;
     }
 
-    public String getLocalAbbrev() {
-        return localAbbrev;
+    public String getCode() {
+        return code;
     }
 
-    public void setLocalAbbrev(String localAbbrev) {
-        if (DataBaseUtil.isDifferent(localAbbrev, this.localAbbrev))
-            this.localAbbrev = localAbbrev;
+    public void setLocalAbbrev(String code) {
+        if (DataBaseUtil.isDifferent(code, this.code))
+            this.code = code;
     }
 
     public String getEntry() {
@@ -383,7 +379,7 @@ public class Dictionary implements Auditable, Cloneable {
                  .setField("related_entry_id", relatedEntryId, original.relatedEntryId, ReferenceTable.DICTIONARY)
                  .setField("system_name", systemName, original.systemName)
                  .setField("is_active", isActive, original.isActive)
-                 .setField("local_abbrev", localAbbrev, original.localAbbrev)
+                 .setField("local_abbrev", code, original.code)
                  .setField("entry", entry, original.entry);
 
         return audit;

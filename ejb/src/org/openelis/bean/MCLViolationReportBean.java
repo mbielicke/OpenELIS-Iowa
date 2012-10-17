@@ -340,7 +340,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             auxDataVDO = adMan.getAuxDataAt(i);
             if ("pb_type".equals(auxDataVDO.getAnalyteExternalId())) {
                 try {
-                    pbSampleType = dictionaryCache.getById(Integer.valueOf(auxDataVDO.getValue())).getLocalAbbrev();
+                    pbSampleType = dictionaryCache.getById(Integer.valueOf(auxDataVDO.getValue())).getCode();
                 } catch (Exception anyE) {
                     anyE.printStackTrace();
                     pbSampleType = "Error Retrieving Sample Type";

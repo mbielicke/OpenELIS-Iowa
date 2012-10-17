@@ -499,7 +499,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             if ("pb_type".equals(adVDO.getAnalyteExternalId())) {
                 if (adVDO.getValue() != null && adVDO.getValue().length() > 0) {
                     try {
-                        pbType = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
+                        pbType = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getCode();
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up dictionary entry for Pb Sample Type; "+anyE.getMessage());
                     }
@@ -507,7 +507,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             } else if ("repeat_code".equals(adVDO.getAnalyteExternalId())) {
                 if (adVDO.getValue() != null && adVDO.getValue().length() > 0) {
                     try {
-                        repeatCode = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
+                        repeatCode = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getCode();
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up dictionary entry for Repeat Code; "+anyE.getMessage());
                     }
@@ -519,7 +519,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
             } else if ("composite_indicator".equals(adVDO.getAnalyteExternalId())) {
                 if (adVDO.getValue() != null && adVDO.getValue().length() > 0) {
                     try {
-                        compIndicator = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getLocalAbbrev();
+                        compIndicator = dictionaryCache.getById(Integer.valueOf(adVDO.getValue())).getCode();
                     } catch (Exception anyE) {
                         throw new Exception("Error looking up dictionary entry for Composite Indicator; "+anyE.getMessage());
                     }
@@ -537,8 +537,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
         
         row = new StringBuilder();
         row.append("#SAM")                                                          // col 1-4
-           .append(sampCatDO.getLocalAbbrev())                                      // col 5-6
-           .append(sampTypeDO.getLocalAbbrev())                                     // col 7-8
+           .append(sampCatDO.getCode())                                      // col 5-6
+           .append(sampTypeDO.getCode())                                     // col 7-8
            .append(getPaddedString(pbType, 3))                                      // col 9-11
            .append(getPaddedString(ssVDO.getPwsNumber0(), 9))                       // col 12-20
            .append(getPaddedString(ssVDO.getFacilityId(), 12))                      // col 21-32
@@ -589,7 +589,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
 
         writer.println(row.toString());
         
-        sampleCounts.set(sampCatDO.getLocalAbbrev()+location, true);
+        sampleCounts.set(sampCatDO.getCode()+location, true);
         
         return;
     }
@@ -725,8 +725,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                     rowData.put("ltIndicator", "");
                     rowData.put("concentration", rVDO.getValue());
                 }
-                if (unitDO.getLocalAbbrev() != null && unitDO.getLocalAbbrev().length() > 0)
-                    rowData.put("concentrationUnit", unitDO.getLocalAbbrev());
+                if (unitDO.getCode() != null && unitDO.getCode().length() > 0)
+                    rowData.put("concentrationUnit", unitDO.getCode());
                 else
                     rowData.put("concentrationUnit", unitDO.getEntry());
                 
@@ -743,8 +743,8 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
                     }
                     if ("quant_limit".equals(alVDO.getExternalId())) {
                         rowData.put("detection", crVDO.getValue());
-                        if (unitDO.getLocalAbbrev() != null && unitDO.getLocalAbbrev().length() > 0)
-                            rowData.put("detectionUnit", unitDO.getLocalAbbrev());
+                        if (unitDO.getCode() != null && unitDO.getCode().length() > 0)
+                            rowData.put("detectionUnit", unitDO.getCode());
                         else
                             rowData.put("detectionUnit", unitDO.getEntry());
                     } else if ("uncertainty".equals(alVDO.getExternalId())) {

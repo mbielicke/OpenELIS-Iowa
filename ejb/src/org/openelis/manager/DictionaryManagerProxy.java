@@ -70,18 +70,14 @@ public class DictionaryManagerProxy {
 
     public DictionaryManager update(DictionaryManager man) throws Exception {
         int i;
-        boolean sendMessage;
         DictionaryViewDO data;
         DictionaryLocal dl;
-        CategoryDO category;
 
 
-        sendMessage = false;
         dl = EJBFactory.getDictionary();
 
         for (i = 0; i < man.deleteCount(); i++ ) {
             dl.delete(man.getDeletedAt(i));
-            sendMessage = true;
         }
 
         for (i = 0; i < man.count(); i++ ) {
@@ -91,11 +87,8 @@ public class DictionaryManagerProxy {
             if (data.getId() == null) {
                 data.setCategoryId(man.getCategoryId());
                 dl.add(data);
-                sendMessage = true;
             } else {
                 dl.update(data);
-                if (data.isChanged())
-                    sendMessage = true;
             }
         }        
 
@@ -123,9 +116,8 @@ public class DictionaryManagerProxy {
             throw list;
     }
 
-    private void validateDictionary(ValidationErrorsList list, DictionaryManager man) {
+    private void validateDictionary(ValidationErrorsList list, DictionaryManager man) throws Exception {
         int i;
-        Integer catId, categoryId;
         String name,systemName;
         ArrayList<String> systemNames, entries;
         DictionaryViewDO data;
@@ -136,8 +128,6 @@ public class DictionaryManagerProxy {
         entries = new ArrayList<String>();
         data = null;
         dl = EJBFactory.getDictionary();
-        catId = null;
-        categoryId = man.getCategoryId();        
 
         for(i = 0;  i < man.deleteCount(); i++) {
             data = man.getDeletedAt(i);
@@ -175,16 +165,13 @@ public class DictionaryManagerProxy {
                 if (!systemNames.contains(systemName)) {
                    try {
                        dictionary = dl.fetchBySystemName(systemName);
-                       catId = dictionary.getCategoryId();
+                       if (!dictionary.getCategoryId().equals(man.getCategoryId())) {
+                           list.add(new TableFieldErrorException("fieldUniqueException", i,
+                                                                 CategoryMeta.getDictionarySystemName(),
+                                                                 "dictEntTable"));                        
+                      }
                    } catch (NotFoundException e) {
-                       //do nothing
-                   } catch(Exception e){
-                       e.printStackTrace();
-                   }
-                   if ( catId != null && !catId.equals(categoryId)) {
-                        list.add(new TableFieldErrorException("fieldUniqueException", i,
-                                                              CategoryMeta.getDictionarySystemName(),
-                                                              "dictEntTable"));                        
+                       //do nothing               
                    }
                    systemNames.add(systemName);
                 } else if (data.getId() == null) {
