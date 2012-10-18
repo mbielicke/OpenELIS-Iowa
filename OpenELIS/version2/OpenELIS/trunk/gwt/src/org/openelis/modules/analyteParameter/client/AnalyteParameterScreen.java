@@ -40,6 +40,7 @@ import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestTypeOfSampleDO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.LocalizedException;
@@ -85,7 +86,6 @@ import org.openelis.manager.TestAnalyteManager;
 import org.openelis.manager.TestManager;
 import org.openelis.manager.TestTypeOfSampleManager;
 import org.openelis.meta.AnalyteParameterMeta;
-import org.openelis.meta.QcMeta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -278,7 +278,16 @@ public class AnalyteParameterScreen extends Screen {
         referenceName = (AutoComplete<Integer>)def.getWidget("referenceName");
         addScreenHandler(referenceName, new ScreenEventHandler<Integer>() {
             public void onDataChange(DataChangeEvent event) {
-                referenceName.setSelection(manager.getReferenceId(), manager.getReferenceName());
+                String name;
+                Integer refId;
+                              
+                refId = manager.getReferenceTableId();
+                if (refId == null || ReferenceTable.QC != refId)
+                    name = manager.getReferenceName();
+                else
+                    name = getQcLabel(manager.getReferenceId(), manager.getReferenceName());
+                
+                referenceName.setSelection(manager.getReferenceId(), name);
             }
 
             public void onValueChange(ValueChangeEvent<Integer> event) {
@@ -314,7 +323,7 @@ public class AnalyteParameterScreen extends Screen {
                     }
                     window.clearStatus();
                 }                
-                DataChangeEvent.fire(screen);
+                DataChangeEvent.fire(screen, parameterTree);
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -615,11 +624,19 @@ public class AnalyteParameterScreen extends Screen {
                 result = nav.getQueryResult();
                 if (result != null) {
                     model = new ArrayList<TableDataRow>();                    
-                    for (ReferenceIdTableIdNameVO entry : result) {
-                        if (entry.getReferenceDescription() == null)
-                            name = entry.getReferenceName();
-                        else
-                            name = entry.getReferenceName()+ " , " + entry.getReferenceDescription();
+                    for (ReferenceIdTableIdNameVO entry : result) { 
+                        name = null;
+                        switch (entry.getReferenceTableId())  {
+                            case ReferenceTable.QC:
+                                name = getQcLabel(entry.getReferenceId(), entry.getReferenceName());
+                                break;
+                            case ReferenceTable.TEST:
+                                name = DataBaseUtil.concatWithSeparator(entry.getReferenceName(), " , ", entry.getReferenceDescription());
+                                break;
+                            case ReferenceTable.PROVIDER:
+                                break;
+                        }
+                            
                         model.add(new TableDataRow(entry.getReferenceId(), entry.getReferenceTableId(), name));
                     }
                 }
@@ -883,12 +900,18 @@ public class AnalyteParameterScreen extends Screen {
     private ArrayList<TableDataRow> getQcModel(String search) {
         ArrayList<TableDataRow> model;
         ArrayList<QcLotViewDO> list;
+        TableDataRow row;
         
         model = new ArrayList<TableDataRow>();
         try {
             list  = qcService.callList("fetchActiveByName", search);
-            for (QcLotViewDO data: list) 
-                model.add(new TableDataRow(data.getQcId(), data.getQcName(), data.getLotNumber()));            
+            for (QcLotViewDO data: list) {
+                row = new TableDataRow(2);
+                row.key = data.getQcId();
+                row.cells.get(0).setValue(getQcLabel(data.getQcId(), data.getQcName()));
+                row.cells.get(1).setValue(data.getLotNumber());
+                model.add(row);
+            }
         } catch (NotFoundException e) {
             // do nothing
         } catch (Exception e) {
@@ -1098,5 +1121,14 @@ public class AnalyteParameterScreen extends Screen {
         // end date must be after begin date 
         //
         return (ab.compareTo(ae) == -1);        
+    }
+    
+    private String getQcLabel(Integer qcId, String qcName) {
+        String desc;
+        
+        if (qcId == null || DataBaseUtil.isEmpty(qcName))
+            return null;
+        desc = DataBaseUtil.concatWithSeparator("(", qcId.toString(), ")");
+        return DataBaseUtil.concatWithSeparator(qcName, " ", desc);
     }
 }

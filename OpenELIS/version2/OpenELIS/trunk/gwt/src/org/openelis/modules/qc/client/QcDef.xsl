@@ -128,6 +128,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:call-template name="duplicateRecordMenuItem" />
                     <menuItem key="qcHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'qcHistory')}" />
                     <menuItem key="qcAnalyteHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'qcAnalyteHistory')}" />
+                    <menuItem key="qcLotHistory" description="" enable="false" icon="historyIcon" label="{resource:getString($constants,'qcLotHistory')}" />
                   </menuPanel>
                 </menuItem>
               </menuPanel>
@@ -139,10 +140,18 @@ UIRF Software License are applicable instead of those above.
               <TablePanel style="Form">
                 <row>
                   <text style="Prompt">
+                    <xsl:value-of select="resource:getString($constants,'id')" />:
+                  </text>
+                  <widget colspan="6">
+                    <textbox key="{meta:getId()}" width="75" tab="{meta:getName()},tabPanel" field="String" required="true" />
+                  </widget>
+                </row> 
+                <row>
+                  <text style="Prompt">
                     <xsl:value-of select="resource:getString($constants,'name')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getTypeId()},QcAnalyteTable" field="String" required="true" />
+                    <textbox key="{meta:getName()}" width="215" case="LOWER" max="30" tab="{meta:getTypeId()},{meta:getId()}" field="String" required="true" />
                   </widget>
                 </row>
                 <row>
@@ -150,12 +159,6 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'type')" />:
                   </text>
                   <dropdown key="{meta:getTypeId()}" width="100" tab="{meta:getInventoryItemName()},{meta:getName()}" field="Integer" />
-                </row>
-                <row>
-                  <text style="Prompt">
-                    <xsl:value-of select='resource:getString($constants,"active")' />:
-                  </text>
-                  <check key="{meta:getIsActive()}" tab="{meta:getPreparedDate()},{meta:getLotNumber()}" />
                 </row>
               </TablePanel>
               <TablePanel style="Form">
@@ -175,16 +178,22 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'source')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getSource()}" width="215" max="30" tab="{meta:getLotNumber()},{meta:getInventoryItemName()}" field="String" required="true" />
+                    <textbox key="{meta:getSource()}" width="215" max="30" tab="{meta:getIsActive()},{meta:getInventoryItemName()}" field="String" required="true" />
                   </widget>
+                </row>
+                <row>
+                  <text style="Prompt">
+                    <xsl:value-of select='resource:getString($constants,"active")' />:
+                  </text>
+                  <check key="{meta:getIsActive()}" tab="tabPanel,{meta:getSource()}" />
                 </row>
               </TablePanel>
             </HorizontalPanel>
             <VerticalPanel height="5" />
             <TabPanel key="tabPanel" width="660">
-              <tab key="analyteTab" text="{resource:getString($constants,'analyte')}">
+              <tab key="analyteTab" tab ="qcAnalyteTable,qcAnalyteTable" text="{resource:getString($constants,'analyte')}">
                 <VerticalPanel>
-                  <table key="qcAnalyteTable" width="640" maxRows="13" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getExpireDate()}">
+                  <table key="qcAnalyteTable" width="640" maxRows="13" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId()},{meta:getIsActive()}">
                     <col key="{meta:getQcAnalyteAnalyteName()}" width="270" align="left" header="{resource:getString($constants,'analyte')}">
                       <autoComplete width="270" popWidth="310" field="Integer" required="true">
                         <col width="300" />
@@ -230,9 +239,9 @@ UIRF Software License are applicable instead of those above.
                   </widget>
                 </VerticalPanel>
               </tab>
-              <tab key="lotTab" text="{resource:getString($constants,'lotInformation')}">
+              <tab key="lotTab" tab = "qcLotTable,qcLotTable" text="{resource:getString($constants,'lotInformation')}">
                 <VerticalPanel>
-                  <table key="qcLotTable" width="640" maxRows="13" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getName()},{meta:getExpireDate()}">
+                  <table key="qcLotTable" width="640" maxRows="13" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId()},{meta:getIsActive()}">
                     <col key="{meta:getQcLotIsActive()}" width="40" align="center" header="{resource:getString($constants,'active')}">
                       <check/>
                     </col>
