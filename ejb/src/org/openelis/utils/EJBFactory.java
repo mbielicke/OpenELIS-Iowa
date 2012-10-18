@@ -27,7 +27,105 @@ package org.openelis.utils;
 
 import javax.naming.InitialContext;
 
-import org.openelis.local.*;
+import org.openelis.local.AnalysisLocal;
+import org.openelis.local.AnalysisQAEventLocal;
+import org.openelis.local.AnalysisReportFlagsLocal;
+import org.openelis.local.AnalysisUserLocal;
+import org.openelis.local.AnalyteLocal;
+import org.openelis.local.AnalyteParameterLocal;
+import org.openelis.local.AuxDataLocal;
+import org.openelis.local.AuxFieldGroupLocal;
+import org.openelis.local.AuxFieldLocal;
+import org.openelis.local.AuxFieldValueLocal;
+import org.openelis.local.CategoryCacheLocal;
+import org.openelis.local.CategoryLocal;
+import org.openelis.local.DictionaryCacheLocal;
+import org.openelis.local.DictionaryLocal;
+import org.openelis.local.EventLogLocal;
+import org.openelis.local.ExchangeCriteriaLocal;
+import org.openelis.local.ExchangeExternalTermLocal;
+import org.openelis.local.ExchangeLocalTermLocal;
+import org.openelis.local.ExchangeProfileLocal;
+import org.openelis.local.HistoryLocal;
+import org.openelis.local.InstrumentLocal;
+import org.openelis.local.InstrumentLogLocal;
+import org.openelis.local.InventoryAdjustmentLocal;
+import org.openelis.local.InventoryComponentLocal;
+import org.openelis.local.InventoryItemCacheLocal;
+import org.openelis.local.InventoryItemLocal;
+import org.openelis.local.InventoryLocationLocal;
+import org.openelis.local.InventoryReceiptLocal;
+import org.openelis.local.InventoryXAdjustLocal;
+import org.openelis.local.InventoryXPutLocal;
+import org.openelis.local.InventoryXUseLocal;
+import org.openelis.local.LockLocal;
+import org.openelis.local.MethodLocal;
+import org.openelis.local.NoteLocal;
+import org.openelis.local.OrderContainerLocal;
+import org.openelis.local.OrderItemLocal;
+import org.openelis.local.OrderLocal;
+import org.openelis.local.OrderManagerLocal;
+import org.openelis.local.OrderOrganizationLocal;
+import org.openelis.local.OrderRecurrenceLocal;
+import org.openelis.local.OrderTestAnalyteLocal;
+import org.openelis.local.OrderTestLocal;
+import org.openelis.local.OrganizationContactLocal;
+import org.openelis.local.OrganizationLocal;
+import org.openelis.local.OrganizationParameterLocal;
+import org.openelis.local.PWSAddressLocal;
+import org.openelis.local.PWSFacilityLocal;
+import org.openelis.local.PWSLocal;
+import org.openelis.local.PWSMonitorLocal;
+import org.openelis.local.PanelItemLocal;
+import org.openelis.local.PanelLocal;
+import org.openelis.local.PreferencesLocal;
+import org.openelis.local.PrinterCacheLocal;
+import org.openelis.local.ProjectLocal;
+import org.openelis.local.ProjectParameterLocal;
+import org.openelis.local.ProviderLocal;
+import org.openelis.local.ProviderLocationLocal;
+import org.openelis.local.QaeventLocal;
+import org.openelis.local.QcAnalyteLocal;
+import org.openelis.local.QcLocal;
+import org.openelis.local.QcLotLocal;
+import org.openelis.local.ResultLocal;
+import org.openelis.local.SampleEnvironmentalLocal;
+import org.openelis.local.SampleItemLocal;
+import org.openelis.local.SampleLocal;
+import org.openelis.local.SampleManagerLocal;
+import org.openelis.local.SampleOrganizationLocal;
+import org.openelis.local.SamplePrivateWellLocal;
+import org.openelis.local.SampleProjectLocal;
+import org.openelis.local.SampleQAEventLocal;
+import org.openelis.local.SampleSDWISLocal;
+import org.openelis.local.SectionCacheLocal;
+import org.openelis.local.SectionLocal;
+import org.openelis.local.SectionParameterLocal;
+import org.openelis.local.SessionCacheLocal;
+import org.openelis.local.ShippingItemLocal;
+import org.openelis.local.ShippingLocal;
+import org.openelis.local.ShippingTrackingLocal;
+import org.openelis.local.StorageLocal;
+import org.openelis.local.StorageLocationLocal;
+import org.openelis.local.SystemVariableLocal;
+import org.openelis.local.TestAnalyteLocal;
+import org.openelis.local.TestLocal;
+import org.openelis.local.TestPrepLocal;
+import org.openelis.local.TestReflexLocal;
+import org.openelis.local.TestResultLocal;
+import org.openelis.local.TestSectionLocal;
+import org.openelis.local.TestTrailerLocal;
+import org.openelis.local.TestTypeOfSampleLocal;
+import org.openelis.local.TestWorksheetAnalyteLocal;
+import org.openelis.local.TestWorksheetItemLocal;
+import org.openelis.local.TestWorksheetLocal;
+import org.openelis.local.ToDoCacheLocal;
+import org.openelis.local.UserCacheLocal;
+import org.openelis.local.WorksheetAnalysisLocal;
+import org.openelis.local.WorksheetItemLocal;
+import org.openelis.local.WorksheetLocal;
+import org.openelis.local.WorksheetQcResultLocal;
+import org.openelis.local.WorksheetResultLocal;
 import org.openelis.security.remote.SystemUserPermissionRemote;
 
 /**
@@ -270,7 +368,7 @@ public class EJBFactory {
     }
     
     public static SampleItemLocal getSampleItem() {
-        return (SampleItemLocal)lookup("SampleItemBean!org.openelis.local.SampleItemLocal");
+        return (SampleItemLocal)lookup("SampleItemBean!org.openelis.local.SampleItemLocal");                                                                                                                                                                                                                                                        
     }
     
     public static SampleLocal getSample() {
@@ -284,7 +382,7 @@ public class EJBFactory {
     public static SampleOrganizationLocal getSampleOrganization() {
         return (SampleOrganizationLocal)lookup("SampleOrganizationBean!org.openelis.local.SampleOrganizationLocal");
     }
-    
+                                                                                                                                                                                                                            
     public static SamplePrivateWellLocal getSamplePrivateWell() {
         return (SamplePrivateWellLocal)lookup("SamplePrivateWellBean!org.openelis.local.SamplePrivateWellLocal");
     }
@@ -407,7 +505,7 @@ public class EJBFactory {
     
     public static InventoryItemCacheLocal getInventoryItemCache() {
         return (InventoryItemCacheLocal) lookup("InventoryItemCacheBean!org.openelis.local.InventoryItemCacheLocal");
-    }
+    }                                                            
     
     public static SectionCacheLocal getSectionCache() {
         return (SectionCacheLocal) lookup("SectionCacheBean!org.openelis.local.SectionCacheLocal");
@@ -419,7 +517,7 @@ public class EJBFactory {
     
     public static UserCacheLocal getUserCache() {
         return (UserCacheLocal)lookup("UserCacheBean!org.openelis.local.UserCacheLocal");
-    }
+    }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
     
     public static ToDoCacheLocal getToDoCache() {
         return (ToDoCacheLocal)lookup("ToDoCacheBean!org.openelis.local.ToDoCacheLocal");
