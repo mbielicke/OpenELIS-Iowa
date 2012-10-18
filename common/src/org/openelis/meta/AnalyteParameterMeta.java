@@ -48,7 +48,6 @@ public class AnalyteParameterMeta implements Meta, MetaMap {
                                    TEST_NAME = "_test.name",
                                    TEST_METHOD_NAME = "_test.method.name",
                                    QC_NAME = "_qc.name",
-                                   QC_LOT_NUMBER = "_qc.lotNumber",
                                    PROVIDER_NAME = "_provider.name",
                                    ANALYTE_NAME = "_analyte.name";
 
@@ -59,7 +58,7 @@ public class AnalyteParameterMeta implements Meta, MetaMap {
                                                   ANALYTE_ID, TYPE_OF_SAMPLE_ID,
                                                   IS_ACTIVE, ACTIVE_BEGIN, ACTIVE_END,
                                                   P1, P2, P3, REFERENCE_NAME, TEST_NAME,
-                                                  TEST_METHOD_NAME, QC_NAME, QC_LOT_NUMBER,
+                                                  TEST_METHOD_NAME, QC_NAME,
                                                   PROVIDER_NAME, ANALYTE_NAME));
     }
     
@@ -85,10 +84,6 @@ public class AnalyteParameterMeta implements Meta, MetaMap {
     
     public static String getQcName() {
         return QC_NAME;
-    }
-    
-    public static String getQcLotNumber() {
-        return QC_LOT_NUMBER;
     }
     
     public static String getProviderName() {

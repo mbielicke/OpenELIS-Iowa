@@ -15,14 +15,7 @@ public class QcMeta implements Meta, MetaMap {
                                   NAME = "_qc.name",
                                   TYPE_ID = "_qc.typeId",
                                   INVENTORY_ITEM_ID = "_qc.inventoryItemId",
-                                  SOURCE = "_qc.source",
-                                  LOT_NUMBER = "_qc.lotNumber",
-                                  PREPARED_DATE = "_qc.preparedDate",
-                                  PREPARED_VOLUME = "_qc.preparedVolume",
-                                  PREPARED_UNIT_ID = "_qc.preparedUnitId",
-                                  PREPARED_BY_ID = "_qc.preparedById",
-                                  USABLE_DATE = "_qc.usableDate",
-                                  EXPIRE_DATE = "_qc.expireDate",
+                                  SOURCE = "_qc.source",                                  
                                   IS_ACTIVE = "_qc.isActive",
                                   
                                   ANA_ID = "_qcAnalyte.id",
@@ -52,10 +45,7 @@ public class QcMeta implements Meta, MetaMap {
 
     static {
         names = new HashSet<String>(Arrays.asList(ID, NAME, TYPE_ID, INVENTORY_ITEM_ID,
-                                                  SOURCE, LOT_NUMBER, PREPARED_DATE,
-                                                  PREPARED_VOLUME, PREPARED_UNIT_ID,
-                                                  PREPARED_BY_ID, USABLE_DATE, EXPIRE_DATE,
-                                                  IS_ACTIVE, ANA_ID, ANA_QC_ID, 
+                                                  SOURCE, IS_ACTIVE, ANA_ID, ANA_QC_ID, 
                                                   ANA_SORT_ORDER, ANA_ANALYTE_ID,
                                                   ANA_TYPE_ID, ANA_VALUE, ANA_IS_TRENDABLE,
                                                   LOT_ID, LOT_QC_ID, LOT_LOCATION_ID,
@@ -84,34 +74,6 @@ public class QcMeta implements Meta, MetaMap {
 
     public static String getSource() {
         return SOURCE;
-    }
-
-    public static String getLotNumber() {
-        return LOT_NUMBER;
-    }
-
-    public static String getPreparedDate() {
-        return PREPARED_DATE;
-    }
-
-    public static String getPreparedVolume() {
-        return PREPARED_VOLUME;
-    }
-
-    public static String getPreparedUnitId() {
-        return PREPARED_UNIT_ID;
-    }
-
-    public static String getPreparedById() {
-        return PREPARED_BY_ID;
-    }
-
-    public static String getUsableDate() {
-        return USABLE_DATE;
-    }
-
-    public static String getExpireDate() {
-        return EXPIRE_DATE;
     }
 
     public static String getIsActive() {
