@@ -110,12 +110,10 @@ public class QcBean implements QcRemote, QcLocal {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + 
-                          QcMeta.getId() + "," + QcMeta.getName() + "," +
-                          QcMeta.getLotNumber() + ") ");
-        builder.addWhere(QcMeta.getQcLotIsActive() + "= 'Y'");
+        builder.setSelect("distinct new org.openelis.domain.IdNameVO(" + QcMeta.getId() +
+                          "," + QcMeta.getName() + ") ");
         builder.constructWhere(fields);        
-        builder.setOrderBy(QcMeta.getName() + "," + QcMeta.getLotNumber());
+        builder.setOrderBy(QcMeta.getName());
 
         query = manager.createQuery(builder.getEJBQL());
         query.setMaxResults(first + max);

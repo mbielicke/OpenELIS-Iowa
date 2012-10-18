@@ -73,13 +73,13 @@ UIRF Software License are applicable instead of those above.
                   <col key="{meta:getName()}" width="150" sort="false" header="{resource:getString($constants,'name')}">
                     <label field="String" />
                   </col>
-                  <col key="{meta:getLotNumber()}" width="150" sort="false" header="{resource:getString($constants,'lotNumber')}">
+                  <col key="{meta:getQcLotLotNumber()}" width="150" sort="false" header="{resource:getString($constants,'lotNumber')}">
                     <label field="String" />
                   </col>
-                  <col key="{meta:getUsableDate()}" width="130" sort="true" header="{resource:getString($constants,'usableDate')}">
+                  <col key="{meta:getQcLotUsableDate()}" width="130" sort="true" header="{resource:getString($constants,'usableDate')}">
                     <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </col>
-                  <col key="{meta:getExpireDate()}" width="130" sort="true" header="{resource:getString($constants,'expireDate')}">
+                  <col key="{meta:getQcLotExpireDate()}" width="130" sort="true" header="{resource:getString($constants,'expireDate')}">
                     <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </col>
                 </table>

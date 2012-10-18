@@ -359,8 +359,7 @@ public class AnalyteParameterBean implements AnalyteParameterRemote, AnalytePara
       
         builder.setSelect("distinct new org.openelis.domain.ReferenceIdTableIdNameVO(" +AnalyteParameterMeta.getReferenceId() +
                           ", " + AnalyteParameterMeta.getReferenceTableId()+                          
-                          ", " + AnalyteParameterMeta.getQcName()+                          
-                          ", " + AnalyteParameterMeta.getQcLotNumber()+  ") ");        
+                          ", " + AnalyteParameterMeta.getQcName()+", ''"+  ") ");        
         builder.constructWhere(fields);
         builder.setOrderBy(AnalyteParameterMeta.getQcName());
 
@@ -502,13 +501,9 @@ public class AnalyteParameterBean implements AnalyteParameterRemote, AnalytePara
     }          
     
     private boolean endDateValid(AnalyteParameterViewDO data) {
-        Datetime ab, ae;
-        
-        ab = data.getActiveBegin();
-        ae = data.getActiveEnd();        
         //
         // end date must be after begin date 
         //
-        return (ab.compareTo(ae) == -1);        
+        return (data.getActiveBegin().compareTo(data.getActiveEnd()) == -1);        
     }
 }

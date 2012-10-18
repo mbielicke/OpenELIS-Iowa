@@ -35,7 +35,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemDO;
 import org.openelis.domain.QcAnalyteViewDO;
-import org.openelis.domain.QcViewDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.ModulePermission;
@@ -55,7 +55,6 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.screen.ScreenNavigator;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AppButton.ButtonState;
@@ -69,7 +68,9 @@ import org.openelis.gwt.widget.ScreenWindow;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.QcAnalyteManager;
+import org.openelis.manager.QcLotManager;
 import org.openelis.manager.QcManager;
+import org.openelis.meta.OrganizationMeta;
 import org.openelis.meta.QcMeta;
 import org.openelis.modules.history.client.HistoryScreen;
 
@@ -83,6 +84,7 @@ import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.TabPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class QcScreen extends Screen {
     private QcManager             manager;
@@ -92,13 +94,13 @@ public class QcScreen extends Screen {
     private AnalyteTab            analyteTab;
     private LotTab                lotTab;
     private AppButton             queryButton, previousButton, nextButton, addButton, updateButton,
-                    commitButton, abortButton;
-    protected MenuItem            duplicate, qcHistory, qcAnalyteHistory;
+                                  commitButton, abortButton;
+    protected MenuItem            duplicate, qcHistory, qcAnalyteHistory, qcLotHistory;
     private ButtonGroup           atoz;
     private ScreenNavigator       nav;
     private AutoComplete<Integer> inventoryItem;
     private Dropdown<Integer>     typeId;
-    private TextBox               name, source;
+    private TextBox               id, name, source;
     private CheckBox              isActive;
     private TabPanel              tabPanel;
 
@@ -111,8 +113,7 @@ public class QcScreen extends Screen {
     public QcScreen() throws Exception {
         super((ScreenDefInt)GWT.create(QcDef.class));
         service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
-        inventoryService = new ScreenService(
-                                             "controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
+        inventoryService = new ScreenService("controller?service=org.openelis.modules.inventoryItem.server.InventoryItemService");
 
         userPermission = UserCache.getPermission().getModule("qc");
         if (userPermission == null)
@@ -271,10 +272,60 @@ public class QcScreen extends Screen {
                 qcAnalyteHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
             }
         });
+        
+        qcLotHistory = (MenuItem)def.getWidget("qcLotHistory");
+        addScreenHandler(qcLotHistory, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                qcLotHistory();
+            }
+
+            private void qcLotHistory() {
+                int i, count;
+                IdNameVO refVoList[];
+                QcLotManager man;
+                QcLotViewDO data;
+
+                try {
+                    man = manager.getLots();
+                    count = man.count();
+                    refVoList = new IdNameVO[count];
+                    for (i = 0; i < count; i++ ) {
+                        data = man.getLotAt(i);
+                        refVoList[i] = new IdNameVO(data.getId(), data.getLotNumber());
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Window.alert(e.getMessage());
+                    return;
+                }
+
+                HistoryScreen.showHistory(consts.get("qcLotHistory"), ReferenceTable.QC_LOT, refVoList);
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                qcLotHistory.enable(EnumSet.of(State.DISPLAY).contains(event.getState()));
+            }
+        });
 
         //
         // screen fields
         //
+        id = (TextBox)def.getWidget(QcMeta.getId());
+        addScreenHandler(id, new ScreenEventHandler<Integer>() {
+            public void onDataChange(DataChangeEvent event) {
+                id.setValue(manager.getQc().getId());
+            }
+
+            public void onValueChange(ValueChangeEvent<Integer> event) {
+                manager.getQc().setId(event.getValue());
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                id.enable(EnumSet.of(State.QUERY).contains(event.getState()));
+                id.setQueryMode(event.getState() == State.QUERY);
+            }
+        });
+        
         name = (TextBox)def.getWidget(QcMeta.getName());
         addScreenHandler(name, new ScreenEventHandler<String>() {
             public void onDataChange(DataChangeEvent event) {
@@ -533,10 +584,11 @@ public class QcScreen extends Screen {
         setState(State.QUERY);
         DataChangeEvent.fire(this);
 
+        // clear all the tabs
         analyteTab.draw();
         lotTab.draw();
 
-        setFocus(name);
+        setFocus(id);
         window.setDone(consts.get("enterFieldsToQuery"));
     }
 
