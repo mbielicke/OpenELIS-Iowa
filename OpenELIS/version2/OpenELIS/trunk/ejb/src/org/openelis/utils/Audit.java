@@ -46,7 +46,7 @@ public class Audit {
     }
 
     protected ArrayList<Field> fields;
-    protected AuditActivity   operation;
+    protected AuditActivity    operation;
     protected Integer          referenceId, referenceTableId;
 
     public Audit(AuditActivity operation) {
@@ -129,7 +129,7 @@ public class Audit {
 
                 for (Field f : fields) {
                     elem = doc.createElement(f.name);
-                    if (! "".equals(f.link))
+                    if ( !"".equals(f.link))
                         elem.setAttribute("refTable", f.link);
                     elem.appendChild(doc.createTextNode(f.value));
                     root.appendChild(elem);
