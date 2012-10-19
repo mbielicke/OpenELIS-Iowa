@@ -88,7 +88,21 @@ import org.openelis.utils.Auditable;
                       + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, AnalysisReportFlags arf"
                       + " where s.releasedDate between :startDate and :endDate and s.statusId = (select id from Dictionary where systemName = ('sample_released')) and"
                       + " si.sampleId = s.id and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and a.sectionId = se.id and"
-                      + " a.id = arf.analysisId order by s.accessionNumber, a.id")})  
+                      + " a.id = arf.analysisId order by s.accessionNumber, a.id"),
+  @NamedQuery( name = "Sample.FetchForTurnaroundMaximumReport",
+               query = "select distinct s.accessionNumber, t.name, m.name, se.id, s.collectionDate, s.collectionTime, s.receivedDate, t.timeTaMax, t.timeHolding" 
+                     + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, SectionParameter sp, Dictionary d"
+                     + " where si.sampleId = s.id and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and"
+                     + " a.statusId not in (select id from Dictionary where systemName in ('analysis_released', 'analysis_cancelled')) and"
+                     + " a.sectionId = se.id and sp.sectionId = se.id and sp.typeId = d.id and d.systemName = 'section_ta_max'"
+                     + " order by se.id, s.accessionNumber"),
+  @NamedQuery( name = "Sample.FetchForTurnaroundWarningReport",
+               query = "select distinct s.accessionNumber, t.name, m.name, se.id, s.collectionDate, s.collectionTime, s.receivedDate, t.timeTaWarning, t.timeHolding" 
+                     + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, SectionParameter sp, Dictionary d"
+                     + " where si.sampleId = s.id and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and"
+                     + " a.statusId not in (select id from Dictionary where systemName in ('analysis_released', 'analysis_cancelled')) and"
+                     + " a.sectionId = se.id and sp.sectionId = se.id and sp.typeId = d.id and d.systemName = 'section_ta_warn'"
+                     + " order by se.id, s.accessionNumber")})                     
                       
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Sample.FetchForFinalReportBatch",     
@@ -402,7 +416,7 @@ import org.openelis.utils.Auditable;
                         "where s.id in (:sampleIds) and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and sw.sample_id = s.id and" +
                         " si.sample_id = s.id and a.status_id != (select id from dictionary where system_name = ('analysis_cancelled')) " +
                         "order by s_anum, t_rep_desc, m_rep_desc ",
-           resultSetMapping="Sample.FetchForSampleStatusReport")})   
+           resultSetMapping="Sample.FetchForSampleStatusReport")})            
 @SqlResultSetMappings({
     @SqlResultSetMapping(name="Sample.FetchForFinalReportBatchMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="s_accession_number"),

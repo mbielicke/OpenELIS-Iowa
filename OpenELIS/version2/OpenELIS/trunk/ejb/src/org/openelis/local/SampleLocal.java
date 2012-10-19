@@ -38,6 +38,10 @@ public interface SampleLocal {
     public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception;
     
     public ArrayList<SampleStatusWebReportVO> fetchForSampleStatusReport(ArrayList<Integer> sampleIdList) throws Exception;
+    
+    public ArrayList<Object[]> fetchForTurnaroundMaximumReport() throws Exception;
+    
+    public ArrayList<Object[]> fetchForTurnaroundWarningReport() throws Exception;
 
 	public SampleDO add(SampleDO data) throws Exception;
 

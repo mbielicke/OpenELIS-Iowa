@@ -436,6 +436,22 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return returnList;
     }
     
+    public ArrayList<Object[]> fetchForTurnaroundMaximumReport() throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Sample.FetchForTurnaroundMaximumReport");     
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
+    public ArrayList<Object[]> fetchForTurnaroundWarningReport() throws Exception {
+        Query query;
+        
+        query = manager.createNamedQuery("Sample.FetchForTurnaroundWarningReport");     
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public ArrayList<IdAccessionVO> fetchSamplesByLastRunDate(ArrayList<QueryData> fields,
                                                               Date lastRunDate) throws Exception {
         boolean orgPresent;
