@@ -31,35 +31,32 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 
-import javax.annotation.Resource;
 import javax.ejb.EJB;
-import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import javax.print.attribute.EnumSyntax;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
-import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.domain.SampleSDWISDO;
+import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
-import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.AnalysisUserLocal;
 import org.openelis.local.AuxDataLocal;
 import org.openelis.local.LockLocal;
+import org.openelis.local.NoteLocal;
 import org.openelis.local.ResultLocal;
 import org.openelis.local.SampleEnvironmentalLocal;
 import org.openelis.local.SampleItemLocal;
@@ -70,7 +67,6 @@ import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.StorageLocal;
-import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.SampleManager1;
 
 @Stateless
@@ -103,6 +99,9 @@ public class SampleManager1Bean {
 
     @EJB
     private AuxDataLocal             auxdata;
+    
+    @EJB
+    private NoteLocal                note;
 
     @EJB
     private SampleItemLocal          item;
@@ -175,12 +174,12 @@ public class SampleManager1Bean {
             setSampleEnvironmental(sm, data);
         }
 
-        for (SampleSDWISDO data : sampleSDWIS.fetchBySampleIds(ids1)) {
+        for (SampleSDWISViewDO data : sampleSDWIS.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getId());
             setSampleSDWIS(sm, data);
         }
 
-        for (SamplePrivateWellDO data : samplePrivate.fetchBySampleIds(ids1)) {
+        for (SamplePrivateWellViewDO data : samplePrivate.fetchBySampleIds(ids1)) {
             sm = map1.get(data.getId());
             setSamplePrivateWell(sm, data);
         }
@@ -210,9 +209,16 @@ public class SampleManager1Bean {
         }
 
         if (elements != null && elements.contains(SampleManager1.Load.AUXDATA)) {
-            for (AuxDataViewDO data : auxdata.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
+            for (AuxDataViewDO data : auxdata.fetchByRefIds(ids1, ReferenceTable.SAMPLE)) {
                 sm = map1.get(data.getId());
                 addAuxilliary(sm, data);
+            }
+        }
+
+        if (elements != null && elements.contains(SampleManager1.Load.NOTE)) {
+            for (NoteViewDO data : note.fetchByRefIds(ids1, ReferenceTable.SAMPLE)) {
+                sm = map1.get(data.getId());
+                addSampleNote(sm, data);
             }
         }
 
@@ -252,6 +258,13 @@ public class SampleManager1Bean {
         }
         ids2 = null;
         map2 = null;
+
+        if (elements != null && elements.contains(SampleManager1.Load.NOTE)) {
+            for (NoteViewDO data : note.fetchByRefIds(ids1, ReferenceTable.ANALYSIS)) {
+                sm = map1.get(data.getId());
+                addAnalysisNote(sm, data);
+            }
+        }
 
         if (elements != null && elements.contains(SampleManager1.Load.QA)) {
             for (AnalysisQaEventViewDO data : analysisQA.fetchByAnalysisIds(ids1)) {
