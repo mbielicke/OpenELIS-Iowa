@@ -43,10 +43,11 @@ import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISDO;
+import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.RPC;
 
@@ -68,13 +69,13 @@ public class SampleManager1 implements RPC {
 
     protected SampleDO                            sample;
     protected SampleEnvironmentalDO               sampleEnvironmental;
-    protected SampleSDWISDO                       sampleSDWIS;
-    protected SamplePrivateWellDO                 samplePrivateWell;
+    protected SampleSDWISViewDO                   sampleSDWIS;
+    protected SamplePrivateWellViewDO             samplePrivateWell;
     protected ArrayList<SampleOrganizationViewDO> organizations;
     protected ArrayList<SampleProjectViewDO>      projects;
     protected ArrayList<SampleQaEventViewDO>      sampleQAs;
     protected ArrayList<AuxDataViewDO>            auxilliary;
-    protected ArrayList<NoteViewDO>               sampleNotes, analysesNotes;
+    protected ArrayList<NoteViewDO>               sampleNotes, analysisNotes;
     protected ArrayList<SampleItemViewDO>         items;
     protected ArrayList<AnalysisViewDO>           analyses;
     protected ArrayList<AnalysisQaEventViewDO>    analysisQAs;
@@ -108,11 +109,11 @@ public class SampleManager1 implements RPC {
         return sampleEnvironmental;
     }
 
-    public SamplePrivateWellDO getSamplePrivateWell() {
+    public SamplePrivateWellViewDO getSamplePrivateWell() {
         return samplePrivateWell;
     }
 
-    public SampleSDWISDO getSampleSDWIS() {
+    public SampleSDWISViewDO getSampleSDWIS() {
         return sampleSDWIS;
     }
 
@@ -148,12 +149,12 @@ public class SampleManager1 implements RPC {
             SampleOrganizationViewDO data;
 
             data = organizations.remove(i);
-            if (data.getId() > 0)
+            if (data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
         public void remove(SampleOrganizationViewDO data) {
-            if (organizations.remove(data) && data.getId() > 0)
+            if (organizations.remove(data) && data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
@@ -218,12 +219,12 @@ public class SampleManager1 implements RPC {
             SampleProjectViewDO data;
 
             data = projects.remove(i);
-            if (data.getId() > 0)
+            if (data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
         public void remove(SampleProjectViewDO data) {
-            if (projects.remove(data) && data.getId() > 0)
+            if (projects.remove(data) && data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
@@ -326,12 +327,12 @@ public class SampleManager1 implements RPC {
             SampleQaEventViewDO data;
 
             data = sampleQAs.remove(i);
-            if (data.getId() > 0)
+            if (data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
         public void remove(SampleQaEventViewDO data) {
-            if (sampleQAs.remove(data) && data.getId() > 0)
+            if (sampleQAs.remove(data) && data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
@@ -345,12 +346,12 @@ public class SampleManager1 implements RPC {
             data = map.get(analysis.getId()).get(i);
             analysisQAs.remove(data);
             mapRemove(data);
-            if (data.getId() > 0)
+            if (data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
         public void remove(AnalysisDO analysis, AnalysisQaEventViewDO data) {
-            if (analysisQAs.remove(data) && data.getId() > 0) {
+            if (analysisQAs.remove(data) && data.getId() != null && data.getId() > 0) {
                 removeDataObject(data);
                 mapRemove(data);
             }
@@ -506,7 +507,7 @@ public class SampleManager1 implements RPC {
      * Class to manage sample notes
      */
     protected class SampleNote {
-        transient int     externalIndex;
+        transient int     extE, intE;
         transient boolean searched;
 
         /**
@@ -514,7 +515,7 @@ public class SampleManager1 implements RPC {
          */
         public NoteViewDO get() {
             map();
-            return sampleNotes.get(externalIndex);
+            return sampleNotes.get(extE);
         }
 
         /**
@@ -522,7 +523,7 @@ public class SampleManager1 implements RPC {
          */
         public NoteViewDO get(int i) {
             map();
-            return sampleNotes.get( (externalIndex == -1 || externalIndex > i) ? i : i + 1);
+            return sampleNotes.get( (extE == -1 || extE > i) ? i : i + 1);
         }
 
         /**
@@ -533,7 +534,30 @@ public class SampleManager1 implements RPC {
          * and returned.
          */
         public NoteViewDO getEditing(boolean isExternal) {
-            return null;
+            NoteViewDO data;
+
+            map();
+            if (isExternal && extE != -1)
+                data = sampleNotes.get(extE);
+            else if ( !isExternal && intE != -1)
+                data = sampleNotes.get(intE);
+            else {
+                data = new NoteViewDO();
+                data.setIsExternal(isExternal ? "Y" : "N");
+                sampleNotes.add(0, data);
+                //
+                // adjust so we don't need to search
+                //
+                if (isExternal) {
+                    extE = 0;
+                    intE = (intE == -1) ? -1 : intE + 1;
+                } else {
+                    intE = 0;
+                    extE = (extE == -1) ? -1 : extE + 1;
+                }
+            }
+
+            return data;
         }
 
         /**
@@ -541,6 +565,22 @@ public class SampleManager1 implements RPC {
          * removed. For internal, only the uncommitted note is removed.
          */
         public void removeEditing(boolean isExternal) {
+            NoteViewDO data;
+
+            map();
+            data = sampleNotes.remove(isExternal ? extE : intE);
+            if (data.getId() != null && data.getId() > 0)
+                removeDataObject(data);
+            //
+            // adjust so we don't need to search
+            //
+            if (isExternal) {
+                intE = (intE > extE) ? intE - 1 : intE;
+                extE = -1;
+            } else {
+                extE = (extE > intE) ? extE - 1 : extE;
+                intE = -1;
+            }
         }
 
         /**
@@ -549,23 +589,31 @@ public class SampleManager1 implements RPC {
         public int count(boolean isExternal) {
             map();
             if (isExternal)
-                return externalIndex == -1 ? 0 : 1;
+                return (extE == -1) ? 0 : 1;
             else
-                return sampleNotes == null ? 0 : sampleNotes.size() - (externalIndex == -1 ? 0 : 1);
+                return (sampleNotes == null) ? 0 : sampleNotes.size() - (extE == -1 ? 0 : 1);
         }
 
         /*
-         * find the index to external note if any
+         * find the index to external and internal editable notes
          */
         private void map() {
+            NoteViewDO data;
+
             if ( !searched) {
                 searched = true;
-                externalIndex = -1;
+                extE = -1;
+                intE = -1;
                 if (sampleNotes != null)
-                    for (int i = 0; i < sampleNotes.size(); i++ )
-                        if ("Y".equals(sampleNotes.get(i).getIsExternal())) {
-                            externalIndex = i;
-                        }
+                    for (int i = 0; i < sampleNotes.size(); i++ ) {
+                        data = sampleNotes.get(i);
+                        if ("Y".equals(data.getIsExternal()))
+                            extE = i;
+                        else if (data.getId() == null || data.getId() < 1)
+                            intE = i;
+                        if (extE != -1 && intE != -1)
+                            break;
+                    }
             }
         }
     }
@@ -609,12 +657,12 @@ public class SampleManager1 implements RPC {
             SampleItemViewDO data;
 
             data = items.remove(i);
-            if (data.getId() > 0)
+            if (data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
         public void remove(SampleItemViewDO data) {
-            if (items.remove(data) && data.getId() > 0)
+            if (items.remove(data) && data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
@@ -711,7 +759,7 @@ public class SampleManager1 implements RPC {
                     n++ ;
                     if (n == i) {
                         storages.remove(j);
-                        if (data.getId() > 0)
+                        if (data.getId() != null && data.getId() > 0)
                             removeDataObject(data);
                         break;
                     }
@@ -722,7 +770,7 @@ public class SampleManager1 implements RPC {
         public void remove(StorageViewDO data) {
             for (StorageViewDO storage : storages) {
                 if (storage.getId().equals(data.getId())) {
-                    if (data.getId() > 0)
+                    if (data.getId() != null && data.getId() > 0)
                         removeDataObject(data);
                     break;
                 }
@@ -757,7 +805,7 @@ public class SampleManager1 implements RPC {
     }
 
     /**
-     * Class to manage auxiliary data
+     * Class to manage analysis data
      */
     protected class Analysis {
         transient protected HashMap<Integer, ArrayList<AnalysisViewDO>> map = null;
@@ -814,6 +862,113 @@ public class SampleManager1 implements RPC {
     }
 
     /**
+     * Class to manage analysis notes
+     */
+    protected class AnalysisNote {
+        transient protected HashMap<Integer, ArrayList<NoteViewDO>> map = null;
+        transient int                                               extE, intE;
+
+        /**
+         * Returns the analysis's one (1) external note
+         */
+        public NoteViewDO get(AnalysisDO analysis) {
+            map(analysis.getId());
+            return map.get(analysis.getId()).get(extE);
+        }
+
+        /**
+         * Returns the analysis's internal note at specified index.
+         */
+        public NoteViewDO get(AnalysisDO analysis, int i) {
+            map(analysis.getId());
+            return map.get(analysis.getId()).get( (extE == -1 || extE > i) ? i : i + 1);
+        }
+
+        /**
+         * Returns the editing note. For external, there is only 1 note and that
+         * note can be edited regardless of whether its committed to the
+         * database or not. For internal, only the currently uncommitted note
+         * can be edited. If no editing note currently exists, one is created
+         * and returned.
+         */
+        public NoteViewDO getEditing(AnalysisDO analysis, boolean isExternal) {
+            NoteViewDO data;
+
+            map(analysis.getId());
+            if (isExternal && extE != -1)
+                data = map.get(analysis.getId()).get(extE);
+            else if ( !isExternal && intE != -1)
+                data = map.get(analysis.getId()).get(intE);
+            else {
+                data = new NoteViewDO();
+                data.setIsExternal(isExternal ? "Y" : "N");
+                data.setReferenceId(analysis.getId());
+                analysisNotes.add(data);
+                map.get(analysis.getId()).add(0, data);
+            }
+
+            return data;
+        }
+
+        /**
+         * Removes the editing note. For external, the entire external note is
+         * removed. For internal, only the uncommitted note is removed.
+         */
+        public void removeEditing(AnalysisDO analysis, boolean isExternal) {
+            NoteViewDO data;
+
+            map(analysis.getId());
+            data = map.get(analysis.getId()).remove(isExternal ? extE : intE);
+            analysisNotes.remove(data);
+            if (data.getId() != null && data.getId() > 0)
+                removeDataObject(data);
+        }
+
+        /**
+         * Returns the number of internal/external note(s)
+         */
+        public int count(AnalysisDO analysis, boolean isExternal) {
+            map(analysis.getId());
+            if (isExternal)
+                return (extE == -1) ? 0 : 1;
+            else
+                return (analysisNotes == null) ? 0 : map.get(analysis.getId()).size() - (extE == -1 ? 0 : 1);
+        }
+
+        /*
+         * find the index to external and internal editable notes
+         */
+        private void map(Integer id) {
+            ArrayList<NoteViewDO> l;
+
+            extE = -1;
+            intE = -1;
+            if (analysisNotes != null) {
+                if (map == null) {
+                    map = new HashMap<Integer, ArrayList<NoteViewDO>>();
+                    for (NoteViewDO data : analysisNotes) {
+                        l = map.get(data.getId());
+                        if (l == null) {
+                            l = new ArrayList<NoteViewDO>();
+                            map.put(data.getId(), l);
+                        }
+                        l.add(data);
+                    }
+                }
+                l = map.get(id);
+                for (int i = 0; i < l.size(); i++ ) {
+                    if ("Y".equals(l.get(i).getIsExternal()))
+                        extE = i;
+                    else if (l.get(i).getId() == null || l.get(i).getId() < 1)
+                        intE = i;
+                    if (extE != -1 && intE != -1)
+                        break;
+                }
+            }
+        }
+    }
+
+    /**
      * Class to manage analysis users
      */
     protected class AnalysisUser {
@@ -853,12 +1008,12 @@ public class SampleManager1 implements RPC {
             data = map.get(analysis.getId()).get(i);
             users.remove(data);
             mapRemove(data);
-            if (data.getId() > 0)
+            if (data.getId() != null && data.getId() > 0)
                 removeDataObject(data);
         }
 
         public void remove(AnalysisDO analysis, AnalysisUserViewDO data) {
-            if (users.remove(data) && data.getId() > 0) {
+            if (users.remove(data) && data.getId() != null && data.getId() > 0) {
                 removeDataObject(data);
                 mapRemove(data);
             }
@@ -941,7 +1096,7 @@ public class SampleManager1 implements RPC {
             rl = map.get(analysis.getId()).get(r);
             for (ResultViewDO data : rl) {
                 results.remove(data);
-                if (data.getId() > 0)
+                if (data.getId() != null && data.getId() > 0)
                     removeDataObject(data);
             }
             rl.remove(r);
