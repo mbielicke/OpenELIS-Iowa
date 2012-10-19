@@ -32,15 +32,16 @@ import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.DataObject;
+import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.domain.SampleItemViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
-import org.openelis.domain.SamplePrivateWellDO;
+import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.domain.SampleSDWISDO;
+import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
 
 /**
@@ -66,19 +67,19 @@ public class SampleManager1Accessor {
         sm.sampleEnvironmental = sampleEnvironmental;
     }
     
-    public static SampleSDWISDO getSampleSDWIS(SampleManager1 sm) {
+    public static SampleSDWISViewDO getSampleSDWIS(SampleManager1 sm) {
         return sm.sampleSDWIS;
     }
     
-    public static void setSampleSDWIS(SampleManager1 sm, SampleSDWISDO sampleSDWIS) {
+    public static void setSampleSDWIS(SampleManager1 sm, SampleSDWISViewDO sampleSDWIS) {
         sm.sampleSDWIS = sampleSDWIS;
     }
     
-    public static SamplePrivateWellDO getSamplePrivateWell(SampleManager1 sm) {
+    public static SamplePrivateWellViewDO getSamplePrivateWell(SampleManager1 sm) {
         return sm.samplePrivateWell;
     }
     
-    public static void setSamplePrivateWell(SampleManager1 sm, SamplePrivateWellDO samplePrivateWell) {
+    public static void setSamplePrivateWell(SampleManager1 sm, SamplePrivateWellViewDO samplePrivateWell) {
         sm.samplePrivateWell = samplePrivateWell;
     }
     
@@ -152,6 +153,20 @@ public class SampleManager1Accessor {
         sm.auxilliary.add(auxilliary);
     }
     
+    public static ArrayList<NoteViewDO> getSampleNotes(SampleManager1 sm) {
+        return sm.sampleNotes;
+    }
+    
+    public static void setSampleNotes(SampleManager1 sm, ArrayList<NoteViewDO> sampleNotes) {
+        sm.sampleNotes = sampleNotes;
+    }
+    
+    public static void addSampleNote(SampleManager1 sm, NoteViewDO sampleNote) {
+        if (sm.sampleNotes == null)
+            sm.sampleNotes = new ArrayList<NoteViewDO>();
+        sm.sampleNotes.add(sampleNote);
+    }
+
     public static ArrayList<SampleItemViewDO> getItems(SampleManager1 sm) {
         return sm.items;
     }
@@ -194,6 +209,20 @@ public class SampleManager1Accessor {
         sm.analyses.add(analysis);
     }
     
+    public static ArrayList<NoteViewDO> getAnalysisNotes(SampleManager1 sm) {
+        return sm.analysisNotes;
+    }
+    
+    public static void setAnalysisNotes(SampleManager1 sm, ArrayList<NoteViewDO> analysisNotes) {
+        sm.analysisNotes = analysisNotes;
+    }
+    
+    public static void addAnalysisNote(SampleManager1 sm, NoteViewDO analysisNotes) {
+        if (sm.analysisNotes == null)
+            sm.analysisNotes = new ArrayList<NoteViewDO>();
+        sm.analysisNotes.add(analysisNotes);
+    }
+
     public static ArrayList<AnalysisUserViewDO> getUsers(SampleManager1 sm) {
         return sm.users;
     }
