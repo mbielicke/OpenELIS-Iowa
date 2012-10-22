@@ -379,7 +379,7 @@ public class Dictionary implements Auditable, Cloneable {
                  .setField("related_entry_id", relatedEntryId, original.relatedEntryId, ReferenceTable.DICTIONARY)
                  .setField("system_name", systemName, original.systemName)
                  .setField("is_active", isActive, original.isActive)
-                 .setField("local_abbrev", code, original.code)
+                 .setField("code", code, original.code)
                  .setField("entry", entry, original.entry);
 
         return audit;
