@@ -32,6 +32,7 @@ import java.util.HashMap;
 
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SectionViewDO;
@@ -157,6 +158,7 @@ public class WorksheetAnalysisManagerProxy {
         AnalysisViewDO            aVDO;
         AnalysisManager           aManager;
         AnalysisResultManager     arManager;
+        QcLotViewDO               qcLotVDO;
         QcManager                 qcManager;
         SampleDO                  sample;
         SampleItemManager         siManager;
@@ -182,7 +184,8 @@ public class WorksheetAnalysisManagerProxy {
             //
             if ("N".equals(analysis.getIsFromOther())) {
                 analysis.setQcStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-                qcManager = QcManager.fetchById(analysis.getQcId());
+                qcLotVDO = EJBFactory.getQcLot().fetchById(analysis.getQcId());
+                qcManager = QcManager.fetchById(qcLotVDO.getQcId());
                 wqrManager = manager.getWorksheetQcResultAt(i);
                 initializeWorksheetQcResults(qcManager, wqrManager);
             }

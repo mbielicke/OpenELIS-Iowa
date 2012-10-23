@@ -67,7 +67,7 @@ import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcAnalyteViewDO;
-import org.openelis.domain.QcViewDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
@@ -94,7 +94,7 @@ import org.openelis.local.AnalyteParameterLocal;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.QcAnalyteLocal;
-import org.openelis.local.QcLocal;
+import org.openelis.local.QcLotLocal;
 import org.openelis.local.SampleManagerLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
@@ -132,7 +132,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     @EJB
     DictionaryCacheLocal dictionaryCacheLocal;
     @EJB
-    QcLocal qcLocal;
+    QcLotLocal qcLotLocal;
     @EJB
     QcAnalyteLocal qcAnalyteLocal;
     @EJB
@@ -174,7 +174,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
         AnalysisResultManager    arManager;
         AnalysisViewDO           aVDO;
         DictionaryDO             formatDO;
-        QcViewDO                 qcVDO;
+        QcLotViewDO              qcLotVDO;
         ReportStatus             status;
         SampleDataBundle         bundle;
         SampleDomainInt          sDomain;
@@ -446,12 +446,12 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                                                 "$"+(oRow.getRowNum()+1));
                     o++;
                 } else if (waDO.getQcId() != null) {
-                    qcVDO = qcLocal.fetchById(waDO.getQcId());
+                    qcLotVDO = qcLotLocal.fetchById(waDO.getQcId());
 
                     // description
                     cell = row.createCell(2);
                     cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue(qcVDO.getName());
+                    cell.setCellValue(qcLotVDO.getQcName());
     
                     // qc link
                     cell = row.createCell(3);
@@ -495,7 +495,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         cellNameIndex = i+"."+a;
                         r = createQcResultCellsForFormat(resultSheet, row, tRow,
                                                          cellNameIndex, tCellNames,
-                                                         waDO.getQcId(), wqrManager);
+                                                         qcLotVDO.getQcId(), wqrManager);
                     }
 
                     //
@@ -517,7 +517,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     // description (override)
                     cell = oRow.createCell(2);
                     cell.setCellStyle(styles.get("row_no_edit"));
-                    cell.setCellValue(qcVDO.getName());
+                    cell.setCellValue(qcLotVDO.getQcName());
     
                     // test name (overrride)
                     cell = oRow.createCell(3);

@@ -34,6 +34,8 @@ import org.openelis.domain.QcLotViewDO;
 
 @Local
 public interface QcLotLocal {
+    public QcLotViewDO fetchById(Integer id) throws Exception;
+    
     public ArrayList<QcLotViewDO> fetchByQcId(Integer id) throws Exception;
     
     public ArrayList<QcLotViewDO> fetchActiveByQcName(String qcName, int max) throws Exception;

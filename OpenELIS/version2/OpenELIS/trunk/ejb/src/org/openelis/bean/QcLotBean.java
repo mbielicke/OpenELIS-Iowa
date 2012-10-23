@@ -61,6 +61,22 @@ public class QcLotBean implements QcLotLocal {
     @EJB
     private UserCacheLocal     userCache;
 
+    public QcLotViewDO fetchById(Integer lotId) throws Exception {
+        QcLotViewDO data;
+        Query query;
+
+        query = manager.createNamedQuery("QcLot.FetchById");
+        query.setParameter("id", lotId);
+        try {
+            data = (QcLotViewDO)query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new NotFoundException();
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+        return data;
+    }
+    
     @SuppressWarnings("unchecked")
     public ArrayList<QcLotViewDO> fetchByQcId(Integer id) throws Exception {
         Query query;
