@@ -255,7 +255,7 @@ UIRF Software License are applicable instead of those above.
                       <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
                     </col>
                     <col key="{meta:getQcLotPreparedVolume()}" width="105" align="right"  header="{resource:getString($constants,'preparedVolume')}">
-                      <textbox field="Double" required="true" />
+                      <textbox field="Double"/>
                     </col>
                     <col key="{meta:getQcLotPreparedUnitId()}" width="100" align="right" header="{resource:getString($constants,'preparedUnit')}">
                       <dropdown width="150" field="Integer" required="true" />
