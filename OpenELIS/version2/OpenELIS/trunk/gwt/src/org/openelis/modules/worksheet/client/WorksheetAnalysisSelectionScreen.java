@@ -28,6 +28,7 @@ package org.openelis.modules.worksheet.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.AnalysisViewDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.WorksheetAnalysisDO;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.gwt.event.ActionEvent;
@@ -45,7 +46,6 @@ import org.openelis.gwt.widget.table.TableRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
-import org.openelis.manager.QcManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
@@ -156,7 +156,7 @@ public class WorksheetAnalysisSelectionScreen extends Screen implements HasActio
         int                      i, j;
         ArrayList<TableDataRow>  model;
         AnalysisViewDO           aVDO;
-        QcManager                qcManager;
+        QcLotViewDO              qcLotVDO;
         TableDataRow             row;
         WorksheetAnalysisDO      waDO;
         WorksheetAnalysisManager waManager;
@@ -186,8 +186,8 @@ public class WorksheetAnalysisSelectionScreen extends Screen implements HasActio
                             row.cells.get(3).value = aVDO.getTestName();
                             row.cells.get(4).value = aVDO.getMethodName();
                         } else if (waDO.getQcId() != null) {
-                            qcManager = qcService.call("fetchById", waDO.getQcId());
-                            row.cells.get(2).value = qcManager.getQc().getName();
+                            qcLotVDO = qcService.call("fetchLotById", waDO.getQcId());
+                            row.cells.get(2).value = qcLotVDO.getQcName();
                         }
                         row.data = waDO;
                         
