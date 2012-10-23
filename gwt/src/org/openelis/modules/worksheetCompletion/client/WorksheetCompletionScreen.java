@@ -49,6 +49,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.domain.NoteViewDO;
+import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleOrganizationViewDO;
@@ -114,6 +115,7 @@ import org.openelis.modules.note.client.NotesTab;
 import org.openelis.modules.sample.client.TestPrepUtility;
 import org.openelis.modules.sample.client.TestReflexUtility;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
+import org.openelis.server.EJBFactory;
 
 public class WorksheetCompletionScreen extends Screen {
 
@@ -1001,7 +1003,7 @@ public class WorksheetCompletionScreen extends Screen {
         ArrayList<IdNameVO>      headers;
         ArrayList<TableDataRow>  model;
         HashMap<Integer,String>  qcLinkMap;
-        QcManager                qcManager;
+        QcLotViewDO              qcLotVDO;
         ResultViewDO             rVDO;
         SampleDataBundle         bundle;
         SampleDomainInt          sDomain;
@@ -1135,9 +1137,9 @@ public class WorksheetCompletionScreen extends Screen {
                             model.add((TableDataRow)row.clone());
                         }
                     } else if (waDO.getQcId() != null) {
-                        qcManager = QcManager.fetchById(waDO.getQcId());
+                        qcLotVDO = EJBFactory.getQcLot().fetchById(waDO.getQcId());
                         
-                        row.cells.get(2).value = qcManager.getQc().getName();
+                        row.cells.get(2).value = qcLotVDO.getQcName();
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();
                         row.cells.get(4).value = "";
                         row.cells.get(5).value = "";

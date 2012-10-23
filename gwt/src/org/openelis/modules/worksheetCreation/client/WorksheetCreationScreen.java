@@ -46,7 +46,6 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InstrumentViewDO;
-import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestWorksheetDO;
@@ -93,7 +92,6 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
-import org.openelis.manager.QcManager;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
@@ -741,7 +739,7 @@ public class WorksheetCreationScreen extends Screen {
                 if (((ArrayList<Object>)row.data).size() == 3)
                     waDO.setAnalysisId(((AnalysisViewDO)((ArrayList<Object>)row.data).get(0)).getId());
                 else
-                    waDO.setQcId(((QcDO)((ArrayList<Object>)row.data).get(1)).getId());
+                    waDO.setQcId(((QcLotViewDO)((ArrayList<Object>)row.data).get(1)).getId());
             } else {
                 waDO.setAnalysisId(((WorksheetCreationVO)row.data).getAnalysisId());
             }
@@ -1298,7 +1296,7 @@ public class WorksheetCreationScreen extends Screen {
                                                 ArrayList<Object>        data, dataList;
                                                 AnalysisViewDO           aVDO;
                                                 Integer                  fromFormatId;
-                                                QcManager                qcManager;
+                                                QcLotViewDO              qcDO;
                                                 TableDataRow             newRow;
                                                 TestWorksheetItemDO      twiDO;
                                                 WorksheetAnalysisDO      waDO;
@@ -1345,21 +1343,21 @@ public class WorksheetCreationScreen extends Screen {
                                                                 }
                                                             } else if (waDO.getQcId() != null) {
                                                                 try {
-                                                                    qcManager = qcService.call("fetchById", waDO.getQcId());
+                                                                    qcDO = qcService.call("fetchLotByQcId", waDO.getQcId());
                                                                     wqrManager = worksheetService.call("fetchWorksheeetQcResultByWorksheetAnalysisId", waDO.getId());
                                                                     
                                                                     twiDO = new TestWorksheetItemDO();
                                                                     twiDO.setPosition(r+1);
                                                                     twiDO.setTypeId(typeFixed);
-                                                                    twiDO.setQcName(qcManager.getQc().getName());
+                                                                    twiDO.setQcName(qcDO.getQcName());
                                                                     
                                                                     newRow = new TableDataRow(11);
                                                                     newRow.cells.get(1).value = waDO.getAccessionNumber();
-                                                                    newRow.cells.get(2).value = qcManager.getQc().getName();
+                                                                    newRow.cells.get(2).value = qcDO.getQcName();
                                                                     
                                                                     dataList = new ArrayList<Object>();
                                                                     dataList.add(twiDO);
-                                                                    dataList.add((QcDO)qcManager.getQc());
+                                                                    dataList.add(qcDO);
                                                                     dataList.add(wqrManager);
                                                                     dataList.add(fromFormatId);
                                                                     newRow.data = dataList;

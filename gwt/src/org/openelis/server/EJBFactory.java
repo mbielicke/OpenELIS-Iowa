@@ -90,6 +90,7 @@ import org.openelis.remote.ProviderRemote;
 import org.openelis.remote.QASummaryReportRemote;
 import org.openelis.remote.QaEventRemote;
 import org.openelis.remote.QcChartReportRemote;
+import org.openelis.remote.QcLotRemote;
 import org.openelis.remote.QcManagerRemote;
 import org.openelis.remote.QcRemote;
 import org.openelis.remote.RequestformReportRemote;
@@ -348,6 +349,10 @@ public class EJBFactory {
     
     public static QcRemote getQc() {
         return (QcRemote)lookup("QcBean!org.openelis.remote.QcRemote");
+    }
+
+    public static QcLotRemote getQcLot() {
+        return (QcLotRemote)lookup("QcLotBean!org.openelis.remote.QcLotRemote");
     }
 
     public static QcManagerRemote getQcManager() {

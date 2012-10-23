@@ -77,6 +77,10 @@ public class QcService {
     public QcManager fetchWithLots(Integer id) throws Exception {
         return EJBFactory.getQcManager().fetchWithLots(id);
     }
+    
+    public QcLotViewDO fetchLotById(Integer id) throws Exception {
+        return EJBFactory.getQcLot().fetchById(id);
+    }
 
     public ArrayList<IdNameVO> query(Query query) throws Exception {
         return EJBFactory.getQc().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
