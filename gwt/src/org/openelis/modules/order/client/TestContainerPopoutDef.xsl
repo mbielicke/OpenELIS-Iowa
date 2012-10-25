@@ -46,7 +46,7 @@ UIRF Software License are applicable instead of those above.
         <HorizontalPanel padding="0" spacing="0" style="WhiteContentPanel">
           <VerticalPanel padding="0" spacing="0">
             <widget valign="top">
-              <tree key="orderTestTree" maxRows="11" showScroll="ALWAYS" style="ScreenTableWithSides" width="440">
+              <tree key="testTree" maxRows="11" showScroll="ALWAYS" style="ScreenTableWithSides" width="440">
                 <header>
                   <col header="{resource:getString($constants,'itemNum')}" width="55" />
                   <col header="{resource:getString($constants,'testMethodDescription')}" width="526" />
