@@ -54,6 +54,7 @@ import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.TableDataRow;
+import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
 import org.openelis.gwt.widget.table.event.CellEditedEvent;
@@ -84,6 +85,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
     private TestTab                   screen; 
     private AppButton                 addTestButton, removeTestButton, popoutButton;
     private TreeWidget                tree;
+    private TableWidget               queryTable;
     private AutoComplete<Integer>     test;
     private boolean                   loaded;
     private static final String       TEST_LEAF = "test", ANALYTE_LEAF = "analyte";
@@ -111,7 +113,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
     private void initialize() {        
         screen = this;
         
-        tree = (TreeWidget)def.getWidget("orderTestTree");
+        tree = (TreeWidget)def.getWidget("testTree");
         addScreenHandler(tree, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) {       
                 tree.load(getTreeModel());
@@ -119,6 +121,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
 
             public void onStateChange(StateChangeEvent<State> event) {
                 tree.enable(true);
+                tree.setVisible(!EnumSet.of(State.QUERY).contains(event.getState()));
             }
         });
         
@@ -364,6 +367,22 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                 }
             }            
         });
+        
+        queryTable = (TableWidget)def.getWidget("queryTestTable");
+        
+        if (queryTable != null) {
+            addScreenHandler(queryTable, new ScreenEventHandler<ArrayList<TableDataRow>>() {
+                public void onStateChange(StateChangeEvent<State> event) {
+                    boolean queryState;
+
+                    queryState = EnumSet.of(State.QUERY).contains(event.getState());
+
+                    queryTable.enable(queryState);
+                    queryTable.setVisible(queryState);
+                    queryTable.setQueryMode(queryState);
+                }
+            });
+        }
 
         addTestButton = (AppButton)def.getWidget("addTestButton");
         addScreenHandler(addTestButton, new ScreenEventHandler<Object>() {

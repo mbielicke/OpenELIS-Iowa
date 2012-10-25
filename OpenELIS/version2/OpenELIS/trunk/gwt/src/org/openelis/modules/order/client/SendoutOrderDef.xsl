@@ -330,7 +330,7 @@ UIRF Software License are applicable instead of those above.
               <tab key="testTab" tab="orderTestTree,orderTestTree" text="{resource:getString($constants,'test')}">
                 <VerticalPanel padding="0" spacing="0">
                   <widget valign="top">
-                    <tree key="orderTestTree" maxRows="11" showScroll="ALWAYS" width="auto">
+                    <tree key="testTree" maxRows="11" showScroll="ALWAYS" width="auto">
                       <header>
                         <col header="{resource:getString($constants,'itemNum')}" width="55" />
                         <col header="{resource:getString($constants,'testMethodDescription')}" width="636" />
@@ -354,6 +354,19 @@ UIRF Software License are applicable instead of those above.
                         </col>
                       </leaf>
                     </tree>
+                  </widget>
+                  <widget valign="top">
+                    <table key="queryTestTable" width="auto" maxRows="10" showScroll="ALWAYS" tab="queryTestTable,queryTestTable" style="ScreenTableWithSides" title="">
+                      <col key="{meta:getTestItemSequence()}" width="55" align="left" header="{resource:getString($constants,'itemNum')}">
+                        <textbox field="Integer" /> 
+                      </col>
+                      <col key="{meta:getTestName()}" width="316" align="left" header="{resource:getString($constants,'test')}">
+                        <textbox field="String" />
+                      </col>
+                      <col key="{meta:getTestMethodName()}" width="315" align="left" header="{resource:getString($constants,'method')}">
+                        <textbox field="String" />
+                      </col>
+                    </table>
                   </widget>
                   <HorizontalPanel>
                     <widget style="TableButtonFooter">
