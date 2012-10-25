@@ -48,7 +48,7 @@ import org.openelis.gwt.common.Datetime;
     @NamedQuery( name = "WorksheetAnalysis.FetchByInstancesForQcChart",
                 query = "select w.createdDate, wa.id " +
                         "from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Qc q, QcLot ql " +  
-                        "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wa.qcId = ql.id and ql.qcId = q.id" + 
+                        "where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and wa.qcId = ql.id and ql.qcId = q.id and" + 
                         " q.name = :qcName and w.statusId in (select id from Dictionary where systemName in ('worksheet_complete', 'worksheet_working')) " + 
                         "order by w.createdDate desc"),
    @NamedQuery( name = "WorksheetAnalysis.FetchAnalytesForQcChart",
