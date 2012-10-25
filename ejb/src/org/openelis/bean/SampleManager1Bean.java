@@ -25,23 +25,7 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.addAnalysis;
-import static org.openelis.manager.SampleManager1Accessor.addAnalysisNote;
-import static org.openelis.manager.SampleManager1Accessor.addAnalysisQA;
-import static org.openelis.manager.SampleManager1Accessor.addAuxilliary;
-import static org.openelis.manager.SampleManager1Accessor.addItem;
-import static org.openelis.manager.SampleManager1Accessor.addOrganization;
-import static org.openelis.manager.SampleManager1Accessor.addProject;
-import static org.openelis.manager.SampleManager1Accessor.addResult;
-import static org.openelis.manager.SampleManager1Accessor.addSampleNote;
-import static org.openelis.manager.SampleManager1Accessor.addSampleQA;
-import static org.openelis.manager.SampleManager1Accessor.addStorage;
-import static org.openelis.manager.SampleManager1Accessor.addUser;
-import static org.openelis.manager.SampleManager1Accessor.setSample;
-import static org.openelis.manager.SampleManager1Accessor.setSampleEnvironmental;
-import static org.openelis.manager.SampleManager1Accessor.setSamplePrivateWell;
-import static org.openelis.manager.SampleManager1Accessor.setSampleSDWIS;
-
+import static org.openelis.manager.SampleManager1Accessor.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
@@ -68,6 +52,7 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.data.Query;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.AnalysisUserLocal;
@@ -118,7 +103,7 @@ public class SampleManager1Bean implements SampleManager1Remote {
 
     @EJB
     private AuxDataLocal             auxdata;
-    
+
     @EJB
     private NoteLocal                note;
 
@@ -141,7 +126,7 @@ public class SampleManager1Bean implements SampleManager1Remote {
     private ResultLocal              result;
 
     /**
-     * Returns sample a manager for specified primary id and requested load
+     * Returns a sample manager for specified primary id and requested load
      * elements
      */
     public SampleManager1 fetchById(Integer sampleId, SampleManager1.Load... elements) throws Exception {
@@ -151,31 +136,7 @@ public class SampleManager1Bean implements SampleManager1Remote {
         ids = new ArrayList<Integer>(1);
         ids.add(sampleId);
         sms = fetchByIds(ids, elements);
-        return sms.size() < 1 ? null : sms.get(0);
-    }
-    
-    public ArrayList<SampleManager> fetchByIds(ArrayList<Integer> sampleIds) throws Exception {
-        ArrayList<SampleManager> sms;
-        long before, after;
-
-        sms = new ArrayList<SampleManager>();
-
-        before = System.currentTimeMillis();
-        System.out.println("started at : "+ before);
-        for (int i = 0; i < sampleIds.size(); i++) {
-            try {
-                sms.add(SampleManager.fetchWithAllDataById(sampleIds.get(i)));
-            } catch (NotFoundException e) {
-                //ignore 
-            }
-        }
-        
-        after = System.currentTimeMillis();
-        System.out.println("ended at : "+ after);
-        
-        System.out.println("total time : "+ (after-before)/1000+" seconds");
-        
-        return sms;
+        return sms.size() == 0 ? null : sms.get(0);
     }
 
     /**
@@ -183,40 +144,38 @@ public class SampleManager1Bean implements SampleManager1Remote {
      * elements
      */
     public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds,
-                                                SampleManager1.Load... elements) {
-        long before, after;
+                                                SampleManager1.Load... elements) throws Exception {
         SampleManager1 sm;
         ArrayList<Integer> ids1, ids2;
         ArrayList<SampleManager1> sms;
         HashMap<Integer, SampleManager1> map1, map2;
         EnumSet<SampleManager1.Load> el;
- 
+
         /*
          * to reduce database select calls, we are going to fetch everything for
          * a given select and unroll through loops.
          */
         sms = new ArrayList<SampleManager1>();
-        el = null;
         if (elements != null)
             el = EnumSet.copyOf(Arrays.asList(elements));
-        
+        else
+            el = EnumSet.noneOf(SampleManager1.Load.class);
+
         /*
          * build level 1, everything is based on sample ids
          */
         ids1 = new ArrayList<Integer>();
         map1 = new HashMap<Integer, SampleManager1>();
-        
-        before = System.currentTimeMillis();
-        System.out.println("started at : "+ before);
+
         for (SampleDO data : sample.fetchByIds(sampleIds)) {
             sm = new SampleManager1();
             setSample(sm, data);
             sms.add(sm);
 
-            ids1.add(data.getId());     // for fetch
+            ids1.add(data.getId()); // for fetch
             map1.put(data.getId(), sm); // for linking
         }
-        
+
         /*
          * additional domains for each sample
          */
@@ -238,35 +197,35 @@ public class SampleManager1Bean implements SampleManager1Remote {
         /*
          * various lists for each sample
          */
-        if (el != null && el.contains(SampleManager1.Load.ORGANIZATION)) {
+        if (el.contains(SampleManager1.Load.ORGANIZATION)) {
             for (SampleOrganizationViewDO data : sampleOrganization.fetchBySampleIds(ids1)) {
                 sm = map1.get(data.getSampleId());
                 addOrganization(sm, data);
             }
         }
 
-        if (el != null && el.contains(SampleManager1.Load.PROJECT)) {
+        if (el.contains(SampleManager1.Load.PROJECT)) {
             for (SampleProjectViewDO data : sampleProject.fetchBySampleIds(ids1)) {
                 sm = map1.get(data.getSampleId());
                 addProject(sm, data);
             }
         }
 
-        if (el != null && el.contains(SampleManager1.Load.QA)) {
+        if (el.contains(SampleManager1.Load.QA)) {
             for (SampleQaEventViewDO data : sampleQA.fetchBySampleIds(ids1)) {
                 sm = map1.get(data.getSampleId());
                 addSampleQA(sm, data);
             }
         }
 
-        if (el != null && el.contains(SampleManager1.Load.AUXDATA)) {
+        if (el.contains(SampleManager1.Load.AUXDATA)) {
             for (AuxDataViewDO data : auxdata.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
                 addAuxilliary(sm, data);
             }
         }
 
-        if (el != null && el.contains(SampleManager1.Load.NOTE)) {
+        if (el.contains(SampleManager1.Load.NOTE)) {
             for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
                 sm = map1.get(data.getReferenceId());
                 addSampleNote(sm, data);
@@ -287,7 +246,7 @@ public class SampleManager1Bean implements SampleManager1Remote {
             }
         }
 
-        if (el != null && el.contains(SampleManager1.Load.STORAGE)) {
+        if (el.contains(SampleManager1.Load.STORAGE)) {
             for (StorageViewDO data : storage.fetchByIds(ids2, ReferenceTable.SAMPLE_ITEM)) {
                 sm = map2.get(data.getReferenceId());
                 addStorage(sm, data);
@@ -310,45 +269,253 @@ public class SampleManager1Bean implements SampleManager1Remote {
         ids2 = null;
         map2 = null;
 
-        if (el != null && el.contains(SampleManager1.Load.NOTE)) {
+        if (el.contains(SampleManager1.Load.NOTE)) {
             for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
                 addAnalysisNote(sm, data);
             }
         }
 
-        if (el != null && el.contains(SampleManager1.Load.QA)) {
+        if (el.contains(SampleManager1.Load.QA)) {
             for (AnalysisQaEventViewDO data : analysisQA.fetchByAnalysisIds(ids1)) {
                 sm = map1.get(data.getAnalysisId());
                 addAnalysisQA(sm, data);
             }
         }
 
-        if (el != null && el.contains(SampleManager1.Load.STORAGE)) {
+        if (el.contains(SampleManager1.Load.STORAGE)) {
             for (StorageViewDO data : storage.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
                 addStorage(sm, data);
             }
         }
 
-        if (el != null && el.contains(SampleManager1.Load.ANALYSISUSER)) {
+        if (el.contains(SampleManager1.Load.ANALYSISUSER)) {
             for (AnalysisUserViewDO data : user.fetchByAnalysisIds(ids1)) {
                 sm = map1.get(data.getAnalysisId());
                 addUser(sm, data);
             }
         }
 
-        if (el != null && el.contains(SampleManager1.Load.RESULT)) {
+        if (el.contains(SampleManager1.Load.RESULT)) {
             for (ResultViewDO data : result.fetchByAnalysisIds(ids1)) {
                 sm = map1.get(data.getAnalysisId());
                 addResult(sm, data);
             }
         }
-        
+
+        return sms;
+    }
+
+    /**
+     * Returns sample managers for specified analysis ids and requested load
+     * elements
+     */
+    public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
+                                                     SampleManager1.Load... elements) throws Exception {
+        SampleManager1 sm;
+        ArrayList<Integer> ids1, ids2;
+        ArrayList<SampleManager1> sms;
+        HashMap<Integer, SampleManager1> map1, map2;
+        EnumSet<SampleManager1.Load> el;
+
+        /*
+         * to reduce database select calls, we are going to fetch everything for
+         * a given select and unroll through loops.
+         */
+        sms = new ArrayList<SampleManager1>();
+        if (elements != null)
+            el = EnumSet.copyOf(Arrays.asList(elements));
+        else
+            el = EnumSet.noneOf(SampleManager1.Load.class);
+
+        /*
+         * we will do it bottom up since we only have analysis ids.
+         * 
+         * build level 3, everything is based on analysis ids
+         */
+        ids1 = new ArrayList<Integer>();
+        map1 = new HashMap<Integer, SampleManager1>();
+
+        return sms;
+    }
+
+    /**
+     * Returns a sample manager for specified accession number and requested
+     * load elements
+     */
+    public SampleManager1 fetchByAccession(Integer accessionNumber, SampleManager1.Load... elements) throws Exception {
+        return null;
+    }
+
+    /**
+     * Returns a sample manager based on the specified query and requested load
+     * elements
+     */
+    public ArrayList<SampleManager1> fetchByQuery(Query query, SampleManager1.Load... elements) throws Exception {
+        return null;
+    }
+
+    /**
+     * Returns a locked sample manager with specified sample id
+     */
+    public SampleManager1 fetchForUpdate(Integer sampleId) throws Exception {
+        return fetchForUpdate(sampleId,
+                              SampleManager1.Load.ORGANIZATION,
+                              SampleManager1.Load.PROJECT,
+                              SampleManager1.Load.QA,
+                              SampleManager1.Load.AUXDATA,
+                              SampleManager1.Load.STORAGE,
+                              SampleManager1.Load.NOTE,
+                              SampleManager1.Load.ANALYSISUSER,
+                              SampleManager1.Load.RESULT);
+    }
+
+    /**
+     * Returns a locked sample manager with specified sample id and requested
+     * load elements
+     */
+    public SampleManager1 fetchForUpdate(Integer sampleId, SampleManager1.Load... elements) throws Exception {
+        ArrayList<Integer> ids;
+        ArrayList<SampleManager1> sms;
+
+        ids = new ArrayList<Integer>(1);
+        ids.add(sampleId);
+        sms = fetchForUpdate(ids, elements);
+        return sms.size() == 0 ? null : sms.get(0);
+    }
+
+    /**
+     * Returns a list of locked sample managers with specified sample ids and
+     * requested load elements
+     */
+    public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds,
+                                                    SampleManager1.Load... elements) throws Exception {
+        lock.lock(ReferenceTable.SAMPLE, sampleIds);
+        return fetchByIds(sampleIds, elements);
+    }
+
+    /**
+     * Returns sample managers loaded with additional elements
+     */
+    public SampleManager1 fetchWith(SampleManager1 sm, SampleManager1.Load... elements) throws Exception {
+        ArrayList<Integer> ids;
+        EnumSet<SampleManager1.Load> el;
+
+        if (elements != null)
+            el = EnumSet.copyOf(Arrays.asList(elements));
+        else
+            return sm;
+
+        /*
+         * various lists for each sample
+         */
+        ids = new ArrayList<Integer>(1);
+        ids.add(getSample(sm).getId());
+        if (el.contains(SampleManager1.Load.ORGANIZATION)) {
+            setOrganizations(sm, null);
+            for (SampleOrganizationViewDO data : sampleOrganization.fetchBySampleIds(ids))
+                addOrganization(sm, data);
+        }
+
+        if (el.contains(SampleManager1.Load.PROJECT)) {
+            setProjects(sm, null);
+            for (SampleProjectViewDO data : sampleProject.fetchBySampleIds(ids))
+                addProject(sm, data);
+        }
+
+        if (el.contains(SampleManager1.Load.QA)) {
+            setSampleQAs(sm, null);
+            for (SampleQaEventViewDO data : sampleQA.fetchBySampleIds(ids))
+                addSampleQA(sm, data);
+        }
+
+        if (el.contains(SampleManager1.Load.AUXDATA)) {
+            setAuxilliary(sm, null);
+            for (AuxDataViewDO data : auxdata.fetchByIds(ids, ReferenceTable.SAMPLE))
+                addAuxilliary(sm, data);
+        }
+
+        if (el.contains(SampleManager1.Load.NOTE)) {
+            setSampleNotes(sm, null);
+            for (NoteViewDO data : note.fetchByIds(ids, ReferenceTable.SAMPLE))
+                addSampleNote(sm, data);
+        }
+
+        /*
+         * build level 2, everything is based on item ids
+         */
+        if (el.contains(SampleManager1.Load.STORAGE)) {
+            ids = new ArrayList<Integer>();
+            for (SampleItemViewDO data : getItems(sm))
+                ids.add(data.getId());
+            setStorages(sm, null);
+            for (StorageViewDO data : storage.fetchByIds(ids, ReferenceTable.SAMPLE_ITEM))
+                addStorage(sm, data);
+        }
+
+        /*
+         * build level 3, everything is based on analysis ids
+         */
+        ids = new ArrayList<Integer>();
+        for (AnalysisViewDO data : getAnalyses(sm))
+            ids.add(data.getId());
+
+        if (el.contains(SampleManager1.Load.NOTE)) {
+            setAnalysisNotes(sm, null);
+            for (NoteViewDO data : note.fetchByIds(ids, ReferenceTable.ANALYSIS))
+                addAnalysisNote(sm, data);
+        }
+
+        if (el.contains(SampleManager1.Load.QA)) {
+            setAnalysisQAs(sm, null);
+            for (AnalysisQaEventViewDO data : analysisQA.fetchByAnalysisIds(ids))
+                addAnalysisQA(sm, data);
+        }
+
+        if (el.contains(SampleManager1.Load.STORAGE)) {
+            for (StorageViewDO data : storage.fetchByIds(ids, ReferenceTable.ANALYSIS))
+                addStorage(sm, data);
+        }
+
+        if (el.contains(SampleManager1.Load.ANALYSISUSER)) {
+            setUsers(sm, null);
+            for (AnalysisUserViewDO data : user.fetchByAnalysisIds(ids))
+                addUser(sm, data);
+        }
+
+        if (el.contains(SampleManager1.Load.RESULT)) {
+            setResults(sm, null);
+            for (ResultViewDO data : result.fetchByAnalysisIds(ids))
+                addResult(sm, data);
+        }
+
+        return sm;
+    }
+
+    /*
+     * test code
+     */
+    public ArrayList<SampleManager> fetchByIds(ArrayList<Integer> sampleIds) throws Exception {
+        ArrayList<SampleManager> sms;
+        long before, after;
+
+        sms = new ArrayList<SampleManager>();
+
+        before = System.currentTimeMillis();
+        System.out.println("started at : " + before);
+        for (int i = 0; i < sampleIds.size(); i++ ) {
+            try {
+                sms.add(SampleManager.fetchWithAllDataById(sampleIds.get(i)));
+            } catch (NotFoundException e) {
+                // ignore
+            }
+        }
+
         after = System.currentTimeMillis();
-        System.out.println("ended at : "+ after);
-        
-        System.out.println("total time : "+ (after-before)/1000+" seconds");
+        System.out.println("ended at : " + after);
+
+        System.out.println("total time : " + (after - before) / 1000 + " seconds");
 
         return sms;
     }
