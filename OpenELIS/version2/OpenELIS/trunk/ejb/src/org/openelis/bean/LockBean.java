@@ -25,6 +25,7 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,31 +40,28 @@ import javax.validation.ConstraintViolationException;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.entity.Lock;
-import org.openelis.entity.Lock.PK;
 import org.openelis.gwt.common.EntityLockedException;
-import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.LockLocal;
 import org.openelis.local.UserCacheLocal;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class LockBean implements LockLocal {
 
     @PersistenceContext
-    private EntityManager manager;
-    
+    private EntityManager  manager;
+
     @EJB
     private UserCacheLocal userCache;
 
-    private static int    DEFAULT_LOCK_TIME = 15 * 60 * 1000,   // 15 M * 60 S * 1000 Millis
-                          GRACE_LOCK_TIME = 2 * 60 * 1000;
+    private static int     DEFAULT_LOCK_TIME = 15 * 60 * 1000, // 15 M * 60 S *
+                           GRACE_LOCK_TIME = 2 * 60 * 1000; // 1000 Millis
 
     /**
      * Method creates a new lock entry for the specified table reference and id.
      * If a valid lock currently exist, a EntityLockedException is thrown.
      */
-    public void lock(int referenceTableId, int referenceId) throws Exception {
+    public void lock(int referenceTableId, Integer referenceId) throws Exception {
         lock(referenceTableId, referenceId, DEFAULT_LOCK_TIME);
     }
 
@@ -72,126 +70,183 @@ public class LockBean implements LockLocal {
      * for the specified time on milliseconds. If a valid lock currently exist,
      * a EntityLockedException is thrown.
      */
-    public void lock(int referenceTableId, int referenceId, long lockTimeMillis) throws Exception {
-        PK pk;
+    public void lock(int referenceTableId, Integer referenceId, long lockTimeMillis) throws Exception {
+        ArrayList<Integer> referenceIds;
+
+        referenceIds = new ArrayList<Integer>();
+        referenceIds.add(referenceId);
+        lock(referenceTableId, referenceIds, lockTimeMillis);
+    }
+
+    /**
+     * Method creates new lock entries for the specified table reference and
+     * ids. If a valid lock currently exist for any of the ids, a
+     * EntityLockedException is thrown.
+     */
+    public void lock(int referenceTableId, ArrayList<Integer> referenceIds) throws Exception {
+        lock(referenceTableId, referenceIds, DEFAULT_LOCK_TIME);
+    }
+
+    /**
+     * Method creates new lock entries for the specified table reference and ids
+     * and specified time on milliseconds. If a valid lock currently exist for
+     * any of the ids, a EntityLockedException is thrown.
+     */
+    public void lock(int referenceTableId, ArrayList<Integer> referenceIds, long lockTimeMillis) throws Exception {
+        long now;
         Lock lock;
-        long timeMillis;
+        List<Lock> locks;
+        Query query;
         Integer userId;
-        SystemUserVO user;
         String sessionId;
 
+        now = System.currentTimeMillis();
+
+        /*
+         * cleanup any expired locks
+         */
+        query = manager.createNamedQuery("Lock.FetchByIds");
+        query.setParameter("ids", referenceIds);
+        query.setParameter("tableId", referenceTableId);
+        locks = query.getResultList();
+        if (locks.size() > 0) {
+            for (Lock l : locks) {
+                if (l.getExpires() >= now) {
+                    throw new EntityLockedException("entityLockException",
+                                                    userCache.getSystemUser(l.getSystemUserId())
+                                                             .getLoginName(),
+                                                    new Date(l.getExpires()).toString());
+                }
+                manager.remove(l);
+                manager.flush();
+            }
+        }
+
+        /*
+         * insert all the locks
+         */
         userId = userCache.getId();
         sessionId = userCache.getSessionId();
-        timeMillis = System.currentTimeMillis();
+        try {
+            for (Integer id : referenceIds) {
+                lock = new Lock();
+                lock.setReferenceTableId(referenceTableId);
+                lock.setReferenceId(id);
+                lock.setSystemUserId(userId);
+                lock.setExpires(lockTimeMillis + now);
+                lock.setSessionId(sessionId);
+                manager.persist(lock);
+            }
+            manager.flush();
+        } catch (ConstraintViolationException e) {
+            throw new EntityLockedException("entityLockException",
+                                            "unknown",
+                                            new Date(lockTimeMillis + now).toString());
+        } catch (PersistenceException e) {
+            throw new EntityLockedException("entityLockException",
+                                            "unknown",
+                                            new Date(lockTimeMillis + now).toString());
+        }
+    }
 
-        pk = new Lock.PK(referenceTableId, referenceId);
-        synchronized (pk) {
-            try {
-                lock = manager.find(Lock.class, pk);
-                if (lock == null) {
-                    lock = new Lock();
-                    lock.setReferenceTableId(referenceTableId);
-                    lock.setReferenceId(referenceId);
-                    lock.setSystemUserId(userId);
-                    lock.setExpires(lockTimeMillis + timeMillis);
-                    lock.setSessionId(sessionId);
-                    manager.persist(lock);
-                } else if (lock.getExpires() < timeMillis) {
-                    //
-                    // if the lock has expired, then we can take it over
-                    //
-                    lock.setSystemUserId(userId);
-                    lock.setExpires(lockTimeMillis + timeMillis);
-                    lock.setSessionId(sessionId);
-                } else {
-                    user = userCache.getSystemUser(lock.getSystemUserId());
-                    throw new EntityLockedException("entityLockException",
-                                                     user.getLoginName(),
-                                                     new Date(lock.getExpires()).toString());
+    /**
+     * This method removes the lock entry for the specified reference table and
+     * id. The lock record must be owned by the user before the lock is removed.
+     */
+    public void unlock(int referenceTableId, Integer referenceId) {
+        ArrayList<Integer> referenceIds;
+
+        referenceIds = new ArrayList<Integer>();
+        referenceIds.add(referenceId);
+        unlock(referenceTableId, referenceIds);
+    }
+
+    public void unlock(int referenceTableId, ArrayList<Integer> referenceIds) {
+        Query query;
+        Integer userId;
+        String sessionId;
+        List<Lock> locks;
+
+        query = manager.createNamedQuery("Lock.FetchByIds");
+        query.setParameter("ids", referenceIds);
+        query.setParameter("tableId", referenceTableId);
+        locks = query.getResultList();
+        if (locks.size() > 0) {
+            userId = userCache.getId();
+            sessionId = userCache.getSessionId();
+            for (Lock l : locks) {
+                if (l.getSystemUserId().equals(userId) && l.getSessionId().equals(sessionId)) {
+                    manager.remove(l);
+                    manager.flush();
                 }
-                manager.flush();
-            } catch (ConstraintViolationException e) {
-                throw new EntityLockedException("entityLockException",
-                                                 "unknown",
-                                                 new Date(lockTimeMillis + timeMillis).toString());
-            } catch (PersistenceException e) {
-                throw new EntityLockedException("entityLockException",
-                                                 "unknown",
-                                                 new Date(lockTimeMillis + timeMillis).toString());
-            } catch (Exception e) {
-                throw e;
             }
         }
     }
 
     /**
-     * This method removes the lock entry for the specified reference table and id. The
-     * lock record must be owned by the user before the lock is removed.
+     * This method will search for an existing lock for the specified reference
+     * table and id. If a lock is not found or the lock does not belong to the
+     * calling user, the method throws EntityLockException specifying that the
+     * lock is not valid. Note that expired locks are valid (because no one else
+     * has requested for the same resource to be locked) and this method resets
+     * the expiration time of expired or nearly expire locks by a constant grace
+     * time.
      */
-    public void unlock(int referenceTableId, int referenceId) {
-        PK pk;
-        Lock lock;
-        Integer userId;
-        String sessionId;
+    public void validateLock(int referenceTableId, Integer referenceId) throws Exception {
+        ArrayList<Integer> referenceIds;
 
-        manager.setFlushMode(FlushModeType.COMMIT);
-
-        pk = new Lock.PK(referenceTableId, referenceId);
-        try {
-            userId = userCache.getId();
-            sessionId = userCache.getSessionId();
-            lock = manager.find(Lock.class, pk);
-            if (lock != null && lock.getSystemUserId().equals(userId) &&
-                lock.getSessionId().equals(sessionId))
-                manager.remove(lock);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        referenceIds = new ArrayList<Integer>();
+        referenceIds.add(referenceId);
+        validateLock(referenceTableId, referenceIds);
     }
 
     /**
-     * This method will search for an existing lock for the specified reference table and id.
-     * If a lock is not found or the lock does not belong to the calling user, the method
-     * throws EntityLockException specifying that the lock is not valid.
-     * Note that expired locks are valid (because no one else has requested for the
-     * same resource to be locked) and this method resets the expiration time of expired or
-     * nearly expire locks by a constant grace time.    
+     * This method will search for a list of existing lock for the specified
+     * reference table and ids. If locks are not found or they don't belong to
+     * the calling user, the method throws EntityLockException specifying that
+     * the lock is not valid. Note that expired locks are valid (because no one
+     * else has requested for the same resource to be locked) and this method
+     * resets the expiration time of expired or nearly expire locks by a
+     * constant grace time.
      */
-    public void validateLock(int referenceTableId, int referenceId) throws Exception {
-        PK pk;
-        Lock lock;
+    public void validateLock(int referenceTableId, ArrayList<Integer> referenceIds) throws Exception {
         long timeMillis;
+        Query query;
         Integer userId;
         String sessionId;
+        List<Lock> locks;
 
-        pk = new Lock.PK(referenceTableId, referenceId);
-        try {
-            lock = manager.find(Lock.class, pk);
-            userId = userCache.getId();
-            sessionId = userCache.getSessionId();
-        } catch (Exception e) {
-            lock = null;
-            userId = null;
-            sessionId = null;
-        }
-
-        if (lock == null || !lock.getSystemUserId().equals(userId) ||
-            !lock.getSessionId().equals(sessionId))
+        query = manager.createNamedQuery("Lock.FetchByIds");
+        query.setParameter("ids", referenceIds);
+        query.setParameter("tableId", referenceTableId);
+        locks = query.getResultList();
+        if (locks.size() != referenceIds.size())
             throw new EntityLockedException("expiredLockException");
-        //
-        // if the lock has expired, we are going to refresh its expiration time
-        //
+
+        userId = userCache.getId();
+        sessionId = userCache.getSessionId();
         timeMillis = System.currentTimeMillis();
-        if (lock.getExpires() < timeMillis-GRACE_LOCK_TIME)
-            lock.setExpires(timeMillis+GRACE_LOCK_TIME);
+        for (Lock l : locks) {
+            if ( !l.getSystemUserId().equals(userId) || !l.getSessionId().equals(sessionId))
+                throw new EntityLockedException("expiredLockException");
+            //
+            // if the lock has expired, we are going to refresh its expiration
+            // time
+            //
+            if (l.getExpires() < timeMillis - GRACE_LOCK_TIME) {
+                l.setExpires(timeMillis + GRACE_LOCK_TIME);
+                manager.flush();
+            }
+        }
     }
-    
+
     /**
-     * Removes all the locks for a user's session. This action is often called from logout.
+     * Removes all the locks for a user's session. This action is often called
+     * from logout.
      */
     public void removeLocks() {
         String sessionId;
-        
+
         try {
             sessionId = userCache.getSessionId();
             removeLocks(sessionId);
@@ -203,16 +258,17 @@ public class LockBean implements LockLocal {
     public void removeLocks(String sessionId) {
         Query query;
         List<Lock> locks;
-        
-        if (sessionId == null || sessionId.trim().length() < 1) 
+
+        if (sessionId == null || sessionId.trim().length() == 0)
             return;
-        manager.setFlushMode(FlushModeType.COMMIT);
 
         query = manager.createNamedQuery("Lock.FetchBySessionId");
         query.setParameter("id", sessionId);
-
         locks = query.getResultList();
-        for (Lock lock: locks)
-            manager.remove(lock);
+        if (locks.size() != 0) {
+            for (Lock lock : locks)
+                manager.remove(lock);
+            manager.flush();
+        }
     }
 }

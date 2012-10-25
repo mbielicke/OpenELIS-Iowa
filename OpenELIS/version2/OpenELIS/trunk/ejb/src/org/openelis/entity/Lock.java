@@ -44,7 +44,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 @NamedQueries({
     @NamedQuery( name = "Lock.FetchBySessionId",
                 query = "select l "
-                      + " from Lock l where l.sessionId = :id")})
+                      + " from Lock l where l.sessionId = :id"),
+    @NamedQuery( name = "Lock.FetchByIds",
+                query = "select l "
+                      + " from Lock l where l.pk.referenceTableId = :tableId and"
+                      + " l.pk.referenceId in (:ids)")})
+
 @Entity
 @Table(name = "lock")
 public class Lock {
