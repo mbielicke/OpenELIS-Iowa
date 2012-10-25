@@ -25,9 +25,25 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.*;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysis;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysisNote;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysisQA;
+import static org.openelis.manager.SampleManager1Accessor.addAuxilliary;
+import static org.openelis.manager.SampleManager1Accessor.addItem;
+import static org.openelis.manager.SampleManager1Accessor.addOrganization;
+import static org.openelis.manager.SampleManager1Accessor.addProject;
+import static org.openelis.manager.SampleManager1Accessor.addResult;
+import static org.openelis.manager.SampleManager1Accessor.addSampleNote;
+import static org.openelis.manager.SampleManager1Accessor.addSampleQA;
+import static org.openelis.manager.SampleManager1Accessor.addStorage;
+import static org.openelis.manager.SampleManager1Accessor.addUser;
+import static org.openelis.manager.SampleManager1Accessor.setSample;
+import static org.openelis.manager.SampleManager1Accessor.setSampleEnvironmental;
+import static org.openelis.manager.SampleManager1Accessor.setSamplePrivateWell;
+import static org.openelis.manager.SampleManager1Accessor.setSampleSDWIS;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 
@@ -51,6 +67,7 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
+import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.AnalysisUserLocal;
@@ -67,11 +84,13 @@ import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.StorageLocal;
+import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
+import org.openelis.remote.SampleManager1Remote;
 
 @Stateless
 @SecurityDomain("openelis")
-public class SampleManager1Bean {
+public class SampleManager1Bean implements SampleManager1Remote {
 
     @EJB
     private LockLocal                lock;
@@ -89,10 +108,10 @@ public class SampleManager1Bean {
     private SamplePrivateWellLocal   samplePrivate;
 
     @EJB
-    private SampleOrganizationLocal  organization;
+    private SampleOrganizationLocal  sampleOrganization;
 
     @EJB
-    private SampleProjectLocal       project;
+    private SampleProjectLocal       sampleProject;
 
     @EJB
     private SampleQAEventLocal       sampleQA;
@@ -125,7 +144,7 @@ public class SampleManager1Bean {
      * Returns sample a manager for specified primary id and requested load
      * elements
      */
-    public SampleManager1 fetchById(Integer sampleId, EnumSet<SampleManager1.Load> elements) throws Exception {
+    public SampleManager1 fetchById(Integer sampleId, SampleManager1.Load... elements) throws Exception {
         ArrayList<Integer> ids;
         ArrayList<SampleManager1> sms;
 
@@ -134,29 +153,61 @@ public class SampleManager1Bean {
         sms = fetchByIds(ids, elements);
         return sms.size() < 1 ? null : sms.get(0);
     }
+    
+    public ArrayList<SampleManager> fetchByIds(ArrayList<Integer> sampleIds) throws Exception {
+        ArrayList<SampleManager> sms;
+        long before, after;
+
+        sms = new ArrayList<SampleManager>();
+
+        before = System.currentTimeMillis();
+        System.out.println("started at : "+ before);
+        for (int i = 0; i < sampleIds.size(); i++) {
+            try {
+                sms.add(SampleManager.fetchWithAllDataById(sampleIds.get(i)));
+            } catch (NotFoundException e) {
+                //ignore 
+            }
+        }
+        
+        after = System.currentTimeMillis();
+        System.out.println("ended at : "+ after);
+        
+        System.out.println("total time : "+ (after-before)/1000+" seconds");
+        
+        return sms;
+    }
 
     /**
      * Returns sample managers for specified primary ids and requested load
      * elements
      */
     public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds,
-                                                EnumSet<SampleManager1.Load> elements) {
+                                                SampleManager1.Load... elements) {
+        long before, after;
         SampleManager1 sm;
         ArrayList<Integer> ids1, ids2;
         ArrayList<SampleManager1> sms;
         HashMap<Integer, SampleManager1> map1, map2;
-
+        EnumSet<SampleManager1.Load> el;
+ 
         /*
          * to reduce database select calls, we are going to fetch everything for
          * a given select and unroll through loops.
          */
         sms = new ArrayList<SampleManager1>();
-
+        el = null;
+        if (elements != null)
+            el = EnumSet.copyOf(Arrays.asList(elements));
+        
         /*
          * build level 1, everything is based on sample ids
          */
         ids1 = new ArrayList<Integer>();
         map1 = new HashMap<Integer, SampleManager1>();
+        
+        before = System.currentTimeMillis();
+        System.out.println("started at : "+ before);
         for (SampleDO data : sample.fetchByIds(sampleIds)) {
             sm = new SampleManager1();
             setSample(sm, data);
@@ -165,59 +216,59 @@ public class SampleManager1Bean {
             ids1.add(data.getId());     // for fetch
             map1.put(data.getId(), sm); // for linking
         }
-
+        
         /*
          * additional domains for each sample
          */
         for (SampleEnvironmentalDO data : sampleEnvironmental.fetchBySampleIds(ids1)) {
-            sm = map1.get(data.getId());
+            sm = map1.get(data.getSampleId());
             setSampleEnvironmental(sm, data);
         }
 
         for (SampleSDWISViewDO data : sampleSDWIS.fetchBySampleIds(ids1)) {
-            sm = map1.get(data.getId());
+            sm = map1.get(data.getSampleId());
             setSampleSDWIS(sm, data);
         }
 
         for (SamplePrivateWellViewDO data : samplePrivate.fetchBySampleIds(ids1)) {
-            sm = map1.get(data.getId());
+            sm = map1.get(data.getSampleId());
             setSamplePrivateWell(sm, data);
         }
 
         /*
          * various lists for each sample
          */
-        if (elements != null && elements.contains(SampleManager1.Load.ORGANIZATION)) {
-            for (SampleOrganizationViewDO data : organization.fetchBySampleIds(ids1)) {
-                sm = map1.get(data.getId());
+        if (el != null && el.contains(SampleManager1.Load.ORGANIZATION)) {
+            for (SampleOrganizationViewDO data : sampleOrganization.fetchBySampleIds(ids1)) {
+                sm = map1.get(data.getSampleId());
                 addOrganization(sm, data);
             }
         }
 
-        if (elements != null && elements.contains(SampleManager1.Load.PROJECT)) {
-            for (SampleProjectViewDO data : project.fetchBySampleIds(ids1)) {
-                sm = map1.get(data.getId());
+        if (el != null && el.contains(SampleManager1.Load.PROJECT)) {
+            for (SampleProjectViewDO data : sampleProject.fetchBySampleIds(ids1)) {
+                sm = map1.get(data.getSampleId());
                 addProject(sm, data);
             }
         }
 
-        if (elements != null && elements.contains(SampleManager1.Load.QA)) {
+        if (el != null && el.contains(SampleManager1.Load.QA)) {
             for (SampleQaEventViewDO data : sampleQA.fetchBySampleIds(ids1)) {
-                sm = map1.get(data.getId());
+                sm = map1.get(data.getSampleId());
                 addSampleQA(sm, data);
             }
         }
 
-        if (elements != null && elements.contains(SampleManager1.Load.AUXDATA)) {
-            for (AuxDataViewDO data : auxdata.fetchByRefIds(ids1, ReferenceTable.SAMPLE)) {
-                sm = map1.get(data.getId());
+        if (el != null && el.contains(SampleManager1.Load.AUXDATA)) {
+            for (AuxDataViewDO data : auxdata.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
+                sm = map1.get(data.getReferenceId());
                 addAuxilliary(sm, data);
             }
         }
 
-        if (elements != null && elements.contains(SampleManager1.Load.NOTE)) {
-            for (NoteViewDO data : note.fetchByRefIds(ids1, ReferenceTable.SAMPLE)) {
-                sm = map1.get(data.getId());
+        if (el != null && el.contains(SampleManager1.Load.NOTE)) {
+            for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
+                sm = map1.get(data.getReferenceId());
                 addSampleNote(sm, data);
             }
         }
@@ -236,8 +287,8 @@ public class SampleManager1Bean {
             }
         }
 
-        if (elements != null && elements.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByRefIds(ids2, ReferenceTable.SAMPLE_ITEM)) {
+        if (el != null && el.contains(SampleManager1.Load.STORAGE)) {
+            for (StorageViewDO data : storage.fetchByIds(ids2, ReferenceTable.SAMPLE_ITEM)) {
                 sm = map2.get(data.getReferenceId());
                 addStorage(sm, data);
             }
@@ -259,40 +310,45 @@ public class SampleManager1Bean {
         ids2 = null;
         map2 = null;
 
-        if (elements != null && elements.contains(SampleManager1.Load.NOTE)) {
-            for (NoteViewDO data : note.fetchByRefIds(ids1, ReferenceTable.ANALYSIS)) {
-                sm = map1.get(data.getId());
+        if (el != null && el.contains(SampleManager1.Load.NOTE)) {
+            for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
+                sm = map1.get(data.getReferenceId());
                 addAnalysisNote(sm, data);
             }
         }
 
-        if (elements != null && elements.contains(SampleManager1.Load.QA)) {
+        if (el != null && el.contains(SampleManager1.Load.QA)) {
             for (AnalysisQaEventViewDO data : analysisQA.fetchByAnalysisIds(ids1)) {
                 sm = map1.get(data.getAnalysisId());
                 addAnalysisQA(sm, data);
             }
         }
 
-        if (elements != null && elements.contains(SampleManager1.Load.STORAGE)) {
-            for (StorageViewDO data : storage.fetchByRefIds(ids1, ReferenceTable.ANALYSIS)) {
+        if (el != null && el.contains(SampleManager1.Load.STORAGE)) {
+            for (StorageViewDO data : storage.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
                 sm = map1.get(data.getReferenceId());
                 addStorage(sm, data);
             }
         }
 
-        if (elements != null && elements.contains(SampleManager1.Load.ANALYSISUSER)) {
+        if (el != null && el.contains(SampleManager1.Load.ANALYSISUSER)) {
             for (AnalysisUserViewDO data : user.fetchByAnalysisIds(ids1)) {
                 sm = map1.get(data.getAnalysisId());
                 addUser(sm, data);
             }
         }
 
-        if (elements != null && elements.contains(SampleManager1.Load.RESULT)) {
+        if (el != null && el.contains(SampleManager1.Load.RESULT)) {
             for (ResultViewDO data : result.fetchByAnalysisIds(ids1)) {
                 sm = map1.get(data.getAnalysisId());
                 addResult(sm, data);
             }
         }
+        
+        after = System.currentTimeMillis();
+        System.out.println("ended at : "+ after);
+        
+        System.out.println("total time : "+ (after-before)/1000+" seconds");
 
         return sms;
     }
