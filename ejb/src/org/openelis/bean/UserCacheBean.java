@@ -70,7 +70,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
     /**
      * Returns the system user id associated with this context.
      */
-    public Integer getId() throws Exception {
+    public Integer getId() {
         SystemUserVO data;
 
         data = getSystemUser();
@@ -85,7 +85,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
      * we concat username, sessionId, and locale on initial login and you will need a special
      * login class for JBOSS to parse the username.
      */
-    public String getName() throws Exception {
+    public String getName() {
         String parts[];
         
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
@@ -100,7 +100,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
      * we concat username, sessionId, and locale on initial login and you will need a special
      * login class for JBOSS to parse the username.
      */
-    public String getSessionId() throws Exception {
+    public String getSessionId() {
         String parts[];
         
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
@@ -116,7 +116,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
      * we concat username, sessionId, and locale on initial login and you will need a special
      * login class for JBOSS to parse the username.
      */
-    public String getLocale() throws Exception {
+    public String getLocale() {
         String parts[];
         
         parts = ctx.getCallerPrincipal().getName().split(";", 3);
@@ -130,7 +130,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
     /**
      * Returns the system user data associated with this context.
      */
-    public SystemUserVO getSystemUser() throws Exception {
+    public SystemUserVO getSystemUser() {
         Element e;
         String name;
 
@@ -145,7 +145,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
     /**
      * Returns the system user data for the specified id.
      */
-    public SystemUserVO getSystemUser(Integer id) throws Exception {
+    public SystemUserVO getSystemUser(Integer id) {
         Element e;
         SystemUserVO data;
 
@@ -167,7 +167,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
     /**
      * Returns the system user data for the specified name.
      */
-    public SystemUserVO getSystemUser(String name) throws Exception {
+    public SystemUserVO getSystemUser(String name) {
         Element e;
         SystemUserVO data;
         ArrayList<SystemUserVO> list;
@@ -252,7 +252,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
     /**
      * Returns the system user data for matching name.
      */
-    public ArrayList<SystemUserVO> getSystemUsers(String name, int max) throws Exception {
+    public ArrayList<SystemUserVO> getSystemUsers(String name, int max) {
         ArrayList<SystemUserVO> list;
 
         try {
@@ -264,7 +264,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
         return list;
     }
     
-    public ArrayList<SystemUserVO> getEmployees(String name, int max) throws Exception {
+    public ArrayList<SystemUserVO> getEmployees(String name, int max) {
         ArrayList<SystemUserVO> list;
 
         try {
@@ -279,7 +279,7 @@ public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
     /**
      * Returns the user permission for current user.
      */
-    public SystemUserPermission getPermission() throws Exception {
+    public SystemUserPermission getPermission() {
         Element e;
         String name, appName;
         SystemUserPermission data;

@@ -25,13 +25,16 @@
 */
 package org.openelis.local;
 
+import java.util.ArrayList;
+
 import javax.ejb.Local;
 
 import org.openelis.domain.SamplePrivateWellViewDO;
 
 @Local
 public interface SamplePrivateWellLocal {
-    public SamplePrivateWellViewDO fetchBySampleId(Integer sampleId) throws Exception;    
+    public SamplePrivateWellViewDO fetchBySampleId(Integer sampleId) throws Exception;
+    public ArrayList<SamplePrivateWellViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds);
     public SamplePrivateWellViewDO add(SamplePrivateWellViewDO data) throws Exception ;
     public SamplePrivateWellViewDO update(SamplePrivateWellViewDO data) throws Exception;
     public void delete(SamplePrivateWellViewDO data) throws Exception;

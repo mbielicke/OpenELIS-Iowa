@@ -51,9 +51,12 @@ import org.openelis.utils.Auditable;
  */
 
 @NamedQueries( {
-    @NamedQuery(name = "SampleSDWIS.FetchBySampleId", query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId, " +
-                       " s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.location, s.collector, p.name, p.number0) " +
-                       " from SampleSDWIS s left join s.pws p where s.sampleId = :id")})
+    @NamedQuery(name = "SampleSDWIS.FetchBySampleId", query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId," +
+                       "s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.location, s.collector, p.name, p.number0) " +
+                       " from SampleSDWIS s left join s.pws p where s.sampleId = :id"),
+    @NamedQuery(name = "SampleSDWIS.FetchBySampleIds", query = "select new org.openelis.domain.SampleSDWISViewDO(s.id, s.sampleId, s.pwsId, s.stateLabId," +
+                       "s.facilityId, s.sampleTypeId, s.sampleCategoryId, s.samplePointId, s.location, s.collector, p.name, p.number0) "
+                     + " from SampleSDWIS s left join s.pws p where s.sampleId in (:ids)")})
                        
 @Entity
 @Table(name = "sample_sdwis")

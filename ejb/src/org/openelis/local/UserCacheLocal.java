@@ -37,27 +37,27 @@ import org.openelis.gwt.common.SystemUserVO;
 @Local
 public interface UserCacheLocal {
 
-    public Integer getId() throws Exception ;
+    public Integer getId();
     
-    public String getName() throws Exception;
+    public String getName();
     
-    public String getSessionId() throws Exception;
+    public String getSessionId();
     
-    public String getLocale() throws Exception;
+    public String getLocale();
     
-    public SystemUserVO getSystemUser() throws Exception;
+    public SystemUserVO getSystemUser();
     
-    public SystemUserVO getSystemUser(Integer id) throws Exception;
+    public SystemUserVO getSystemUser(Integer id);
 
-    public SystemUserVO getSystemUser(String name) throws Exception;
+    public SystemUserVO getSystemUser(String name);
     
-    public ArrayList<SystemUserVO> getSystemUsers(String name, int max) throws Exception;
+    public ArrayList<SystemUserVO> getSystemUsers(String name, int max);
     
-    public ArrayList<SystemUserVO> getEmployees(String name, int max) throws Exception;
+    public ArrayList<SystemUserVO> getEmployees(String name, int max);
 
     public void applyPermission(String module, ModuleFlags flag) throws Exception;
 
     public void applyPermission(String section, SectionFlags flag) throws Exception;
     
-    public SystemUserPermission getPermission() throws Exception;
+    public SystemUserPermission getPermission();
 }

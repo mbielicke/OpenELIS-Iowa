@@ -32,11 +32,14 @@ package org.openelis.entity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -48,12 +51,16 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries( {
-     @NamedQuery( name = "AnalysisUser.FetchById",
+    @NamedQuery( name = "AnalysisUser.FetchById",
                 query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId, a.actionId, '')"
                       + " from AnalysisUser a where a.id = :id"),
     @NamedQuery( name = "AnalysisUser.FetchByAnalysisId",
                 query = "select new org.openelis.domain.AnalysisUserViewDO(a.id, a.analysisId, a.systemUserId,a.actionId, '')"
-                      + " from AnalysisUser a where a.analysisId = :id ")})
+                      + " from AnalysisUser a where a.analysisId = :id"),
+    @NamedQuery( name = "AnalysisUser.FetchByAnalysisIds",
+                query = "select new org.openelis.domain.AnalysisUserViewDO(au.id, au.analysisId, au.systemUserId, au.actionId, '')"
+                      + " from AnalysisUser au left join au.analysis a left join a.test t left join a.sampleItem si left join si.sample s"
+                      +	" where au.analysisId in (:ids) order by s.id, si.itemSequence, t.name, t.method.name, au.id")})
 
 @Entity
 @Table(name = "analysis_user")
@@ -73,6 +80,10 @@ public class AnalysisUser implements Auditable, Cloneable {
 
     @Column(name = "action_id")
     private Integer      actionId;
+    
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "analysis_id", insertable = false, updatable = false)
+    private Analysis        analysis;
 
     @Transient
     private AnalysisUser original;
@@ -111,6 +122,14 @@ public class AnalysisUser implements Auditable, Cloneable {
     public void setActionId(Integer actionId) {
         if (DataBaseUtil.isDifferent(actionId, this.actionId))
             this.actionId = actionId;
+    }
+    
+    public Analysis getAnalysis() {
+        return analysis;
+    }
+
+    public void setAnalysis(Analysis analysis) {
+        this.analysis = analysis;
     }
 
     public void setClone() {

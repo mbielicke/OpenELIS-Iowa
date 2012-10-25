@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -34,6 +35,7 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
@@ -49,7 +51,7 @@ import org.openelis.local.AnalysisLocal;
 import org.openelis.local.SampleItemLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.StorageLocal;
-import org.openelis.utils.EJBFactory;
+import org.openelis.local.UserCacheLocal;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -67,23 +69,27 @@ public class StorageBean implements StorageLocal {
 
     @EJB
     private SampleLocal     sample;
+    
+    @EJB
+    private UserCacheLocal   userCache; 
+        
 
-    public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception {
+    public ArrayList<StorageViewDO> fetchById(Integer referenceId, Integer refTableId) throws Exception {
         Query query;
         SystemUserVO user;
         StorageViewDO data;
         ArrayList<StorageViewDO> list;
 
         query = manager.createNamedQuery("Storage.FetchById");
-        query.setParameter("referenceTable", refTableId);
-        query.setParameter("id", refId);
+        query.setParameter("id", referenceId);
+        query.setParameter("tableId", refTableId);
 
         list = DataBaseUtil.toArrayList(query.getResultList());
         for (int i = 0; i < list.size(); i++ ) {
             data = list.get(i);
 
             if (data.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
+                user = userCache.getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setUserName(user.getLoginName());
             }
@@ -91,6 +97,31 @@ public class StorageBean implements StorageLocal {
 
         if (list.size() == 0)
             throw new NotFoundException();
+
+        return list;
+    }
+    
+    public ArrayList<StorageViewDO> fetchByIds(ArrayList<Integer> referenceIds, Integer refTableId) {
+        Query query;
+        SystemUserVO user;
+        StorageViewDO data;
+        ArrayList<StorageViewDO> list;
+
+        query = manager.createNamedQuery("Storage.FetchByIds");
+        query.setParameter("ids", referenceIds);
+        query.setParameter("tableId", refTableId);
+
+        list = DataBaseUtil.toArrayList(query.getResultList());
+
+        for (int i = 0; i < list.size(); i++ ) {
+            data = list.get(i);
+
+            if (data.getSystemUserId() != null) {
+                user = userCache.getSystemUser(data.getSystemUserId());
+                if (user != null)
+                    data.setUserName(user.getLoginName());
+            }
+        }
 
         return list;
     }
@@ -118,7 +149,7 @@ public class StorageBean implements StorageLocal {
             refTableId = data.getReferenceTableId();
 
             if (data.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
+                user = userCache.getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setUserName(user.getLoginName());
             }
@@ -180,7 +211,7 @@ public class StorageBean implements StorageLocal {
             refTableId = data.getReferenceTableId();
 
             if (data.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
+                user = userCache.getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setUserName(user.getLoginName());
             }
@@ -218,7 +249,7 @@ public class StorageBean implements StorageLocal {
         entity.setStorageLocationId(data.getStorageLocationId());
         entity.setCheckin(data.getCheckin());
         entity.setCheckout(data.getCheckout());
-        entity.setSystemUserId(EJBFactory.getUserCache().getId());
+        entity.setSystemUserId(userCache.getId());
 
         manager.persist(entity);
         data.setId(entity.getId());

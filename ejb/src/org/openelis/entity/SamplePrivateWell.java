@@ -52,7 +52,13 @@ import org.openelis.utils.Auditable;
                 		"s.reportToAddressId, s.location, s.locationAddressId, s.owner, s.collector, s.wellNumber, r.multipleUnit, r.streetAddress, r.city," +
                 		"r.state, r.zipCode, r.workPhone, r.homePhone, r.cellPhone, r.faxPhone, r.email, r.country,l.multipleUnit, l.streetAddress, l.city," +
                 		"l.state, l.zipCode, l.workPhone,l.homePhone, l.cellPhone, l.faxPhone, l.email, l.country) "
-                      + " from SamplePrivateWell s left join s.locationAddress l left join s.reportToAddress r where s.sampleId = :id")})
+                      + " from SamplePrivateWell s left join s.locationAddress l left join s.reportToAddress r where s.sampleId = :id"),
+    @NamedQuery( name = "SamplePrivateWell.FetchBySampleIds",
+                query = "select new org.openelis.domain.SamplePrivateWellViewDO(s.id, s.sampleId, s.organizationId, s.reportToName, s.reportToAttention," +
+                        "s.reportToAddressId, s.location, s.locationAddressId, s.owner, s.collector, s.wellNumber, r.multipleUnit, r.streetAddress, r.city," +
+                        "r.state, r.zipCode, r.workPhone, r.homePhone, r.cellPhone, r.faxPhone, r.email, r.country,l.multipleUnit, l.streetAddress, l.city," +
+                        "l.state, l.zipCode, l.workPhone,l.homePhone, l.cellPhone, l.faxPhone, l.email, l.country) "
+                      + " from SamplePrivateWell s left join s.locationAddress l left join s.reportToAddress r where s.sampleId in (:ids)")})
 
 @Entity
 @Table(name = "sample_private_well")

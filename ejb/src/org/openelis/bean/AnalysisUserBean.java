@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -42,14 +43,18 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.AnalysisUserLocal;
-import org.openelis.utils.EJBFactory;
+import org.openelis.local.UserCacheLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
 public class AnalysisUserBean implements AnalysisUserLocal {
+    
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
+    
+    @EJB
+    private UserCacheLocal userCache;
     
     public AnalysisUserViewDO fetchById(Integer id) throws Exception {
         Query query;
@@ -63,7 +68,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
             data = (AnalysisUserViewDO)query.getSingleResult();
             
             if (data.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
+                user = userCache.getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setSystemUser(user.getLoginName());
             }
@@ -89,7 +94,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
             data = returnList.get(i);
 
             if (data.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
+                user = userCache.getSystemUser(data.getSystemUserId());
                 if (user != null)
                     data.setSystemUser(user.getLoginName());
             }
@@ -99,7 +104,30 @@ public class AnalysisUserBean implements AnalysisUserLocal {
             throw new NotFoundException();
 
         return returnList;
-    }         
+    }        
+    
+    public ArrayList<AnalysisUserViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) {
+        Query query;
+        ArrayList<AnalysisUserViewDO> list;
+        AnalysisUserViewDO data;
+        SystemUserVO user;
+
+        query = manager.createNamedQuery("AnalysisUser.FetchByAnalysisIds");
+        query.setParameter("ids", analysisIds);
+
+        list = DataBaseUtil.toArrayList(query.getResultList());
+
+        for (int i = 0; i < list.size(); i++ ) {
+            data = list.get(i);
+
+            if (data.getSystemUserId() != null) {
+                user = userCache.getSystemUser(data.getSystemUserId());
+                if (user != null)
+                    data.setSystemUser(user.getLoginName());
+            }
+        }
+        return list;
+    }
 
     public AnalysisUserViewDO add(AnalysisUserViewDO data) {
         AnalysisUser entity;

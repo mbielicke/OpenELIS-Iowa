@@ -25,6 +25,8 @@
 */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -37,6 +39,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.PWSDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.entity.SampleSDWIS;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
@@ -59,16 +62,12 @@ public class SampleSDWISBean implements SampleSDWISLocal {
     public SampleSDWISViewDO fetchBySampleId(Integer sampleId) throws Exception {
         Query query;
         SampleSDWISViewDO data;
-        PWSDO pwsData;
         
         query = manager.createNamedQuery("SampleSDWIS.FetchBySampleId");
         query.setParameter("id", sampleId);
 
         try{
             data = (SampleSDWISViewDO) query.getSingleResult();
-            pwsData = pws.fetchById(data.getPwsId());
-            data.setPwsName(pwsData.getName());
-            
         } catch (NoResultException e) {
             throw new NotFoundException();
         } catch (Exception e) {
@@ -76,6 +75,15 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         }
         
         return data;
+    }
+    
+    public ArrayList<SampleSDWISViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
+        Query query;
+
+        query = manager.createNamedQuery("SampleSDWIS.FetchBySampleIds");
+        query.setParameter("ids", sampleIds);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
     
     public SampleSDWISViewDO add(SampleSDWISViewDO data) throws Exception {

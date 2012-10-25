@@ -29,8 +29,14 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "Result.FetchByAnalysisId",
                 query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
                         "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId,ta.resultGroup)"
-                      + " from Result r, Analysis an, Analyte a, TestAnalyte ta "
+                      + " from Result r, Analysis an, Analyte a, TestAnalyte ta"
                       + " where  r.analysisId = an.id and r.analyteId = a.id and r.testAnalyteId = ta.id and an.id = :id order by r.sortOrder"),
+    @NamedQuery( name = "Result.FetchByAnalysisIds",
+                query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
+                        "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId,ta.resultGroup)"
+                      + " from Result r, Analysis an, Test t, SampleItem si, Sample s, Analyte a, TestAnalyte ta"
+                      + " where  r.analysisId = an.id and an.testId = t.id and an.sampleItemId = si.id and si.sampleId = s.id and r.analyteId = a.id and r.testAnalyteId = ta.id"
+                      +	" and r.analysisId in (:ids) order by s.id, si.itemSequence, t.name, t.method.name, r.sortOrder"),                  
     @NamedQuery( name = "Result.FetchForFinalReportByAnalysisId",
                 query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
                         "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId, ta.resultGroup)"
@@ -45,19 +51,19 @@ import org.openelis.utils.Auditable;
                       + " from Result r, Analysis an, Test t, Analyte a, TestAnalyte ta "
                       + " where r.analysisId in (:ids) and r.isReportable = 'Y'and r.isColumn = 'N' and r.value != null"
                       + " and an.id = r.analysisId and t.id = an.testId and ta.id = r.testAnalyteId and a.id = r.analyteId order by a.name"),
-   @NamedQuery( name = "Result.FetchForDataViewByAnalysisIdAndRowGroup",
-               query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
-                       "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId,ta.resultGroup)"
-                     + " from Result r, Analysis an, Test t, Analyte a, TestAnalyte ta "
-                     + " where r.analysisId = :id and ta.rowGroup = :rowGroup and r.isColumn = 'Y' "
-                     + " and an.id = r.analysisId and t.id = an.testId and ta.id = r.testAnalyteId and a.id = r.analyteId order by r.sortOrder"),  
-  @NamedQuery( name = "Result.FetchForBillingByAnalysisId",
-              query = "select new org.openelis.domain.ResultDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
-                      "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value)"
-                    + " from Result r where r.analysisId = :id and r.isReportable = 'Y' and r.isColumn = 'N'"),                  
+    @NamedQuery( name = "Result.FetchForDataViewByAnalysisIdAndRowGroup",
+                query = "select new org.openelis.domain.ResultViewDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
+                        "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value, a.name, ta.rowGroup,ta.typeId,ta.resultGroup)"
+                      + " from Result r, Analysis an, Test t, Analyte a, TestAnalyte ta "
+                      + " where r.analysisId = :id and ta.rowGroup = :rowGroup and r.isColumn = 'Y' "
+                      + " and an.id = r.analysisId and t.id = an.testId and ta.id = r.testAnalyteId and a.id = r.analyteId order by r.sortOrder"),  
+   @NamedQuery( name = "Result.FetchForBillingByAnalysisId",
+               query = "select new org.openelis.domain.ResultDO(r.id,r.analysisId,r.testAnalyteId,r.testResultId," +
+                       "r.isColumn, r.sortOrder, r.isReportable, r.analyteId, r.typeId, r.value)"
+                     + " from Result r where r.analysisId = :id and r.isReportable = 'Y' and r.isColumn = 'N'"),                  
    @NamedQuery( name = "Result.FetchAnalyteByAnalysisId",
-                query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "
-                      + " from Result r left join r.analyte a where r.analysisId = :id order by r.sortOrder")})
+               query = "select new org.openelis.domain.AnalyteDO(a.id,a.name,a.isActive,a.parentAnalyteId,a.externalId) "
+                     + " from Result r left join r.analyte a where r.analysisId = :id order by r.sortOrder")})
 @Entity
 @Table(name = "result")
 @EntityListeners({AuditUtil.class})

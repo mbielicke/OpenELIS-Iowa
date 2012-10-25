@@ -29,8 +29,6 @@ import java.util.ArrayList;
 
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.gwt.common.data.Query;
-import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.StorageLocal;
 import org.openelis.utils.EJBFactory;
 
@@ -39,7 +37,7 @@ public class StorageManagerProxy {
         ArrayList<StorageViewDO> list;
         StorageManager sm;
         
-        list = EJBFactory.getStorage().fetchByRefId(tableId, id);
+        list = EJBFactory.getStorage().fetchById(id, tableId);
         
         sm = StorageManager.getInstance();
         sm.setStorages(list);

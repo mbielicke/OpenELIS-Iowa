@@ -25,6 +25,10 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -34,8 +38,10 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.entity.SamplePrivateWell;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AddressLocal;
@@ -73,6 +79,58 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         }
 
         return data;
+    }
+    
+    public ArrayList<SamplePrivateWellViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
+        Query query;
+        Integer orgId;
+        List<SamplePrivateWellViewDO> results;
+        ArrayList<SamplePrivateWellViewDO> list;
+        ArrayList<OrganizationViewDO> orgs;
+        HashMap<Integer, ArrayList<SamplePrivateWellViewDO>> map;
+
+        query = manager.createNamedQuery("SamplePrivateWell.FetchBySampleIds");
+        query.setParameter("ids", sampleIds);
+        
+        results = query.getResultList();
+
+        map = new HashMap<Integer, ArrayList<SamplePrivateWellViewDO>>();
+        /*
+         * creating the following mapping allows us to fetch in one query all of
+         * the primary report to organizations linked to these private well records
+         * and put them in the appropriate SamplePrivateWellViewDOs
+         */
+        for (SamplePrivateWellViewDO data : results) {
+            orgId = data.getOrganizationId();
+            
+            if (orgId == null)
+                continue;
+            
+            list = map.get(orgId);
+            if (map.get(orgId) == null) {
+                list = new ArrayList<SamplePrivateWellViewDO>();
+                map.put(orgId, list);
+            } 
+            list.add(data);
+        }
+        
+        if (map.size() > 0) {
+            orgs = organization.fetchByIds(map.keySet());
+
+            for (OrganizationViewDO org : orgs) {
+                list = map.get(org.getId());
+                if (list != null) {
+                    /*
+                     * set the OrganizationViewDOs for the primary report to in the 
+                     * SamplePrivateWellViewDOs that link to them
+                     */
+                    for (SamplePrivateWellViewDO well : list)
+                        well.setOrganization(org);                    
+                }
+            }
+        }
+        
+        return DataBaseUtil.toArrayList(results);
     }
 
     public SamplePrivateWellViewDO add(SamplePrivateWellViewDO data) throws Exception {

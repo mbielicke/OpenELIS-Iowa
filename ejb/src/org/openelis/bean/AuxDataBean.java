@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -52,7 +53,6 @@ import org.openelis.local.AuxDataLocal;
 import org.openelis.local.DictionaryCacheLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.remote.AuxDataRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
@@ -60,14 +60,17 @@ import org.openelis.utils.EJBFactory;
 public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager manager;
-    
+    private EntityManager        manager;
+
     @EJB
-    private DictionaryLocal dictionary;
+    private DictionaryLocal      dictionary;
+
+    @EJB
+    private DictionaryCacheLocal dictionaryCache;
     
-    private static Integer dictionaryTypeId;
+    private static Integer       dictionaryTypeId;
     
-    private static final Logger      log  = Logger.getLogger(AuxDataBean.class);
+    private static final Logger  log  = Logger.getLogger(AuxDataBean.class);
     
     @PostConstruct
     public void init() {
@@ -82,22 +85,20 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
 
     public ArrayList<AuxDataViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
         Query query;
-        ArrayList<AuxDataViewDO> data;
-        AuxDataViewDO dataDO;
-        DictionaryDO dictDO;
-        DictionaryCacheLocal dcl;
+        ArrayList<AuxDataViewDO> list;
+        AuxDataViewDO data;
+        DictionaryDO dict;
 
         query = manager.createNamedQuery("AuxData.FetchById");
         query.setParameter("id", referenceId);
         query.setParameter("tableId", referenceTableId);
         try {
-            data = DataBaseUtil.toArrayList(query.getResultList());
-            dcl = EJBFactory.getDictionaryCache();
-            for (int i = 0; i < data.size(); i++ ) {
-                dataDO = data.get(i);
-                if (dictionaryTypeId.equals(dataDO.getTypeId()) && dataDO.getValue() != null) {
-                    dictDO = dcl.getById(new Integer(dataDO.getValue()));
-                    dataDO.setDictionary(dictDO.getEntry());
+            list = DataBaseUtil.toArrayList(query.getResultList());
+            for (int i = 0; i < list.size(); i++ ) {
+                data = list.get(i);
+                if (dictionaryTypeId.equals(data.getTypeId()) && data.getValue() != null) {
+                    dict = dictionaryCache.getById(new Integer(data.getValue()));
+                    data.setDictionary(dict.getEntry());
                 }
             }
         } catch (NoResultException e) {
@@ -105,8 +106,56 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         } catch (Exception e) {
             throw new DatabaseException(e);
         }
-        return data;
+        return list;
     }
+    
+    public ArrayList<AuxDataViewDO> fetchByIds(ArrayList<Integer> referenceIds, Integer referenceTableId) {
+        Integer dictId;
+        String value;
+        Query query;
+        ArrayList<AuxDataViewDO> list;
+        AuxDataViewDO data;
+        DictionaryDO dict;
+        HashMap<String, DictionaryDO> dictMap;
+
+        query = manager.createNamedQuery("AuxData.FetchByIds");
+        query.setParameter("ids", referenceIds);
+        query.setParameter("tableId", referenceTableId);        
+        list = DataBaseUtil.toArrayList(query.getResultList());
+        
+        dictMap = new HashMap<String, DictionaryDO>();
+        
+        for (int i = 0; i < list.size(); i++ ) {
+            data = list.get(i);
+
+            value = data.getValue();
+            if (dictionaryTypeId.equals(data.getTypeId()) && value != null) {
+                dict = dictMap.get(value);
+                /*
+                 * the following helps avoid creating new integers from the same
+                 * string over and over again potentially hundreds or thousands
+                 * of times and also trying to fetch a dictionary record even if
+                 * fetching it failed previously
+                 */
+                if (dict == null) {
+                    dictId = Integer.valueOf(value);                    
+                    
+                    try {
+                        dict = dictionaryCache.getById(dictId);
+                        dictMap.put(value, dict);
+                        data.setDictionary(dict.getEntry());
+                    } catch (Exception e) {
+                        log.error("Failed to lookup dictionary entry with id: " + dictId, e);
+                    }
+                } else {
+                    data.setDictionary(dict.getEntry());
+                }
+            }
+        }
+
+        return list;
+    }
+    
     
     public ArrayList<AuxDataViewDO> fetchForDataView(Integer referenceTableId,
                                                      ArrayList<Integer> ids) throws Exception {
