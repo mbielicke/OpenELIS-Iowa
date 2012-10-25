@@ -51,10 +51,14 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "Note.FetchByRefTableRefId",
+    @NamedQuery( name = "Note.FetchById",
                 query = "select new org.openelis.domain.NoteViewDO(n.id,n.referenceId,n.referenceTableId," +
                 		"n.timestamp,n.isExternal,n.systemUserId,n.subject,n.text, '')"
-                      + "  from Note n where n.referenceTableId = :referenceTable and n.referenceId = :id ORDER BY n.timestamp DESC"),
+                      + "  from Note n where  n.referenceId = :id and n.referenceTableId = :tableId ORDER BY n.timestamp DESC"),
+   @NamedQuery( name = "Note.FetchByIds",
+               query = "select new org.openelis.domain.NoteViewDO(n.id,n.referenceId,n.referenceTableId," +
+                       "n.timestamp,n.isExternal,n.systemUserId,n.subject,n.text, '')"
+                     + "  from Note n where  n.referenceId in (:ids) and n.referenceTableId = :tableId ORDER BY n.referenceId, n.timestamp DESC"),                  
     @NamedQuery( name = "Note.FetchByRefTableRefIdIsExternal",
                  query = "select new org.openelis.domain.NoteViewDO(n.id,n.referenceId,n.referenceTableId," +
                          "n.timestamp,n.isExternal,n.systemUserId,n.subject,n.text, '')"

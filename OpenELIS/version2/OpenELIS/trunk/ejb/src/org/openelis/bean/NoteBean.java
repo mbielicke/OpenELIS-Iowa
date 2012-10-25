@@ -27,6 +27,7 @@ package org.openelis.bean;
 
 import java.util.ArrayList;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -36,10 +37,12 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.Note;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.local.NoteLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.utils.EJBFactory;
 
 @Stateless
@@ -49,8 +52,11 @@ public class NoteBean implements NoteLocal {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager          manager;
-
-    public ArrayList<NoteViewDO> fetchByRefTableRefId(Integer refTableId, Integer refId) throws Exception {
+    
+    @EJB
+    private UserCacheLocal         userCache; 
+    
+    public ArrayList<NoteViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception {
         Query query;
         NoteViewDO note;
         SystemUserVO user;
@@ -60,11 +66,11 @@ public class NoteBean implements NoteLocal {
         // we are currently returning any requested note without checking to see
         // if the user have permission to this note -- we need to fix this
         //        
-        query = manager.createNamedQuery("Note.FetchByRefTableRefId");
-        query.setParameter("referenceTable", refTableId);
-        query.setParameter("id", refId);
+        query = manager.createNamedQuery("Note.FetchById");
+        query.setParameter("id", referenceId);
+        query.setParameter("tableId", referenceTableId);
 
-        list = (ArrayList<NoteViewDO>)query.getResultList();
+        list = DataBaseUtil.toArrayList(query.getResultList());
         if (list.size() == 0)
             throw new NotFoundException();
 
@@ -72,9 +78,38 @@ public class NoteBean implements NoteLocal {
             note = list.get(i);
 
             if (note.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(note.getSystemUserId());
+                user = userCache.getSystemUser(note.getSystemUserId());
                 if (user != null)
                     note.setSystemUser(user.getLoginName());
+            }
+        }
+
+        return list;
+    }
+    
+    public ArrayList<NoteViewDO> fetchByIds(ArrayList<Integer> referenceIds, Integer referenceTableId) {
+        Query query;
+        NoteViewDO data;
+        SystemUserVO user;
+        ArrayList<NoteViewDO> list;
+
+        // TODO
+        // we are currently returning any requested note without checking to see
+        // if the user have permission to this note -- we need to fix this
+        //        
+        query = manager.createNamedQuery("Note.FetchByIds");
+        query.setParameter("ids", referenceIds);
+        query.setParameter("tableId", referenceTableId);
+
+        list = DataBaseUtil.toArrayList(query.getResultList());
+
+        for (int i = 0; i < list.size(); i++ ) {
+            data = list.get(i);
+
+            if (data.getSystemUserId() != null) {
+                user = userCache.getSystemUser(data.getSystemUserId());
+                if (user != null)
+                    data.setSystemUser(user.getLoginName());
             }
         }
 
@@ -106,7 +141,7 @@ public class NoteBean implements NoteLocal {
             note = list.get(i);
 
             if (note.getSystemUserId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(note.getSystemUserId());
+                user = userCache.getSystemUser(note.getSystemUserId());
                 if (user != null)
                     note.setSystemUser(user.getLoginName());
             }

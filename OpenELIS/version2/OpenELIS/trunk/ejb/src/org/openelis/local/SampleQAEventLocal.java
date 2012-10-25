@@ -35,6 +35,7 @@ import org.openelis.domain.SampleQaEventViewDO;
 @Local
 public interface SampleQAEventLocal {
     public ArrayList<SampleQaEventViewDO> fetchBySampleId(Integer sampleId) throws Exception;
+    public ArrayList<SampleQaEventViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds);
     public ArrayList<SampleQaEventViewDO> fetchInternalBySampleId(Integer sampleId) throws Exception;
     public ArrayList<SampleQaEventViewDO> fetchExternalBySampleId(Integer sampleId) throws Exception;
     public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIds(ArrayList<Integer> ids) throws Exception;

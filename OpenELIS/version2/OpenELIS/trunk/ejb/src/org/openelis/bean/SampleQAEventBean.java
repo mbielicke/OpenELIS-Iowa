@@ -63,6 +63,15 @@ public class SampleQAEventBean implements SampleQAEventLocal {
 
         return DataBaseUtil.toArrayList(returnList);
     }
+    
+    public ArrayList<SampleQaEventViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
+        Query query;
+
+        query = manager.createNamedQuery("SampleQaevent.FetchBySampleIds");
+        query.setParameter("ids", sampleIds);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     public ArrayList<SampleQaEventViewDO> fetchInternalBySampleId(Integer sampleId) throws Exception {
         Query query;

@@ -16,6 +16,8 @@ import org.openelis.gwt.common.data.QueryData;
 public interface SampleLocal {
 	public SampleDO fetchById(Integer sampleId) throws Exception;
 	
+	public ArrayList<SampleDO> fetchByIds(ArrayList<Integer> ids);
+	
     public ArrayList<IdAccessionVO> fetchSamplesByLastRunDate(ArrayList<QueryData> fields, 
                                                             Date lastRunDate) throws Exception;
 

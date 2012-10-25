@@ -33,7 +33,9 @@ import org.openelis.domain.NoteViewDO;
 
 @Local
 public interface NoteLocal {
-    public ArrayList<NoteViewDO> fetchByRefTableRefId(Integer refTableId, Integer refId) throws Exception;
+    public ArrayList<NoteViewDO> fetchById(Integer refTableId, Integer refId) throws Exception;
+    
+    public ArrayList<NoteViewDO> fetchByIds(ArrayList<Integer> referenceIds, Integer referenceTableId);
 
     public ArrayList<NoteViewDO> fetchByRefTableRefIdIsExt(Integer refTableId, Integer refId, String isExternal) throws Exception;
     

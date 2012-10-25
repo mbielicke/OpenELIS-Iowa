@@ -33,7 +33,8 @@ import org.openelis.domain.SampleOrganizationViewDO;
 
 @Local
 public interface SampleOrganizationLocal {
-    public ArrayList<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
+    public ArrayList<SampleOrganizationViewDO> fetchBySampleId(Integer sampleId) throws Exception;  
+    public ArrayList<SampleOrganizationViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds);
     public SampleOrganizationViewDO fetchReportToBySampleId(Integer sampleId) throws Exception;
     public SampleOrganizationViewDO add(SampleOrganizationViewDO sampleOrgDO);
     public SampleOrganizationViewDO update(SampleOrganizationViewDO sampleOrgDO); 

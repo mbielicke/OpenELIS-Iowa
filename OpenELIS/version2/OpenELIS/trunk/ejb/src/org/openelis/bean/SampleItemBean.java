@@ -81,6 +81,15 @@ public class SampleItemBean implements SampleItemLocal {
         
         return DataBaseUtil.toArrayList(returnList);
     }
+    
+    public ArrayList<SampleItemViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
+        Query query;
+        
+        query = manager.createNamedQuery("SampleItem.FetchBySampleIds");
+        query.setParameter("ids", sampleIds);
+ 
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     public SampleItemViewDO add(SampleItemViewDO data){
         SampleItem entity;

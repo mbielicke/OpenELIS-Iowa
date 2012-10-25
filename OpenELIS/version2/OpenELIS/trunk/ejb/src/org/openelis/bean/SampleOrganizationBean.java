@@ -64,6 +64,15 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
+    public ArrayList<SampleOrganizationViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
+        Query query;
+        
+        query = manager.createNamedQuery("SampleOrganization.FetchBySampleIds");
+        query.setParameter("ids", sampleIds);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }    
+    
     public SampleOrganizationViewDO fetchReportToBySampleId(Integer sampleId) throws Exception {
         Query query;
         

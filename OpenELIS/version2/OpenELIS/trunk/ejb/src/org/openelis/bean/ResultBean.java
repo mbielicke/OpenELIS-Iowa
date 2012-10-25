@@ -242,7 +242,6 @@ public class ResultBean implements ResultLocal {
         ArrayList<ResultViewDO> ar;
         TestResultDO testResult;
         ArrayList<TestAnalyteViewDO> tmpList;
-        boolean includeRow;
 
         // get test_analytes by test id
         Query query = manager.createNamedQuery("TestAnalyte.FetchByTestId");
@@ -300,7 +299,6 @@ public class ResultBean implements ResultLocal {
         if (testAnalyteList == null || testAnalyteList.size() == 0)
             throw new NotFoundException();
 
-        includeRow = true;
         for (i = 0; i < testAnalytes.size(); i++ ) {
             data = testAnalytes.get(i);
 
@@ -388,6 +386,15 @@ public class ResultBean implements ResultLocal {
 
             ar.add(data);
         }
+    }
+    
+    public ArrayList<ResultViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) {
+        Query query;
+        
+        query = manager.createNamedQuery("Result.FetchByAnalysisIds");
+        query.setParameter("ids", analysisIds);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public void fetchByAnalysisId(Integer analysisId,

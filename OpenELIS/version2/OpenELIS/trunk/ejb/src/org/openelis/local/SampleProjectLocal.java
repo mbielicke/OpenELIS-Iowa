@@ -36,6 +36,7 @@ import org.openelis.domain.SampleProjectViewDO;
 public interface SampleProjectLocal {
 
     public ArrayList<SampleProjectViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
+    public ArrayList<SampleProjectViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds);
     public ArrayList<SampleProjectViewDO> fetchPermanentBySampleId(Integer sampleId) throws Exception;
     public SampleProjectViewDO add(SampleProjectViewDO sampleProjectDO);
     public SampleProjectViewDO update(SampleProjectViewDO sampleProjectDO);

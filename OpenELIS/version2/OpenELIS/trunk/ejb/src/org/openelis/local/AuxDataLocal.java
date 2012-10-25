@@ -34,6 +34,7 @@ import org.openelis.domain.AuxDataViewDO;
 @Local
 public interface AuxDataLocal {
     public ArrayList<AuxDataViewDO> fetchById(Integer referenceId, Integer referenceTableId) throws Exception;
+    public ArrayList<AuxDataViewDO> fetchByIds(ArrayList<Integer> referenceIds, Integer referenceTableId);
     public ArrayList<AuxDataViewDO> fetchForDataView(Integer referenceTableId, ArrayList<Integer> ids) throws Exception;
     public ArrayList<AuxDataViewDO> fetchByIdAnalyteName(Integer referenceId, Integer referenceTableId, String analyteName) throws Exception;
     public ArrayList<AuxDataViewDO> fetchByRefIdRefTableIdGroupName(Integer referenceId, Integer referenceTableId, String auxGroupName) throws Exception;

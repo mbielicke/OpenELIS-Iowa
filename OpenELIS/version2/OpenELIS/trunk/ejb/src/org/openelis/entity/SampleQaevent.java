@@ -29,6 +29,9 @@ import org.openelis.utils.Auditable;
     @NamedQuery( name = "SampleQaevent.FetchBySampleId",
                 query = "select new org.openelis.domain.SampleQaEventViewDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable, sq.qaEvent.name, sq.qaEvent.reportingText)"
                       + " from SampleQaevent sq where sq.sampleId = :id order by sq.id"),
+    @NamedQuery( name = "SampleQaevent.FetchBySampleIds",
+                query = "select new org.openelis.domain.SampleQaEventViewDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable, sq.qaEvent.name, sq.qaEvent.reportingText)"
+                      + " from SampleQaevent sq where sq.sampleId in (:ids) order by sq.sampleId, sq.id"),                      
    @NamedQuery( name = "SampleQaevent.FetchInternalBySampleId",
                query = "select new org.openelis.domain.SampleQaEventViewDO(sq.id, sq.sampleId, sq.qaeventId, sq.typeId, sq.isBillable, q.name, q.reportingText)"
                      + " from SampleQaevent sq left join sq.qaEvent q left join sq.dictionary d"

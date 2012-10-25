@@ -190,7 +190,6 @@ public class SampleBean implements SampleLocal, SampleRemote {
         List results;
         QueryBuilderV2 builder;
 
-        
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
         builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
@@ -236,6 +235,15 @@ public class SampleBean implements SampleLocal, SampleRemote {
         }
     }
 
+    public ArrayList<SampleDO> fetchByIds(ArrayList<Integer> ids) {
+        Query query;
+        
+        query = manager.createNamedQuery("Sample.FetchByIds");
+        query.setParameter("ids", ids);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         Query query;
 

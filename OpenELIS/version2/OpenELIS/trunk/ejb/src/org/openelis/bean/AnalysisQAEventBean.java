@@ -64,6 +64,15 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
+    public ArrayList<AnalysisQaEventViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) {
+        Query query;
+        
+        query = manager.createNamedQuery("AnalysisQaevent.FetchByAnalysisIds");
+        query.setParameter("ids", analysisIds);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+    
     public ArrayList<AnalysisQaEventViewDO> fetchInternalByAnalysisId(Integer analysisId) throws Exception {
         Query query;
         List returnList;

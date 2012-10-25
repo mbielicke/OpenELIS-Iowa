@@ -25,6 +25,8 @@
  */
 package org.openelis.bean;
 
+import java.util.ArrayList;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -36,6 +38,7 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.SampleEnvironmentalDO;
 import org.openelis.entity.SampleEnvironmental;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AddressLocal;
@@ -66,6 +69,15 @@ public class SampleEnvironmentalBean implements SampleEnvironmentalLocal {
         }
 
         return data;
+    }
+    
+    public ArrayList<SampleEnvironmentalDO> fetchBySampleIds(ArrayList<Integer> sampleIds) {
+        Query query;
+
+        query = manager.createNamedQuery("SampleEnvironmental.FetchBySampleIds");
+        query.setParameter("ids", sampleIds);
+
+        return DataBaseUtil.toArrayList(query.getResultList());
     }
 
     public SampleEnvironmentalDO add(SampleEnvironmentalDO data) throws Exception {

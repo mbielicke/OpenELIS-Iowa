@@ -25,13 +25,16 @@
 */
 package org.openelis.local;
 
+import java.util.ArrayList;
+
 import javax.ejb.Local;
 
 import org.openelis.domain.SampleSDWISViewDO;
 
 @Local
 public interface SampleSDWISLocal {
-    public SampleSDWISViewDO fetchBySampleId(Integer sampleId) throws Exception;        
+    public SampleSDWISViewDO fetchBySampleId(Integer sampleId) throws Exception;    
+    public ArrayList<SampleSDWISViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds);
     public SampleSDWISViewDO add(SampleSDWISViewDO data) throws Exception ;
     public SampleSDWISViewDO update(SampleSDWISViewDO data) throws Exception;
     public void delete(SampleSDWISViewDO data) throws Exception;

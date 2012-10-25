@@ -43,6 +43,7 @@ public interface AnalysisLocal {
     public ArrayList<AnalysisViewDO> fetchBySampleId(Integer sampleId) throws Exception;
     public ArrayList<SDWISUnloadReportVO> fetchBySampleIdForSDWISUnloadReport(Integer sampleId) throws Exception;
     public ArrayList<AnalysisViewDO> fetchBySampleItemId(Integer sampleItemId) throws Exception;
+    public ArrayList<AnalysisViewDO> fetchBySampleItemIds(ArrayList<Integer> sampleItemIds);
     public ArrayList<MCLViolationReportVO> fetchForMCLViolationReport(Date beginPrinted, Date endPrinted) throws Exception;
 
     public AnalysisViewDO add(AnalysisViewDO data) throws Exception;
@@ -50,5 +51,4 @@ public interface AnalysisLocal {
     public void updatePrintedDate(Integer id, Datetime timeStamp) throws Exception;
     public void updatePrintedDate(Set<Integer> ids, Datetime timeStamp) throws Exception;
     public void delete(AnalysisViewDO data) throws Exception;
-    
 }

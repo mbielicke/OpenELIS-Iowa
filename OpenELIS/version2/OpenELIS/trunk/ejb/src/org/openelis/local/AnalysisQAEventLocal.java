@@ -36,6 +36,7 @@ import org.openelis.entity.AnalysisQaevent;
 @Local
 public interface AnalysisQAEventLocal {
     public ArrayList<AnalysisQaEventViewDO> fetchByAnalysisId(Integer analysisId) throws Exception;
+    public ArrayList<AnalysisQaEventViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds);
     public ArrayList<AnalysisQaEventViewDO> fetchInternalByAnalysisId(Integer analysisId) throws Exception;
     public ArrayList<AnalysisQaEventViewDO> fetchExternalByAnalysisId(Integer analysisId) throws Exception;
     public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisId(Integer analysisId) throws Exception;

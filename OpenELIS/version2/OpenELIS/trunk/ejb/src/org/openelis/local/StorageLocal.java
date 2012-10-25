@@ -33,7 +33,8 @@ import org.openelis.domain.StorageViewDO;
 
 @Local
 public interface StorageLocal {
-    public ArrayList<StorageViewDO> fetchByRefId(Integer refTableId, Integer refId) throws Exception;
+    public ArrayList<StorageViewDO> fetchById(Integer referenceId, Integer refTableId) throws Exception;
+    public ArrayList<StorageViewDO> fetchByIds(ArrayList<Integer> referenceIds, Integer refTableId);
     public ArrayList<StorageViewDO> fetchCurrentByLocationId(Integer id) throws Exception;
     public ArrayList<StorageViewDO> fetchHistoryByLocationId(Integer id, int first, int max) throws Exception;
     public StorageViewDO update(StorageViewDO data) throws Exception;

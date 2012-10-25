@@ -26,10 +26,15 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
-    @NamedQuery( name = "AnalysisQaevent.FetchByAnalysisId",
-                query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " +
-                        "q.typeId, q.isBillable, q.qaEvent.name, q.qaEvent.reportingText)"
-                      + " from AnalysisQaevent q where q.analysisId = :id order by q.id"),
+   @NamedQuery( name = "AnalysisQaevent.FetchByAnalysisId",
+               query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " +
+                       "q.typeId, q.isBillable, q.qaEvent.name, q.qaEvent.reportingText)"
+                     + " from AnalysisQaevent q where q.analysisId = :id order by q.id"),
+   @NamedQuery( name = "AnalysisQaevent.FetchByAnalysisIds",
+               query = "select new org.openelis.domain.AnalysisQaEventViewDO(q.id, q.analysisId, q.qaeventId, " +
+                       "q.typeId, q.isBillable, q.qaEvent.name, q.qaEvent.reportingText)"
+                     + " from AnalysisQaevent q left join q.analysis a left join a.test t left join a.sampleItem si left join si.sample s"
+                     + " where q.analysisId in (:ids) order by s.id, si.itemSequence, t.name, t.method.name, q.id"),                   
    @NamedQuery( name = "AnalysisQaevent.FetchInternalByAnalysisId",
                query = "select new org.openelis.domain.AnalysisQaEventViewDO(aq.id, aq.analysisId, aq.qaeventId, " +
                        "aq.typeId, aq.isBillable, q.name, q.reportingText)"

@@ -55,7 +55,12 @@ import org.openelis.utils.Auditable;
                 query = "select new org.openelis.domain.SampleEnvironmentalDO(s.id,s.sampleId,s.isHazardous, s.priority, "+
                         "s.description,s.collector,s.collectorPhone,s.location,s.locationAddressId,a.multipleUnit," +
                         "a.streetAddress,a.city,a.state,a.zipCode,a.workPhone,a.homePhone,a.cellPhone, a.faxPhone, a.email,a.country)"
-                      + " from SampleEnvironmental s LEFT JOIN s.locationAddress a where s.sampleId = :id")})
+                      + " from SampleEnvironmental s LEFT JOIN s.locationAddress a where s.sampleId = :id"),
+    @NamedQuery( name = "SampleEnvironmental.FetchBySampleIds",
+                query = "select new org.openelis.domain.SampleEnvironmentalDO(s.id,s.sampleId,s.isHazardous, s.priority, "+
+                        "s.description,s.collector,s.collectorPhone,s.location,s.locationAddressId,a.multipleUnit," +
+                        "a.streetAddress,a.city,a.state,a.zipCode,a.workPhone,a.homePhone,a.cellPhone, a.faxPhone, a.email,a.country)"
+                      + " from SampleEnvironmental s LEFT JOIN s.locationAddress a where s.sampleId in (:ids)")})
 @Entity
 @Table(name = "sample_environmental")
 @EntityListeners({AuditUtil.class})
