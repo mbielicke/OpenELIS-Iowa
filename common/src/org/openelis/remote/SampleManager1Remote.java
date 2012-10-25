@@ -34,7 +34,7 @@ import org.openelis.manager.SampleManager1;
 
 @Remote
 public interface SampleManager1Remote {
-    public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds, SampleManager1.Load ...elements);
+    public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds, SampleManager1.Load ...elements) throws Exception;
     
     public ArrayList<SampleManager> fetchByIds(ArrayList<Integer> sampleIds) throws Exception;
 }
