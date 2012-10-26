@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="statisticTypeHeader" pageWidth="138" pageHeight="24" orientation="Landscape" whenNoDataType="NoDataSection" columnWidth="138" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="statisticTypeHeader" pageWidth="138" pageHeight="24" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="138" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
 	<property name="ireport.zoom" value="3.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
@@ -14,15 +14,10 @@
 		</conditionalStyle>
 	</style>
 	<parameter name="TYPE" class="java.lang.String"/>
-	<queryString language="SQL">
+	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="type" class="java.lang.String"/>
-	<field name="MIN" class="java.lang.Float"/>
-	<field name="MAX" class="java.lang.Float"/>
-	<field name="AVG" class="java.lang.Float"/>
-	<field name="SD" class="java.lang.Float"/>
-	<noData>
+	<pageHeader>
 		<band height="24">
 			<textField>
 				<reportElement x="0" y="0" width="138" height="12"/>
@@ -102,5 +97,5 @@
 				<text><![CDATA[1 SD]]></text>
 			</staticText>
 		</band>
-	</noData>
+	</pageHeader>
 </jasperReport>

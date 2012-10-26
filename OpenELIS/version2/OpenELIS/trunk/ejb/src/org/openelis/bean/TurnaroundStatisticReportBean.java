@@ -575,7 +575,7 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
 
     public ReportStatus runReport(TurnAroundReportViewVO data) throws Exception {
         Integer intervalId;
-        String printer, fromDate, toDate, key, intervalType;
+        String dir, printer, fromDate, toDate, key, intervalType;
         ReportStatus status;
         String printstat;
         ArrayList<Value> values, valueList;
@@ -634,17 +634,19 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
 
         status.setMessage("Initializing report");
         url = ReportUtil.getResourceURL("org/openelis/report/turnaroundstatistic/main.jasper");
+        jreport = (JasperReport)JRLoader.loadObject(url);
+        dir = ReportUtil.getResourcePath(url);
 
         tempFile = File.createTempFile("turnaroundstatisticreport", ".pdf", new File("/tmp"));
         jparam = new HashMap<String, Object>();
         jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
+        jparam.put("SUBREPORT_DIR", dir);
         jparam.put("FROM_DATE", fromDate);
         jparam.put("TO_DATE", toDate);
         jparam.put("INTERVAL_TYPE", intervalType);
         jparam.put("TURNAROUND_DATASOURCE", ds);
 
         status.setMessage("Loading report");
-        jreport = (JasperReport)JRLoader.loadObject(url);
         jprint = JasperFillManager.fillReport(jreport, jparam, ds);
         jexport = new JRPdfExporter();
         jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
