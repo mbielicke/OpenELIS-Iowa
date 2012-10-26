@@ -28,41 +28,57 @@ package org.openelis.report.qcchart;
 public class QcChartUtil {
 
     public static Double getMeanRecovery(Double mean, String expected) {
+        try {
+            return getMeanRecovery(mean, Double.parseDouble(expected));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Double getMeanRecovery(Double mean, Double expected) {
         Double meanRecovery;
 
         meanRecovery = null;
-        if (mean != null && expected != null) {
-            try {
-                meanRecovery = (mean / Double.parseDouble(expected)) * 100;
-            } catch (Exception e) {
-                //
-            }
-        }
+        if (mean != null && expected != null)
+            meanRecovery = (mean / expected) * 100;
+
         return meanRecovery;
     }
 
     public static Double getConcentrationBias(Double mean, String expected) {
+        try {
+            return getConcentrationBias(mean, Double.parseDouble(expected));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Double getConcentrationBias(Double mean, Double expected) {
         Double concBias;
 
         concBias = null;
-        if (mean != null && expected != null) {
-            try {
-                concBias = mean - Double.parseDouble(expected);
-            } catch (Exception e) {
-                //
-            }
-        }
+        if (mean != null && expected != null)
+            concBias = mean - expected;
+
         return concBias;
     }
 
     public static Double getPercentBias(Double mean, String expected) {
+        try {
+            return getPercentBias(mean, Double.parseDouble(expected));
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static Double getPercentBias(Double mean, Double expected) {
         Double percentBias, meanRecovery;
 
         percentBias = null;
         meanRecovery = getMeanRecovery(mean, expected);
-        if (meanRecovery != null) {
+        if (meanRecovery != null)
             percentBias = meanRecovery - 100;
-        }
+
         return percentBias;
     }
 

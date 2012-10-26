@@ -60,6 +60,9 @@
 		<variableExpression><![CDATA[$V{Chart_Util}]]></variableExpression>
 		<initialValueExpression><![CDATA[]]></initialValueExpression>
 	</variable>
+	<variable name="AVERAGE_PERCENT_RECOVERY" class="java.lang.Double" resetType="Group" resetGroup="AnalyteGroupHeader" calculation="Average">
+		<variableExpression><![CDATA[Double.valueOf($F{VALUE_2})]]></variableExpression>
+	</variable>
 	<group name="AnalyteGroupHeader" isStartNewPage="true" keepTogether="true">
 		<groupExpression><![CDATA[$F{ANALYTE_NAME}]]></groupExpression>
 		<groupHeader>
@@ -164,7 +167,7 @@
 			</staticText>
 			<textField isStretchWithOverflow="true" evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
 				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="107" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
-					<printWhenExpression><![CDATA[$V{Chart_Util}.getMeanRecovery($F{MEAN}, $F{VALUE_1}) != null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$V{Chart_Util}.getMeanRecovery($F{MEAN}, $V{AVERAGE_PERCENT_RECOVERY}) != null]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<pen lineColor="#C0C0C0"/>
@@ -220,7 +223,7 @@
 			</staticText>
 			<textField evaluationTime="Group" evaluationGroup="AnalyteGroupHeader" pattern="###0.00####" isBlankWhenNull="true">
 				<reportElement positionType="Float" isPrintRepeatedValues="false" x="670" y="120" width="80" height="12" printWhenGroupChanges="AnalyteGroupHeader">
-					<printWhenExpression><![CDATA[$V{Chart_Util}.getPercentBias($F{MEAN}, $F{VALUE_1}) != null]]></printWhenExpression>
+					<printWhenExpression><![CDATA[$V{Chart_Util}.getPercentBias($F{MEAN}, $V{AVERAGE_PERCENT_RECOVERY}) != null]]></printWhenExpression>
 				</reportElement>
 				<box>
 					<pen lineColor="#C0C0C0"/>
