@@ -309,7 +309,8 @@ public class SampleManager1Bean implements SampleManager1Remote {
 
     /**
      * Returns sample managers for specified analysis ids and requested load
-     * elements
+     * elements. Optionally, the Load.SINGLERESULT can be specified to only
+     * fetch the result for the specified analysis rather than all the analysis.
      */
     public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
                                                      SampleManager1.Load... elements) throws Exception {
@@ -330,12 +331,153 @@ public class SampleManager1Bean implements SampleManager1Remote {
             el = EnumSet.noneOf(SampleManager1.Load.class);
 
         /*
-         * we will do it bottom up since we only have analysis ids.
-         * 
+         * build level 2, everything is based on item ids
+         */
+        ids1 = new ArrayList<Integer>(); // sample ids
+        map1 = new HashMap<Integer, SampleManager1>();
+        ids2 = new ArrayList<Integer>(); // sample item ids
+        map2 = new HashMap<Integer, SampleManager1>();
+        for (SampleItemViewDO data : item.fetchByAnalysisIds(analysisIds)) {
+            sm = map1.get(data.getSampleId());
+            if (sm == null) {
+                sm = new SampleManager1();
+                sms.add(sm);
+                ids1.add(data.getSampleId());
+                map1.put(data.getSampleId(), sm);
+            }
+            addItem(sm, data);
+            if ( !map2.containsKey(data.getId())) {
+                ids2.add(data.getId());
+                map2.put(data.getId(), sm);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.STORAGE)) {
+            for (StorageViewDO data : storage.fetchByIds(ids2, ReferenceTable.SAMPLE_ITEM)) {
+                sm = map2.get(data.getReferenceId());
+                addStorage(sm, data);
+            }
+        }
+
+        /*
+         * build level 1, everything is based on sample ids
+         */
+        for (SampleDO data : sample.fetchByIds(ids1)) {
+            sm = map1.get(data.getId());
+            setSample(sm, data);
+        }
+
+        /*
+         * additional domains for each sample
+         */
+        for (SampleEnvironmentalDO data : sampleEnvironmental.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSampleEnvironmental(sm, data);
+        }
+
+        for (SampleSDWISViewDO data : sampleSDWIS.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSampleSDWIS(sm, data);
+        }
+
+        for (SamplePrivateWellViewDO data : samplePrivate.fetchBySampleIds(ids1)) {
+            sm = map1.get(data.getSampleId());
+            setSamplePrivateWell(sm, data);
+        }
+
+        /*
+         * various lists for each sample
+         */
+        if (el.contains(SampleManager1.Load.ORGANIZATION)) {
+            for (SampleOrganizationViewDO data : sampleOrganization.fetchBySampleIds(ids1)) {
+                sm = map1.get(data.getSampleId());
+                addOrganization(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.PROJECT)) {
+            for (SampleProjectViewDO data : sampleProject.fetchBySampleIds(ids1)) {
+                sm = map1.get(data.getSampleId());
+                addProject(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.QA)) {
+            for (SampleQaEventViewDO data : sampleQA.fetchBySampleIds(ids1)) {
+                sm = map1.get(data.getSampleId());
+                addSampleQA(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.AUXDATA)) {
+            for (AuxDataViewDO data : auxdata.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
+                sm = map1.get(data.getReferenceId());
+                addAuxilliary(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.NOTE)) {
+            for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.SAMPLE)) {
+                sm = map1.get(data.getReferenceId());
+                addSampleNote(sm, data);
+            }
+        }
+
+        /*
          * build level 3, everything is based on analysis ids
          */
         ids1 = new ArrayList<Integer>();
         map1 = new HashMap<Integer, SampleManager1>();
+        for (AnalysisViewDO data : analysis.fetchBySampleItemIds(ids2)) {
+            sm = map2.get(data.getSampleItemId());
+            addAnalysis(sm, data);
+            if ( !map1.containsKey(data.getId())) {
+                ids1.add(data.getId());
+                map1.put(data.getId(), sm);
+            }
+        }
+        ids2 = null;
+        map2 = null;
+
+        if (el.contains(SampleManager1.Load.NOTE)) {
+            for (NoteViewDO data : note.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
+                sm = map1.get(data.getReferenceId());
+                addAnalysisNote(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.QA)) {
+            for (AnalysisQaEventViewDO data : analysisQA.fetchByAnalysisIds(ids1)) {
+                sm = map1.get(data.getAnalysisId());
+                addAnalysisQA(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.STORAGE)) {
+            for (StorageViewDO data : storage.fetchByIds(ids1, ReferenceTable.ANALYSIS)) {
+                sm = map1.get(data.getReferenceId());
+                addStorage(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.ANALYSISUSER)) {
+            for (AnalysisUserViewDO data : user.fetchByAnalysisIds(ids1)) {
+                sm = map1.get(data.getAnalysisId());
+                addUser(sm, data);
+            }
+        }
+
+        if (el.contains(SampleManager1.Load.RESULT)) {
+            for (ResultViewDO data : result.fetchByAnalysisIds(ids1)) {
+                sm = map1.get(data.getAnalysisId());
+                addResult(sm, data);
+            }
+        } else if (el.contains(SampleManager1.Load.SINGLERESULT)) {
+            for (ResultViewDO data : result.fetchByAnalysisIds(analysisIds)) {
+                sm = map1.get(data.getAnalysisId());
+                addResult(sm, data);
+            }
+        }
 
         return sms;
     }
@@ -393,6 +535,22 @@ public class SampleManager1Bean implements SampleManager1Remote {
                                                     SampleManager1.Load... elements) throws Exception {
         lock.lock(ReferenceTable.SAMPLE, sampleIds);
         return fetchByIds(sampleIds, elements);
+    }
+
+    /**
+     * Returns a list of locked sample managers with specified analysis ids and
+     * requested load elements.
+     */
+    public ArrayList<SampleManager1> fetchForUpdateByAnalyses(ArrayList<Integer> analysisIds,
+                                                              SampleManager1.Load... elements) throws Exception {
+        ArrayList<Integer> ids;
+
+        ids = new ArrayList<Integer>();
+        for (SampleItemViewDO data : item.fetchByAnalysisIds(analysisIds))
+            ids.add(data.getSampleId());
+
+        lock.lock(ReferenceTable.SAMPLE, ids);
+        return fetchByAnalyses(analysisIds, elements);
     }
 
     /**
