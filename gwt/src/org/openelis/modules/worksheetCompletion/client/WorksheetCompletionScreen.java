@@ -115,13 +115,12 @@ import org.openelis.modules.note.client.NotesTab;
 import org.openelis.modules.sample.client.TestPrepUtility;
 import org.openelis.modules.sample.client.TestReflexUtility;
 import org.openelis.modules.worksheet.client.WorksheetLookupScreen;
-import org.openelis.server.EJBFactory;
 
 public class WorksheetCompletionScreen extends Screen {
 
     private boolean              closeWindow, isPopup, successfulLoad, tableLoaded;//, commitDone;
     private Integer              statusWorking, statusFailedRun, origStatus;
-    private ScreenService        instrumentService, sysVarService, worksheetService;
+    private ScreenService        instrumentService, qcService, sysVarService, worksheetService;
     private ModulePermission     userPermission;
     private WorksheetManager     manager;
 
@@ -169,6 +168,7 @@ public class WorksheetCompletionScreen extends Screen {
         successfulLoad    = false;
         service           = new ScreenService("controller?service=org.openelis.modules.worksheetCompletion.server.WorksheetCompletionService");
         instrumentService = new ScreenService("controller?service=org.openelis.modules.instrument.server.InstrumentService");
+        qcService         = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");
         sysVarService     = new ScreenService("controller?service=org.openelis.modules.systemvariable.server.SystemVariableService");
         worksheetService  = new ScreenService("controller?service=org.openelis.modules.worksheet.server.WorksheetService");
         
@@ -1137,7 +1137,7 @@ public class WorksheetCompletionScreen extends Screen {
                             model.add((TableDataRow)row.clone());
                         }
                     } else if (waDO.getQcId() != null) {
-                        qcLotVDO = EJBFactory.getQcLot().fetchById(waDO.getQcId());
+                        qcLotVDO = qcService.call("fetchLotById", waDO.getQcId());
                         
                         row.cells.get(2).value = qcLotVDO.getQcName();
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();
