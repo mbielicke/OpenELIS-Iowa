@@ -953,6 +953,7 @@ public class AnalysisManager implements RPC {
                     if (DataBaseUtil.isSame(temp.getPreAnalysisId(), data.getId()) &&
                         temp.getStatusId().equals(proxy().anInPrepId)) {
                         temp.setStatusId(proxy().anLoggedInId);
+                        temp.setAvailableDate(proxy().getCurrentDatetime(Datetime.YEAR, Datetime.MINUTE));
                     }
                 }
             }
