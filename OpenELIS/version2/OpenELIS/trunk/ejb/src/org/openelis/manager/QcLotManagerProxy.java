@@ -35,7 +35,6 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.QcLotLocal;
-import org.openelis.meta.CategoryMeta;
 import org.openelis.meta.QcMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -89,6 +88,7 @@ public class QcLotManagerProxy {
     }
 
     public void validate(QcLotManager man) throws Exception {
+        int i;
         String lotNum;
         QcLotViewDO data;
         QcLotDO lot;
@@ -100,7 +100,18 @@ public class QcLotManagerProxy {
         list = new ValidationErrorsList();
         lotNums = new HashSet<String>();
         
-        for (int i = 0; i < man.count(); i++ ) {
+        for(i = 0;  i < man.deleteCount(); i++) {
+            data = man.getDeletedAt(i);
+            try {
+                cl.validateForDelete(data);
+            } catch(ValidationErrorsList  e) {
+                list.add(e.getErrorList().get(0));
+            } catch(Exception e) {
+                DataBaseUtil.mergeException(list, e);                
+            } 
+        }
+        
+        for (i = 0; i < man.count(); i++ ) {
             data = man.getLotAt(i);
             try {
                 cl.validate(data);

@@ -49,4 +49,6 @@ public interface QcLotLocal {
     public void delete(QcLotDO data) throws Exception;
 
     public void validate(QcLotDO data) throws Exception;
+    
+    public void validateForDelete(QcLotViewDO data) throws Exception;
 }

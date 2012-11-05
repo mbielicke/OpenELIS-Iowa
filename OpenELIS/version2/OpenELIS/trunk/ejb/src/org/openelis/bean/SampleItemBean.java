@@ -90,6 +90,20 @@ public class SampleItemBean implements SampleItemLocal {
  
         return DataBaseUtil.toArrayList(query.getResultList());
     }
+    
+    /**
+     * This method returns all of the sample items belonging to the samples that
+     * have the analyses with these ids and not just the sample items that are
+     * linked to those analysis
+     */
+    public ArrayList<SampleItemViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) {
+        Query query;
+        
+        query = manager.createNamedQuery("SampleItem.FetchByAnalysisIds");
+        query.setParameter("ids", analysisIds);
+ 
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
 
     public SampleItemViewDO add(SampleItemViewDO data){
         SampleItem entity;
