@@ -84,12 +84,12 @@ UIRF Software License are applicable instead of those above.
       <xs:attribute name="accesssion_number" type="xs:integer" use = "required"/>
       <xs:attribute name="revision" type="xs:integer"/>
       <xs:attribute name="order_id" type="xs:integer"/>
-      <xs:attribute name="entered_date" type="xs:string" use = "required"/>
-      <xs:attribute name="received_date" type="xs:string" use = "required"/>
-      <xs:attribute name="collection_date" type="xs:string" use = "required"/>
-      <xs:attribute name="collection_time" type="xs:string"/>
+      <xs:attribute name="entered_date" type="xs:dateTime" use = "required"/>
+      <xs:attribute name="received_date" type="xs:dateTime" use = "required"/>
+      <xs:attribute name="collection_date" type="xs:date" use = "required"/>
+      <xs:attribute name="collection_time" type="xs:time"/>
       <xs:attribute name="package_id" type="xs:integer"/>
-      <xs:attribute name="released_date" type="xs:string"/>
+      <xs:attribute name="released_date" type="xs:dateTime"/>
     </xs:complexType>
   </xs:element>    
   
@@ -189,7 +189,7 @@ UIRF Software License are applicable instead of those above.
       <xs:attribute name="sample_id" type="xs:integer" use = "required"/>
       <xs:attribute name="sample_item_id" type="xs:integer" />
       <xs:attribute name="item_sequence" type="xs:integer" />
-      <xs:attribute name="quantity" type="xs:integer" />
+      <xs:attribute name="quantity" type="xs:decimal" />
     </xs:complexType>
   </xs:element>
   
@@ -213,8 +213,8 @@ UIRF Software License are applicable instead of those above.
         <xs:element name="owner" minOccurs="0" type = "systemUser"/>
       </xs:sequence>
       <xs:attribute name="id" use = "required" type="xs:integer"/>
-      <xs:attribute name="started_date" type="xs:string" use = "required"/>
-      <xs:attribute name="completed_date" type="xs:string" use = "required"/>
+      <xs:attribute name="started_date" type="xs:date" use = "required"/>
+      <xs:attribute name="completed_date" type="xs:date" use = "required"/>
       <xs:attribute name="is_active" type="xs:string"/>
     </xs:complexType>
   </xs:element>
@@ -240,7 +240,7 @@ UIRF Software License are applicable instead of those above.
       </xs:sequence>
       <xs:attribute name="id" type="xs:integer" use = "required"/>
       <xs:attribute name="parent_organization_id" type="xs:integer"/>
-      <xs:attribute name="is_active"/>
+      <xs:attribute name="is_active" type="xs:string"/>
     </xs:complexType>
   </xs:element>  
   
@@ -253,7 +253,7 @@ UIRF Software License are applicable instead of those above.
         <xs:element name="status" type="dictionary"/>
         <xs:element ref="analysis_qaevent" minOccurs="0" maxOccurs="unbounded"/>   
         <xs:element ref="result" maxOccurs="unbounded"/>
-        <xs:element ref="analysis_user" maxOccurs="unbounded"/>    
+        <xs:element ref="analysis_user" minOccurs="0" maxOccurs="unbounded"/>    
         <xs:element ref="note" minOccurs="0" maxOccurs="unbounded"/>
       </xs:sequence>
       <xs:attribute name="id" use = "required" type="xs:integer" />
@@ -262,11 +262,11 @@ UIRF Software License are applicable instead of those above.
       <xs:attribute name="pre_analysis_id" type="xs:integer" />
       <xs:attribute name="parent_result_id" type="xs:integer" />
       <xs:attribute name="is_reportable" type="xs:string" use = "required"/>
-      <xs:attribute name="available_date" type="xs:string"/>
-      <xs:attribute name="started_date" type="xs:string"/>
-      <xs:attribute name="completed_date" type="xs:string"/>
-      <xs:attribute name="released_date" type="xs:string"/>
-      <xs:attribute name="printed_date" type="xs:string"/>
+      <xs:attribute name="available_date" type="xs:dateTime"/>
+      <xs:attribute name="started_date" type="xs:dateTime"/>
+      <xs:attribute name="completed_date" type="xs:dateTime"/>
+      <xs:attribute name="released_date" type="xs:dateTime"/>
+      <xs:attribute name="printed_date" type="xs:dateTime"/>
     </xs:complexType>
   </xs:element>
   
@@ -286,8 +286,8 @@ UIRF Software License are applicable instead of those above.
       </xs:sequence>
       <xs:attribute name="id" type="xs:integer" use = "required"/>
       <xs:attribute name="is_active" type="xs:string" use = "required"/>
-      <xs:attribute name="active_begin" type="xs:string"/>
-      <xs:attribute name="active_end" type="xs:string"/>
+      <xs:attribute name="active_begin" type="xs:date"/>
+      <xs:attribute name="active_end" type="xs:date"/>
       <xs:attribute name="is_reportable" type="xs:string" use = "required" />
       <xs:attribute name="time_transit" type="xs:integer" use = "required"/>
       <xs:attribute name="time_holding" type="xs:integer" use = "required"/>
@@ -308,8 +308,8 @@ UIRF Software License are applicable instead of those above.
      </xs:sequence>
      <xs:attribute name="id" type="xs:integer" use = "required"/>
      <xs:attribute name="is_active" type="xs:string" use = "required"/>
-     <xs:attribute name="active_begin" type="xs:string" use = "required"/>
-     <xs:attribute name="active_end" type="xs:string" use = "required"/>
+     <xs:attribute name="active_begin" type="xs:date" use = "required"/>
+     <xs:attribute name="active_end" type="xs:date" use = "required"/>
    </xs:complexType>
  </xs:element>
  
@@ -321,7 +321,7 @@ UIRF Software License are applicable instead of those above.
        <xs:element ref="organization" minOccurs = "0"/>
      </xs:sequence>
      <xs:attribute name="id" type="xs:integer" use = "required"/>
-     <xs:attribute name="parent_section_id" type="xs:string"/>
+     <xs:attribute name="parent_section_id" type="xs:integer"/>
      <xs:attribute name="is_external" type="xs:string" use = "required"/>
    </xs:complexType>
  </xs:element>
@@ -403,7 +403,7 @@ UIRF Software License are applicable instead of those above.
       <xs:attribute name="id" type="xs:integer" use = "required"/>
       <xs:attribute name="reference_id" type="xs:integer" use = "required"/>
       <xs:attribute name="reference_table_id" type="xs:integer" use = "required"/>
-      <xs:attribute name="timestamp" type="xs:string" use = "required"/>
+      <xs:attribute name="timestamp" type="xs:dateTime" use = "required"/>
       <xs:attribute name="is_external" type="xs:string" use = "required"/>
     </xs:complexType>
   </xs:element>
@@ -450,27 +450,28 @@ UIRF Software License are applicable instead of those above.
    
  <xs:complexType name="dictionary">
    <xs:sequence>    
+     <xs:element name="system_name" minOccurs="0" type="xs:string"/>
      <xs:element name="entry" type="xs:string"/>                 
      <xs:element ref="translation" minOccurs="0"/>
    </xs:sequence>
    <xs:attribute name="id" type="xs:integer" use = "required"/>
  </xs:complexType>
  
-  <xs:complexType name="address">
-    <xs:sequence>    
-      <xs:element name="multiple_unit" minOccurs="0" type="xs:string"/>          
-      <xs:element name="street_address" minOccurs="0" type="xs:string"/>  
-      <xs:element name="city" minOccurs="0" type="xs:string"/>  
-      <xs:element name="state" minOccurs="0" type="xs:string"/>  
-      <xs:element name="zip_code" minOccurs="0" type="xs:string"/>  
-      <xs:element name="home_phone" minOccurs="0" type="xs:string"/>  
-      <xs:element name="cell_phone" minOccurs="0" type="xs:string"/>  
-      <xs:element name="fax_phone" minOccurs="0" type="xs:string"/>
-      <xs:element name="email" minOccurs="0" type="xs:string"/>
-      <xs:element name="country" minOccurs="0" type="xs:string"/>
-    </xs:sequence>
-    <xs:attribute name="id" type="xs:integer" use = "required"/>
-  </xs:complexType>
+ <xs:complexType name="address">
+   <xs:sequence>    
+     <xs:element name="multiple_unit" minOccurs="0" type="xs:string"/>          
+     <xs:element name="street_address" minOccurs="0" type="xs:string"/>  
+     <xs:element name="city" minOccurs="0" type="xs:string"/>  
+     <xs:element name="state" minOccurs="0" type="xs:string"/>  
+     <xs:element name="zip_code" minOccurs="0" type="xs:string"/>  
+     <xs:element name="home_phone" minOccurs="0" type="xs:string"/>  
+     <xs:element name="cell_phone" minOccurs="0" type="xs:string"/>  
+     <xs:element name="fax_phone" minOccurs="0" type="xs:string"/>
+     <xs:element name="email" minOccurs="0" type="xs:string"/>
+     <xs:element name="country" minOccurs="0" type="xs:string"/>
+   </xs:sequence>
+   <xs:attribute name="id" type="xs:integer" use = "required"/>
+ </xs:complexType>
   
   <xs:element name="analyte">
     <xs:complexType>
@@ -481,7 +482,7 @@ UIRF Software License are applicable instead of those above.
       </xs:sequence>
       <xs:attribute name="id" type="xs:integer" use = "required"/>
       <xs:attribute name="is_active" use = "required" type="xs:string"/>
-      <xs:attribute name="parent_analyte_id"/>
+      <xs:attribute name="parent_analyte_id" type="xs:integer"/>
     </xs:complexType>
   </xs:element>
   
