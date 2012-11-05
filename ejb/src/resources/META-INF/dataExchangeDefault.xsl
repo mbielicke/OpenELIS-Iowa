@@ -620,9 +620,6 @@ UIRF Software License are applicable instead of those above.
     <xsl:attribute name="active_end">
       <xsl:value-of select="@active_end" />
     </xsl:attribute>
-    <xsl:attribute name="is_active">
-      <xsl:value-of select="@is_active" />
-    </xsl:attribute>
     <name>
       <xsl:value-of select="name" />
     </name>
@@ -640,9 +637,11 @@ UIRF Software License are applicable instead of those above.
     <xsl:attribute name="id">
       <xsl:value-of select="@id" />
     </xsl:attribute>        
-    <xsl:attribute name="parent_section_id">
-      <xsl:value-of select="@parent_section_id" />
-    </xsl:attribute>
+    <xsl:if test="@parent_section_id[. != '']">
+      <xsl:attribute name="parent_section_id">
+        <xsl:value-of select="@parent_section_id" />
+      </xsl:attribute>
+    </xsl:if>
     <xsl:attribute name="is_external">
       <xsl:value-of select="@is_external" />
     </xsl:attribute>
@@ -684,7 +683,7 @@ UIRF Software License are applicable instead of those above.
       <xsl:attribute name="test_analyte_id">
         <xsl:value-of select="@test_analyte_id" />
       </xsl:attribute>
-      <xsl:if test="test_result_id[. != '']">
+      <xsl:if test="@test_result_id[. != '']">
         <xsl:attribute name="test_result_id">
           <xsl:value-of select="@test_result_id" />
         </xsl:attribute>
@@ -1077,6 +1076,11 @@ UIRF Software License are applicable instead of those above.
     <xsl:attribute name="id">
       <xsl:value-of select="@id" />
     </xsl:attribute>
+    <xsl:if test="system_name[. != '']">
+      <system_name>
+        <xsl:value-of select="system_name" />
+      </system_name>
+    </xsl:if>
     <entry>
       <xsl:value-of select="entry" />
     </entry>

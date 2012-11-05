@@ -25,8 +25,10 @@
  */
 package org.openelis.bean;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 
 import javax.annotation.PostConstruct;
@@ -69,6 +71,8 @@ import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestTrailerDO;
 import org.openelis.domain.TestViewDO;
+import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
@@ -148,7 +152,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
      
     private static Integer            resultDictTypeId, auxDictTypeId, cancelledStatusId, releasedStatusId;
 
-    private static SimpleDateFormat   timeFormat;
+    private static SimpleDateFormat   dateFormat, timeFormat;
     
     private static final String       VERSION = "2.1.8", MESSAGE_TYPE = "result-out";
     
@@ -162,7 +166,8 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
                 auxDictTypeId = EJBFactory.getDictionary().fetchBySystemName("aux_dictionary").getId();
                 cancelledStatusId = EJBFactory.getDictionary().fetchBySystemName("analysis_cancelled").getId();
                 releasedStatusId = EJBFactory.getDictionary().fetchBySystemName("analysis_released").getId();
-                timeFormat = new SimpleDateFormat("HH:mm");
+                dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                timeFormat = new SimpleDateFormat("HH:mm:ss");
             } catch (Exception e) {
                 log.error("Could not fetch dictionary with system name "+ "test_res_type_dictionary", e);
             }
@@ -414,12 +419,12 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
                         
                         analyteIds.add(result.getAnalyteId());
                         
-                        if (!showValue) 
-                            continue;
-                        
                         typeId = result.getTypeId();
                         if (typeId != null)
                             dictIds.add(typeId);
+                        
+                        if (!showValue) 
+                            continue;
                         
                         if (resultDictTypeId.equals(typeId) && result.getValue() != null) {
                             dictId = Integer.valueOf(result.getValue());
@@ -705,17 +710,17 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         if (sample.getOrderId() != null)
             parent.setAttribute("order_id", sample.getOrderId().toString());
         
-        parent.setAttribute("entered_date", sample.getEnteredDate().toString());
-        parent.setAttribute("received_date", sample.getReceivedDate().toString());
+        parent.setAttribute("entered_date", getDatetimeForSchema(sample.getEnteredDate()));
+        parent.setAttribute("received_date", getDatetimeForSchema(sample.getReceivedDate()));
         parent.setAttribute("received_by_id", sample.getReceivedById().toString());
         
         if (sample.getCollectionDate() != null)
-            parent.setAttribute("collection_date", sample.getCollectionDate().toString());
+            parent.setAttribute("collection_date", getDatetimeForSchema(sample.getCollectionDate()));
         
         parent.setAttribute("status_id", sample.getStatusId().toString());
 
         if (sample.getCollectionTime() != null)
-            parent.setAttribute("collection_time", timeFormat.format(sample.getCollectionTime().getDate()));        
+            parent.setAttribute("collection_time", getDatetimeForSchema(sample.getCollectionTime()));        
         
         if (sample.getPackageId() != null)
             parent.setAttribute("package_id", sample.getPackageId().toString());
@@ -727,7 +732,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         }
         
         if (sample.getReleasedDate() != null)
-            parent.setAttribute("released_date", sample.getReleasedDate().toString());
+            parent.setAttribute("released_date", getDatetimeForSchema(sample.getReleasedDate()));
         
         return parent;
     }
@@ -985,19 +990,19 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         parent.setAttribute("status_id", analysis.getStatusId().toString());
         
         if (analysis.getAvailableDate() != null)
-            parent.setAttribute("available_date", analysis.getAvailableDate().toString());
+            parent.setAttribute("available_date", getDatetimeForSchema(analysis.getAvailableDate()));
         
         if (analysis.getStartedDate() != null)
-            parent.setAttribute("started_date", analysis.getStartedDate().toString());
+            parent.setAttribute("started_date", getDatetimeForSchema(analysis.getStartedDate()));
         
         if (analysis.getCompletedDate() != null)
-            parent.setAttribute("completed_date", analysis.getCompletedDate().toString());
+            parent.setAttribute("completed_date", getDatetimeForSchema(analysis.getCompletedDate()));
         
         if (analysis.getReleasedDate() != null)
-            parent.setAttribute("released_date", analysis.getReleasedDate().toString());
+            parent.setAttribute("released_date", getDatetimeForSchema(analysis.getReleasedDate()));
         
         if (analysis.getPrintedDate() != null)
-            parent.setAttribute("printed_date", analysis.getPrintedDate().toString());
+            parent.setAttribute("printed_date", getDatetimeForSchema(analysis.getPrintedDate()));
         
         return parent;
     }
@@ -1025,8 +1030,8 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         
         parent.setAttribute("method_id", test.getMethodId().toString());
         parent.setAttribute("is_active", test.getIsActive());  
-        parent.setAttribute("active_begin", test.getActiveBegin().toString());
-        parent.setAttribute("active_end", test.getActiveEnd().toString());
+        parent.setAttribute("active_begin", getDatetimeForSchema(test.getActiveBegin()));
+        parent.setAttribute("active_end", getDatetimeForSchema(test.getActiveEnd()));
         parent.setAttribute("is_reportable", test.getIsReportable());
         parent.setAttribute("time_transit", test.getTimeTransit().toString());
         parent.setAttribute("time_holding", test.getTimeHolding().toString());
@@ -1077,8 +1082,8 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         parent.appendChild(child);
         
         parent.setAttribute("is_active", method.getIsActive());
-        parent.setAttribute("active_begin", method.getActiveBegin().toString());
-        parent.setAttribute("active_end", method.getActiveEnd().toString());
+        parent.setAttribute("active_begin", getDatetimeForSchema(method.getActiveBegin()));
+        parent.setAttribute("active_end", getDatetimeForSchema(method.getActiveEnd()));
         
         return parent;
     }
@@ -1183,8 +1188,8 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         child.setTextContent(project.getDescription());
         parent.appendChild(child);
         
-        parent.setAttribute("started_date", project.getStartedDate().toString());
-        parent.setAttribute("completed_date", project.getCompletedDate().toString());
+        parent.setAttribute("started_date", getDatetimeForSchema(project.getStartedDate()));
+        parent.setAttribute("completed_date", getDatetimeForSchema(project.getCompletedDate()));
         parent.setAttribute("is_active", project.getIsActive());
         
         if (project.getReferenceTo() != null) {
@@ -1497,7 +1502,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         parent.setAttribute("id", note.getId().toString());
         parent.setAttribute("reference_id", note.getReferenceId().toString());
         parent.setAttribute("reference_table_id", note.getReferenceTableId().toString());
-        parent.setAttribute("timestamp", note.getTimestamp().toString());
+        parent.setAttribute("timestamp", getDatetimeForSchema(note.getTimestamp()));
         parent.setAttribute("is_external", note.getIsExternal());
         parent.setAttribute("system_user_id", note.getSystemUserId().toString());
         
@@ -1634,5 +1639,25 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
         parent.setAttribute("include_all_analyses", criteria.getIsAllAnalysesIncluded());
         
         return parent;
+    }
+    
+    private String getDatetimeForSchema(Datetime dt) {
+        String ytod, htos;
+        Date d;
+        
+        if (dt == null)
+            return null;
+        
+        d = dt.getDate();
+        
+        ytod = null;        
+        if (dt.getStartCode() < Datetime.DAY)         
+            ytod = dateFormat.format(d);        
+        
+        htos = null;
+        if (dt.getEndCode() > Datetime.DAY)
+            htos = timeFormat.format(d);
+                
+        return DataBaseUtil.concatWithSeparator(ytod, "T", htos);
     }
 }

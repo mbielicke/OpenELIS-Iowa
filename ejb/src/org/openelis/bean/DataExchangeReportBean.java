@@ -282,7 +282,7 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
                  * xml for each sample
                  */
                 for (Integer accNum : accessionNumbers) {
-                    tempFile = File.createTempFile("dataExchange", ".xml", dir);
+                    tempFile = File.createTempFile(DataBaseUtil.concat(accNum,"_dataExchange"), ".xml", dir);
                     out = new FileOutputStream(tempFile);
                     writer = new BufferedWriter(new FileWriter(tempFile));
                     
