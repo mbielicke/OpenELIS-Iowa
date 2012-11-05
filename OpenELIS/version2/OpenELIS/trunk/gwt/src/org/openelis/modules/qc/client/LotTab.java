@@ -34,6 +34,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.SystemUserVO;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.event.DataChangeEvent;
 import org.openelis.gwt.event.GetMatchesEvent;
 import org.openelis.gwt.event.GetMatchesHandler;
@@ -41,6 +42,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
 import org.openelis.gwt.widget.Dropdown;
@@ -71,8 +73,9 @@ public class LotTab extends Screen {
     private AutoComplete<Integer>       preparedBy;
 
     private boolean                     loaded;
-
-    public LotTab(ScreenDefInt def, ScreenWindowInt window) {        
+    
+    public LotTab(ScreenDefInt def, ScreenWindowInt window) {   
+        service = new ScreenService("controller?service=org.openelis.modules.qc.server.QcService");        
         setDefinition(def);
         setWindow(window);
         initialize();
@@ -135,12 +138,18 @@ public class LotTab extends Screen {
                         data.setPreparedDate((Datetime)val);                        
                         break;
                     case 4:
-                        data.setPreparedVolume((Double)val);
+                        data.setUsableDate((Datetime)val);
                         break;
                     case 5:
+                        data.setExpireDate((Datetime)val);
+                        break;    
+                    case 6:
+                        data.setPreparedVolume((Double)val);
+                        break;
+                    case 7:
                         data.setPreparedUnitId((Integer)val);
                         break;
-                    case 6:
+                    case 8:
                         row = (TableDataRow)val;
                         if (row != null) {
                             data.setPreparedById((Integer)row.key);
@@ -150,12 +159,7 @@ public class LotTab extends Screen {
                             data.setPreparedByName(null);
                         }
                         break;
-                    case 7:
-                        data.setUsableDate((Datetime)val);
-                        break;
-                    case 8:
-                        data.setExpireDate((Datetime)val);
-                        break;
+
                         
                 }
             }
@@ -222,7 +226,7 @@ public class LotTab extends Screen {
                     row = new TableDataRow(9);
                     row.cells.get(0).setValue("Y");
                     row.cells.get(3).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-                    row.cells.get(6).setValue(new TableDataRow(UserCache.getId(), UserCache.getName()));
+                    row.cells.get(8).setValue(new TableDataRow(UserCache.getId(), UserCache.getName()));
 
                     table.addRow(row);
                     n = table.numRows() - 1;
@@ -245,8 +249,19 @@ public class LotTab extends Screen {
                 int r;
 
                 r = table.getSelectedRow();
-                if (r > -1 && table.numRows() > 0)
-                    table.deleteRow(r);
+
+                try {
+                    if (r > -1 && table.numRows() > 0) { 
+                        window.setBusy(consts.get("validatingDelete"));
+                        validateForDelete(manager.getLots().getLotAt(r));
+                        table.deleteRow(r);
+                    }
+                } catch (ValidationErrorsList e) {
+                    Window.alert(e.getErrorList().get(0).getMessage());
+                } catch (Exception e) {
+                    Window.alert(e.getMessage());
+                    e.printStackTrace();
+                }                window.clearStatus();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -303,16 +318,16 @@ public class LotTab extends Screen {
                 row.cells.get(1).setValue(data.getLotNumber());
                 row.cells.get(2).setValue(data.getLocationId());
                 row.cells.get(3).setValue(data.getPreparedDate());
-                row.cells.get(4).setValue(data.getPreparedVolume());
-                row.cells.get(5).setValue(data.getPreparedUnitId());
+                row.cells.get(4).setValue(data.getUsableDate());
+                row.cells.get(5).setValue(data.getExpireDate());
+                row.cells.get(6).setValue(data.getPreparedVolume());
+                row.cells.get(7).setValue(data.getPreparedUnitId());
                 
                 userRow = null;
                 if (data.getPreparedById() != null)
                     userRow = new TableDataRow(data.getPreparedById(),data.getPreparedByName());
                 
-                row.cells.get(6).setValue(userRow);
-                row.cells.get(7).setValue(data.getUsableDate());
-                row.cells.get(8).setValue(data.getExpireDate());
+                row.cells.get(8).setValue(userRow);                
                 row.data = data;
                 model.add(row);
             }
@@ -337,5 +352,11 @@ public class LotTab extends Screen {
     
     protected void clearExceptions() {
         table.clearCellExceptions();
+    }
+    
+    private void validateForDelete(QcLotViewDO data) throws Exception {
+        if (data.getId() == null)
+            return;
+        service.call("validateForDelete", data);
     }
 }

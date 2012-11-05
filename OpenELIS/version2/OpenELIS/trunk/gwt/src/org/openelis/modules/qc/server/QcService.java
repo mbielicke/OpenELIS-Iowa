@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.QcDO;
+import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
@@ -116,4 +117,9 @@ public class QcService {
     public QcLotManager fetchLotByQcId(Integer id) throws Exception {
         return EJBFactory.getQcManager().fetchLotByQcId(id);
     }
+    
+    public QcLotDO validateForDelete(QcLotViewDO data) throws Exception {
+        EJBFactory.getQcLot().validateForDelete(data);
+        return data;
+    } 
 }
