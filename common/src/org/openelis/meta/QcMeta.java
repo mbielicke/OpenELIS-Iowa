@@ -48,12 +48,12 @@ public class QcMeta implements Meta, MetaMap {
                                                   SOURCE, IS_ACTIVE, ANA_ID, ANA_QC_ID, 
                                                   ANA_SORT_ORDER, ANA_ANALYTE_ID,
                                                   ANA_TYPE_ID, ANA_VALUE, ANA_IS_TRENDABLE,
-                                                  LOT_ID, LOT_QC_ID, LOT_LOCATION_ID,
-                                                  LOT_PREPARED_DATE, LOT_PREPARED_VOLUME,
-                                                  LOT_PREPARED_UNIT_ID, LOT_PREPARED_BY_ID,
-                                                  LOT_USABLE_DATE, LOT_EXPIRE_DATE,
-                                                  LOT_IS_ACTIVE, INVENTORY_ITEM_NAME,
-                                                  ANA_ANALYTE_NAME));
+                                                  LOT_ID, LOT_QC_ID, LOT_LOT_NUMBER,
+                                                  LOT_LOCATION_ID, LOT_PREPARED_DATE, 
+                                                  LOT_PREPARED_VOLUME, LOT_PREPARED_UNIT_ID,
+                                                  LOT_PREPARED_BY_ID, LOT_USABLE_DATE,
+                                                  LOT_EXPIRE_DATE, LOT_IS_ACTIVE,
+                                                  INVENTORY_ITEM_NAME, ANA_ANALYTE_NAME));
     }
 
     public static String getId() {

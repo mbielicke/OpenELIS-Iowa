@@ -48,18 +48,23 @@ import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.QcLotLocal;
 import org.openelis.local.UserCacheLocal;
+import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.meta.QcMeta;
+import org.openelis.remote.QcLotRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class QcLotBean implements QcLotLocal {
+public class QcLotBean implements QcLotLocal, QcLotRemote {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;
     
     @EJB
     private UserCacheLocal     userCache;
+    
+    @EJB
+    private WorksheetAnalysisLocal worksheetAnalysis;
 
     public QcLotViewDO fetchById(Integer lotId) throws Exception {
         QcLotViewDO data;
@@ -225,10 +230,25 @@ public class QcLotBean implements QcLotLocal {
             list.add(new FieldErrorException("usableBeforePrepException", QcMeta.getQcLotUsableDate()));
 
         if (validateExpire && DataBaseUtil.isAfter(data.getUsableDate(), data.getExpireDate()))
-            list.add(new FieldErrorException("expireBeforeUsableException",
-                                             QcMeta.getQcLotExpireDate()));
+            list.add(new FieldErrorException("expireBeforeUsableException", QcMeta.getQcLotExpireDate()));
 
         if (list.size() > 0)
             throw list;
+    }
+    
+
+    public void validateForDelete(QcLotViewDO data) throws Exception {        
+        ValidationErrorsList list;
+        
+        list = new ValidationErrorsList();
+        
+        try {
+            worksheetAnalysis.fetchByQcId(data.getId());
+            list.add(new FieldErrorException("qcLotDeleteException", null));
+            throw list;
+        } catch (NotFoundException e) {
+            // ignore
+        }
+        
     }
 }

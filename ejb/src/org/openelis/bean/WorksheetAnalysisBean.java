@@ -111,6 +111,21 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
 
         return data;
     }
+    
+    @SuppressWarnings("unchecked")
+    public ArrayList<WorksheetAnalysisDO> fetchByQcId(Integer id) throws Exception {
+        Query query;
+        List list;
+
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchByQcId");
+        query.setParameter("id", id);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
 
     public ArrayList<WorksheetCacheVO> fetchByWorking() throws Exception {
         Query query;

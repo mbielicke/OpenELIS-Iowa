@@ -40,6 +40,8 @@ public interface WorksheetAnalysisLocal {
 
     public WorksheetAnalysisDO fetchById(Integer testId) throws Exception;
     
+    public ArrayList<WorksheetAnalysisDO> fetchByQcId(Integer id) throws Exception;
+    
     public ArrayList<WorksheetCacheVO> fetchByWorking() throws Exception;
 
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception;

@@ -32,4 +32,6 @@ import org.openelis.domain.QcLotViewDO;
 @Remote
 public interface QcLotRemote {
     public QcLotViewDO fetchById(Integer id) throws Exception;
+
+    public void validateForDelete(QcLotViewDO data) throws Exception;
 }
