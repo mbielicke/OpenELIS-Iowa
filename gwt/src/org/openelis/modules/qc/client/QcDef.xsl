@@ -143,7 +143,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'id')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getId()}" width="75" tab="{meta:getName()},tabPanel" field="String" required="true" />
+                    <textbox key="{meta:getId()}" width="75" tab="{meta:getName()},tabPanel" field="Integer" required="true" />
                   </widget>
                 </row> 
                 <row>
@@ -245,14 +245,20 @@ UIRF Software License are applicable instead of those above.
                     <col key="{meta:getQcLotIsActive()}" width="40" align="center" header="{resource:getString($constants,'active')}">
                       <check/>
                     </col>
-                    <col key="{meta:getQcLotLotNumber()}" width="215" align="left" header="{resource:getString($constants,'lotNumber')}">
-                      <textbox field="String" case = "UPPER" required="true" />
+                    <col key="{meta:getQcLotLotNumber()}" width="210" align="left" header="{resource:getString($constants,'lotNumber')}">
+                      <textbox field="String" case = "UPPER" max = "30" required="true" />
                     </col>
-                    <col key="{meta:getQcLotLocationId()}" width="80" align="left" header="{resource:getString($constants,'location')}">
+                    <col key="{meta:getQcLotLocationId()}" width="60" align="left" header="{resource:getString($constants,'location')}">
                       <dropdown width="100" field="Integer" required="true" />
                     </col>
                     <col key="{meta:getQcLotPreparedDate()}" width="105" align="left"  header="{resource:getString($constants,'preparedDate')}">
                       <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
+                    </col>
+                    <col key="{meta:getQcLotUsableDate()}" width="105" align="left" header="{resource:getString($constants,'usableDate')}">
+                      <calendar begin="0" end="4" width="105" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" />
+                    </col>
+                    <col key="{meta:getQcLotExpireDate()}" width="105" align="left" header="{resource:getString($constants,'expireDate')}">
+                      <calendar begin="0" end="4" width="105" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" />
                     </col>
                     <col key="{meta:getQcLotPreparedVolume()}" width="105" align="right"  header="{resource:getString($constants,'preparedVolume')}">
                       <textbox field="Double"/>
@@ -264,13 +270,7 @@ UIRF Software License are applicable instead of those above.
                       <autoComplete width="145" field="Integer">
                         <col width="145" />
                       </autoComplete>
-                    </col>
-                    <col key="{meta:getQcLotUsableDate()}" width="105" align="left" header="{resource:getString($constants,'usableDate')}">
-                      <calendar begin="0" end="4" width="105" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" />
-                    </col>
-                    <col key="{meta:getQcLotExpireDate()}" width="105" align="left" header="{resource:getString($constants,'expireDate')}">
-                      <calendar begin="0" end="4" width="105" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" />
-                    </col>
+                    </col>                    
                   </table>
                   <widget style="TableButtonFooter">
                     <HorizontalPanel>
