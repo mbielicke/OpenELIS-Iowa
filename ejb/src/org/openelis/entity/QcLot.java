@@ -54,17 +54,22 @@ import org.openelis.utils.AuditUtil;
 import org.openelis.utils.Auditable;
 
 @NamedQueries({
+    @NamedQuery( name = "QcLot.FetchById",
+                query = "select new org.openelis.domain.QcLotViewDO(qcl.id, qcl.qcId, "
+                      + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"
+                      + "qcl.preparedById, qcl.usableDate, qcl.expireDate, qcl.isActive, qc.name)"
+                      + " from QcLot qcl where qcl.id = :id"),                       
     @NamedQuery( name = "QcLot.FetchByQcId",
                 query = "select new org.openelis.domain.QcLotViewDO(qcl.id, qcl.qcId, "
                       + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"
                       + "qcl.preparedById, qcl.usableDate, qcl.expireDate, qcl.isActive, qc.name)"
                       + " from QcLot qcl left join qcl.qc qc where qcl.qcId = :id"),                       
-   @NamedQuery( name = "QcLot.FetchByLotNumber",
-               query = "select new org.openelis.domain.QcLotDO(qcl.id, qcl.qcId, "
-                       + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"
-                       + "qcl.preparedById, qcl.usableDate, qcl.expireDate, qcl.isActive)"
-                       + " from QcLot qcl where qcl.lotNumber = :lotNumber"),
-   @NamedQuery( name = "QcLot.FetchActiveByQcName",
+    @NamedQuery( name = "QcLot.FetchByLotNumber",
+                query = "select new org.openelis.domain.QcLotDO(qcl.id, qcl.qcId, "
+                      + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"
+                      + "qcl.preparedById, qcl.usableDate, qcl.expireDate, qcl.isActive)"
+                      + " from QcLot qcl where qcl.lotNumber = :lotNumber"),
+    @NamedQuery( name = "QcLot.FetchActiveByQcName",
                 query = "select new org.openelis.domain.QcLotViewDO(qcl.id, qcl.qcId, "
                       + "qcl.lotNumber, qcl.locationId, qcl.preparedDate, qcl.preparedVolume, qcl.preparedUnitId,"
                       + "qcl.preparedById, qcl.usableDate, qcl.expireDate, qcl.isActive, qc.name)"
