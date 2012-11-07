@@ -48,6 +48,7 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
+import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.AutoComplete;
@@ -83,7 +84,8 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
 
     private OrderManager              manager;
     private TestTab                   screen; 
-    private AppButton                 addTestButton, removeTestButton, popoutButton;
+    private AppButton                 addTestButton, removeTestButton, popoutButton,
+                                      checkAllButton, uncheckAllButton;
     private TreeWidget                tree;
     private TableWidget               queryTable;
     private AutoComplete<Integer>     test;
@@ -132,6 +134,8 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                 if (state == State.ADD || state == State.UPDATE) {
                     row = event.getSelectedItem();
                     removeTestButton.enable(TEST_LEAF.equals(row.leafType));
+                    checkAllButton.enable(true);
+                    uncheckAllButton.enable(true);
                 }              
             }
         });
@@ -452,6 +456,44 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
                 });
             }
         }
+        
+        checkAllButton = (AppButton)def.getWidget("checkAllButton");
+        addScreenHandler(checkAllButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                setReportableForTest(tree.getSelection(), "Y");
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                checkAllButton.enable(false);
+            }
+        });
+        
+        uncheckAllButton = (AppButton)def.getWidget("uncheckAllButton");
+        addScreenHandler(uncheckAllButton, new ScreenEventHandler<Object>() {
+            public void onClick(ClickEvent event) {
+                setReportableForTest(tree.getSelection(), "N");
+            }
+
+            public void onStateChange(StateChangeEvent<State> event) {
+                uncheckAllButton.enable(false);
+            }
+        });
+    }
+    
+    public void setManager(OrderManager manager) {
+        this.manager = manager;
+        loaded = false;
+    }
+
+    public void draw() {
+        if ( !loaded)
+            DataChangeEvent.fire(this);
+
+        loaded = true;
+    } 
+
+    public HandlerRegistration addActionHandler(ActionHandler<TestTab.Action> handler) {
+        return addHandler(handler, ActionEvent.getType());
     }
     
     protected void addAnalytes(int index, TreeDataItem parent) {
@@ -619,19 +661,28 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
         }
     }
     
-    public void setManager(OrderManager manager) {
-        this.manager = manager;
-        loaded = false;
-    }
 
-    public void draw() {
-        if ( !loaded)
-            DataChangeEvent.fire(this);
+    private void setReportableForTest(TreeDataItem item, String reportable) {
+        ArrayList<TreeDataItem> items;
+        OrderTestAnalyteViewDO ana;
+        
+        if (ANALYTE_LEAF.equals(item.leafType))
+            item = item.parent;
+        /*
+         * this is done to make sure that the analytes are loaded before any attempt
+         * to check or uncheck them is made
+         */        
+        tree.finishEditing();
+        if (!item.open) 
+            tree.toggle(item);            
 
-        loaded = true;
-    } 
-
-    public HandlerRegistration addActionHandler(ActionHandler<TestTab.Action> handler) {
-        return addHandler(handler, ActionEvent.getType());
+        items = item.getItems();
+        for (TreeDataItem i : items) {
+            i.cells.get(0).setValue(reportable);
+            ana = (OrderTestAnalyteViewDO)i.data;
+            ana.setTestAnalyteIsReportable(reportable);
+        }
+        
+        tree.refreshRow(item);
     }
 }
