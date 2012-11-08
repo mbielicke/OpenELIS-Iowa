@@ -93,21 +93,7 @@ import org.openelis.utils.Auditable;
                       + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, AnalysisReportFlags arf"
                       + " where s.releasedDate between :startDate and :endDate and s.statusId = (select id from Dictionary where systemName = ('sample_released')) and"
                       + " si.sampleId = s.id and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and a.sectionId = se.id and"
-                      + " a.id = arf.analysisId order by s.accessionNumber, a.id"),
-  @NamedQuery( name = "Sample.FetchForTurnaroundMaximumReport",
-               query = "select distinct s.accessionNumber, t.name, m.name, se.id, s.collectionDate, s.collectionTime, s.receivedDate, t.timeTaMax, t.timeHolding" 
-                     + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, SectionParameter sp, Dictionary d"
-                     + " where si.sampleId = s.id and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and"
-                     + " a.statusId not in (select id from Dictionary where systemName in ('analysis_released', 'analysis_cancelled')) and"
-                     + " a.sectionId = se.id and sp.sectionId = se.id and sp.typeId = d.id and d.systemName = 'section_ta_max'"
-                     + " order by se.id, s.accessionNumber"),
-  @NamedQuery( name = "Sample.FetchForTurnaroundWarningReport",
-               query = "select distinct s.accessionNumber, t.name, m.name, se.id, s.collectionDate, s.collectionTime, s.receivedDate, t.timeTaWarning, t.timeHolding" 
-                     + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, SectionParameter sp, Dictionary d"
-                     + " where si.sampleId = s.id and a.sampleItemId = si.id and a.testId = t.id and t.methodId = m.id and"
-                     + " a.statusId not in (select id from Dictionary where systemName in ('analysis_released', 'analysis_cancelled')) and"
-                     + " a.sectionId = se.id and sp.sectionId = se.id and sp.typeId = d.id and d.systemName = 'section_ta_warn'"
-                     + " order by se.id, s.accessionNumber")})                     
+                      + " a.id = arf.analysisId order by s.accessionNumber, a.id")})                     
                       
 @NamedNativeQueries({
     @NamedNativeQuery(name = "Sample.FetchForFinalReportBatch",     
@@ -421,7 +407,77 @@ import org.openelis.utils.Auditable;
                         "where s.id in (:sampleIds) and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and sw.sample_id = s.id and" +
                         " si.sample_id = s.id and a.status_id != (select id from dictionary where system_name = ('analysis_cancelled')) " +
                         "order by s_anum, t_rep_desc, m_rep_desc ",
-           resultSetMapping="Sample.FetchForSampleStatusReport")})            
+           resultSetMapping="Sample.FetchForSampleStatusReport"),
+     @NamedNativeQuery( name = "Sample.FetchForTurnaroundWarningReport",
+                query = "select distinct s.accession_number, s.received_date, CAST(o.name AS varchar(40)) o_name,"
+                      + " CAST(t.name AS varchar(20)) t_name, t.time_ta_warning, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
+                      + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d2.entry a_status, a.available_date" 
+                      + " from sample s, sample_organization so, organization o, sample_item si, analysis a, test t, method m,"
+                      + " section se, section_parameter sp, dictionary d1, dictionary d2, dictionary d3"
+                      + " where s.domain != 'W' and so.sample_id = s.id and so.type_id = d1.id and d1.system_name = 'org_report_to' and so.organization_id = o.id and"
+                      + " si.sample_id = s.id and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and"
+                      + " a.status_id = d2.id and d2.system_name not in ('analysis_released', 'analysis_cancelled') and"
+                      + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d3.id and d3.system_name = 'section_ta_warn' and"
+                      + " a.available_date is not null"
+                      + " UNION "
+                      + "select distinct s.accession_number, s.received_date, CAST(o.name AS varchar(40)) o_name,"
+                      + " CAST(t.name AS varchar(20)) t_name, t.time_ta_warning, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
+                      + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d1.entry a_status, a.available_date" 
+                      + " from sample s, sample_private_well spw, organization o, sample_item si, analysis a, test t, method m,"
+                      + " section se, section_parameter sp, dictionary d1, dictionary d2"
+                      + " where s.domain = 'W' and spw.sample_id = s.id and spw.organization_id = o.id and"
+                      + " si.sample_id = s.id and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and"
+                      + " a.status_id = d1.id and d1.system_name not in ('analysis_released', 'analysis_cancelled') and"
+                      + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_warn' and"
+                      + " a.available_date is not null"
+                      + " UNION "
+                      + "select distinct s.accession_number, s.received_date, spw.report_to_name o_name,"
+                      + " CAST(t.name AS varchar(20)) t_name, t.time_ta_warning, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
+                      + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d1.entry a_status, a.available_date" 
+                      + " from sample s, sample_private_well spw, sample_item si, analysis a, test t, method m,"
+                      + " section se, section_parameter sp, dictionary d1, dictionary d2"
+                      + " where s.domain = 'W' and spw.sample_id = s.id and spw.report_to_name is not null and"
+                      + " si.sample_id = s.id and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and"
+                      + " a.status_id = d1.id and d1.system_name not in ('analysis_released', 'analysis_cancelled') and"
+                      + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_warn' and"
+                      + " a.available_date is not null"
+                      + " order by se.id, s.accession_number",
+           resultSetMapping="Sample.FetchForTurnaroundWarningReport"),
+     @NamedNativeQuery( name = "Sample.FetchForTurnaroundMaximumReport",
+                query = "select distinct s.accession_number, s.received_date, CAST(o.name AS varchar(40)) o_name,"
+                      + " CAST(t.name AS varchar(20)) t_name, t.time_ta_max, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
+                      + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d2.entry a_status, a.available_date" 
+                      + " from sample s, sample_organization so, organization o, sample_item si, analysis a, test t, method m,"
+                      + " section se, section_parameter sp, dictionary d1, dictionary d2, dictionary d3"
+                      + " where s.domain != 'W' and so.sample_id = s.id and so.type_id = d1.id and d1.system_name = 'org_report_to' and so.organization_id = o.id and"
+                      + " si.sample_id = s.id and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and"
+                      + " a.status_id = d2.id and d2.system_name not in ('analysis_released', 'analysis_cancelled') and"
+                      + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d3.id and d3.system_name = 'section_ta_max' and"
+                      + " a.available_date is not null"
+                      + " UNION "
+                      + "select distinct s.accession_number, s.received_date, CAST(o.name AS varchar(40)) o_name,"
+                      + " CAST(t.name AS varchar(20)) t_name, t.time_ta_max, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
+                      + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d1.entry a_status, a.available_date" 
+                      + " from sample s, sample_private_well spw, organization o, sample_item si, analysis a, test t, method m,"
+                      + " section se, section_parameter sp, dictionary d1, dictionary d2"
+                      + " where s.domain = 'W' and spw.sample_id = s.id and spw.organization_id = o.id and"
+                      + " si.sample_id = s.id and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and"
+                      + " a.status_id = d1.id and d1.system_name not in ('analysis_released', 'analysis_cancelled') and"
+                      + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_max' and"
+                      + " a.available_date is not null"
+                      + " UNION "
+                      + "select distinct s.accession_number, s.received_date, spw.report_to_name o_name,"
+                      + " CAST(t.name AS varchar(20)) t_name, t.time_ta_max, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
+                      + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d1.entry a_status, a.available_date" 
+                      + " from sample s, sample_private_well spw, sample_item si, analysis a, test t, method m,"
+                      + " section se, section_parameter sp, dictionary d1, dictionary d2"
+                      + " where s.domain = 'W' and spw.sample_id = s.id and spw.report_to_name is not null and"
+                      + " si.sample_id = s.id and a.sample_item_id = si.id and a.test_id = t.id and t.method_id = m.id and"
+                      + " a.status_id = d1.id and d1.system_name not in ('analysis_released', 'analysis_cancelled') and"
+                      + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_max' and"
+                      + " a.available_date is not null"
+                      + " order by se.id, s.accession_number",
+           resultSetMapping="Sample.FetchForTurnaroundMaximumReport")})
 @SqlResultSetMappings({
     @SqlResultSetMapping(name="Sample.FetchForFinalReportBatchMapping",
                          columns={@ColumnResult(name="s_id"), @ColumnResult(name="s_accession_number"),
@@ -456,11 +512,24 @@ import org.openelis.utils.Auditable;
                                   @ColumnResult(name="ref_field1"), @ColumnResult(name="ref_field2"),
                                   @ColumnResult(name="ref_field3"), @ColumnResult(name="ref_field4")}),
     @SqlResultSetMapping(name="Sample.FetchForSampleStatusReport",
-                        columns={@ColumnResult(name="s_anum"),  @ColumnResult(name="s_rec"), @ColumnResult(name="s_col_date"), 
-                                 @ColumnResult(name="s_col_time"), @ColumnResult(name="a_stat_id"), @ColumnResult(name="s_cl_ref"),  
-                                 @ColumnResult(name="s_col"), @ColumnResult(name="t_rep_desc"), @ColumnResult(name="m_rep_desc"),
-                                 @ColumnResult(name="s_id"), @ColumnResult(name="a_id")})}) 
-               
+                         columns={@ColumnResult(name="s_anum"),  @ColumnResult(name="s_rec"), @ColumnResult(name="s_col_date"), 
+                                  @ColumnResult(name="s_col_time"), @ColumnResult(name="a_stat_id"), @ColumnResult(name="s_cl_ref"),  
+                                  @ColumnResult(name="s_col"), @ColumnResult(name="t_rep_desc"), @ColumnResult(name="m_rep_desc"),
+                                  @ColumnResult(name="s_id"), @ColumnResult(name="a_id")}),
+    @SqlResultSetMapping(name="Sample.FetchForTurnaroundWarningReport",
+                         columns={@ColumnResult(name="accession_number"), @ColumnResult(name="received_date"),
+                                  @ColumnResult(name="o_name"), @ColumnResult(name="t_name"),
+                                  @ColumnResult(name="time_ta_warning"), @ColumnResult(name="time_holding"),
+                                  @ColumnResult(name="m_name"), @ColumnResult(name="se_id"),
+                                  @ColumnResult(name="se_name"), @ColumnResult(name="a_status"),
+                                  @ColumnResult(name="available_date")}),
+    @SqlResultSetMapping(name="Sample.FetchForTurnaroundMaximumReport",
+                         columns={@ColumnResult(name="accession_number"), @ColumnResult(name="received_date"),
+                                  @ColumnResult(name="o_name"), @ColumnResult(name="t_name"),
+                                  @ColumnResult(name="time_ta_max"), @ColumnResult(name="time_holding"),
+                                  @ColumnResult(name="m_name"), @ColumnResult(name="se_id"),
+                                  @ColumnResult(name="se_name"), @ColumnResult(name="a_status"),
+                                  @ColumnResult(name="available_date")})}) 
 
 @Entity
 @Table(name = "sample")
