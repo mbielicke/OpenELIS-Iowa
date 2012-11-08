@@ -81,7 +81,7 @@ public class QcChartReportViewVO implements RPC {
         
         protected Integer         qcId, wId, analyteId;
         protected String          accessionNumber, lotNumber, analyteName, value1, value2, isPlot;
-        protected Double          plotValue, mean, uWL, uCL, lWL, lCL, sd;
+        protected Double          plotValue, mean, meanRecovery, uWL, uCL, lWL, lCL, sd;
         protected Datetime        worksheetCreatedDate;
         
         
@@ -171,6 +171,14 @@ public class QcChartReportViewVO implements RPC {
 
         public void setMean(Double mean) {
             this.mean = mean;
+        }
+
+        public Double getMeanRecovery() {
+            return meanRecovery;
+        }
+
+        public void setMeanRecovery(Double meanRecovery) {
+            this.meanRecovery = meanRecovery;
         }
 
         public Double getUWL() {
