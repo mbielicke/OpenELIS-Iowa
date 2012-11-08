@@ -104,8 +104,12 @@ public class TurnaroundNotificationWarningReportBean implements
             daysElapsed = JasperUtil.daysAndHours(JasperUtil.delta_hours(availableDate, nowDateTime));
             expireDate = JasperUtil.changeDate(availableDate, holdingTime, Calendar.HOUR);
             try {
-                expireString = sdf.format(expireDate);
-                recString = sdf.format(recDate);
+                expireString = "";
+                if (expireDate != null)
+                    expireString = sdf.format(expireDate);
+                recString = "";
+                if (recDate != null)
+                    recString = sdf.format(recDate);
             } catch (Exception e) {
                 throw e;
             }
