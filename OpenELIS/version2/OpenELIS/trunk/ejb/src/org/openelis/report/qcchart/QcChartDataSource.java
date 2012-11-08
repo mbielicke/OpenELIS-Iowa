@@ -71,6 +71,8 @@ public class QcChartDataSource implements JRDataSource {
             return value.getPlotValue();
         else if ("MEAN".equals(field.getName()))
             return value.getMean();
+        else if ("MEAN_RECOVERY".equals(field.getName()))
+            return value.getMeanRecovery();
         else if ("UCL".equals(field.getName()))
             return value.getUCL();
         else if ("LCL".equals(field.getName()))
