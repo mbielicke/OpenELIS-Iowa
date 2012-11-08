@@ -14,16 +14,13 @@ import javax.ejb.Stateless;
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
-import org.openelis.domain.OptionListItem;
 import org.openelis.domain.SectionParameterDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SectionParameterLocal;
 import org.openelis.local.TurnaroundNotificationMaximumReportLocal;
-import org.openelis.report.Prompt;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
@@ -40,9 +37,6 @@ public class TurnaroundNotificationMaximumReportBean implements
     @EJB
     private SectionParameterLocal sectParamBean;
 
-    @EJB
-    private PrinterCacheLocal     printers;
-
     private static final Logger   log = Logger.getLogger(TurnaroundNotificationMaximumReportBean.class);
 
     private Integer               sectParamTypeId;
@@ -54,27 +48,6 @@ public class TurnaroundNotificationMaximumReportBean implements
             sectParamTypeId = dictionaryCache.getBySystemName("section_ta_max").getId();
         } catch (Throwable e) {
             e.printStackTrace();
-        }
-    }
-
-    public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<OptionListItem> prn;
-        ArrayList<Prompt> p;
-
-        try {
-            p = new ArrayList<Prompt>();
-
-            prn = printers.getListByType("pdf");
-            prn.add(0, new OptionListItem("-view-", "View in PDF"));
-            p.add(new Prompt("PRINTER", Prompt.Type.ARRAY).setPrompt("Printer:")
-                                                          .setWidth(200)
-                                                          .setOptionList(prn)
-                                                          .setMutiSelect(false)
-                                                          .setRequired(true));
-            return p;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
         }
     }
 
@@ -94,17 +67,17 @@ public class TurnaroundNotificationMaximumReportBean implements
 
     protected void generateEmail(ArrayList<Object[]> resultList) throws Exception {
         int i;
-        Integer accession, prevSecId, currSecId, holdingTime;
-        Float daysElapsed;
-        String toEmail, test, method;
-        StringBuilder contents;
-        Timestamp colDate, colTime, recDate, checkDateTime, expireDate, nowDateTime;
-        Datetime date, now;
-        SimpleDateFormat sdf;
-        String expiredDate;
         ArrayList<SectionParameterDO> emailList;
+        Datetime date, now;
+        Integer accession, prevSecId, currSecId, holdingTime, maxTime;
+        Float daysElapsed;
+        SimpleDateFormat sdf;
+        String expireString, recString, toEmail, test, method, orgName, sectionName, prevSectionName, anaStatus;
+        StringBuilder contents;
+        Timestamp availableDate, expireDate, nowDateTime, recDate;
 
         prevSecId = null;
+        prevSectionName = null;
         contents = new StringBuilder();
         now = new Datetime(Datetime.YEAR, Datetime.MINUTE, new Date());
         nowDateTime = new Timestamp(now.getDate().getTime());
@@ -113,30 +86,35 @@ public class TurnaroundNotificationMaximumReportBean implements
         toEmail = "";
         contents.setLength(0);
         for (Object[] result : resultList) {
-            currSecId = (Integer)result[3];
             accession = (Integer)result[0];
-            test = (String)result[1];
-            method = (String)result[2];
-            colDate = (Timestamp)result[4];
-            colTime = (Timestamp)result[5];
-            recDate = (Timestamp)result[6];
-            holdingTime = (Integer)result[8];
-            checkDateTime = getDate(colDate, colTime, recDate);
-            daysElapsed = JasperUtil.daysAndHours(JasperUtil.delta_hours(checkDateTime, nowDateTime));
-            expireDate = JasperUtil.changeDate(checkDateTime, holdingTime, Calendar.HOUR);
+            recDate = (Timestamp)result[1];
+            orgName = (String)result[2];
+            test = (String)result[3];
+            maxTime = (Integer)result[4];
+            holdingTime = (Integer)result[5];
+            method = (String)result[6];
+            currSecId = (Integer)result[7];
+            sectionName = (String)result[8];
+            anaStatus = (String)result[9];
+            availableDate = (Timestamp)result[10];
+            
+            date = new Datetime(Datetime.YEAR, Datetime.MINUTE, new Date(availableDate.getTime()));
+            if (date.add(maxTime).compareTo(now) > 0)
+                continue;
+
+            daysElapsed = JasperUtil.daysAndHours(JasperUtil.delta_hours(availableDate, nowDateTime));
+            expireDate = JasperUtil.changeDate(availableDate, holdingTime, Calendar.HOUR);
             try {
-                expiredDate = sdf.format(expireDate);
+                expireString = sdf.format(expireDate);
+                recString = sdf.format(recDate);
             } catch (Exception e) {
                 throw e;
             }
-            date = new Datetime(Datetime.YEAR, Datetime.MINUTE, new Date(checkDateTime.getTime()));
-            if ( (date.add((Integer)result[7])).compareTo(now) > 0)
-                continue;
 
             if (prevSecId != currSecId) {
                 if (prevSecId != null) {
                     printFooter(contents);
-                    sendEmail(toEmail, "Turnaround Maximum Violation", contents.toString());
+                    sendEmail(toEmail, "Turnaround Maximum Notification: "+prevSectionName, contents.toString());
                     toEmail = "";
                     contents.setLength(0);
                 }
@@ -148,44 +126,19 @@ public class TurnaroundNotificationMaximumReportBean implements
                         toEmail += emailList.get(i).getValue().trim();
                     }
                 } catch (NotFoundException nfE) {
-                    log.warn("No Turnaround Max Email Address(es) for Section (" + currSecId + ").");
+                    log.warn("No Turnaround Max Email Address(es) for Section ("+sectionName+").");
                     continue;
                 }
                 printHeader(contents);
                 prevSecId = currSecId;
+                prevSectionName = sectionName;
             }
-            printBody(contents, accession, test, method, daysElapsed, expiredDate);
+            printBody(contents, accession, test, method, daysElapsed, expireString, orgName, anaStatus, recString);
         }
         if (resultList.size() > 0 && contents.length() > 0) {
             printFooter(contents);
-            sendEmail(toEmail, "Turnaround Maximum Violation", contents.toString());
+            sendEmail(toEmail, "Turnaround Maximum Notification: "+prevSectionName, contents.toString());
         }
-    }
-
-    private Timestamp getDate(Timestamp colDate, Timestamp colTime, Timestamp recDate) throws Exception {
-        Timestamp checkDateTime;
-        SimpleDateFormat sdf;
-        Date time;
-        long timeInMinSec;
-
-        sdf = new SimpleDateFormat("hh:mm");
-        try {
-            time = sdf.parse("00:00");
-        } catch (Exception e) {
-            throw e;
-        }
-        timeInMinSec = time.getTime();
-
-        if (colDate != null) {
-            if (colTime != null)
-                checkDateTime = JasperUtil.concatDateAndTime(colDate, colTime);
-            else
-                checkDateTime = JasperUtil.concatDateAndTime(colDate, new Timestamp(timeInMinSec));
-        } else {
-            checkDateTime = recDate;
-        }
-
-        return checkDateTime;
     }
 
     protected void printHeader(StringBuilder body) {
@@ -196,12 +149,16 @@ public class TurnaroundNotificationMaximumReportBean implements
             .append("    <tr><td>Accession No.</td>")
             .append("<td>Test</td>")
             .append("<td>Method</td>")
+            .append("<td>Status</td>")
+            .append("<td>Organization</td>")
+            .append("<td>Received</td>")
             .append("<td>Days Elapsed</td>")
             .append("<td>Expires</td></tr>\r\n");
     }
 
     protected void printBody(StringBuilder body, Integer accNum, String test, String method,
-                             Float daysElapsed, String expireDate) {
+                             Float daysElapsed, String expireDate, String orgName,
+                             String anaStatus, String recDate) {
         body.append("<tr><td align=\"center\">")
             .append(accNum)
             .append("</td>")
@@ -210,6 +167,15 @@ public class TurnaroundNotificationMaximumReportBean implements
             .append("</td>")
             .append("<td>")
             .append(method)
+            .append("</td>")
+            .append("<td>")
+            .append(anaStatus)
+            .append("</td>")
+            .append("<td>")
+            .append(orgName)
+            .append("</td>")
+            .append("<td>")
+            .append(recDate)
             .append("</td>")
             .append("<td>")
             .append(daysElapsed)
@@ -227,7 +193,6 @@ public class TurnaroundNotificationMaximumReportBean implements
             .append("<b>Additional Information:</b>\r\n")
             .append("<br>\r\n")
             .append("<ul><li>This mail was sent from an automated e-mail server. Please do not reply to this message.</li>\r\n")
-            .append("    <br>\r\n")
             .append("    <li><div style='color:#006400'>Save the Environment, Go GREEN.</div></li></ul>\r\n")
             .append("    <br>\r\n")
             .append("<b>Disclaimer:</b>\r\n")
