@@ -27,7 +27,6 @@ package org.openelis.modules.qc.client;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.QcDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
@@ -191,14 +190,14 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
     }
 
     public void ok() {
-        ArrayList<QcDO> list;               
+        ArrayList<QcLotViewDO> list;               
         
         list = null;
         
         if(selectionList != null) {
-            list = new ArrayList<QcDO>();
+            list = new ArrayList<QcLotViewDO>();
             for(TableDataRow row: selectionList)
-                list.add((QcDO)row.data);
+                list.add((QcLotViewDO)row.data);
         }
         
         window.close();
