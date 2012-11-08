@@ -19,7 +19,7 @@
 		<![CDATA[SELECT se.name se_name, se.id se_id, t.id t_id, t.description t_description, m.name m_name, d.id ana_id, d.entry as ana_status, d.system_name d_system_name
 FROM sample s, sample_item si, section se, test_section ts, test t,
      analysis a, method m, dictionary d
-WHERE  s.entered_date BETWEEN $P{FROM} AND $P{TO} and si.sample_id =s.id and a.sample_item_id = si.id and
+WHERE  s.entered_date BETWEEN $P{FROM} AND $P{TO} and si.sample_id = s.id and a.sample_item_id = si.id and
       a.test_id = t.id and t.is_active = "Y" and
       t.method_id = m.id and t.id = ts.test_id and
       ts.section_id = se.id and a.section_id = se.id and d.id = a.status_id $P!{SECTION}
