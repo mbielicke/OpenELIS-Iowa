@@ -210,6 +210,7 @@ public class QcChartReportBean implements QcChartReportRemote {
         for (Value data : qcList) {
             if (data.getPlotValue() == null || "N".equals(data.getIsPlot())) {
                 data.setMean(null);
+                data.setMeanRecovery(null);
                 data.setLCL(null);
                 data.setUCL(null);
                 data.setLWL(null);
@@ -224,6 +225,7 @@ public class QcChartReportBean implements QcChartReportRemote {
             if (voList == null) {
                 list = new ArrayList<Value>();
                 voList = new QcChartReportViewVO();
+                voList.setReportType(dataPoints.getReportType());
                 voList.setQcList(list);
                 analyteMap.put(analyteName, voList);
             } else {
@@ -462,7 +464,7 @@ public class QcChartReportBean implements QcChartReportRemote {
 
     private void calculateDynamicStatistics(QcChartReportViewVO list) throws Exception {
         int i, numValue;
-        Double mean, sd, diff, sqDiffSum, sum, uWL, uCL, lWL, lCL;
+        Double mean, meanRecovery, sd, diff, sqDiffSum, sum, recovery, uWL, uCL, lWL, lCL;
         Value value;
         ArrayList<Value> qcList;
 
@@ -470,13 +472,25 @@ public class QcChartReportBean implements QcChartReportRemote {
 
         numValue = qcList.size();
         sum = 0.0;
-        for (i = 0; i < numValue; i++ )
+        recovery = 0.0;
+        for (i = 0; i < numValue; i++)
             sum += qcList.get(i).getPlotValue();
+        
+        if (QcChartReportViewVO.ReportType.SPIKE_CONC.equals(list.getReportType())) {
+            for (i = 0; i < numValue; i++) {
+                if (qcList.get(i).getValue2() != null)
+                    recovery += Double.valueOf(qcList.get(i).getValue2());
+            }
+        } else if (QcChartReportViewVO.ReportType.SPIKE_PERCENT.equals(list.getReportType())) {
+            for (i = 0; i < numValue; i++)
+                recovery += qcList.get(i).getPlotValue();
+        }
 
         mean = sum / numValue;
+        meanRecovery = recovery / numValue;
         sqDiffSum = 0.0;
         if (numValue > 1) {
-            for (i = 0; i < numValue; i++ ) {
+            for (i = 0; i < numValue; i++) {
                 diff = qcList.get(i).getPlotValue() - mean;
                 sqDiffSum += diff * diff;
             }
@@ -492,9 +506,10 @@ public class QcChartReportBean implements QcChartReportRemote {
             lWL = mean;
             lCL = mean;
         }
-        for (i = 0; i < numValue; i++ ) {
+        for (i = 0; i < numValue; i++) {
             value = qcList.get(i);
             value.setMean(mean);
+            value.setMeanRecovery(meanRecovery);
             value.setUWL(uWL);
             value.setUCL(uCL);
             value.setLWL(lWL);
