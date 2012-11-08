@@ -257,7 +257,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                                     mclValue = Double.parseDouble(colResult.getValue());
                                     if (resultValue > mclValue ||
                                         (resultValue == mclValue && (resultSign == null ||
-                                                                     resultSign != "<"))) {
+                                                                     !"<".equals(resultSign)))) {
                                         if (shlBody.length() <= 0)
                                             printHeader(shlBody, analysis);
                                         printResultRow(shlBody, analysis, rowResult, colResult);
