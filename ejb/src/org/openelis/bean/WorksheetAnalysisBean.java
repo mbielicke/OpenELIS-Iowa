@@ -113,11 +113,11 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
     }
     
     @SuppressWarnings("unchecked")
-    public ArrayList<WorksheetAnalysisDO> fetchByQcId(Integer id) throws Exception {
+    public ArrayList<WorksheetAnalysisDO> fetchByQcLotId(Integer id) throws Exception {
         Query query;
         List list;
 
-        query = manager.createNamedQuery("WorksheetAnalysis.FetchByQcId");
+        query = manager.createNamedQuery("WorksheetAnalysis.FetchByQcLotId");
         query.setParameter("id", id);
 
         list = query.getResultList();
@@ -190,7 +190,7 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         entity.setWorksheetItemId(data.getWorksheetItemId());
         entity.setAccessionNumber(data.getAccessionNumber());
         entity.setAnalysisId(data.getAnalysisId());
-        entity.setQcId(data.getQcId());
+        entity.setQcLotId(data.getQcLotId());
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setQcSystemUserId(data.getQcSystemUserId());
         entity.setQcStartedDate(data.getQcStartedDate());
@@ -213,7 +213,7 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         entity = manager.find(WorksheetAnalysis.class, data.getId());
         entity.setAccessionNumber(data.getAccessionNumber());
         entity.setAnalysisId(data.getAnalysisId());
-        entity.setQcId(data.getQcId());
+        entity.setQcLotId(data.getQcLotId());
         entity.setWorksheetAnalysisId(data.getWorksheetAnalysisId());
         entity.setQcSystemUserId(data.getQcSystemUserId());
         entity.setQcStartedDate(data.getQcStartedDate());
@@ -239,11 +239,11 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         if (DataBaseUtil.isEmpty(data.getAccessionNumber()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetAnalysisAccessionNumber()));
-        if (DataBaseUtil.isEmpty(data.getAnalysisId()) && DataBaseUtil.isEmpty(data.getQcId())) {
+        if (DataBaseUtil.isEmpty(data.getAnalysisId()) && DataBaseUtil.isEmpty(data.getQcLotId())) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              WorksheetCompletionMeta.getWorksheetAnalysisAnalysisId()));
             list.add(new FieldErrorException("fieldRequiredException",
-                                             WorksheetCompletionMeta.getWorksheetAnalysisQcId()));
+                                             WorksheetCompletionMeta.getWorksheetAnalysisQcLotId()));
         }
 
         if (list.size() > 0)

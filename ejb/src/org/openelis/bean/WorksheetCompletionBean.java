@@ -445,8 +445,8 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     cellName.setRefersToFormula("Overrides!$"+CellReference.convertNumToColString(7)+
                                                 "$"+(oRow.getRowNum()+1));
                     o++;
-                } else if (waDO.getQcId() != null) {
-                    qcLotVDO = qcLotLocal.fetchById(waDO.getQcId());
+                } else if (waDO.getQcLotId() != null) {
+                    qcLotVDO = qcLotLocal.fetchById(waDO.getQcLotId());
 
                     // description
                     cell = row.createCell(2);
@@ -887,7 +887,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             manager.getLockedManagers().remove(sManager.getSample().getAccessionNumber());
                         }
                     }
-                } else if (waDO.getQcId() != null) {
+                } else if (waDO.getQcLotId() != null) {
                     wqrManager = waManager.getWorksheetQcResultAt(a);
                     for (r = 0; r < wqrManager.count(); r++, rowIndex++) {
                         wqrVDO = wqrManager.getWorksheetQcResultAt(r);
