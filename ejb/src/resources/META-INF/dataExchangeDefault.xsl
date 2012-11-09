@@ -29,13 +29,18 @@ UIRF Software License are applicable instead of those above.
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   
   <xsl:template match="message">
-    <message type = "{@type}">
+    <!--
+        The following attribute is called "Type" and not "type" because "type"
+        is treated as a keyword by the module used for data exchange and is 
+        not allowed to be used as the name of an attribute or element   
+     --> 
+    <message Type = "{@type}">
       <xsl:apply-templates select="//header"/>
       <xsl:apply-templates select="//sample" />
     </message>
   </xsl:template>
   <xsl:template match="header">
-   <!-- 
+   <!--
      The information about the exchange criteria if one was used to genarate the
      data for this document  
     -->
@@ -64,7 +69,7 @@ UIRF Software License are applicable instead of those above.
   </xsl:template>  
   
   <xsl:template match="sample">
-    <sample accesssion_number="{@accesssion_number}" collection_date="{@collection_date}" domain="{@domain}" entered_date="{@entered_date}" id="{@id}" received_date="{@received_date}" revision="{@revision}">
+    <sample accession_number="{@accession_number}" collection_date="{@collection_date}" domain="{@domain}" entered_date="{@entered_date}" id="{@id}" received_date="{@received_date}" revision="{@revision}">
       <xsl:if test="@order_id[. != '']">
         <xsl:attribute name="order_id">
           <xsl:value-of select="@order_id" />
@@ -699,9 +704,14 @@ UIRF Software License are applicable instead of those above.
       </xsl:attribute>
       <xsl:if test="@type_id[. != '']">
         <xsl:variable name="type_id" select="@type_id" />
-        <type>
+         <!-- 
+             The following element is called "Type" and not "type" because "type"
+             is treated as a keyword by the module used for data exchange and is 
+             not allowed to be used as the name of an attribute or element   
+         --> 
+        <Type>
           <xsl:apply-templates select="//dictionary[@id = $type_id]" />
-        </type>
+        </Type>
       </xsl:if>
       <xsl:if test="value[. != '']">
         <value>
@@ -811,9 +821,14 @@ UIRF Software License are applicable instead of those above.
         <xsl:value-of select="@sample_id" />
       </xsl:attribute>
       <xsl:variable name="type_id" select="@type_id" />
-      <type>
+      <!-- 
+          The following element is called "Type" and not "type" because "type"
+          is treated as a keyword by the module used for data exchange and is 
+          not allowed to be used as the name of an attribute or element   
+      --> 
+      <Type>
         <xsl:apply-templates select="//dictionary[@id = $type_id]" />
-      </type>
+      </Type>
       <xsl:variable name="organization_id" select="@organization_id" />
       <organization>
         <xsl:apply-templates select="//organization[@id = $organization_id]">
@@ -929,9 +944,14 @@ UIRF Software License are applicable instead of those above.
       <xsl:variable name="qaevent_id" select="@qaevent_id" />
       <xsl:apply-templates select="//qaevent[@id = $qaevent_id]" />
       <xsl:variable name="type_id" select="@type_id" />
-      <type>
+      <!-- 
+          The following element is called "Type" and not "type" because "type"
+          is treated as a keyword by the module used for data exchange and is 
+          not allowed to be used as the name of an attribute or element   
+      -->
+      <Type>
         <xsl:apply-templates select="//dictionary[@id = $type_id]" />
-      </type>
+      </Type>
     </sample_qaevent>
   </xsl:template>
   
@@ -949,9 +969,14 @@ UIRF Software License are applicable instead of those above.
       <xsl:variable name="qaevent_id" select="@qaevent_id" />
       <xsl:apply-templates select="//qaevent[@id = $qaevent_id]" />
       <xsl:variable name="type_id" select="@type_id" />
-      <type>
+      <!-- 
+          The following element is called "Type" and not "type" because "type"
+          is treated as a keyword by the module used for data exchange and is 
+          not allowed to be used as the name of an attribute or element   
+      -->
+      <Type>
         <xsl:apply-templates select="//dictionary[@id = $type_id]" />
-      </type>
+      </Type>
     </analysis_qaevent>
   </xsl:template>
   
@@ -983,9 +1008,14 @@ UIRF Software License are applicable instead of those above.
         </test>
       </xsl:if>
       <xsl:variable name="type_id" select="@type_id" />
-      <type>
+      <!-- 
+          The following element is called "Type" and not "type" because "type"
+          is treated as a keyword by the module used for data exchange and is 
+          not allowed to be used as the name of an attribute or element   
+      -->
+      <Type>
         <xsl:apply-templates select="//dictionary[@id = $type_id]" />
-      </type>
+      </Type>
       <reporting_text>
         <xsl:value-of select="reporting_text" />
       </reporting_text>
@@ -1013,9 +1043,14 @@ UIRF Software License are applicable instead of those above.
         <xsl:value-of select="@is_reportable" />
       </xsl:attribute>
       <xsl:variable name="type_id" select="@type_id" />
-      <type>
+      <!-- 
+          The following element is called "Type" and not "type" because "type"
+          is treated as a keyword by the module used for data exchange and is 
+          not allowed to be used as the name of an attribute or element   
+      -->
+      <Type>
         <xsl:apply-templates select="//dictionary[@id = $type_id]" />
-      </type>
+      </Type>
       <xsl:if test="value[. != '']">
         <value>
           <xsl:value-of select="value" />
