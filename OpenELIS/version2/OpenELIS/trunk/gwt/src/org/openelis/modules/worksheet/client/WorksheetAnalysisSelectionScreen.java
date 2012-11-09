@@ -185,8 +185,8 @@ public class WorksheetAnalysisSelectionScreen extends Screen implements HasActio
                             aVDO = analysisService.call("fetchById", waDO.getAnalysisId());
                             row.cells.get(3).value = aVDO.getTestName();
                             row.cells.get(4).value = aVDO.getMethodName();
-                        } else if (waDO.getQcId() != null) {
-                            qcLotVDO = qcService.call("fetchLotById", waDO.getQcId());
+                        } else if (waDO.getQcLotId() != null) {
+                            qcLotVDO = qcService.call("fetchLotById", waDO.getQcLotId());
                             row.cells.get(2).value = qcLotVDO.getQcName();
                         }
                         row.data = waDO;

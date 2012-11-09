@@ -1136,8 +1136,8 @@ public class WorksheetCompletionScreen extends Screen {
                             row.cells.get(7).value = "NO ANALYTES FOUND";
                             model.add((TableDataRow)row.clone());
                         }
-                    } else if (waDO.getQcId() != null) {
-                        qcLotVDO = qcService.call("fetchLotById", waDO.getQcId());
+                    } else if (waDO.getQcLotId() != null) {
+                        qcLotVDO = qcService.call("fetchLotById", waDO.getQcLotId());
                         
                         row.cells.get(2).value = qcLotVDO.getQcName();
                         row.cells.get(3).value = waDO.getWorksheetAnalysisId();

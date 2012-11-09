@@ -92,6 +92,7 @@ import org.openelis.gwt.widget.table.event.SortEvent;
 import org.openelis.gwt.widget.table.event.SortHandler;
 import org.openelis.gwt.widget.table.event.UnselectionEvent;
 import org.openelis.gwt.widget.table.event.UnselectionHandler;
+import org.openelis.manager.Preferences;
 import org.openelis.manager.TestWorksheetManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
@@ -739,7 +740,7 @@ public class WorksheetCreationScreen extends Screen {
                 if (((ArrayList<Object>)row.data).size() == 3)
                     waDO.setAnalysisId(((AnalysisViewDO)((ArrayList<Object>)row.data).get(0)).getId());
                 else
-                    waDO.setQcId(((QcLotViewDO)((ArrayList<Object>)row.data).get(1)).getId());
+                    waDO.setQcLotId(((QcLotViewDO)((ArrayList<Object>)row.data).get(1)).getId());
             } else {
                 waDO.setAnalysisId(((WorksheetCreationVO)row.data).getAnalysisId());
             }
@@ -911,7 +912,8 @@ public class WorksheetCreationScreen extends Screen {
         int                    i, j;
         ArrayList<Object>      dataList;
         ArrayList<QcLotViewDO> list;
-        QcLotViewDO            qcDO = null;
+        Preferences            prefs;
+        QcLotViewDO            qcDO = null, tempQc;
         TableDataRow           qcRow;
         TestWorksheetItemDO    twiDO;
         
@@ -940,6 +942,7 @@ public class WorksheetCreationScreen extends Screen {
             
             i = qcStartIndex;
             qcStartIndex = 0;
+            prefs = Preferences.userRoot();
             for (; i < twManager.itemCount(); i++) {
                 twiDO = twManager.getItemAt(i);
                 try {
@@ -960,10 +963,30 @@ public class WorksheetCreationScreen extends Screen {
                             }
                             continue;
                         } else if (list.size() > 1) {
-                            Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), String.valueOf(i+1)).getMessage());
-                            openQCLookup(twiDO.getQcName(), list);
-                            qcStartIndex = i + 1;
-                            break;
+                            //
+                            // look for a single qc in the list that matches the user's
+                            // location. if none or multiple match or the user has 
+                            // not specified a preference, show the lookup screen
+                            //
+                            qcDO = null;
+                            for (j = 0; j < list.size(); j++) {
+                                tempQc = list.get(j);
+                                if (tempQc.getLocationId() != null && tempQc.getLocationId().equals(prefs.getInt("location", -1))) {
+                                    if (qcDO == null) {
+                                        qcDO = tempQc;
+                                    } else {
+                                        qcDO = null;
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            if (qcDO == null) {
+                                Window.alert(new FormErrorException("multiMatchingActiveQc", twiDO.getQcName(), String.valueOf(i+1)).getMessage());
+                                openQCLookup(twiDO.getQcName(), list);
+                                qcStartIndex = i + 1;
+                                break;
+                            }
                         } else {
                             qcDO = list.get(0);
                         }
@@ -1341,9 +1364,9 @@ public class WorksheetCreationScreen extends Screen {
                                                                     anyE.printStackTrace();
                                                                     Window.alert("error: " + anyE.getMessage());
                                                                 }
-                                                            } else if (waDO.getQcId() != null) {
+                                                            } else if (waDO.getQcLotId() != null) {
                                                                 try {
-                                                                    qcDO = qcService.call("fetchLotByQcId", waDO.getQcId());
+                                                                    qcDO = qcService.call("fetchLotByQcId", waDO.getQcLotId());
                                                                     wqrManager = worksheetService.call("fetchWorksheeetQcResultByWorksheetAnalysisId", waDO.getId());
                                                                     
                                                                     twiDO = new TestWorksheetItemDO();
