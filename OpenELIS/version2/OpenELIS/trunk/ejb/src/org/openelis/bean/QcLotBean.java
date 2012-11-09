@@ -243,7 +243,7 @@ public class QcLotBean implements QcLotLocal, QcLotRemote {
         list = new ValidationErrorsList();
         
         try {
-            worksheetAnalysis.fetchByQcId(data.getId());
+            worksheetAnalysis.fetchByQcLotId(data.getId());
             list.add(new FieldErrorException("qcLotDeleteException", null));
             throw list;
         } catch (NotFoundException e) {

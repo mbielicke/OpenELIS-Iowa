@@ -170,7 +170,7 @@ public class WorksheetAnalysisManagerProxy {
 
         local = EJBFactory.getWorksheetAnalysis();
 
-        if (analysis.getQcId() != null) {
+        if (analysis.getQcLotId() != null) {
             //
             // Rewrite temporary QC accession number
             //
@@ -184,7 +184,7 @@ public class WorksheetAnalysisManagerProxy {
             //
             if ("N".equals(analysis.getIsFromOther())) {
                 analysis.setQcStartedDate(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE));
-                qcLotVDO = EJBFactory.getQcLot().fetchById(analysis.getQcId());
+                qcLotVDO = EJBFactory.getQcLot().fetchById(analysis.getQcLotId());
                 qcManager = QcManager.fetchById(qcLotVDO.getQcId());
                 wqrManager = manager.getWorksheetQcResultAt(i);
                 initializeWorksheetQcResults(qcManager, wqrManager);
@@ -258,7 +258,7 @@ public class WorksheetAnalysisManagerProxy {
         if (analysis.getAnalysisId() != null && listItem.worksheetResult != null) {
             manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
             manager.getWorksheetResultAt(i).add();
-        } else if (analysis.getQcId() != null && listItem.worksheetQcResult != null) {
+        } else if (analysis.getQcLotId() != null && listItem.worksheetQcResult != null) {
             manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
             manager.getWorksheetQcResultAt(i).add();
         }
@@ -368,7 +368,7 @@ public class WorksheetAnalysisManagerProxy {
             if (analysis.getAnalysisId() != null && listItem.worksheetResult != null) {
                 manager.getWorksheetResultAt(i).setWorksheetAnalysisId(analysis.getId());
                 manager.getWorksheetResultAt(i).update();
-            } else if (analysis.getQcId() != null && listItem.worksheetQcResult != null) {
+            } else if (analysis.getQcLotId() != null && listItem.worksheetQcResult != null) {
                 manager.getWorksheetQcResultAt(i).setWorksheetAnalysisId(analysis.getId());
                 manager.getWorksheetQcResultAt(i).update();
             }
@@ -402,7 +402,7 @@ public class WorksheetAnalysisManagerProxy {
             listItem = manager.getItemAt(i);
             if (waDO.getAnalysisId() != null && listItem.worksheetResult != null)
                 manager.getWorksheetResultAt(i).validate(errorList);
-            else if (waDO.getQcId() != null && listItem.worksheetQcResult != null)
+            else if (waDO.getQcLotId() != null && listItem.worksheetQcResult != null)
                 manager.getWorksheetQcResultAt(i).validate(errorList);
         }
     }

@@ -112,7 +112,7 @@ public class WorksheetManagerProxy {
                     waMan.getBundleAt(j);
                     waMan.getWorksheetResultAt(j);
                 }
-                if (waMan.getWorksheetAnalysisAt(j).getQcId() != null)
+                if (waMan.getWorksheetAnalysisAt(j).getQcLotId() != null)
                     waMan.getWorksheetQcResultAt(j);
             }
         }
