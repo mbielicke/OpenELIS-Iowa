@@ -28,9 +28,9 @@ import org.openelis.gwt.common.Datetime;
     @NamedQuery( name = "WorksheetAnalysis.FetchById",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther) "+
                         "from WorksheetAnalysis wa where wa.id = :id"),
-    @NamedQuery( name = "WorksheetAnalysis.FetchByQcId",
+    @NamedQuery( name = "WorksheetAnalysis.FetchByQcLotId",
                 query = "select distinct new org.openelis.domain.WorksheetAnalysisDO(wa.id,wa.worksheetItemId,wa.accessionNumber,wa.analysisId,wa.qcLotId,wa.worksheetAnalysisId,wa.qcSystemUserId,wa.qcStartedDate,wa.isFromOther)"
-                      + " from WorksheetAnalysis wa where wa.qcId = :id"),
+                      + " from WorksheetAnalysis wa where wa.qcLotId = :id"),
     @NamedQuery( name = "WorksheetAnalysis.FetchByWorksheetStatusId",
                 query = "select distinct new org.openelis.domain.WorksheetCacheVO(w.id, w.createdDate, w.systemUserId, w.statusId, t.name, m.name, s.name)"
                       + " from WorksheetAnalysis wa, WorksheetItem wi, Worksheet w, Analysis a, Test t, Method m, Section s where wa.worksheetItemId = wi.id and wi.worksheetId = w.id and w.statusId = :statusId"
