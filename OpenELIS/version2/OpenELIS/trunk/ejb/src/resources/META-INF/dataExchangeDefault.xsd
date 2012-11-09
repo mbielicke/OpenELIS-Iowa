@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 Exhibit A - UIRF Open-source Based Public Software License.
   
@@ -33,7 +34,12 @@ UIRF Software License are applicable instead of those above.
         <xs:element ref="header"/>
         <xs:element ref="sample"/>
       </xs:sequence>
-      <xs:attribute name="type" type="xs:string" use = "required"/>
+      <!-- 
+          The name "Type" is used instead of "type" because "type" is a keyword
+          used by Rhapsody's Symphonia Mapper. "type" is renamed on import by
+          Symphonia otherwise.   
+      -->
+      <xs:attribute name="Type" type="xs:string" use = "required"/>
     </xs:complexType>
   </xs:element>
   
@@ -81,7 +87,7 @@ UIRF Software License are applicable instead of those above.
       </xs:sequence>
       <xs:attribute name="id" use = "required" type="xs:integer"/>
       <xs:attribute name="domain" type="xs:string" use = "required"/>
-      <xs:attribute name="accesssion_number" type="xs:integer" use = "required"/>
+      <xs:attribute name="accession_number" type="xs:integer" use = "required"/>
       <xs:attribute name="revision" type="xs:integer"/>
       <xs:attribute name="order_id" type="xs:integer"/>
       <xs:attribute name="entered_date" type="xs:dateTime" use = "required"/>
@@ -222,7 +228,12 @@ UIRF Software License are applicable instead of those above.
   <xs:element name="sample_organization">
     <xs:complexType>
       <xs:sequence>    
-        <xs:element name="type" type="dictionary"/>
+        <!-- 
+            The name "Type" is used instead of "type" because "type" is a keyword
+            used by Rhapsody's Symphonia Mapper. "type" is renamed on import by
+            Symphonia otherwise.   
+        -->
+        <xs:element name="Type" type="dictionary"/>
         <xs:element ref="organization"/>
       </xs:sequence>
       <xs:attribute name="id" type="xs:integer" use = "required"/>
@@ -341,7 +352,12 @@ UIRF Software License are applicable instead of those above.
    <xs:complexType>
      <xs:sequence>    
        <xs:element ref="qaevent"/> 
-       <xs:element name="type" type="dictionary"/>          
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper. "type" is renamed on import by 
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" type="dictionary"/>          
      </xs:sequence>
      <xs:attribute name="id" type="xs:integer" use = "required"/>
      <xs:attribute name="analysis_id" type="xs:integer" use = "required"/>
@@ -355,7 +371,12 @@ UIRF Software License are applicable instead of those above.
        <xs:element name="name" type="xs:string"/>                 
        <xs:element name="description" type="xs:string" minOccurs="0"/>
        <xs:element ref="test" minOccurs="0"/>
-       <xs:element name="type" type="dictionary"/>          
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper.  "type" is renamed on import by
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" type="dictionary"/>          
        <xs:element name="reporting_text" type="xs:string"/>
      </xs:sequence>
      <xs:attribute name="id" type="xs:integer" use = "required"/>
@@ -367,7 +388,12 @@ UIRF Software License are applicable instead of those above.
  <xs:element name="result">
    <xs:complexType>
      <xs:sequence>    
-       <xs:element name="type" minOccurs="0" type="dictionary"/>
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper. "type" is renamed on import by 
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" minOccurs="0" type="dictionary"/>
        <xs:element name="value" minOccurs="0" type="xs:string"/>
        <xs:element name="dictionary" minOccurs="0" type="dictionary"/>
        <xs:element ref="analyte" minOccurs="0"/>
@@ -423,7 +449,12 @@ UIRF Software License are applicable instead of those above.
    <xs:complexType>
      <xs:sequence>    
        <xs:element ref="qaevent"/> 
-       <xs:element name="type" type="dictionary"/>          
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper. "type" is renamed on import by 
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" type="dictionary"/>          
      </xs:sequence>
      <xs:attribute name="id" type="xs:integer" use = "required"/>
      <xs:attribute name="sample_id" type="xs:integer" use = "required"/>
@@ -434,7 +465,12 @@ UIRF Software License are applicable instead of those above.
  <xs:element name="aux_data">
    <xs:complexType>
      <xs:sequence>    
-       <xs:element name="type" minOccurs="0" type="dictionary"/>
+       <!-- 
+           The name "Type" is used instead of "type" because "type" is a keyword
+           used by Rhapsody's Symphonia Mapper. "type" is renamed on import by 
+           Symphonia otherwise.   
+       -->
+       <xs:element name="Type" minOccurs="0" type="dictionary"/>
        <xs:element name="value" minOccurs="0" type="xs:string"/>
        <xs:element name="dictionary" minOccurs="0" type="dictionary"/>
        <xs:element ref="analyte"/>
