@@ -38,7 +38,7 @@ public class WorksheetAnalysisDO extends DataObject {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer  id, worksheetItemId, worksheetAnalysisId, analysisId, qcId,
+    protected Integer  id, worksheetItemId, worksheetAnalysisId, analysisId, qcLotId,
                        qcSystemUserId;
     protected String   accessionNumber, isFromOther;
     protected Datetime qcStartedDate;
@@ -47,13 +47,13 @@ public class WorksheetAnalysisDO extends DataObject {
     }
 
     public WorksheetAnalysisDO(Integer id, Integer worksheetItemId, String accessionNumber,
-                               Integer analysisId, Integer qcId, Integer worksheetAnalysisId,
+                               Integer analysisId, Integer qcLotId, Integer worksheetAnalysisId,
                                Integer qcSystemUserId, Date qcStartedDate, String isFromOther) {
         setId(id);
         setWorksheetItemId(worksheetItemId);
         setAccessionNumber(accessionNumber);
         setAnalysisId(analysisId);
-        setQcId(qcId);
+        setQcLotId(qcLotId);
         setWorksheetAnalysisId(worksheetAnalysisId);
         setQcSystemUserId(qcSystemUserId);
         setQcStartedDate(DataBaseUtil.toYM(qcStartedDate));
@@ -97,12 +97,12 @@ public class WorksheetAnalysisDO extends DataObject {
         _changed = true;
     }
 
-    public Integer getQcId() {
-        return qcId;
+    public Integer getQcLotId() {
+        return qcLotId;
     }
 
-    public void setQcId(Integer qcId) {
-        this.qcId = qcId;
+    public void setQcLotId(Integer qcLotId) {
+        this.qcLotId = qcLotId;
         _changed = true;
     }
 

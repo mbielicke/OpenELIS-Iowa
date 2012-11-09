@@ -53,7 +53,7 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                 ANALYSIS_WORKSHEET_ITEM_ID     = "_worksheetAnalysis.worksheetItemId",
                                 ANALYSIS_ACCESSION_NUMBER      = "_worksheetAnalysis.accessionNumber",
                                 ANALYSIS_ANALYSIS_ID           = "_worksheetAnalysis.analysisId",
-                                ANALYSIS_QC_ID                 = "_worksheetAnalysis.qcId",
+                                ANALYSIS_QC_LOT_ID             = "_worksheetAnalysis.qcLotId",
                                 ANALYSIS_WORKSHEET_ANALYSIS_ID = "_worksheetAnalysis.worksheetAnalysisId",
                                 ANALYSIS_QC_SYSTEM_USER_ID     = "_worksheetAnalysis.qcSystemUserId",
                                 ANALYSIS_QC_STARTED_DATE       = "_worksheetAnalysis.qcStartedDate",
@@ -118,7 +118,7 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
                                     STATUS_ID, FORMAT_ID, SUBSET_CAPACITY, RELATED_WORKSHEET_ID,
                                     INSTRUMENT_ID, ITEM_ID, ITEM_WORKSHEET_ID, ITEM_POSITION,
                                     ANALYSIS_ID, ANALYSIS_WORKSHEET_ITEM_ID, ANALYSIS_ACCESSION_NUMBER,
-                                    ANALYSIS_ANALYSIS_ID, ANALYSIS_QC_ID, ANALYSIS_WORKSHEET_ANALYSIS_ID,
+                                    ANALYSIS_ANALYSIS_ID, ANALYSIS_QC_LOT_ID, ANALYSIS_WORKSHEET_ANALYSIS_ID,
                                     ANALYSIS_QC_SYSTEM_USER_ID, ANALYSIS_QC_STARTED_DATE,
                                     ANALYSIS_IS_FROM_OTHER,
                                     RESULT_ID, RESULT_WORKSHEET_ANALYSIS_ID, RESULT_TEST_ANALYTE_ID,
@@ -199,8 +199,8 @@ public class WorksheetCompletionMeta implements Meta, MetaMap {
         return ANALYSIS_ANALYSIS_ID;
     }
 
-    public static String getWorksheetAnalysisQcId() {
-        return ANALYSIS_QC_ID;
+    public static String getWorksheetAnalysisQcLotId() {
+        return ANALYSIS_QC_LOT_ID;
     }
 
     public static String getWorksheetAnalysisWorksheetAnalysisId() {
