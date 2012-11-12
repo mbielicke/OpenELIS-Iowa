@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -35,7 +34,6 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;

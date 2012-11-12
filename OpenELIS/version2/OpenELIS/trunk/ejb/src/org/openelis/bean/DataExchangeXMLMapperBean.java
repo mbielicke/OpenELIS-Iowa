@@ -704,7 +704,7 @@ public class DataExchangeXMLMapperBean implements DataExchangeXMLMapperLocal {
 
         parent.setAttribute("id", sample.getId().toString());       
         parent.setAttribute("domain", sample.getDomain());
-        parent.setAttribute("accesssion_number", sample.getAccessionNumber().toString());
+        parent.setAttribute("accession_number", sample.getAccessionNumber().toString());
         parent.setAttribute("revision", sample.getRevision().toString());
         
         if (sample.getOrderId() != null)
