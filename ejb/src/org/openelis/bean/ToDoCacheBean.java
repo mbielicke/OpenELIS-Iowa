@@ -67,7 +67,6 @@ import org.openelis.local.SectionLocal;
 import org.openelis.local.ToDoCacheLocal;
 import org.openelis.remote.ToDoCacheRemote;
 import org.openelis.utils.EJBFactory;
-import org.openelis.utils.JasperUtil;
 
 /**
  * This class provides application level cache handling for todo lists
@@ -752,7 +751,7 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         fields.add(projName);
         fields.add(senv.getLocation());
         
-        return JasperUtil.concatWithSeparator(fields, ", ");
+        return DataBaseUtil.concatWithSeparator(fields, ", ");
     }
     
     private String getSDWISDomainSpecField(SampleSDWISViewDO ssd, ArrayList fields) {        
@@ -761,6 +760,6 @@ public class ToDoCacheBean implements ToDoCacheLocal, ToDoCacheRemote {
         fields.add(ssd.getPwsName());
         fields.add(ssd.getFacilityId());
         
-        return JasperUtil.concatWithSeparator(fields, ", ");
+        return DataBaseUtil.concatWithSeparator(fields, ", ");
     }
 }
