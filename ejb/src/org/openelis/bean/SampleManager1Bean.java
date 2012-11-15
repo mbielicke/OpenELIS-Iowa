@@ -28,6 +28,7 @@ package org.openelis.bean;
 import static org.openelis.manager.SampleManager1Accessor.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.HashMap;
 
@@ -39,6 +40,7 @@ import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.AuxDataViewDO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
@@ -51,7 +53,14 @@ import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
+import org.openelis.domain.SystemVariableDO;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FieldErrorException;
+import org.openelis.gwt.common.FieldErrorWarning;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AnalysisQAEventLocal;
@@ -69,8 +78,10 @@ import org.openelis.local.SampleProjectLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SampleSDWISLocal;
 import org.openelis.local.StorageLocal;
+import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
+import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleManager1Remote;
 
 @Stateless
@@ -124,6 +135,9 @@ public class SampleManager1Bean implements SampleManager1Remote {
 
     @EJB
     private ResultLocal              result;
+
+    @EJB
+    private SystemVariableLocal      systemVariable;
 
     /**
      * Returns a sample manager for specified primary id and requested load
@@ -649,6 +663,137 @@ public class SampleManager1Bean implements SampleManager1Remote {
         }
 
         return sm;
+    }
+
+    /**
+     * Adds the sample and all related records into the database. All the
+     * records within the manager are validated before the insertion.
+     */
+    public ValidationErrorsList add(SampleManager1 sm, boolean ignoreWarnings) {
+        return null;
+    }
+
+    /**
+     * Validates the sample manager and returns a possible list of
+     * errors/warnings
+     */
+    protected ValidationErrorsList validate(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
+        boolean valid;
+        Datetime dt, now, minReceived;
+        Calendar cal;
+        Integer maxAccession;
+        SystemVariableDO sys;
+        ValidationErrorsList e;
+
+        e = new ValidationErrorsList();
+        cal = Calendar.getInstance();
+        now = Datetime.getInstance(Datetime.YEAR, Datetime.SECOND);
+        minReceived = now.add( -180);
+
+        /*
+         * see what was the last accession number we have given out
+         */
+        try {
+            sys = systemVariable.fetchByName("last_accession_number");
+            maxAccession = Integer.valueOf(sys.getValue());
+        } catch (Exception any) {
+            // TODO log the error
+            throw new FormErrorException("Missing or invalid system variable 'last_accession_number'");
+        }
+
+        for (SampleManager1 sm : sms) {
+            /*
+             * sample level
+             */
+            if (getSample(sm).isChanged()) {
+                // accession number must be > 0, previously issued. we don't
+                // want to check the duplicate again since it will not guarantee
+                // that by the time we insert it will still be unique, and will
+                // slow us down.
+                if (getSample(sm).getAccessionNumber() == null ||
+                    getSample(sm).getAccessionNumber() <= 0)
+                    throw new FormErrorException("accessionNumberNotPositiveException",
+                                                 getSample(sm).getAccessionNumber());
+
+                if (maxAccession.compareTo(getSample(sm).getAccessionNumber()) < 0)
+                    throw new FormErrorException("accessionNumberNotInUse",
+                                                 getSample(sm).getAccessionNumber());
+
+                // domain
+                valid = false;
+                for (Constants.Domain d : Constants.Domain.values())
+                    if (d.getValue().equals(getSample(sm).getDomain())) {
+                        valid = true;
+                        break;
+                    }
+                if ( !valid)
+                    e.add(new FormErrorException("noDomainException",
+                                                 getSample(sm).getAccessionNumber()));
+                // dates
+                dt = getSample(sm).getCollectionDate();
+                if (getSample(sm).getCollectionTime() != null) {
+                    cal.setTime(dt.getDate());
+                    cal.add(Calendar.HOUR_OF_DAY, dt.get(Datetime.HOUR));
+                    cal.add(Calendar.MINUTE, dt.get(Datetime.MINUTE));
+                    dt = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
+                }
+                if (dt != null && dt.after(getSample(sm).getReceivedDate()) && !ignoreWarnings)
+                    e.add(new FormErrorException("collectedDateInvalidError",
+                                                 getSample(sm).getAccessionNumber()));
+
+                if (getSample(sm).getReceivedDate() == null ||
+                    getSample(sm).getReceivedDate().after(now))
+                    e.add(new FormErrorException("receivedDateRequiredException",
+                                                 getSample(sm).getAccessionNumber()));
+                else if (getSample(sm).getReceivedDate().before(minReceived) && !ignoreWarnings)
+                    e.add(new FormErrorWarning("receivedTooOldWarning",
+                                               getSample(sm).getAccessionNumber()));
+
+                
+            }
+
+        }
+        return e.size() == 0 ? null : e;
+    }
+
+    /**
+     * Validates the accession number. Throws exception if accession is not
+     * valid
+     */
+    public void validateAccessionNumber(SampleDO data) throws Exception {
+        Integer acc;
+        SampleDO dup;
+        SystemVariableDO sys;
+
+        /*
+         * accession number must be > 0, previously issued, and not duplicate
+         */
+        acc = data.getAccessionNumber();
+        if (acc == null || acc <= 0)
+            throw new FieldErrorException("accessionNumberNotPositiveException",
+                                          SampleMeta.getAccessionNumber());
+
+        try {
+            sys = systemVariable.fetchByName("last_accession_number");
+            if (acc.compareTo(Integer.valueOf(sys.getValue())) > 0)
+                throw new FieldErrorException("accessionNumberNotInUse",
+                                              SampleMeta.getAccessionNumber());
+        } catch (Exception any) {
+            // TODO log the error
+            throw any;
+        }
+
+        try {
+            dup = sample.fetchByAccessionNumber(acc);
+            if ( !dup.getId().equals(data.getId()))
+                throw new FieldErrorException("accessionNumberDuplicate",
+                                              SampleMeta.getAccessionNumber());
+        } catch (NotFoundException nf) {
+            // ok if no other sample with the same accession number
+        } catch (Exception any) {
+            // TODO log the error
+            throw any;
+        }
     }
 
     /*
