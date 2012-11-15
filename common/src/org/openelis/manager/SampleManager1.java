@@ -46,7 +46,6 @@ import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
-import org.openelis.domain.SampleSDWISDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.RPC;
@@ -88,6 +87,12 @@ public class SampleManager1 implements RPC {
     transient public final SampleProject          project      = new SampleProject();
     transient public final QAEvent                qaEvent      = new QAEvent();
     transient public final AuxData                auxData      = new AuxData();
+
+    // TODO move all these to application level global flags
+    public static final String                    ENVIRONMENTAL_DOMAIN_FLAG = "E",
+                    HUMAN_DOMAIN_FLAG = "H", ANIMAL_DOMAIN_FLAG = "A", NEWBORN_DOMAIN_FLAG = "N",
+                    PT_DOMAIN_FLAG = "P", SDWIS_DOMAIN_FLAG = "S", WELL_DOMAIN_FLAG = "W",
+                    QUICK_ENTRY = "Q";
 
     /**
      * Initialize an empty sample manager
@@ -932,7 +937,8 @@ public class SampleManager1 implements RPC {
             if (isExternal)
                 return (extE == -1) ? 0 : 1;
             else
-                return (analysisNotes == null) ? 0 : map.get(analysis.getId()).size() - (extE == -1 ? 0 : 1);
+                return (analysisNotes == null) ? 0 : map.get(analysis.getId()).size() -
+                                                     (extE == -1 ? 0 : 1);
         }
 
         /*
