@@ -117,6 +117,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                           WorksheetCreationMeta.getSamplePrivateWellReportToName()+", "+
 //                          WorksheetCreationMeta.getPatientLastName()+", "+
 //                          WorksheetCreationMeta.getPatientFirstName()+", "+
+                          WorksheetCreationMeta.getSampleItemTypeOfSampleId()+", "+
                           WorksheetCreationMeta.getAnalysisTestId()+", " +
                           WorksheetCreationMeta.getAnalysisTestName()+", " +
                           WorksheetCreationMeta.getAnalysisTestMethodName()+", "+
@@ -125,6 +126,7 @@ public class WorksheetCreationBean implements WorksheetCreationRemote {
                           WorksheetCreationMeta.getAnalysisSectionId()+", "+
                           WorksheetCreationMeta.getAnalysisPreAnalysisId()+", "+
                           WorksheetCreationMeta.getAnalysisStatusId()+", " +
+                          WorksheetCreationMeta.getAnalysisUnitOfMeasureId()+", " +
                           WorksheetCreationMeta.getTestWorksheetFormatId()+") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCreationMeta.getSampleAccessionNumber());
