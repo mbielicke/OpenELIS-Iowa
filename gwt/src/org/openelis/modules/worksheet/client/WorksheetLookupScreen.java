@@ -85,6 +85,7 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
     protected Dropdown<Integer>     statusId;
     protected TableWidget           worksheetTable;
     protected TextBox<Integer>      worksheetNumber;
+    protected TextBox<String>       description;
 
     public enum Action {
         SELECT, CANCEL
@@ -174,6 +175,14 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
             public void onStateChange(StateChangeEvent<State> event) {
                 statusId.enable(true);
                 statusId.setQueryMode(true);
+            }
+        });
+
+        description = (TextBox)def.getWidget(WorksheetCompletionMeta.getDescription());
+        addScreenHandler(description, new ScreenEventHandler<String>() {
+            public void onStateChange(StateChangeEvent<State> event) {
+                description.enable(true);
+                description.setQueryMode(true);
             }
         });
 
@@ -360,30 +369,9 @@ public class WorksheetLookupScreen extends Screen implements HasActionHandlers<W
                 row.cells.get(1).value = worksheetRow.getSystemUser();
                 row.cells.get(2).value = worksheetRow.getCreatedDate();
                 row.cells.get(3).value = worksheetRow.getStatusId();
-
-                testList = worksheetRow.getTestList();
-                if (testList != null && testList.size() > 0) {
-                    for (j = 0; j < testList.size(); j++) {
-                        aVDO = testList.get(j);
-                        if (j != 0) {
-                            row = new TableDataRow(6);
-                            row.key = worksheetRow.getId();
-                            row.cells.get(0).value = null;
-                            row.cells.get(1).value = null;
-                            row.cells.get(2).value = null;
-                            row.cells.get(3).value = null;
-                        }
-                        row.cells.get(4).value = aVDO.getTestName();
-                        row.cells.get(5).value = aVDO.getMethodName();
-                        row.data = worksheetRow;
-                        model.add(row);
-                    }
-                } else {
-                    row.cells.get(4).value = null;
-                    row.cells.get(5).value = null;
-                    row.data = worksheetRow;
-                    model.add(row);
-                }
+                row.cells.get(4).value = worksheetRow.getDescription();
+                row.data = worksheetRow;
+                model.add(row);
             }
 
             worksheetTable.load(model);
