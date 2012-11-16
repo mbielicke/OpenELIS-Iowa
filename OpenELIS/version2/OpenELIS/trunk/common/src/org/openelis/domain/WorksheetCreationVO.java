@@ -30,7 +30,6 @@ import java.util.Date;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
-import org.openelis.manager.SampleManager;
 
 public class WorksheetCreationVO implements RPC {
     private static final long serialVersionUID = 1L;
@@ -38,7 +37,8 @@ public class WorksheetCreationVO implements RPC {
     protected Boolean  hasQaOverride;
     protected Integer  analysisId, accessionNumber, dueDays, preAnalysisId, priority,
                        privateWellOrgId, sampleId, sectionId, statusId, testId, 
-                       timeHolding, timeTaAverage, worksheetFormatId;
+                       timeHolding, timeTaAverage, typeOfSampleId, unitOfMeasureId,
+                       worksheetFormatId;
     protected String   description, domain, envLocation, methodName, privateWellLocation, 
                        privateWellReportToName, sdwisLocation, testName;
     protected Datetime collectionDate, collectionTime, expireDate, receivedDate;
@@ -47,15 +47,15 @@ public class WorksheetCreationVO implements RPC {
 
     }
 
-    // analysis, accession number, test, method, section, status and received
     public WorksheetCreationVO(Integer analysisId, Integer sampleId, String domain,
                                Integer accessionNumber, Date collectionDate, Date collectionTime,
                                Date receivedDate, String envLocation, Integer priority,
                                String sdwisLocation, String privateWellLocation,
                                Integer privateWellOrgId, String privateWellReportToName,
-                               Integer testId, String testName, String methodName,
-                               Integer timeHolding, Integer timeTaAverage, Integer sectionId,
-                               Integer preAnalysisId, Integer statusId, Integer worksheetFormatId) {
+                               Integer typeOfSampleId, Integer testId, String testName,
+                               String methodName, Integer timeHolding, Integer timeTaAverage,
+                               Integer sectionId, Integer preAnalysisId, Integer statusId,
+                               Integer unitOfMeasureId, Integer worksheetFormatId) {
         setAnalysisId(analysisId);
         setSampleId(sampleId);
         setDomain(domain);
@@ -77,6 +77,8 @@ public class WorksheetCreationVO implements RPC {
         setSectionId(sectionId);
         setPreAnalysisId(preAnalysisId);
         setStatusId(statusId);
+        setTypeOfSampleId(typeOfSampleId);
+        setUnitOfMeasureId(unitOfMeasureId);
         setWorksheetFormatId(worksheetFormatId);
     }
 
@@ -262,6 +264,22 @@ public class WorksheetCreationVO implements RPC {
 
     public void setStatusId(Integer statusId) {
         this.statusId = statusId;
+    }
+
+    public Integer getTypeOfSampleId() {
+        return typeOfSampleId;
+    }
+
+    public void setTypeOfSampleId(Integer typeOfSampleId) {
+        this.typeOfSampleId = typeOfSampleId;
+    }
+
+    public Integer getUnitOfMeasureId() {
+        return unitOfMeasureId;
+    }
+
+    public void setUnitOfMeasureId(Integer unitOfMeasureId) {
+        this.unitOfMeasureId = unitOfMeasureId;
     }
 
     public Integer getWorksheetFormatId() {
