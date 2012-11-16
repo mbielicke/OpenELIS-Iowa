@@ -27,9 +27,11 @@ package org.openelis.modules.test.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
+import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.domain.TestViewDO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
@@ -90,6 +92,32 @@ public class TestService {
     
     public TestTypeOfSampleManager fetchSampleTypeByTestId(Integer testId) throws Exception {
         return EJBFactory.getTestManager().fetchSampleTypeByTestId(testId);
+    }
+
+    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Query query) throws Exception {
+        ArrayList<QueryData> fields;
+        QueryData            field;
+        Integer              testId, typeOfSampleId;
+        String               unitOfMeasure;
+
+        fields = query.getFields();
+        field = fields.get(0);
+        if (field.query != null)
+            testId = Integer.valueOf(field.query);
+        else
+            testId = null; 
+        field = fields.get(1);
+        if (field.query != null)
+            typeOfSampleId = Integer.valueOf(field.query);
+        else
+            typeOfSampleId = null;
+        field = fields.get(2);
+        if (field.query != null)
+            unitOfMeasure = field.query;
+        else
+            unitOfMeasure = null; 
+        
+        return EJBFactory.getTestTypeOfSample().fetchUnitsForWorksheetAutocomplete(testId, typeOfSampleId, unitOfMeasure);
     }
 
     public TestAnalyteManager fetchTestAnalyteByTestId(Integer testId) throws Exception {

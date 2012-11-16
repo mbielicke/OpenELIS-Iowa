@@ -121,6 +121,7 @@ import org.openelis.remote.TestManagerRemote;
 import org.openelis.remote.TestRemote;
 import org.openelis.remote.TestReportRemote;
 import org.openelis.remote.TestTrailerRemote;
+import org.openelis.remote.TestTypeOfSampleRemote;
 import org.openelis.remote.ToDoAnalyteReportRemote;
 import org.openelis.remote.ToDoRemote;
 import org.openelis.remote.TurnaroundReportRemote;
@@ -494,6 +495,10 @@ public class EJBFactory {
     
     public static TestTrailerRemote getTestTrailer() {
         return (TestTrailerRemote)EJBFactory.lookup("TestTrailerBean!org.openelis.remote.TestTrailerRemote");
+    }
+    
+    public static TestTypeOfSampleRemote getTestTypeOfSample() {
+        return (TestTypeOfSampleRemote)EJBFactory.lookup("TestTypeOfSampleBean!org.openelis.remote.TestTypeOfSampleRemote");
     }
     
     public static ToDoRemote getToDo() {

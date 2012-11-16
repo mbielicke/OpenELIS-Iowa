@@ -103,6 +103,7 @@ import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
+import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen1;
 import org.openelis.modules.sampleManagerTest.client.SampleManagerTestScreen;
 
 import com.google.gwt.core.client.GWT;
@@ -511,6 +512,27 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                     public void onSuccess() {
                         try {
                             browser.addScreen(new WorksheetCreationScreen(), "worksheetCreation");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+
+        addClickHandler("worksheetCreation1", "worksheet", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new WorksheetCreationScreen1(), "worksheetCreation1");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
