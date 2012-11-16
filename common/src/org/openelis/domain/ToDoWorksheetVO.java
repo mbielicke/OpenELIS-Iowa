@@ -33,20 +33,20 @@ import org.openelis.gwt.common.RPC;
 
 /** 
  * This class's objects store the data for the individual records that populate
- * the caches used for the various todo lists  
+ * the todo lists for worksheets   
  */
-public class WorksheetCacheVO implements RPC {
+public class ToDoWorksheetVO implements RPC {
 
     private static final long serialVersionUID = 1L;
+
+    protected Integer         id, systemUserId, statusId;
+    protected Datetime        createdDate;
+    protected String          systemUserName, testName, testMethodName, sectionName;
     
-    protected Integer  id, systemUserId, statusId;
-    protected Datetime createdDate;
-    protected String   systemUserName, testName, testMethodName, sectionName;
-    
-    public WorksheetCacheVO() {
+    public ToDoWorksheetVO() {
     }
     
-    public WorksheetCacheVO(Integer id, Date createdDate, Integer systemUserId,
+    public ToDoWorksheetVO(Integer id, Date createdDate, Integer systemUserId,
                             Integer statusId, String testName, String testMethodName,
                             String sectionName) {
         setId(id);

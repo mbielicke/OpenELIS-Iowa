@@ -119,7 +119,6 @@ import org.openelis.local.TestTypeOfSampleLocal;
 import org.openelis.local.TestWorksheetAnalyteLocal;
 import org.openelis.local.TestWorksheetItemLocal;
 import org.openelis.local.TestWorksheetLocal;
-import org.openelis.local.ToDoCacheLocal;
 import org.openelis.local.UserCacheLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.local.WorksheetItemLocal;
@@ -518,10 +517,6 @@ public class EJBFactory {
     public static UserCacheLocal getUserCache() {
         return (UserCacheLocal)lookup("UserCacheBean!org.openelis.local.UserCacheLocal");
     }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
-    
-    public static ToDoCacheLocal getToDoCache() {
-        return (ToDoCacheLocal)lookup("ToDoCacheBean!org.openelis.local.ToDoCacheLocal");
-    } 
 
     public static PreferencesLocal getPreferences() {
         return (PreferencesLocal)lookup("PreferencesBean!org.openelis.local.PreferencesLocal");

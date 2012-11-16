@@ -41,7 +41,7 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.WorksheetAnalysisDO;
-import org.openelis.domain.WorksheetCacheVO;
+import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.entity.WorksheetAnalysis;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -127,16 +127,16 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public ArrayList<WorksheetCacheVO> fetchByWorking() throws Exception {
+    public ArrayList<ToDoWorksheetVO> fetchByWorking() throws Exception {
         Query query;
-        List<WorksheetCacheVO> list;
+        List<ToDoWorksheetVO> list;
         SystemUserVO user;
 
         query = manager.createNamedQuery("WorksheetAnalysis.FetchByWorksheetStatusId");
         query.setParameter("statusId", workingId);
         list = query.getResultList();
 
-        for (WorksheetCacheVO data : list) {
+        for (ToDoWorksheetVO data : list) {
             user = userCache.getSystemUser(data.getSystemUserId());
             if (user != null)
                 data.setSystemUserName(user.getLoginName());

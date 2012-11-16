@@ -28,9 +28,13 @@ package org.openelis.modules.todo.client;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
+import org.openelis.cache.CategoryCache;
+import org.openelis.cache.SectionCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalysisCacheVO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ToDoAnalysisViewVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -40,6 +44,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -55,7 +60,7 @@ public class ReleasedTab extends Screen {
             
     private boolean                    loadedFromCache;
     private String                     loadBySection;  
-    private ArrayList<AnalysisCacheVO> fullList;
+    private ArrayList<ToDoAnalysisViewVO> fullList;
     private TableWidget                table;
     
     public ReleasedTab(ScreenDefInt def, ScreenWindowInt window) {
@@ -63,6 +68,7 @@ public class ReleasedTab extends Screen {
         setWindow(window);
         service = new ScreenService("controller?service=org.openelis.modules.todo.server.ToDoService");        
         initialize();        
+        initializeDropdowns();
     }
     
     private void initialize() {                
@@ -86,6 +92,27 @@ public class ReleasedTab extends Screen {
         loadBySection = "N";
     }
     
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
+        List<DictionaryDO> list;
+        Dropdown<Integer> domain;
+        
+        model = new ArrayList<TableDataRow>();
+        try {
+            list = CategoryCache.getBySystemName("sample_domain");
+            for (DictionaryDO data : list) {
+                row = new TableDataRow(data.getCode(), data.getEntry());
+                model.add(row);
+            }            
+            domain = ((Dropdown<Integer>)table.getColumnWidget("domain"));
+            domain.setModel(model);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+    }
+    
     private void loadTableModel() {
         ArrayList<TableDataRow> model;
         
@@ -95,8 +122,8 @@ public class ReleasedTab extends Screen {
             table.load(model);
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getReleased", new AsyncCallback<ArrayList<AnalysisCacheVO>>() {
-                public void onSuccess(ArrayList<AnalysisCacheVO> result) {
+            service.callList("getReleased", new AsyncCallback<ArrayList<ToDoAnalysisViewVO>>() {
+                public void onSuccess(ArrayList<ToDoAnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     
                     fullList = result;
@@ -132,44 +159,44 @@ public class ReleasedTab extends Screen {
         model = new ArrayList<TableDataRow>();
         perm = UserCache.getPermission();
         sectOnly = "Y".equals(loadBySection);
-        
-        for (AnalysisCacheVO data : fullList) {
-            sectName = data.getSectionName();
-            if (sectOnly && perm.getSection(sectName) == null)
-                continue;
-            row = new TableDataRow(10);
-            row.cells.get(0).setValue(data.getSampleAccessionNumber());
-            row.cells.get(1).setValue(data.getSampleDomain());
-            row.cells.get(2).setValue(sectName);
-            row.cells.get(3).setValue(data.getTestName());
-            row.cells.get(4).setValue(data.getTestMethodName());
 
-            scd = data.getSampleCollectionDate();
-            sct = data.getSampleCollectionTime();
-            if (scd != null) {
-                temp = scd.getDate();
-                if (sct == null) {
-                    temp.setHours(0);
-                    temp.setMinutes(0);
-                } else {
-                    temp.setHours(sct.getDate().getHours());
-                    temp.setMinutes(sct.getDate().getMinutes());
+        try {
+            for (ToDoAnalysisViewVO data : fullList) {
+                sectName = data.getSectionName();
+                if (sectOnly && perm.getSection(sectName) == null)
+                    continue;
+                row = new TableDataRow(10);
+                row.cells.get(0).setValue(data.getAccessionNumber());
+                row.cells.get(1).setValue(data.getDomain());
+                row.cells.get(2).setValue(sectName);
+                row.cells.get(3).setValue(data.getTestName());
+                row.cells.get(4).setValue(data.getMethodName());
+
+                scd = data.getCollectionDate();
+                sct = data.getCollectionTime();
+                if (scd != null) {
+                    temp = scd.getDate();
+                    if (sct == null) {
+                        temp.setHours(0);
+                        temp.setMinutes(0);
+                    } else {
+                        temp.setHours(sct.getDate().getHours());
+                        temp.setMinutes(sct.getDate().getMinutes());
+                    }
+
+                    row.cells.get(5).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE,
+                                                                   temp));
                 }
-
-                row.cells.get(5)
-                         .setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp));
+                row.cells.get(6).setValue(data.getReleasedDate());
+                row.cells.get(7).setValue(data.getAnalysisResultOverride());
+                row.cells.get(8).setValue(data.getDescription());
+                row.cells.get(9).setValue(data.getPrimaryOrganizationName());
+                row.data = data;
+                model.add(row);
             }
-            row.cells.get(6).setValue(data.getReleasedDate());
-            if ("Y".equals(data.getAnalysisQaeventResultOverride()) ||
-                "Y".equals(data.getSampleQaeventResultOverride()))
-                row.cells.get(7).setValue("Y");
-            else
-                row.cells.get(7).setValue("N");
-            
-            row.cells.get(8).setValue(data.getDomainSpecificField());
-            row.cells.get(9).setValue(data.getSampleReportToName());
-            row.data = data;
-            model.add(row);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
         }
 
         return model;
@@ -181,13 +208,13 @@ public class ReleasedTab extends Screen {
     
     public Integer getSelectedId() {
         TableDataRow row;
-        AnalysisCacheVO data; 
+        ToDoAnalysisViewVO data; 
         
         row = table.getSelection();
         if (row == null)
             return null;
         
-        data = (AnalysisCacheVO)row.data;        
+        data = (ToDoAnalysisViewVO)row.data;        
         return data.getSampleId();
     }
     

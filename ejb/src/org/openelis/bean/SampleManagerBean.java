@@ -109,7 +109,6 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             ut.begin(); 
             man.add();
             ut.commit(); 
-            //man.updateCache();
         } catch (Exception e) {
             ut.rollback();
             throw e;
@@ -131,7 +130,6 @@ public class SampleManagerBean  implements SampleManagerRemote, SampleManagerLoc
             man.update();
             lock.unlock(ReferenceTable.SAMPLE, man.getSample().getId());  
             ut.commit();    
-            //man.updateCache();
         } catch (Exception e) {
             ut.rollback();
             throw e;

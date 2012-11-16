@@ -32,8 +32,8 @@ import java.util.List;
 
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalysisCacheVO;
 import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ToDoAnalysisViewVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -57,10 +57,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class OtherTab extends Screen {
             
-    private boolean                    loadedFromCache;
-    private String                     loadBySection;
-    private ArrayList<AnalysisCacheVO> fullList;
-    private TableWidget                table;
+    private boolean                       loadedFromCache;
+    private String                        loadBySection;
+    private ArrayList<ToDoAnalysisViewVO> fullList;
+    private TableWidget                   table;
     
     public OtherTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
@@ -95,7 +95,7 @@ public class OtherTab extends Screen {
         ArrayList<TableDataRow> model;
         TableDataRow row;
         List<DictionaryDO> list;
-        Dropdown<Integer> status;
+        Dropdown<Integer> status, domain;
         
         model = new ArrayList<TableDataRow>();
         try {
@@ -106,6 +106,16 @@ public class OtherTab extends Screen {
             }            
             status = ((Dropdown<Integer>)table.getColumnWidget("status"));
             status.setModel(model);
+            
+            model = new ArrayList<TableDataRow>();
+            
+            list = CategoryCache.getBySystemName("sample_domain");
+            for (DictionaryDO data : list) {
+                row = new TableDataRow(data.getCode(), data.getEntry());
+                model.add(row);
+            }            
+            domain = ((Dropdown<Integer>)table.getColumnWidget("domain"));
+            domain.setModel(model);
         } catch (Exception e) {
             Window.alert(e.getMessage());
             window.close();
@@ -121,8 +131,8 @@ public class OtherTab extends Screen {
             table.load(model);
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getOther", new AsyncCallback<ArrayList<AnalysisCacheVO>>() {
-                public void onSuccess(ArrayList<AnalysisCacheVO> result) {
+            service.callList("getOther", new AsyncCallback<ArrayList<ToDoAnalysisViewVO>>() {
+                public void onSuccess(ArrayList<ToDoAnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     
                     fullList = result;
@@ -159,44 +169,43 @@ public class OtherTab extends Screen {
         perm = UserCache.getPermission();
         sectOnly = "Y".equals(loadBySection);
 
-        for (AnalysisCacheVO data : fullList) {
-            sectName = data.getSectionName();
-            if (sectOnly && perm.getSection(sectName) == null)
-                continue;
-            row = new TableDataRow(11);
-            row.cells.get(0).setValue(data.getSampleAccessionNumber());
-            row.cells.get(1).setValue(data.getSampleDomain());
-            row.cells.get(2).setValue(sectName);
-            row.cells.get(3).setValue(data.getStatusId());
-            row.cells.get(4).setValue(data.getTestName());
-            row.cells.get(5).setValue(data.getTestMethodName());
+        try {
+            for (ToDoAnalysisViewVO data : fullList) {
+                sectName = data.getSectionName();
+                if (sectOnly && perm.getSection(sectName) == null)
+                    continue;
+                row = new TableDataRow(11);
+                row.cells.get(0).setValue(data.getAccessionNumber());
+                row.cells.get(1).setValue(data.getDomain());
+                row.cells.get(2).setValue(sectName);
+                row.cells.get(3).setValue(data.getAnalysisStatusId());
+                row.cells.get(4).setValue(data.getTestName());
+                row.cells.get(5).setValue(data.getMethodName());
 
-            scd = data.getSampleCollectionDate();
-            sct = data.getSampleCollectionTime();
-            if (scd != null) {
-                temp = scd.getDate();
-                if (sct == null) {
-                    temp.setHours(0);
-                    temp.setMinutes(0);
-                } else {
-                    temp.setHours(sct.getDate().getHours());
-                    temp.setMinutes(sct.getDate().getMinutes());
+                scd = data.getCollectionDate();
+                sct = data.getCollectionTime();
+                if (scd != null) {
+                    temp = scd.getDate();
+                    if (sct == null) {
+                        temp.setHours(0);
+                        temp.setMinutes(0);
+                    } else {
+                        temp.setHours(sct.getDate().getHours());
+                        temp.setMinutes(sct.getDate().getMinutes());
+                    }
+
+                    row.cells.get(6).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp));
                 }
-
-                row.cells.get(6)
-                         .setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp));
+                row.cells.get(7).setValue(data.getReceivedDate());
+                row.cells.get(8).setValue(data.getAnalysisResultOverride());
+                row.cells.get(9).setValue(data.getDescription());
+                row.cells.get(10).setValue(data.getPrimaryOrganizationName());
+                row.data = data;
+                model.add(row);
             }
-            row.cells.get(7).setValue(data.getSampleReceivedDate());
-            if ("Y".equals(data.getAnalysisQaeventResultOverride()) ||
-                "Y".equals(data.getSampleQaeventResultOverride()))
-                row.cells.get(8).setValue("Y");
-            else
-                row.cells.get(8).setValue("N");            
-
-            row.cells.get(9).setValue(data.getDomainSpecificField());
-            row.cells.get(10).setValue(data.getSampleReportToName());
-            row.data = data;
-            model.add(row);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
         }
 
         return model;
@@ -208,13 +217,13 @@ public class OtherTab extends Screen {
     
     public Integer getSelectedId() {
         TableDataRow row;
-        AnalysisCacheVO data; 
+        ToDoAnalysisViewVO data; 
         
         row = table.getSelection();
         if (row == null)
             return null;
         
-        data = (AnalysisCacheVO)row.data;        
+        data = (ToDoAnalysisViewVO)row.data;        
         return data.getSampleId();
     }
     

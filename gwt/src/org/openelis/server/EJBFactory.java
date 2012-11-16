@@ -99,6 +99,7 @@ import org.openelis.remote.SDWISUnloadReportRemote;
 import org.openelis.remote.SampleInhouseReportRemote;
 import org.openelis.remote.SampleLoginLabelReportRemote;
 import org.openelis.remote.SampleManagerRemote;
+import org.openelis.remote.SampleManager1Remote;
 import org.openelis.remote.SampleQAEventManagerRemote;
 import org.openelis.remote.SampleRemote;
 import org.openelis.remote.SampleStatusReportRemote;
@@ -121,7 +122,7 @@ import org.openelis.remote.TestRemote;
 import org.openelis.remote.TestReportRemote;
 import org.openelis.remote.TestTrailerRemote;
 import org.openelis.remote.ToDoAnalyteReportRemote;
-import org.openelis.remote.ToDoCacheRemote;
+import org.openelis.remote.ToDoRemote;
 import org.openelis.remote.TurnaroundReportRemote;
 import org.openelis.remote.TurnaroundStatisticReportRemote;
 import org.openelis.remote.UserCacheRemote;
@@ -426,6 +427,10 @@ public class EJBFactory {
     public static SampleManagerRemote getSampleManager() {
         return (SampleManagerRemote)lookup("SampleManagerBean!org.openelis.remote.SampleManagerRemote");
     }
+    
+    public static SampleManager1Remote getSampleManager1() {
+        return (SampleManager1Remote)lookup("SampleManager1Bean!org.openelis.remote.SampleManager1Remote");
+    }
 
     public static SampleQAEventManagerRemote getSampleQAEventManager() {
         return (SampleQAEventManagerRemote)lookup("SampleQAEventManagerBean!org.openelis.remote.SampleQAEventManagerRemote");
@@ -491,8 +496,8 @@ public class EJBFactory {
         return (TestTrailerRemote)EJBFactory.lookup("TestTrailerBean!org.openelis.remote.TestTrailerRemote");
     }
     
-    public static ToDoCacheRemote getToDoCache() {
-        return (ToDoCacheRemote)EJBFactory.lookup("ToDoCacheBean!org.openelis.remote.ToDoCacheRemote");
+    public static ToDoRemote getToDo() {
+        return (ToDoRemote)EJBFactory.lookup("ToDoBean!org.openelis.remote.ToDoRemote");
     } 
     
     public static WorksheetRemote getWorksheet() {

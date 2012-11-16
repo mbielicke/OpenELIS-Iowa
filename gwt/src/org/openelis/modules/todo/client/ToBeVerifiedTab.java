@@ -29,8 +29,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
-import org.openelis.domain.SampleCacheVO;
+import org.openelis.cache.CategoryCache;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -39,6 +42,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -62,20 +66,21 @@ import com.google.gwt.visualization.client.visualizations.corechart.TextStyle;
 
 public class ToBeVerifiedTab extends Screen {
             
-    private boolean                    loadedFromCache, reattachChart;
-    private String                     loadBySection;
-    private ArrayList<String>          ranges;         
-    private ArrayList<SampleCacheVO>   fullList;
-    private TableWidget                table;
-    private VerticalPanel              toBeVerifiedPanel; 
-    private ColumnChart                chart;
-    private Options                    options;
+    private boolean                     loadedFromCache, reattachChart;
+    private String                      loadBySection;
+    private ArrayList<String>           ranges;         
+    private ArrayList<ToDoSampleViewVO> fullList;
+    private TableWidget                 table;
+    private VerticalPanel               toBeVerifiedPanel; 
+    private ColumnChart                 chart;
+    private Options                     options;
     
     public ToBeVerifiedTab(ScreenDefInt def, ScreenWindowInt window) {
         setDefinition(def);
         setWindow(window);
         service = new ScreenService("controller?service=org.openelis.modules.todo.server.ToDoService");        
         initialize();        
+        initializeDropdowns();
     }
     
     private void initialize() {                
@@ -115,6 +120,27 @@ public class ToBeVerifiedTab extends Screen {
         ranges.add(consts.get("moreThenTenDays"));
     }
     
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
+        List<DictionaryDO> list;
+        Dropdown<Integer> domain;
+        
+        model = new ArrayList<TableDataRow>();
+        try {
+            list = CategoryCache.getBySystemName("sample_domain");
+            for (DictionaryDO data : list) {
+                row = new TableDataRow(data.getCode(), data.getEntry());
+                model.add(row);
+            }            
+            domain = ((Dropdown<Integer>)table.getColumnWidget("domain"));
+            domain.setModel(model);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+    }
+    
     private void loadTableModel(final boolean refreshChart) {
         ArrayList<TableDataRow> model;
         
@@ -126,8 +152,8 @@ public class ToBeVerifiedTab extends Screen {
                 refreshChart();
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getToBeVerified", new AsyncCallback<ArrayList<SampleCacheVO>>() {
-                public void onSuccess(ArrayList<SampleCacheVO> result) {
+            service.callList("getToBeVerified", new AsyncCallback<ArrayList<ToDoSampleViewVO>>() {
+                public void onSuccess(ArrayList<ToDoSampleViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     
                     fullList = result;
@@ -161,7 +187,7 @@ public class ToBeVerifiedTab extends Screen {
 
         model = new ArrayList<TableDataRow>();
 
-        for (SampleCacheVO data : fullList) {
+        for (ToDoSampleViewVO data : fullList) {
             row = new TableDataRow(10);
             row.cells.get(0).setValue(data.getAccessionNumber());
             row.cells.get(1).setValue(data.getDomain());
@@ -180,9 +206,9 @@ public class ToBeVerifiedTab extends Screen {
                 row.cells.get(2).setValue(Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp));
             }
             row.cells.get(3).setValue(data.getReceivedDate());
-            row.cells.get(4).setValue(data.getQaeventResultOverride());           
-            row.cells.get(5).setValue(data.getDomainSpecificField());
-            row.cells.get(6).setValue(data.getReportToName());
+            row.cells.get(4).setValue(data.getSampleResultOverride());           
+            row.cells.get(5).setValue(data.getDescription());
+            row.cells.get(6).setValue(data.getPrimaryOrganizationName());
             row.data = data;
             model.add(row);
         }
@@ -200,14 +226,12 @@ public class ToBeVerifiedTab extends Screen {
     
     public Integer getSelectedId() {
         TableDataRow row;
-        SampleCacheVO data; 
         
         row = table.getSelection();
         if (row == null)
             return null;
         
-        data = (SampleCacheVO)row.data;        
-        return data.getId();
+        return ((ToDoSampleViewVO)row.data).getSampleId();        
     }
     
     public void draw(String loadBySection) {                
@@ -228,7 +252,7 @@ public class ToBeVerifiedTab extends Screen {
         ArrayList<TableDataRow> model;
         Datetime now, srd;
         Date midNight;
-        SampleCacheVO data;
+        ToDoSampleViewVO data;
         HashMap<String, Integer> map;
         
         now = Datetime.getInstance();
@@ -252,7 +276,7 @@ public class ToBeVerifiedTab extends Screen {
         for (TableDataRow row : model) {
             if (!row.shown)
                  continue;
-            data = (SampleCacheVO)row.data;
+            data = (ToDoSampleViewVO)row.data;
             srd = data.getReceivedDate();
             if (srd == null)
                 srd = now;

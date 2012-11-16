@@ -29,9 +29,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalysisCacheVO;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ToDoAnalysisViewVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -41,6 +44,7 @@ import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -54,9 +58,9 @@ import org.openelis.gwt.widget.table.event.SortEvent.SortDirection;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.DataTable;
 import com.google.gwt.visualization.client.LegendPosition;
-import com.google.gwt.visualization.client.AbstractDataTable.ColumnType;
 import com.google.gwt.visualization.client.visualizations.corechart.AxisOptions;
 import com.google.gwt.visualization.client.visualizations.corechart.ColumnChart;
 import com.google.gwt.visualization.client.visualizations.corechart.Options;
@@ -67,7 +71,7 @@ public class CompletedTab extends Screen {
     private boolean                    loadedFromCache, reattachChart;
     private String                     loadBySection;
     private ArrayList<String>          ranges;          
-    private ArrayList<AnalysisCacheVO> fullList;
+    private ArrayList<ToDoAnalysisViewVO> fullList;
     private TableWidget                table;
     private VerticalPanel              completedPanel; 
     private ColumnChart                chart;
@@ -78,6 +82,7 @@ public class CompletedTab extends Screen {
         setWindow(window);
         service = new ScreenService("controller?service=org.openelis.modules.todo.server.ToDoService");
         initialize();        
+        initializeDropdowns();
     }
     
     private void initialize() {        
@@ -116,6 +121,27 @@ public class CompletedTab extends Screen {
         ranges.add(consts.get("moreThanThreeDays"));
     }
     
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
+        List<DictionaryDO> list;
+        Dropdown<Integer> domain;
+        
+        model = new ArrayList<TableDataRow>();
+        try {
+            list = CategoryCache.getBySystemName("sample_domain");
+            for (DictionaryDO data : list) {
+                row = new TableDataRow(data.getCode(), data.getEntry());
+                model.add(row);
+            }            
+            domain = ((Dropdown<Integer>)table.getColumnWidget("domain"));
+            domain.setModel(model);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+    }
+    
     private void loadTableModel(final boolean refreshChart) {
         ArrayList<TableDataRow> model;
         
@@ -127,8 +153,8 @@ public class CompletedTab extends Screen {
                 refreshChart();
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getCompleted", new AsyncCallback<ArrayList<AnalysisCacheVO>>() {
-                public void onSuccess(ArrayList<AnalysisCacheVO> result) {
+            service.callList("getCompleted", new AsyncCallback<ArrayList<ToDoAnalysisViewVO>>() {
+                public void onSuccess(ArrayList<ToDoAnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     
                     fullList = result;
@@ -164,29 +190,29 @@ public class CompletedTab extends Screen {
         model = new ArrayList<TableDataRow>();
         perm = UserCache.getPermission();
         sectOnly = "Y".equals(loadBySection);
-        
-        for (AnalysisCacheVO data : fullList) {
-            sectName = data.getSectionName();
-            if (sectOnly && perm.getSection(sectName) == null)
-                continue;
-            row = new TableDataRow(9);
-            row.cells.get(0).setValue(data.getSampleAccessionNumber());
-            row.cells.get(1).setValue(data.getSampleDomain());
-            row.cells.get(2).setValue(sectName);
-            row.cells.get(3).setValue(data.getTestName());
-            row.cells.get(4).setValue(data.getTestMethodName());
-            if ("Y".equals(data.getAnalysisQaeventResultOverride()) ||
-                "Y".equals(data.getSampleQaeventResultOverride()))
-                row.cells.get(5).setValue("Y");
-            else
-                row.cells.get(5).setValue("N");
-            row.cells.get(6).setValue(data.getCompletedDate());
-            row.cells.get(7).setValue(data.getDomainSpecificField());
-            row.cells.get(8).setValue(data.getSampleReportToName());
-            row.data = data;
-            model.add(row);
-        }
 
+        try {
+            for (ToDoAnalysisViewVO data : fullList) {
+                sectName = data.getSectionName();
+                if (sectOnly && perm.getSection(sectName) == null)
+                    continue;
+                row = new TableDataRow(9);
+                row.cells.get(0).setValue(data.getAccessionNumber());
+                row.cells.get(1).setValue(data.getDomain());
+                row.cells.get(2).setValue(sectName);
+                row.cells.get(3).setValue(data.getTestName());
+                row.cells.get(4).setValue(data.getMethodName());
+                row.cells.get(5).setValue(data.getAnalysisResultOverride());
+                row.cells.get(6).setValue(data.getCompletedDate());
+                row.cells.get(7).setValue(data.getDescription());
+                row.cells.get(8).setValue(data.getPrimaryOrganizationName());
+                row.data = data;
+                model.add(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
+        }
         return model;
     }
     
@@ -200,13 +226,13 @@ public class CompletedTab extends Screen {
     
     public Integer getSelectedId() {
         TableDataRow row;
-        AnalysisCacheVO data; 
+        ToDoAnalysisViewVO data; 
         
         row = table.getSelection();
         if (row == null)
             return null;
         
-        data = (AnalysisCacheVO)row.data;        
+        data = (ToDoAnalysisViewVO)row.data;        
         return data.getSampleId();
     }
     
@@ -229,7 +255,7 @@ public class CompletedTab extends Screen {
         ArrayList<TableDataRow> model;
         Datetime now, cmpd;
         Date midNight;
-        AnalysisCacheVO data;
+        ToDoAnalysisViewVO data;
         HashMap<String, Integer> map;
         
         now = Datetime.getInstance();
@@ -251,7 +277,7 @@ public class CompletedTab extends Screen {
         for (TableDataRow row : model) {
             if (!row.shown)
                 continue;
-            data = (AnalysisCacheVO)row.data;
+            data = (ToDoAnalysisViewVO)row.data;
             cmpd = data.getCompletedDate();
             if (cmpd == null)
                 cmpd = now;

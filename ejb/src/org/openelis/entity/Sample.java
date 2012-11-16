@@ -84,10 +84,6 @@ import org.openelis.utils.Auditable;
                         "s.receivedById, s.collectionDate, s.collectionTime, s.statusId, s.packageId," +
                         "s.clientReference, s.releasedDate)"
                       + " from Sample s where s.domain = 'S' and s.releasedDate between :startDate and :endDate"),
-    @NamedQuery( name = "Sample.FetchForCachingByStatusId",
-                query = "select distinct new org.openelis.domain.SampleCacheVO(s.id, s.statusId, s.domain, s.accessionNumber," +
-                        "s.receivedDate, s.collectionDate, s.collectionTime, '', '')"
-                      + " from Sample s where s.statusId = :statusId order by s.accessionNumber "),
     @NamedQuery( name = "Sample.FetchForBillingReport",
                 query = "select s.id, s.accessionNumber, s.domain, s.clientReference, s.receivedDate, a.id, t.id, t.name, m.name, se.name, arf.billedDate, arf.billedAnalytes, arf.billedZero, a.isReportable, a.statusId" 
                       + " from Sample s, SampleItem si, Analysis a, Test t, Method m,  Section se, AnalysisReportFlags arf"

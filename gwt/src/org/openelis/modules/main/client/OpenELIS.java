@@ -46,6 +46,7 @@ import org.openelis.modules.cron.client.CronScreen;
 import org.openelis.modules.report.dataView.client.DataViewScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
+import org.openelis.modules.newbornScreeningSampleLogin.client.NewbornScreeningSampleLoginScreen;
 import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapScreen;
 import org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
@@ -102,6 +103,7 @@ import org.openelis.modules.todo.client.ToDoScreen;
 import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
+import org.openelis.modules.sampleManagerTest.client.SampleManagerTestScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -318,13 +320,13 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-
-        addClickHandler("animalSampleLogin", "sampleanimal", new ClickHandler() {
+        
+        addClickHandler("newbornScreeningSampleLogin", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            // browser.addScreen(new AnimalSampleLoginScreen());
+                            browser.addScreen(new NewbornScreeningSampleLoginScreen(), "newbornScreeningSampleLogin");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -339,13 +341,12 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("newbornScreeningSampleLogin", "samplenewborn", new ClickHandler() {
+        addClickHandler("animalSampleLogin", "sampleanimal", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            // browser.addScreen(new
-                            // NewbornScreeningSampleLoginScreen());
+                            // browser.addScreen(new AnimalSampleLoginScreen());
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());
@@ -407,6 +408,27 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                         try {
                             browser.addScreen(new PrivateWellWaterSampleLoginScreen(),
                                               "privateWellWaterSampleLogin");
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            Window.alert(e.getMessage());
+                        }
+                    }
+
+                    public void onFailure(Throwable caught) {
+                        caught.printStackTrace();
+                        Window.alert(caught.getMessage());
+                    }
+                });
+            }
+        });
+        
+        addClickHandler("testSampleManager", "sampleprivatewell", new ClickHandler() {
+            public void onClick(ClickEvent event) {
+                GWT.runAsync(new RunAsyncCallback() {
+                    public void onSuccess() {
+                        try {
+                            browser.addScreen(new SampleManagerTestScreen(),
+                                              "Test Sample Manager");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

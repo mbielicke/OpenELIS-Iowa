@@ -32,64 +32,66 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
 /** 
  * This class's objects store the data for the individual records that populate
- * the caches used for the various todo lists  
+ * the todo lists for samples
  */
-public class SampleCacheVO implements RPC {
+public class ToDoSampleViewVO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         id, statusId, accessionNumber;                              
-    protected String          domain, qaeventResultOverride, 
-                              domainSpecificField, reportToName;
+    protected Integer         sampleId, accessionNumber, sampleStatusId;                              
+    protected String          domain, primaryOrganizationName, sampleResultOverride, 
+                              description;
     protected Datetime        receivedDate, collectionDate, collectionTime;
     
-    public SampleCacheVO() {        
+    public ToDoSampleViewVO() {        
     }
     
-    public SampleCacheVO(Integer id, Integer statusId, String domain, Integer accessionNumber,
-                         Date receivedDate, Date collectionDate, Date collectionTime, 
-                         String qaeventResultOverride, String reportToName) {
-        setId(id);
-        setStatusId(statusId);
+    public ToDoSampleViewVO(Integer sampleId, String domain, Integer accessionNumber, 
+                            Integer sampleStatusId, Date receivedDate, Date collectionDate,
+                            Date collectionTime, String primaryOrganizationName, 
+                            String description, String sampleResultOverride) {
+        setSampleId(sampleId);
         setDomain(domain);
         setAccessionNumber(accessionNumber);
+        setSampleStatusId(sampleStatusId);
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
-        setQaeventResultOverride(qaeventResultOverride);
-        setReportToName(reportToName);
+        setPrimaryOrganizationName(primaryOrganizationName);
+        setDescription(description);
+        setSampleResultOverride(sampleResultOverride);
+    }
+
+    public Integer getSampleId() {
+        return sampleId;
+    }
+
+    public void setSampleId(Integer sampleId) {
+        this.sampleId = sampleId;
     }
     
-    public Integer getId() {
-        return id;
-    }
-    
-    public void setId(Integer id) {
-        this.id = id;
-    }
-    
-    public Integer getStatusId() {
-        return statusId;
-    }
-    
-    public void setStatusId(Integer statusId) {
-        this.statusId = statusId;
-    }   
-        
     public String getDomain() {
         return domain;
     }
-    
-    public void setDomain(String sampleDomain) {
-        this.domain = DataBaseUtil.trim(sampleDomain);
+
+    public void setDomain(String domain) {
+        this.domain = DataBaseUtil.trim(domain);
     }
-    
+
     public Integer getAccessionNumber() {
         return accessionNumber;
     }
-    
+
     public void setAccessionNumber(Integer accessionNumber) {
         this.accessionNumber = accessionNumber;
+    }
+
+    public Integer getSampleStatusId() {
+        return sampleStatusId;
+    }
+
+    public void setSampleStatusId(Integer sampleStatusId) {
+        this.sampleStatusId = sampleStatusId;
     }
     
     public Datetime getReceivedDate() {
@@ -116,27 +118,27 @@ public class SampleCacheVO implements RPC {
         this.collectionTime = DataBaseUtil.toHM(collectionTime);
     }
 
-    public String getQaeventResultOverride() {
-        return qaeventResultOverride;
-    }
-    
-    public void setQaeventResultOverride(String qaeventResultOverride) {
-        this.qaeventResultOverride = DataBaseUtil.trim(qaeventResultOverride);
-    }
-    
-    public String getDomainSpecificField() {
-        return domainSpecificField;
+    public String getPrimaryOrganizationName() {
+        return primaryOrganizationName;
     }
 
-    public void setDomainSpecificField(String domainSpecificField) {
-        this.domainSpecificField = DataBaseUtil.trim(domainSpecificField);
+    public void setPrimaryOrganizationName(String primaryOrganizationName) {
+        this.primaryOrganizationName = DataBaseUtil.trim(primaryOrganizationName);
     }
-    
-    public String getReportToName() {
-        return reportToName;
+
+    public String getDescription() {
+        return description;
     }
-    
-    public void setReportToName(String reportToName) {
-        this.reportToName = DataBaseUtil.trim(reportToName);
+
+    public void setDescription(String description) {
+        this.description = DataBaseUtil.trim(description);
+    }
+
+    public String getSampleResultOverride() {
+        return sampleResultOverride;
+    }
+
+    public void setSampleResultOverride(String sampleResultOverride) {
+        this.sampleResultOverride = DataBaseUtil.trim(sampleResultOverride);
     }
 }

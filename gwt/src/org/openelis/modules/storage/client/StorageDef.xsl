@@ -138,7 +138,7 @@ UIRF Software License are applicable instead of those above.
               <tab key="currentTab" text="{resource:getString($constants,'current')}">
                 <VerticalPanel>
                   <widget>
-                    <tree key="storageCurrentTree" width="auto" maxRows="11" showScroll="ALWAYS">
+                    <tree key="storageCurrentTree" width="610" maxRows="11" showScroll="ALWAYS">
                       <header>
                         <col width="200" header="{resource:getString($constants,'storageLocationItem')}" />
                         <col width="100" header="{resource:getString($constants,'user')}" />

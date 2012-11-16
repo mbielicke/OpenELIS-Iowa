@@ -23,15 +23,10 @@
 * license ("UIRF Software License"), in which case the provisions of a
 * UIRF Software License are applicable instead of those above. 
 */
-package org.openelis.local;
+package org.openelis.modules.newbornScreeningSampleLogin.client;
 
-import javax.ejb.Local;
+import org.openelis.gwt.screen.ScreenDefInt;
 
-import org.openelis.domain.AnalysisCacheVO;
-import org.openelis.domain.SampleCacheVO;
+public interface NewbornScreeningSampleLoginDef extends ScreenDefInt {
 
-@Local
-public interface ToDoCacheLocal {
-    public void update(AnalysisCacheVO data);
-    public void update(SampleCacheVO data);
 }
