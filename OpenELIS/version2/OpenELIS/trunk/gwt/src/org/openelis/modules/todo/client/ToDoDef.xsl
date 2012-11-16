@@ -86,7 +86,7 @@ UIRF Software License are applicable instead of those above.
                     <label field="Integer" />
                   </col>
                   <col filter="true" header="{resource:getString($constants,'domain')}" key="domain" width="50">
-                    <label field="String" />
+                    <dropdown field="String" width="50" />
                   </col>
                   <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="100">
                     <label field="String" />
@@ -106,6 +106,22 @@ UIRF Software License are applicable instead of those above.
                   <col filter="true" header="{resource:getString($constants,'override')}" key="qaResOver" width="55">
                     <check />
                   </col>
+                  <col header="{resource:getString($constants,'holding')}" key="holdingTime" sort="true" width="100">
+                    <percentBar barWidth = "50">
+                      <range color="green" threshold="25" />
+                      <range color="yellow" threshold="50" />
+                      <range color="orange" threshold="75" />
+                      <range color="red" threshold="100" />
+                    </percentBar>
+                  </col>
+                  <col header="{resource:getString($constants,'expCompletion')}" key="avgTATime" sort="true" width="105">
+                    <percentBar barWidth = "50">
+                      <range color="green" threshold="25" />
+                      <range color="yellow" threshold="50" />
+                      <range color="orange" threshold="75" />
+                      <range color="red" threshold="100" />
+                    </percentBar>
+                  </col>
                   <col header="{resource:getString($constants,'domainSpecField')}" key="mush" width="150">
                     <label field="String" />
                   </col>
@@ -124,7 +140,7 @@ UIRF Software License are applicable instead of those above.
                   <label field="Integer" />
                 </col>
                 <col filter="true" header="{resource:getString($constants,'domain')}" key="domain" width="50">
-                  <label field="String" />
+                  <dropdown field="String" width="50" />
                 </col>
                 <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="100">
                   <label field="String" />
@@ -143,7 +159,7 @@ UIRF Software License are applicable instead of those above.
                     <range color="red" threshold="100" />
                   </percentBar>
                 </col>
-                <col header="{resource:getString($constants,'avgTA')}" key="avgTATime" sort="true" width="105">
+                <col header="{resource:getString($constants,'expCompletion')}" key="avgTATime" sort="true" width="105">
                   <percentBar barWidth = "50">
                     <range color="green" threshold="25" />
                     <range color="yellow" threshold="50" />
@@ -173,7 +189,7 @@ UIRF Software License are applicable instead of those above.
                 <col filter="true" header="{resource:getString($constants,'worksheetUser')}" key="user" sort="true" width="122">
                   <label field="String" />
                 </col>
-                <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="120">
+                <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="100">
                   <label field="String" />
                 </col>
                 <col filter="true" header="{resource:getString($constants,'test')}" key="test" sort="true" width="80">
@@ -195,7 +211,7 @@ UIRF Software License are applicable instead of those above.
                   <label field="Integer" />
                 </col>
                 <col filter="true" header="{resource:getString($constants,'domain')}" key="domain" width="50">
-                  <label field="String" />
+                  <dropdown field="String" width="50" />
                 </col>
                 <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="100">
                   <label field="String" />
@@ -230,7 +246,7 @@ UIRF Software License are applicable instead of those above.
                     <label field="Integer" />
                   </col>
                   <col filter="true" header="{resource:getString($constants,'domain')}" key="domain" width="50">
-                    <label field="String" />
+                    <dropdown field="String" width="50" />
                   </col>
                   <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="100">
                     <label field="String" />
@@ -268,7 +284,7 @@ UIRF Software License are applicable instead of those above.
                     <label field="Integer" />
                   </col>
                   <col filter="true" header="{resource:getString($constants,'domain')}" key="domain" width="50">
-                    <label field="String" />
+                    <dropdown field="String" width="50" />
                   </col>
                   <col header="{resource:getString($constants,'collected')}" key="datec" sort="true" width="105">
                     <label field="Date" pattern="{resource:getString($constants,'dateTimePattern')}" />
@@ -297,7 +313,7 @@ UIRF Software License are applicable instead of those above.
                   <label field="Integer" />
                 </col>
                 <col filter="true" header="{resource:getString($constants,'domain')}" key="domain" width="50">
-                  <label field="String" />
+                  <dropdown field="String" width="50" />
                 </col>
                 <col filter="true" header="{resource:getString($constants,'section')}" key="section" sort="true" width="100">
                   <label field="String" />

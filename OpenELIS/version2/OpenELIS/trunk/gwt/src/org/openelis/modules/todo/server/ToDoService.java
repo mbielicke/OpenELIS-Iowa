@@ -27,40 +27,39 @@ package org.openelis.modules.todo.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.AnalysisCacheVO;
-import org.openelis.domain.SampleCacheVO;
-import org.openelis.domain.WorksheetCacheVO;
+import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.ToDoSampleViewVO;
+import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.server.EJBFactory;
 
 public class ToDoService {
 
-    public ArrayList<AnalysisCacheVO> getLoggedIn() throws Exception {
-        return EJBFactory.getToDoCache().getLoggedIn();
+    public ArrayList<ToDoAnalysisViewVO> getLoggedIn() throws Exception {
+        return EJBFactory.getToDo().getLoggedIn();
     }
     
-    public ArrayList<AnalysisCacheVO> getInitiated() throws Exception {
-        return EJBFactory.getToDoCache().getInitiated();
+    public ArrayList<ToDoAnalysisViewVO> getInitiated() throws Exception {
+        return EJBFactory.getToDo().getInitiated();
     }
     
-    public ArrayList<AnalysisCacheVO> getCompleted() throws Exception {
-        return EJBFactory.getToDoCache().getCompleted();
+    public ArrayList<ToDoAnalysisViewVO> getCompleted() throws Exception {
+        return EJBFactory.getToDo().getCompleted();
     }
     
-    public ArrayList<AnalysisCacheVO> getReleased() throws Exception {
-        return EJBFactory.getToDoCache().getReleased();
+    public ArrayList<ToDoAnalysisViewVO> getReleased() throws Exception {
+        return EJBFactory.getToDo().getReleased();
     }
     
-    public ArrayList<SampleCacheVO> getToBeVerified() throws Exception {
-        return EJBFactory.getToDoCache().getToBeVerified();
+    public ArrayList<ToDoSampleViewVO> getToBeVerified() throws Exception {
+        return EJBFactory.getToDo().getToBeVerified();
     }
     
-    public ArrayList<AnalysisCacheVO> getOther() throws Exception {
-        return EJBFactory.getToDoCache().getOther();
+    public ArrayList<ToDoAnalysisViewVO> getOther() throws Exception {
+        return EJBFactory.getToDo().getOther();
     }
     
-    public ArrayList<WorksheetCacheVO> getWorksheet() throws Exception {
-        return EJBFactory.getToDoCache().getWorksheet();
-    }
-   
+    public ArrayList<ToDoWorksheetVO> getWorksheet() throws Exception {
+        return EJBFactory.getToDo().getWorksheet();
+    }   
 }
 

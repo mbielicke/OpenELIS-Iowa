@@ -32,7 +32,7 @@ import javax.ejb.Local;
 
 import org.openelis.domain.QcChartResultVO;
 import org.openelis.domain.WorksheetAnalysisDO;
-import org.openelis.domain.WorksheetCacheVO;
+import org.openelis.domain.ToDoWorksheetVO;
 
 @Local
 public interface WorksheetAnalysisLocal {
@@ -42,7 +42,7 @@ public interface WorksheetAnalysisLocal {
     
     public ArrayList<WorksheetAnalysisDO> fetchByQcLotId(Integer id) throws Exception;
     
-    public ArrayList<WorksheetCacheVO> fetchByWorking() throws Exception;
+    public ArrayList<ToDoWorksheetVO> fetchByWorking() throws Exception;
 
     public WorksheetAnalysisDO add(WorksheetAnalysisDO data) throws Exception;
 

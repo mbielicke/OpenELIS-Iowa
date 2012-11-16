@@ -682,7 +682,7 @@ public class TestTab extends Screen implements HasActionHandlers<TestTab.Action>
             ana = (OrderTestAnalyteViewDO)i.data;
             ana.setTestAnalyteIsReportable(reportable);
         }
-        
+                
         tree.refreshRow(item);
     }
 }

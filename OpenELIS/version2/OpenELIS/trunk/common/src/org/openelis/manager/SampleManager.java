@@ -502,5 +502,5 @@ public class SampleManager implements RPC, HasAuxDataInt {
             proxy = new SampleManagerProxy();
 
         return proxy;
-    }
+    }    
 }

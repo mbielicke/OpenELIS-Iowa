@@ -29,12 +29,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
+import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalysisCacheVO;
-import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.domain.DictionaryDO;
+import org.openelis.domain.ToDoAnalysisViewVO;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -42,8 +43,8 @@ import org.openelis.gwt.event.StateChangeEvent;
 import org.openelis.gwt.screen.Screen;
 import org.openelis.gwt.screen.ScreenDefInt;
 import org.openelis.gwt.screen.ScreenEventHandler;
-import org.openelis.gwt.screen.Screen.State;
 import org.openelis.gwt.services.ScreenService;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.ScreenWindowInt;
 import org.openelis.gwt.widget.table.ColumnComparator;
 import org.openelis.gwt.widget.table.TableDataRow;
@@ -70,7 +71,7 @@ public class LoggedInTab extends Screen {
     private boolean                    loadedFromCache, reattachChart;
     private String                     loadBySection;
     private ArrayList<String>          ranges;         
-    private ArrayList<AnalysisCacheVO> fullList;
+    private ArrayList<ToDoAnalysisViewVO> fullList;
     private TableWidget                table;
     private VerticalPanel              loggedInPanel; 
     private ColumnChart                chart;
@@ -81,6 +82,7 @@ public class LoggedInTab extends Screen {
         setWindow(window);
         service = new ScreenService("controller?service=org.openelis.modules.todo.server.ToDoService");        
         initialize();        
+        initializeDropdowns();
     }
     
     private void initialize() {                
@@ -120,6 +122,27 @@ public class LoggedInTab extends Screen {
         ranges.add(consts.get("moreThenTenDays"));      
     }
     
+    private void initializeDropdowns() {
+        ArrayList<TableDataRow> model;
+        TableDataRow row;
+        List<DictionaryDO> list;
+        Dropdown<Integer> domain;
+        
+        model = new ArrayList<TableDataRow>();
+        try {
+            list = CategoryCache.getBySystemName("sample_domain");
+            for (DictionaryDO data : list) {
+                row = new TableDataRow(data.getCode(), data.getEntry());
+                model.add(row);
+            }            
+            domain = ((Dropdown<Integer>)table.getColumnWidget("domain"));
+            domain.setModel(model);
+        } catch (Exception e) {
+            Window.alert(e.getMessage());
+            window.close();
+        }
+    }
+    
     private void loadTableModel(final boolean refreshChart) {
         ArrayList<TableDataRow> model;
         
@@ -131,8 +154,8 @@ public class LoggedInTab extends Screen {
                 refreshChart();
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getLoggedIn", new AsyncCallback<ArrayList<AnalysisCacheVO>>() {
-                public void onSuccess(ArrayList<AnalysisCacheVO> result) {
+            service.callList("getLoggedIn", new AsyncCallback<ArrayList<ToDoAnalysisViewVO>>() {
+                public void onSuccess(ArrayList<ToDoAnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     
                     fullList = result;
@@ -168,13 +191,13 @@ public class LoggedInTab extends Screen {
     
     public Integer getSelectedId() {
         TableDataRow row;
-        AnalysisCacheVO data; 
+        ToDoAnalysisViewVO data; 
         
         row = table.getSelection();
         if (row == null)
             return null;
         
-        data = (AnalysisCacheVO)row.data;        
+        data = (ToDoAnalysisViewVO)row.data;        
         return data.getSampleId();
     }
     
@@ -192,67 +215,108 @@ public class LoggedInTab extends Screen {
     
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
+        Long day, hour, diff;
+        Double percent, units, factor;
         Integer accNum, prevAccNum;
-        String sectName;
-        
+        String secName;
         TableDataRow row;
-        Datetime scDate, scTime, scDateTime;
+        Datetime now, scd, sct, scdt, stdt, srd;
         Date temp;
-        SystemUserPermission perm;     
+        SystemUserPermission perm;
         ArrayList<TableDataRow> model;
 
         model = new ArrayList<TableDataRow>();
         perm = UserCache.getPermission();
-        sectOnly = "Y".equals(loadBySection);        
+        sectOnly = "Y".equals(loadBySection);
+        now = Datetime.getInstance();
+        hour = 3600000L;
+        day = 24 * hour;
         accNum = null;
         prevAccNum = null;
-        scDateTime = null;
-        
-        for (AnalysisCacheVO data : fullList) {
-            sectName = data.getSectionName();
-            if (sectOnly && perm.getSection(sectName) == null)
-                continue;
-            row = new TableDataRow(10);
-            accNum = data.getSampleAccessionNumber(); 
-            row.cells.get(0).setValue(accNum);
-            row.cells.get(1).setValue(data.getSampleDomain());
-            row.cells.get(2).setValue(sectName);
-            row.cells.get(3).setValue(data.getTestName());
-            row.cells.get(4).setValue(data.getTestMethodName());
+        scdt = null;
 
-            if (!accNum.equals(prevAccNum)) {
-                scDate = data.getSampleCollectionDate();
-                scTime = data.getSampleCollectionTime();
-                if (scDate != null) {
-                    temp = scDate.getDate();
-                    if (scTime == null) {
-                        temp.setHours(0);
-                        temp.setMinutes(0);
+        try {
+            for (ToDoAnalysisViewVO data : fullList) {
+                secName = data.getSectionName();
+                if (sectOnly && perm.getSection(secName) == null)
+                    continue;
+                row = new TableDataRow(12);
+                accNum = data.getAccessionNumber();
+                row.cells.get(0).setValue(accNum);
+                row.cells.get(1).setValue(data.getDomain());
+                row.cells.get(2).setValue(secName);
+                row.cells.get(3).setValue(data.getTestName());
+                row.cells.get(4).setValue(data.getMethodName());
+
+                if ( !accNum.equals(prevAccNum)) {
+                    scd = data.getCollectionDate();
+                    sct = data.getCollectionTime();
+                    if (scd != null) {
+                        temp = scd.getDate();
+                        if (sct == null) {
+                            temp.setHours(0);
+                            temp.setMinutes(0);
+                        } else {
+                            temp.setHours(sct.getDate().getHours());
+                            temp.setMinutes(sct.getDate().getMinutes());
+                        }
+                        scdt = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
                     } else {
-                        temp.setHours(scTime.getDate().getHours());
-                        temp.setMinutes(scTime.getDate().getMinutes());
+                        scdt = null;
                     }
-                    scDateTime = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE, temp);
+                }
+
+                row.cells.get(5).setValue(scdt);
+                row.cells.get(6).setValue(data.getReceivedDate());
+                row.cells.get(7).setValue(data.getAnalysisResultOverride());
+                
+                if (scdt != null) {
+                    //
+                    // holding % is calculated based on sample collection date
+                    //
+                    stdt = data.getStartedDate() != null ? data.getStartedDate() : now;
+                    diff = (stdt.getDate().getTime() - scdt.getDate().getTime());
+                    units = diff.doubleValue() / hour.doubleValue();
+                    percent = (units / data.getTimeHolding().doubleValue() * 100);
+                    row.cells.get(8).setValue(percent);
+
+                    /*
+                     * average turnaround % is calculated based on sample collection
+                     * date if present
+                     */
+                    diff = now.getDate().getTime() - scdt.getDate().getTime();
+                    units = diff.doubleValue() / day.doubleValue();
+                    factor = data.getPriority() != null ? data.getPriority().doubleValue() : data.getTimeTaAverage().doubleValue();
+                    percent = (units / factor) * 100;
+                    row.cells.get(9).setValue(percent);
                 } else {
-                    scDateTime = null;
-                }                
+                    row.cells.get(8).setValue(0.0);
+
+                    /*
+                     * average turnaround % is calculated based on sample received
+                     * date if sample collection date isn't present
+                     */
+                    srd = data.getReceivedDate();
+                    if (srd == null)
+                        srd = now;
+                    diff = now.getDate().getTime() - srd.getDate().getTime();
+                    units = diff.doubleValue() / day.doubleValue();
+                    factor = data.getPriority() != null ? data.getPriority().doubleValue() : data.getTimeTaAverage().doubleValue();
+                    percent = (units / factor) * 100;
+                    row.cells.get(9).setValue(percent);
+                }
+                row.cells.get(10).setValue(data.getDescription());
+                row.cells.get(11).setValue(data.getPrimaryOrganizationName());
+                row.data = data;
+                model.add(row);
+
+                prevAccNum = accNum;
             }
-            
-            row.cells.get(5).setValue(scDateTime);
-            row.cells.get(6).setValue(data.getSampleReceivedDate());
-            if ("Y".equals(data.getAnalysisQaeventResultOverride()) ||
-                "Y".equals(data.getSampleQaeventResultOverride()))
-                row.cells.get(7).setValue("Y");
-            else
-                row.cells.get(7).setValue("N");
-            row.cells.get(8).setValue(data.getDomainSpecificField());
-            row.cells.get(9).setValue(data.getSampleReportToName());
-            row.data = data;            
-            model.add(row);
-            
-            prevAccNum = accNum;
+        } catch (Exception e) {
+            e.printStackTrace();
+            Window.alert(e.getMessage());
         }
-        
+
         return model;
     }
     
@@ -262,7 +326,7 @@ public class LoggedInTab extends Screen {
         ArrayList<TableDataRow> model;
         Datetime now, avd;
         Date midNight;
-        AnalysisCacheVO data;
+        ToDoAnalysisViewVO data;
         HashMap<String, Integer> map;
         
         now = Datetime.getInstance();
@@ -286,7 +350,7 @@ public class LoggedInTab extends Screen {
         for (TableDataRow row : model) {
             if (!row.shown)
                  continue;
-            data = (AnalysisCacheVO)row.data;
+            data = (ToDoAnalysisViewVO)row.data;
             avd = data.getAvailableDate();
             if (avd == null)
                 avd = now;

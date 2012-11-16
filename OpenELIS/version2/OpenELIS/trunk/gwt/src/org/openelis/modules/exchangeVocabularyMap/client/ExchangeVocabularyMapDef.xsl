@@ -49,11 +49,8 @@ UIRF Software License are applicable instead of those above.
           <HorizontalPanel width="230">        
             <VerticalPanel>
               <table key="atozTable" maxRows="20" style="atozTable" width="auto">
-                <col header="{resource:getString($constants,'localTerm')}" key="{meta:getReferenceId()}" width="175">
+                <col header="{resource:getString($constants,'localTerm')}" key="{meta:getReferenceId()}" width="245">
                   <label field="String" />
-                </col>
-                <col header="{resource:getString($constants,'type')}" key="{meta:getReferenceTableId()}" width="70">
-                  <dropdown field="Integer" width="70" />
                 </col>
               </table>
               <widget halign="center">

@@ -100,6 +100,12 @@ UIRF Software License are applicable instead of those above.
     <load-on-startup>4</load-on-startup>
   </servlet>
   
+  <servlet>
+    <servlet-name>SampleManagerTestServlet</servlet-name>
+    <servlet-class>org.openelis.modules.sampleManagerTest.server.SampleManagerTestServlet</servlet-class>
+    <load-on-startup>4</load-on-startup>
+  </servlet>
+  
   <servlet-mapping>
     <servlet-name>OpenELISServlet</servlet-name>
     <url-pattern>/controller</url-pattern>
@@ -113,6 +119,11 @@ UIRF Software License are applicable instead of those above.
   <servlet-mapping>
     <servlet-name>FileServlet</servlet-name>
     <url-pattern>/upload</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+    <servlet-name>SampleManagerTestServlet</servlet-name>
+    <url-pattern>/sampleManagerTest</url-pattern>
   </servlet-mapping>
   
   <session-config>

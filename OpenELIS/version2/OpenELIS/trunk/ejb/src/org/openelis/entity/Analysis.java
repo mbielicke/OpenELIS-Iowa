@@ -89,23 +89,7 @@ import org.openelis.utils.Auditable;
                         "a.availableDate, a.startedDate, a.completedDate, a.releasedDate, a.printedDate, t.name, t.reportingDescription, t.method.id," +
                         "t.method.name, t.method.reportingDescription, pat.name, pam.name, s.name)"
                       + " from Analysis a LEFT JOIN a.sampleItem si LEFT JOIN a.section s LEFT JOIN a.preAnalysis pa LEFT JOIN pa.test pat LEFT JOIN pat.method pam"
-                      + " LEFT JOIN a.test t where a.sampleItemId in (:ids) order by si.sampleId, si.itemSequence, t.name, t.method.name "),                  
-    @NamedQuery( name = "Analysis.FetchForCachingByStatusId",
-                query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, a.releasedDate, s.id, s.domain, s.accessionNumber," +
-                		"s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name)"
-                      + " from Analysis a, SampleItem si, Sample s, Test t"
-                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = :statusId order by s.accessionNumber "),
-    @NamedQuery( name = "Analysis.FetchOtherForCaching",
-                query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, a.releasedDate, s.id, s.domain, s.accessionNumber," +
-                        "s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name)"
-                      + " from Analysis a, SampleItem si, Sample s, Test t, Dictionary d"
-                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = d.id and d.systemName not in ('analysis_logged_in', 'analysis_initiated',"
-                      + " 'analysis_completed', 'analysis_released', 'analysis_cancelled')) order by s.accessionNumber"),
-    @NamedQuery( name = "Analysis.FetchReleasedForCaching",
-                query = "select distinct new org.openelis.domain.AnalysisCacheVO(a.id, a.statusId, a.sectionId, a.availableDate, a.startedDate, a.completedDate, a.releasedDate, s.id, s.domain, s.accessionNumber," +
-                        "s.receivedDate, s.collectionDate, s.collectionTime, t.name,t.timeHolding, t.timeTaAverage, t.method.name)"
-                      + " from Analysis a, SampleItem si, Sample s, Test t, Dictionary d"
-                      + " where a.sampleItemId = si.id and si.sampleId = s.id and a.testId = t.id and a.statusId = d.id and d.systemName = 'analysis_released' and a.releasedDate >= :releasedDate order by s.accessionNumber"),          
+                      + " LEFT JOIN a.test t where a.sampleItemId in (:ids) order by si.sampleId, si.itemSequence, t.name, t.method.name "),          
     @NamedQuery( name = "Analysis.FetchForMCLViolation",
                 query = "select distinct new org.openelis.domain.MCLViolationReportVO(s.id, s.accessionNumber, s.collectionDate, s.collectionTime, ss.stateLabId, ss.facilityId, d1.entry, ss.samplePointId, ss.location, p.number0, p.name, p.alternateStNum, o.name, a.id, a.sectionId, se.name, a.unitOfMeasureId, a.startedDate, a.releasedDate, d2.entry, t.name, t.method.name)"
                       + " from Analysis a, SampleItem si, Sample s, SampleSDWIS ss, PWS p, SampleOrganization so, Organization o, Test t, Section se, Dictionary d1, Dictionary d2, Dictionary d3"

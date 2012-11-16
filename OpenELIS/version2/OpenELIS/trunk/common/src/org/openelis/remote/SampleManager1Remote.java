@@ -37,4 +37,10 @@ public interface SampleManager1Remote {
     public ArrayList<SampleManager1> fetchByIds(ArrayList<Integer> sampleIds, SampleManager1.Load ...elements) throws Exception;
     
     public ArrayList<SampleManager> fetchByIds(ArrayList<Integer> sampleIds) throws Exception;
+    
+    public ArrayList<SampleManager1> fetchForUpdate(ArrayList<Integer> sampleIds,
+                                                    SampleManager1.Load... elements) throws Exception;
+    
+    public ArrayList<SampleManager1> fetchByAnalyses(ArrayList<Integer> analysisIds,
+                                                     SampleManager1.Load... elements) throws Exception;
 }

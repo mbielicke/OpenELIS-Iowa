@@ -540,7 +540,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
                             name = entry.getReferenceName();
                         else
                             name = DataBaseUtil.concatWithSeparator(entry.getReferenceName(), ", ", entry.getReferenceDescription());
-                        model.add(new TableDataRow(entry.getId(), name, entry.getReferenceTableId()));
+                        model.add(new TableDataRow(entry.getId(), name));
                     }
                 }
                 return model;
@@ -591,7 +591,7 @@ public class ExchangeVocabularyMapScreen extends Screen {
 
         referenceTableId.setModel(model);
         
-        ((Dropdown)atozTable.getColumnWidget(ExchangeLocalTermMeta.getReferenceTableId())).setModel(model);
+        //((Dropdown)atozTable.getColumnWidget(ExchangeLocalTermMeta.getReferenceTableId())).setModel(model);
         
         model = new ArrayList<TableDataRow>();
         model.add(new TableDataRow(null, ""));

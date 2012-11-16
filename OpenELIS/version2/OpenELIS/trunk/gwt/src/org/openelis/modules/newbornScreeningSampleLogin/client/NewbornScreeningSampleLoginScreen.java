@@ -26,96 +26,29 @@
 package org.openelis.modules.newbornScreeningSampleLogin.client;
 
 
-public class NewbornScreeningSampleLoginScreen {//extends OpenELISScreenForm<NewbornScreeningSampleLoginForm,Query<TableDataRow<Integer>>> implements ClickListener, TabListener, TreeManager{
- /*
-    private TreeWidget itemsTestsTree;
-    private KeyListManager keyList = new KeyListManager();
+import org.openelis.gwt.screen.Screen;
+import org.openelis.gwt.screen.ScreenDefInt;
+import org.openelis.gwt.services.ScreenService;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.DeferredCommand;
+
+
+public class NewbornScreeningSampleLoginScreen extends Screen {
     
-    public NewbornScreeningSampleLoginScreen() {
-        super("org.openelis.modules.newbornScreeningSampleLogin.server.NewbornScreeningSampleLoginService");
-        query = new Query<TableDataRow<Integer>>();
-        getScreen(new NewbornScreeningSampleLoginForm());
-    }
+    public NewbornScreeningSampleLoginScreen() throws Exception {
+        super((ScreenDefInt)GWT.create(NewbornScreeningSampleLoginDef.class));
+        service = new ScreenService("controller?service=org.openelis.modules.sample.server.SampleService");
 
-    public void onClick(Widget sender) {
-    
-    }
-    
-    public void afterDraw(boolean sucess) {
-        ButtonPanel bpanel = (ButtonPanel)getWidget("buttons");
-        
-        //disable the buttons for the demo for now
-        bpanel.enableButton("query", false);
-        bpanel.enableButton("add", false);
-        
-        CommandChain formChain = new CommandChain();
-        formChain.addCommand(this);
-        formChain.addCommand(bpanel);
-        formChain.addCommand(keyList);
+        //userPermission = UserCache.getPermission().getModule("sampleenvironmental");
+        //if (userPermission == null)
+          //  throw new PermissionException("screenPermException", "Environmental Sample Login Screen");
 
-        itemsTestsTree = (TreeWidget)getWidget("itemsTestsTree");
-        
-        //build the tree
-        TreeDataItem row1 = itemsTestsTree.model.createTreeItem("top");
-        row1.cells[0].setValue("0 - Blood Spot");
-        row1.cells[1].setValue("Heal");
-        TreeDataItem row2 = itemsTestsTree.model.createTreeItem("top");
-        row2.cells[0].setValue("Hemoglobinopathies - Logged In");
-        TreeDataItem row3 = itemsTestsTree.model.createTreeItem("top");
-        row3.cells[0].setValue("Biotinidase Deficiency - Logged In");
-        TreeDataItem row4 = itemsTestsTree.model.createTreeItem("top");
-        row4.cells[0].setValue("Congenital Adrenal Hyperplasia - Logged In");
-        TreeDataItem row5 = itemsTestsTree.model.createTreeItem("top");
-        row5.cells[0].setValue("TMS Disorders- Logged In");
-        TreeDataItem row6 = itemsTestsTree.model.createTreeItem("top");
-        row6.cells[0].setValue("Galactosemia - Logged In");
-        TreeDataItem row7 = itemsTestsTree.model.createTreeItem("top");
-        row7.cells[0].setValue("Hypothyroidism - Logged In");
-        TreeDataItem row8 = itemsTestsTree.model.createTreeItem("top");
-        row8.cells[0].setValue("Cystic Fibrosis - Logged In");
-        
-        row1.addItem(row2);
-        row1.addItem(row3);
-        row1.addItem(row4);
-        row1.addItem(row5);
-        row1.addItem(row6);
-        row1.addItem(row7);
-        row1.addItem(row8);
-        itemsTestsTree.model.addRow(row1);
-        
-        itemsTestsTree.model.refresh();
-        
-        super.afterDraw(sucess);
+        DeferredCommand.addCommand(new Command() {
+            public void execute() {
+                //postConstructor();
+            }
+        });
     }
-
-    public boolean onBeforeTabSelected(SourcesTabEvents sender, int tabIndex) {
-        return true;
-    }
-
-    public void onTabSelected(SourcesTabEvents sender, int tabIndex) {}
-
-    public boolean canAdd(TreeWidget widget, TreeDataItem set, int row) {
-        return false;
-    }
-
-    public boolean canClose(TreeWidget widget, TreeDataItem set, int row) {
-        return true;
-    }
-
-    public boolean canDelete(TreeWidget widget, TreeDataItem set, int row) {
-        return false;
-    }
-
-    public boolean canEdit(TreeWidget widget, TreeDataItem set, int row, int col) {
-        return true;
-    }
-
-    public boolean canOpen(TreeWidget widget, TreeDataItem addRow, int row) {
-        return true;
-    }
-
-    public boolean canSelect(TreeWidget widget, TreeDataItem set, int row) {
-        return false;
-    }
- */
 }

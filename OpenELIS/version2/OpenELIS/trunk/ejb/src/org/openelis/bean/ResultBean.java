@@ -588,7 +588,7 @@ public class ResultBean implements ResultLocal {
     }
     
     public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) throws Exception {
-        List<ResultViewDO> list;        
+        List<ResultDO> list;        
         Query query;
         
         query = manager.createNamedQuery("Result.FetchForBillingByAnalysisId");

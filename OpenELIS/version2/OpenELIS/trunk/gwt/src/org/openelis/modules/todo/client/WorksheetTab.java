@@ -29,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.openelis.cache.UserCache;
-import org.openelis.domain.AnalysisCacheVO;
-import org.openelis.domain.WorksheetCacheVO;
+import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.event.DataChangeEvent;
@@ -54,7 +54,7 @@ public class WorksheetTab extends Screen {
             
     private boolean                     loadedFromCache;
     private String                      loadBySection;  
-    private ArrayList<WorksheetCacheVO> fullList;
+    private ArrayList<ToDoWorksheetVO> fullList;
     private TableWidget                 table;
     
     public WorksheetTab(ScreenDefInt def, ScreenWindowInt window) {
@@ -94,8 +94,8 @@ public class WorksheetTab extends Screen {
             table.load(model);
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getWorksheet", new AsyncCallback<ArrayList<WorksheetCacheVO>>() {
-                public void onSuccess(ArrayList<WorksheetCacheVO> result) {
+            service.callList("getWorksheet", new AsyncCallback<ArrayList<ToDoWorksheetVO>>() {
+                public void onSuccess(ArrayList<ToDoWorksheetVO> result) {
                     ArrayList<TableDataRow> model;         
                     
                     fullList = result;
@@ -130,7 +130,7 @@ public class WorksheetTab extends Screen {
         perm = UserCache.getPermission();
         sectOnly = "Y".equals(loadBySection);
         
-        for (WorksheetCacheVO data : fullList) {
+        for (ToDoWorksheetVO data : fullList) {
             sectName = data.getSectionName();
             if (sectOnly && perm.getSection(sectName) == null)
                 continue;
@@ -154,13 +154,13 @@ public class WorksheetTab extends Screen {
     
     public Integer getSelectedId() {
         TableDataRow row;
-        WorksheetCacheVO data; 
+        ToDoWorksheetVO data; 
         
         row = table.getSelection();
         if (row == null)
             return null;
         
-        data = (WorksheetCacheVO)row.data;        
+        data = (ToDoWorksheetVO)row.data;        
         return data.getId();
     }
     
