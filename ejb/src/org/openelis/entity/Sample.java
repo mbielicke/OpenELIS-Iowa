@@ -405,7 +405,7 @@ import org.openelis.utils.Auditable;
                         "order by s_anum, t_rep_desc, m_rep_desc ",
            resultSetMapping="Sample.FetchForSampleStatusReport"),
      @NamedNativeQuery( name = "Sample.FetchForTurnaroundWarningReport",
-                query = "select distinct s.accession_number, s.received_date, CAST(o.name AS varchar(40)) o_name,"
+                query = "select distinct s.accession_number, s.collection_date, s.collection_time, s.received_date, CAST(o.name AS varchar(40)) o_name,"
                       + " CAST(t.name AS varchar(20)) t_name, t.time_ta_warning, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
                       + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d2.entry a_status, a.available_date" 
                       + " from sample s, sample_organization so, organization o, sample_item si, analysis a, test t, method m,"
@@ -416,7 +416,7 @@ import org.openelis.utils.Auditable;
                       + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d3.id and d3.system_name = 'section_ta_warn' and"
                       + " a.available_date is not null"
                       + " UNION "
-                      + "select distinct s.accession_number, s.received_date, CAST(o.name AS varchar(40)) o_name,"
+                      + "select distinct s.accession_number, s.collection_date, s.collection_time, s.received_date, CAST(o.name AS varchar(40)) o_name,"
                       + " CAST(t.name AS varchar(20)) t_name, t.time_ta_warning, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
                       + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d1.entry a_status, a.available_date" 
                       + " from sample s, sample_private_well spw, organization o, sample_item si, analysis a, test t, method m,"
@@ -427,7 +427,7 @@ import org.openelis.utils.Auditable;
                       + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_warn' and"
                       + " a.available_date is not null"
                       + " UNION "
-                      + "select distinct s.accession_number, s.received_date, spw.report_to_name o_name,"
+                      + "select distinct s.accession_number, s.collection_date, s.collection_time, s.received_date, spw.report_to_name o_name,"
                       + " CAST(t.name AS varchar(20)) t_name, t.time_ta_warning, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
                       + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d1.entry a_status, a.available_date" 
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, test t, method m,"
@@ -440,7 +440,7 @@ import org.openelis.utils.Auditable;
                       + " order by se.id, s.accession_number",
            resultSetMapping="Sample.FetchForTurnaroundWarningReport"),
      @NamedNativeQuery( name = "Sample.FetchForTurnaroundMaximumReport",
-                query = "select distinct s.accession_number, s.received_date, CAST(o.name AS varchar(40)) o_name,"
+                query = "select distinct s.accession_number, s.collection_date, s.collection_time, s.received_date, CAST(o.name AS varchar(40)) o_name,"
                       + " CAST(t.name AS varchar(20)) t_name, t.time_ta_max, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
                       + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d2.entry a_status, a.available_date" 
                       + " from sample s, sample_organization so, organization o, sample_item si, analysis a, test t, method m,"
@@ -451,7 +451,7 @@ import org.openelis.utils.Auditable;
                       + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d3.id and d3.system_name = 'section_ta_max' and"
                       + " a.available_date is not null"
                       + " UNION "
-                      + "select distinct s.accession_number, s.received_date, CAST(o.name AS varchar(40)) o_name,"
+                      + "select distinct s.accession_number, s.collection_date, s.collection_time, s.received_date, CAST(o.name AS varchar(40)) o_name,"
                       + " CAST(t.name AS varchar(20)) t_name, t.time_ta_max, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
                       + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d1.entry a_status, a.available_date" 
                       + " from sample s, sample_private_well spw, organization o, sample_item si, analysis a, test t, method m,"
@@ -462,7 +462,7 @@ import org.openelis.utils.Auditable;
                       + " a.section_id = se.id and sp.section_id = se.id and sp.type_id = d2.id and d2.system_name = 'section_ta_max' and"
                       + " a.available_date is not null"
                       + " UNION "
-                      + "select distinct s.accession_number, s.received_date, spw.report_to_name o_name,"
+                      + "select distinct s.accession_number, s.collection_date, s.collection_time, s.received_date, spw.report_to_name o_name,"
                       + " CAST(t.name AS varchar(20)) t_name, t.time_ta_max, t.time_holding, CAST(m.name AS varchar(20)) m_name,"
                       + " se.id se_id, CAST(se.name AS varchar(20)) se_name, d1.entry a_status, a.available_date" 
                       + " from sample s, sample_private_well spw, sample_item si, analysis a, test t, method m,"
@@ -513,14 +513,16 @@ import org.openelis.utils.Auditable;
                                   @ColumnResult(name="s_col"), @ColumnResult(name="t_rep_desc"), @ColumnResult(name="m_rep_desc"),
                                   @ColumnResult(name="s_id"), @ColumnResult(name="a_id")}),
     @SqlResultSetMapping(name="Sample.FetchForTurnaroundWarningReport",
-                         columns={@ColumnResult(name="accession_number"), @ColumnResult(name="received_date"),
+                         columns={@ColumnResult(name="accession_number"), @ColumnResult(name="collection_date"),
+                                  @ColumnResult(name="collection_time"), @ColumnResult(name="received_date"),
                                   @ColumnResult(name="o_name"), @ColumnResult(name="t_name"),
                                   @ColumnResult(name="time_ta_warning"), @ColumnResult(name="time_holding"),
                                   @ColumnResult(name="m_name"), @ColumnResult(name="se_id"),
                                   @ColumnResult(name="se_name"), @ColumnResult(name="a_status"),
                                   @ColumnResult(name="available_date")}),
     @SqlResultSetMapping(name="Sample.FetchForTurnaroundMaximumReport",
-                         columns={@ColumnResult(name="accession_number"), @ColumnResult(name="received_date"),
+                         columns={@ColumnResult(name="accession_number"), @ColumnResult(name="collection_date"),
+                                  @ColumnResult(name="collection_time"), @ColumnResult(name="received_date"),
                                   @ColumnResult(name="o_name"), @ColumnResult(name="t_name"),
                                   @ColumnResult(name="time_ta_max"), @ColumnResult(name="time_holding"),
                                   @ColumnResult(name="m_name"), @ColumnResult(name="se_id"),

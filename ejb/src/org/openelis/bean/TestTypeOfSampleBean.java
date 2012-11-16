@@ -34,6 +34,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.IdNameVO;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.entity.TestTypeOfSample;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -42,11 +43,12 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.TestTypeOfSampleLocal;
 import org.openelis.meta.TestMeta;
+import org.openelis.remote.TestTypeOfSampleRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestTypeOfSampleBean implements TestTypeOfSampleLocal {
+public class TestTypeOfSampleBean implements TestTypeOfSampleLocal, TestTypeOfSampleRemote {
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
     
@@ -62,6 +64,23 @@ public class TestTypeOfSampleBean implements TestTypeOfSampleLocal {
             throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(sampleTypeList);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ArrayList<IdNameVO> fetchUnitsForWorksheetAutocomplete(Integer testId, Integer typeOfSampleId, String unitOfMeasure) throws Exception {
+        Query query;
+        ArrayList<IdNameVO> unitList;
+
+        query = manager.createNamedQuery("TestTypeOfSample.FetchUnitsForWorksheetAutocomplete");
+        query.setParameter("testId", testId);
+        query.setParameter("typeOfSampleId", typeOfSampleId);
+        query.setParameter("unitOfMeasure", unitOfMeasure);
+        unitList = (ArrayList<IdNameVO>)query.getResultList();
+
+        if (unitList.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(unitList);
     }
 
     public TestTypeOfSampleDO add(TestTypeOfSampleDO data) throws Exception {

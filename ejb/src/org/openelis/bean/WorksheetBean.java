@@ -189,20 +189,12 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 
     @SuppressWarnings({"unchecked", "static-access"})
     public ArrayList<WorksheetViewDO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
-        int                             i, j, k;
-        Integer                         analysisId, testId, methodId;
-        Query                           query;
-        QueryBuilderV2                  builder;
-        ArrayList<AnalysisViewDO>       waList;
-        ArrayList<WorksheetViewDO>      list;
-        HashMap<String, AnalysisViewDO> analysisMap;
-        AnalysisViewDO                  aVDO;
-        SystemUserVO                    user;
-        WorksheetAnalysisManager        waManager;
-        WorksheetItemManager            wiManager;
-        WorksheetManager                wManager;
-        WorksheetManagerProxy           wManagerProxy;
-        WorksheetViewDO                 worksheet;
+        int                        i;
+        Query                      query;
+        QueryBuilderV2             builder;
+        ArrayList<WorksheetViewDO> list;
+        SystemUserVO               user;
+        WorksheetViewDO            worksheet;
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
@@ -214,7 +206,8 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                           WorksheetCompletionMeta.getSubsetCapacity()+", "+
                           WorksheetCompletionMeta.getRelatedWorksheetId()+", "+
                           WorksheetCompletionMeta.getInstrumentId()+", "+
-                          WorksheetCompletionMeta.getInstrumentName()+") ");
+                          WorksheetCompletionMeta.getInstrumentName()+", "+
+                          WorksheetCompletionMeta.getDescription()+") ");
         builder.constructWhere(fields);
         builder.setOrderBy(WorksheetCompletionMeta.getId());
 
@@ -226,7 +219,6 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         if (list.isEmpty())
             throw new NotFoundException();
         
-        wManagerProxy = new WorksheetManagerProxy();
         for (i = 0; i < list.size(); i++) {
             worksheet = list.get(i);
             
@@ -235,28 +227,6 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
                 if (user != null)
                     worksheet.setSystemUser(user.getLoginName());
             }
-            
-            waList = new ArrayList<AnalysisViewDO>();
-            analysisMap = new HashMap<String, AnalysisViewDO>();
-            wManager = wManagerProxy.fetchById(worksheet.getId());
-            wiManager = wManager.getItems();
-            for (j = 0; j < wiManager.count(); j++) {
-                waManager = wiManager.getWorksheetAnalysisAt(j);
-                for (k = 0; k < waManager.count(); k++) {
-                    analysisId = waManager.getWorksheetAnalysisAt(k).getAnalysisId();
-                    if (analysisId != null) {
-                        aVDO = analysis.fetchById(analysisId);
-                        testId = aVDO.getTestId();
-                        methodId = aVDO.getMethodId();
-                        if (!analysisMap.containsKey(testId+","+methodId)) {
-                            analysisMap.put(testId+","+methodId, aVDO);
-                            waList.add(aVDO);
-                        }
-                    }
-                }
-            }
-            
-            worksheet.setTestList(waList);
         }
         
         list = DataBaseUtil.subList(list, first, max);
@@ -280,6 +250,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         entity.setSubsetCapacity(data.getSubsetCapacity());
         entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
         entity.setInstrumentId(data.getInstrumentId());
+        entity.setDescription(data.getDescription());
 
         manager.persist(entity);
         data.setId(entity.getId());
@@ -388,6 +359,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         entity.setSubsetCapacity(data.getSubsetCapacity());
         entity.setRelatedWorksheetId(data.getRelatedWorksheetId());
         entity.setInstrumentId(data.getInstrumentId());
+        entity.setDescription(data.getDescription());
 
         return data;
     }

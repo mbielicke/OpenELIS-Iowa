@@ -53,7 +53,12 @@ import org.openelis.utils.Auditable;
 @NamedQueries( {
     @NamedQuery( name = "TestTypeOfSample.FetchByTestId",
                 query = "select distinct new org.openelis.domain.TestTypeOfSampleDO(ts.id, ts.testId, ts.typeOfSampleId,ts.unitOfMeasureId) "
-                      + " from TestTypeOfSample ts where ts.testId = :id")})
+                      + " from TestTypeOfSample ts where ts.testId = :id"),
+    @NamedQuery( name = "TestTypeOfSample.FetchUnitsForWorksheetAutocomplete",
+                query = "select distinct new org.openelis.domain.IdNameVO(ts.unitOfMeasureId, ud.entry) "
+                      + " from TestTypeOfSample ts LEFT JOIN ts.unitDictionary ud"
+                      + " where ts.testId = :testId and ts.typeOfSampleId = :typeOfSampleId"
+                      + " and ud.entry like :unitOfMeasure")})
 @Entity
 @Table(name = "test_type_of_sample")
 @EntityListeners({AuditUtil.class})
@@ -75,7 +80,11 @@ public class TestTypeOfSample implements Auditable, Cloneable {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_of_sample_id", insertable = false, updatable = false)
-    private Dictionary       dictionary;
+    private Dictionary       typeDictionary;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_of_sample_id", insertable = false, updatable = false)
+    private Dictionary       unitDictionary;
 
     @Transient
     private TestTypeOfSample original;
@@ -116,12 +125,20 @@ public class TestTypeOfSample implements Auditable, Cloneable {
             this.unitOfMeasureId = unitOfMeasureId;
     }
 
-    public Dictionary getDictionary() {
-        return dictionary;
+    public Dictionary getTypeDictionary() {
+        return typeDictionary;
     }
 
-    public void setDictionary(Dictionary dictionary) {
-        this.dictionary = dictionary;
+    public void setTypeDictionary(Dictionary typeDictionary) {
+        this.typeDictionary = typeDictionary;
+    }
+
+    public Dictionary getUnitDictionary() {
+        return unitDictionary;
+    }
+
+    public void setUnitDictionary(Dictionary unitDictionary) {
+        this.unitDictionary = unitDictionary;
     }
 
     public void setClone() {

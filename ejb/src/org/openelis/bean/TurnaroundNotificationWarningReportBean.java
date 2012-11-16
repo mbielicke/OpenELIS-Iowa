@@ -70,49 +70,57 @@ public class TurnaroundNotificationWarningReportBean implements
         Datetime date, now;
         Integer accession, prevSecId, currSecId, holdingTime, warningTime;
         Float daysElapsed;
-        SimpleDateFormat sdf;
-        String expireString, recString, toEmail, test, method, orgName, sectionName, prevSectionName, anaStatus;
+        SimpleDateFormat yToD, yToM;
+        String colString, expireString, recString, toEmail, test, method, orgName, sectionName, prevSectionName, anaStatus;
         StringBuilder contents;
-        Timestamp availableDate, expireDate, nowDateTime, recDate;
+        Timestamp availableDate, colDate, colTime, expireDate, nowDateTime, recDate;
 
         prevSecId = null;
         prevSectionName = null;
         contents = new StringBuilder();
         now = new Datetime(Datetime.YEAR, Datetime.MINUTE, new Date());
         nowDateTime = new Timestamp(now.getDate().getTime());
-        sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        yToD = new SimpleDateFormat("yyyy-MM-dd");
+        yToM = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
         toEmail = "";
         contents.setLength(0);
         for (Object[] result : resultList) {
             accession = (Integer)result[0];
-            recDate = (Timestamp)result[1];
-            orgName = (String)result[2];
-            test = (String)result[3];
-            warningTime = (Integer)result[4];
-            holdingTime = (Integer)result[5];
-            method = (String)result[6];
-            currSecId = (Integer)result[7];
-            sectionName = (String)result[8];
-            anaStatus = (String)result[9];
-            availableDate = (Timestamp)result[10];
+            colDate = (Timestamp)result[1];
+            colTime = (Timestamp)result[2];
+            recDate = (Timestamp)result[3];
+            orgName = (String)result[4];
+            test = (String)result[5];
+            warningTime = (Integer)result[6];
+            holdingTime = (Integer)result[7];
+            method = (String)result[8];
+            currSecId = (Integer)result[9];
+            sectionName = (String)result[10];
+            anaStatus = (String)result[11];
+            availableDate = (Timestamp)result[12];
             
             date = new Datetime(Datetime.YEAR, Datetime.MINUTE, new Date(availableDate.getTime()));
             if (date.add(warningTime).compareTo(now) > 0)
                 continue;
 
-            daysElapsed = JasperUtil.daysAndHours(JasperUtil.delta_hours(availableDate, nowDateTime));
-            expireDate = JasperUtil.changeDate(availableDate, holdingTime, Calendar.HOUR);
-            try {
-                expireString = "";
-                if (expireDate != null)
-                    expireString = sdf.format(expireDate);
-                recString = "";
-                if (recDate != null)
-                    recString = sdf.format(recDate);
-            } catch (Exception e) {
-                throw e;
+            colString = "";
+            if (colDate != null) {
+                colString = yToD.format(colDate);
+                if (colTime != null)
+                    colString = yToM.format(JasperUtil.concatDateAndTime(colDate, colTime));
             }
+
+            recString = "";
+            if (recDate != null)
+                recString = yToM.format(recDate);
+
+            expireDate = JasperUtil.changeDate(availableDate, holdingTime, Calendar.HOUR);
+            expireString = "";
+            if (expireDate != null)
+                expireString = yToM.format(expireDate);
+
+            daysElapsed = JasperUtil.daysAndHours(JasperUtil.delta_hours(availableDate, nowDateTime));
 
             if (prevSecId != currSecId) {
                 if (prevSecId != null) {
@@ -136,7 +144,7 @@ public class TurnaroundNotificationWarningReportBean implements
                 prevSecId = currSecId;
                 prevSectionName = sectionName;
             }
-            printBody(contents, accession, test, method, daysElapsed, expireString, orgName, anaStatus, recString);
+            printBody(contents, accession, test, method, anaStatus, orgName, colString, recString, daysElapsed, expireString);
         }
         if (resultList.size() > 0 && contents.length() > 0) {
             printFooter(contents);
@@ -146,7 +154,7 @@ public class TurnaroundNotificationWarningReportBean implements
 
     protected void printHeader(StringBuilder body) {
         body.append("\r\n")
-            .append("The following sample(s) have gone past the warning turnaround time:\r\n")
+            .append("The following sample(s) have exceeded warning TAT from date available:\r\n")
             .append("<br><br>\r\n")
             .append("<table border='1' cellpadding='2' cellspacing='0'>\r\n")
             .append("    <tr><td>Accession No.</td>")
@@ -154,14 +162,15 @@ public class TurnaroundNotificationWarningReportBean implements
             .append("<td>Method</td>")
             .append("<td>Status</td>")
             .append("<td>Organization</td>")
+            .append("<td>Collected</td>")
             .append("<td>Received</td>")
             .append("<td>Days Elapsed</td>")
             .append("<td>Expires</td></tr>\r\n");
     }
 
     protected void printBody(StringBuilder body, Integer accNum, String test, String method,
-                             Float daysElapsed, String expireDate, String orgName,
-                             String anaStatus, String recDate) {
+                             String anaStatus, String orgName, String colDate, String recDate,
+                             Float daysElapsed, String expireDate) {
         body.append("<tr><td align=\"center\">")
             .append(accNum)
             .append("</td>")
@@ -178,6 +187,9 @@ public class TurnaroundNotificationWarningReportBean implements
             .append(orgName)
             .append("</td>")
             .append("<td>")
+            .append(colDate)
+            .append("</td>")
+            .append("<td>")
             .append(recDate)
             .append("</td>")
             .append("<td>")
@@ -191,16 +203,7 @@ public class TurnaroundNotificationWarningReportBean implements
     protected void printFooter(StringBuilder body) {
         body.append("</table>\r\n")
             .append("<br>\r\n")
-            .append("<ul><li>Days Elapsed values are in days and hours. i.e., 4.09 is 4 days and 9 hours</li></ul>\r\n")
-            .append("<br>\r\n")
-            .append("<b>Additional Information:</b>\r\n")
-            .append("<br>\r\n")
-            .append("<ul><li>This mail was sent from an automated e-mail server. Please do not reply to this message.</li>\r\n")
-            .append("    <li><div style='color:#006400'>Save the Environment, Go GREEN.</div></li></ul>\r\n")
-            .append("<br>\r\n")
-            .append("<b>Disclaimer:</b>\r\n")
-            .append("<br><br>\r\n")
-            .append("<i>This email and any files transmitted with it are confidential and intended solely for the use of the individual or entity to whom they are addressed. If you have received this email in error please notify the system manager. This message contains confidential information and is intended only for the individual named. If you are not the named addressee you should not disseminate, distribute or copy this e-mail. Please notify <a href='mailto:ask-shl@uiowa.edu'>ask-shl@uiowa.edu</a> immediately by e-mail if you have received this e-mail by mistake and delete this e-mail from your system. If you are not the intended recipient you are notified that disclosing, copying, distributing or taking any action in reliance on the contents of this information is strictly prohibited.</i>");
+            .append("<ul><li>Days Elapsed values are in days and hours. i.e., 4.09 is 4 days and 9 hours</li></ul>\r\n");
     }
 
     protected void sendEmail(String toEmail, String subject, String body) {
