@@ -37,6 +37,7 @@ import org.openelis.gwt.common.MetaMap;
 
 public class WorksheetCreationMeta implements Meta, MetaMap {
     private static final String WSHT_ID  = "_worksheet.id",
+                                WSHT_FORMAT_ID = "_worksheet.formatId",
                                 WSHT_RELATED_WORKSHEET_ID = "_worksheet.relatedWorksheetId",
     
                                 WSHT_ITEM_POSITION = "_worksheetItem.position",
@@ -74,6 +75,7 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                 ANA_SECTION_ID = "_analysis.sectionId",
                                 ANA_PRE_ANALYSIS_ID = "_analysis.preAnalysisId",
                                 ANA_STATUS_ID = "_analysis.statusId",
+                                ANA_UNIT_OF_MEASURE_ID = "_analysis.unitOfMeasureId",
                                 
                                 TEST_WORKSHEET_FORMAT_ID = "_testWorksheet.formatId",
 
@@ -85,7 +87,7 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
     private static HashSet<String> names;
 
     static {
-        names = new HashSet<String>(Arrays.asList(WSHT_ID, WSHT_RELATED_WORKSHEET_ID,
+        names = new HashSet<String>(Arrays.asList(WSHT_ID, WSHT_FORMAT_ID, WSHT_RELATED_WORKSHEET_ID,
                                                   WSHT_ITEM_POSITION, WSHT_ANA_WORKSHEET_ANALYSIS_ID, 
                                                   SAMP_ID, SAMP_DOMAIN, SAMP_ACCESSION_NUMBER,
                                                   SAMP_COLLECTION_DATE, SAMP_COLLECTION_TIME,
@@ -100,12 +102,17 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
                                                   ANA_TEST_METHOD_NAME, ANA_TEST_TIME_HOLDING,
                                                   ANA_TEST_TIME_TA_AVERAGE, ANA_SECTION_ID,
                                                   ANA_PRE_ANALYSIS_ID, ANA_STATUS_ID,
-                                                  TEST_WORKSHEET_FORMAT_ID, SAMP_DESCRIPTION,
-                                                  ANA_DUE_DAYS, ANA_EXPIRE_DATE));
+                                                  ANA_UNIT_OF_MEASURE_ID, TEST_WORKSHEET_FORMAT_ID,
+                                                  SAMP_DESCRIPTION, ANA_DUE_DAYS,
+                                                  ANA_EXPIRE_DATE));
     }
 
     public static String getWorksheetId() {
         return WSHT_ID;
+    }
+
+    public static String getWorksheetFormatId() {
+        return WSHT_FORMAT_ID;
     }
 
     public static String getWorksheetRelatedWorksheetId() {
@@ -219,6 +226,10 @@ public class WorksheetCreationMeta implements Meta, MetaMap {
 
     public static String getAnalysisStatusId() {
         return ANA_STATUS_ID;
+    }
+
+    public static String getAnalysisUnitOfMeasureId() {
+        return ANA_UNIT_OF_MEASURE_ID;
     }
 
     public static String getTestWorksheetFormatId() {
