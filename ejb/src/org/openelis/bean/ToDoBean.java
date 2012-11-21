@@ -38,7 +38,7 @@ import javax.persistence.Query;
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ToDoSampleViewVO;
-import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.local.DictionaryLocal;
@@ -81,50 +81,50 @@ public class ToDoBean implements ToDoRemote {
         }
     }
     
-    public ArrayList<ToDoAnalysisViewVO> getLoggedIn() throws Exception {
+    public ArrayList<AnalysisViewVO> getLoggedIn() throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("ToDoAnalysisView.FetchByAnalysisStatusId");
+        query = manager.createNamedQuery("AnalysisView.FetchByAnalysisStatusId");
         query.setParameter("statusId", loggedInStatusId);
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<ToDoAnalysisViewVO> getInitiated() throws Exception {
+    public ArrayList<AnalysisViewVO> getInitiated() throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("ToDoAnalysisView.FetchByAnalysisStatusId");
+        query = manager.createNamedQuery("AnalysisView.FetchByAnalysisStatusId");
         query.setParameter("statusId", initiatedStatusId);
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<ToDoAnalysisViewVO> getCompleted() throws Exception {
+    public ArrayList<AnalysisViewVO> getCompleted() throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("ToDoAnalysisView.FetchByAnalysisStatusId");
+        query = manager.createNamedQuery("AnalysisView.FetchByAnalysisStatusId");
         query.setParameter("statusId", completedStatusId);
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public ArrayList<ToDoAnalysisViewVO> getReleased() throws Exception {
+    public ArrayList<AnalysisViewVO> getReleased() throws Exception {
         Query query;
         Calendar cal;
 
         cal = Calendar.getInstance();
         cal.add(Calendar.DATE,-4);
         
-        query = manager.createNamedQuery("ToDoAnalysisView.FetchReleased");
+        query = manager.createNamedQuery("AnalysisView.FetchReleased");
         query.setParameter("releasedDate", cal.getTime());
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public ArrayList<ToDoAnalysisViewVO> getOther() throws Exception {
+    public ArrayList<AnalysisViewVO> getOther() throws Exception {
         Query query;
 
-        query = manager.createNamedQuery("ToDoAnalysisView.FetchOther");
+        query = manager.createNamedQuery("AnalysisView.FetchOther");
         
         return DataBaseUtil.toArrayList(query.getResultList());
     }
@@ -141,6 +141,4 @@ public class ToDoBean implements ToDoRemote {
     public ArrayList<ToDoWorksheetVO> getWorksheet() throws Exception {
         return worksheetAnalysis.fetchByWorking();
     }
-    
-    
 }

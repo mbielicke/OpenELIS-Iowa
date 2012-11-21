@@ -27,26 +27,26 @@ package org.openelis.modules.todo.server;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.server.EJBFactory;
 
 public class ToDoService {
 
-    public ArrayList<ToDoAnalysisViewVO> getLoggedIn() throws Exception {
+    public ArrayList<AnalysisViewVO> getLoggedIn() throws Exception {
         return EJBFactory.getToDo().getLoggedIn();
     }
     
-    public ArrayList<ToDoAnalysisViewVO> getInitiated() throws Exception {
+    public ArrayList<AnalysisViewVO> getInitiated() throws Exception {
         return EJBFactory.getToDo().getInitiated();
     }
     
-    public ArrayList<ToDoAnalysisViewVO> getCompleted() throws Exception {
+    public ArrayList<AnalysisViewVO> getCompleted() throws Exception {
         return EJBFactory.getToDo().getCompleted();
     }
     
-    public ArrayList<ToDoAnalysisViewVO> getReleased() throws Exception {
+    public ArrayList<AnalysisViewVO> getReleased() throws Exception {
         return EJBFactory.getToDo().getReleased();
     }
     
@@ -54,7 +54,7 @@ public class ToDoService {
         return EJBFactory.getToDo().getToBeVerified();
     }
     
-    public ArrayList<ToDoAnalysisViewVO> getOther() throws Exception {
+    public ArrayList<AnalysisViewVO> getOther() throws Exception {
         return EJBFactory.getToDo().getOther();
     }
     
@@ -62,4 +62,3 @@ public class ToDoService {
         return EJBFactory.getToDo().getWorksheet();
     }   
 }
-

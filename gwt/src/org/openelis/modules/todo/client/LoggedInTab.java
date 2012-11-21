@@ -34,7 +34,8 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.AnalysisViewVO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -71,7 +72,7 @@ public class LoggedInTab extends Screen {
     private boolean                    loadedFromCache, reattachChart;
     private String                     loadBySection;
     private ArrayList<String>          ranges;         
-    private ArrayList<ToDoAnalysisViewVO> fullList;
+    private ArrayList<AnalysisViewVO> fullList;
     private TableWidget                table;
     private VerticalPanel              loggedInPanel; 
     private ColumnChart                chart;
@@ -154,8 +155,8 @@ public class LoggedInTab extends Screen {
                 refreshChart();
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getLoggedIn", new AsyncCallback<ArrayList<ToDoAnalysisViewVO>>() {
-                public void onSuccess(ArrayList<ToDoAnalysisViewVO> result) {
+            service.callList("getLoggedIn", new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+                public void onSuccess(ArrayList<AnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     
                     fullList = result;
@@ -191,13 +192,13 @@ public class LoggedInTab extends Screen {
     
     public Integer getSelectedId() {
         TableDataRow row;
-        ToDoAnalysisViewVO data; 
+        AnalysisViewVO data; 
         
         row = table.getSelection();
         if (row == null)
             return null;
         
-        data = (ToDoAnalysisViewVO)row.data;        
+        data = (AnalysisViewVO)row.data;        
         return data.getSampleId();
     }
     
@@ -215,12 +216,10 @@ public class LoggedInTab extends Screen {
     
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
-        Long day, hour, diff;
-        Double percent, units, factor;
         Integer accNum, prevAccNum;
         String secName;
         TableDataRow row;
-        Datetime now, scd, sct, scdt, stdt, srd;
+        Datetime scd, sct, scdt;
         Date temp;
         SystemUserPermission perm;
         ArrayList<TableDataRow> model;
@@ -228,15 +227,12 @@ public class LoggedInTab extends Screen {
         model = new ArrayList<TableDataRow>();
         perm = UserCache.getPermission();
         sectOnly = "Y".equals(loadBySection);
-        now = Datetime.getInstance();
-        hour = 3600000L;
-        day = 24 * hour;
         accNum = null;
         prevAccNum = null;
         scdt = null;
 
         try {
-            for (ToDoAnalysisViewVO data : fullList) {
+            for (AnalysisViewVO data : fullList) {
                 secName = data.getSectionName();
                 if (sectOnly && perm.getSection(secName) == null)
                     continue;
@@ -269,43 +265,12 @@ public class LoggedInTab extends Screen {
                 row.cells.get(5).setValue(scdt);
                 row.cells.get(6).setValue(data.getReceivedDate());
                 row.cells.get(7).setValue(data.getAnalysisResultOverride());
-                
-                if (scdt != null) {
-                    //
-                    // holding % is calculated based on sample collection date
-                    //
-                    stdt = data.getStartedDate() != null ? data.getStartedDate() : now;
-                    diff = (stdt.getDate().getTime() - scdt.getDate().getTime());
-                    units = diff.doubleValue() / hour.doubleValue();
-                    percent = (units / data.getTimeHolding().doubleValue() * 100);
-                    row.cells.get(8).setValue(percent);
-
-                    /*
-                     * average turnaround % is calculated based on sample collection
-                     * date if present
-                     */
-                    diff = now.getDate().getTime() - scdt.getDate().getTime();
-                    units = diff.doubleValue() / day.doubleValue();
-                    factor = data.getPriority() != null ? data.getPriority().doubleValue() : data.getTimeTaAverage().doubleValue();
-                    percent = (units / factor) * 100;
-                    row.cells.get(9).setValue(percent);
-                } else {
-                    row.cells.get(8).setValue(0.0);
-
-                    /*
-                     * average turnaround % is calculated based on sample received
-                     * date if sample collection date isn't present
-                     */
-                    srd = data.getReceivedDate();
-                    if (srd == null)
-                        srd = now;
-                    diff = now.getDate().getTime() - srd.getDate().getTime();
-                    units = diff.doubleValue() / day.doubleValue();
-                    factor = data.getPriority() != null ? data.getPriority().doubleValue() : data.getTimeTaAverage().doubleValue();
-                    percent = (units / factor) * 100;
-                    row.cells.get(9).setValue(percent);
-                }
-                row.cells.get(10).setValue(data.getDescription());
+                row.cells.get(8).setValue(DataBaseUtil.getPercentHoldingUsed(data.getStartedDate(), data.getCollectionDate(),
+                                                                             data.getCollectionTime(), data.getTimeHolding()));
+                row.cells.get(9).setValue(DataBaseUtil.getPercentExpectedCompletion(data.getCollectionDate(), data.getCollectionTime(),
+                                                                    data.getReceivedDate(), data.getPriority(),
+                                                                    data.getTimeTaAverage()));
+                row.cells.get(10).setValue(data.getToDoDescription());
                 row.cells.get(11).setValue(data.getPrimaryOrganizationName());
                 row.data = data;
                 model.add(row);
@@ -326,7 +291,7 @@ public class LoggedInTab extends Screen {
         ArrayList<TableDataRow> model;
         Datetime now, avd;
         Date midNight;
-        ToDoAnalysisViewVO data;
+        AnalysisViewVO data;
         HashMap<String, Integer> map;
         
         now = Datetime.getInstance();
@@ -350,7 +315,7 @@ public class LoggedInTab extends Screen {
         for (TableDataRow row : model) {
             if (!row.shown)
                  continue;
-            data = (ToDoAnalysisViewVO)row.data;
+            data = (AnalysisViewVO)row.data;
             avd = data.getAvailableDate();
             if (avd == null)
                 avd = now;

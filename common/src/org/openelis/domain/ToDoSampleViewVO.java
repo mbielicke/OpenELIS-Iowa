@@ -38,27 +38,27 @@ public class ToDoSampleViewVO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, accessionNumber, sampleStatusId;                              
-    protected String          domain, primaryOrganizationName, sampleResultOverride, 
-                              description;
-    protected Datetime        receivedDate, collectionDate, collectionTime;
+    protected Integer           sampleId, accessionNumber, sampleStatusId;
+    protected String            domain, primaryOrganizationName, sampleResultOverride,
+                                 description;
+    protected Datetime          receivedDate, collectionDate, collectionTime;
     
     public ToDoSampleViewVO() {        
     }
     
     public ToDoSampleViewVO(Integer sampleId, String domain, Integer accessionNumber, 
-                            Integer sampleStatusId, Date receivedDate, Date collectionDate,
-                            Date collectionTime, String primaryOrganizationName, 
-                            String description, String sampleResultOverride) {
+                            Date receivedDate, Date collectionDate, Date collectionTime,
+                            String primaryOrganizationName, String description,
+                            Integer sampleStatusId, String sampleResultOverride) {
         setSampleId(sampleId);
         setDomain(domain);
         setAccessionNumber(accessionNumber);
-        setSampleStatusId(sampleStatusId);
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
         setPrimaryOrganizationName(primaryOrganizationName);
         setDescription(description);
+        setSampleStatusId(sampleStatusId);
         setSampleResultOverride(sampleResultOverride);
     }
 
@@ -86,14 +86,6 @@ public class ToDoSampleViewVO implements RPC {
         this.accessionNumber = accessionNumber;
     }
 
-    public Integer getSampleStatusId() {
-        return sampleStatusId;
-    }
-
-    public void setSampleStatusId(Integer sampleStatusId) {
-        this.sampleStatusId = sampleStatusId;
-    }
-    
     public Datetime getReceivedDate() {
         return receivedDate;
     }
@@ -132,6 +124,14 @@ public class ToDoSampleViewVO implements RPC {
 
     public void setDescription(String description) {
         this.description = DataBaseUtil.trim(description);
+    }
+    
+    public Integer getSampleStatusId() {
+        return sampleStatusId;
+    }
+
+    public void setSampleStatusId(Integer sampleStatusId) {
+        this.sampleStatusId = sampleStatusId;
     }
 
     public String getSampleResultOverride() {

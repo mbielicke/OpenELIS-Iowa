@@ -29,17 +29,17 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 
 @Remote
 public interface ToDoRemote {
-    public ArrayList<ToDoAnalysisViewVO> getLoggedIn() throws Exception;    
-    public ArrayList<ToDoAnalysisViewVO> getInitiated() throws Exception;
-    public ArrayList<ToDoAnalysisViewVO> getCompleted() throws Exception;
-    public ArrayList<ToDoAnalysisViewVO> getReleased() throws Exception;
+    public ArrayList<AnalysisViewVO> getLoggedIn() throws Exception;    
+    public ArrayList<AnalysisViewVO> getInitiated() throws Exception;
+    public ArrayList<AnalysisViewVO> getCompleted() throws Exception;
+    public ArrayList<AnalysisViewVO> getReleased() throws Exception;
     public ArrayList<ToDoSampleViewVO> getToBeVerified() throws Exception;    
-    public ArrayList<ToDoAnalysisViewVO> getOther() throws Exception;
+    public ArrayList<AnalysisViewVO> getOther() throws Exception;
     public ArrayList<ToDoWorksheetVO> getWorksheet() throws Exception;
 }

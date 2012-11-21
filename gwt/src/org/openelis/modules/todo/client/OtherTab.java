@@ -33,7 +33,7 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -59,7 +59,7 @@ public class OtherTab extends Screen {
             
     private boolean                       loadedFromCache;
     private String                        loadBySection;
-    private ArrayList<ToDoAnalysisViewVO> fullList;
+    private ArrayList<AnalysisViewVO> fullList;
     private TableWidget                   table;
     
     public OtherTab(ScreenDefInt def, ScreenWindowInt window) {
@@ -131,8 +131,8 @@ public class OtherTab extends Screen {
             table.load(model);
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getOther", new AsyncCallback<ArrayList<ToDoAnalysisViewVO>>() {
-                public void onSuccess(ArrayList<ToDoAnalysisViewVO> result) {
+            service.callList("getOther", new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+                public void onSuccess(ArrayList<AnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     
                     fullList = result;
@@ -170,7 +170,7 @@ public class OtherTab extends Screen {
         sectOnly = "Y".equals(loadBySection);
 
         try {
-            for (ToDoAnalysisViewVO data : fullList) {
+            for (AnalysisViewVO data : fullList) {
                 sectName = data.getSectionName();
                 if (sectOnly && perm.getSection(sectName) == null)
                     continue;
@@ -198,7 +198,7 @@ public class OtherTab extends Screen {
                 }
                 row.cells.get(7).setValue(data.getReceivedDate());
                 row.cells.get(8).setValue(data.getAnalysisResultOverride());
-                row.cells.get(9).setValue(data.getDescription());
+                row.cells.get(9).setValue(data.getToDoDescription());
                 row.cells.get(10).setValue(data.getPrimaryOrganizationName());
                 row.data = data;
                 model.add(row);
@@ -217,13 +217,13 @@ public class OtherTab extends Screen {
     
     public Integer getSelectedId() {
         TableDataRow row;
-        ToDoAnalysisViewVO data; 
+        AnalysisViewVO data; 
         
         row = table.getSelection();
         if (row == null)
             return null;
         
-        data = (ToDoAnalysisViewVO)row.data;        
+        data = (AnalysisViewVO)row.data;        
         return data.getSampleId();
     }
     
