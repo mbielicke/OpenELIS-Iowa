@@ -34,7 +34,8 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.AnalysisViewVO;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -71,7 +72,7 @@ public class InitiatedTab extends Screen {
     private boolean                       loadedFromCache, reattachChart;
     private String                        loadBySection;
     private ArrayList<String>             ranges;
-    private ArrayList<ToDoAnalysisViewVO> fullList;
+    private ArrayList<AnalysisViewVO> fullList;
     private TableWidget                   table;
     private VerticalPanel                 initiatedPanel;
     private ColumnChart                   chart;
@@ -155,8 +156,8 @@ public class InitiatedTab extends Screen {
                 refreshChart();
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getInitiated", new AsyncCallback<ArrayList<ToDoAnalysisViewVO>>() {
-                public void onSuccess(ArrayList<ToDoAnalysisViewVO> result) {
+            service.callList("getInitiated", new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+                public void onSuccess(ArrayList<AnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;
 
                     fullList = result;
@@ -185,12 +186,11 @@ public class InitiatedTab extends Screen {
     private ArrayList<TableDataRow> getTableModel() {
         boolean sectOnly;
         Long day, hour, diff;
-        Double percent, units, ceil, factor;
+        Double units;
         String sectName;
         TableDataRow row;
         ArrayList<TableDataRow> model;
-        Datetime now, stdt, scd, sct, srd;
-        Date temp;
+        Datetime now;
         SystemUserPermission perm;
 
         model = new ArrayList<TableDataRow>();
@@ -202,7 +202,7 @@ public class InitiatedTab extends Screen {
         now = Datetime.getInstance();
 
         try {
-            for (ToDoAnalysisViewVO data : fullList) {
+            for (AnalysisViewVO data : fullList) {
                 sectName = data.getSectionName();
                 if (sectOnly && perm.getSection(sectName) == null)
                     continue;
@@ -212,67 +212,28 @@ public class InitiatedTab extends Screen {
                 row.cells.get(2).setValue(sectName);
                 row.cells.get(3).setValue(data.getTestName());
                 row.cells.get(4).setValue(data.getMethodName());
-                stdt = data.getStartedDate();
-                if (stdt == null)
-                    stdt = now;
-                scd = data.getCollectionDate();
-                sct = data.getCollectionTime();
-                if (scd != null) {
-                    //
-                    // holding % is calculated based on sample collection date
-                    //
-                    temp = scd.getDate();
-                    if (sct == null) {
-                        temp.setHours(0);
-                        temp.setMinutes(0);
-                    } else {
-                        temp.setHours(sct.getDate().getHours());
-                        temp.setMinutes(sct.getDate().getMinutes());
-                    }
-                    diff = (stdt.getDate().getTime() - temp.getTime());
-                    units = diff.doubleValue() / hour.doubleValue();
-                    percent = (units / data.getTimeHolding().doubleValue() * 100);
-                    row.cells.get(5).setValue(percent);
 
-                    /*
-                     * average turnaround % is calculated based on sample
-                     * collection date if present
-                     */
-                    diff = now.getDate().getTime() - temp.getTime();
-                    units = diff.doubleValue() / day.doubleValue();
-                    factor = data.getPriority() != null ? data.getPriority().doubleValue()
-                                                       : data.getTimeTaAverage().doubleValue();
-                    percent = (units / factor) * 100;
+                row.cells.get(5).setValue(DataBaseUtil.getPercentHoldingUsed(data.getStartedDate(), data.getCollectionDate(),
+                                                                             data.getCollectionTime(), data.getTimeHolding()));
+                row.cells.get(6).setValue(DataBaseUtil.getPercentExpectedCompletion(data.getCollectionDate(), data.getCollectionTime(),
+                                                                    data.getReceivedDate(), data.getPriority(),
+                                                                    data.getTimeTaAverage()));
+
+                if (data.getStartedDate() == null) {
+                    row.cells.get(7).setValue(0);
                 } else {
-                    row.cells.get(5).setValue(0.0);
-
                     /*
-                     * average turnaround % is calculated based on sample
-                     * received date if sample collection date isn't present
+                     * Days in initiated are calculated based on started date.
+                     * Math.ceil() returns the value closest to an integer that's
+                     * greater than or equal to the argument("units" here). For
+                     * example 3.4 is converted to 4.0 and 5.0 stays the same.
                      */
-                    srd = data.getReceivedDate();
-                    if (srd == null)
-                        srd = now;
-                    diff = now.getDate().getTime() - srd.getDate().getTime();
+                    diff = now.getDate().getTime() - data.getStartedDate().getDate().getTime();
                     units = diff.doubleValue() / day.doubleValue();
-                    factor = data.getPriority() != null ? data.getPriority().doubleValue()
-                                                       : data.getTimeTaAverage().doubleValue();
-                    percent = (units / factor) * 100;
-                    row.cells.get(6).setValue(percent);
+                    row.cells.get(7).setValue(Math.ceil(units));
                 }
-
-                /*
-                 * Days in initiated are calculated based on started date.
-                 * Math.ceil() returns the value closest to an integer that's
-                 * greater than or equal to the argument("units" here). For
-                 * example 3.4 is converted to 4.0 and 5.0 stays the same.
-                 */
-                diff = now.getDate().getTime() - stdt.getDate().getTime();
-                units = diff.doubleValue() / day.doubleValue();
-                ceil = Math.ceil(units);
-
-                row.cells.get(7).setValue(ceil.intValue());
-                row.cells.get(8).setValue(data.getDescription());
+                
+                row.cells.get(8).setValue(data.getToDoDescription());
                 row.cells.get(9).setValue(data.getPrimaryOrganizationName());
                 row.data = data;
                 model.add(row);
@@ -296,13 +257,13 @@ public class InitiatedTab extends Screen {
 
     public Integer getSelectedId() {
         TableDataRow row;
-        ToDoAnalysisViewVO data;
+        AnalysisViewVO data;
 
         row = table.getSelection();
         if (row == null)
             return null;
 
-        data = (ToDoAnalysisViewVO)row.data;
+        data = (AnalysisViewVO)row.data;
         return data.getSampleId();
     }
 
@@ -326,7 +287,7 @@ public class InitiatedTab extends Screen {
         ArrayList<TableDataRow> model;
         Datetime now, std;
         Date midNight;
-        ToDoAnalysisViewVO data;
+        AnalysisViewVO data;
         HashMap<String, Integer> map;
 
         now = Datetime.getInstance();
@@ -352,7 +313,7 @@ public class InitiatedTab extends Screen {
         for (TableDataRow row : model) {
             if ( !row.shown)
                 continue;
-            data = (ToDoAnalysisViewVO)row.data;
+            data = (AnalysisViewVO)row.data;
             std = data.getStartedDate();
             if (std == null)
                 std = now;

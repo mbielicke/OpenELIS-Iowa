@@ -25,7 +25,6 @@
  */
 package org.openelis.bean;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -110,6 +109,7 @@ import org.openelis.utils.EJBFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+import org.apache.commons.lang.StringEscapeUtils;
 
 @Stateless
 @SecurityDomain("openelis")

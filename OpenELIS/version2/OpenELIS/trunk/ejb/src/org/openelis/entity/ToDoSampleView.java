@@ -44,8 +44,8 @@ import org.openelis.gwt.common.Datetime;
 @NamedQueries( {                  
     @NamedQuery( name = "ToDoSampleView.FetchBySampleStatusId",
                 query = "select distinct new org.openelis.domain.ToDoSampleViewVO(sv.sampleId, sv.domain, sv.accessionNumber," +
-                		"sv.sampleStatusId, sv.receivedDate, sv.collectionDate, sv.collectionTime, sv.primaryOrganizationName," +
-                		"sv.description, sv.sampleResultOverride)"
+                		"sv.receivedDate, sv.collectionDate, sv.collectionTime, sv.primaryOrganizationName," +
+                		"sv.description, sv.sampleStatusId,  sv.sampleResultOverride)"
                       + " from ToDoSampleView sv where sv.sampleStatusId = :statusId order by sv.accessionNumber")})
 @Entity
 @Table(name = "todo_sample_view")
@@ -61,9 +61,6 @@ public class ToDoSampleView  {
     @Column(name = "accession_number")
     private Integer                     accessionNumber;
     
-    @Column(name = "sample_status_id")
-    private Integer                     sampleStatusId;
-    
     @Column(name = "received_date")
     private Date                        receivedDate;
 
@@ -78,6 +75,9 @@ public class ToDoSampleView  {
 
     @Column(name = "description")
     private String                      description;    
+    
+    @Column(name = "sample_status_id")
+    private Integer                     sampleStatusId;
 
     @Column(name = "sample_result_override")
     private String                      sampleResultOverride;
@@ -92,10 +92,6 @@ public class ToDoSampleView  {
 
     public Integer getAccessionNumber() {
         return accessionNumber;
-    }
-    
-    public Integer getSampleStatusId() {
-        return sampleStatusId;
     }
     
     public Datetime getReceivedDate() {
@@ -116,6 +112,10 @@ public class ToDoSampleView  {
 
     public String getDescription() {
         return description;
+    }
+    
+    public Integer getSampleStatusId() {
+        return sampleStatusId;
     }
 
     public String getAnalysisResultOverride() {

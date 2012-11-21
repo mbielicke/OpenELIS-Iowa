@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.openelis.cache.UserCache;
-import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;

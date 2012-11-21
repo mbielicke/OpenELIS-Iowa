@@ -34,7 +34,7 @@ import java.util.List;
 import org.openelis.cache.CategoryCache;
 import org.openelis.cache.UserCache;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.ToDoAnalysisViewVO;
+import org.openelis.domain.AnalysisViewVO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserPermission;
@@ -71,7 +71,7 @@ public class CompletedTab extends Screen {
     private boolean                    loadedFromCache, reattachChart;
     private String                     loadBySection;
     private ArrayList<String>          ranges;          
-    private ArrayList<ToDoAnalysisViewVO> fullList;
+    private ArrayList<AnalysisViewVO> fullList;
     private TableWidget                table;
     private VerticalPanel              completedPanel; 
     private ColumnChart                chart;
@@ -153,8 +153,8 @@ public class CompletedTab extends Screen {
                 refreshChart();
         } else {
             window.setBusy(consts.get("fetching"));
-            service.callList("getCompleted", new AsyncCallback<ArrayList<ToDoAnalysisViewVO>>() {
-                public void onSuccess(ArrayList<ToDoAnalysisViewVO> result) {
+            service.callList("getCompleted", new AsyncCallback<ArrayList<AnalysisViewVO>>() {
+                public void onSuccess(ArrayList<AnalysisViewVO> result) {
                     ArrayList<TableDataRow> model;         
                     
                     fullList = result;
@@ -192,7 +192,7 @@ public class CompletedTab extends Screen {
         sectOnly = "Y".equals(loadBySection);
 
         try {
-            for (ToDoAnalysisViewVO data : fullList) {
+            for (AnalysisViewVO data : fullList) {
                 sectName = data.getSectionName();
                 if (sectOnly && perm.getSection(sectName) == null)
                     continue;
@@ -204,7 +204,7 @@ public class CompletedTab extends Screen {
                 row.cells.get(4).setValue(data.getMethodName());
                 row.cells.get(5).setValue(data.getAnalysisResultOverride());
                 row.cells.get(6).setValue(data.getCompletedDate());
-                row.cells.get(7).setValue(data.getDescription());
+                row.cells.get(7).setValue(data.getToDoDescription());
                 row.cells.get(8).setValue(data.getPrimaryOrganizationName());
                 row.data = data;
                 model.add(row);
@@ -226,13 +226,13 @@ public class CompletedTab extends Screen {
     
     public Integer getSelectedId() {
         TableDataRow row;
-        ToDoAnalysisViewVO data; 
+        AnalysisViewVO data; 
         
         row = table.getSelection();
         if (row == null)
             return null;
         
-        data = (ToDoAnalysisViewVO)row.data;        
+        data = (AnalysisViewVO)row.data;        
         return data.getSampleId();
     }
     
@@ -255,7 +255,7 @@ public class CompletedTab extends Screen {
         ArrayList<TableDataRow> model;
         Datetime now, cmpd;
         Date midNight;
-        ToDoAnalysisViewVO data;
+        AnalysisViewVO data;
         HashMap<String, Integer> map;
         
         now = Datetime.getInstance();
@@ -277,7 +277,7 @@ public class CompletedTab extends Screen {
         for (TableDataRow row : model) {
             if (!row.shown)
                 continue;
-            data = (ToDoAnalysisViewVO)row.data;
+            data = (AnalysisViewVO)row.data;
             cmpd = data.getCompletedDate();
             if (cmpd == null)
                 cmpd = now;

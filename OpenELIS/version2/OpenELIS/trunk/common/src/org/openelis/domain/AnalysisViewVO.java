@@ -34,27 +34,32 @@ import org.openelis.gwt.common.RPC;
  * This class's objects store the data for the individual records that populate
  * the todo lists for analyses
  */
-public class ToDoAnalysisViewVO implements RPC {
+public class AnalysisViewVO implements RPC {
 
     private static final long serialVersionUID = 1L;
 
-    protected Integer         sampleId, accessionNumber, timeHolding, timeTaAverage,
-                              analysisId, priority, analysisStatusId;                                                            
-    protected String          domain, primaryOrganizationName, testName, methodName,
-                              description, analysisResultOverride, sectionName;
-    protected Datetime        availableDate, startedDate, completedDate, releasedDate,
-                              receivedDate, collectionDate, collectionTime;
+    protected Integer        sampleId, accessionNumber, timeHolding, timeTaAverage,
+                              analysisId, priority, testId, analysisStatusId, sectionId,
+                              unitOfMeasureId, worksheetFormatId;                                                            
+    protected String         domain, primaryOrganizationName, testName, methodName,
+                              todoDescription, worksheetDescription, analysisResultOverride,
+                              sectionName;
+    protected Datetime       availableDate, startedDate, completedDate, releasedDate,
+                              receivedDate, collectionDate, collectionTime, enteredDate;
 
-    public ToDoAnalysisViewVO() {        
+    public AnalysisViewVO() {        
     }
     
-    public ToDoAnalysisViewVO(Integer sampleId, String domain, Integer accessionNumber,
+    public AnalysisViewVO(Integer sampleId, String domain, Integer accessionNumber,
                           Date receivedDate, Date collectionDate, Date collectionTime,
-                          String primaryOrganizationName, String description, Integer priority,
+                          Date enteredDate, String primaryOrganizationName, String todoDescription, 
+                          String worksheetDescription, Integer priority, Integer testId,
                           String testName, String methodName, Integer timeTaAverage,
                           Integer timeHolding, Integer analysisId, Integer analysisStatusId,
-                          Date availableDate, Date startedDate, Date completedDate,
-                          Date releasedDate, String analysisResultOverride, String sectionName) {
+                          Integer sectionId, String sectionName, Date availableDate,
+                          Date startedDate, Date completedDate, Date releasedDate,
+                          String analysisResultOverride, Integer unitOfMeasureId,
+                          Integer worksheetFormatId) {
         
         setSampleId(sampleId);
         setDomain(domain);
@@ -62,21 +67,27 @@ public class ToDoAnalysisViewVO implements RPC {
         setReceivedDate(DataBaseUtil.toYM(receivedDate));
         setCollectionDate(DataBaseUtil.toYD(collectionDate));
         setCollectionTime(DataBaseUtil.toHM(collectionTime));
+        setEnteredDate(DataBaseUtil.toYM(enteredDate));
         setPrimaryOrganizationName(primaryOrganizationName);
-        setDescription(description);
+        setToDoDescription(todoDescription);
+        setWorksheetDescription(worksheetDescription);
         setPriority(priority);
+        setTestId(testId);
         setTestName(testName);
         setMethodName(methodName);
         setTimeTaAverage(timeTaAverage);
         setTimeHolding(timeHolding);
         setAnalysisId(analysisId);
-        setAnalysisStatusId(analysisStatusId);        
+        setAnalysisStatusId(analysisStatusId);
+        setSectionId(sectionId);
+        setSectionName(sectionName);
         setAvailableDate(DataBaseUtil.toYM(availableDate));
         setStartedDate(DataBaseUtil.toYM(startedDate));
         setCompletedDate(DataBaseUtil.toYM(completedDate));
         setReleasedDate(DataBaseUtil.toYM(releasedDate));
         setAnalysisResultOverride(analysisResultOverride);
-        setSectionName(sectionName);
+        setUnitOfMeasureId(unitOfMeasureId);
+        setWorksheetFormatId(worksheetFormatId);
     }
     
     public Integer getSampleId() {
@@ -102,7 +113,7 @@ public class ToDoAnalysisViewVO implements RPC {
     public void setAccessionNumber(Integer accessionNumber) {
         this.accessionNumber = accessionNumber;
     }
-
+    
     public Datetime getReceivedDate() {
         return receivedDate;
     }
@@ -127,6 +138,10 @@ public class ToDoAnalysisViewVO implements RPC {
         this.collectionTime = DataBaseUtil.toHM(collectionTime);
     }
     
+    public void setEnteredDate(Datetime enteredDate) {
+        this.enteredDate = DataBaseUtil.toYM(enteredDate);
+    }
+    
     public String getPrimaryOrganizationName() {
         return primaryOrganizationName;
     }
@@ -134,13 +149,21 @@ public class ToDoAnalysisViewVO implements RPC {
     public void setPrimaryOrganizationName(String primaryOrganizationName) {
         this.primaryOrganizationName = DataBaseUtil.trim(primaryOrganizationName);
     }
-
-    public String getDescription() {
-        return description;
+    
+    public String getToDoDescription() {
+        return todoDescription;
     }
 
-    public void setDescription(String description) {
-        this.description = DataBaseUtil.trim(description);
+    public void setToDoDescription(String todoDescription) {
+        this.todoDescription = DataBaseUtil.trim(todoDescription);
+    }
+    
+    public String getWorksheetDescription() {
+        return worksheetDescription;
+    }
+
+    public void setWorksheetDescription(String worksheetDescription) {
+        this.worksheetDescription = DataBaseUtil.trim(worksheetDescription);
     }
     
     public Integer getPriority() {
@@ -149,6 +172,14 @@ public class ToDoAnalysisViewVO implements RPC {
 
     public void setPriority(Integer priority) {
         this.priority = priority;
+    }
+    
+    public Integer getTestId() {
+        return testId;
+    }
+    
+    public void setTestId(Integer testId) {
+        this.testId = testId;
     }
 
     public String getTestName() {
@@ -199,6 +230,22 @@ public class ToDoAnalysisViewVO implements RPC {
         this.analysisStatusId = analysisStatusId;
     }
     
+    public Integer getSectionId() {
+        return sectionId;
+    }
+    
+    public void setSectionId(Integer sectionId) {
+        this.sectionId = sectionId;
+    }
+
+    public String getSectionName() {
+        return sectionName;
+    }
+
+    public void setSectionName(String sectionName) {
+        this.sectionName = DataBaseUtil.trim(sectionName);
+    }   
+    
     public Datetime getAvailableDate() {
         return availableDate;
     }
@@ -237,13 +284,21 @@ public class ToDoAnalysisViewVO implements RPC {
     
     public void setAnalysisResultOverride(String analysisResultOverride) {
         this.analysisResultOverride = DataBaseUtil.trim(analysisResultOverride);
+    } 
+    
+    public Integer getUnitOfMeasureId() {
+        return unitOfMeasureId;
+    }
+    
+    public void setUnitOfMeasureId(Integer unitOfMeasureId) {
+        this.unitOfMeasureId = unitOfMeasureId;
     }
 
-    public String getSectionName() {
-        return sectionName;
+    public Integer getWorksheetFormatId() {
+        return worksheetFormatId;
     }
 
-    public void setSectionName(String sectionName) {
-        this.sectionName = DataBaseUtil.trim(sectionName);
-    }    
+    public void setWorksheetFormatId(Integer worksheetFormatId) {
+        this.worksheetFormatId = worksheetFormatId;
+    }
 }
