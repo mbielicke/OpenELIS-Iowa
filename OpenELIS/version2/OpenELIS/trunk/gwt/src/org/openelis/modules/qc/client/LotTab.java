@@ -177,7 +177,7 @@ public class LotTab extends Screen {
                     data = new QcLotViewDO();
                     data.setIsActive("Y");
                     data.setPreparedDate((Datetime)row.cells.get(3).getValue());
-                    userRow = (TableDataRow)row.cells.get(6).getValue();
+                    userRow = (TableDataRow)row.cells.get(8).getValue();
                     data.setPreparedById((Integer)userRow.key);
                     data.setPreparedByName((String)userRow.cells.get(0).getValue());
                     manager.getLots().addLotAt(data, r);
