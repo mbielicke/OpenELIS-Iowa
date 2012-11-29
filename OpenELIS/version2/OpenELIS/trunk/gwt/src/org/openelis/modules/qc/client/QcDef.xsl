@@ -143,7 +143,7 @@ UIRF Software License are applicable instead of those above.
                     <xsl:value-of select="resource:getString($constants,'id')" />:
                   </text>
                   <widget colspan="6">
-                    <textbox key="{meta:getId()}" width="75" tab="{meta:getName()},tabPanel" field="Integer" required="true" />
+                    <textbox key="{meta:getId()}" width="75" tab="{meta:getName()},tabPanel" field="Integer" />
                   </widget>
                 </row> 
                 <row>
