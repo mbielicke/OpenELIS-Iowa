@@ -103,6 +103,34 @@ public class QcBean implements QcRemote, QcLocal {
     }
 
     @SuppressWarnings("unchecked")
+    public ArrayList<QcLotViewDO> fetchActiveByName(ArrayList<QueryData> fields) throws Exception {
+        Query query;
+        QueryBuilderV2 builder;
+        List list;
+
+        builder = new QueryBuilderV2();
+        builder.setMeta(meta);
+        builder.setSelect("distinct new org.openelis.domain.QcLotViewDO(" + 
+                          QcMeta.getQcLotId() + "," + QcMeta.getId() + "," + QcMeta.getQcLotLotNumber() + "," + 
+                          QcMeta.getQcLotLocationId() + "," + QcMeta.getQcLotPreparedDate() + "," +
+                          QcMeta.getQcLotPreparedVolume() + "," + QcMeta.getQcLotPreparedUnitId() + "," +
+                          QcMeta.getQcLotPreparedById() + "," + QcMeta.getQcLotUsableDate() + "," +
+                          QcMeta.getQcLotExpireDate() + "," + QcMeta.getQcLotIsActive() + "," +
+                          QcMeta.getName() + ") ");
+        builder.constructWhere(fields);
+        builder.setOrderBy(QcMeta.getName() + "," + QcMeta.getQcLotLotNumber() + "," + QcMeta.getQcLotLocationId());
+
+        query = manager.createQuery(builder.getEJBQL());
+        builder.setQueryParams(query, fields);
+
+        list = query.getResultList();
+        if (list.isEmpty())
+            throw new NotFoundException();
+
+        return DataBaseUtil.toArrayList(list);
+    }
+
+    @SuppressWarnings("unchecked")
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception {
         Query query;
         QueryBuilderV2 builder;
