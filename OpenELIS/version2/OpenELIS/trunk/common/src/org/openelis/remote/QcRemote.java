@@ -40,5 +40,7 @@ public interface QcRemote {
 
     public ArrayList<QcLotViewDO> fetchActiveByName(String name, int max) throws Exception;
 
+    public ArrayList<QcLotViewDO> fetchActiveByName(ArrayList<QueryData> fields) throws Exception;
+
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 }
