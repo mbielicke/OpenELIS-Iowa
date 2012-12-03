@@ -58,6 +58,10 @@ public class QcService {
         return list;
     }
     
+    public ArrayList<QcLotViewDO> fetchActiveByName(Query query) throws Exception {
+        return EJBFactory.getQc().fetchActiveByName(query.getFields());
+    }
+
     public ArrayList<QcLotViewDO> fetchActiveByName(String search) throws Exception {
         ArrayList<QcLotViewDO> list;
 

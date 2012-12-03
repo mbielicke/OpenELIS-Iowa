@@ -27,6 +27,8 @@ package org.openelis.modules.qc.client;
 
 import java.util.ArrayList;
 
+import org.openelis.cache.CategoryCache;
+import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
@@ -43,11 +45,13 @@ import org.openelis.gwt.screen.ScreenEventHandler;
 import org.openelis.gwt.services.ScreenService;
 import org.openelis.gwt.widget.AppButton;
 import org.openelis.gwt.widget.ButtonGroup;
+import org.openelis.gwt.widget.Dropdown;
 import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.gwt.widget.table.TableWidget;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedEvent;
 import org.openelis.gwt.widget.table.event.BeforeCellEditedHandler;
+import org.openelis.meta.QcMeta;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -217,7 +221,20 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         return addHandler(handler, ActionEvent.getType());
     }
 
+    @SuppressWarnings("unchecked")
     private void initializeDropdowns() {
+        ArrayList<DictionaryDO> dictList;
+        ArrayList<TableDataRow> model;
+
+        //
+        // load location dropdown model
+        //
+        dictList  = CategoryCache.getBySystemName("laboratory_location");
+        model = new ArrayList<TableDataRow>();
+        model.add(new TableDataRow(null, ""));
+        for (DictionaryDO resultDO : dictList)
+            model.add(new TableDataRow(resultDO.getId(),resultDO.getEntry()));
+        ((Dropdown<Integer>)qcTable.getColumns().get(2).getColumnWidget()).setModel(model);
     }
     
     public void clearFields() {
@@ -225,22 +242,41 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
     }
 
     public void executeQuery(String pattern) {
+        Query query;  
+        QueryData field;
         ArrayList<QueryData> fields;
-        Query                query;
 
         if (DataBaseUtil.isEmpty(pattern))
             return;              
 
         findTextBox.setText(pattern);
         
+        query = new Query();
         fields = new ArrayList<QueryData>();
 
-        query = new Query();
-        query.setFields(fields);
+        field = new QueryData();
+        field.key = QcMeta.getName();
+        field.type = QueryData.Type.STRING;
+        field.query = pattern;
+        fields.add(field);
         
+        field = new QueryData();
+        field.key = QcMeta.getIsActive();
+        field.type = QueryData.Type.STRING;
+        field.query = "Y";
+        fields.add(field);
+        
+        field = new QueryData();
+        field.key = QcMeta.getQcLotIsActive();
+        field.type = QueryData.Type.STRING;
+        field.query = "Y";
+        fields.add(field);
+        
+        query.setFields(fields);
+
         window.setBusy(consts.get("querying"));
 
-        service.callList("fetchActiveByName", pattern, new AsyncCallback<ArrayList<QcLotViewDO>>() {
+        service.callList("fetchActiveByName", query, new AsyncCallback<ArrayList<QcLotViewDO>>() {
             public void onSuccess(ArrayList<QcLotViewDO> result) {
                 setQueryResult(result);
             }
@@ -275,7 +311,8 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         if(list != null) {
             for (QcLotViewDO data : list)   {  
                 row = new TableDataRow(data.getId(), data.getQcName(), data.getLotNumber(),
-                                       data.getUsableDate(), data.getExpireDate());
+                                       data.getLocationId(), data.getUsableDate(),
+                                       data.getExpireDate());
                 row.data = data;
                 model.add(row);
             }

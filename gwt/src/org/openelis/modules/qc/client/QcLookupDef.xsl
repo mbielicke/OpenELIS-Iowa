@@ -76,6 +76,9 @@ UIRF Software License are applicable instead of those above.
                   <col key="{meta:getQcLotLotNumber()}" width="150" sort="false" header="{resource:getString($constants,'lotNumber')}">
                     <label field="String" />
                   </col>
+                  <col key="{meta:getQcLotLocationId()}" width="80" sort="false" header="{resource:getString($constants,'location')}">
+	                <dropdown width="80" field="Integer" />
+                  </col>
                   <col key="{meta:getQcLotUsableDate()}" width="130" sort="true" header="{resource:getString($constants,'usableDate')}">
                     <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
                   </col>
@@ -90,7 +93,7 @@ UIRF Software License are applicable instead of those above.
             </VerticalPanel>
           </VerticalPanel>
         </HorizontalPanel>
-        <VerticalPanel width="636px" spacing="0">
+        <VerticalPanel width="719px" spacing="0">
           <AbsolutePanel align="center" spacing="0" style="BottomButtonPanelContainer">
             <HorizontalPanel>
               <xsl:call-template name="okButton">
