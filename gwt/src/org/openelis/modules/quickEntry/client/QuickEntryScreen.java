@@ -551,7 +551,7 @@ public class QuickEntryScreen extends Screen {
                 try {
                     sampleDO = new SampleDO();
                     sampleDO.setAccessionNumber(Integer.valueOf(val));
-                    sampleMan = accNumUtil.accessionNumberEntered(sampleDO);
+                    sampleMan = accNumUtil.validateAccessionNumber(sampleDO);
 
                     // if this sample has been entered as quick entry before
                     // then add it to the manager hash for reuse, if it hasnt

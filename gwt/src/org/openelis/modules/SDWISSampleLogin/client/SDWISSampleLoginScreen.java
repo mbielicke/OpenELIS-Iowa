@@ -74,8 +74,10 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
+import org.openelis.manager.SampleSDWISManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.sample.client.AccessionNumberUtility;
@@ -89,6 +91,7 @@ import org.openelis.modules.sample.client.SampleDuplicateUtil;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
+import org.openelis.modules.sample.client.SampleMergeUtility;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.sample.client.SampleSDWISImportOrder;
@@ -459,9 +462,8 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
-                Integer       oldNumber;
+                Integer       oldNumber, orderId;
                 SampleManager quickEntryMan;
-                NoteViewDO    exn;  
 
                 oldNumber = manager.getSample().getAccessionNumber();
                 if (oldNumber != null) {
@@ -482,10 +484,31 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     if (accessionNumUtil == null)
                         accessionNumUtil = new AccessionNumberUtility();
 
-                    quickEntryMan = accessionNumUtil.accessionNumberEntered(manager.getSample());
-                    if (quickEntryMan != null) {
+                    window.setBusy(consts.get("fetching"));
+                    quickEntryMan = accessionNumUtil.validateAccessionNumber(manager.getSample());
+                    
+                    if (quickEntryMan == null) {
+                        window.clearStatus();
+                        return;
+                    } else if (manager.getSample().getOrderId() != null) {
+                        Window.alert(consts.get("cantLoadQEIfOrderNumPresent"));
+                        quickEntryMan.abortUpdate();
+                        accessionNumber.setValue(Util.toString(oldNumber));
+                        setFocus(accessionNumber);
+                        window.clearStatus();
+                        return;
+                    }
+                    
                         if (state == State.ADD) {
-                            manager = quickEntryMan;
+                            orderId = manager.getSample().getOrderId();
+                            if (orderId != null) {
+                                SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                                manager.setSample(quickEntryMan.getSample());
+                                manager.getSample().setOrderId(orderId);
+                            } else {
+                                manager = quickEntryMan;
+                            }
+                            
                             manager.getSample().setDomain(SampleManager.SDWIS_DOMAIN_FLAG);
                             manager.createEmptyDomainManager();
                             
@@ -507,9 +530,9 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                             });
                         } else {
                             quickEntryMan.abortUpdate();
+                            window.clearStatus();
                             throw new Exception(consts.get("quickEntryNumberExists"));
                         }
-                    }
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
                     accessionNumber.setValue(Util.toString(oldNumber));
@@ -521,6 +544,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
                     manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 }
+                window.clearStatus();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1451,10 +1475,14 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
     
     
     private void importOrder(Integer orderId) {
+        int i;
         Integer orgId;
         ArrayList<Integer> orgIds; 
         OrderManager man;
+        SampleManager quickEntryMan;
+        SampleItemManager itemMan;
         SampleOrganizationManager sorgMan;
+        SampleSDWISManager orderSDMan, qeSDMan;
         SampleOrganizationViewDO data;
         ValidationErrorsList errors;        
         
@@ -1463,17 +1491,11 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             return;
         }
         
-        if (manager.getSample().getId() != null) {
-            Window.alert(consts.get("existSampleCantFillFromOrder"));
-            return;
-        } 
-        
         try {
-            if (manager.getSampleItems().count() > 0 ) {
-                if (!Window.confirm(consts.get("sampleContainsItems"))) {
-                    orderNumber.setValue(manager.getSample().getOrderId());
-                    return;
-                }
+            if (manager.getSample().getAccessionNumber() == null) {
+                Window.alert(consts.get("enterAccNumBeforeOrderLoad"));
+                orderNumber.setValue(manager.getSample().getOrderId());
+                return;
             }
 
             manager.getSample().setOrderId(orderId);
@@ -1500,7 +1522,42 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
             if (sdwisOrderImport == null)
                 sdwisOrderImport = new SampleSDWISImportOrder();
             
+            quickEntryMan = null;
+            if (quickUpdate) {
+                /*
+                 * keep track of the manager loaded through quick entry in order
+                 * to be able to merge any sample items and tests present in it
+                 * with the ones added from the order                  
+                 */
+                quickEntryMan = manager;
+                manager = SampleManager.getInstance();
+                manager.setSample(quickEntryMan.getSample());
+                manager.createEmptyDomainManager();
+                qeSDMan = ((SampleSDWISManager)quickEntryMan.getDomainManager());
+                orderSDMan = ((SampleSDWISManager)manager.getDomainManager());
+                orderSDMan.setSDWIS(qeSDMan.getSDWIS());
+                
+                itemMan = manager.getSampleItems();
+                
+                /* 
+                 * any existing sample items and tests in the manager created through
+                 * quick entry are removed before loading the sample items and tests
+                 * from the order so that after the order has been loaded,  only
+                 * the tests loaded from the order, which are treated as the
+                 * base case for merging the tests, can be present when the two 
+                 * sets of tests are merged later
+                 */
+                while (itemMan.count() > 0)
+                    itemMan.removeSampleItemAt(0);                
+                
+                manager.getSample().setNextItemSequence(0);                 
+            }
+            
             errors = sdwisOrderImport.importOrderInfo(orderId, manager);
+            
+            if (quickEntryMan != null)
+                SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                        
             setDataInTabs();
             DataChangeEvent.fire(screen);
             window.clearStatus();
@@ -1515,7 +1572,7 @@ public class SDWISSampleLoginScreen extends Screen implements HasActionHandlers 
              */                       
             sorgMan = manager.getOrganizations();
             orgIds = new ArrayList<Integer>();
-            for (int i = 0; i < sorgMan.count(); i++) {
+            for (i = 0; i < sorgMan.count(); i++) {
                 data = sorgMan.getOrganizationAt(i);
                 orgId = data.getOrganizationId();
                 if (!orgIds.contains(orgId)) {

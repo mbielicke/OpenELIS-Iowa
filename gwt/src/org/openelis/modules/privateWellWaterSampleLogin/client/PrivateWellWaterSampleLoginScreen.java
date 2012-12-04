@@ -72,6 +72,8 @@ import org.openelis.gwt.widget.TextBox;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.OrderManager;
 import org.openelis.manager.SampleDataBundle;
+import org.openelis.manager.SampleEnvironmentalManager;
+import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleOrganizationManager;
 import org.openelis.manager.SamplePrivateWellManager;
@@ -88,6 +90,7 @@ import org.openelis.modules.sample.client.SampleDuplicateUtil;
 import org.openelis.modules.sample.client.SampleHistoryUtility;
 import org.openelis.modules.sample.client.SampleItemAnalysisTreeTab;
 import org.openelis.modules.sample.client.SampleItemTab;
+import org.openelis.modules.sample.client.SampleMergeUtility;
 import org.openelis.modules.sample.client.SampleNotesTab;
 import org.openelis.modules.sample.client.SampleOrganizationUtility;
 import org.openelis.modules.sample.client.SamplePrivateWellImportOrder;
@@ -459,9 +462,9 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             }
 
             public void onValueChange(final ValueChangeEvent<Integer> event) {
-                Integer       oldNumber;
+                Integer oldNumber, orderId;
                 SampleManager quickEntryMan;
-                NoteViewDO    exn;
+                NoteViewDO exn;
 
                 oldNumber = manager.getSample().getAccessionNumber();
                 if (oldNumber != null) {
@@ -470,49 +473,72 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                         accessionNumber.setValue(Util.toString(oldNumber));
                         setFocus(accessionNumber);
                         return;
-                    } else if (!Window.confirm(consts.get("accessionNumberEditConfirm"))) {
+                    } else if ( !Window.confirm(consts.get("accessionNumberEditConfirm"))) {
                         accessionNumber.setValue(Util.toString(oldNumber));
                         setFocus(accessionNumber);
                         return;
                     }
                 }
+                
                 try {
                     manager.getSample().setAccessionNumber(event.getValue());
 
                     if (accessionNumUtil == null)
                         accessionNumUtil = new AccessionNumberUtility();
 
-                    quickEntryMan = accessionNumUtil.accessionNumberEntered(manager.getSample());
-                    if (quickEntryMan != null) {
-                        if (state == State.ADD) {
-                            manager = quickEntryMan;
-                            manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
-                            manager.createEmptyDomainManager();
-    
-                            /*
-                             * We add the standard note, if any, defined through
-                             * a system variable for this domain, because it isn't 
-                             * present in the manager fetched from the back-end. 
-                             */
-                            if (autoNote != null) { 
-                                exn = manager.getExternalNote().getEditingNote();
-                                exn.setIsExternal("Y");
-                                exn.setText(autoNote.getText());
-                            }
-                            DeferredCommand.addCommand(new Command() {
-                                public void execute() {
-                                    setFocus(null);
-                                    setDataInTabs();
-                                    setState(State.UPDATE);
-                                    DataChangeEvent.fire(screen);
-                                    window.clearStatus();
-                                    quickUpdate = true;
-                                }
-                            });
+                    window.setBusy(consts.get("fetching"));
+                    quickEntryMan = accessionNumUtil.validateAccessionNumber(manager.getSample());
+
+                    if (quickEntryMan == null) {
+                        window.clearStatus();
+                        return;
+                    } else if (manager.getSample().getOrderId() != null) {
+                        Window.alert(consts.get("cantLoadQEIfOrderNumPresent"));
+                        quickEntryMan.abortUpdate();
+                        accessionNumber.setValue(Util.toString(oldNumber));
+                        setFocus(accessionNumber);
+                        window.clearStatus();
+                        return;
+                    }
+
+                    if (state == State.ADD) {
+                        orderId = manager.getSample().getOrderId();
+                        if (orderId != null) {
+                            SampleMergeUtility.mergeTests(manager, quickEntryMan);
+                            manager.setSample(quickEntryMan.getSample());
+                            manager.getSample().setOrderId(orderId);
                         } else {
-                            quickEntryMan.abortUpdate();
-                            throw new Exception(consts.get("quickEntryNumberExists"));
+                            manager = quickEntryMan;
                         }
+                        
+                        manager.getSample().setDomain(SampleManager.WELL_DOMAIN_FLAG);
+                        manager.createEmptyDomainManager();
+
+                        /*
+                         * We add the standard note, if any, defined through a
+                         * system variable for this domain, because it isn't
+                         * present in the manager fetched from the back-end.
+                         */
+                        if (autoNote != null) {
+                            exn = manager.getExternalNote().getEditingNote();
+                            exn.setIsExternal("Y");
+                            exn.setText(autoNote.getText());
+                        }
+                        
+                        DeferredCommand.addCommand(new Command() {
+                            public void execute() {
+                                setFocus(null);
+                                setDataInTabs();
+                                setState(State.UPDATE);
+                                DataChangeEvent.fire(screen);
+                                window.clearStatus();
+                                quickUpdate = true;
+                            }
+                        });
+                    } else {
+                        quickEntryMan.abortUpdate();
+                        window.clearStatus();
+                        throw new Exception(consts.get("quickEntryNumberExists"));
                     }
                 } catch (ValidationErrorsList e) {
                     showErrors(e);
@@ -525,6 +551,7 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                     manager.getSample().setAccessionNumber(oldNumber);
                     setFocus(accessionNumber);
                 }
+                window.clearStatus();
             }
 
             public void onStateChange(StateChangeEvent<State> event) {
@@ -1530,30 +1557,28 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
     }
     
     private void importOrder(Integer orderId) {
+        int i;
         Integer orgId;
         ArrayList<Integer> orgIds; 
         OrderManager man;
+        SampleManager quickEntryMan;
+        SampleItemManager itemMan;
         SampleOrganizationManager sorgMan;
-        SampleOrganizationViewDO data;
+        SampleOrganizationViewDO sorg;
+        SamplePrivateWellManager orderPWMan, qePWMan;
         ValidationErrorsList errors;
         SamplePrivateWellViewDO well;
 
         if (orderId == null) {
             manager.getSample().setOrderId(orderId);
             return;
-        }
-        
-        if (manager.getSample().getId() != null) {
-            Window.alert(consts.get("existSampleCantFillFromOrder"));
-            return;
-        } 
+        }       
         
         try {
-            if (manager.getSampleItems().count() > 0 ) {
-                if (!Window.confirm(consts.get("sampleContainsItems"))) {
-                    orderNumber.setValue(manager.getSample().getOrderId());
-                    return;
-                }
+            if (manager.getSample().getAccessionNumber() == null) {
+                Window.alert(consts.get("enterAccNumBeforeOrderLoad"));
+                orderNumber.setValue(manager.getSample().getOrderId());
+                return;
             }
 
             manager.getSample().setOrderId(orderId);
@@ -1580,6 +1605,37 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
             if (wellOrderImport == null)
                 wellOrderImport = new SamplePrivateWellImportOrder();
             
+            quickEntryMan = null;
+            if (quickUpdate) {
+                /*
+                 * keep track of the manager loaded through quick entry in order
+                 * to be able to merge any sample items and tests present in it
+                 * with the ones added from the order                  
+                 */
+                quickEntryMan = manager;
+                manager = SampleManager.getInstance();
+                manager.setSample(quickEntryMan.getSample());
+                manager.createEmptyDomainManager();
+                qePWMan = ((SamplePrivateWellManager)quickEntryMan.getDomainManager());
+                orderPWMan = ((SamplePrivateWellManager)manager.getDomainManager());
+                orderPWMan.setPrivateWell(qePWMan.getPrivateWell());
+                
+                itemMan = manager.getSampleItems();
+                
+                /* 
+                 * any existing sample items and tests in the manager created through
+                 * quick entry are removed before loading the sample items and tests
+                 * from the order so that after the order has been loaded,  only
+                 * the tests loaded from the order, which are treated as the
+                 * base case for merging the tests, can be present when the two 
+                 * sets of tests are merged later
+                 */
+                while (itemMan.count() > 0)
+                    itemMan.removeSampleItemAt(0);                
+                
+                manager.getSample().setNextItemSequence(0);                 
+            }
+            
             errors = wellOrderImport.importOrderInfo(orderId, manager);
             
             setDataInTabs();
@@ -1603,12 +1659,18 @@ public class PrivateWellWaterSampleLoginScreen extends Screen implements HasActi
                 orgIds.add(orgId);
             }
             
+            /*
+             * check to see if any of the sample organizations has been marked for
+             * holding or refusing samples from 
+             */
             sorgMan = manager.getOrganizations();
-            for (int i = 0; i < sorgMan.count(); i++) {
-                data = sorgMan.getOrganizationAt(i);
-                orgId = data.getOrganizationId();
+            orgIds = new ArrayList<Integer>();
+            for (i = 0; i < sorgMan.count(); i++) {
+                sorg = sorgMan.getOrganizationAt(i);
+                orgId = sorg.getOrganizationId();
                 if (!orgIds.contains(orgId)) {
-                    showHoldRefuseWarning(orgId, data.getOrganizationName());
+                    if (SampleOrganizationUtility.isHoldRefuseSampleForOrg(orgId)) 
+                        Window.alert(consts.get("orgMarkedAsHoldRefuseSample")+ "'"+ sorg.getOrganizationName()+"'");
                     orgIds.add(orgId);
                 }
             }

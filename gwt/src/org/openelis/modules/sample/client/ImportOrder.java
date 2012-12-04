@@ -491,8 +491,7 @@ public abstract class ImportOrder {
          */
         setAnalytesReportable(orderTestAnaMan, anaMan.getAnalysisResultAt(anaIndex));
     }
-    
-    
+        
     private void setAnalytesReportable(OrderTestAnalyteManager analyteMan, 
                                        AnalysisResultManager resultMan) {
         int i;

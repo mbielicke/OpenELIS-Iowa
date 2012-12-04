@@ -667,7 +667,7 @@ public class SampleTrackingScreen extends Screen implements HasActionHandlers {
                     if (accessionNumUtil == null)
                         accessionNumUtil = new AccessionNumberUtility();
 
-                    quickEntryMan = accessionNumUtil.accessionNumberEntered(manager.getSample());
+                    quickEntryMan = accessionNumUtil.validateAccessionNumber(manager.getSample());
                     if (quickEntryMan != null)
                         throw new Exception(consts.get("quickEntryNumberExists"));
                 } catch (ValidationErrorsList e) {

@@ -40,7 +40,7 @@ public class AccessionNumberUtility {
         service = new ScreenService("controller?service="+SAMPLE_SERVICE_URL);
     }
     
-    public SampleManager accessionNumberEntered(SampleDO sampleDO) throws Exception {
+    public SampleManager validateAccessionNumber(SampleDO sampleDO) throws Exception {
         if(sampleDO.getAccessionNumber() != null)
             return service.call("validateAccessionNumber", sampleDO);
        
