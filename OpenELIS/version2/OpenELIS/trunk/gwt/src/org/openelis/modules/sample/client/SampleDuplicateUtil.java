@@ -45,6 +45,7 @@ import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
+import org.openelis.domain.StorageViewDO;
 import org.openelis.gwt.common.LocalizedException;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisQaEventManager;
@@ -59,6 +60,7 @@ import org.openelis.manager.SamplePrivateWellManager;
 import org.openelis.manager.SampleProjectManager;
 import org.openelis.manager.SampleQaEventManager;
 import org.openelis.manager.SampleSDWISManager;
+import org.openelis.manager.StorageManager;
 
 public class SampleDuplicateUtil {
 
@@ -93,6 +95,54 @@ public class SampleDuplicateUtil {
         return newMan;
     }
     
+    public static void duplicateSampleItem(SampleItemViewDO newData, SampleItemViewDO oldData) {
+        newData.setTypeOfSampleId(oldData.getTypeOfSampleId());
+        newData.setSourceOfSampleId(oldData.getSourceOfSampleId());
+        newData.setSourceOther(oldData.getSourceOther());
+        newData.setContainerId(oldData.getContainerId());
+        newData.setContainerReference(oldData.getContainerReference());
+        newData.setQuantity(oldData.getQuantity());
+        newData.setUnitOfMeasureId(oldData.getUnitOfMeasureId());
+        newData.setTypeOfSample(oldData.getTypeOfSample());
+        newData.setSourceOfSample(oldData.getSourceOfSample());
+        newData.setContainer(oldData.getContainer());
+    }
+    
+    public static void duplicateNotes(NoteManager newMan, NoteManager oldMan) throws Exception {
+        NoteViewDO newData, oldData;
+                
+        for (int i = 0; i < oldMan.count(); i++) {
+            oldData = oldMan.getNoteAt(i);
+            newData = new NoteViewDO();
+            
+            newData.setIsExternal(oldData.getIsExternal());
+            newData.setReferenceId(oldData.getReferenceId());
+            newData.setReferenceTableId(oldData.getReferenceTableId());
+            newData.setSubject(oldData.getSubject());
+            newData.setSystemUserId(oldData.getSystemUserId());
+            newData.setText(oldData.getText());
+            newData.setSystemUser(oldData.getSystemUser());
+            newMan.addNote(newData);
+        }
+    }
+    
+    public static void duplicateSampleQaEvents(SampleQaEventManager newMan,
+                                               SampleQaEventManager oldMan) {
+       SampleQaEventViewDO newData, oldData;
+       
+       for (int i = 0; i < oldMan.count(); i++) {
+           oldData = oldMan.getSampleQAAt(i);
+           newData = new SampleQaEventViewDO();
+           
+           newData.setQaEventId(oldData.getQaEventId());
+           newData.setTypeId(oldData.getTypeId());
+           newData.setIsBillable(oldData.getIsBillable());
+           newData.setQaEventName(oldData.getQaEventName());
+           newData.setQaEventReportingText(oldData.getQaEventReportingText());
+           newMan.addSampleQA(newData);
+       }
+   }
+    
     private static void duplicate(SampleManager newMan, SampleManager oldMan) throws Exception {        
         String domain;
         SampleDO newData, oldData;         
@@ -126,6 +176,7 @@ public class SampleDuplicateUtil {
             duplicateSDWIS((SampleSDWISManager)newMan.getDomainManager(),
                            (SampleSDWISManager)oldMan.getDomainManager());
         }
+        
         duplicateNotes(newMan.getExternalNote(), oldMan.getExternalNote());
         duplicateAuxData(newMan.getAuxData(), oldMan.getAuxData());
     }
@@ -141,23 +192,14 @@ public class SampleDuplicateUtil {
             index = newMan.addSampleItem();
             newData = newMan.getSampleItemAt(index);
             
-            newData.setTypeOfSampleId(oldData.getTypeOfSampleId());
-            newData.setSourceOfSampleId(oldData.getSourceOfSampleId());
-            newData.setSourceOther(oldData.getSourceOther());
-            newData.setContainerId(oldData.getContainerId());
-            newData.setContainerReference(oldData.getContainerReference());
-            newData.setQuantity(oldData.getQuantity());
-            newData.setUnitOfMeasureId(oldData.getUnitOfMeasureId());
-            newData.setTypeOfSample(oldData.getTypeOfSample());
-            newData.setSourceOfSample(oldData.getSourceOfSample());
-            newData.setContainer(oldData.getContainer());
+            duplicateSampleItem(newData, oldData);
             
-            duplicateAnalyses (newMan.getAnalysisAt(index), oldMan.getAnalysisAt(i), oldNewAnaMap); 
+            duplicateAnalyses(newMan.getAnalysisAt(index), oldMan.getAnalysisAt(i), oldNewAnaMap);
         }
         
         setPrepAnalyses (newMan, oldMan, oldNewAnaMap);
     }
-    
+
     private static void duplicateOrganizations(SampleOrganizationManager newMan,
                                                SampleOrganizationManager oldMan) {
         SampleOrganizationViewDO newData, oldData;
@@ -196,23 +238,6 @@ public class SampleDuplicateUtil {
         }
     }
     
-    private static void duplicateSampleQaEvents(SampleQaEventManager newMan,
-                                                SampleQaEventManager oldMan) {
-        SampleQaEventViewDO newData, oldData;
-        
-        for (int i = 0; i < oldMan.count(); i++) {
-            oldData = oldMan.getSampleQAAt(i);
-            newData = new SampleQaEventViewDO();
-            
-            newData.setQaEventId(oldData.getQaEventId());
-            newData.setTypeId(oldData.getTypeId());
-            newData.setIsBillable(oldData.getIsBillable());
-            newData.setQaEventName(oldData.getQaEventName());
-            newData.setQaEventReportingText(oldData.getQaEventReportingText());
-            newMan.addSampleQA(newData);
-        }
-    }
-        
     private static void duplicateAnalyses(AnalysisManager newMan, AnalysisManager oldMan,
                                           HashMap<Integer, AnalysisViewDO> newOldAnaIdMap) throws Exception {
         int index;
@@ -257,6 +282,7 @@ public class SampleDuplicateUtil {
             newData.setTestId(oldData.getTestId());
             
             duplicateAnalysisQaEvents(newMan.getQAEventAt(index), oldMan.getQAEventAt(i));
+            
             duplicateNotes(newMan.getExternalNoteAt(index), oldMan.getExternalNoteAt(i));
         }                
     }
@@ -411,24 +437,6 @@ public class SampleDuplicateUtil {
         newData.setPwsName(oldData.getPwsName());
         newData.setPwsNumber0(oldData.getPwsNumber0());
     }
-    
-    private static void duplicateNotes(NoteManager newMan, NoteManager oldMan) throws Exception {
-        NoteViewDO newData, oldData;
-                
-        for (int i = 0; i < oldMan.count(); i++) {
-            oldData = oldMan.getNoteAt(i);
-            newData = new NoteViewDO();
-            
-            newData.setIsExternal(oldData.getIsExternal());
-            newData.setReferenceId(oldData.getReferenceId());
-            newData.setReferenceTableId(oldData.getReferenceTableId());
-            newData.setSubject(oldData.getSubject());
-            newData.setSystemUserId(oldData.getSystemUserId());
-            newData.setText(oldData.getText());
-            newData.setSystemUser(oldData.getSystemUser());
-            newMan.addNote(newData);
-        }
-    }        
     
     private static void duplicateAuxData(AuxDataManager newMan, AuxDataManager oldMan) {
         AuxDataViewDO newAD, oldAD;
