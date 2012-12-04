@@ -35,6 +35,7 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.local.SampleItemLocal;
+import org.openelis.local.StorageLocal;
 import org.openelis.manager.SampleItemManager.SampleItemListItem;
 import org.openelis.utils.EJBFactory;
 
@@ -60,7 +61,8 @@ public class SampleItemManagerProxy {
 
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
 
-        l = EJBFactory.getSampleItem();
+        l = EJBFactory.getSampleItem();       
+        
         for (int i = 0; i < man.count(); i++ ) {
             data = man.getSampleItemAt(i);
             data.setSampleId(man.getSampleId());
@@ -84,17 +86,22 @@ public class SampleItemManagerProxy {
     }
 
     public SampleItemManager update(SampleItemManager man) throws Exception {
-        int i;
+        int i, j;
         Integer sampleItemRefTableId;
         SampleItemLocal l;
+        StorageLocal sl;        
         SampleItemViewDO data;
         SampleItemListItem item;
 
         l = EJBFactory.getSampleItem();
         sampleItemRefTableId = ReferenceTable.SAMPLE_ITEM;
 
-        for (i = 0; i < man.deleteCount(); i++ )
-            l.delete(man.getDeletedAt(i).sampleItem);
+        sl = EJBFactory.getStorage();
+        for (i = 0; i < man.deleteCount(); i++ ) {
+            data = man.getDeletedAt(i).sampleItem;
+            sl.deleteById(data.getId(), ReferenceTable.SAMPLE_ITEM);
+            l.delete(data);
+        }
 
         for (i = 0; i < man.count(); i++ ) {
             data = man.getSampleItemAt(i);
