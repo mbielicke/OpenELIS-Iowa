@@ -284,4 +284,16 @@ public class StorageBean implements StorageLocal {
         if (entity != null)
             manager.remove(entity);
     }
+    
+    public void deleteById(Integer referenceId, Integer refTableId) throws Exception {
+        ArrayList<StorageViewDO> list;
+        
+        try {
+            list = fetchById(referenceId, refTableId);
+            for (StorageViewDO data : list)
+                delete(data);
+        } catch (NotFoundException e) {
+            // there may not be any storages linked to the reference table and reference id
+        }
+    }
 }

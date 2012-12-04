@@ -40,4 +40,5 @@ public interface StorageLocal {
     public StorageViewDO update(StorageViewDO data) throws Exception;
     public StorageViewDO add(StorageViewDO data) throws Exception;
     public void delete(StorageViewDO data) throws Exception;
+    public void deleteById(Integer referenceId, Integer refTableId) throws Exception;
 }
