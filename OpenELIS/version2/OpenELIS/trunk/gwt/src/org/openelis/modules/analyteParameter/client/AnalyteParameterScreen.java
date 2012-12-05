@@ -115,6 +115,7 @@ public class AnalyteParameterScreen extends Screen {
     private ScreenService           testService, qcService;  
     private ArrayList<TableDataRow> sampleTypeModel;
     private boolean                 warningShown;   
+    private static final String    LATEST_LEAF = "latest", PREVIOUS_LEAF = "previous"; 
     
     public AnalyteParameterScreen() throws Exception {
         super((ScreenDefInt)GWT.create(AnalyteParameterDef.class));
@@ -178,7 +179,7 @@ public class AnalyteParameterScreen extends Screen {
             }
         });
 
-        previousButton = (AppButton)def.getWidget("previous");
+        previousButton = (AppButton)def.getWidget(PREVIOUS_LEAF);
         addScreenHandler(previousButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 previous();
@@ -360,8 +361,8 @@ public class AnalyteParameterScreen extends Screen {
         });
         
         parameterTree = (TreeWidget)def.getWidget("parameterTree");
-        sampleTypeLatest = ((Dropdown)parameterTree.getColumns().get("latest").get(2).getColumnWidget());
-        sampleTypePrevious = ((Dropdown)parameterTree.getColumns().get("previous").get(2).getColumnWidget());
+        sampleTypeLatest = ((Dropdown)parameterTree.getColumns().get(LATEST_LEAF).get(2).getColumnWidget());
+        sampleTypePrevious = ((Dropdown)parameterTree.getColumns().get(PREVIOUS_LEAF).get(2).getColumnWidget());
 
         addScreenHandler(parameterTree, new ScreenEventHandler<ArrayList<TableDataRow>>() {
             public void onDataChange(DataChangeEvent event) { 
@@ -388,12 +389,12 @@ public class AnalyteParameterScreen extends Screen {
                 QueryData field;
                 ArrayList<QueryData> fields;
                 
-                query = new Query();
-                fields = new ArrayList<QueryData>();                                  
-                                
                 item = event.getItem();
-                if (item.hasChildren())                     
+                if (item.hasChildren() || PREVIOUS_LEAF.equals(item.leafType))                     
                     return;
+                
+                query = new Query();
+                fields = new ArrayList<QueryData>();                                 
                 
                 data = (AnalyteParameterViewDO)item.data;
                 
@@ -425,7 +426,7 @@ public class AnalyteParameterScreen extends Screen {
                         newData = list.get(i);
                         if (newData.getId().equals(data.getId())) 
                             continue;                        
-                        item.addItem(getItem(newData, "previous"));                        
+                        item.addItem(getItem(newData, PREVIOUS_LEAF));                        
                         manager.addParamaterAt(newData, index+i+j);                             
                     }                        
                 } catch (NotFoundException ignE) {
@@ -999,7 +1000,7 @@ public class AnalyteParameterScreen extends Screen {
             anaId = null;
             for (i = 0; i < manager.count(); i++) {                
                 data = manager.getParameterAt(i);
-                item = getItem(data, "latest");                    
+                item = getItem(data, LATEST_LEAF);                    
                 item.checkForChildren(true);                    
                 model.add(item);                             
             }            
@@ -1008,7 +1009,7 @@ public class AnalyteParameterScreen extends Screen {
             for (i = 0; i < manager.count(); i++) {                
                 data = manager.getParameterAt(i);
                 if (!data.getAnalyteId().equals(anaId)) {
-                    item = getItem(data, "latest");              
+                    item = getItem(data, LATEST_LEAF);              
                     item.checkForChildren(true);
                     model.add(item);                             
                 }
