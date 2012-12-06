@@ -1,5 +1,6 @@
 package org.openelis.bean;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -43,7 +44,6 @@ public class TurnaroundNotificationMaximumReportBean implements
 
     @PostConstruct
     public void init() {
-
         try {
             sectParamTypeId = dictionaryCache.getBySystemName("section_ta_max").getId();
         } catch (Throwable e) {
@@ -61,8 +61,13 @@ public class TurnaroundNotificationMaximumReportBean implements
 
         resultList = sample.fetchForTurnaroundMaximumReport();
         log.debug("Considering " + resultList.size() + " cases to run");
-        if (resultList.size() > 0)
-            generateEmail(resultList);
+        if (resultList.size() > 0) {
+            try {
+                generateEmail(resultList);
+            } catch (Exception anyE) {
+                log.error(anyE.getMessage());
+            }
+        }
     }
 
     protected void generateEmail(ArrayList<Object[]> resultList) throws Exception {
@@ -74,7 +79,8 @@ public class TurnaroundNotificationMaximumReportBean implements
         SimpleDateFormat yToD, yToM;
         String colString, expireString, recString, toEmail, test, method, orgName, sectionName, prevSectionName, anaStatus;
         StringBuilder contents;
-        Timestamp availableDate, colDate, colTime, expireDate, nowDateTime, recDate;
+        Timestamp availableDate, colDate, expireDate, nowDateTime, recDate;
+        Time colTime;
 
         prevSecId = null;
         prevSectionName = null;
@@ -89,7 +95,7 @@ public class TurnaroundNotificationMaximumReportBean implements
         for (Object[] result : resultList) {
             accession = (Integer)result[0];
             colDate = (Timestamp)result[1];
-            colTime = (Timestamp)result[2];
+            colTime = (Time)result[2];
             recDate = (Timestamp)result[3];
             orgName = (String)result[4];
             test = (String)result[5];
