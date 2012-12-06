@@ -24,54 +24,41 @@
 	<parameter name="ORDER_BY" class="java.lang.String">
 		<defaultValueExpression><![CDATA["accession_number"]]></defaultValueExpression>
 	</parameter>
+	<parameter name="PREP_TEST" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
 	<queryString>
-		<![CDATA[SELECT s.accession_number, s.collection_date, s.collection_time,
-       t.name t_name, m.name m_name, d.entry status, d1.entry sample_type, a.id a_id, t1.name t1_name,
-       m1.name m1_name, d2.entry status1, o.name o_name
-FROM sample s, sample_item si, analysis a,
-     test t, method m, section sec, dictionary d, dictionary d1, outer(analysis a1, test t1, method m1, dictionary d2), sample_organization sd, organization o
-WHERE s.domain != "W" and
-      s.entered_date between $P{FROM} and $P{TO} and
-      s.id = si.sample_id and
-      si.id = a.sample_item_id and a.test_id = t.id and
-      t.method_id = m.id and a.section_id = sec.id and
-      a.status_id = d.id and si.type_of_sample_id = d1.id and
-      a.pre_analysis_id = a1.id and a1.test_id = t1.id and t1.method_id = m1.id and a1.status_id = d2.id and
-      s.id = sd.sample_id and sd.organization_id = o.id and sd.type_id in (select id from dictionary where system_name in        ('org_report_to'))
-      $P!{STATUS}  $P!{TEST} $P!{SECTION}
+		<![CDATA[SELECT s.id s_id, s.accession_number, s.collection_date, s.collection_time,
+       t.name t_name, m.name m_name, d.entry status, d1.entry sample_type, a.id a_id,
+       t1.name t1_name, m1.name m1_name, d2.entry status1
+  FROM sample s, sample_item si, analysis a,
+       test t, method m, section sec, dictionary d, dictionary d1,
+       outer(analysis a1, test t1, method m1, dictionary d2)
+ WHERE s.entered_date between $P{FROM} and $P{TO} and
+       s.id = si.sample_id and
+       si.id = a.sample_item_id and a.test_id = t.id and
+       t.method_id = m.id and a.section_id = sec.id and
+       a.status_id = d.id and si.type_of_sample_id = d1.id and
+       a.pre_analysis_id = a1.id and a1.test_id = t1.id and t1.method_id = m1.id and a1.status_id = d2.id and
+       $P{PREP_TEST} = ""
+       $P!{STATUS} $P!{TEST} $P!{SECTION}
 UNION
-
-SELECT s.accession_number, s.collection_date, s.collection_time,
-       t.name t_name, m.name m_name, d.entry status, d1.entry sample_type, a.id a_id, t1.name t1_name,
-       m1.name m1_name, d2.entry status1, o.name o_name
-FROM sample s, sample_item si, analysis a,
-     test t, method m,  section sec, dictionary d, dictionary d1, outer(analysis a1, test t1, method m1, dictionary d2),        sample_private_well sd, organization o
-WHERE s.domain = 'W' and
-      s.entered_date between $P{FROM} and $P{TO} and
-      s.id = si.sample_id and si.id = a.sample_item_id and a.test_id = t.id and
-      t.method_id = m.id and a.section_id = sec.id and
-      a.status_id = d.id and si.type_of_sample_id = d1.id and
-      a.pre_analysis_id = a1.id and a1.test_id = t1.id and t1.method_id = m1.id and a1.status_id = d2.id and
-      s.id = sd.sample_id and sd.organization_id = o.id
-      $P!{STATUS} $P!{TEST} $P!{SECTION}
-
-UNION
-
-SELECT s.accession_number, s.collection_date, s.collection_time,
-       t.name t_name, m.name m_name, d.entry status, d1.entry sample_type, a.id a_id, t1.name t1_name,
-       m1.name m1_name,d2.entry status1, sd.report_to_name o_name
-FROM sample s, sample_item si, sample_private_well sd, analysis a,
-     test t, method m,  section sec, dictionary d, dictionary d1, outer(analysis a1, test t1, method m1, dictionary d2)
-WHERE s.domain = 'W' and
-      s.entered_date between $P{FROM} and $P{TO} and
-      s.id = si.sample_id and s.id = sd.sample_id and sd.report_to_name is not null and
-      si.id = a.sample_item_id and a.test_id = t.id and
-      t.method_id = m.id and a.section_id = sec.id and
-      a.status_id = d.id and si.type_of_sample_id = d1.id and
-      a.pre_analysis_id = a1.id and a1.test_id = t1.id and t1.method_id = m1.id and a1.status_id = d2.id
-      $P!{STATUS} $P!{TEST} $P!{SECTION}
+SELECT s.id s_id, s.accession_number, s.collection_date, s.collection_time,
+       t.name t_name, m.name m_name, d.entry status, d1.entry sample_type,
+       a.id a_id, t1.name t1_name, m1.name m1_name, d2.entry status1
+  FROM sample s, sample_item si, analysis a,
+       test t, method m, section sec, dictionary d, dictionary d1,
+       analysis a1, test t1, method m1, dictionary d2
+ WHERE s.entered_date between $P{FROM} and $P{TO} and
+       s.id = si.sample_id and
+       si.id = a.sample_item_id and a.test_id = t.id and
+       t.method_id = m.id and a.section_id = sec.id and
+       a.status_id = d.id and si.type_of_sample_id = d1.id and
+       a.pre_analysis_id = a1.id and a1.test_id = t1.id and t1.method_id = m1.id and a1.status_id = d2.id
+       $P!{STATUS} $P!{TEST} $P!{PREP_TEST} $P!{SECTION}
 ORDER BY $P!{ORDER_BY}]]>
 	</queryString>
+	<field name="s_id" class="java.lang.Integer"/>
 	<field name="accession_number" class="java.lang.Integer"/>
 	<field name="collection_date" class="java.sql.Timestamp"/>
 	<field name="collection_time" class="java.sql.Time"/>
@@ -83,7 +70,6 @@ ORDER BY $P!{ORDER_BY}]]>
 	<field name="t1_name" class="java.lang.String"/>
 	<field name="m1_name" class="java.lang.String"/>
 	<field name="status1" class="java.lang.String"/>
-	<field name="o_name" class="java.lang.String"/>
 	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
 		<variableExpression><![CDATA[new Date()]]></variableExpression>
 	</variable>
@@ -194,7 +180,7 @@ ORDER BY $P!{ORDER_BY}]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="36">
+		<band height="24">
 			<textField>
 				<reportElement x="0" y="0" width="50" height="12"/>
 				<textElement>
@@ -230,13 +216,6 @@ ORDER BY $P!{ORDER_BY}]]>
 				</textElement>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{sample_type}]]></textFieldExpression>
 			</textField>
-			<textField>
-				<reportElement x="680" y="0" width="72" height="12"/>
-				<textElement>
-					<font size="8" pdfFontName="Times-Roman"/>
-				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{o_name}]]></textFieldExpression>
-			</textField>
 			<textField isBlankWhenNull="true">
 				<reportElement x="448" y="0" width="147" height="12"/>
 				<textElement>
@@ -252,7 +231,15 @@ ORDER BY $P!{ORDER_BY}]]>
 				<textFieldExpression class="java.lang.String"><![CDATA[$F{status1}]]></textFieldExpression>
 			</textField>
 			<subreport>
-				<reportElement x="54" y="11" width="698" height="12"/>
+				<reportElement x="680" y="0" width="72" height="12"/>
+				<subreportParameter name="SAMPLE_ID">
+					<subreportParameterExpression><![CDATA[$F{s_id}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "reportToName.jasper"]]></subreportExpression>
+			</subreport>
+			<subreport>
+				<reportElement x="54" y="12" width="698" height="12"/>
 				<subreportParameter name="ANALYSIS_ID">
 					<subreportParameterExpression><![CDATA[$F{a_id}]]></subreportParameterExpression>
 				</subreportParameter>

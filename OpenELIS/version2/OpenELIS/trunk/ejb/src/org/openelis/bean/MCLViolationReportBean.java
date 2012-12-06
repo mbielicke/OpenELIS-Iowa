@@ -529,6 +529,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         contaminantIds.put("Aldicarb sulfone",                      "2044");
         contaminantIds.put("Aldicarb sulfoxide",                    "2043");
         contaminantIds.put("Aldrin",                                "2356");
+        contaminantIds.put("Aluminum",                              "1002");
         contaminantIds.put("Ammonia nitrogen as N",                 "1003");
         contaminantIds.put("AMPA",                                  "2097");
         contaminantIds.put("Anthracene",                            "2280");
