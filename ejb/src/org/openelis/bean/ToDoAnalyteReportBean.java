@@ -129,6 +129,11 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
                                                        .setOptionList(getTests())
                                                        .setMutiSelect(true));
 
+            p.add(new Prompt("PREP_TEST", Prompt.Type.ARRAY).setPrompt("Prep Test Name:")
+                                                            .setWidth(250)
+                                                            .setOptionList(getTests())
+                                                            .setMutiSelect(true));
+
             p.add(new Prompt("STATUS", Prompt.Type.ARRAY).setPrompt("Analysis Status:")
                                                          .setWidth(250)
                                                          .setOptionList(getStatus())
@@ -174,7 +179,8 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String fromDate, toDate, section, test, analysisStatus, loginName, orderBy, printer, printstat, dir;
+        String fromDate, toDate, section, test, prepTest, analysisStatus, loginName,
+               orderBy, printer, printstat, dir;
 
         /*
          * push status into session so we can query it while the report is
@@ -191,6 +197,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
         toDate = ReportUtil.getSingleParameter(param, "TO_ENTERED");
         section = ReportUtil.getListParameter(param, "SECTION");
         test = ReportUtil.getListParameter(param, "TEST");
+        prepTest = ReportUtil.getListParameter(param, "PREP_TEST");
         analysisStatus = ReportUtil.getListParameter(param, "STATUS");
         orderBy = ReportUtil.getSingleParameter(param, "ORDER_BY");
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
@@ -219,6 +226,11 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
         else
             test = "";
 
+        if ( !DataBaseUtil.isEmpty(prepTest))
+            prepTest = " and t1.id " + prepTest;
+        else
+            prepTest = "";
+
         loginName = EJBFactory.getUserCache().getName();
         /*
          * start the report
@@ -238,6 +250,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
             jparam.put("TO", toDate);
             jparam.put("SECTION", section);
             jparam.put("TEST", test);
+            jparam.put("PREP_TEST", prepTest);
             jparam.put("STATUS", analysisStatus);
             jparam.put("ORDER_BY", orderBy);
             jparam.put("LOGIN_NAME", loginName);
