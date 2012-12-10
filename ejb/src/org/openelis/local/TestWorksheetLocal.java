@@ -27,6 +27,7 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetViewDO;
 
 @Local
@@ -34,9 +35,9 @@ public interface TestWorksheetLocal {
 
     public TestWorksheetViewDO fetchByTestId(Integer testId) throws Exception;
     
-    public TestWorksheetViewDO add(TestWorksheetViewDO data) throws Exception;
+    public TestWorksheetDO add(TestWorksheetDO data) throws Exception;
     
-    public TestWorksheetViewDO update(TestWorksheetViewDO data) throws Exception;
+    public TestWorksheetDO update(TestWorksheetDO data) throws Exception;
     
-    public void validate(TestWorksheetViewDO testWorksheetViewDO) throws Exception;    
+    public void validate(TestWorksheetDO data) throws Exception;    
 }

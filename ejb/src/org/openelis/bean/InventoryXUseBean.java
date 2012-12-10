@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.InventoryXUseDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.entity.InventoryItem;
@@ -166,7 +167,7 @@ public class InventoryXUseBean implements InventoryXUseLocal {
         return data;
     }
     
-    public void delete(InventoryXUseViewDO data) throws Exception {
+    public void delete(InventoryXUseDO data) throws Exception {
         InventoryXUse entity;
         InventoryLocation loc;
         

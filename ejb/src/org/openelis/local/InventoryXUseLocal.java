@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
-import org.openelis.domain.InventoryComponentViewDO;
+import org.openelis.domain.InventoryXUseDO;
 import org.openelis.domain.InventoryXUseViewDO;
 import org.openelis.domain.OrderItemViewDO;
 
@@ -45,6 +45,6 @@ public interface InventoryXUseLocal {
 
     public InventoryXUseViewDO update(InventoryXUseViewDO data) throws Exception;
 
-    public void delete(InventoryXUseViewDO data) throws Exception;
+    public void delete(InventoryXUseDO data) throws Exception;
     
 }

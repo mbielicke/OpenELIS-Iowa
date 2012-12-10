@@ -39,6 +39,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.PanelVO;
+import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodSampleTypeVO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
@@ -190,7 +191,7 @@ public class TestBean implements TestRemote, TestLocal {
         return (ArrayList<TestMethodVO>)returnList;
     }
 
-    public TestViewDO add(TestViewDO data) throws Exception {
+    public TestDO add(TestDO data) throws Exception {
         Test entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -227,7 +228,7 @@ public class TestBean implements TestRemote, TestLocal {
     }
 
     @RolesAllowed("test-update")
-    public TestViewDO update(TestViewDO data) throws Exception {
+    public TestDO update(TestDO data) throws Exception {
         Test entity;
 
         if ( !data.isChanged())
@@ -263,7 +264,7 @@ public class TestBean implements TestRemote, TestLocal {
 
     }
 
-    public void validate(TestViewDO data) throws Exception {
+    public void validate(TestDO data) throws Exception {
         boolean checkDuplicate, overlap;
         List list;
         Query query;

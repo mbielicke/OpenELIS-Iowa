@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestSectionViewDO;
 
 @Local
@@ -36,11 +37,11 @@ public interface TestSectionLocal {
 
     public ArrayList<TestSectionViewDO> fetchByTestId(Integer testId) throws Exception;
     
-    public TestSectionViewDO add(TestSectionViewDO sectDO) throws Exception;
+    public TestSectionDO add(TestSectionDO data) throws Exception;
     
-    public TestSectionViewDO update(TestSectionViewDO sectDO) throws Exception;
+    public TestSectionDO update(TestSectionDO data) throws Exception;
     
-    public void delete(TestSectionViewDO sectDO) throws Exception;
+    public void delete(TestSectionDO data) throws Exception;
     
-    public void validate(TestSectionViewDO section) throws Exception;
+    public void validate(TestSectionDO data) throws Exception;
 }

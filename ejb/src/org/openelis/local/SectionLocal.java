@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.SectionDO;
 import org.openelis.domain.SectionViewDO;
 
 @Local
@@ -37,9 +38,9 @@ public interface SectionLocal {
     
     public ArrayList<SectionViewDO> fetchList() throws Exception;
 
-    public SectionViewDO add(SectionViewDO data) throws Exception;
+    public SectionDO add(SectionDO data) throws Exception;
 
-    public SectionViewDO update(SectionViewDO data) throws Exception;
+    public SectionDO update(SectionDO data) throws Exception;
     
-    public void validate(SectionViewDO data) throws Exception;
+    public void validate(SectionDO data) throws Exception;
 }

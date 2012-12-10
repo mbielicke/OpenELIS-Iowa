@@ -40,5 +40,4 @@ public interface PanelLocal {
     public void delete(PanelDO data) throws Exception;
     
     public void validate(PanelDO data) throws Exception;
-
 }

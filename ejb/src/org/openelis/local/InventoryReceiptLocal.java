@@ -27,6 +27,7 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 
 @Local
@@ -41,7 +42,7 @@ public interface InventoryReceiptLocal {
     
     public InventoryReceiptViewDO abortUpdate(Integer id) throws Exception;   
     
-    public void delete(InventoryReceiptViewDO data) throws Exception;
+    public void delete(InventoryReceiptDO data) throws Exception;
     
     public void validate(InventoryReceiptViewDO data) throws Exception;
 

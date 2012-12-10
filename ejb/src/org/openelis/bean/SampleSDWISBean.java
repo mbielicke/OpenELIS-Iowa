@@ -37,6 +37,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.PWSDO;
+import org.openelis.domain.SampleSDWISDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.entity.SampleSDWIS;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -86,13 +87,12 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         return DataBaseUtil.toArrayList(query.getResultList());
     }
     
-    public SampleSDWISViewDO add(SampleSDWISViewDO data) throws Exception {
+    public SampleSDWISDO add(SampleSDWISDO data) throws Exception {
         SampleSDWIS entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = new SampleSDWIS();
-        
+        entity = new SampleSDWIS();        
         entity.setSampleId(data.getSampleId());
         entity.setPwsId(data.getPwsId());
         entity.setStateLabId(data.getStateLabId());
@@ -110,7 +110,7 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         return data;
     }
 
-    public SampleSDWISViewDO update(SampleSDWISViewDO data) throws Exception {
+    public SampleSDWISDO update(SampleSDWISDO data) throws Exception {
         SampleSDWIS entity;
         
         if (!data.isChanged())
@@ -133,7 +133,17 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         return data;
     }
 
-    public void validate(SampleSDWISViewDO data) throws Exception {
+    public void delete(SampleSDWISDO data) throws Exception {
+        SampleSDWIS entity;
+        
+        manager.setFlushMode(FlushModeType.COMMIT);
+        
+        entity = manager.find(SampleSDWIS.class, data.getId());
+        if (entity != null)
+            manager.remove(entity);
+    }
+
+    public void validate(SampleSDWISDO data) throws Exception {
         Integer id;
         ValidationErrorsList list;
         
@@ -162,16 +172,5 @@ public class SampleSDWISBean implements SampleSDWISLocal {
         
         if (list.size() > 0)
             throw list;
-    }
-
-    public void delete(SampleSDWISViewDO data) throws Exception {
-        SampleSDWIS entity;
-        
-        manager.setFlushMode(FlushModeType.COMMIT);
-        
-        entity = manager.find(SampleSDWIS.class, data.getId());
-        if (entity != null)
-            manager.remove(entity);
-        
     }
 }

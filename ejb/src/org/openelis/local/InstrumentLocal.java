@@ -27,6 +27,7 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.InstrumentDO;
 import org.openelis.domain.InstrumentViewDO;
 
 @Local
@@ -34,11 +35,9 @@ public interface InstrumentLocal {
 
     public InstrumentViewDO fetchById(Integer id) throws Exception;
 
-    public InstrumentViewDO add(InstrumentViewDO data) throws Exception;
+    public InstrumentDO add(InstrumentDO data) throws Exception;
 
-    public InstrumentViewDO update(InstrumentViewDO data) throws Exception;
+    public InstrumentDO update(InstrumentDO data) throws Exception;
 
-    public void validate(InstrumentViewDO data) throws Exception;
-        
-
+    public void validate(InstrumentDO data) throws Exception;        
 }

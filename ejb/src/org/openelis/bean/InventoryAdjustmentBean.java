@@ -112,7 +112,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         return (ArrayList<InventoryAdjustmentDO>)list;
     }
     
-    public InventoryAdjustmentViewDO add(InventoryAdjustmentViewDO data) throws Exception {
+    public InventoryAdjustmentDO add(InventoryAdjustmentDO data) throws Exception {
         InventoryAdjustment entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -127,7 +127,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         return data;
     }
 
-    public InventoryAdjustmentViewDO update(InventoryAdjustmentViewDO data) throws Exception {
+    public InventoryAdjustmentDO update(InventoryAdjustmentDO data) throws Exception {
         InventoryAdjustment entity;
         
         if (!data.isChanged())
@@ -142,7 +142,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         return data;
     }
 
-    public void validate(InventoryAdjustmentViewDO data) throws Exception {
+    public void validate(InventoryAdjustmentDO data) throws Exception {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();

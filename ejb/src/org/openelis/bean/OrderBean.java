@@ -38,6 +38,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.entity.Order;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -201,7 +202,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         }
     }    
 
-    public OrderViewDO add(OrderViewDO data) throws Exception {
+    public OrderDO add(OrderDO data) throws Exception {
         Order entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -227,7 +228,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         return data;
     }
 
-    public OrderViewDO update(OrderViewDO data) throws Exception {
+    public OrderDO update(OrderDO data) throws Exception {
         Order entity;
         
         if (!data.isChanged())
@@ -252,7 +253,7 @@ public class OrderBean implements OrderRemote, OrderLocal {
         return data;
     }
 
-    public void validate(OrderViewDO data) throws Exception {
+    public void validate(OrderDO data) throws Exception {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();

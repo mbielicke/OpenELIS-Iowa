@@ -36,6 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AnalysisUserDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.entity.AnalysisUser;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -106,7 +107,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
         return returnList;
     }        
     
-    public ArrayList<AnalysisUserViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) {
+    public ArrayList<AnalysisUserViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) throws Exception {
         Query query;
         ArrayList<AnalysisUserViewDO> list;
         AnalysisUserViewDO data;
@@ -129,7 +130,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
         return list;
     }
 
-    public AnalysisUserViewDO add(AnalysisUserViewDO data) {
+    public AnalysisUserDO add(AnalysisUserDO data) throws Exception {
         AnalysisUser entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -145,7 +146,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
         return data;
     }
 
-    public AnalysisUserViewDO update(AnalysisUserViewDO data) {
+    public AnalysisUserDO update(AnalysisUserDO data) throws Exception {
         AnalysisUser entity;
         
         if ( !data.isChanged())
@@ -161,7 +162,7 @@ public class AnalysisUserBean implements AnalysisUserLocal {
         return data;
     }
 
-    public void delete(AnalysisUserViewDO data) {
+    public void delete(AnalysisUserDO data) throws Exception {
         AnalysisUser entity;
         manager.setFlushMode(FlushModeType.COMMIT);
         

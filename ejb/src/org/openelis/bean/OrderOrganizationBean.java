@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.OrderOrganizationDO;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.entity.OrderOrganization;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -65,7 +66,7 @@ public class OrderOrganizationBean implements OrderOrganizationLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
-    public OrderOrganizationViewDO add(OrderOrganizationViewDO data) throws Exception {
+    public OrderOrganizationDO add(OrderOrganizationDO data) throws Exception {
         OrderOrganization entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -82,7 +83,7 @@ public class OrderOrganizationBean implements OrderOrganizationLocal {
         return data;
     }
 
-    public OrderOrganizationViewDO update(OrderOrganizationViewDO data) throws Exception {
+    public OrderOrganizationDO update(OrderOrganizationDO data) throws Exception {
         OrderOrganization entity;
         
         if (!data.isChanged())
@@ -99,7 +100,7 @@ public class OrderOrganizationBean implements OrderOrganizationLocal {
         return data;
     }
     
-    public void delete(OrderOrganizationViewDO data) throws Exception {
+    public void delete(OrderOrganizationDO data) throws Exception {
         OrderOrganization entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -110,7 +111,7 @@ public class OrderOrganizationBean implements OrderOrganizationLocal {
             manager.remove(entity);
     }
     
-    public void validate(OrderOrganizationViewDO data) throws Exception {
+    public void validate(OrderOrganizationDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();

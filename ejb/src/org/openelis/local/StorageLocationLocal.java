@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.StorageLocationDO;
 import org.openelis.domain.StorageLocationViewDO;
 
 @Local
@@ -38,16 +39,16 @@ public interface StorageLocationLocal {
     
     public ArrayList<StorageLocationViewDO> fetchByParentStorageLocationId(Integer id) throws Exception;
 
-    public StorageLocationViewDO add(StorageLocationViewDO data) throws Exception;
+    public StorageLocationDO add(StorageLocationDO data) throws Exception;
     
-    public StorageLocationViewDO update(StorageLocationViewDO data) throws Exception;
+    public StorageLocationDO update(StorageLocationDO data) throws Exception;
 
-    public void delete(StorageLocationViewDO deletedAt) throws Exception;
+    public void delete(StorageLocationDO data) throws Exception;
     
-    public void validateParentStorageLocation(StorageLocationViewDO data) throws Exception;
+    public void validateParentStorageLocation(StorageLocationDO data) throws Exception;
     
-    public void validateChildStorageLocation(StorageLocationViewDO data) throws Exception;
+    public void validateChildStorageLocation(StorageLocationDO data) throws Exception;
 
-    public void validateForDelete(StorageLocationViewDO data) throws Exception;
+    public void validateForDelete(StorageLocationDO data) throws Exception;
 
 }

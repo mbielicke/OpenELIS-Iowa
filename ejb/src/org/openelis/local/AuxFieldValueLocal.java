@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 
 @Local
@@ -37,8 +38,8 @@ public interface AuxFieldValueLocal {
     public ArrayList<AuxFieldValueViewDO> fetchByAuxDataRefIdRefTableId(Integer referenceId, Integer referenceTableId) throws Exception;
     public ArrayList<AuxFieldValueViewDO> fetchByFieldId(Integer fieldId) throws Exception;
     public ArrayList<AuxFieldValueViewDO> fetchByGroupId(Integer groupId) throws Exception;
-    public AuxFieldValueViewDO add(AuxFieldValueViewDO data) throws Exception;
-    public AuxFieldValueViewDO update(AuxFieldValueViewDO data) throws Exception;
-    public void delete(AuxFieldValueViewDO data) throws Exception;
-    public void validate(AuxFieldValueViewDO data) throws Exception;
+    public AuxFieldValueDO add(AuxFieldValueDO data) throws Exception;
+    public AuxFieldValueDO update(AuxFieldValueDO data) throws Exception;
+    public void delete(AuxFieldValueDO data) throws Exception;
+    public void validate(AuxFieldValueDO data) throws Exception;
 }

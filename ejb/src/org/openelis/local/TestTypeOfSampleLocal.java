@@ -36,11 +36,11 @@ public interface TestTypeOfSampleLocal {
     
     public ArrayList<TestTypeOfSampleDO> fetchByTestId(Integer testId)throws Exception;
     
-    public TestTypeOfSampleDO add(TestTypeOfSampleDO sampleType) throws Exception;
+    public TestTypeOfSampleDO add(TestTypeOfSampleDO data) throws Exception;
     
-    public TestTypeOfSampleDO update(TestTypeOfSampleDO sampleType) throws Exception;
+    public TestTypeOfSampleDO update(TestTypeOfSampleDO data) throws Exception;
     
-    public void delete(TestTypeOfSampleDO deletedAt) throws Exception;
+    public void delete(TestTypeOfSampleDO data) throws Exception;
     
-    public void validate(TestTypeOfSampleDO sampleType) throws Exception;
+    public void validate(TestTypeOfSampleDO data) throws Exception;
 }

@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.TestWorksheetAnalyteDO;
 import org.openelis.domain.TestWorksheetAnalyteViewDO;
 import org.openelis.entity.TestWorksheetAnalyte;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -62,7 +63,7 @@ public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
         return DataBaseUtil.toArrayList(list);
     }
     
-    public TestWorksheetAnalyteViewDO add(TestWorksheetAnalyteViewDO data) throws Exception {
+    public TestWorksheetAnalyteDO add(TestWorksheetAnalyteDO data) throws Exception {
         TestWorksheetAnalyte analyte;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -81,7 +82,7 @@ public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
         return data;
     }
     
-    public TestWorksheetAnalyteViewDO update(TestWorksheetAnalyteViewDO data) throws Exception {
+    public TestWorksheetAnalyteDO update(TestWorksheetAnalyteDO data) throws Exception {
         TestWorksheetAnalyte analyte;
         
         if(!data.isChanged()) 
@@ -100,23 +101,23 @@ public class TestWorksheetAnalyteBean implements TestWorksheetAnalyteLocal {
 
     }
 
-    public void delete(TestWorksheetAnalyteViewDO deletedAnalyteAt) throws Exception {
+    public void delete(TestWorksheetAnalyteDO data) throws Exception {
         TestWorksheetAnalyte analyte;
         
         manager.setFlushMode(FlushModeType.COMMIT);
         
-        analyte = manager.find(TestWorksheetAnalyte.class, deletedAnalyteAt.getId());
+        analyte = manager.find(TestWorksheetAnalyte.class, data.getId());
         
         if(analyte != null)
             manager.remove(analyte);
 
     }
 
-    public void validate(TestWorksheetAnalyteViewDO analyte) throws Exception {
+    public void validate(TestWorksheetAnalyteDO data) throws Exception {
         ValidationErrorsList list;
         Integer repeat;
                 
-        repeat = analyte.getRepeat();
+        repeat = data.getRepeat();
         list = new ValidationErrorsList();
         
         if (DataBaseUtil.isEmpty(repeat) || repeat < 1) {

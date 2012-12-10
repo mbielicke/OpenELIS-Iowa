@@ -29,14 +29,15 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldViewDO;
 
 @Local
 public interface AuxFieldLocal {
     public AuxFieldViewDO fetchById(Integer id) throws Exception;
     public ArrayList<AuxFieldViewDO> fetchByGroupId(Integer groupId) throws Exception;
-    public AuxFieldViewDO add(AuxFieldViewDO data) throws Exception;
-    public AuxFieldViewDO update(AuxFieldViewDO data) throws Exception;
-    public void delete(AuxFieldViewDO data) throws Exception;
-    public void validate(AuxFieldViewDO data) throws Exception;
+    public AuxFieldDO add(AuxFieldDO data) throws Exception;
+    public AuxFieldDO update(AuxFieldDO data) throws Exception;
+    public void delete(AuxFieldDO data) throws Exception;
+    public void validate(AuxFieldDO data) throws Exception;
 }

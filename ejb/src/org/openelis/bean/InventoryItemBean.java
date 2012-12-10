@@ -164,7 +164,7 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
     }
 
 
-    public InventoryItemViewDO add(InventoryItemViewDO data) throws Exception {
+    public InventoryItemDO add(InventoryItemDO data) throws Exception {
         InventoryItem entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -200,7 +200,7 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         return data;
     }
 
-    public InventoryItemViewDO update(InventoryItemViewDO data) throws Exception {
+    public InventoryItemDO update(InventoryItemDO data) throws Exception {
         InventoryItem entity;
         
         if (!data.isChanged())
@@ -239,7 +239,7 @@ public class InventoryItemBean implements InventoryItemRemote, InventoryItemLoca
         return data;
     }
 
-    public void validate(InventoryItemViewDO data) throws Exception {
+    public void validate(InventoryItemDO data) throws Exception {
         ArrayList<InventoryItemDO> dup;
         InventoryItemViewDO parentItem;
         ValidationErrorsList list;

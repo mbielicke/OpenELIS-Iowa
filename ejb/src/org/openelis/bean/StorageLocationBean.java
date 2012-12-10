@@ -37,6 +37,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.StorageLocationDO;
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.entity.StorageLocation;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -138,7 +139,7 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         return (ArrayList<IdNameVO>)list;
     }
 
-    public StorageLocationViewDO add(StorageLocationViewDO data) throws Exception {
+    public StorageLocationDO add(StorageLocationDO data) throws Exception {
         StorageLocation entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -156,7 +157,7 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         return data;
     }
 
-    public StorageLocationViewDO update(StorageLocationViewDO data) throws Exception {
+    public StorageLocationDO update(StorageLocationDO data) throws Exception {
         StorageLocation entity;
 
         if ( !data.isChanged())
@@ -174,7 +175,7 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
         return data;
     }
 
-    public void delete(StorageLocationViewDO data) throws Exception {
+    public void delete(StorageLocationDO data) throws Exception {
         StorageLocation entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -184,7 +185,7 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
             manager.remove(entity);
     }
 
-    public void validateParentStorageLocation(StorageLocationViewDO data) throws Exception {
+    public void validateParentStorageLocation(StorageLocationDO data) throws Exception {
         ValidationErrorsList list;
         ArrayList<StorageLocationViewDO> dups;
 
@@ -217,19 +218,19 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
 
     }
 
-    public void validateChildStorageLocation(StorageLocationViewDO storageLocationDO)
+    public void validateChildStorageLocation(StorageLocationDO data)
                                                                                      throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();
 
-        if (DataBaseUtil.isEmpty(storageLocationDO.getStorageUnitId()))
+        if (DataBaseUtil.isEmpty(data.getStorageUnitId()))
             list.add(new FieldErrorException(
                                              "fieldRequiredException",
                                              StorageLocationMeta.getChildStorageUnitDescription()));
 
         // location required
-        if (DataBaseUtil.isEmpty(storageLocationDO.getLocation()))
+        if (DataBaseUtil.isEmpty(data.getLocation()))
             list.add(new FieldErrorException("fieldRequiredException",
                                              StorageLocationMeta.getChildStorageUnitDescription()));
 
@@ -237,7 +238,7 @@ public class StorageLocationBean implements StorageLocationRemote, StorageLocati
             throw list;
     }
 
-    public void validateForDelete(StorageLocationViewDO data) throws Exception {
+    public void validateForDelete(StorageLocationDO data) throws Exception {
         ValidationErrorsList list;
         Query query;
         List result;

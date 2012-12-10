@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.InventoryXPutDO;
 import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
@@ -94,16 +95,16 @@ public class InventoryXPutBean implements InventoryXPutLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public InventoryXPutViewDO add(InventoryXPutViewDO data) throws Exception {
+    public InventoryXPutDO add(InventoryXPutDO data) throws Exception {
         return data;
     }
 
-    public InventoryXPutViewDO update(InventoryXPutViewDO data) throws Exception {
+    public InventoryXPutDO update(InventoryXPutDO data) throws Exception {
 
         return data;
     }
 
-    public void delete(InventoryXPutViewDO data) throws Exception {
+    public void delete(InventoryXPutDO data) throws Exception {
     }
 
 }

@@ -201,7 +201,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         return (ArrayList<IdNameVO>)list;
     }
 
-    public ProjectViewDO add(ProjectViewDO data) throws Exception {
+    public ProjectDO add(ProjectDO data) throws Exception {
         Project entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -222,7 +222,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         return data;
     }
 
-    public ProjectViewDO update(ProjectViewDO data) throws Exception {
+    public ProjectDO update(ProjectDO data) throws Exception {
         Project entity;
 
         if ( !data.isChanged())
@@ -244,7 +244,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         return data;
     }
 
-    public void validate(ProjectViewDO data) throws ValidationErrorsList {
+    public void validate(ProjectDO data) throws ValidationErrorsList {
         ArrayList<ProjectDO> dups;
         ValidationErrorsList list;
         

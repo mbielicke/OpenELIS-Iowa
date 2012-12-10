@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 
 @Local
@@ -38,7 +39,7 @@ public interface AuxDataLocal {
     public ArrayList<AuxDataViewDO> fetchForDataView(Integer referenceTableId, ArrayList<Integer> ids) throws Exception;
     public ArrayList<AuxDataViewDO> fetchByIdAnalyteName(Integer referenceId, Integer referenceTableId, String analyteName) throws Exception;
     public ArrayList<AuxDataViewDO> fetchByRefIdRefTableIdGroupName(Integer referenceId, Integer referenceTableId, String auxGroupName) throws Exception;
-    public AuxDataViewDO add(AuxDataViewDO data) throws Exception;
-    public AuxDataViewDO update(AuxDataViewDO data) throws Exception;
-    public void delete(AuxDataViewDO data) throws Exception;
+    public AuxDataDO add(AuxDataDO data) throws Exception;
+    public AuxDataDO update(AuxDataDO data) throws Exception;
+    public void delete(AuxDataDO data) throws Exception;
 }

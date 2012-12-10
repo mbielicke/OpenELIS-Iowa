@@ -40,7 +40,7 @@ public interface SampleQAEventLocal {
     public ArrayList<SampleQaEventViewDO> fetchExternalBySampleId(Integer sampleId) throws Exception;
     public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleIds(ArrayList<Integer> ids) throws Exception;
     public ArrayList<SampleQaEventDO> fetchResultOverrideBySampleId(Integer sampleId) throws Exception;
-    public void add(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void update(SampleQaEventViewDO sampleQAEventDO) throws Exception;
-    public void delete(SampleQaEventViewDO sampleQAEventDO) throws Exception;
+    public SampleQaEventDO add(SampleQaEventDO data) throws Exception;
+    public SampleQaEventDO update(SampleQaEventDO data) throws Exception;
+    public void delete(SampleQaEventDO data) throws Exception;
 }

@@ -40,6 +40,7 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.ExchangeLocalTermDO;
 import org.openelis.domain.ExchangeLocalTermViewDO;
 import org.openelis.domain.MethodDO;
 import org.openelis.domain.OrganizationViewDO;
@@ -185,7 +186,7 @@ public class ExchangeLocalTermBean implements  ExchangeLocalTermRemote, Exchange
         return (ArrayList<ExchangeLocalTermViewDO>)results;
     }
 
-    public ExchangeLocalTermViewDO add(ExchangeLocalTermViewDO data) throws Exception {
+    public ExchangeLocalTermDO add(ExchangeLocalTermDO data) throws Exception {
         ExchangeLocalTerm entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -200,7 +201,7 @@ public class ExchangeLocalTermBean implements  ExchangeLocalTermRemote, Exchange
         return data;
     }
 
-    public ExchangeLocalTermViewDO update(ExchangeLocalTermViewDO data) throws Exception {
+    public ExchangeLocalTermDO update(ExchangeLocalTermDO data) throws Exception {
         ExchangeLocalTerm entity;
 
         if (!data.isChanged())
@@ -214,7 +215,7 @@ public class ExchangeLocalTermBean implements  ExchangeLocalTermRemote, Exchange
         return data;
     }
 
-    public void validate(ExchangeLocalTermViewDO data) throws Exception {
+    public void validate(ExchangeLocalTermDO data) throws Exception {
         boolean checkDuplicate;
         ExchangeLocalTermViewDO localTerm;
         ValidationErrorsList list;        

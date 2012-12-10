@@ -43,6 +43,7 @@ import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.InventoryLocationViewDO;
+import org.openelis.domain.InventoryReceiptDO;
 import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.InventoryXPutViewDO;
 import org.openelis.domain.OrganizationDO;
@@ -455,7 +456,7 @@ public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryRe
         return fetchById(id);
     }
 
-    public void delete(InventoryReceiptViewDO data) throws Exception {
+    public void delete(InventoryReceiptDO data) throws Exception {
         // TODO Auto-generated method stub
     }
 

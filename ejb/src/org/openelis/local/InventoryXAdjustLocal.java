@@ -29,17 +29,18 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.InventoryXAdjustDO;
 import org.openelis.domain.InventoryXAdjustViewDO;
 
 @Local
 public interface InventoryXAdjustLocal {
     public ArrayList<InventoryXAdjustViewDO> fetchByInventoryAdjustmentId(Integer id) throws Exception;
 
-    public InventoryXAdjustViewDO add(InventoryXAdjustViewDO data) throws Exception;   
+    public InventoryXAdjustDO add(InventoryXAdjustDO data) throws Exception;   
 
-    public InventoryXAdjustViewDO update(InventoryXAdjustViewDO data) throws Exception;
+    public InventoryXAdjustDO update(InventoryXAdjustDO data) throws Exception;
 
-    public void delete(InventoryXAdjustViewDO data) throws Exception;
+    public void delete(InventoryXAdjustDO data) throws Exception;
 
-    public void validate(InventoryXAdjustViewDO data) throws Exception;
+    public void validate(InventoryXAdjustDO data) throws Exception;
 }

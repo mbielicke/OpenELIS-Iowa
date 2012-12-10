@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.SampleProjectDO;
 import org.openelis.domain.SampleProjectViewDO;
 
 
@@ -38,7 +39,7 @@ public interface SampleProjectLocal {
     public ArrayList<SampleProjectViewDO> fetchBySampleId(Integer sampleId) throws Exception;   
     public ArrayList<SampleProjectViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds);
     public ArrayList<SampleProjectViewDO> fetchPermanentBySampleId(Integer sampleId) throws Exception;
-    public SampleProjectViewDO add(SampleProjectViewDO sampleProjectDO);
-    public SampleProjectViewDO update(SampleProjectViewDO sampleProjectDO);
-    public void delete(SampleProjectViewDO sampleProjectDO);
+    public SampleProjectDO add(SampleProjectDO data);
+    public SampleProjectDO update(SampleProjectDO data);
+    public void delete(SampleProjectDO data);
 }

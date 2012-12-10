@@ -46,9 +46,9 @@ public interface AnalyteParameterLocal {
     
     public AnalyteParameterDO fetchById(Integer id) throws Exception;   
     
-    public AnalyteParameterViewDO add(AnalyteParameterViewDO data) throws Exception;
+    public AnalyteParameterDO add(AnalyteParameterDO data) throws Exception;
     
-    public AnalyteParameterViewDO update(AnalyteParameterViewDO data) throws Exception;  
+    public AnalyteParameterDO update(AnalyteParameterDO data) throws Exception;  
     
     public AnalyteParameterViewDO fetchForUpdate(Integer id) throws Exception;   
     

@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.WorksheetResultDO;
 import org.openelis.domain.WorksheetResultViewDO;
 import org.openelis.entity.WorksheetResult;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -67,7 +68,7 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public WorksheetResultViewDO add(WorksheetResultViewDO data) throws Exception {
+    public WorksheetResultDO add(WorksheetResultDO data) throws Exception {
         WorksheetResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -116,7 +117,7 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         return data;
     }
 
-    public WorksheetResultViewDO update(WorksheetResultViewDO data) throws Exception {
+    public WorksheetResultDO update(WorksheetResultDO data) throws Exception {
         WorksheetResult entity;
 
         if ( !data.isChanged())
@@ -165,7 +166,7 @@ public class WorksheetResultBean implements WorksheetResultLocal {
         return data;
     }
 
-    public void delete(WorksheetResultViewDO data) throws Exception {
+    public void delete(WorksheetResultDO data) throws Exception {
         WorksheetResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -175,7 +176,7 @@ public class WorksheetResultBean implements WorksheetResultLocal {
             manager.remove(entity);
     }
 
-    public void validate(WorksheetResultViewDO data) throws Exception {
+    public void validate(WorksheetResultDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();

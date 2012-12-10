@@ -159,7 +159,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return (ArrayList<IdNameVO>)list;
     }
 
-    public OrganizationViewDO add(OrganizationViewDO data) throws Exception {
+    public OrganizationDO add(OrganizationDO data) throws Exception {
         Organization entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -177,7 +177,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return data;
     }
 
-    public OrganizationViewDO update(OrganizationViewDO data) throws Exception {
+    public OrganizationDO update(OrganizationDO data) throws Exception {
         Organization entity;
 
         if (!data.isChanged() && !data.getAddress().isChanged())
@@ -195,7 +195,7 @@ public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
         return data;
     }
 
-    public void validate(OrganizationViewDO data) throws Exception {
+    public void validate(OrganizationDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();

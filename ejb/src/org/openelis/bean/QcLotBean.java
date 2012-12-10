@@ -143,7 +143,7 @@ public class QcLotBean implements QcLotLocal, QcLotRemote {
         return data;
     }
 
-    public QcLotViewDO add(QcLotViewDO data) throws Exception {
+    public QcLotDO add(QcLotDO data) throws Exception {
         QcLot entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -166,7 +166,7 @@ public class QcLotBean implements QcLotLocal, QcLotRemote {
         return data;
     }
 
-    public QcLotViewDO update(QcLotViewDO data) throws Exception {
+    public QcLotDO update(QcLotDO data) throws Exception {
         QcLot entity;
 
         if ( !data.isChanged())
@@ -237,7 +237,7 @@ public class QcLotBean implements QcLotLocal, QcLotRemote {
     }
     
 
-    public void validateForDelete(QcLotViewDO data) throws Exception {        
+    public void validateForDelete(QcLotDO data) throws Exception {        
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();

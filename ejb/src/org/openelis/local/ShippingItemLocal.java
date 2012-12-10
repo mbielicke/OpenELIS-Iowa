@@ -42,6 +42,6 @@ public interface ShippingItemLocal {
 
    public void delete(ShippingItemDO data) throws Exception;
 
-   public void validate(ShippingItemDO itemAt) throws Exception;;
+   public void validate(ShippingItemDO data) throws Exception;
 
 }

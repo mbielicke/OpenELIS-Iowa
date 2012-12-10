@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.SampleItemDO;
 import org.openelis.domain.SampleItemViewDO;
 
 @Local
@@ -12,7 +13,7 @@ public interface SampleItemLocal {
     public ArrayList<SampleItemViewDO> fetchBySampleId(Integer sampleId) throws Exception;
     public ArrayList<SampleItemViewDO> fetchBySampleIds(ArrayList<Integer> sampleIds);
     public ArrayList<SampleItemViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds);
-    public SampleItemViewDO add(SampleItemViewDO data);
-    public SampleItemViewDO update(SampleItemViewDO data);
-    public void delete(SampleItemViewDO data);
+    public SampleItemDO add(SampleItemDO data);
+    public SampleItemDO update(SampleItemDO data);
+    public void delete(SampleItemDO data);
 }

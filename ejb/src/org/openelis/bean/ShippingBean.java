@@ -39,6 +39,7 @@ import javax.persistence.Query;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.entity.Shipping;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -133,7 +134,7 @@ public class ShippingBean implements ShippingRemote, ShippingLocal{
         return (ArrayList<IdNameVO>)list;
     }
 
-    public ShippingViewDO add(ShippingViewDO data) throws Exception {
+    public ShippingDO add(ShippingDO data) throws Exception {
         Shipping entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -156,7 +157,7 @@ public class ShippingBean implements ShippingRemote, ShippingLocal{
         return data;
     }
 
-    public ShippingViewDO update(ShippingViewDO data) throws Exception {
+    public ShippingDO update(ShippingDO data) throws Exception {
         Shipping entity;
         
         if (!data.isChanged())
@@ -178,7 +179,7 @@ public class ShippingBean implements ShippingRemote, ShippingLocal{
         return data;
     }
 
-    public void validate(ShippingViewDO data) throws Exception {
+    public void validate(ShippingDO data) throws Exception {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();

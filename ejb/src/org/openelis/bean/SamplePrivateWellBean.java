@@ -39,6 +39,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.SamplePrivateWellDO;
 import org.openelis.domain.SamplePrivateWellViewDO;
 import org.openelis.entity.SamplePrivateWell;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -133,7 +134,7 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         return DataBaseUtil.toArrayList(results);
     }
 
-    public SamplePrivateWellViewDO add(SamplePrivateWellViewDO data) throws Exception {
+    public SamplePrivateWellDO add(SamplePrivateWellDO data) throws Exception {
         SamplePrivateWell entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -172,7 +173,7 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         return data;
     }
 
-    public SamplePrivateWellViewDO update(SamplePrivateWellViewDO data) throws Exception {
+    public SamplePrivateWellDO update(SamplePrivateWellDO data) throws Exception {
         SamplePrivateWell entity;
 
         if ( !data.isChanged() && !data.getLocationAddress().isChanged() &&
@@ -236,7 +237,7 @@ public class SamplePrivateWellBean implements SamplePrivateWellLocal {
         return data;
     }
 
-    public void delete(SamplePrivateWellViewDO data) throws Exception {
+    public void delete(SamplePrivateWellDO data) throws Exception {
         SamplePrivateWell entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

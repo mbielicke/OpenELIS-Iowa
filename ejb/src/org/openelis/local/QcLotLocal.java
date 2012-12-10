@@ -42,13 +42,13 @@ public interface QcLotLocal {
     
     public QcLotDO fetchByLotNumber(String systemName) throws Exception;
 
-    public QcLotViewDO add(QcLotViewDO data) throws Exception;
+    public QcLotDO add(QcLotDO data) throws Exception;
 
-    public QcLotViewDO update(QcLotViewDO data) throws Exception;
+    public QcLotDO update(QcLotDO data) throws Exception;
 
     public void delete(QcLotDO data) throws Exception;
 
     public void validate(QcLotDO data) throws Exception;
     
-    public void validateForDelete(QcLotViewDO data) throws Exception;
+    public void validateForDelete(QcLotDO data) throws Exception;
 }

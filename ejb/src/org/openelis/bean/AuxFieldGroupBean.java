@@ -175,8 +175,8 @@ public class AuxFieldGroupBean implements AuxFieldGroupRemote, AuxFieldGroupLoca
     }
 
     public void validate(AuxFieldGroupDO data) throws Exception {
-        ValidationErrorsList list;
         boolean checkDuplicate,overlap;
+        ValidationErrorsList list;
         ArrayList<AuxFieldGroupDO> groups;
         AuxFieldGroupDO group;
         

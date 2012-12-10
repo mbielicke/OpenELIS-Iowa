@@ -27,15 +27,16 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.InventoryAdjustmentDO;
 import org.openelis.domain.InventoryAdjustmentViewDO;
 
 @Local
 public interface InventoryAdjustmentLocal {
     public InventoryAdjustmentViewDO fetchById(Integer id) throws Exception;
 
-    public InventoryAdjustmentViewDO add(InventoryAdjustmentViewDO data) throws Exception;
+    public InventoryAdjustmentDO add(InventoryAdjustmentDO data) throws Exception;
 
-    public InventoryAdjustmentViewDO update(InventoryAdjustmentViewDO data) throws Exception;
+    public InventoryAdjustmentDO update(InventoryAdjustmentDO data) throws Exception;
 
-    public void validate(InventoryAdjustmentViewDO data) throws Exception;
+    public void validate(InventoryAdjustmentDO data) throws Exception;
 }

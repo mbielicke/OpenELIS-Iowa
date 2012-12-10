@@ -166,7 +166,7 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
-    public AnalysisQaEventViewDO add(AnalysisQaEventViewDO data) {
+    public AnalysisQaEventDO add(AnalysisQaEventDO data) throws Exception {
         AnalysisQaevent entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -184,7 +184,7 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         
     }
 
-    public AnalysisQaEventViewDO update(AnalysisQaEventViewDO data) {
+    public AnalysisQaEventDO update(AnalysisQaEventDO data) throws Exception {
         AnalysisQaevent entity;
         
         if ( !data.isChanged())
@@ -201,7 +201,7 @@ public class AnalysisQAEventBean implements AnalysisQAEventLocal {
         return data;
     }
     
-    public void delete(AnalysisQaEventViewDO data) {
+    public void delete(AnalysisQaEventDO data) throws Exception {
         AnalysisQaevent entity;
         manager.setFlushMode(FlushModeType.COMMIT);
         

@@ -28,6 +28,8 @@ package org.openelis.local;
 import java.util.ArrayList;
 
 import javax.ejb.Local;
+
+import org.openelis.domain.OrderDO;
 import org.openelis.domain.OrderViewDO;
 
 @Local
@@ -36,9 +38,9 @@ public interface OrderLocal {
     
     public ArrayList<OrderViewDO> fetchByShippingId(Integer shippingId) throws Exception;
 
-    public OrderViewDO add(OrderViewDO data) throws Exception;
+    public OrderDO add(OrderDO data) throws Exception;
 
-    public OrderViewDO update(OrderViewDO data) throws Exception;
+    public OrderDO update(OrderDO data) throws Exception;
 
-    public void validate(OrderViewDO data) throws Exception;
+    public void validate(OrderDO data) throws Exception;
 }

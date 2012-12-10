@@ -170,7 +170,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         return dictDO;
     }
 
-    public DictionaryViewDO add(DictionaryViewDO data) throws Exception {
+    public DictionaryDO add(DictionaryDO data) throws Exception {
         Dictionary entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -190,7 +190,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         return data;
     }
 
-    public DictionaryViewDO update(DictionaryViewDO data) throws Exception {
+    public DictionaryDO update(DictionaryDO data) throws Exception {
         Dictionary entity;
 
         if ( !data.isChanged())
@@ -214,7 +214,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
         return data;
     }
 
-    public void delete(DictionaryViewDO data) throws Exception {
+    public void delete(DictionaryDO data) throws Exception {
         Dictionary entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -226,8 +226,19 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
             manager.remove(entity);
         }
     }
+    
+    public ArrayList<CategoryCacheVO> preLoadBySystemName(ArrayList<CategoryCacheVO> cacheVO) throws Exception {
+        CategoryCacheVO catVO;
 
-    public void validate(DictionaryViewDO data) throws Exception {
+        for (int i = 0; i < cacheVO.size(); i++ ) {
+            catVO = cacheVO.get(i);
+            catVO.setDictionaryList(fetchByCategorySystemName(catVO.getSystemName()));
+        }
+
+        return cacheVO;
+    }
+
+    public void validate(DictionaryDO data) throws Exception {
         ValidationErrorsList list;
         String entry;
 
@@ -241,18 +252,7 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
             throw list;
     }
 
-    public ArrayList<CategoryCacheVO> preLoadBySystemName(ArrayList<CategoryCacheVO> cacheVO) throws Exception {
-        CategoryCacheVO catVO;
-
-        for (int i = 0; i < cacheVO.size(); i++ ) {
-            catVO = cacheVO.get(i);
-            catVO.setDictionaryList(fetchByCategorySystemName(catVO.getSystemName()));
-        }
-
-        return cacheVO;
-    }
-
-    public void validateForDelete(DictionaryViewDO data) throws Exception {
+    public void validateForDelete(DictionaryDO data) throws Exception {
         Query query;
         ValidationErrorsList list;
         List result;
@@ -285,7 +285,5 @@ public class DictionaryBean implements DictionaryLocal, DictionaryRemote {
             list.add(new FieldErrorException("dictionaryDeleteException", null));
             throw list;
         }
-
     }
-
 }

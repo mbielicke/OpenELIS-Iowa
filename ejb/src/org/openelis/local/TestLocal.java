@@ -30,6 +30,7 @@ import java.util.Collection;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.domain.TestViewDO;
 
@@ -43,9 +44,9 @@ public interface TestLocal {
     
     public ArrayList<TestMethodVO> fetchList() throws Exception;
 
-    public TestViewDO add(TestViewDO data) throws Exception;
+    public TestDO add(TestDO data) throws Exception;
 
-    public TestViewDO update(TestViewDO data) throws Exception;
+    public TestDO update(TestDO data) throws Exception;
 
-    public void validate(TestViewDO data) throws Exception;
+    public void validate(TestDO data) throws Exception;
 }

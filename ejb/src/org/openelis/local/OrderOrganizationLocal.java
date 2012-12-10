@@ -29,13 +29,14 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.OrderOrganizationDO;
 import org.openelis.domain.OrderOrganizationViewDO;
 
 @Local
 public interface OrderOrganizationLocal {
     public ArrayList<OrderOrganizationViewDO> fetchByOrderId(Integer orderId) throws Exception;   
-    public OrderOrganizationViewDO add(OrderOrganizationViewDO data) throws Exception;
-    public OrderOrganizationViewDO update(OrderOrganizationViewDO data) throws Exception; 
-    public void delete(OrderOrganizationViewDO data) throws Exception;
-    public void validate(OrderOrganizationViewDO data) throws Exception;
+    public OrderOrganizationDO add(OrderOrganizationDO data) throws Exception;
+    public OrderOrganizationDO update(OrderOrganizationDO data) throws Exception; 
+    public void delete(OrderOrganizationDO data) throws Exception;
+    public void validate(OrderOrganizationDO data) throws Exception;
 }

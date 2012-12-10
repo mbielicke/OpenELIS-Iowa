@@ -34,9 +34,9 @@ public interface CategoryLocal {
 
     public CategoryDO fetchById(Integer id) throws Exception;
     
-    public CategoryDO add(CategoryDO category) throws Exception;
+    public CategoryDO add(CategoryDO data) throws Exception;
     
-    public CategoryDO update(CategoryDO category) throws Exception;    
+    public CategoryDO update(CategoryDO data) throws Exception;    
     
     public void validate(CategoryDO category) throws Exception;   
         

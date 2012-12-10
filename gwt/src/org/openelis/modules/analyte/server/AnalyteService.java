@@ -32,7 +32,6 @@ import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.server.EJBFactory;
-import org.openelis.remote.AnalyteRemote;
 
 public class AnalyteService {
     public AnalyteViewDO fetchById(Integer id) throws Exception {
@@ -43,11 +42,11 @@ public class AnalyteService {
         return EJBFactory.getAnalyte().query(query.getFields(), query.getPage() * query.getRowsPerPage(), query.getRowsPerPage());
     }
 
-    public AnalyteViewDO add(AnalyteViewDO data) throws Exception {
+    public AnalyteDO add(AnalyteViewDO data) throws Exception {
         return EJBFactory.getAnalyte().add(data);
     }
 
-    public AnalyteViewDO update(AnalyteViewDO data) throws Exception {
+    public AnalyteDO update(AnalyteViewDO data) throws Exception {
         return EJBFactory.getAnalyte().update(data);
     }
 
@@ -55,7 +54,7 @@ public class AnalyteService {
         return EJBFactory.getAnalyte().fetchForUpdate(id);
     }
 
-    public void delete(AnalyteViewDO data) throws Exception {
+    public void delete(AnalyteDO data) throws Exception {
     	EJBFactory.getAnalyte().delete(data);
     }
 
@@ -66,5 +65,4 @@ public class AnalyteService {
     public ArrayList<AnalyteDO> fetchByName(String search) throws Exception {
         return EJBFactory.getAnalyte().fetchByName(search + "%", 100);
     }
-
 }

@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.NoteDO;
 import org.openelis.domain.NoteViewDO;
 
 @Local
@@ -39,9 +40,9 @@ public interface NoteLocal {
 
     public ArrayList<NoteViewDO> fetchByRefTableRefIdIsExt(Integer refTableId, Integer refId, String isExternal) throws Exception;
     
-    public NoteViewDO add(NoteViewDO note) throws Exception;
+    public NoteDO add(NoteDO note) throws Exception;
 
-    public NoteViewDO update(NoteViewDO note) throws Exception;
+    public NoteDO update(NoteDO note) throws Exception;
 
-    public void delete(NoteViewDO data) throws Exception;
+    public void delete(NoteDO data) throws Exception;
 }

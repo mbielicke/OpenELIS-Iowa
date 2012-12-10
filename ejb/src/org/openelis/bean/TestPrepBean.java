@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.TestPrepDO;
 import org.openelis.domain.TestPrepViewDO;
 import org.openelis.entity.TestPrep;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -66,7 +67,7 @@ public class TestPrepBean implements TestPrepLocal {
         return DataBaseUtil.toArrayList(testPrepDOList);
     }
     
-    public TestPrepViewDO add(TestPrepViewDO data) throws Exception {
+    public TestPrepDO add(TestPrepDO data) throws Exception {
         TestPrep prepTest;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -85,7 +86,7 @@ public class TestPrepBean implements TestPrepLocal {
 
     }
     
-    public TestPrepViewDO update(TestPrepViewDO data) throws Exception {
+    public TestPrepDO update(TestPrepDO data) throws Exception {
         TestPrep prepTest;
 
         if(!data.isChanged())
@@ -102,22 +103,22 @@ public class TestPrepBean implements TestPrepLocal {
         return data;
     }
 
-    public void delete(TestPrepViewDO deletedAt) throws Exception {
-        TestPrep prepTest;
+    public void delete(TestPrepDO data) throws Exception {
+        TestPrep entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        prepTest = manager.find(TestPrep.class, deletedAt.getId());
+        entity = manager.find(TestPrep.class, data.getId());
 
-        if (prepTest != null)
-            manager.remove(prepTest);
+        if (entity != null)
+            manager.remove(entity);
     }
 
-    public void validate(TestPrepViewDO prepDO) throws Exception {
+    public void validate(TestPrepDO data) throws Exception {
         ValidationErrorsList list;                
 
         list = new ValidationErrorsList();        
-        if (prepDO.getPrepTestId() == null) {
+        if (data.getPrepTestId() == null) {
             list.add(new FieldErrorException("fieldRequiredException",
                                              TestMeta.getPrepPrepTestName()));                        
         }

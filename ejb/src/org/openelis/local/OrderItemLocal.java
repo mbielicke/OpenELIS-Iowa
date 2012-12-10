@@ -41,12 +41,12 @@ public interface OrderItemLocal {
     
     public OrderItemViewDO fetchById(Integer id) throws Exception;
     
-    public OrderItemViewDO add(OrderItemViewDO data) throws Exception;
+    public OrderItemDO add(OrderItemDO data) throws Exception;
     
     public ArrayList<OrderItemViewDO> add(OrderViewDO order, 
                                           ArrayList<OrderItemViewDO> items) throws Exception;
 
-    public OrderItemViewDO update(OrderItemViewDO data) throws Exception;
+    public OrderItemDO update(OrderItemDO data) throws Exception;
 
     public void delete(OrderItemDO data) throws Exception;
 

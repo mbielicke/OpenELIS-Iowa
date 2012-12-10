@@ -42,9 +42,9 @@ public interface AnalyteRemote {
 
     public ArrayList<IdNameVO> query(ArrayList<QueryData> fields, int first, int max) throws Exception;
 
-    public AnalyteViewDO add(AnalyteViewDO data) throws Exception;
+    public AnalyteDO add(AnalyteDO data) throws Exception;
 
-    public AnalyteViewDO update(AnalyteViewDO data) throws Exception;
+    public AnalyteDO update(AnalyteDO data) throws Exception;
 
     public AnalyteViewDO fetchForUpdate(Integer id) throws Exception;
 
@@ -52,5 +52,5 @@ public interface AnalyteRemote {
     
     public ArrayList<AnalyteDO> getAlias(ArrayList<Integer> analyteIds) throws Exception;
 
-    public void delete(AnalyteViewDO data) throws Exception;	 
+    public void delete(AnalyteDO data) throws Exception;	 
 }

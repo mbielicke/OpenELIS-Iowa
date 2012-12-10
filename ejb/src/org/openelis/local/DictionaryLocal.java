@@ -45,14 +45,14 @@ public interface DictionaryLocal {
     
     public ArrayList<DictionaryViewDO> fetchByIds(Collection<Integer> ids) throws Exception;
     
-    public DictionaryViewDO add(DictionaryViewDO data) throws Exception;
+    public DictionaryDO add(DictionaryDO data) throws Exception;
     
-    public DictionaryViewDO update(DictionaryViewDO data) throws Exception;
+    public DictionaryDO update(DictionaryDO data) throws Exception;
     
-    public void delete(DictionaryViewDO data) throws Exception;
+    public void delete(DictionaryDO data) throws Exception;
     
-    public void validate(DictionaryViewDO data) throws Exception;    
+    public void validate(DictionaryDO data) throws Exception;    
     
-    public void validateForDelete(DictionaryViewDO data) throws Exception;    
+    public void validateForDelete(DictionaryDO data) throws Exception;    
 
 }

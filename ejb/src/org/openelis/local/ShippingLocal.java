@@ -27,6 +27,7 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.ShippingDO;
 import org.openelis.domain.ShippingViewDO;
 
 @Local
@@ -34,10 +35,10 @@ public interface ShippingLocal {
 
    public ShippingViewDO fetchById(Integer id) throws Exception;
 
-   public ShippingViewDO add(ShippingViewDO data) throws Exception;
+   public ShippingDO add(ShippingDO data) throws Exception;
 
-   public ShippingViewDO update(ShippingViewDO data) throws Exception;
+   public ShippingDO update(ShippingDO data) throws Exception;
    
-   public void validate(ShippingViewDO data) throws Exception;
+   public void validate(ShippingDO data) throws Exception;
 
 }

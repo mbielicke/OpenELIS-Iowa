@@ -40,9 +40,9 @@ public interface InventoryLocationLocal {
     
     public InventoryLocationViewDO fetchById(Integer id) throws Exception;        
 
-    public InventoryLocationViewDO add(InventoryLocationViewDO data) throws Exception;
+    public InventoryLocationDO add(InventoryLocationDO data) throws Exception;
 
-    public InventoryLocationViewDO update(InventoryLocationViewDO data) throws Exception;
+    public InventoryLocationDO update(InventoryLocationDO data) throws Exception;
     
     public InventoryLocationViewDO fetchForUpdate(Integer id) throws Exception;
     

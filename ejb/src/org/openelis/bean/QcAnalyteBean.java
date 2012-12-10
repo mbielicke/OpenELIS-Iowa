@@ -86,7 +86,7 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public QcAnalyteViewDO add(QcAnalyteViewDO data) throws Exception {
+    public QcAnalyteDO add(QcAnalyteDO data) throws Exception {
         QcAnalyte entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -105,7 +105,7 @@ public class QcAnalyteBean implements QcAnalyteLocal {
         return data;
     }
 
-    public QcAnalyteViewDO update(QcAnalyteViewDO data) throws Exception {
+    public QcAnalyteDO update(QcAnalyteDO data) throws Exception {
         QcAnalyte entity;
 
         if ( !data.isChanged())
