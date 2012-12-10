@@ -154,7 +154,7 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         return (ArrayList<IdNameVO>)list;
     }
 
-    public AnalyteViewDO add(AnalyteViewDO data) throws Exception {
+    public AnalyteDO add(AnalyteDO data) throws Exception {
         Analyte entity;
 
         checkSecurity(ModuleFlags.ADD);
@@ -175,7 +175,7 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
         return data;
     }
 
-    public AnalyteViewDO update(AnalyteViewDO data) throws Exception {
+    public AnalyteDO update(AnalyteDO data) throws Exception {
         Analyte entity;
 
         if ( !data.isChanged()) {
@@ -202,7 +202,7 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
 
     }
 
-    public void delete(AnalyteViewDO data) throws Exception {
+    public void delete(AnalyteDO data) throws Exception {
         Analyte entity;
 
         checkSecurity(ModuleFlags.DELETE);
@@ -272,7 +272,7 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
 
     }
 
-    public void validate(AnalyteViewDO data) throws Exception {
+    private void validate(AnalyteDO data) throws Exception {
         Analyte analyte;
         Query query;
         ValidationErrorsList list;

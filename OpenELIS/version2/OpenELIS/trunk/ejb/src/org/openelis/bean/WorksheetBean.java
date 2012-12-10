@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -38,9 +37,9 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
-import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.InstrumentLogDO;
+import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.entity.InstrumentLog;
 import org.openelis.entity.Worksheet;
@@ -53,14 +52,9 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.InstrumentLogLocal;
 import org.openelis.local.WorksheetLocal;
-import org.openelis.manager.WorksheetAnalysisManager;
-import org.openelis.manager.WorksheetItemManager;
-import org.openelis.manager.WorksheetManager;
-import org.openelis.manager.WorksheetManagerProxy;
 import org.openelis.meta.WorksheetCompletionMeta;
 import org.openelis.remote.WorksheetRemote;
 import org.openelis.util.QueryBuilderV2;
@@ -73,9 +67,6 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
 
 	@PersistenceContext(unitName = "openelis")
     private EntityManager manager;
-	
-	@EJB
-	private AnalysisLocal analysis;
 	
     @EJB
     private DictionaryLocal dictionary;
@@ -236,7 +227,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         return list;
     }
 
-	public WorksheetViewDO add(WorksheetViewDO data){
+	public WorksheetDO add(WorksheetDO data) throws Exception {
 	    InstrumentLog ilEntity;
         Worksheet     entity;
         
@@ -267,7 +258,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         return data;
     }
     
-    public WorksheetViewDO update(WorksheetViewDO data) throws Exception {
+    public WorksheetDO update(WorksheetDO data) throws Exception {
         InstrumentLog   ilEntity;
         InstrumentLogDO ilDO;
         Worksheet       entity;
@@ -364,7 +355,7 @@ public class WorksheetBean implements WorksheetRemote, WorksheetLocal {
         return data;
     }
 
-    public void validate(WorksheetViewDO data) throws Exception {
+    public void validate(WorksheetDO data) throws Exception {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();

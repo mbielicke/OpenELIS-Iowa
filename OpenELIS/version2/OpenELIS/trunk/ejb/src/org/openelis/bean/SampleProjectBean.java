@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.SampleProjectDO;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.entity.SampleProject;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -85,7 +86,7 @@ public class SampleProjectBean implements SampleProjectLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
 
-    public SampleProjectViewDO add(SampleProjectViewDO data) {
+    public SampleProjectDO add(SampleProjectDO data) {
         SampleProject entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -101,7 +102,7 @@ public class SampleProjectBean implements SampleProjectLocal {
         return data;
     }
 
-    public SampleProjectViewDO update(SampleProjectViewDO data) {
+    public SampleProjectDO update(SampleProjectDO data) {
         SampleProject entity;
         
         if (!data.isChanged())
@@ -117,7 +118,7 @@ public class SampleProjectBean implements SampleProjectLocal {
         return data;
     }
 
-    public void delete(SampleProjectViewDO data) {
+    public void delete(SampleProjectDO data) {
         SampleProject entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);

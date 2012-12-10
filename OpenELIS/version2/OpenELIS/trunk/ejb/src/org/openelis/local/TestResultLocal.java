@@ -29,6 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestResultViewDO;
 
 @Local
@@ -36,11 +37,11 @@ public interface TestResultLocal {
     
     public ArrayList<ArrayList<TestResultViewDO>> fetchByTestId(Integer testId) throws Exception;
     
-    public TestResultViewDO add(TestResultViewDO data) throws Exception;
+    public TestResultDO add(TestResultDO data) throws Exception;
     
-    public TestResultViewDO update(TestResultViewDO data) throws Exception;
+    public TestResultDO update(TestResultDO data) throws Exception;
     
-    public void delete(TestResultViewDO data) throws Exception;
+    public void delete(TestResultDO data) throws Exception;
     
-    public void validate(TestResultViewDO data) throws Exception;
+    public void validate(TestResultDO data) throws Exception;
 }

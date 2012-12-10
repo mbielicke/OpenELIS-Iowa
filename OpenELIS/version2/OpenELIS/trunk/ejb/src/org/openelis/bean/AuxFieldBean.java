@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AuxFieldDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.entity.AuxField;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -84,7 +85,7 @@ public class AuxFieldBean implements AuxFieldLocal {
         return data;
     }
     
-    public AuxFieldViewDO add(AuxFieldViewDO data) throws Exception {
+    public AuxFieldDO add(AuxFieldDO data) throws Exception {
         AuxField entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -107,7 +108,7 @@ public class AuxFieldBean implements AuxFieldLocal {
         return data;
     }
 
-    public AuxFieldViewDO update(AuxFieldViewDO data) throws Exception {
+    public AuxFieldDO update(AuxFieldDO data) throws Exception {
         AuxField entity;
         
         if (!data.isChanged())
@@ -129,7 +130,7 @@ public class AuxFieldBean implements AuxFieldLocal {
         return data;
     }
     
-    public void delete(AuxFieldViewDO data) throws Exception {
+    public void delete(AuxFieldDO data) throws Exception {
         AuxField entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -138,7 +139,7 @@ public class AuxFieldBean implements AuxFieldLocal {
             manager.remove(entity);
     }
 
-    public void validate(AuxFieldViewDO data) throws Exception {
+    public void validate(AuxFieldDO data) throws Exception {
         ValidationErrorsList list;
     
         list = new ValidationErrorsList();

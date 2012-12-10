@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.NoteDO;
 import org.openelis.domain.NoteViewDO;
 import org.openelis.entity.Note;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -150,7 +151,7 @@ public class NoteBean implements NoteLocal {
         return list;
     }
 
-    public NoteViewDO add(NoteViewDO data) throws Exception {
+    public NoteDO add(NoteDO data) throws Exception {
         Note entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -170,7 +171,7 @@ public class NoteBean implements NoteLocal {
         return data;
     }
 
-    public NoteViewDO update(NoteViewDO data) throws Exception {
+    public NoteDO update(NoteDO data) throws Exception {
         Note entity;
 
         if ( !data.isChanged())
@@ -190,7 +191,7 @@ public class NoteBean implements NoteLocal {
         return data;
     }
 
-    public void delete(NoteViewDO data) throws Exception {
+    public void delete(NoteDO data) throws Exception {
         Note entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

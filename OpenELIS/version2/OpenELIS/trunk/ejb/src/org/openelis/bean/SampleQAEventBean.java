@@ -134,7 +134,7 @@ public class SampleQAEventBean implements SampleQAEventLocal {
         return DataBaseUtil.toArrayList(returnList);
     }
     
-    public void add(SampleQaEventViewDO data) {
+    public SampleQaEventDO add(SampleQaEventDO data) throws Exception {
         SampleQaevent entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -147,13 +147,15 @@ public class SampleQAEventBean implements SampleQAEventLocal {
 
         manager.persist(entity);
         data.setId(entity.getId());
+        
+        return data;
     }
 
-    public void update(SampleQaEventViewDO data) {
+    public SampleQaEventDO update(SampleQaEventDO data) throws Exception {
         SampleQaevent entity;
 
         if ( !data.isChanged())
-            return;
+            return data;
 
         manager.setFlushMode(FlushModeType.COMMIT);
 
@@ -162,9 +164,11 @@ public class SampleQAEventBean implements SampleQAEventLocal {
         entity.setQaeventId(data.getQaEventId());
         entity.setTypeId(data.getTypeId());
         entity.setIsBillable(data.getIsBillable());
+        
+        return data;
     }
 
-    public void delete(SampleQaEventViewDO data) {
+    public void delete(SampleQaEventDO data) throws Exception {
         SampleQaevent entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

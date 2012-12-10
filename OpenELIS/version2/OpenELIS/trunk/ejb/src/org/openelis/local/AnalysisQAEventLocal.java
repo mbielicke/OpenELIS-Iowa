@@ -43,7 +43,7 @@ public interface AnalysisQAEventLocal {
     public ArrayList<AnalysisQaEventDO> fetchResultOverrideByAnalysisIds(ArrayList<Integer> ids) throws Exception;
     public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleIds(ArrayList<Integer> ids) throws Exception;
     public ArrayList<AnalysisQaevent> fetchResultOverrideBySampleId(Integer id) throws Exception;
-    public AnalysisQaEventViewDO add(AnalysisQaEventViewDO data) throws Exception;
-    public AnalysisQaEventViewDO update(AnalysisQaEventViewDO data) throws Exception;
-    public void delete(AnalysisQaEventViewDO data) throws Exception;        
+    public AnalysisQaEventDO add(AnalysisQaEventDO data) throws Exception;
+    public AnalysisQaEventDO update(AnalysisQaEventDO data) throws Exception;
+    public void delete(AnalysisQaEventDO data) throws Exception;        
 }

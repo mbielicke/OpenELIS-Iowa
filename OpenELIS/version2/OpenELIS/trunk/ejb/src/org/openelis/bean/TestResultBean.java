@@ -39,6 +39,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.TestResultDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.entity.TestResult;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -132,7 +133,7 @@ public class TestResultBean implements TestResultLocal {
         return grid;
     }
 
-    public TestResultViewDO add(TestResultViewDO data) throws Exception {
+    public TestResultDO add(TestResultDO data) throws Exception {
         TestResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -155,7 +156,7 @@ public class TestResultBean implements TestResultLocal {
         return data;
     }
 
-    public TestResultViewDO update(TestResultViewDO data) throws Exception {
+    public TestResultDO update(TestResultDO data) throws Exception {
         TestResult entity;
 
         if ( !data.isChanged())
@@ -179,7 +180,7 @@ public class TestResultBean implements TestResultLocal {
 
     }
 
-    public void delete(TestResultViewDO data) throws Exception {
+    public void delete(TestResultDO data) throws Exception {
         TestResult entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -191,7 +192,7 @@ public class TestResultBean implements TestResultLocal {
 
     }
 
-    public void validate(TestResultViewDO data) throws Exception {
+    public void validate(TestResultDO data) throws Exception {
         ValidationErrorsList list;
         Integer typeId;
         String value;
@@ -219,7 +220,5 @@ public class TestResultBean implements TestResultLocal {
 
         if (list.size() > 0)
             throw list;
-
     }
-
 }

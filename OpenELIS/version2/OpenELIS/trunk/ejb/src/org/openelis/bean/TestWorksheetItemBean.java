@@ -160,7 +160,6 @@ public class TestWorksheetItemBean implements TestWorksheetItemLocal {
 
     }
 
-
     public void validate(TestWorksheetItemDO data) throws Exception {
         String name;
         ValidationErrorsList list;

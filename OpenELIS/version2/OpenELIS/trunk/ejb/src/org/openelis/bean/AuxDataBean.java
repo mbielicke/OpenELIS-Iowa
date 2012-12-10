@@ -40,6 +40,7 @@ import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;
 import org.openelis.domain.DictionaryDO;
@@ -231,7 +232,7 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public AuxDataViewDO add(AuxDataViewDO data) throws Exception {
+    public AuxDataDO add(AuxDataDO data) throws Exception {
         AuxData entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -251,7 +252,7 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         return data;
     }
 
-    public AuxDataViewDO update(AuxDataViewDO data) throws Exception {
+    public AuxDataDO update(AuxDataDO data) throws Exception {
         AuxData entity;
 
         if ( !data.isChanged())
@@ -271,7 +272,7 @@ public class AuxDataBean implements AuxDataLocal, AuxDataRemote {
         return data;
     }
 
-    public void delete(AuxDataViewDO data) throws Exception {
+    public void delete(AuxDataDO data) throws Exception {
         AuxData entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

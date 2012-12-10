@@ -34,6 +34,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.TestWorksheetDO;
 import org.openelis.domain.TestWorksheetViewDO;
 import org.openelis.entity.TestWorksheet;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -71,7 +72,7 @@ public class TestWorksheetBean implements TestWorksheetLocal {
         return data;
     }
     
-    public TestWorksheetViewDO add(TestWorksheetViewDO data) throws Exception {
+    public TestWorksheetDO add(TestWorksheetDO data) throws Exception {
         TestWorksheet entity;      
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -92,7 +93,7 @@ public class TestWorksheetBean implements TestWorksheetLocal {
 
     }
 
-    public TestWorksheetViewDO update(TestWorksheetViewDO data) throws Exception {
+    public TestWorksheetDO update(TestWorksheetDO data) throws Exception {
         TestWorksheet entity;
         
         if(!data.isChanged())
@@ -112,7 +113,7 @@ public class TestWorksheetBean implements TestWorksheetLocal {
 
     }
 
-    public void validate(TestWorksheetViewDO data) throws Exception {
+    public void validate(TestWorksheetDO data) throws Exception {
         boolean checkForMultiple = true;
         ValidationErrorsList list;
 

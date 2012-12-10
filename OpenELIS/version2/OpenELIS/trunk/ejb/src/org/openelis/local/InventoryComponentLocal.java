@@ -36,9 +36,9 @@ import org.openelis.domain.InventoryComponentViewDO;
 public interface InventoryComponentLocal {
     public ArrayList<InventoryComponentViewDO> fetchByInventoryItemId(Integer id) throws Exception;
 
-    public InventoryComponentViewDO add(InventoryComponentViewDO data) throws Exception;
+    public InventoryComponentDO add(InventoryComponentDO data) throws Exception;
 
-    public InventoryComponentViewDO update(InventoryComponentViewDO data) throws Exception;
+    public InventoryComponentDO update(InventoryComponentDO data) throws Exception;
 
     public void delete(InventoryComponentDO data) throws Exception;
 

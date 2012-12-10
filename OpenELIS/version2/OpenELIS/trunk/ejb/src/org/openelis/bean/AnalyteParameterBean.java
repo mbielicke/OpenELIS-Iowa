@@ -39,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AnalyteParameterDO;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
 import org.openelis.domain.ReferenceIdTableIdNameVO;
@@ -244,7 +245,7 @@ public class AnalyteParameterBean implements AnalyteParameterRemote, AnalytePara
         return (ArrayList<ReferenceIdTableIdNameVO>)results;
     }
 
-    public AnalyteParameterViewDO add(AnalyteParameterViewDO data) throws Exception {
+    public AnalyteParameterDO add(AnalyteParameterDO data) throws Exception {
         AnalyteParameter entity;
                 
         if (DataBaseUtil.isEmpty(data.getActiveBegin()) || DataBaseUtil.isEmpty(data.getActiveEnd()) ||
@@ -271,7 +272,7 @@ public class AnalyteParameterBean implements AnalyteParameterRemote, AnalytePara
         return data;
     }    
     
-    public AnalyteParameterViewDO update(AnalyteParameterViewDO data) throws Exception {
+    public AnalyteParameterDO update(AnalyteParameterDO data) throws Exception {
         AnalyteParameter entity;
         
         if (!data.isChanged())

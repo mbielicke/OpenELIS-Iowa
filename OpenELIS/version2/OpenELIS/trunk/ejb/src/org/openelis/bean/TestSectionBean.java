@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.TestSectionDO;
 import org.openelis.domain.TestSectionViewDO;
 import org.openelis.entity.TestSection;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -66,7 +67,7 @@ public class TestSectionBean implements TestSectionLocal {
         return DataBaseUtil.toArrayList(list);
     }
         
-    public TestSectionViewDO add(TestSectionViewDO data) throws Exception {
+    public TestSectionDO add(TestSectionDO data) throws Exception {
         TestSection ts;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -83,7 +84,7 @@ public class TestSectionBean implements TestSectionLocal {
         return data;
     }
 
-    public TestSectionViewDO update(TestSectionViewDO data) throws Exception {
+    public TestSectionDO update(TestSectionDO data) throws Exception {
         TestSection ts;
 
         if(!data.isChanged())
@@ -100,7 +101,7 @@ public class TestSectionBean implements TestSectionLocal {
         return data;
     }
     
-    public void delete(TestSectionViewDO data) throws Exception {
+    public void delete(TestSectionDO data) throws Exception {
         TestSection ts;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -112,7 +113,7 @@ public class TestSectionBean implements TestSectionLocal {
 
     }
 
-    public void validate(TestSectionViewDO data) throws Exception {        
+    public void validate(TestSectionDO data) throws Exception {        
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();

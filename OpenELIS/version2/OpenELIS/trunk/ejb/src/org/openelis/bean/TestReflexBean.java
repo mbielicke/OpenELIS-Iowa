@@ -38,6 +38,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryViewDO;
+import org.openelis.domain.TestReflexDO;
 import org.openelis.domain.TestReflexViewDO;
 import org.openelis.entity.TestReflex;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -100,7 +101,7 @@ public class TestReflexBean implements TestReflexLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public TestReflexViewDO add(TestReflexViewDO data) throws Exception {
+    public TestReflexDO add(TestReflexDO data) throws Exception {
         TestReflex entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -120,7 +121,7 @@ public class TestReflexBean implements TestReflexLocal {
         return data;
     }
 
-    public TestReflexViewDO update(TestReflexViewDO data) throws Exception {
+    public TestReflexDO update(TestReflexDO data) throws Exception {
         TestReflex entity;
 
         if ( !data.isChanged())
@@ -139,7 +140,7 @@ public class TestReflexBean implements TestReflexLocal {
         return data;
     }
 
-    public void delete(TestReflexViewDO data) throws Exception {
+    public void delete(TestReflexDO data) throws Exception {
         TestReflex entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -150,7 +151,7 @@ public class TestReflexBean implements TestReflexLocal {
             manager.remove(entity);
     }
 
-    public void validate(TestReflexViewDO data) throws Exception {
+    public void validate(TestReflexDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();

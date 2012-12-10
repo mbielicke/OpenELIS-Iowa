@@ -601,7 +601,7 @@ public class ResultBean implements ResultLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public ResultViewDO add(ResultViewDO data) {
+    public ResultDO add(ResultDO data) {
         Result entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -623,7 +623,7 @@ public class ResultBean implements ResultLocal {
         return data;
     }
 
-    public ResultViewDO update(ResultViewDO data) {
+    public ResultDO update(ResultDO data) {
         Result entity;
 
         if ( !data.isChanged())
@@ -645,7 +645,7 @@ public class ResultBean implements ResultLocal {
         return data;
     }
 
-    public void delete(ResultViewDO data) {
+    public void delete(ResultDO data) {
         Result entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

@@ -27,11 +27,12 @@ package org.openelis.remote;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
 
 @Remote
 public interface QcLotRemote {
     public QcLotViewDO fetchById(Integer id) throws Exception;
 
-    public void validateForDelete(QcLotViewDO data) throws Exception;
+    public void validateForDelete(QcLotDO data) throws Exception;
 }

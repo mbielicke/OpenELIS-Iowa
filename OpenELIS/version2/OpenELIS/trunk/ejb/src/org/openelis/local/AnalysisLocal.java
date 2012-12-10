@@ -31,6 +31,7 @@ import java.util.Set;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
@@ -46,9 +47,9 @@ public interface AnalysisLocal {
     public ArrayList<AnalysisViewDO> fetchBySampleItemIds(ArrayList<Integer> sampleItemIds);
     public ArrayList<MCLViolationReportVO> fetchForMCLViolationReport(Date beginPrinted, Date endPrinted) throws Exception;
 
-    public AnalysisViewDO add(AnalysisViewDO data) throws Exception;
-    public AnalysisViewDO update(AnalysisViewDO data) throws Exception;
+    public AnalysisDO add(AnalysisDO data) throws Exception;
+    public AnalysisDO update(AnalysisDO data) throws Exception;
     public void updatePrintedDate(Integer id, Datetime timeStamp) throws Exception;
     public void updatePrintedDate(Set<Integer> ids, Datetime timeStamp) throws Exception;
-    public void delete(AnalysisViewDO data) throws Exception;
+    public void delete(AnalysisDO data) throws Exception;
 }

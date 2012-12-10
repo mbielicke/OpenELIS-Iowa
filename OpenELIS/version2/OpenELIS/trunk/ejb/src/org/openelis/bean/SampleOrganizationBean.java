@@ -36,6 +36,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.SampleOrganizationDO;
 import org.openelis.domain.SampleOrganizationViewDO;
 import org.openelis.entity.SampleOrganization;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -87,7 +88,7 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         }
     }
     
-    public SampleOrganizationViewDO add(SampleOrganizationViewDO data) {
+    public SampleOrganizationDO add(SampleOrganizationDO data) {
         SampleOrganization entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -104,7 +105,7 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         return data;
     }
 
-    public SampleOrganizationViewDO update(SampleOrganizationViewDO data) {
+    public SampleOrganizationDO update(SampleOrganizationDO data) {
         SampleOrganization entity;
         
         if (!data.isChanged())
@@ -121,7 +122,7 @@ public class SampleOrganizationBean implements SampleOrganizationLocal {
         return data;
     }
     
-    public void delete(SampleOrganizationViewDO data) {
+    public void delete(SampleOrganizationDO data) {
         SampleOrganization entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);

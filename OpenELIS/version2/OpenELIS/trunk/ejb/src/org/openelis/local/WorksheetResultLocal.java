@@ -29,17 +29,18 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.WorksheetResultDO;
 import org.openelis.domain.WorksheetResultViewDO;
 
 @Local
 public interface WorksheetResultLocal {
     public ArrayList<WorksheetResultViewDO> fetchByWorksheetAnalysisId(Integer id) throws Exception;
 
-    public WorksheetResultViewDO add(WorksheetResultViewDO data) throws Exception;
+    public WorksheetResultDO add(WorksheetResultDO data) throws Exception;
 
-    public WorksheetResultViewDO update(WorksheetResultViewDO data) throws Exception;
+    public WorksheetResultDO update(WorksheetResultDO data) throws Exception;
 
-    public void delete(WorksheetResultViewDO data) throws Exception;
+    public void delete(WorksheetResultDO data) throws Exception;
 
-    public void validate(WorksheetResultViewDO data) throws Exception;
+    public void validate(WorksheetResultDO data) throws Exception;
 }

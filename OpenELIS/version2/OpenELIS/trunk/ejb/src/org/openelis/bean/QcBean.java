@@ -73,7 +73,6 @@ public class QcBean implements QcRemote, QcLocal {
     public QcViewDO fetchById(Integer id) throws Exception {
         Query query;
         QcViewDO data;
-        SystemUserVO user;
         
         query = manager.createNamedQuery("Qc.FetchById");
         query.setParameter("id", id);
@@ -157,7 +156,7 @@ public class QcBean implements QcRemote, QcLocal {
         return (ArrayList<IdNameVO>)list;
     }
 
-    public QcViewDO add(QcViewDO data) throws Exception {
+    public QcDO add(QcDO data) throws Exception {
         Qc entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -175,7 +174,7 @@ public class QcBean implements QcRemote, QcLocal {
         return data;
     }
 
-    public QcViewDO update(QcViewDO data) throws Exception {
+    public QcDO update(QcDO data) throws Exception {
         Qc entity;
         
         if (!data.isChanged())
@@ -193,7 +192,7 @@ public class QcBean implements QcRemote, QcLocal {
         return data;
     }
 
-    public void validate(QcViewDO data) throws Exception {
+    public void validate(QcDO data) throws Exception {
         ValidationErrorsList list;
         
         list = new ValidationErrorsList();

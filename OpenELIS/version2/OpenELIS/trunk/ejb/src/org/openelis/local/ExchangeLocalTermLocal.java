@@ -27,6 +27,7 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.ExchangeLocalTermDO;
 import org.openelis.domain.ExchangeLocalTermViewDO;
 
 @Local
@@ -34,10 +35,10 @@ public interface ExchangeLocalTermLocal {
 
     public ExchangeLocalTermViewDO fetchById(Integer id) throws Exception;
 
-    public ExchangeLocalTermViewDO add(ExchangeLocalTermViewDO data) throws Exception;
+    public ExchangeLocalTermDO add(ExchangeLocalTermDO data) throws Exception;
 
-    public ExchangeLocalTermViewDO update(ExchangeLocalTermViewDO data) throws Exception;
+    public ExchangeLocalTermDO update(ExchangeLocalTermDO data) throws Exception;
 
-    public void validate(ExchangeLocalTermViewDO data) throws Exception;
+    public void validate(ExchangeLocalTermDO data) throws Exception;
 
 }

@@ -39,7 +39,6 @@ import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.OrderItemDO;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
-import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.OrderItem;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
@@ -98,7 +97,7 @@ public class OrderItemBean implements OrderItemLocal {
         return data;
     }
 
-    public OrderItemViewDO add(OrderItemViewDO data) throws Exception {
+    public OrderItemDO add(OrderItemDO data) throws Exception {
         OrderItem entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -116,7 +115,7 @@ public class OrderItemBean implements OrderItemLocal {
         return data;
     }
 
-    public OrderItemViewDO update(OrderItemViewDO data) throws Exception {
+    public OrderItemDO update(OrderItemDO data) throws Exception {
         OrderItem entity;
 
         if ( !data.isChanged())

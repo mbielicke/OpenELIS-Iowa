@@ -38,6 +38,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AuxFieldValueDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.entity.AuxFieldValue;
@@ -284,7 +285,7 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         return (ArrayList) list;
     }
 
-    public AuxFieldValueViewDO add(AuxFieldValueViewDO data) throws Exception {
+    public AuxFieldValueDO add(AuxFieldValueDO data) throws Exception {
         AuxFieldValue entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -300,7 +301,7 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         return data;
     }
 
-    public AuxFieldValueViewDO update(AuxFieldValueViewDO data) throws Exception {
+    public AuxFieldValueDO update(AuxFieldValueDO data) throws Exception {
         AuxFieldValue entity;
         
         if (!data.isChanged())
@@ -315,7 +316,7 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
         return data;
     }
     
-    public void delete(AuxFieldValueViewDO data) throws Exception {
+    public void delete(AuxFieldValueDO data) throws Exception {
         AuxFieldValue entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -325,7 +326,7 @@ public class AuxFieldValueBean implements AuxFieldValueLocal {
             manager.remove(entity);
     }
 
-    public void validate(AuxFieldValueViewDO data) throws Exception {
+    public void validate(AuxFieldValueDO data) throws Exception {
         ValidationErrorsList list;
         Integer typeId;
         String value;

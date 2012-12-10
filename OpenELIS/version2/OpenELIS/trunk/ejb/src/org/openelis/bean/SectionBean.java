@@ -138,7 +138,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
         return (ArrayList<IdNameVO>)list;
     }
 
-    public SectionViewDO add(SectionViewDO data) throws Exception {
+    public SectionDO add(SectionDO data) throws Exception {
         Section entity;
 
         checkSecurity(ModuleFlags.ADD);
@@ -164,7 +164,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
         return data;
     }
 
-    public SectionViewDO update(SectionViewDO data) throws Exception {
+    public SectionDO update(SectionDO data) throws Exception {
         Section entity;
 
         if ( !data.isChanged()) {
@@ -207,7 +207,7 @@ public class SectionBean implements SectionRemote, SectionLocal {
         return fetchById(id);
     }
 
-    public void validate(SectionViewDO data) throws Exception {
+    public void validate(SectionDO data) throws Exception {
         String name;
         ValidationErrorsList exceptionList;
         Query query;
@@ -249,5 +249,4 @@ public class SectionBean implements SectionRemote, SectionLocal {
     private void checkSecurity(ModuleFlags flag) throws Exception {
         EJBFactory.getUserCache().applyPermission("section", flag);
     }
-
 }

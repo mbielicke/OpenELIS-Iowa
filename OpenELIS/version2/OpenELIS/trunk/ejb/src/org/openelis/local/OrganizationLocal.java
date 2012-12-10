@@ -30,6 +30,7 @@ import java.util.Collection;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
 
 @Local
@@ -38,11 +39,11 @@ public interface OrganizationLocal {
 
     public ArrayList<OrganizationViewDO> fetchByIds(Collection<Integer> ids);
 
-    public OrganizationViewDO add(OrganizationViewDO data) throws Exception;
+    public OrganizationDO add(OrganizationDO data) throws Exception;
 
-    public OrganizationViewDO update(OrganizationViewDO data) throws Exception;
+    public OrganizationDO update(OrganizationDO data) throws Exception;
 
-    public void validate(OrganizationViewDO data) throws Exception;
+    public void validate(OrganizationDO data) throws Exception;
     
     public boolean hasDontPrintFinalReport(Integer id) throws Exception;
 }

@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.InventoryXAdjustDO;
 import org.openelis.domain.InventoryXAdjustViewDO;
 import org.openelis.entity.InventoryLocation;
 import org.openelis.entity.InventoryXAdjust;
@@ -68,7 +69,7 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
         return DataBaseUtil.toArrayList(list);
     }
     
-    public InventoryXAdjustViewDO add(InventoryXAdjustViewDO data) throws Exception {
+    public InventoryXAdjustDO add(InventoryXAdjustDO data) throws Exception {
         Integer inventoryLocationId;
         InventoryXAdjust entity;
         InventoryLocation inventorylocation;
@@ -90,7 +91,7 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
         return data;
     }
 
-    public InventoryXAdjustViewDO update(InventoryXAdjustViewDO data) throws Exception {
+    public InventoryXAdjustDO update(InventoryXAdjustDO data) throws Exception {
         Integer inventoryLocationId;
         InventoryXAdjust entity;
         InventoryLocation inventorylocation;
@@ -112,7 +113,7 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
         return data;
     }
     
-    public void delete(InventoryXAdjustViewDO data) throws Exception {
+    public void delete(InventoryXAdjustDO data) throws Exception {
         InventoryXAdjust entity;     
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -122,7 +123,7 @@ public class InventoryXAdjustBean implements InventoryXAdjustLocal {
             manager.remove(entity);
     }
 
-    public void validate(InventoryXAdjustViewDO data) throws Exception {
+    public void validate(InventoryXAdjustDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();

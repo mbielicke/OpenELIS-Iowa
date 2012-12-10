@@ -29,14 +29,15 @@ import java.util.ArrayList;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.AnalysisUserDO;
 import org.openelis.domain.AnalysisUserViewDO;
 
 @Local
 public interface AnalysisUserLocal {
     public AnalysisUserViewDO fetchById(Integer id) throws Exception;    
-    public ArrayList<AnalysisUserViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds);
+    public ArrayList<AnalysisUserViewDO> fetchByAnalysisIds(ArrayList<Integer> analysisIds) throws Exception;
     public ArrayList<AnalysisUserViewDO> fetchByAnalysisId(Integer analysisId) throws Exception;
-    public AnalysisUserViewDO add(AnalysisUserViewDO data);
-    public AnalysisUserViewDO update(AnalysisUserViewDO data);
-    public void delete(AnalysisUserViewDO data);
+    public AnalysisUserDO add(AnalysisUserDO data) throws Exception;
+    public AnalysisUserDO update(AnalysisUserDO data) throws Exception;
+    public void delete(AnalysisUserDO data) throws Exception;
 }

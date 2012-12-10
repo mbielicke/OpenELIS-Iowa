@@ -154,7 +154,7 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
         return DataBaseUtil.toArrayList(query.getResultList());
     }
 
-    public InventoryLocationViewDO add(InventoryLocationViewDO data) throws Exception {
+    public InventoryLocationDO add(InventoryLocationDO data) throws Exception {
         InventoryLocation entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -172,7 +172,7 @@ public class InventoryLocationBean implements InventoryLocationLocal, InventoryL
         return data;
     }
 
-    public InventoryLocationViewDO update(InventoryLocationViewDO data) throws Exception {
+    public InventoryLocationDO update(InventoryLocationDO data) throws Exception {
         InventoryLocation entity;
 
         if ( !data.isChanged())

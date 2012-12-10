@@ -27,7 +27,6 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.CategoryDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.DictionaryViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -72,7 +71,6 @@ public class DictionaryManagerProxy {
         int i;
         DictionaryViewDO data;
         DictionaryLocal dl;
-
 
         dl = EJBFactory.getDictionary();
 

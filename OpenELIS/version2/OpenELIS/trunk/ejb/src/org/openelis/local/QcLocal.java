@@ -27,15 +27,16 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.QcDO;
 import org.openelis.domain.QcViewDO;
 
 @Local
 public interface QcLocal {
     public QcViewDO fetchById(Integer id) throws Exception;
 
-    public QcViewDO add(QcViewDO data) throws Exception;
+    public QcDO add(QcDO data) throws Exception;
 
-    public QcViewDO update(QcViewDO data) throws Exception;
+    public QcDO update(QcDO data) throws Exception;
 
-    public void validate(QcViewDO data) throws Exception;
+    public void validate(QcDO data) throws Exception;
 }

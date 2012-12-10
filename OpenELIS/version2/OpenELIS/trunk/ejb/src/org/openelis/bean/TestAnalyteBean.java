@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.TestAnalyteDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.entity.TestAnalyte;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -119,7 +120,7 @@ public class TestAnalyteBean implements TestAnalyteLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public TestAnalyteViewDO add(TestAnalyteViewDO data) throws Exception {
+    public TestAnalyteDO add(TestAnalyteDO data) throws Exception {
         TestAnalyte entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -143,7 +144,7 @@ public class TestAnalyteBean implements TestAnalyteLocal {
 
     }
 
-    public TestAnalyteViewDO update(TestAnalyteViewDO data) throws Exception {
+    public TestAnalyteDO update(TestAnalyteDO data) throws Exception {
         TestAnalyte entity;
 
         if ( !data.isChanged())
@@ -165,17 +166,17 @@ public class TestAnalyteBean implements TestAnalyteLocal {
         return data;
     }
 
-    public void delete(TestAnalyteViewDO analyteDO) throws Exception {
+    public void delete(TestAnalyteDO data) throws Exception {
         TestAnalyte entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
 
-        entity = manager.find(TestAnalyte.class, analyteDO.getId());
+        entity = manager.find(TestAnalyte.class, data.getId());
         if (entity != null)
             manager.remove(entity);
     }
 
-    public void validate(TestAnalyteViewDO data) throws Exception {
+    public void validate(TestAnalyteDO data) throws Exception {
         ValidationErrorsList list;
 
         list = new ValidationErrorsList();

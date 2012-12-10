@@ -39,6 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.MCLViolationReportVO;
 import org.openelis.domain.SDWISUnloadReportVO;
@@ -140,7 +141,7 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public AnalysisViewDO add(AnalysisViewDO data) throws Exception{
+    public AnalysisDO add(AnalysisDO data) throws Exception{
         Analysis entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -168,7 +169,7 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
         return data;
     }
 
-    public AnalysisViewDO update(AnalysisViewDO data) throws Exception {
+    public AnalysisDO update(AnalysisDO data) throws Exception {
         Analysis entity;
         
         if ( !data.isChanged())
@@ -231,7 +232,7 @@ public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
         entity.setPrintedDate(timeStamp);
     }
     
-    public void delete(AnalysisViewDO data) {
+    public void delete(AnalysisDO data) throws Exception {
         Analysis entity;
         manager.setFlushMode(FlushModeType.COMMIT);
         

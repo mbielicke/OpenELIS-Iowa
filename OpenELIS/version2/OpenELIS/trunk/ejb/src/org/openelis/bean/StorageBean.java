@@ -39,6 +39,7 @@ import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SampleItemViewDO;
+import org.openelis.domain.StorageDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.entity.Storage;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -236,7 +237,7 @@ public class StorageBean implements StorageLocal {
         return list;
     }
 
-    public StorageViewDO add(StorageViewDO data) throws Exception {
+    public StorageDO add(StorageDO data) throws Exception {
         Storage entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -255,7 +256,7 @@ public class StorageBean implements StorageLocal {
         return data;
     }
 
-    public StorageViewDO update(StorageViewDO data) throws Exception {
+    public StorageDO update(StorageDO data) throws Exception {
         Storage entity;
 
         if ( !data.isChanged())
@@ -275,7 +276,7 @@ public class StorageBean implements StorageLocal {
         return data;
     }
 
-    public void delete(StorageViewDO data) throws Exception {
+    public void delete(StorageDO data) throws Exception {
         Storage entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);

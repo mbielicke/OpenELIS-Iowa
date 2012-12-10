@@ -50,5 +50,5 @@ public interface DictionaryRemote {
     
     public ArrayList<CategoryCacheVO> preLoadBySystemName(ArrayList<CategoryCacheVO> cacheVO) throws Exception;
     
-    public void validateForDelete(DictionaryViewDO data) throws Exception; 
+    public void validateForDelete(DictionaryDO data) throws Exception; 
 }

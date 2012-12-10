@@ -71,7 +71,7 @@ public class InventoryComponentBean implements InventoryComponentLocal {
         return DataBaseUtil.toArrayList(list);
     }
 
-    public InventoryComponentViewDO add(InventoryComponentViewDO data) throws Exception {
+    public InventoryComponentDO add(InventoryComponentDO data) throws Exception {
         InventoryComponent entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -87,7 +87,7 @@ public class InventoryComponentBean implements InventoryComponentLocal {
         return data;
     }
 
-    public InventoryComponentViewDO update(InventoryComponentViewDO data) throws Exception {
+    public InventoryComponentDO update(InventoryComponentDO data) throws Exception {
         InventoryComponent entity;
 
         if ( !data.isChanged())

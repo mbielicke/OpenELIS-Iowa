@@ -27,15 +27,16 @@ package org.openelis.local;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.WorksheetDO;
 import org.openelis.domain.WorksheetViewDO;
 
 @Local
 public interface WorksheetLocal {
     public WorksheetViewDO fetchById(Integer id) throws Exception;
 
-    public WorksheetViewDO add(WorksheetViewDO data);
+    public WorksheetDO add(WorksheetDO data) throws Exception;
 
-    public WorksheetViewDO update(WorksheetViewDO data) throws Exception;
+    public WorksheetDO update(WorksheetDO data) throws Exception;
 
-    public void validate(WorksheetViewDO data) throws Exception;
+    public void validate(WorksheetDO data) throws Exception;
 }

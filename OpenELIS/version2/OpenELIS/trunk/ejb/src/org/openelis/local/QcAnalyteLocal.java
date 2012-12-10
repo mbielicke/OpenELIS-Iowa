@@ -38,9 +38,9 @@ public interface QcAnalyteLocal {
 
     public ArrayList<QcAnalyteViewDO> fetchByQcId(Integer id) throws Exception;
 
-    public QcAnalyteViewDO add(QcAnalyteViewDO data) throws Exception;
+    public QcAnalyteDO add(QcAnalyteDO data) throws Exception;
 
-    public QcAnalyteViewDO update(QcAnalyteViewDO data) throws Exception;
+    public QcAnalyteDO update(QcAnalyteDO data) throws Exception;
 
     public void delete(QcAnalyteDO data) throws Exception;
 

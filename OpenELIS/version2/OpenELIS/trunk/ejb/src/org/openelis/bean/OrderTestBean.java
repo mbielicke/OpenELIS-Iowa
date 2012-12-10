@@ -35,6 +35,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
+import org.openelis.domain.OrderTestDO;
 import org.openelis.domain.OrderTestViewDO;
 import org.openelis.entity.OrderTest;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -68,7 +69,7 @@ public class OrderTestBean implements OrderTestLocal {
         return (ArrayList) list;
     }
 
-    public OrderTestViewDO add(OrderTestViewDO data) throws Exception {
+    public OrderTestDO add(OrderTestDO data) throws Exception {
         OrderTest entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -84,7 +85,7 @@ public class OrderTestBean implements OrderTestLocal {
         return data;
     }
 
-    public OrderTestViewDO update(OrderTestViewDO data) throws Exception {
+    public OrderTestDO update(OrderTestDO data) throws Exception {
         OrderTest entity;
 
         if ( !data.isChanged())
@@ -101,7 +102,7 @@ public class OrderTestBean implements OrderTestLocal {
         return data;
     }
 
-    public void delete(OrderTestViewDO data) throws Exception {
+    public void delete(OrderTestDO data) throws Exception {
         OrderTest entity;
 
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -111,7 +112,7 @@ public class OrderTestBean implements OrderTestLocal {
             manager.remove(entity);
     }
     
-    public void validate(OrderTestViewDO data, int index) throws Exception {
+    public void validate(OrderTestDO data, int index) throws Exception {
         ValidationErrorsList list;
         String indexStr;
 

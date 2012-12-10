@@ -37,6 +37,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
+import org.openelis.domain.InstrumentDO;
 import org.openelis.domain.InstrumentViewDO;
 import org.openelis.entity.Instrument;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -122,7 +123,7 @@ public class InstrumentBean implements InstrumentRemote , InstrumentLocal{
         return (ArrayList<IdNameVO>)list;
     }
     
-    public InstrumentViewDO add(InstrumentViewDO data) throws Exception {
+    public InstrumentDO add(InstrumentDO data) throws Exception {
         Instrument entity;
         
         manager.setFlushMode(FlushModeType.COMMIT);
@@ -145,7 +146,7 @@ public class InstrumentBean implements InstrumentRemote , InstrumentLocal{
         return data;        
     }
 
-    public InstrumentViewDO update(InstrumentViewDO data) throws Exception {
+    public InstrumentDO update(InstrumentDO data) throws Exception {
         Instrument entity;
         
         if (!data.isChanged())
@@ -168,7 +169,7 @@ public class InstrumentBean implements InstrumentRemote , InstrumentLocal{
         return data;        
     }
 
-    public void validate(InstrumentViewDO data) throws Exception {
+    public void validate(InstrumentDO data) throws Exception {
         String name, serialNumber,location;
         boolean checkDuplicate;
         Datetime activeBegin, activeEnd;

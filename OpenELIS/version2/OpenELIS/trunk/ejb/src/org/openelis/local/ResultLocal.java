@@ -74,9 +74,9 @@ public interface ResultLocal {
 	
 	public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) throws Exception;
 	
-	public ResultViewDO add(ResultViewDO data);
+	public ResultDO add(ResultDO data);
 
-	public ResultViewDO update(ResultViewDO data);
+	public ResultDO update(ResultDO data);
 
-	public void delete(ResultViewDO data);
+	public void delete(ResultDO data);
 }

@@ -45,11 +45,11 @@ public interface ProjectLocal {
 
     public ArrayList<ProjectDO> fetchActiveByName(String name, int maxResults) throws Exception;
 
-    public ProjectViewDO add(ProjectViewDO data) throws Exception;
+    public ProjectDO add(ProjectDO data) throws Exception;
 
-    public ProjectViewDO update(ProjectViewDO data) throws Exception;
+    public ProjectDO update(ProjectDO data) throws Exception;
 
-    public void validate(ProjectViewDO data) throws Exception; 
+    public void validate(ProjectDO data) throws Exception; 
     
     public ArrayList<IdNameVO> fetchForOrganizations(String clause) throws Exception;
     
