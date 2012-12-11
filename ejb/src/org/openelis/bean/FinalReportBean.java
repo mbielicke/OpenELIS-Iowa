@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -30,7 +32,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AuxDataViewDO;
@@ -48,6 +49,7 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AuxDataLocal;
 import org.openelis.local.DictionaryLocal;
+import org.openelis.local.EventLogLocal;
 import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.OrganizationParameterLocal;
@@ -63,13 +65,15 @@ import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-@Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-
+@Resource(name = "jdbc/OpenELISDB",
+          type = DataSource.class,
+          authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER,
+          mappedName = "java:/OpenELISDS")
 public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
     @EJB
     private SessionCacheLocal          session;
-    
+
     @EJB
     private DictionaryLocal            dictionary;
 
@@ -84,28 +88,31 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
 
     @EJB
     private PrinterCacheLocal          printer;
-    
+
     @EJB
     private AuxDataLocal               auxData;
-    
+
     @EJB
-    private OrganizationParameterLocal organizationParameter;        
+    private OrganizationParameterLocal organizationParameter;
     
     @Resource
     private SessionContext             ctx;
 
-    private static Integer             finalReportFaxNumTypeId, noFinalReportTypeId, primaryReportToTypeId; 
+    private static Integer             finalReportFaxNumTypeId, noFinalReportTypeId,
+                    primaryReportToTypeId;
 
-    private static final Logger log = Logger.getLogger(FinalReportBean.class);
-    
+    private static final Logger        log = Logger.getLogger("openelis");
+
     @PostConstruct
     public void init() {
         try {
-            finalReportFaxNumTypeId = dictionary.fetchBySystemName("org_finalrep_fax_number").getId();
-            noFinalReportTypeId = dictionary.fetchBySystemName("org_no_finalreport").getId();
+            finalReportFaxNumTypeId = dictionary.fetchBySystemName("org_finalrep_fax_number")
+                                                .getId();
+            noFinalReportTypeId = dictionary.fetchBySystemName("org_no_finalreport")
+                                            .getId();
             primaryReportToTypeId = dictionary.fetchBySystemName("org_report_to").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
 
@@ -113,7 +120,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
      * Returns the prompt for a single re-print
      */
     public ArrayList<Prompt> getPromptsForSingle() throws Exception {
-        throw new InconsistencyException("Method not supported");        
+        throw new InconsistencyException("Method not supported");
     }
 
     /**
@@ -135,7 +142,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
-            log.error(e);
+            log.log(Level.SEVERE, "Failed to create result prompts", e);
             throw e;
         }
     }
@@ -150,19 +157,17 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         try {
             p = new ArrayList<Prompt>();
 
-            p.add(new Prompt("BEGIN_PRINTED", Prompt.Type.DATETIME)
-             .setPrompt("Begin Printed:")
-             .setWidth(130)
-             .setDatetimeStartCode(Prompt.Datetime.YEAR)
-             .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-             .setRequired(true));
+            p.add(new Prompt("BEGIN_PRINTED", Prompt.Type.DATETIME).setPrompt("Begin Printed:")
+                                                                   .setWidth(130)
+                                                                   .setDatetimeStartCode(Prompt.Datetime.YEAR)
+                                                                   .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+                                                                   .setRequired(true));
 
-            p.add(new Prompt("END_PRINTED", Prompt.Type.DATETIME)
-             .setPrompt("End Printed:")
-             .setWidth(130)
-             .setDatetimeStartCode(Prompt.Datetime.YEAR)
-             .setDatetimeEndCode(Prompt.Datetime.MINUTE)
-             .setRequired(true));
+            p.add(new Prompt("END_PRINTED", Prompt.Type.DATETIME).setPrompt("End Printed:")
+                                                                 .setWidth(130)
+                                                                 .setDatetimeStartCode(Prompt.Datetime.YEAR)
+                                                                 .setDatetimeEndCode(Prompt.Datetime.MINUTE)
+                                                                 .setRequired(true));
 
             prn = printer.getListByType("pdf");
             prn.add(0, new OptionListItem("-view-", "View PDF"));
@@ -173,7 +178,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
-            log.error(e);
+            log.log(Level.SEVERE, "Failed to create result prompts", e);
             throw e;
         }
     }
@@ -203,15 +208,15 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         toCompany = ReportUtil.getSingleParameter(param, "TO_COMPANY");
         faxAttention = ReportUtil.getSingleParameter(param, "FAX_ATTENTION");
         faxNote = ReportUtil.getSingleParameter(param, "FAX_NOTE");
-        
-        
-        if (DataBaseUtil.isEmpty(accession) || (DataBaseUtil.isEmpty(printer) && DataBaseUtil.isEmpty(faxNumber)))
+
+        if (DataBaseUtil.isEmpty(accession) ||
+            (DataBaseUtil.isEmpty(printer) && DataBaseUtil.isEmpty(faxNumber)))
             throw new InconsistencyException("You must specify the accession number and either the printer or the fax number for this report");
-        
+
         status = new ReportStatus();
         status.setMessage("Initializing report");
         session.setAttribute("FinalReport", status);
-        
+
         /*
          * find the sample
          */
@@ -235,12 +240,13 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             orgPrintList = new ArrayList<OrganizationPrint>();
             if ( !DataBaseUtil.isEmpty(printer)) {
                 /*
-                 * if the user didn't select an organization then print the report
-                 * for all organizations otherwise print it for only the organization
-                 * selected
+                 * if the user didn't select an organization then print the
+                 * report for all organizations otherwise print it for only the
+                 * organization selected
                  */
                 for (FinalReportVO result : results) {
-                    if (orgId == null || DataBaseUtil.isSame(orgId, result.getOrganizationId())) {
+                    if (orgId == null ||
+                        DataBaseUtil.isSame(orgId, result.getOrganizationId())) {
                         orgPrint = new OrganizationPrint();
                         orgPrint.setOrganizationId(result.getOrganizationId());
                         orgPrint.setSampleId(result.getSampleId());
@@ -255,12 +261,12 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 for (FinalReportVO result : results) {
                     typeId = result.getOrganizationTypeId();
                     /*
-                     * If the organization was not specified by the user (orgId == null)
-                     * then the report is faxed only for the primary report to, 
-                     * which will have the org type returned from the query as zero 
-                     * for private well samples and a specific id for the other
-                     * domains. Otherwise the report is faxed for the organization
-                     * specified by the user.     
+                     * If the organization was not specified by the user (orgId
+                     * == null) then the report is faxed only for the primary
+                     * report to, which will have the org type returned from the
+                     * query as zero for private well samples and a specific id
+                     * for the other domains. Otherwise the report is faxed for
+                     * the organization specified by the user.
                      */
                     if ( (orgId == null && (primaryReportToTypeId.equals(typeId) || zero.equals(typeId))) ||
                         DataBaseUtil.isSame(orgId, result.getOrganizationId())) {
@@ -279,14 +285,17 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                         orgPrintList.add(orgPrint);
                     }
                 }
-            }            
-            
-            if (orgPrintList.size() == 0)
-                throw new InconsistencyException("Final report for accession number " + accession +
-                                                 " has incorrect status,\nmissing information, or has no analysis ready to be printed or faxed");
+            }
+
         } catch (Exception e) {
+            log.log(Level.SEVERE, "Trying to find a sample", e);
             throw e;
         }
+
+        if (orgPrintList.size() == 0)
+            throw new InconsistencyException("Final report for accession number " +
+                                             accession +
+                                             " has incorrect status,\nmissing information, or has no analysis ready to be printed or faxed");
 
         print(orgPrintList, "R", false, status, printer);
 
@@ -294,8 +303,9 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     }
 
     /**
-     * Final report for preview. In preview mode the analyses can be in completed or
-     * released status. Additionally the preview mode adds a watermark to the background. 
+     * Final report for preview. In preview mode the analyses can be in
+     * completed or released status. Additionally the preview mode adds a
+     * watermark to the background.
      */
     public ReportStatus runReportForPreview(ArrayList<QueryData> paramList) throws Exception {
         ReportStatus status;
@@ -304,7 +314,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         HashMap<String, QueryData> param;
         FinalReportVO result;
         ArrayList<OrganizationPrint> printList;
-        
+
         /*
          * Recover the accession number
          */
@@ -321,16 +331,21 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         try {
             result = sample.fetchForFinalReportPreview(Integer.parseInt(accession));
 
-            print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
-                                          result.getOrganizationAttention(), result.getSampleId(),
-                                          result.getAccessionNumber(), result.getRevision(),
+            print = new OrganizationPrint(result.getOrganizationId(),
+                                          result.getOrganizationName(),
+                                          result.getOrganizationAttention(),
+                                          result.getSampleId(),
+                                          result.getAccessionNumber(),
+                                          result.getRevision(),
                                           result.getDomain());
             printList = new ArrayList<OrganizationPrint>();
             printList.add(print);
         } catch (NotFoundException e) {
-            throw new InconsistencyException("Final report for accession number " + accession +
+            throw new InconsistencyException("Final report for accession number " +
+                                             accession +
                                              " has incorrect status,\nmissing information, or has no analysis ready to be printed");
         } catch (Exception e) {
+            log.log(Level.SEVERE, "Trying to find a sample", e);
             throw e;
         }
 
@@ -340,37 +355,44 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     }
 
     /**
-     * Prints final reports for all ready to be printed samples. The routine
-     * time stamps all the analyses' printed date with current time and groups
-     * the output by organization.
-     * 
-     * Additionally, because we use automatic folding machine, the report sorts
-     * the entire output by the # of pages for each organization. A BLANK page
-     * is inserted between all the reports that have less than 6 pages and the
-     * remaining reports to stop the folding process.
+     * This method is called from cron to print all the environmental type
+     * samples.
      */
     @Asynchronous
     @TransactionTimeout(600)
-    public void runReportForBatch() throws Exception {
+    public void runReportForBatch() {
         ArrayList<QueryData> list;
+        String printer;
         QueryData field;
-        
-        field = new QueryData();
-        field.key = "PRINTER";
-        field.query = ReportUtil.getSystemVariableValue("final_report_env_printer");        
-        field.type = QueryData.Type.STRING;
-        
-        if (field.query == null) {
-            log.error("No 'final_report_env_printer' system variable defined");
+
+        try {
+            printer = ReportUtil.getSystemVariableValue("final_report_env_printer");
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "No 'final_report_env_printer' system variable defined");
             return;
         }
-        
+
+        field = new QueryData();
+        field.key = "PRINTER";
+        field.query = printer;
+        field.type = QueryData.Type.STRING;
+
         list = new ArrayList<QueryData>();
         list.add(field);
-        
-        runReportForBatch(list);        
-    }          
-    
+
+        try {
+            runReportForBatch(list);
+        } catch (Exception e) {
+            log.log(Level.SEVERE, "Final Report batch", e);
+        }
+    }
+
+    /**
+     * This method prints final reports for all ready to be printed samples. The
+     * routine time stamps all the analyses' printed date with current time and
+     * groups the output by organization.
+     */
+
     @RolesAllowed("r_final-select")
     @TransactionTimeout(600)
     public ReportStatus runReportForBatch(ArrayList<QueryData> paramList) throws Exception {
@@ -402,66 +424,73 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          * obtain the list of sample ids, organization ids and analysis ids
          */
         resultList = sample.fetchForFinalReportBatch();
-        
-        log.info("Considering "+ resultList.size()+ " cases to run");        
+
+        log.fine("Considering " + resultList.size() + " cases to run");
         if (resultList.size() == 0)
             return status;
-        
+
         anaSet = new HashSet<Integer>();
         samLockMap = new HashMap<Integer, Boolean>();
         printList = new ArrayList<OrganizationPrint>();
-        
-        cachedOrgId = null;        
+
+        cachedOrgId = null;
         orgPrint = false;
         orgFaxNumber = null;
-        
+
         faxGrpName = ReportUtil.getSystemVariableValue("sample_fax_aux_data");
-        
+
         /*
          * loop through the list and lock all the samples obtained from
          * resultList that can be locked; the ones that can't be locked, skip
          * all the analysis in that sample (skip the sample)
          */
-        log.debug("Locking all samples");
-        
+        log.fine("Locking all samples");
+
         print = null;
         zero = new Integer(0);
-        for (FinalReportVO result: resultList) {
+        for (FinalReportVO result : resultList) {
             lockSucceeded = samLockMap.get(result.getSampleId());
             if (lockSucceeded == null) {
                 try {
                     lock.lock(ReferenceTable.SAMPLE, result.getSampleId());
                     lockSucceeded = Boolean.TRUE;
                 } catch (Exception e) {
+                    log.finer("Sample id " + result.getSampleId() + " can't be locked");
                     lockSucceeded = Boolean.FALSE;
                 }
                 samLockMap.put(result.getSampleId(), lockSucceeded);
             }
 
-            if ( !lockSucceeded) 
-                continue;            
+            if ( !lockSucceeded)
+                continue;
             /*
              * List of analyses to timestamp.
              */
             anaSet.add(result.getAnalysisId());
-            
+
             /*
              * only unique sample & org pairs
              */
-            if (print != null && print.getOrganizationId().equals(result.getOrganizationId()) &&
-                (!result.getOrganizationId().equals(zero) || print.getOrganizationName().equals(result.getOrganizationName())) &&
+            if (print != null &&
+                print.getOrganizationId().equals(result.getOrganizationId()) &&
+                ( !result.getOrganizationId().equals(zero) || print.getOrganizationName()
+                                                                   .equals(result.getOrganizationName())) &&
                 print.getSampleId().equals(result.getSampleId()))
                 continue;
 
-            print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
-                                          result.getOrganizationAttention(), result.getSampleId(),
-                                          result.getAccessionNumber(), result.getRevision(),
+            print = new OrganizationPrint(result.getOrganizationId(),
+                                          result.getOrganizationName(),
+                                          result.getOrganizationAttention(),
+                                          result.getSampleId(),
+                                          result.getAccessionNumber(),
+                                          result.getRevision(),
                                           result.getDomain());
-            if (!print.getOrganizationId().equals(cachedOrgId) || print.getOrganizationId().equals(zero)) {
+            if ( !print.getOrganizationId().equals(cachedOrgId) ||
+                print.getOrganizationId().equals(zero)) {
                 orgPrint = true;
                 orgFaxNumber = null;
                 cachedOrgId = print.getOrganizationId();
-                if (!cachedOrgId.equals(zero)) {
+                if ( !cachedOrgId.equals(zero)) {
                     try {
                         orgParamList = organizationParameter.fetchByOrganizationId(cachedOrgId);
                         for (OrganizationParameterDO orgParam : orgParamList) {
@@ -471,18 +500,17 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                                 orgPrint = false;
                         }
                     } catch (NotFoundException e) {
-                        //ignore
+                        // ignore
                     }
                 }
             }
 
             /*
              * Find out if this sample has the aux group assigned to it that
-             * defines the values for faxing.Auxiliary fax info on sample is applied
-             * only to the primary report to. 
-             */              
-            if ((primaryReportToTypeId.equals(result.getOrganizationTypeId()) ||
-                 zero.equals(result.getOrganizationTypeId())) &&
+             * defines the values for faxing.Auxiliary fax info on sample is
+             * applied only to the primary report to.
+             */
+            if ( (primaryReportToTypeId.equals(result.getOrganizationTypeId()) || zero.equals(result.getOrganizationTypeId())) &&
                 !DataBaseUtil.isEmpty(faxGrpName)) {
                 try {
                     auxList = auxData.fetchByRefIdRefTableIdGroupName(result.getSampleId(),
@@ -499,15 +527,17 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 }
             }
             /*
-             * Fax info on sample overrides organization fax info. Additionally 
-             * organization fax info overrides do-not-print flag for organization.  
+             * Fax info on sample overrides organization fax info. Additionally
+             * organization fax info overrides do-not-print flag for
+             * organization.
              */
-            if (DataBaseUtil.isEmpty(print.getFaxNumber()) && !DataBaseUtil.isEmpty(orgFaxNumber))
+            if (DataBaseUtil.isEmpty(print.getFaxNumber()) &&
+                !DataBaseUtil.isEmpty(orgFaxNumber))
                 print.setFaxNumber(orgFaxNumber);
-            
-            if (orgPrint || !DataBaseUtil.isEmpty(print.getFaxNumber())) 
-                printList.add(print);            
-        }        
+
+            if (orgPrint || !DataBaseUtil.isEmpty(print.getFaxNumber()))
+                printList.add(print);
+        }
 
         /*
          * update all the analyses with date printed
@@ -515,25 +545,24 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         timeStamp = Datetime.getInstance(Datetime.YEAR, Datetime.MINUTE);
         analysis.updatePrintedDate(anaSet, timeStamp);
 
-        log.debug("Printing the reports");
+        log.fine("Printing the reports");
         print(printList, "R", true, status, printer);
 
         /*
          * unlock all the samples
          */
-        log.debug("Unlocking all samples"); 
+        log.fine("Unlocking all samples");
         for (Map.Entry<Integer, Boolean> entry : samLockMap.entrySet()) {
-          if (entry.getValue())  
-              lock.unlock(ReferenceTable.SAMPLE, entry.getKey());
+            if (entry.getValue())
+                lock.unlock(ReferenceTable.SAMPLE, entry.getKey());
         }
 
         return status;
-    }   
-    
-    
+    }
+
     /**
-     * Reprints a batch report for the specified printed date range.  This routine
-     * does not re-timestamp the analyses nor does it lock the samples
+     * Reprints a batch report for the specified printed date range. This
+     * routine does not re-timestamp the analyses nor does it lock the samples
      */
     @RolesAllowed("r_final-select")
     @TransactionTimeout(600)
@@ -556,55 +585,61 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
          */
         param = ReportUtil.getMapParameter(paramList);
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
-        
+
         status = new ReportStatus();
         status.setMessage("Initializing report");
         session.setAttribute("FinalReport", status);
-        
+
         format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         beginPrinted = format.parse(ReportUtil.getSingleParameter(param, "BEGIN_PRINTED"));
-        endPrinted = format.parse(ReportUtil.getSingleParameter(param, "END_PRINTED"));        
+        endPrinted = format.parse(ReportUtil.getSingleParameter(param, "END_PRINTED"));
 
         /*
          * obtain the list of sample ids and organization ids
          */
         resultList = sample.fetchForFinalReportBatchReprint(beginPrinted, endPrinted);
-        
-        log.info("Considering "+ resultList.size()+ " cases to run");        
+
+        log.fine("Considering " + resultList.size() + " cases to run");
         if (resultList.size() == 0)
             return status;
-        
-        printList = new ArrayList<OrganizationPrint>();        
-        
-        cachedOrgId = null;        
+
+        printList = new ArrayList<OrganizationPrint>();
+
+        cachedOrgId = null;
         orgPrint = false;
         orgFaxNumber = null;
-        
+
         faxGrpName = ReportUtil.getSystemVariableValue("sample_fax_aux_data");
-                      
+
         /*
-         * loop through the list and mark the samples for printing or faxing 
-         */        
+         * loop through the list and mark the samples for printing or faxing
+         */
         print = null;
         zero = new Integer(0);
-        for (FinalReportVO result: resultList) {
+        for (FinalReportVO result : resultList) {
             /*
              * only unique sample & org pairs
              */
-            if (print != null && print.getOrganizationId().equals(result.getOrganizationId()) &&
-                (!result.getOrganizationId().equals(zero) || print.getOrganizationName().equals(result.getOrganizationName())) &&
+            if (print != null &&
+                print.getOrganizationId().equals(result.getOrganizationId()) &&
+                ( !result.getOrganizationId().equals(zero) || print.getOrganizationName()
+                                                                   .equals(result.getOrganizationName())) &&
                 print.getSampleId().equals(result.getSampleId()))
                 continue;
 
-            print = new OrganizationPrint(result.getOrganizationId(), result.getOrganizationName(),
-                                          result.getOrganizationAttention(), result.getSampleId(),
-                                          result.getAccessionNumber(), result.getRevision(),
+            print = new OrganizationPrint(result.getOrganizationId(),
+                                          result.getOrganizationName(),
+                                          result.getOrganizationAttention(),
+                                          result.getSampleId(),
+                                          result.getAccessionNumber(),
+                                          result.getRevision(),
                                           result.getDomain());
-            if (!print.getOrganizationId().equals(cachedOrgId) || print.getOrganizationId().equals(zero)) {
+            if ( !print.getOrganizationId().equals(cachedOrgId) ||
+                print.getOrganizationId().equals(zero)) {
                 orgPrint = true;
                 orgFaxNumber = null;
                 cachedOrgId = print.getOrganizationId();
-                if (!cachedOrgId.equals(zero)) {
+                if ( !cachedOrgId.equals(zero)) {
                     try {
                         orgParamList = organizationParameter.fetchByOrganizationId(cachedOrgId);
                         for (OrganizationParameterDO orgParam : orgParamList) {
@@ -614,18 +649,17 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                                 orgPrint = false;
                         }
                     } catch (NotFoundException e) {
-                        //ignore
+                        // ignore
                     }
                 }
             }
 
             /*
              * Find out if this sample has the aux group assigned to it that
-             * defines the values for faxing.Auxiliary fax info on sample is applied
-             * only to the primary report to. 
-             */              
-            if ((primaryReportToTypeId.equals(result.getOrganizationTypeId()) ||
-                 zero.equals(result.getOrganizationTypeId())) &&
+             * defines the values for faxing.Auxiliary fax info on sample is
+             * applied only to the primary report to.
+             */
+            if ( (primaryReportToTypeId.equals(result.getOrganizationTypeId()) || zero.equals(result.getOrganizationTypeId())) &&
                 !DataBaseUtil.isEmpty(faxGrpName)) {
                 try {
                     auxList = auxData.fetchByRefIdRefTableIdGroupName(result.getSampleId(),
@@ -642,14 +676,16 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 }
             }
             /*
-             * Fax info on sample overrides organization fax info. Additionally 
-             * organization fax info overrides do-not-print flag for organization.  
+             * Fax info on sample overrides organization fax info. Additionally
+             * organization fax info overrides do-not-print flag for
+             * organization.
              */
-            if (DataBaseUtil.isEmpty(print.getFaxNumber()) && !DataBaseUtil.isEmpty(orgFaxNumber))
+            if (DataBaseUtil.isEmpty(print.getFaxNumber()) &&
+                !DataBaseUtil.isEmpty(orgFaxNumber))
                 print.setFaxNumber(orgFaxNumber);
-            
-            if (orgPrint || !DataBaseUtil.isEmpty(print.getFaxNumber())) 
-                printList.add(print);            
+
+            if (orgPrint || !DataBaseUtil.isEmpty(print.getFaxNumber()))
+                printList.add(print);
         }
 
         print(printList, "R", true, status, printer);
@@ -657,6 +693,11 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         return status;
     }
 
+    /**
+     * Prints final report for a set of sample data stored in user's session.
+     * This session list is the result of previously run query that validated
+     * user's permission and access.
+     */
     @RolesAllowed({"w_final_environmental-select", "w_final_privatewell-select", "w_final_sdwis-select"})
     public ReportStatus runReportForWeb(ArrayList<QueryData> paramList) throws Exception {
         int i, indexList[];
@@ -666,7 +707,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         HashMap<String, QueryData> param;
         ArrayList<OrganizationPrint> orgPrintList;
         ArrayList<FinalReportWebVO> sampleList;
-        
+
         /*
          * Retrieve the indexes of the sample ids selected for the report as an
          * array of integers.
@@ -675,7 +716,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         indexList = ReportUtil.getArrayParameter(param, "SAMPLE_ID");
         if (indexList == null)
             throw new InconsistencyException("No sample(s) were selected for the report");
-        
 
         /*
          * push status into session so we can query it while the report is
@@ -684,7 +724,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         status = new ReportStatus();
         status.setMessage("Initializing report");
         session.setAttribute("FinalReport", status);
-        
+
         /*
          * Find the organization id and sample id corresponding to the selected
          * sample indices from the list of samples in session.
@@ -695,7 +735,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
             try {
                 data = sampleList.get(indexList[i]);
             } catch (Exception e) {
-                throw new InconsistencyException("The sample search list is no longer valid.\nPlease search again"); 
+                throw new InconsistencyException("The sample search list is no longer valid.\nPlease search again");
             }
             orgPrint = new OrganizationPrint();
             orgPrint.setOrganizationId(data.getOrganizationId());
@@ -712,15 +752,19 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         print(orgPrintList, "R", false, status, "-view-");
 
         return status;
-    }    
-   
+    }
+
+    /**
+     * This method generates the actual report using jasper. The jasper output
+     * is directed to either a printer or he faxing system.
+     */
     private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
                        boolean forMailing, ReportStatus status, String printer) throws Exception {
         int i;
         Integer zero;
         URL url;
         File tempFile;
-        Connection con;        
+        Connection con;
         JasperReport jreport;
         String dir, printstat, toCompany, faxOwner, faxEmail;
         JasperPrint print, faxPrint;
@@ -729,77 +773,58 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         JasperPrint master, stats;
         OrganizationPrintDataSource ds;
         ArrayList<OrganizationPrint> orgFaxList;
-        
+
         con = null;
         zero = new Integer(0);
         try {
             con = ReportUtil.getConnection(ctx);
+
             /*
              * get all the report instances
              */
-//            url = ReportUtil.getResourceURL("org/openelis/report/finalreport/blank.jasper");
-//            jreport = (JasperReport)JRLoader.loadObject(url);
-//            master = JasperFillManager.fillReport(jreport, null);
-            
             url = ReportUtil.getResourceURL("org/openelis/report/finalreport/main.jasper");
             jreport = (JasperReport)JRLoader.loadObject(url);
             dir = ReportUtil.getResourcePath(url);
-            
+
             jparam = new HashMap<String, Object>();
             jparam.put("REPORT_TYPE", reportType);
             jparam.put("SUBREPORT_DIR", dir);
             jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
             jparam.put("CONNECTION", con);
-            
+
             /*
-             * print loop
+             * fill all the printed reports
              */
-//            for (OrganizationPrint o : orgPrintList) {
-//                if (!DataBaseUtil.isEmpty(o.getFaxNumber())) {
-//                    log.info("Skipping Sample ID "+o.getSampleId().toString()+" for printing");
-//                    continue;
-//                }
-//                log.info("Processing Sample ID "+o.getSampleId().toString()+" for printing");
-//                
-//                if (o.getOrganizationId() == null) 
-//                    jparam.put("ORGANIZATION_ID", zero);
-//                else
-//                    jparam.put("ORGANIZATION_ID", o.getOrganizationId());                                                       
-//
-//                jparam.put("SAMPLE_ID", o.getSampleId().toString());
-//                jparam.put("ORGANIZATION_PRINT", o);
-//                
             ds = new OrganizationPrintDataSource(OrganizationPrintDataSource.Type.PRINT);
             ds.setData(orgPrintList);
             print = JasperFillManager.fillReport(jreport, jparam, ds);
-//            if (print != null) {
-//                pages = print.getPages();   
-//                for (i = 0; i < pages.size(); i++ )
-//                    master.addPage(pages.get(i));
-//            }
-            
+
             /*
-             * faxing loop
+             * process all the faxes
+             * 
+             * when fax is sent for a batch run, the fax system needs to
+             * identify a fax owner and email notifier for errors. In case of
+             * single faxing, the logged in user is used for both.
              */
             if (forMailing) {
-                faxOwner = ReportUtil.getSystemVariableValue("system_fax_owner");
-                faxEmail = ReportUtil.getSystemVariableValue("system_fax_email");
+                try {
+                    faxOwner = ReportUtil.getSystemVariableValue("system_fax_owner");
+                    faxEmail = ReportUtil.getSystemVariableValue("system_fax_email");
+                } catch (Exception e) {
+                    log.log(Level.SEVERE,
+                            "Missing system_fax_owner and email in system variable",
+                            e);
+                    faxOwner = null;
+                    faxEmail = null;
+                }
             } else {
                 faxOwner = EJBFactory.getUserCache().getSystemUser().getLoginName();
-                faxEmail = EJBFactory.getUserCache().getSystemUser().getLoginName();
+                faxEmail = faxOwner;
             }
             for (OrganizationPrint o : orgPrintList) {
                 if (DataBaseUtil.isEmpty(o.getFaxNumber()))
                     continue;
 
-//                if (o.getOrganizationId() == null) 
-//                    jparam.put("ORGANIZATION_ID", zero);
-//                else
-//                    jparam.put("ORGANIZATION_ID", o.getOrganizationId());                
-//
-//                jparam.put("SAMPLE_ID", o.getSampleId().toString());
-//                jparam.put("ORGANIZATION_PRINT", o);
-                
                 ds = new OrganizationPrintDataSource(OrganizationPrintDataSource.Type.FAX);
                 orgFaxList = new ArrayList<OrganizationPrint>();
                 orgFaxList.add(o);
@@ -807,45 +832,48 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 faxPrint = JasperFillManager.fillReport(jreport, jparam, ds);
                 if (faxPrint == null)
                     continue;
-//                o.setPageCount(print.getPages().size());
-                tempFile = export(faxPrint);                
+
+                tempFile = export(faxPrint);
                 try {
                     /*
-                     * In the case of faxing for a single sample, the user can specify
-                     * a different name to go on the cover sheet as the "To Company"
-                     * than the name of the organization for which the report is
-                     * generated. Since the organization name is set by JasperReport
-                     * when it creates the report, it needs to be made sure that the name    
+                     * For a single sample, the user can specify a different
+                     * name for "To Company" than the default organization.
                      */
                     toCompany = o.getToCompany() != null ? o.getToCompany() : o.getOrganizationName();
-                    printstat = ReportUtil.fax(tempFile, o.getFaxNumber(), o.getFromCompany(),
-                                               o.getFaxAttention(), toCompany,
-                                               o.getFaxNote(), faxOwner, faxEmail);
+                    printstat = ReportUtil.fax(tempFile,
+                                               o.getFaxNumber(),
+                                               o.getFromCompany(),
+                                               o.getFaxAttention(),
+                                               toCompany,
+                                               o.getFaxNote(),
+                                               faxOwner,
+                                               faxEmail);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.FAXED);
                 } catch (Exception e) {
-                    log.error("Sample Id: " + o.getSampleId() + " Organization: " +
-                              o.getOrganizationName() + ": " + e.getMessage());
-                }                              
+                    log.log(Level.SEVERE, "Sample Id: " + o.getSampleId() +
+                                          " Organization: " + o.getOrganizationName() +
+                                          ": " + e.getMessage());
+                }
             }
-            
+
             /*
-             * the stat page at the end will list all the organizations printed
-             * in this run.
+             * generate state page at the end of print run to list all the organizations 
+             * printed/faxed.
              */
             if (forMailing) {
                 ds = new OrganizationPrintDataSource(OrganizationPrintDataSource.Type.STATS);
                 ds.setData(orgPrintList);
                 url = ReportUtil.getResourceURL("org/openelis/report/finalreport/stats.jasper");
                 stats = JasperFillManager.fillReport((JasperReport)JRLoader.loadObject(url),
-                                                           jparam,
-                                                           ds);
+                                                     jparam,
+                                                     ds);
                 pages = stats.getPages();
                 for (i = 0; i < pages.size(); i++ )
                     print.addPage(pages.get(i));
             }
 
             if (print.getPages().size() > 0) {
-                tempFile = export(print); 
+                tempFile = export(print);
                 if (ReportUtil.isPrinter(printer)) {
                     printstat = ReportUtil.print(tempFile, printer, 1);
                     status.setMessage(printstat).setStatus(ReportStatus.Status.PRINTED);
@@ -857,25 +885,28 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
             throw e;
         } finally {
             try {
                 if (con != null)
                     con.close();
             } catch (Exception e1) {
-                log.error(e1);
+                log.severe("Can not close connection");
             }
         }
     }
 
+    /*
+     * Exports the filled report to a temp file for printing or faxing.
+     */
     private File export(JasperPrint print) throws Exception {
         File tempFile;
         JRExporter jexport;
 
         jexport = new JRPdfExporter();
         tempFile = File.createTempFile("finalreport", ".pdf", new File("/tmp"));
-        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM, new FileOutputStream(tempFile));
+        jexport.setParameter(JRExporterParameter.OUTPUT_STREAM,
+                             new FileOutputStream(tempFile));
         jexport.setParameter(JRExporterParameter.JASPER_PRINT, print);
         jexport.exportReport();
 
