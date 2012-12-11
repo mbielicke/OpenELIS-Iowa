@@ -180,7 +180,7 @@ ORDER BY $P!{ORDER_BY}]]>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="24">
+		<band height="24" splitType="Prevent">
 			<textField>
 				<reportElement x="0" y="0" width="50" height="12"/>
 				<textElement>
