@@ -29,7 +29,7 @@ WHERE an.id = $P{ANALYSIS_ID} and r.analysis_id = an.id and r.is_reportable ='Y'
 			</textField>
 		</band>
 	</detail>
-	<summary>
+	<columnFooter>
 		<band height="12"/>
-	</summary>
+	</columnFooter>
 </jasperReport>
