@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="turnaround" pageWidth="792" pageHeight="612" orientation="Landscape" columnWidth="752" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.report.turnaround.CounterTurnaround"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<reportFont name="times" isDefault="true" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+	<parameter name="LOGIN_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="FROM_DATE" class="java.lang.String">
+		<parameterDescription><![CDATA[starting date-time released]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="TO_DATE" class="java.lang.String">
+		<parameterDescription><![CDATA[ending date-time released]]></parameterDescription>
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SECTION" class="java.lang.String">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT t.description tst_name, m.name mth_name,
+       s.collection_date s_col_date, s.collection_time s_col_time, s.received_date s_rec,
+       a.available_date a_avail,  a.completed_date a_com, a.released_date a_rel
+FROM   sample s, sample_item si, analysis a, test t, method m, test_section ts, section se, dictionary d
+WHERE  a.released_date between $P{FROM_DATE} and $P{TO_DATE} and
+       s.id = si.sample_id and a.sample_item_id = si.id and
+       a.test_id = t.id and t.is_active = "Y" and
+       t.method_id = m.id and ts.section_id = se.id and ts.test_id = t.id and a.section_id = se.id and
+       a.revision = 0 and
+       d.id=a.status_id and d.system_name = 'analysis_released' and
+       --a.printed_date is not null and
+       a.id not in
+         (
+          SELECT  analysis_qaevent.analysis_id
+          FROM   analysis_qaevent, qaevent
+          WHERE  analysis_qaevent.analysis_id = qaevent.id and
+                 qaevent.type_id = d.id and d.system_name = 'qaevent_override'
+         )
+        $P!{SECTION}
+order by 1, 2]]>
+	</queryString>
+	<field name="tst_name" class="java.lang.String"/>
+	<field name="mth_name" class="java.lang.String"/>
+	<field name="s_col_date" class="java.sql.Timestamp"/>
+	<field name="s_col_time" class="java.sql.Timestamp"/>
+	<field name="s_rec" class="java.sql.Timestamp"/>
+	<field name="a_avail" class="java.sql.Timestamp"/>
+	<field name="a_com" class="java.sql.Timestamp"/>
+	<field name="a_rel" class="java.sql.Timestamp"/>
+	<variable name="HEADER_DATE" class="java.util.Date" resetType="None">
+		<variableExpression><![CDATA[new Date()]]></variableExpression>
+	</variable>
+	<variable name="COL_REL" class="org.openelis.report.turnaround.CounterTurnaround" resetType="Group" resetGroup="test_method">
+		<variableExpression><![CDATA[$V{COL_REL}.set(JasperUtil.delta_hours(
+    JasperUtil.concatDateAndTime($F{s_col_date},$F{s_col_time}),$F{a_rel}))]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.report.turnaround.CounterTurnaround()]]></initialValueExpression>
+	</variable>
+	<variable name="REC_REL" class="org.openelis.report.turnaround.CounterTurnaround" resetType="Group" resetGroup="test_method">
+		<variableExpression><![CDATA[$V{REC_REL}.set(JasperUtil.delta_hours($F{s_rec},$F{a_rel}))]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.report.turnaround.CounterTurnaround()]]></initialValueExpression>
+	</variable>
+	<variable name="REC_COMPL" class="org.openelis.report.turnaround.CounterTurnaround" resetType="Group" resetGroup="test_method">
+		<variableExpression><![CDATA[$V{REC_COMPL}.set(JasperUtil.delta_hours($F{s_rec},$F{a_com}))]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.report.turnaround.CounterTurnaround()]]></initialValueExpression>
+	</variable>
+	<variable name="COMPL_REL" class="org.openelis.report.turnaround.CounterTurnaround" resetType="Group" resetGroup="test_method">
+		<variableExpression><![CDATA[$V{COMPL_REL}.set(JasperUtil.delta_hours($F{a_com},$F{a_rel}))]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.report.turnaround.CounterTurnaround()]]></initialValueExpression>
+	</variable>
+	<variable name="READY_COMPL" class="org.openelis.report.turnaround.CounterTurnaround" resetType="Group" resetGroup="test_method">
+		<variableExpression><![CDATA[$V{READY_COMPL}.set(JasperUtil.delta_hours($F{a_avail},$F{a_com}))]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.report.turnaround.CounterTurnaround()]]></initialValueExpression>
+	</variable>
+	<variable name="COL_REC" class="org.openelis.report.turnaround.CounterTurnaround" resetType="Group" resetGroup="test_method">
+		<variableExpression><![CDATA[$V{COL_REC}.set(JasperUtil.delta_hours(
+    JasperUtil.concatDateAndTime($F{s_col_date},$F{s_col_time}),$F{s_rec}))]]></variableExpression>
+		<initialValueExpression><![CDATA[new org.openelis.report.turnaround.CounterTurnaround()]]></initialValueExpression>
+	</variable>
+	<group name="test_method">
+		<groupExpression><![CDATA[$F{tst_name}+$F{mth_name}]]></groupExpression>
+		<groupFooter>
+			<band height="84">
+				<textField>
+					<reportElement positionType="Float" x="0" y="0" width="85" height="12"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{tst_name}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement positionType="Float" x="95" y="0" width="80" height="12"/>
+					<textElement/>
+					<textFieldExpression class="java.lang.String"><![CDATA[$F{mth_name}]]></textFieldExpression>
+				</textField>
+				<textField isBlankWhenNull="true">
+					<reportElement positionType="Float" x="185" y="0" width="30" height="12"/>
+					<textElement textAlignment="Center"/>
+					<textFieldExpression class="java.lang.Integer"><![CDATA[$V{REC_REL}.getCount()]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="225" y="0" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getMin()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getMin())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="275" y="0" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getMax()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getMax())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="325" y="0" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getAverage()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getAverage().intValue())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="375" y="0" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getMedian()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getMedian())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="425" y="0" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REL}.getSD()!=null?(JasperUtil.daysAndHours($V{COL_REL}.getSD())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="225" y="12" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getMin()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getMin())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="275" y="12" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getMax()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getMax())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="325" y="12" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getAverage()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getAverage().intValue())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="375" y="12" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getMedian()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getMedian())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="425" y="12" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_REL}.getSD()!=null?(JasperUtil.daysAndHours($V{REC_REL}.getSD())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00">
+					<reportElement positionType="Float" x="225" y="24" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getMin()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getMin())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="275" y="24" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getMax()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getMax())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="325" y="24" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getAverage()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getAverage())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="375" y="24" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getMedian()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getMedian())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="425" y="24" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{REC_COMPL}.getSD()!=null?(JasperUtil.daysAndHours($V{REC_COMPL}.getSD())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="225" y="36" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getMin()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getMin())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="275" y="36" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getMax()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getMax())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="325" y="36" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getAverage()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getAverage())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="375" y="36" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getMedian()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getMedian())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="425" y="36" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COMPL_REL}.getSD()!=null?(JasperUtil.daysAndHours($V{COMPL_REL}.getSD())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="225" y="48" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getMin()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getMin())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="275" y="48" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getMax()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getMax())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="325" y="48" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getAverage()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getAverage())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="375" y="48" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getMedian()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getMedian())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="425" y="48" width="40" height="12"/>
+					<textElement textAlignment="Right"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{READY_COMPL}.getSD()!=null?(JasperUtil.daysAndHours($V{READY_COMPL}.getSD())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="225" y="60" width="40" height="12"/>
+					<textElement textAlignment="Right" markup="none"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getMin()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getMin())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="275" y="60" width="40" height="12"/>
+					<textElement textAlignment="Right" markup="none"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getMax()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getMax())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="325" y="60" width="40" height="12"/>
+					<textElement textAlignment="Right" markup="none"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getAverage()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getAverage())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="375" y="60" width="40" height="12"/>
+					<textElement textAlignment="Right" markup="none"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getMedian()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getMedian())):null]]></textFieldExpression>
+				</textField>
+				<textField pattern="###0.00" isBlankWhenNull="true">
+					<reportElement positionType="Float" x="425" y="60" width="40" height="12"/>
+					<textElement textAlignment="Right" markup="none"/>
+					<textFieldExpression class="java.lang.Float"><![CDATA[$V{COL_REC}.getSD()!=null?(JasperUtil.daysAndHours($V{COL_REC}.getSD())):null]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="475" y="0" width="40" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Col-Rel]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="475" y="12" width="40" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Rec-Rel]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="475" y="24" width="40" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Rec-Cmp]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="475" y="36" width="40" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Cmp-Rel]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="475" y="48" width="40" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Rdy-Cmp]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="475" y="60" width="40" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Col-Rec]]></text>
+				</staticText>
+				<bar3DChart>
+					<chart isShowLegend="false" renderType="draw">
+						<reportElement mode="Opaque" x="530" y="2" width="221" height="70"/>
+						<chartTitle/>
+						<chartSubtitle/>
+						<chartLegend textColor="#000000"/>
+					</chart>
+					<categoryDataset>
+						<dataset resetType="Group" resetGroup="test_method"/>
+						<categorySeries>
+							<seriesExpression><![CDATA["CL-RL"]]></seriesExpression>
+							<categoryExpression><![CDATA["CL-RL"]]></categoryExpression>
+							<valueExpression><![CDATA[$V{COL_REL}.getAverageInDays()]]></valueExpression>
+							<labelExpression><![CDATA["Col-Rel"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["RC-RL"]]></seriesExpression>
+							<categoryExpression><![CDATA["RC-RL"]]></categoryExpression>
+							<valueExpression><![CDATA[$V{REC_REL}.getAverageInDays()]]></valueExpression>
+							<labelExpression><![CDATA["RC-RL"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["RC-Com"]]></seriesExpression>
+							<categoryExpression><![CDATA["RC-Com"]]></categoryExpression>
+							<valueExpression><![CDATA[$V{REC_COMPL}.getAverageInDays()]]></valueExpression>
+							<labelExpression><![CDATA["RC-Com"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["Com-Rel"]]></seriesExpression>
+							<categoryExpression><![CDATA["Com-Rel"]]></categoryExpression>
+							<valueExpression><![CDATA[$V{COMPL_REL}.getAverageInDays()]]></valueExpression>
+							<labelExpression><![CDATA["Com-Rel"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["RD-Com"]]></seriesExpression>
+							<categoryExpression><![CDATA["RD-Com"]]></categoryExpression>
+							<valueExpression><![CDATA[$V{READY_COMPL}.getAverageInDays()]]></valueExpression>
+							<labelExpression><![CDATA["RD-Com"]]></labelExpression>
+						</categorySeries>
+						<categorySeries>
+							<seriesExpression><![CDATA["CL-RC"]]></seriesExpression>
+							<categoryExpression><![CDATA["CL-RC"]]></categoryExpression>
+							<valueExpression><![CDATA[$V{COL_REC}.getAverageInDays()]]></valueExpression>
+							<labelExpression><![CDATA["CL-RC"]]></labelExpression>
+						</categorySeries>
+					</categoryDataset>
+					<bar3DPlot isShowLabels="false">
+						<plot/>
+						<itemLabel color="#000000" backgroundColor="#FFFFFF"/>
+						<categoryAxisFormat>
+							<axisFormat verticalTickLabels="true">
+								<labelFont>
+									<font size="10"/>
+								</labelFont>
+								<tickLabelFont>
+									<font size="0"/>
+								</tickLabelFont>
+							</axisFormat>
+						</categoryAxisFormat>
+						<valueAxisFormat>
+							<axisFormat verticalTickLabels="true">
+								<labelFont>
+									<font size="10"/>
+								</labelFont>
+								<tickLabelFont>
+									<font size="5"/>
+								</tickLabelFont>
+							</axisFormat>
+						</valueAxisFormat>
+					</bar3DPlot>
+				</bar3DChart>
+				<staticText>
+					<reportElement x="530" y="72" width="33" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Col-Rel]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="563" y="72" width="33" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Rec-Rel]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="596" y="72" width="37" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Rec-Cmp]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="633" y="72" width="35" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Cmp-Rel]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="668" y="72" width="38" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Rdy-Cmp]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="706" y="72" width="35" height="12" forecolor="#7F7F7F"/>
+					<textElement textAlignment="Left">
+						<font size="8"/>
+					</textElement>
+					<text><![CDATA[Col-Rec]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<pageHeader>
+		<band height="36">
+			<textField pattern="MMM dd, yyyy">
+				<reportElement key="headerDate" mode="Transparent" x="0" y="0" width="100" height="12"/>
+				<textElement>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="HH:mm:ss">
+				<reportElement key="headerTime" mode="Transparent" x="0" y="12" width="100" height="12"/>
+				<textElement>
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="headerTitle1" mode="Opaque" x="278" y="0" width="227" height="12"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<text><![CDATA[Turnaround Report]]></text>
+			</staticText>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement key="headerPageNo" mode="Opaque" x="621" y="0" width="116" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Page "+$V{PAGE_NUMBER}+" of "]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" evaluationTime="Report" pattern="">
+				<reportElement key="headerPageNoLast" mode="Opaque" x="737" y="0" width="10" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement key="headerLogname" mode="Opaque" x="654" y="12" width="93" height="12"/>
+				<textElement textAlignment="Right">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement key="headerTime" mode="Opaque" x="278" y="12" width="240" height="12"/>
+				<textElement textAlignment="Center">
+					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{FROM_DATE}+" to "+$P{TO_DATE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="12">
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="0" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Test name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="90" y="0" width="90" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Method name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="180" y="0" width="40" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement>
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[# tested]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="220" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement textAlignment="Right">
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Min]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="270" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement textAlignment="Right">
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Max]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="320" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement textAlignment="Right">
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Average]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="370" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement textAlignment="Right">
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[Median]]></text>
+			</staticText>
+			<staticText>
+				<reportElement positionType="Float" mode="Opaque" x="420" y="0" width="50" height="12" forecolor="#FFFFFF" backcolor="#000000"/>
+				<textElement textAlignment="Right">
+					<font reportFont="times"/>
+				</textElement>
+				<text><![CDATA[1 SD]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<pageFooter>
+		<band height="12">
+			<staticText>
+				<reportElement x="0" y="0" width="752" height="12"/>
+				<textElement/>
+				<text><![CDATA[* All values are in days and hours. i.e., 4.09 is 4 days and 9 hours]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>
