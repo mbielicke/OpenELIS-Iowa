@@ -161,23 +161,19 @@ public class ContainerTab extends Screen {
         table.addRowAddedHandler(new RowAddedHandler() {
             public void onRowAdded(RowAddedEvent event) {
                 int index;
-                Integer sampleTypeId;
-                OrderContainerDO data, prevData;
-                OrderContainerManager man;
+                TableDataRow row;
+                OrderContainerDO data;
                 
                 try {
-                    man = manager.getContainers();
                     index = event.getIndex();
-                    man.addContainerAt(index);
-                    data = man.getContainerAt(index);
+                    row = table.getRow(index);
+                    
+                    data = new OrderContainerDO();
                     data.setItemSequence(index);
-                    table.setCell(index, 0, index);
-                    if (index > 0) {
-                        prevData = man.getContainerAt(index-1);
-                        sampleTypeId = prevData.getTypeOfSampleId();                        
-                        data.setTypeOfSampleId(sampleTypeId);
-                        table.setCell(index, 2, sampleTypeId);
-                    }
+                    data.setContainerId((Integer)row.cells.get(1).getValue());
+                    data.setTypeOfSampleId((Integer)row.cells.get(2).getValue());
+                    
+                    manager.getContainers().addContainerAt(data, index);
                 } catch (Exception e) {
                     Window.alert(e.getMessage());
                     e.printStackTrace();
@@ -248,9 +244,28 @@ public class ContainerTab extends Screen {
         addContainerButton = (AppButton)def.getWidget("addContainerButton");
         addScreenHandler(addContainerButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
-                int n;
+                int n, r;
+                TableDataRow row;
+                OrderContainerDO prevData;
+                OrderContainerManager man;
 
-                table.addRow();
+                table.finishEditing();
+                
+                r = table.numRows();
+                row = new TableDataRow(3);
+                if (r > 0) {
+                    try {
+                        man = manager.getContainers();
+                        prevData = man.getContainerAt(r-1);
+                        row.cells.get(0).setValue(r);
+                        row.cells.get(2).setValue(prevData.getTypeOfSampleId());
+                    } catch (Exception e) {
+                        Window.alert(e.getMessage());
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+                table.addRow(r, row);
                 n = table.numRows() - 1;
                 table.selectRow(n);
                 table.scrollToSelection();
@@ -307,28 +322,28 @@ public class ContainerTab extends Screen {
         addScreenHandler(duplicateButton, new ScreenEventHandler<Object>() {
             public void onClick(ClickEvent event) {
                 int n, r;     
-                OrderContainerDO prevData, data;
-                OrderContainerManager man;
+                OrderContainerDO prevData;
+                TableDataRow row;
                 
                 r = table.getSelectedRow();
                 if (r == -1)
                     return;
+                
+                table.finishEditing();
                 try {
-                    man = manager.getContainers();
-                    n = r + 1;
+                    prevData = manager.getContainers().getContainerAt(r);
+                   
+                    n = r+1;
+                    row = new TableDataRow(3);
+                    row.cells.get(0).setValue(n);
+                    row.cells.get(1).setValue(prevData.getContainerId());
+                    row.cells.get(2).setValue(prevData.getTypeOfSampleId());
+
                     if (n < table.numRows())
-                        table.addRow(n);
+                        table.addRow(n, row);
                     else
-                        table.addRow();
+                        table.addRow(row);
                     
-                    prevData = man.getContainerAt(r);
-                    data = man.getContainerAt(n);
-                    data.setContainerId(prevData.getContainerId());
-                    data.setOrderId(prevData.getOrderId());
-                    data.setTypeOfSampleId(prevData.getTypeOfSampleId());
-                    
-                    table.setCell(n, 1, data.getContainerId());
-                    table.setCell(n, 2, data.getTypeOfSampleId());                    
                     resetSequencesFrom(n);
                     
                     table.selectRow(n);
