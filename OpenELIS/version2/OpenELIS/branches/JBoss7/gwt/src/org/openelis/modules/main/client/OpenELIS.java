@@ -43,12 +43,10 @@ import org.openelis.modules.auxiliary.client.AuxiliaryScreen;
 import org.openelis.modules.buildKits.client.BuildKitsScreen;
 import org.openelis.modules.completeRelease.client.CompleteReleaseScreen;
 import org.openelis.modules.cron.client.CronScreen;
-import org.openelis.modules.report.dataView.client.DataViewScreen;
 import org.openelis.modules.dictionary.client.DictionaryScreen;
 import org.openelis.modules.environmentalSampleLogin.client.EnvironmentalSampleLoginScreen;
-import org.openelis.modules.newbornScreeningSampleLogin.client.NewbornScreeningSampleLoginScreen;
-import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapScreen;
 import org.openelis.modules.exchangeDataSelection.client.ExchangeDataSelectionScreen;
+import org.openelis.modules.exchangeVocabularyMap.client.ExchangeVocabularyMapScreen;
 import org.openelis.modules.favorites.client.FavoritesScreen;
 import org.openelis.modules.instrument.client.InstrumentScreen;
 import org.openelis.modules.inventoryAdjustment.client.InventoryAdjustmentScreen;
@@ -57,6 +55,7 @@ import org.openelis.modules.inventoryReceipt.client.InventoryReceiptScreen;
 import org.openelis.modules.inventoryTransfer.client.InventoryTransferScreen;
 import org.openelis.modules.label.client.LabelScreen;
 import org.openelis.modules.method.client.MethodScreen;
+import org.openelis.modules.newbornScreeningSampleLogin.client.NewbornScreeningSampleLoginScreen;
 import org.openelis.modules.order.client.InternalOrderScreen;
 import org.openelis.modules.order.client.SendoutOrderScreen;
 import org.openelis.modules.order.client.VendorOrderScreen;
@@ -70,11 +69,9 @@ import org.openelis.modules.provider.client.ProviderScreen;
 import org.openelis.modules.pws.client.PWSScreen;
 import org.openelis.modules.qaevent.client.QaEventScreen;
 import org.openelis.modules.qc.client.QcScreen;
-import org.openelis.modules.report.qcChart.client.QcChartScreen;
 import org.openelis.modules.quickEntry.client.QuickEntryScreen;
 import org.openelis.modules.report.client.FinalReportBatchReprintScreen;
 import org.openelis.modules.report.client.FinalReportBatchScreen;
-import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintScreen;
 import org.openelis.modules.report.client.HoldRefuseOrganizationReportScreen;
 import org.openelis.modules.report.client.OrderRecurrenceReportScreen;
 import org.openelis.modules.report.client.QASummaryReportScreen;
@@ -88,6 +85,9 @@ import org.openelis.modules.report.client.ToDoAnalyteReportScreen;
 import org.openelis.modules.report.client.TurnaroundReportScreen;
 import org.openelis.modules.report.client.VerificationReportScreen;
 import org.openelis.modules.report.client.VolumeReportScreen;
+import org.openelis.modules.report.dataView.client.DataViewScreen;
+import org.openelis.modules.report.finalReportSingleReprint.client.FinalReportSingleReprintScreen;
+import org.openelis.modules.report.qcChart.client.QcChartScreen;
 import org.openelis.modules.report.turnaroundStatistic.client.TurnaroundStatisticScreen;
 import org.openelis.modules.sampleTracking.client.SampleTrackingScreen;
 import org.openelis.modules.section.client.SectionScreen;
@@ -104,7 +104,6 @@ import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen1;
-import org.openelis.modules.sampleManagerTest.client.SampleManagerTestScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -422,7 +421,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-        
+        /*
         addClickHandler("testSampleManager", "sampleprivatewell", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
@@ -443,7 +442,7 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
                 });
             }
         });
-
+        */
         addClickHandler("project", "project", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {

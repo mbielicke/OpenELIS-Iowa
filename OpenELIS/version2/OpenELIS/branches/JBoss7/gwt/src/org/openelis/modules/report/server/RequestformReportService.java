@@ -27,9 +27,9 @@ package org.openelis.modules.report.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
-import org.openelis.report.Prompt;
 import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 

@@ -46,8 +46,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.OptionListItem;
+import org.openelis.domain.Prompt;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
@@ -57,7 +58,6 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.remote.VolumeReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 

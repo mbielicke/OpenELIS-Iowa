@@ -36,12 +36,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.IdNameVO;
-import org.openelis.domain.PanelItemDO;
 import org.openelis.entity.EventLog;
-import org.openelis.entity.PanelItem;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.Datetime;

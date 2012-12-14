@@ -37,11 +37,10 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.TestTrailerDO;
-import org.openelis.domain.TestViewDO;
 import org.openelis.entity.TestTrailer;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;

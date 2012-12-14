@@ -36,9 +36,10 @@ import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
+import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
@@ -50,7 +51,6 @@ import org.openelis.local.OrderLocal;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.remote.BuildKitsReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

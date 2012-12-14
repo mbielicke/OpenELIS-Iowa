@@ -39,7 +39,7 @@ import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
-import org.openelis.report.Prompt;
+import org.openelis.domain.Prompt;
 import org.openelis.server.EJBFactory;
 
 public class OrderService {

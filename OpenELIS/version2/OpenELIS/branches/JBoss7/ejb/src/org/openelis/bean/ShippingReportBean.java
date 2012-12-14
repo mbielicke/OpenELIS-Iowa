@@ -22,7 +22,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
@@ -30,6 +30,7 @@ import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
+import org.openelis.domain.Prompt;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
@@ -46,7 +47,6 @@ import org.openelis.local.RequestformReportLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.ShippingLocal;
 import org.openelis.remote.ShippingReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

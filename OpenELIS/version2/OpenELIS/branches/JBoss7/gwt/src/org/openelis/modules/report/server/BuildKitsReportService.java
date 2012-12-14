@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.remote.BuildKitsReportRemote;
-import org.openelis.report.Prompt;
+import org.openelis.domain.Prompt;
 import org.openelis.server.EJBFactory;
 import org.openelis.util.SessionManager;
 

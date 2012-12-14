@@ -529,14 +529,14 @@ public class EJBFactory {
      * Bean from Security project
      */
     public static SystemUserPermissionRemote getSecurity() {
-        return (SystemUserPermissionRemote)lookup("/security/security.jar/SystemUserPermissionBean!org.openelis.security.remote.SystemUserPermissionRemote");
+        return (SystemUserPermissionRemote)lookup("java:global/security/security.jar/SystemUserPermissionBean!org.openelis.security.remote.SystemUserPermissionRemote");
     }
 
     private static Object lookup(String bean) {
         InitialContext ctx;
         
-        if (!bean.startsWith("/"))
-            bean = "/openelis/openelis.jar/" + bean; 
+        if (!bean.startsWith("java"))
+            bean = "java:app/openelis.jar/" + bean; 
             
         try {
             ctx = new InitialContext();

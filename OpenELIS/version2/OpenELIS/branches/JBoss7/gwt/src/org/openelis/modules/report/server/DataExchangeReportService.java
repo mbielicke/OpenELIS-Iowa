@@ -27,11 +27,11 @@ package org.openelis.modules.report.server;
 
 import java.util.ArrayList;
 
+import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.Query;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.report.Prompt;
 import org.openelis.server.EJBFactory;
 
 public class DataExchangeReportService {    

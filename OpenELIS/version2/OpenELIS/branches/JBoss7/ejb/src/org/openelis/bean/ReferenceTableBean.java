@@ -34,7 +34,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.local.ReferenceTableLocal;
 import org.openelis.remote.ReferenceTableRemote;
 

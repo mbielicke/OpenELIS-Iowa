@@ -36,7 +36,7 @@ import javax.ejb.TransactionManagementType;
 import javax.persistence.NoResultException;
 import javax.transaction.UserTransaction;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.SampleDO;

@@ -37,7 +37,7 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 
 import org.apache.log4j.Logger;
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
@@ -109,7 +109,6 @@ import org.openelis.utils.EJBFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.apache.commons.lang.StringEscapeUtils;
 
 @Stateless
 @SecurityDomain("openelis")
