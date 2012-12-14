@@ -242,31 +242,31 @@ UIRF Software License are applicable instead of those above.
               <tab key="lotTab" tab = "qcLotTable,qcLotTable" text="{resource:getString($constants,'lotInformation')}">
                 <VerticalPanel>
                   <table key="qcLotTable" width="640" maxRows="13" showScroll="ALWAYS" style="ScreenTableWithSides" tab="{meta:getId()},{meta:getIsActive()}">
-                    <col key="{meta:getQcLotIsActive()}" width="40" align="center" header="{resource:getString($constants,'active')}">
+                    <col key="{meta:getQcLotIsActive()}" width="40" align="center" header="{resource:getString($constants,'active')}" filter="true">
                       <check/>
                     </col>
-                    <col key="{meta:getQcLotLotNumber()}" width="210" align="left" header="{resource:getString($constants,'lotNumber')}">
+                    <col key="{meta:getQcLotLotNumber()}" width="210" align="left" header="{resource:getString($constants,'lotNumber')}" sort="true">
                       <textbox field="String" case = "UPPER" max = "30" required="true" />
                     </col>
-                    <col key="{meta:getQcLotLocationId()}" width="60" align="left" header="{resource:getString($constants,'location')}">
+                    <col key="{meta:getQcLotLocationId()}" width="60" align="left" header="{resource:getString($constants,'location')}" filter="true" sort="true">
                       <dropdown width="100" field="Integer" required="true" />
                     </col>
-                    <col key="{meta:getQcLotPreparedDate()}" width="105" align="left"  header="{resource:getString($constants,'preparedDate')}">
+                    <col key="{meta:getQcLotPreparedDate()}" width="105" align="left"  header="{resource:getString($constants,'preparedDate')}" sort="true">
                       <calendar begin="0" end="4" pattern="{resource:getString($constants,'dateTimePattern')}" />
                     </col>
-                    <col key="{meta:getQcLotUsableDate()}" width="105" align="left" header="{resource:getString($constants,'usableDate')}">
+                    <col key="{meta:getQcLotUsableDate()}" width="105" align="left" header="{resource:getString($constants,'usableDate')}" sort="true">
                       <calendar begin="0" end="4" width="105" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" />
                     </col>
-                    <col key="{meta:getQcLotExpireDate()}" width="105" align="left" header="{resource:getString($constants,'expireDate')}">
+                    <col key="{meta:getQcLotExpireDate()}" width="105" align="left" header="{resource:getString($constants,'expireDate')}" sort="true">
                       <calendar begin="0" end="4" width="105" pattern="{resource:getString($constants,'dateTimePattern')}" required="true" />
                     </col>
                     <col key="{meta:getQcLotPreparedVolume()}" width="105" align="right"  header="{resource:getString($constants,'preparedVolume')}">
                       <textbox field="Double"/>
                     </col>
-                    <col key="{meta:getQcLotPreparedUnitId()}" width="100" align="right" header="{resource:getString($constants,'preparedUnit')}">
+                    <col key="{meta:getQcLotPreparedUnitId()}" width="100" align="right" header="{resource:getString($constants,'preparedUnit')}" filter="true">
                       <dropdown width="150" field="Integer" required="true" />
                     </col>
-                    <col key="{meta:getQcLotPreparedById()}" width="145" align="left" header="{resource:getString($constants,'preparedBy')}">
+                    <col key="{meta:getQcLotPreparedById()}" width="145" align="left" header="{resource:getString($constants,'preparedBy')}" sort="true" filter="true">
                       <autoComplete width="145" field="Integer">
                         <col width="145" />
                       </autoComplete>
@@ -287,6 +287,14 @@ UIRF Software License are applicable instead of those above.
                           <AbsolutePanel style="RemoveRowButtonImage" />
                           <text>
                             <xsl:value-of select="resource:getString($constants,'removeRow')" />
+                          </text>
+                        </HorizontalPanel>
+                      </appButton>
+                      <appButton key="duplicateLotButton" style="Button">
+                        <HorizontalPanel>
+                          <AbsolutePanel style="DuplicateRowButtonImage" />
+                          <text>
+                            <xsl:value-of select="resource:getString($constants,'duplicateRecord')" />
                           </text>
                         </HorizontalPanel>
                       </appButton>

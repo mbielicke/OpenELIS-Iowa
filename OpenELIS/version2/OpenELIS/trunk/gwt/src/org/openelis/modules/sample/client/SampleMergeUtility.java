@@ -130,25 +130,41 @@ public class SampleMergeUtility {
 
                 if (indexes != null) {
                     /*
-                     * go through the tests added at each index and see if there's
-                     * an analysis with this test id and a null or negative analysis
-                     * id there
+                     * go through the tests added at each index 
                      */
                     for (Integer index : indexes) {
                         orderAnaMan = fromOrderItemMan.getAnalysisAt(index);
+                        /*
+                         * see if there's an analysis with this test id and a null
+                         * or negative analysis id at this index
+                         */
                         orderAnaIndex = getUnitializedByTestId(orderAnaMan, qeAna.getTestId());                        
                         
                         if (orderAnaIndex != -1) {
+                            /*
+                             * if such an analysis is found, then set the various
+                             * parts of that analysis' manager like notes and qa
+                             * events to be the ones from the analysis in the manager
+                             * filled from quick entry 
+                             */
                             orderAna = orderAnaMan.getAnalysisAt(orderAnaIndex);
-                            setAnalysisInfo(j, orderAnaIndex, orderAnaMan, qeAnaMan);
+                            setAnalysisInfo(j, orderAnaIndex, qeAnaMan, orderAnaMan);
                             orderAna.setId(qeAna.getId());
                             analysisFound = true;
                             break;
                         }
                     }
                 }
-
+                
                 if ( !analysisFound) {
+                    /*
+                     * if the analysis isn't found at this index or if it isn't
+                     * found anywhere in the manager filled from the order, then
+                     * create a new analysis, add it to the sample item at this
+                     * index or index zero and set the various parts of that analysis'
+                     * manager like notes and qa events to be the ones from the
+                     * analysis in the manager filled from quick entry                      
+                     */
                     sequence = quickEntryItemMan.getSampleItemAt(i).getItemSequence();
                     if (sequence >= fromOrderItemMan.count())
                         sequence = 0;
@@ -156,7 +172,7 @@ public class SampleMergeUtility {
                     orderAnaMan = fromOrderItemMan.getAnalysisAt(sequence);
                     orderAnaIndex = addAnalysis(orderAnaMan, qeAnaMan.getTestAt(j));
                     orderAna = orderAnaMan.getAnalysisAt(orderAnaIndex); 
-                    setAnalysisInfo(j, orderAnaIndex, orderAnaMan, qeAnaMan);
+                    setAnalysisInfo(j, orderAnaIndex, qeAnaMan, orderAnaMan);
                     orderAna.setId(qeAna.getId());
                 }
             }
@@ -164,13 +180,13 @@ public class SampleMergeUtility {
     }
 
 
-    private static void setAnalysisInfo(int j, int index, AnalysisManager orderAnaMan,
-                                          AnalysisManager qeAnaMan) throws Exception {
-        orderAnaMan.setQAEventAt(qeAnaMan.getQAEventAt(j), j);
-        orderAnaMan.setInternalNotes(qeAnaMan.getInternalNotesAt(j), index);
-        orderAnaMan.setExternalNoteAt(qeAnaMan.getExternalNoteAt(j), index);
-        orderAnaMan.setStorageAt(qeAnaMan.getStorageAt(j), index);
-        orderAnaMan.setAnalysisUserAt(qeAnaMan.getAnalysisUserAt(j), index);
+    private static void setAnalysisInfo(int qeAnaIndex, int orderAnaIndex,
+                                          AnalysisManager qeAnaMan,  AnalysisManager orderAnaMan) throws Exception {
+        orderAnaMan.setQAEventAt(qeAnaMan.getQAEventAt(qeAnaIndex), qeAnaIndex);
+        orderAnaMan.setInternalNotes(qeAnaMan.getInternalNotesAt(qeAnaIndex), orderAnaIndex);
+        orderAnaMan.setExternalNoteAt(qeAnaMan.getExternalNoteAt(qeAnaIndex), orderAnaIndex);
+        orderAnaMan.setStorageAt(qeAnaMan.getStorageAt(qeAnaIndex), orderAnaIndex);
+        orderAnaMan.setAnalysisUserAt(qeAnaMan.getAnalysisUserAt(qeAnaIndex), orderAnaIndex);
     }
 
     

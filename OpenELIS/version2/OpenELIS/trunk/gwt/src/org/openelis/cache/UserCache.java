@@ -32,8 +32,6 @@ import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.services.ScreenService;
 
-import com.google.gwt.user.client.Window;
-
 /**
  * Class provides cache service handling for front end GWT classes. Cache
  * objects in GWT instance are cached for the duration of the session and are
