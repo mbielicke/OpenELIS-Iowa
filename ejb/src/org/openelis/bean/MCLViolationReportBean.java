@@ -38,12 +38,13 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
-import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.MCLViolationReportVO;
+import org.openelis.domain.Prompt;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleQaEventDO;
@@ -65,7 +66,6 @@ import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.remote.MCLViolationReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

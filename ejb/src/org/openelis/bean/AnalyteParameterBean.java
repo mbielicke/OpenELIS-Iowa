@@ -38,7 +38,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteParameterDO;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.QcAnalyteViewDO;
@@ -48,7 +48,6 @@ import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.entity.AnalyteParameter;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;

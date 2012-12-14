@@ -19,10 +19,9 @@ import org.openelis.gwt.server.AppServlet;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
 import org.openelis.manager.SampleManager1.Load;
-import org.openelis.modules.sampleManagerTest.client.SampleManagerTestServiceInt;
 import org.openelis.server.EJBFactory;
 
-public class SampleManagerTestServlet extends AppServlet implements SampleManagerTestServiceInt {
+public class SampleManagerTestServlet extends AppServlet {//implements SampleManagerTestServiceInt {
 
     private static final long serialVersionUID = 1L;
 

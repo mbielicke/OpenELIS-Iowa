@@ -28,6 +28,7 @@ package org.openelis.server;
 import java.util.Properties;
 import java.util.logging.Logger;
 
+import javax.ejb.EJB;
 import javax.naming.InitialContext;
 
 import org.openelis.remote.AnalysisManagerRemote;
@@ -139,6 +140,8 @@ import org.openelis.remote.EventLogRemote;
 import org.openelis.util.SessionManager;
 
 public class EJBFactory {
+    
+    
     private static Logger log = Logger.getLogger(EJBFactory.class.getName());
     
     public static AnalysisRemote getAnalysis() {
@@ -575,15 +578,15 @@ public class EJBFactory {
     	Properties p;
     	
     	try {
-    		p = (Properties)SessionManager.getSession().getAttribute("jndiProps");
-    		if (p == null) {
-    			log.severe("Failed to get user properties for thread id " + Thread.currentThread());
-    			return null;
-    		}
+    		//p = (Properties)SessionManager.getSession().getAttribute("jndiProps");
+    		//if (p == null) {
+    		//	log.severe("Failed to get user properties for thread id " + Thread.currentThread());
+    		//	return null;
+    	//	}
 
-    		c = new InitialContext(p);
+    		c = new InitialContext();
     		if (!bean.startsWith("/"))
-                bean = "/openelis/openelis.jar/" + bean;
+                bean = "java:app/openelis.jar/" + bean;
     		object = c.lookup(bean);
     	} catch (Exception e) {
     		log.severe("Failed to lookup "+ bean +" for thread id "+ Thread.currentThread()+": " +

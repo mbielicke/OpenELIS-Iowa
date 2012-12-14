@@ -48,11 +48,10 @@
  * which case the provisions of a UIRF Software License are applicable instead
  * of those above.
  */
-package org.openelis.report;
+package org.openelis.domain;
 
 import java.util.ArrayList;
 
-import org.openelis.domain.OptionListItem;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.RPC;
 

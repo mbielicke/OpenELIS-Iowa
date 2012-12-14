@@ -4,5 +4,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Lib"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/OpenELIS-Common"/>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/bin/client/jboss-client.jar"/>
+	<classpathentry kind="lib" path="/usr/local/java/jboss-as-7.1.1.Final/modules/javax/servlet/api/main/jboss-servlet-api_3.0_spec-1.0.0.Final.jar"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER/gwt-2.0.1"/>
+	<classpathentry kind="lib" path="/OpenELIS-EJB/bin"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

@@ -46,14 +46,14 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.OptionListItem;
+import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.remote.HoldRefuseOrganizationReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

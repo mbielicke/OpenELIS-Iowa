@@ -29,8 +29,8 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
+import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.ReportStatus;
-import org.openelis.report.Prompt;
 
 @Remote
 public interface DataExchangeReportRemote {

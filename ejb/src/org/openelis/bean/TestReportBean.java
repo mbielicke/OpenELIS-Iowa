@@ -21,8 +21,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.OptionListItem;
+import org.openelis.domain.Prompt;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -34,7 +35,6 @@ import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.TestLocal;
 import org.openelis.remote.TestReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

@@ -39,7 +39,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.apache.log4j.Logger;
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AuxDataDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldGroupDO;

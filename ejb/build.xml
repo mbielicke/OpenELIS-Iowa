@@ -2,92 +2,92 @@
 <!-- JBoss build file                                                       -->
 <!-- ======================================================================= -->
 
-<project name="ELIS" default="ejbjar" basedir=".">
+<project name="ELIS" basedir=".">
 
-	<property environment="env" />
-	<property name="src.resources" value="${basedir}/src/resources" />
+	<delete file="build/openelis.war" />
+	<war destFile="build/openelis.war" baseDir="../OpenELIS-GWT/war">
+		<exclude name="WEB-INF/lib/gwt-servlet.jar" />
+		<exclude name="WEB-INF/classes/org/openelis/manager/*"/>
+	</war>
 
-	<target name="ejbjar">
-		<mkdir dir="build"/>
-		<delete file="build/openelis.jar" />
-		<copy file="src/resources/META-INF/ehcache.xml" todir="bin" overwrite="true" />
-        <copy file="src/resources/META-INF/dataExchangeDefault.xsl" todir="bin" overwrite="true" />
-		<jar jarfile="build/openelis.jar">
-			<fileset dir="bin">
-				<include name="org/openelis/bean/*.class" />
-				<include name="org/openelis/manager/*.class" />
-				<include name="org/openelis/entity/*.class" />
-				<include name="org/openelis/local/*.class" />
-				<include name="org/openelis/report/**/*" />
-				<include name="org/openelis/utils/*.class" />
-				<exclude name="org/openelis/report/**/*.jrxml"/>
-				<include name="ehcache.xml" />
-                <include name="dataExchangeDefault.xsl" />
-			</fileset>
-			<fileset dir="${src.resources}/">
-				<include name="META-INF/persistence.xml" />
-				<include name="META-INF/ehcache.xml" />
-			</fileset>
-		</jar>
-		<delete file="build/openelis-common.jar" />
-		<jar jarfile="build/openelis-common.jar">
-			<fileset dir="../OpenELIS-Common/bin">
-				<include name="org/openelis/constants/*" />
-				<include name="org/openelis/domain/*.class" />
-				<include name="org/openelis/exception/*.class" />
-				<include name="org/openelis/manager/*.class" />
-				<include name="org/openelis/messages/*.class" />
-				<include name="org/openelis/meta/*.class" />
-				<include name="org/openelis/remote/*.class" />
-				<include name="org/openelis/report/*.class" />
-				<include name="org/openelis/utilcommon/*.class" />
-			</fileset>
-		</jar>
-		<delete file="build/security-common.jar" />
-		<jar jarfile="build/security-common.jar">
-		    <fileset dir="../Security-Common/bin">
-			  <include name="org/openelis/security/domain/*.class"/>
-		      <include name="org/openelis/security/remote/*.class"/>
-		    </fileset>
-		</jar>
-		<!--
-		<copy file="../OpenELIS-Security-EJB/security-client.jar" todir="./lib" overwrite="true" />
-		-->
-        <copy file="../OpenELIS-Lib/openelis-lib.jar" todir="./lib" overwrite="true" />
-		<delete file="build/openelis.ear" />
-		<ear destfile="build/openelis.ear" appxml="${src.resources}/META-INF/application.xml">
-			<fileset dir="${src.resources}/">
-				<include name="META-INF/jboss-app.xml" />
-			</fileset>
-			<fileset dir="build">
-				<include name="openelis.jar" />
-			</fileset>
-			<fileset dir="build">
-				<include name="openelis-common.jar" />
-			</fileset>
-			<fileset dir="build">
-				<include name="security-common.jar" />
-		    </fileset>
-			<fileset dir=".">
-				<include name="lib/openelis-lib.jar" />
-				<include name="lib/poi-3.6-20091214.jar" />
-				<include name="lib/iText-2.1.7.jar" />
-				<include name="lib/jcommon-1.0.15.jar" />
-				<include name="lib/jfreechart-1.0.12.jar" />				
-			    <include name="lib/groovy-all-1.7.5.jar" />
-			    <include name="lib/barbecue-1.5-beta1.jar" />			    
-			    <include name="lib/commons-digester-1.7.jar" />
-			    <include name="lib/ehcache-1.2.jar"/>
-		    	<include name="lib/commons-beanutils-1.8.2.jar" />
-			    <include name="lib/jasperreports-4.0.1.jar" />
-				<include name="lib/javamail.jar" />
-			</fileset>
-		</ear>
-	</target>
+	<delete file="build/openelis.jar" />
+	<copy file="src/resources/META-INF/ehcache.xml" todir="bin" overwrite="true" />
+	<copy file="src/resources/META-INF/dataExchangeDefault.xsl" todir="bin" overwrite="true" />
+	<jar jarfile="build/openelis.jar">
+		<fileset dir="bin">
+			<include name="org/openelis/bean/*.class" />
+			<include name="org/openelis/manager/*.class" />
+			<include name="org/openelis/entity/*.class" />
+			<include name="org/openelis/local/*.class" />
+			<include name="org/openelis/report/**/*" />
+			<include name="org/openelis/utils/*.class" />
+			<exclude name="org/openelis/report/**/*.jrxml" />
+			<include name="ehcache.xml" />
+			<include name="dataExchangeDefault.xsl" />
+		</fileset>
+		<fileset dir="src/resources/">
+			<include name="META-INF/persistence.xml" />
+			<include name="META-INF/ehcache.xml" />
+		</fileset>
+		<fileset dir="../OpenELIS-Common/bin">
+			<include name="org/openelis/manager/*.class" />
+	    </fileset>
+	</jar>
 
-	<target name="deploy-openelis-ejb" depends="ejbjar">
-		<copy file="build/openelis.ear" todir="/usr/local/java/jboss/server/shl/deploy" />
-	</target>
+	<delete file="build/openelis-common.jar" />
+	<jar jarfile="build/openelis-common.jar">
+		<fileset dir="../OpenELIS-Common/bin">
+			<include name="org/openelis/constants/*" />
+			<include name="org/openelis/domain/*.class" />
+			<include name="org/openelis/exception/*.class" />
+			<!--<include name="org/openelis/manager/*.class" /> -->
+			<include name="org/openelis/messages/*.class" />
+			<include name="org/openelis/meta/*.class" />
+			<include name="org/openelis/remote/*.class" />
+			<include name="org/openelis/report/*.class" />
+			<include name="org/openelis/utilcommon/*.class" />
+		</fileset>
+	</jar>
+	<delete file="build/security-client.jar" />
+	<jar jarfile="build/security-client.jar">
+		<fileset dir="../Security/bin">
+			<include name="org/openelis/security/domain/*.class" />
+			<include name="org/openelis/security/remote/*.class" />
+		</fileset>
+	</jar>
+
+	<copy file="../OpenELIS-Lib/openelis-lib.jar" todir="./lib" overwrite="true" />
+	<delete file="build/openelis.ear" />
+	<ear destfile="build/openelis.ear" appxml="src/resources/META-INF/application.xml">
+		<fileset dir="build">
+			<include name="openelis.jar" />
+		</fileset>
+		<fileset dir="build">
+			<include name="openelis.war" />
+		</fileset>
+		<fileset dir="build">
+			<include name="openelis-common.jar"/>
+	    </fileset>
+		<fileset dir="build">
+			<include name="security-client.jar" />
+		</fileset>
+		<fileset dir=".">
+			<include name="lib/openelis-lib.jar" />
+			<include name="lib/poi-3.6-20091214.jar" />
+			<include name="lib/iText-2.1.7.jar" />
+			<include name="lib/jcommon-1.0.15.jar" />
+			<include name="lib/jfreechart-1.0.12.jar" />
+			<include name="lib/groovy-all-1.7.5.jar" />
+			<include name="lib/barbecue-1.5-beta1.jar" />
+			<include name="lib/commons-digester-1.7.jar" />
+			<include name="lib/ehcache-1.2.jar" />
+			<include name="lib/commons-beanutils-1.8.2.jar" />
+			<include name="lib/jasperreports-4.0.1.jar" />
+			<include name="lib/gwt-servlet.jar" />
+			<include name="lib/javamail.jar" />
+			<include name="lib/commons-fileupload-1.2.1.jar"/>
+		</fileset>
+	</ear>
 
 </project>
 

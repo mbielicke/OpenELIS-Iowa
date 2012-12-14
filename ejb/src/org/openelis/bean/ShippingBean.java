@@ -36,7 +36,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.domain.OrganizationViewDO;
 import org.openelis.domain.ShippingDO;

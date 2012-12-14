@@ -26,7 +26,6 @@
 package org.openelis.bean;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -36,13 +35,12 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisReportFlagsDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.entity.AnalysisReportFlags;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisReportFlagsLocal;
 import org.openelis.local.LockLocal;

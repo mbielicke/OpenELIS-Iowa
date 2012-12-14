@@ -27,7 +27,7 @@ package org.openelis.bean;
 
 import javax.ejb.Stateless;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.remote.AuxDataManagerRemote;
 

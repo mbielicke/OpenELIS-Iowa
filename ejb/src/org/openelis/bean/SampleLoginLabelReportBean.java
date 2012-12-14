@@ -10,9 +10,10 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
 import org.apache.log4j.Logger;
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
+import org.openelis.domain.Prompt;
 import org.openelis.domain.SampleDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
@@ -22,13 +23,12 @@ import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.CategoryCacheLocal;
 import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.LabelReportLocal;
+import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SampleLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.remote.SampleLoginLabelReportRemote;
-import org.openelis.report.Prompt;
 import org.openelis.utils.ReportUtil;
 
 @Stateless

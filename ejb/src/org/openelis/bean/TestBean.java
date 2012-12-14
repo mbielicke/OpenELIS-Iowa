@@ -37,7 +37,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.PanelVO;
 import org.openelis.domain.TestDO;
 import org.openelis.domain.TestMethodSampleTypeVO;

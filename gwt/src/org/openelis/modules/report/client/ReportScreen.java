@@ -28,6 +28,7 @@ package org.openelis.modules.report.client;
 import java.util.ArrayList;
 
 import org.openelis.domain.OptionListItem;
+import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.RPC;
@@ -54,7 +55,6 @@ import org.openelis.gwt.widget.TextBox.Case;
 import org.openelis.gwt.widget.table.TableColumn;
 import org.openelis.gwt.widget.table.TableDataRow;
 import org.openelis.manager.Preferences;
-import org.openelis.report.Prompt;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.http.client.URL;

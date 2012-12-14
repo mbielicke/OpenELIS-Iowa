@@ -25,7 +25,36 @@
  */
 package org.openelis.bean;
 
-import static org.openelis.manager.SampleManager1Accessor.*;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysis;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysisNote;
+import static org.openelis.manager.SampleManager1Accessor.addAnalysisQA;
+import static org.openelis.manager.SampleManager1Accessor.addAuxilliary;
+import static org.openelis.manager.SampleManager1Accessor.addItem;
+import static org.openelis.manager.SampleManager1Accessor.addOrganization;
+import static org.openelis.manager.SampleManager1Accessor.addProject;
+import static org.openelis.manager.SampleManager1Accessor.addResult;
+import static org.openelis.manager.SampleManager1Accessor.addSampleNote;
+import static org.openelis.manager.SampleManager1Accessor.addSampleQA;
+import static org.openelis.manager.SampleManager1Accessor.addStorage;
+import static org.openelis.manager.SampleManager1Accessor.addUser;
+import static org.openelis.manager.SampleManager1Accessor.getAnalyses;
+import static org.openelis.manager.SampleManager1Accessor.getItems;
+import static org.openelis.manager.SampleManager1Accessor.getSample;
+import static org.openelis.manager.SampleManager1Accessor.setAnalysisNotes;
+import static org.openelis.manager.SampleManager1Accessor.setAnalysisQAs;
+import static org.openelis.manager.SampleManager1Accessor.setAuxilliary;
+import static org.openelis.manager.SampleManager1Accessor.setOrganizations;
+import static org.openelis.manager.SampleManager1Accessor.setProjects;
+import static org.openelis.manager.SampleManager1Accessor.setResults;
+import static org.openelis.manager.SampleManager1Accessor.setSample;
+import static org.openelis.manager.SampleManager1Accessor.setSampleEnvironmental;
+import static org.openelis.manager.SampleManager1Accessor.setSampleNotes;
+import static org.openelis.manager.SampleManager1Accessor.setSamplePrivateWell;
+import static org.openelis.manager.SampleManager1Accessor.setSampleQAs;
+import static org.openelis.manager.SampleManager1Accessor.setSampleSDWIS;
+import static org.openelis.manager.SampleManager1Accessor.setStorages;
+import static org.openelis.manager.SampleManager1Accessor.setUsers;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -35,7 +64,7 @@ import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.jboss.ejb3.annotation.SecurityDomain;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AnalysisQaEventViewDO;
 import org.openelis.domain.AnalysisUserViewDO;
 import org.openelis.domain.AnalysisViewDO;
@@ -56,7 +85,6 @@ import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.NotFoundException;

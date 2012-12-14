@@ -36,8 +36,8 @@ import javax.ejb.Stateless;
 import javax.ejb.Timer;
 
 import org.apache.log4j.Logger;
-import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
+import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.entity.Cron;
 import org.openelis.local.CronLocal;
 import org.openelis.utils.FixedPeriodCron;

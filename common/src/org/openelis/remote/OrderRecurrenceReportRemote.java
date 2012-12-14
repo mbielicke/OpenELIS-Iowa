@@ -29,7 +29,7 @@ import java.util.ArrayList;
 
 import javax.ejb.Remote;
 
-import org.openelis.report.Prompt;
+import org.openelis.domain.Prompt;
 
 @Remote
 public interface OrderRecurrenceReportRemote {
