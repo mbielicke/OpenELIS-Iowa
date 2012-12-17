@@ -7,12 +7,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AnalysisReportFlagsDO;
@@ -31,6 +32,7 @@ import org.openelis.utils.ReportUtil;
 @Stateless
 @SecurityDomain("openelis")
 public class ClientNotificationReceivedReportBean implements ClientNotificationReceivedReportLocal {
+    
     @EJB
     private SampleLocal              sample;
 
@@ -40,7 +42,7 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
     @EJB
     private AnalysisReportFlagsLocal analysisReportFlags;
 
-    private static final Logger      log = Logger.getLogger(ClientNotificationReceivedReportBean.class);
+    private static final Logger    log = Logger.getLogger("openelis");
 
     /*
      * Execute the report and email its output to specified addresses
@@ -57,7 +59,6 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
 
         try {
             runBackDays = systemVariable.fetchByName("receivable_report_back_days");
-            log.debug("receivable_report_back_days = " + runBackDays);
 
             /*
              * subtracting runBackDays from the current time for start date
@@ -70,17 +71,16 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             lastRunDate = cal.getTime();
             log.info("Receivable Notification Start Date: " + df.format(lastRunDate));
 
-            from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");            
-            if (from == null) 
+            from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");
+            if (from == null)
                 throw new InconsistencyException("System variable 'do_not_reply_email_address' not present.");
 
             resultList = sample.fetchForClientEmailReceivedReport(lastRunDate, currentRunDate);
-            log.debug("Considering " + resultList.size() + " cases to run");
+            log.fine("Considering " + resultList.size() + " cases to run");
             if (resultList.size() > 0)
                 generateEmail(resultList, from);
         } catch (Exception e) {
-            log.error(e);
-            return;
+            log.log(Level.SEVERE, "Could not generate email(s) ", e);
         }
     }
 
@@ -159,14 +159,10 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             printFooter(contents);
             
             try {
-                ReportUtil.sendEmail(from,
-                                     to,
-                                     "Samples Received by the State Hygienic Laboratory",
-                                     contents.toString());
+                ReportUtil.sendEmail(from, to, "Samples Received by the State Hygienic Laboratory", contents.toString());
             } catch (Exception e) {
-                log.error(e);
+                log.log(Level.SEVERE, "Could not send email to "+ to, e);
             }
-            
         }
         
         /*
@@ -182,9 +178,9 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
                 anaData.setNotifiedReceived("Y");
                 analysisReportFlags.update(anaData);
             } catch (EntityLockedException e) {
-                log.error("Could not lock analysis report flag for id " + anaData.getAnalysisId());
+                log.severe("Could not lock analysis report flag for id " + anaData.getAnalysisId());
             } catch (Exception e) {
-                log.error("Error occurred while updating report flags " + e);
+                log.log(Level.SEVERE, "Error occurred while updating report flags", e);
             }
         }
     }

@@ -4,12 +4,13 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
@@ -51,18 +52,18 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
     private SampleLocal          sample;
 
     @EJB
-    private PrinterCacheLocal    printer;
+    private PrinterCacheLocal      printer;
 
     @EJB
-    private LabelReportLocal     labelReport;
+    private LabelReportLocal       labelReport;
 
-    private static final Logger  log = Logger.getLogger(SampleLoginLabelReportBean.class);
+    private static final Logger  log = Logger.getLogger("openelis");
 
     /*
      * Returns the prompt for new setup accession login labels
      */
     public ArrayList<Prompt> getPrompts() throws Exception {
-        ArrayList<OptionListItem> prn, l;
+        ArrayList<OptionListItem> prn;
         ArrayList<Prompt> p;
 
         try {
@@ -99,6 +100,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
+            log.log(Level.SEVERE, "Failed to create result prompts", e);
             throw e;
         }
     }
@@ -154,7 +156,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
             locationDO = dictionary.getById(Integer.valueOf(locationId));
             location = locationDO.getEntry().substring(0, 1);
         } catch (Exception e) {
-            log.error("Error looking up dictionary for location", e);
+            log.log(Level.SEVERE, "Error looking up dictionary for location", e);
             throw e;
         }
 
@@ -170,7 +172,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
             data.setValue(String.valueOf(laccession + samples));
             sysvar.updateAsSystem(data);
         } catch (Exception e) {
-            log.error("System variable 'last_accession_number' is not available or valid", e);
+            log.log(Level.SEVERE, "System variable 'last_accession_number' is not available or valid", e);
             if (data != null)
                 sysvar.abortUpdate(data.getId());
             throw e;
@@ -304,8 +306,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
             locationDO = dictionary.getById(Integer.valueOf(locationId));
             location = locationDO.getEntry().substring(0, 1);
         } catch (Exception e) {
-            log.error("Error looking up dictionary for location", e);
-            
+            log.log(Level.SEVERE, "Error looking up dictionary for location", e);
         }
 
         status.setMessage("Outputing report").setPercentComplete(0);

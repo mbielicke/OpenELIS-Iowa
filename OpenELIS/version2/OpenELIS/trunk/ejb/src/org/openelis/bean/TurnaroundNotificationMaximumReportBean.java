@@ -6,13 +6,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.SectionParameterDO;
@@ -38,7 +39,7 @@ public class TurnaroundNotificationMaximumReportBean implements
     @EJB
     private SectionParameterLocal sectParamBean;
 
-    private static final Logger   log = Logger.getLogger(TurnaroundNotificationMaximumReportBean.class);
+    private static final Logger  log = Logger.getLogger("openelis");
 
     private Integer               sectParamTypeId;
 
@@ -60,12 +61,12 @@ public class TurnaroundNotificationMaximumReportBean implements
         ArrayList<Object[]> resultList;
 
         resultList = sample.fetchForTurnaroundMaximumReport();
-        log.debug("Considering " + resultList.size() + " cases to run");
+        log.fine("Considering " + resultList.size() + " cases to run");
         if (resultList.size() > 0) {
             try {
                 generateEmail(resultList);
             } catch (Exception anyE) {
-                log.error(anyE.getMessage());
+                log.log(Level.SEVERE, "Could not generate email", anyE);
             }
         }
     }
@@ -144,7 +145,7 @@ public class TurnaroundNotificationMaximumReportBean implements
                         toEmail += emailList.get(i).getValue().trim();
                     }
                 } catch (NotFoundException nfE) {
-                    log.warn("No Turnaround Max Email Address(es) for Section ("+sectionName+").");
+                    log.fine("No Turnaround Max Email Address(es) for Section ("+sectionName+").");
                     continue;
                 }
                 printHeader(contents);

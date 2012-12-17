@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
@@ -44,7 +46,6 @@ import javax.ejb.TransactionManagement;
 import javax.ejb.TransactionManagementType;
 import javax.xml.transform.stream.StreamResult;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.EventLogDO;
@@ -93,13 +94,13 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
     @EJB
     private DataExchangeXMLMapperLocal dataExchangeXMLMapper;
 
-    private static Integer             dataTransLogTypeId, infoLogLevelId, errorLogLevelId;
+    private static Integer            dataTransLogTypeId, infoLogLevelId, errorLogLevelId;
 
-    private static final Logger        log = Logger.getLogger(DataExchangeReportBean.class);
+    private static final Logger      log = Logger.getLogger("openelis");
 
-    private static String              FILE_PREFIX = "file://", SOCKET_PREFIX = "socket://";
+    private static String             FILE_PREFIX = "file://", SOCKET_PREFIX = "socket://";
 
-    private static UTFResource         resource;    
+    private static UTFResource        resource;    
     
     @PostConstruct
     public void init() {
@@ -110,7 +111,7 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
             infoLogLevelId = dictionary.fetchBySystemName("log_level_info").getId();
             errorLogLevelId = dictionary.fetchBySystemName("log_level_error").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
         
         try {
@@ -123,7 +124,7 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
                 resource = UTFResource.getBundle("org.openelis.constants.OpenELISConstants",  new Locale(locale));
             }
         } catch (Throwable e) {
-            log.error("Failed to initialize resource bundle", e);
+            log.log(Level.SEVERE, "Failed to initialize resource bundle", e);
         }
     }
     
@@ -156,11 +157,11 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
             data = man.getExchangeCriteria();
         } catch (NotFoundException e) {
             addLogEntry("dataExchangeCriteriaNotFound", name, null, errorLogLevelId, null);
-            log.error(getSource("dataExchangeCriteriaNotFound", name), e);
+            log.log(Level.SEVERE, getSource("dataExchangeCriteriaNotFound", name), e);
             return;            
         } catch (Exception e) {
             addLogEntry("dataExchangeCriteriaFetchFailed", name, null, errorLogLevelId, null);
-            log.error(getSource("dataExchangeCriteriaFetchFailed", name), e);
+            log.log(Level.SEVERE, getSource("dataExchangeCriteriaFetchFailed", name), e);
             return;
         }
         
@@ -177,7 +178,7 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
             lastRunDate = cal.getTime();         
         } catch (Exception e) {
             addLogEntry("dataExchangeLastRunDateFetchFailed", name, null, errorLogLevelId, null);
-            log.error(getSource("dataExchangeLastRunDateFetchFailed", name), e);
+            log.log(Level.SEVERE, getSource("dataExchangeLastRunDateFetchFailed", name), e);
             return;
         }
         
@@ -204,7 +205,7 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
                 addLogEntry("dataExchangeNoSamplesFound", name, data.getId(), infoLogLevelId, null);
             } catch (Exception e) {
                 addLogEntry("dataExchangeCouldNotExecuteCriteria", name, data.getId(), errorLogLevelId, null);
-                log.error(getSource("dataExchangeCouldNotExecuteCriteria", name), e);
+                log.log(Level.SEVERE, getSource("dataExchangeCouldNotExecuteCriteria", name), e);
             }
         }
     }
@@ -334,7 +335,7 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
             eventLog.add(dataTransLogTypeId, getSource(key, name), ReferenceTable.EXCHANGE_CRITERIA,
                      referenceId, levelId, text);
         } catch (Exception e) {
-            log.error("Failed to add log entry for: "+ name, e);
+            log.log(Level.SEVERE, "Failed to add log entry for: "+ name, e);
         }
     }
     

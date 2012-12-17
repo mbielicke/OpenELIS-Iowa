@@ -49,7 +49,6 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.AnalysisLocal;
 import org.openelis.local.AuxDataLocal;
 import org.openelis.local.DictionaryLocal;
-import org.openelis.local.EventLogLocal;
 import org.openelis.local.FinalReportLocal;
 import org.openelis.local.LockLocal;
 import org.openelis.local.OrganizationParameterLocal;
@@ -98,18 +97,16 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     @Resource
     private SessionContext             ctx;
 
-    private static Integer             finalReportFaxNumTypeId, noFinalReportTypeId,
-                    primaryReportToTypeId;
+    private static Integer            finalReportFaxNumTypeId, noFinalReportTypeId,
+                                        primaryReportToTypeId;
 
-    private static final Logger        log = Logger.getLogger("openelis");
+    private static final Logger      log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
         try {
-            finalReportFaxNumTypeId = dictionary.fetchBySystemName("org_finalrep_fax_number")
-                                                .getId();
-            noFinalReportTypeId = dictionary.fetchBySystemName("org_no_finalreport")
-                                            .getId();
+            finalReportFaxNumTypeId = dictionary.fetchBySystemName("org_finalrep_fax_number").getId();
+            noFinalReportTypeId = dictionary.fetchBySystemName("org_no_finalreport").getId();
             primaryReportToTypeId = dictionary.fetchBySystemName("org_report_to").getId();
         } catch (Throwable e) {
             log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
@@ -761,7 +758,6 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
     private void print(ArrayList<OrganizationPrint> orgPrintList, String reportType,
                        boolean forMailing, ReportStatus status, String printer) throws Exception {
         int i;
-        Integer zero;
         URL url;
         File tempFile;
         Connection con;
@@ -770,12 +766,11 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         JasperPrint print, faxPrint;
         List<JRPrintPage> pages;
         HashMap<String, Object> jparam;
-        JasperPrint master, stats;
+        JasperPrint stats;
         OrganizationPrintDataSource ds;
         ArrayList<OrganizationPrint> orgFaxList;
 
         con = null;
-        zero = new Integer(0);
         try {
             con = ReportUtil.getConnection(ctx);
 
@@ -891,7 +886,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
                 if (con != null)
                     con.close();
             } catch (Exception e1) {
-                log.severe("Can not close connection");
+                log.severe("Could not close connection");
             }
         }
     }

@@ -31,13 +31,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AnalysisQaEventDO;
@@ -91,7 +92,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
     @EJB
     private SystemVariableLocal     sysVarBean;
 
-    private static final Logger     log  = Logger.getLogger(MCLViolationReportBean.class);
+    private static final Logger    log = Logger.getLogger("openelis");
 
     private HashMap<String, String> contaminantIds, methodCodes;
     private Integer                 ugPerLId, ngPerLId, ngPerMlId, sectParamTypeId;
@@ -108,7 +109,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             ngPerMlId = dictionaryCache.getBySystemName("nanograms_per_milliliter").getId();
             sectParamTypeId = dictionaryCache.getBySystemName("section_mcl_violation_email").getId();
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
     
@@ -121,7 +122,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
             p = new ArrayList<Prompt>();
             return p;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Failed to create result prompts", e);
             throw e;
         }
     }
@@ -224,7 +225,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                         toEmail += emailList.get(j).getValue().trim();
                     }
                 } catch (NotFoundException nfE) {
-                    log.warn("No MCL Violation Email Address(es) for Section ("+analysis.getSectionId()+").");
+                    log.fine("No MCL Violation Email Address(es) for Section ("+analysis.getSectionId()+").");
                     continue;
                 }
                 
@@ -234,7 +235,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                 try {
                     resultBean.fetchByAnalysisIdForDisplay(analysis.getAnalysisId(), results);
                 } catch (NotFoundException nfE) {
-                    log.error("Analysis ("+analysis.getAnalysisId()+") is missing results.");
+                    log.severe("Analysis ("+analysis.getAnalysisId()+") is missing results.");
                     continue;
                 }
                 for (j = 0; j < results.size(); j++) {
@@ -264,7 +265,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                                         printDNR(dnrBody, analysis, adMan, rowResult);
                                     }
                                 } catch (NumberFormatException numE) {
-                                    log.error("Value is not parseable as a number", numE);
+                                    log.log(Level.SEVERE, "Value is not parseable as a number", numE);
                                 }
                                 break;
                             }
@@ -287,7 +288,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
         } catch (Exception e) {
             if (lastRun != null)
                 sysVarBean.abortUpdate(lastRun.getId());
-            log.error("Failed to run MCL Violation Report ", e);
+            log.log(Level.SEVERE, "Failed to run MCL Violation Report ", e);
             throw e;
         }
         

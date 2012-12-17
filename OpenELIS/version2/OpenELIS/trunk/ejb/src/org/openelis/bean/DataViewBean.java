@@ -38,6 +38,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.security.RolesAllowed;
@@ -49,7 +51,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -124,74 +125,74 @@ import org.openelis.utils.ReportUtil;
 public class DataViewBean implements DataViewRemote {
     
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                   manager;
+    private EntityManager                  manager;
 
     @EJB
-    private SessionCacheLocal               session;
+    private SessionCacheLocal              session;
 
     @EJB
-    private ProjectLocal                    project;
+    private ProjectLocal                   project;
     
     @EJB
-    private SampleProjectLocal              sampleProject;
+    private SampleProjectLocal             sampleProject;
 
     @EJB
-    private SampleQAEventLocal              sampleQaEvent;
+    private SampleQAEventLocal             sampleQaEvent;
 
     @EJB
-    private AnalysisQAEventLocal            analysisQaEvent;
+    private AnalysisQAEventLocal           analysisQaEvent;
 
     @EJB
-    private ResultLocal                     result;
+    private ResultLocal                    result;
 
     @EJB
-    private AuxDataLocal                    auxData;
+    private AuxDataLocal                   auxData;
 
     @EJB
-    private DictionaryLocal                 dictionary;
+    private DictionaryLocal                dictionary;
 
     @EJB
-    private SampleLocal                     sample;
+    private SampleLocal                    sample;
     
     @EJB
-    private SampleOrganizationLocal         sampleOrganization;
+    private SampleOrganizationLocal        sampleOrganization;
     
     @EJB
-    private SampleItemLocal                 sampleItem; 
+    private SampleItemLocal                sampleItem; 
     
     @EJB
-    private AnalysisLocal                   analysis;
+    private AnalysisLocal                  analysis;
     
     @EJB
-    private AnalysisUserLocal               analysisUser;
+    private AnalysisUserLocal              analysisUser;
     
     @EJB
-    private SampleEnvironmentalLocal        sampleEnvironmental;  
+    private SampleEnvironmentalLocal       sampleEnvironmental;  
     
     @EJB
-    private SamplePrivateWellLocal          samplePrivateWell;  
+    private SamplePrivateWellLocal         samplePrivateWell;  
     
     @EJB
-    private SampleSDWISLocal                sampleSDWIS;
+    private SampleSDWISLocal               sampleSDWIS;
     
     @EJB
-    private PWSLocal                        pws;
+    private PWSLocal                       pws;
     
     @EJB
-    private DictionaryCacheLocal            dictionaryCache; 
+    private DictionaryCacheLocal           dictionaryCache; 
     
     @EJB
-    private UserCacheLocal                  userCache; 
+    private UserCacheLocal                 userCache; 
     
-    private static Integer                  organizationReportToId, sampleInErrorId, 
+    private static Integer                organizationReportToId, sampleInErrorId, 
                                             resultDictId, auxFieldValueDictId, 
                                             completedActionId, releasedActionId, 
                                             releasedStatusId, qaResultOverrideTypeId,
                                             qaInternalTypeId;   
 
-    private static final SampleWebMeta      meta = new SampleWebMeta();
+    private static final SampleWebMeta    meta = new SampleWebMeta();
 
-    private static final Logger             log  = Logger.getLogger(DataViewBean.class);
+    private static final Logger           log = Logger.getLogger("openelis");
 
     private static UTFResource              resource;
 
@@ -244,7 +245,7 @@ public class DataViewBean implements DataViewRemote {
                     dictEntryMap.put(data.getId(), data.getEntry());
                                 
             } catch (Throwable e) {
-                log.error("Failed to lookup constants for dictionary entries", e);
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
         }
         
@@ -259,7 +260,7 @@ public class DataViewBean implements DataViewRemote {
                                                  new Locale(locale));
             }
         } catch (Throwable e) {
-            log.error("Failed to initialize resource bundle", e);
+            log.log(Level.SEVERE, "Failed to initialize resource bundle", e);
         }
     }   
     
@@ -2067,7 +2068,7 @@ public class DataViewBean implements DataViewRemote {
                         dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
-                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                        log.log(Level.SEVERE, "Failed to lookup constants for dictionary entry: " + id, e);
                     }
                 }
             }            
@@ -2081,7 +2082,7 @@ public class DataViewBean implements DataViewRemote {
                         dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
-                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                        log.log(Level.SEVERE, "Failed to lookup constants for dictionary entry: " + id, e);
                     }
                 }
             }
@@ -2101,7 +2102,7 @@ public class DataViewBean implements DataViewRemote {
                         dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
-                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                        log.log(Level.SEVERE, "Failed to lookup constants for dictionary entry: " + id, e);
                     }
                 }
             }
@@ -2164,7 +2165,7 @@ public class DataViewBean implements DataViewRemote {
                         dict = dictionaryCache.getById(id);
                         cell.setCellValue(dict.getEntry());
                     } catch (Exception e) {
-                        log.error("Failed to lookup constants for dictionary entry: " + id, e);
+                        log.log(Level.SEVERE, "Failed to lookup constants for dictionary entry: " + id, e);
                     }
                 }
             }
@@ -2391,7 +2392,7 @@ public class DataViewBean implements DataViewRemote {
                     }
                     cell.setCellValue(pwsDO.getNumber0());
                 } catch (Exception e) {
-                    log.error("Failed to lookup pws for id: " + id, e);
+                    log.log(Level.SEVERE, "Failed to lookup pws for id: " + id, e);
                 }
             }
         } 

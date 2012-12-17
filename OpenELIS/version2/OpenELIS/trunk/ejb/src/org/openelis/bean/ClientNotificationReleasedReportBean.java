@@ -32,12 +32,13 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AnalysisReportFlagsDO;
@@ -65,8 +66,8 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
     @EJB
     private AnalysisReportFlagsLocal analysisReportFlags;
 
-    private static final Logger      log = Logger.getLogger(ClientNotificationReleasedReportBean.class);
-
+    private static final Logger    log = Logger.getLogger("openelis");
+    
     /*
      * Execute the report and email its output to specified addresses
      */
@@ -92,7 +93,6 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
         lastRun = null;
         try {
             lastRun = systemVariable.fetchForUpdateByName("last_released_report_run");
-            log.debug("last_receivable_report_run = " + lastRun);
             lastRunDate = df.parse(lastRun.getValue());
             if (lastRunDate.compareTo(currentRunDate) >= 0)
                 throw new InconsistencyException("Start Date should be earlier than End Date");
@@ -102,7 +102,7 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
                 throw new InconsistencyException("System variable 'do_not_reply_email_address' not present.");
             
             resultList = sample.fetchForClientEmailReleasedReport(lastRunDate, currentRunDate);
-            log.debug("Considering " + resultList.size() + " cases to run");
+            log.fine("Considering " + resultList.size() + " cases to run");
 
             if (resultList.size() > 0)
                 generateEmail(resultList, from);
@@ -110,10 +110,9 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
             lastRun.setValue(df.format(now));
             systemVariable.updateAsSystem(lastRun);
         } catch (Exception e) {
-            log.error(e);
+            log.log(Level.SEVERE, "Could not generate email(s) ", e);
             if (lastRun != null)
                 systemVariable.abortUpdate(lastRun.getId());
-            return;
         }
     }
 
@@ -180,12 +179,11 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
             }
             printFooter(contents);
             try {
-                ReportUtil.sendEmail(from,
-                                     to,
+                ReportUtil.sendEmail(from, to,
                                      "Your Results are available from the State Hygienic Laboratory at the University of Iowa",
                                      contents.toString());
             } catch (Exception e) {
-                log.error(e);
+                log.log(Level.SEVERE, "Could not send email to "+ to, e);
             }
         }
 
@@ -196,9 +194,9 @@ public class ClientNotificationReleasedReportBean implements ClientNotificationR
                 anaData.setNotifiedReleased("Y");
                 analysisReportFlags.update(anaData);
             } catch (EntityLockedException e) {
-                log.error("Could not lock analysis report flag for id " + anaData.getAnalysisId());
+                log.severe("Could not lock analysis report flag for id " + anaData.getAnalysisId());
             } catch (Exception e) {
-                log.error("Error occurred while updating report flags " + e);
+                log.log(Level.SEVERE, "Error occurred while updating report flags ", e);
             }
         }
 
