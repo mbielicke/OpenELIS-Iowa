@@ -37,11 +37,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFName;
@@ -146,7 +147,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
     @EJB
     WorksheetAnalysisLocal worksheetAnalysisLocal;
 
-    private static final Logger       log  = Logger.getLogger(WorksheetCompletionBean.class);
+    private static final Logger      log = Logger.getLogger("openelis");
 
     private Integer                   resultTypeDictionary;
     private HashMap<String,CellStyle> styles;
@@ -1144,7 +1145,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             } catch (NotFoundException nfE) {
                                 continue;
                             } catch (Exception anyE) {
-                                log.error("Error retrieving analyte parameters for an analysis on worksheet.", anyE);
+                                log.log(Level.SEVERE, "Error retrieving analyte parameters for an analysis on worksheet.", anyE);
                                 continue;
                             } finally {
                                 queriedAP = true;
@@ -1261,7 +1262,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             } catch (NotFoundException nfE) {
                                 continue;
                             } catch (Exception anyE) {
-                                log.error("Error retrieving analyte parameters for a qc on worksheet.", anyE);
+                                log.log(Level.SEVERE, "Error retrieving analyte parameters for a qc on worksheet.", anyE);
                                 continue;
                             } finally {
                                 queriedAP = true;

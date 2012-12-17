@@ -32,13 +32,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.openelis.domain.AddressDO;
@@ -57,7 +58,6 @@ import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.Datetime;
-import org.openelis.gwt.common.EntityLockedException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.AnalysisReportFlagsLocal;
@@ -125,7 +125,7 @@ public class BillingReportBean implements BillingReportLocal {
     
     private static Integer           organizationReportToId, organizationBillToId, analysisCancelledId;
     
-    private static final Logger      log  = Logger.getLogger(BillingReportBean.class);
+    private static final Logger        log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -134,7 +134,7 @@ public class BillingReportBean implements BillingReportLocal {
             organizationBillToId = dictionary.fetchBySystemName("org_bill_to").getId();
             analysisCancelledId = dictionary.fetchBySystemName("analysis_cancelled").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
     
@@ -159,7 +159,7 @@ public class BillingReportBean implements BillingReportLocal {
         
         billDir = ReportUtil.getSystemVariableValue("billing_directory");
         if (billDir == null) {
-            log.error("System variable 'billing_directory' is not available");
+            log.severe("System variable 'billing_directory' is not available");
             return;
         }                
         
@@ -169,7 +169,7 @@ public class BillingReportBean implements BillingReportLocal {
             lastRun = systemVariable.fetchForUpdateByName("last_billing_report_run");            
             lastRunDate = df.parse(lastRun.getValue());   
         } catch (Exception e) {
-            log.error("System variable 'last_billing_report_run' is not available or valid", e);
+            log.log(Level.SEVERE, "System variable 'last_billing_report_run' is not available or valid", e);
             if (lastRun != null)
                 systemVariable.abortUpdate(lastRun.getId());
             return;
@@ -186,13 +186,13 @@ public class BillingReportBean implements BillingReportLocal {
         currentRunDate = cal.getTime();                  
         
         if (lastRunDate.compareTo(currentRunDate) >= 0) {
-            log.error("Start Date should be earlier than End Date");
+            log.severe("Start Date should be earlier than End Date");
             systemVariable.abortUpdate(lastRun.getId());
             return;
         }
             
         resultList = sample.fetchForBillingReport(lastRunDate, currentRunDate);        
-        log.info("Considering "+ resultList.size()+ " cases to run");        
+        log.fine("Considering "+ resultList.size()+ " cases to run");        
         if (resultList.size() == 0) {
             systemVariable.abortUpdate(lastRun.getId());
             return;
@@ -212,7 +212,9 @@ public class BillingReportBean implements BillingReportLocal {
                 out.close();
             if (tempFile != null)
                 tempFile.delete();
-            log.error(e);
+            
+            log.log(Level.SEVERE, "Could not generate billing report", e);
+            
             systemVariable.abortUpdate(lastRun.getId());     
             //
             // we need to roll back the entire transaction
@@ -315,7 +317,7 @@ public class BillingReportBean implements BillingReportLocal {
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
-                    log.error("Problem with fetching sample qa events for id " + samId);
+                    log.severe("Problem with fetching sample qa events for id " + samId);
                     throw e;
                 }
                 
@@ -368,7 +370,7 @@ public class BillingReportBean implements BillingReportLocal {
                 } catch (NotFoundException e) {
                     // ignore
                 } catch (Exception e) {
-                    log.error("Problem with fetching analysis qa events for id "+ anaId);
+                    log.severe("Problem with fetching analysis qa events for id "+ anaId);
                     throw e;
                 }
             }
@@ -378,7 +380,7 @@ public class BillingReportBean implements BillingReportLocal {
             } catch (NotFoundException e) {
                 billableAnalytes = 0;
             } catch (Exception e) {
-                log.error("Problem with fetching results for analysis with id "+ anaId);
+                log.severe("Problem with fetching results for analysis with id "+ anaId);
                 throw e;
             }          
 
@@ -480,19 +482,12 @@ public class BillingReportBean implements BillingReportLocal {
                 anaRepFlags.setBilledAnalytes(billableAnalytes);
                 anaRepFlags.setBilledZero(anaZeroCharge ? "Y" : "N");
                 analysisReportFlags.update(anaRepFlags);
-            } catch (EntityLockedException e) {
-                /*
-                 * if we can't lock the record then we need to abandon the
-                 * process of filling the file and delete the file 
-                 */                                      
-                log.error("Could not lock analysis report flag for id "+ anaId);
-                throw e;
             } catch (Exception e) {
                 /*
                  * if we can't lock the record then we need to abandon the
-                 * process of filling the file and delete the file 
+                 * process of filling the file
                  */                                      
-                log.error("Could not lock analysis report flag for id "+ anaId);
+                log.severe("Could not lock analysis report flag for id "+ anaId);
                 throw e;
             }                                                        
         }

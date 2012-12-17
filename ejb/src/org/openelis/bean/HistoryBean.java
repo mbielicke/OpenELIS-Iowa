@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -37,7 +39,6 @@ import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.HistoryVO;
 import org.openelis.domain.InventoryItemDO;
@@ -112,7 +113,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
     @EJB
     private UserCacheLocal          userCache;
     
-    private static final Logger     log = Logger.getLogger(HistoryBean.class);
+    private static final Logger    log = Logger.getLogger("openelis");
     
     @SuppressWarnings("unchecked")
     public ArrayList<HistoryVO> fetchByReferenceIdAndTable(Integer referenceId, Integer referenceTableId) throws Exception {
@@ -170,7 +171,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
         try {
             doc = XMLUtil.parse(changes);
         } catch (Exception e) {
-            log.error("Failed to parse changes"+ e);
+            log.log(Level.SEVERE, "Failed to parse changes"+ e);
             return null;
         }
         
@@ -222,7 +223,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
         try {
             return XMLUtil.toString(doc);
         } catch (Exception e) {
-            log.error("Failed to convert the data back to xml"+ e);
+            log.log(Level.SEVERE, "Failed to convert the data back to xml"+ e);
             return null;
         }        
     }    
@@ -265,7 +266,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
                     return getTestLabel(refId);
             }
         } catch (Exception e) {
-            log.error("Failed to look up record with reference table: "+ refTable +" and reference id: "+refId, e);
+            log.log(Level.SEVERE, "Failed to look up record with reference table: "+ refTable +" and reference id: "+refId, e);
         }
         return refId.toString();
     }

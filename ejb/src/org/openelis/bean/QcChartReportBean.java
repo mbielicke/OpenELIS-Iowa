@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -21,7 +23,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.AnalyteParameterViewDO;
 import org.openelis.domain.CategoryCacheVO;
@@ -65,9 +66,9 @@ public class QcChartReportBean implements QcChartReportRemote {
     @EJB
     private AnalyteParameterLocal  analyteParameter;
 
-    private static final Logger    log = Logger.getLogger(QcChartReportBean.class);
+    private static final Logger  log = Logger.getLogger("openelis");
 
-    private static Integer         typeDynamicId, typeFixedId, typeQcSpike, typeQcBlank, typeQcDuplicate;
+    private static Integer        typeDynamicId, typeFixedId, typeQcSpike;
 
     @PostConstruct
     public void init() {
@@ -75,10 +76,8 @@ public class QcChartReportBean implements QcChartReportRemote {
             typeDynamicId = dictionary.fetchBySystemName("chart_type_dynamic").getId();
             typeFixedId = dictionary.fetchBySystemName("chart_type_fixed").getId();
             typeQcSpike = dictionary.fetchBySystemName("qc_spike").getId();
-            typeQcBlank = dictionary.fetchBySystemName("qc_blank").getId();
-            typeQcDuplicate = dictionary.fetchBySystemName("qc_duplicate").getId();
         } catch (Throwable e) {
-            log.error("Failed to lookup constants for dictionary entries", e);
+            log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
         }
     }
 
@@ -133,7 +132,7 @@ public class QcChartReportBean implements QcChartReportRemote {
             if (resultList.size() == 0)
                 throw new NotFoundException("No data found for the query. Please change your query parameters.");
         } catch (Exception e) {
-            log.error(e);
+            log.log(Level.SEVERE, "Could not fetch worksheet analyses", e);
             throw e;
         }
 
@@ -457,7 +456,7 @@ public class QcChartReportBean implements QcChartReportRemote {
             } catch (NotFoundException ignE) {
                 // ignore not found exception
             } catch (Exception e) {
-                log.error("Error retrieving analyte parameters for an analysis on worksheet", e);
+                log.log(Level.SEVERE, "Error retrieving analyte parameters for an analysis on worksheet", e);
             }
         }
     }

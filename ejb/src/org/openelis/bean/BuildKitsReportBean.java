@@ -29,13 +29,14 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
@@ -59,21 +60,21 @@ import org.openelis.utils.ReportUtil;
 public class BuildKitsReportBean implements BuildKitsReportRemote {
     
     @EJB
-    private SessionCacheLocal session;
-    
+    private SessionCacheLocal      session;
+
     @EJB
-    private PrinterCacheLocal printer;
-    
+    private PrinterCacheLocal      printer;
+
     @EJB
-    private DictionaryLocal   dictionary;
-     
-    @EJB   
-    private LabelReportLocal labelReport;
-    
+    private DictionaryLocal        dictionary;
+
     @EJB
-    private OrderLocal        order;  
-    
-    private static final Logger log = Logger.getLogger(BuildKitsReportBean.class);
+    private LabelReportLocal       labelReport;
+
+    @EJB
+    private OrderLocal             order;
+
+    private static final Logger  log = Logger.getLogger("openelis");
 
     public ArrayList<Prompt> getPrompts() throws Exception {
         ArrayList<OptionListItem> list;
@@ -121,7 +122,7 @@ public class BuildKitsReportBean implements BuildKitsReportRemote {
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.log(Level.SEVERE, "Failed to create result prompts", e);
             throw e;
         }
     }

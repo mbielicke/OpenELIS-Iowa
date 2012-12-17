@@ -31,6 +31,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -41,7 +43,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ClientNotificationVO;
 import org.openelis.domain.FinalReportVO;
@@ -68,14 +69,14 @@ import org.openelis.util.QueryBuilderV2;
 public class SampleBean implements SampleLocal, SampleRemote {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager           manager;
+    private EntityManager                  manager;
     
     @EJB
     private DictionaryLocal                dictionary;
 
-    private static final SampleMeta        meta = new SampleMeta();
+    private static final SampleMeta       meta = new SampleMeta();
     
-    private static final Logger            log  = Logger.getLogger(SampleBean.class);
+    private static final Logger           log = Logger.getLogger("openelis");
     
     private static HashMap<String, String> wellOrgFieldMap, reportToAddressFieldMap;
     
@@ -124,7 +125,7 @@ public class SampleBean implements SampleLocal, SampleRemote {
                 sampleErrorStatusId = dictionary.fetchBySystemName("sample_error").getId();
                 analysisReleasedStatusId = dictionary.fetchBySystemName("analysis_released").getId();
             } catch (Throwable e) {
-                log.error("Failed to lookup constants for dictionary entries", e);
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
         }
     }

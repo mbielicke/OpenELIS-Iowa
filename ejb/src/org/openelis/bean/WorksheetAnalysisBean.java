@@ -28,6 +28,8 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -65,6 +67,8 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
     private UserCacheLocal       userCache;
 
     private static Integer       workingId;
+    
+    private static final Logger log = Logger.getLogger("openelis");
 
     @PostConstruct
     public void init() {
@@ -72,7 +76,7 @@ public class WorksheetAnalysisBean implements WorksheetAnalysisLocal {
             try {
                 workingId = dictionary.fetchBySystemName("worksheet_working").getId();
             } catch (Throwable e) {
-                e.printStackTrace();
+                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
             }
         }
     }

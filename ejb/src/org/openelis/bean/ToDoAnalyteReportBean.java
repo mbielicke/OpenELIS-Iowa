@@ -31,6 +31,8 @@ import java.net.URL;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -46,7 +48,6 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
-import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.OptionListItem;
@@ -74,25 +75,25 @@ import org.openelis.utils.ReportUtil;
 public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext       ctx;
 
     @EJB
-    private SessionCacheLocal session;
+    private SessionCacheLocal    session;
 
     @EJB
-    private TestLocal       test;
+    private TestLocal            test;
 
     @EJB
-    private SectionCacheLocal section;
+    private SectionCacheLocal    section;
 
     @EJB
-    private DictionaryLocal dictionary;
+    private DictionaryLocal      dictionary;
+
+    @EJB
+    private PrinterCacheLocal    printers;
     
-    @EJB
-    private PrinterCacheLocal printers;
+    private static final Logger log = Logger.getLogger("openelis");
     
-    private static final Logger log = Logger.getLogger(ToDoAnalyteReportBean.class);
-
     /*
      * Returns the prompt for To-Do Analyte Report
      */
@@ -161,7 +162,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
                                                           .setRequired(true));
             return p;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.log(Level.SEVERE, "Failed to create result prompts", e);
             throw e;
         }
     }
@@ -280,14 +281,13 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
                       .setStatus(ReportStatus.Status.SAVED);
             }
         } catch (Exception e) {
-            log.error(e);
             throw e;
         } finally {
             try {
                 if (con != null)
                     con.close();
             } catch (Exception e) {
-                // ignore
+                log.severe("Could not close connection");
             }
         }
 
@@ -305,7 +305,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
             for (SectionViewDO n : s)
                 l.add(new OptionListItem(n.getId().toString(), n.getName()));
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.log(Level.SEVERE, "Could not fetch sections", e);
         }
 
         return l;
@@ -329,7 +329,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
                     l.add(new OptionListItem(n.getTestId().toString(), n.getTestName() + ", " +
                                                                        n.getMethodName()));
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.log(Level.SEVERE, "Could not fetch tests", e);
         }
 
         return l;
@@ -347,7 +347,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
             for (DictionaryDO n : statusDO)
                 l.add(new OptionListItem(n.getId().toString(), n.getEntry().toString()));
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.log(Level.SEVERE, "Could not fetch entries for category 'analysis_status'", e);
         }
 
         return l;
