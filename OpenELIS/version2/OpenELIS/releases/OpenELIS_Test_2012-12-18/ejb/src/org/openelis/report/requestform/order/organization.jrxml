@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="organization" pageWidth="250" pageHeight="572" columnWidth="250" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="3.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<import value="org.openelis.utils.JasperUtil"/>
+	<parameter name="ORGANIZATION_ID" class="java.lang.Integer"/>
+	<parameter name="ATTENTION" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     name, multiple_unit, street_address, city, state, zip_code, country
+FROM
+     organization o, address a
+WHERE
+     o.address_id = a.id and o.id = $P{ORGANIZATION_ID}]]>
+	</queryString>
+	<field name="name" class="java.lang.String"/>
+	<field name="multiple_unit" class="java.lang.String"/>
+	<field name="street_address" class="java.lang.String"/>
+	<field name="city" class="java.lang.String"/>
+	<field name="state" class="java.lang.String"/>
+	<field name="zip_code" class="java.lang.String"/>
+	<field name="country" class="java.lang.String"/>
+	<detail>
+		<band height="12">
+			<textField>
+				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{ATTENTION}]]></textFieldExpression>
+			</textField>
+		</band>
+		<band height="48">
+			<textField>
+				<reportElement positionType="Float" x="0" y="0" width="250" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{name}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement positionType="Float" x="0" y="12" width="250" height="12" isRemoveLineWhenBlank="true"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{multiple_unit}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="24" width="250" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{street_address}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement positionType="Float" x="0" y="36" width="250" height="12"/>
+				<textElement>
+					<font fontName="Courier New" size="8" pdfFontName="Courier"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[JasperUtil.concatWithSeparator($F{city},", ",JasperUtil.concatWithSeparator($F{state}, " ", $F{zip_code}))]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
