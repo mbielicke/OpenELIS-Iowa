@@ -178,7 +178,7 @@ public class SampleLoginLabelReportBean implements SampleLoginLabelReportRemote 
             throw e;
         }
         
-        log.info("Starting at accession # "+laccession+" for "+samples+" labels");
+        log.fine("Starting at accession # "+laccession+" for "+samples+" labels");
 
         status.setPercentComplete(50);
         /*

@@ -223,7 +223,7 @@ public class HistoryBean implements HistoryRemote, HistoryLocal {
         try {
             return XMLUtil.toString(doc);
         } catch (Exception e) {
-            log.log(Level.SEVERE, "Failed to convert the data back to xml"+ e);
+            log.log(Level.SEVERE, "Failed to convert the data back to xml", e);
             return null;
         }        
     }    

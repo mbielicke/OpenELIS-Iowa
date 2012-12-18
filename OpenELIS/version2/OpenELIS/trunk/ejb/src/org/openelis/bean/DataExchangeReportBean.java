@@ -303,7 +303,7 @@ public class DataExchangeReportBean implements DataExchangeReportLocal, DataExch
                     XMLUtil.transformXML(doc, in, new StreamResult(byteOut));
                     out.write(byteOut.toByteArray());
 
-                    log.info("Generated xml for accession number: " + accNum);
+                    log.fine("Generated xml for accession number: " + accNum);
                     
                     writer.close();
                     in.close();

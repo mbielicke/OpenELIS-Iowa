@@ -66,10 +66,8 @@ public class ClientNotificationReceivedReportBean implements ClientNotificationR
             df = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             cal = Calendar.getInstance();
             currentRunDate = cal.getTime();
-            log.info("Receivable Notification End Date: " + df.format(currentRunDate));
             cal.add(Calendar.DAY_OF_MONTH, -Integer.valueOf(runBackDays.getValue()));
             lastRunDate = cal.getTime();
-            log.info("Receivable Notification Start Date: " + df.format(lastRunDate));
 
             from = ReportUtil.getSystemVariableValue("do_not_reply_email_address");
             if (from == null)

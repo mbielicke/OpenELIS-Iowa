@@ -139,7 +139,7 @@ import org.openelis.remote.EventLogRemote;
 import org.openelis.util.SessionManager;
 
 public class EJBFactory {
-    private static Logger log = Logger.getLogger(EJBFactory.class.getName());
+    private static Logger log = Logger.getLogger("openelis");
     
     public static AnalysisRemote getAnalysis() {
     	return (AnalysisRemote)lookup("AnalysisBean!org.openelis.remote.AnalysisRemote");

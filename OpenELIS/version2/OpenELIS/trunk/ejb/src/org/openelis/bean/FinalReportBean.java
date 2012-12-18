@@ -365,7 +365,7 @@ public class FinalReportBean implements FinalReportRemote, FinalReportLocal {
         try {
             printer = ReportUtil.getSystemVariableValue("final_report_env_printer");
         } catch (Exception e) {
-            log.log(Level.SEVERE, "No 'final_report_env_printer' system variable defined");
+            log.severe("No 'final_report_env_printer' system variable defined");
             return;
         }
 

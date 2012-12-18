@@ -1234,7 +1234,7 @@ public class DataViewScreen extends Screen {
         }         
         
         modal = new ScreenWindow(ScreenWindow.Mode.DIALOG);
-        modal.setName(consts.get("analyteResultAuxDataFilter"));
+        modal.setName(consts.get("testAnalyteAuxDataFilter"));
         modal.setContent(filter);      
         filter.setData(data);
         filter.setState(State.DEFAULT);
