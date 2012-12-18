@@ -15,8 +15,8 @@
 	<reportFont name="Qaevent" isDefault="false" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Bold" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 	<reportFont name="Comment" isDefault="false" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 	<reportFont name="Trailer" isDefault="false" size="8" isBold="false" isItalic="true" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Italic" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
-	<parameter name="LOGNAME" class="java.lang.String" isForPrompting="false">
-		<defaultValueExpression><![CDATA["uhl"]]></defaultValueExpression>
+	<parameter name="USER_NAME" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="QCNAME" class="java.lang.String" isForPrompting="false"/>
 	<field name="ACCESSION_NUMBER" class="java.lang.String"/>
@@ -70,11 +70,11 @@
 	<pageHeader>
 		<band height="258" splitType="Stretch">
 			<textField pattern="">
-				<reportElement key="headerLogname" mode="Opaque" x="652" y="12" width="100" height="12"/>
+				<reportElement key="headerUserName" mode="Opaque" x="652" y="12" width="100" height="12"/>
 				<textElement textAlignment="Right">
 					<font size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Times-Roman" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGNAME}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMM dd, yyyy">
 				<reportElement x="0" y="0" width="100" height="12"/>

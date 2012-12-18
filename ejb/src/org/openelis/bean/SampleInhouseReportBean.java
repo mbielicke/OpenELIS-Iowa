@@ -63,9 +63,9 @@ import org.openelis.local.ProjectLocal;
 import org.openelis.local.SectionCacheLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.TestLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.SampleInhouseReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -94,6 +94,9 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
     
     @EJB
     private PrinterCacheLocal printers;
+
+    @EJB
+    private UserCacheLocal userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -185,7 +188,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String fromDate, toDate, section, test, aStatus, project, orgId, loginName, orderBy, printer, printstat;
+        String fromDate, toDate, section, test, aStatus, project, orgId, userName, orderBy, printer, printstat;
 
         /*
          * push status into session so we can query it while the report is
@@ -244,7 +247,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         else
             orgId = "";
 
-        loginName = EJBFactory.getUserCache().getName();
+        userName = userCache.getName();
         /*
          * start the report
          */
@@ -266,7 +269,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
             jparam.put("PROJECT", project);
             jparam.put("ORG_ID", orgId);
             jparam.put("ORDER_BY", orderBy);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

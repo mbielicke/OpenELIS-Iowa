@@ -12,8 +12,8 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="LOGIN_NAME" class="java.lang.String">
-		<defaultValueExpression><![CDATA["demo"]]></defaultValueExpression>
+	<parameter name="USER_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="USER_NAMES" class="java.lang.String">
 		<defaultValueExpression><![CDATA["demo"]]></defaultValueExpression>
@@ -83,11 +83,11 @@ ORDER BY
 				<textFieldExpression class="java.util.Date"><![CDATA[$V{HEADER_DATE}]]></textFieldExpression>
 			</textField>
 			<textField isBlankWhenNull="true">
-				<reportElement key="loginName" mode="Transparent" x="702" y="12" width="50" height="12"/>
+				<reportElement key="headerUserName" mode="Transparent" x="702" y="12" width="50" height="12"/>
 				<textElement textAlignment="Right" verticalAlignment="Bottom">
 					<font pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement key="userNames.label" mode="Transparent" x="273" y="12" width="20" height="12"/>

@@ -56,9 +56,9 @@ import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.VolumeReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -68,13 +68,16 @@ import org.openelis.utils.ReportUtil;
 public class VolumeReportBean implements VolumeReportRemote{
 
     @Resource
-    private SessionContext  ctx;
+    private SessionContext    ctx;
 
     @EJB
     private SessionCacheLocal session;
 
     @EJB
-    private SectionLocal    section;
+    private SectionLocal      section;
+
+    @EJB
+    private UserCacheLocal    userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -129,7 +132,7 @@ public class VolumeReportBean implements VolumeReportRemote{
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String frDate, tDate, fromDate, toDate, section, loginName, dir, printstat;
+        String frDate, tDate, fromDate, toDate, section, userName, dir, printstat;
         fromDate = toDate = null;
         /*
          * push status into session so we can query it while the report is
@@ -143,7 +146,7 @@ public class VolumeReportBean implements VolumeReportRemote{
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        loginName = EJBFactory.getUserCache().getName();
+        userName = userCache.getName();
 
         frDate = ReportUtil.getSingleParameter(param, "FROM");
         tDate = ReportUtil.getSingleParameter(param, "TO");
@@ -181,7 +184,7 @@ public class VolumeReportBean implements VolumeReportRemote{
             jparam.put("FROM", fromDate);
             jparam.put("TO", toDate);
             jparam.put("SECTION", section);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

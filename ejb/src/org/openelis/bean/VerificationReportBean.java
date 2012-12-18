@@ -51,6 +51,9 @@ public class VerificationReportBean implements VerificationReportRemote {
     @EJB
     private PrinterCacheLocal printers;
 
+    @EJB
+    private UserCacheLocal userCache;
+
     /*
      * Returns the prompt for a single re-print
      */
@@ -111,10 +114,9 @@ public class VerificationReportBean implements VerificationReportRemote {
         JasperPrint jprint;
         JRExporter jexport;
         String /*beginEntered, endEntered,*/ userIds, userWhere, userNames, printer,
-               dir, printstat, loginName, token;
+               dir, printstat, userName, token;
         StringTokenizer tokenizer;
         SystemUserVO  sysUserVO;
-        UserCacheLocal ucl;
 
         /*
          * push status into session so we can query it while the report is
@@ -127,8 +129,7 @@ public class VerificationReportBean implements VerificationReportRemote {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        ucl = EJBFactory.getUserCache();
-        loginName = ucl.getName();
+        userName = userCache.getName();
         
 //        beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
 //        if (beginEntered != null && beginEntered.length() > 0)
@@ -147,7 +148,7 @@ public class VerificationReportBean implements VerificationReportRemote {
                 try {
                     while (tokenizer.hasMoreTokens()) {
                         token = tokenizer.nextToken();
-                        sysUserVO = ucl.getSystemUser(Integer.valueOf(token));
+                        sysUserVO = userCache.getSystemUser(Integer.valueOf(token));
                         if (userNames.length() > 0)
                             userNames += ", ";
                         userNames += sysUserVO.getLoginName();
@@ -159,7 +160,7 @@ public class VerificationReportBean implements VerificationReportRemote {
             } else if (userWhere.startsWith(" = ")) {
                 userIds = userWhere.substring(3);
                 try {
-                    sysUserVO = ucl.getSystemUser(Integer.valueOf(userIds));
+                    sysUserVO = userCache.getSystemUser(Integer.valueOf(userIds));
                     userNames = sysUserVO.getLoginName();
                 } catch (Exception e) {
                     userNames = "ERROR LOADING NAMES";
@@ -168,8 +169,8 @@ public class VerificationReportBean implements VerificationReportRemote {
             }
             userWhere = " and h.system_user_id " + userWhere;
         } else {
-            userNames = loginName;
-            userWhere = " and h.system_user_id = " + ucl.getId();
+            userNames = userName;
+            userWhere = " and h.system_user_id = " + userCache.getId();
         }
         
         /*
@@ -190,7 +191,7 @@ public class VerificationReportBean implements VerificationReportRemote {
 //            jparam.put("END_ENTERED", endEntered);
             jparam.put("USER_WHERE", userWhere);
             jparam.put("USER_NAMES", userNames);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
             jparam.put("SUBREPORT_DIR", dir);
 
             status.setMessage("Loading report");

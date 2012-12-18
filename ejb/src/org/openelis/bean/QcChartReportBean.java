@@ -42,6 +42,7 @@ import org.openelis.local.AnalyteParameterLocal;
 import org.openelis.local.CategoryCacheLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SessionCacheLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.remote.QcChartReportRemote;
 import org.openelis.report.qcchart.QcChartDataSource;
@@ -66,9 +67,12 @@ public class QcChartReportBean implements QcChartReportRemote {
     @EJB
     private AnalyteParameterLocal  analyteParameter;
 
-    private static final Logger  log = Logger.getLogger("openelis");
+    @EJB
+    private UserCacheLocal         userCache;
 
-    private static Integer        typeDynamicId, typeFixedId, typeQcSpike;
+    private static final Logger    log = Logger.getLogger("openelis");
+
+    private static Integer         typeDynamicId, typeFixedId, typeQcSpike;
 
     @PostConstruct
     public void init() {
@@ -251,7 +255,7 @@ public class QcChartReportBean implements QcChartReportRemote {
     }
 
     public ReportStatus runReport(QcChartReportViewVO dataPoints) throws Exception {
-        String qcName, printstat, printer;
+        String qcName, printstat, printer, userName;
         QcChartReportViewVO result;
         ArrayList<Value> list;
         URL url;
@@ -289,9 +293,13 @@ public class QcChartReportBean implements QcChartReportRemote {
                 url = ReportUtil.getResourceURL("org/openelis/report/qcchart/spikePercent.jasper");
 
             tempFile = File.createTempFile("qcreport", ".pdf", new File("/tmp"));
+            
+            userName = userCache.getName();
+            
             jparam = new HashMap<String, Object>();
             jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
             jparam.put("QCNAME", qcName);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
             jreport = (JasperReport)JRLoader.loadObject(url);

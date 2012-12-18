@@ -57,9 +57,9 @@ import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.TurnaroundReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -79,6 +79,9 @@ public class TurnaroundReportBean implements TurnaroundReportRemote {
     
     @EJB
     private PrinterCacheLocal printers;
+
+    @EJB
+    private UserCacheLocal userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -140,7 +143,7 @@ public class TurnaroundReportBean implements TurnaroundReportRemote {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String frDate, tDate, fromDate, toDate, section, loginName, dir, printer, printstat;
+        String frDate, tDate, fromDate, toDate, section, userName, dir, printer, printstat;
         fromDate = toDate = null;
         /*
          * push status into session so we can query it while the report is
@@ -154,7 +157,7 @@ public class TurnaroundReportBean implements TurnaroundReportRemote {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        loginName = EJBFactory.getUserCache().getName();
+        userName = userCache.getName();
 
         frDate = ReportUtil.getSingleParameter(param, "FROM_RELEASED");
         tDate = ReportUtil.getSingleParameter(param, "TO_RELEASED");
@@ -192,7 +195,7 @@ public class TurnaroundReportBean implements TurnaroundReportRemote {
             jparam = new HashMap<String, Object>();
             jparam.put("FROM_DATE", fromDate);
             jparam.put("TO_DATE", toDate);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
             jparam.put("SECTION", section);
 
             status.setMessage("Loading report");
