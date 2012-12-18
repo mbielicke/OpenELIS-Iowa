@@ -78,7 +78,7 @@ public class CronSchedulerBean {
             dayOfWeek = now.get(Calendar.DAY_OF_WEEK) - 1;
             
             cronTabs = cron.fetchActive();
-            log.fine("Evaluating "+ cronTabs.size()+ " entries");
+            log.finest("Evaluating "+ cronTabs.size()+ " entries");
 
             for (Cron cronTab : cronTabs)
                 checkForRun(cronTab, month, day, hour, minute, dayOfWeek);
