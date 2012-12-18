@@ -277,7 +277,7 @@ public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViola
                     printFooter(shlBody);
                     sendEmail(toEmail, "OpenELIS MCL Violation", shlBody.toString());
                     sendEmail(dnrEmail, "Chemical Exceedance Report for "+analysis.getFieldOffice(), dnrBody.toString());
-                    log.info("MCL Violation email sent for Accession #"+analysis.getAccessionNumber());
+                    log.fine("MCL Violation email sent for Accession #"+analysis.getAccessionNumber());
                     shlBody.setLength(0);
                     dnrBody.setLength(0);
                 }
