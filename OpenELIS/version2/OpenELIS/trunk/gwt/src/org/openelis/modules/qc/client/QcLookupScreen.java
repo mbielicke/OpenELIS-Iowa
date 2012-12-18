@@ -82,13 +82,6 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
         
         // Setup link between Screen and widget Handlers
         initialize();
-        
-        DeferredCommand.addCommand(new Command() {
-            public void execute() {
-                postConstructor();
-            }
-        });
-
     }
     
 
@@ -97,7 +90,7 @@ public class QcLookupScreen extends Screen implements HasActionHandlers<QcLookup
      * screen is attached to the browser. It is usually called in deferred
      * command.
      */
-    private void postConstructor() {
+    public void postConstructor() {
         setState(State.DEFAULT);
         initializeDropdowns();
     }
