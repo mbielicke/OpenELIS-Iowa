@@ -52,6 +52,7 @@ import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SessionCacheLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.HoldRefuseOrganizationReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.ReportUtil;
@@ -70,6 +71,9 @@ public class HoldRefuseOrganizationReportBean implements HoldRefuseOrganizationR
 
     @EJB
     private PrinterCacheLocal printers;
+
+    @EJB
+    private UserCacheLocal userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -108,7 +112,7 @@ public class HoldRefuseOrganizationReportBean implements HoldRefuseOrganizationR
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String printer, dir, printstat;
+        String printer, dir, printstat, userName;
 
         /*
          * push status into session so we can query it while the report is
@@ -121,8 +125,8 @@ public class HoldRefuseOrganizationReportBean implements HoldRefuseOrganizationR
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-
         printer = ReportUtil.getSingleParameter(param, "PRINTER");
+        userName = userCache.getName();
 
         /*
          * start the report
@@ -139,6 +143,7 @@ public class HoldRefuseOrganizationReportBean implements HoldRefuseOrganizationR
 
             jparam = new HashMap<String, Object>();
             jparam.put("SUBREPORT_DIR", dir);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

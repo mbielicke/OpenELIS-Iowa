@@ -33,6 +33,7 @@ import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.TestLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.TestReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.utils.ReportUtil;
@@ -57,6 +58,9 @@ public class TestReportBean implements TestReportRemote {
     
     @EJB
     private PrinterCacheLocal printers;
+
+    @EJB
+    private UserCacheLocal userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -116,7 +120,7 @@ public class TestReportBean implements TestReportRemote {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String detail, test, section, printer, dir, printstat;
+        String detail, test, section, printer, dir, printstat, userName;
 
         /*
          * push status into session so we can query it while the report is
@@ -160,11 +164,14 @@ public class TestReportBean implements TestReportRemote {
 
             tempFile = File.createTempFile("test", ".pdf", new File("/tmp"));
 
+            userName = userCache.getName();
+            
             jparam = new HashMap<String, Object>();
             jparam.put("DETAIL", detail);
             jparam.put("SECTION", section);
             jparam.put("TEST", test);
             jparam.put("SUBREPORT_DIR", dir);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

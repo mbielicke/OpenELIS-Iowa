@@ -47,6 +47,7 @@ import org.openelis.local.AnalysisQAEventLocal;
 import org.openelis.local.DictionaryLocal;
 import org.openelis.local.SampleQAEventLocal;
 import org.openelis.local.SessionCacheLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.TurnaroundStatisticReportRemote;
 import org.openelis.report.turnaroundstatistic.TurnaroundDataSource;
@@ -73,12 +74,15 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
     @EJB
     private AnalysisQAEventLocal    analysisQAEvent;
 
+    @EJB
+    private UserCacheLocal          userCache;
+
     private static Integer          releasedStatusId, ptSampleTypeId;
     
     private static DictionaryDO     analysisDailyTotalPlotInterval, weeklyTotalPlotInterval,
                                     monthlyTotalPlotInterval;
 
-    private static final Logger      log = Logger.getLogger("openelis");
+    private static final Logger     log = Logger.getLogger("openelis");
     
     private static final SampleMeta meta = new SampleMeta();
 
@@ -576,7 +580,7 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
 
     public ReportStatus runReport(TurnAroundReportViewVO data) throws Exception {
         Integer intervalId;
-        String dir, printer, fromDate, toDate, key, intervalType;
+        String dir, printer, fromDate, toDate, key, intervalType, userName;
         ReportStatus status;
         String printstat;
         ArrayList<Value> values, valueList;
@@ -639,6 +643,9 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
         dir = ReportUtil.getResourcePath(url);
 
         tempFile = File.createTempFile("turnaroundstatisticreport", ".pdf", new File("/tmp"));
+        
+        userName = userCache.getName();
+        
         jparam = new HashMap<String, Object>();
         jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
         jparam.put("SUBREPORT_DIR", dir);
@@ -646,6 +653,7 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
         jparam.put("TO_DATE", toDate);
         jparam.put("INTERVAL_TYPE", intervalType);
         jparam.put("TURNAROUND_DATASOURCE", ds);
+        jparam.put("USER_NAME", userName);
 
         status.setMessage("Loading report");
         jprint = JasperFillManager.fillReport(jreport, jparam, ds);

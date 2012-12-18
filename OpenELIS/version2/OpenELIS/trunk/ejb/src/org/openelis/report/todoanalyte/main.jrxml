@@ -20,7 +20,9 @@
 	<parameter name="STATUS" class="java.lang.String">
 		<defaultValueExpression><![CDATA[""]]></defaultValueExpression>
 	</parameter>
-	<parameter name="LOGIN_NAME" class="java.lang.String"/>
+	<parameter name="USER_NAME" class="java.lang.String">
+		<defaultValueExpression><![CDATA["unknown"]]></defaultValueExpression>
+	</parameter>
 	<parameter name="ORDER_BY" class="java.lang.String">
 		<defaultValueExpression><![CDATA["accession_number"]]></defaultValueExpression>
 	</parameter>
@@ -115,7 +117,7 @@ ORDER BY $P!{ORDER_BY}]]>
 				<textElement textAlignment="Right">
 					<font size="10" isUnderline="false" pdfFontName="Times-Roman"/>
 				</textElement>
-				<textFieldExpression class="java.lang.String"><![CDATA[$P{LOGIN_NAME}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{USER_NAME}]]></textFieldExpression>
 			</textField>
 		</band>
 	</pageHeader>

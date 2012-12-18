@@ -104,7 +104,7 @@ import org.openelis.modules.verification.client.VerificationScreen;
 import org.openelis.modules.worksheetCompletion.client.WorksheetCompletionScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen;
 import org.openelis.modules.worksheetCreation.client.WorksheetCreationScreen1;
-import org.openelis.modules.sampleManagerTest.client.SampleManagerTestScreen;
+//import org.openelis.modules.sampleManagerTest.client.SampleManagerTestScreen;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.core.client.RunAsyncCallback;
@@ -423,26 +423,26 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
         
-        addClickHandler("testSampleManager", "sampleprivatewell", new ClickHandler() {
-            public void onClick(ClickEvent event) {
-                GWT.runAsync(new RunAsyncCallback() {
-                    public void onSuccess() {
-                        try {
-                            browser.addScreen(new SampleManagerTestScreen(),
-                                              "Test Sample Manager");
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                            Window.alert(e.getMessage());
-                        }
-                    }
-
-                    public void onFailure(Throwable caught) {
-                        caught.printStackTrace();
-                        Window.alert(caught.getMessage());
-                    }
-                });
-            }
-        });
+//        addClickHandler("testSampleManager", "sampleprivatewell", new ClickHandler() {
+//            public void onClick(ClickEvent event) {
+//                GWT.runAsync(new RunAsyncCallback() {
+//                    public void onSuccess() {
+//                        try {
+//                            browser.addScreen(new SampleManagerTestScreen(),
+//                                              "Test Sample Manager");
+//                        } catch (Throwable e) {
+//                            e.printStackTrace();
+//                            Window.alert(e.getMessage());
+//                        }
+//                    }
+//
+//                    public void onFailure(Throwable caught) {
+//                        caught.printStackTrace();
+//                        Window.alert(caught.getMessage());
+//                    }
+//                });
+//            }
+//        });
 
         addClickHandler("project", "project", new ClickHandler() {
             public void onClick(ClickEvent event) {
@@ -1513,12 +1513,12 @@ public class OpenELIS extends Screen implements ScreenSessionTimer {
             }
         });
 
-        addClickHandler("QAByOrganization", "sampletracking", new ClickHandler() {
+        addClickHandler("QASummaryReport", "sampletracking", new ClickHandler() {
             public void onClick(ClickEvent event) {
                 GWT.runAsync(new RunAsyncCallback() {
                     public void onSuccess() {
                         try {
-                            browser.addScreen(new QASummaryReportScreen(), "QAByOrganization");
+                            browser.addScreen(new QASummaryReportScreen(), "QASummaryReport");
                         } catch (Throwable e) {
                             e.printStackTrace();
                             Window.alert(e.getMessage());

@@ -60,9 +60,9 @@ import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SectionLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.TestLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.QASummaryReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -86,6 +86,8 @@ public class QASummaryReportBean implements QASummaryReportRemote {
     @EJB
     private PrinterCacheLocal printers;
    
+    @EJB
+    private UserCacheLocal userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -164,7 +166,7 @@ public class QASummaryReportBean implements QASummaryReportRemote {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String fromDate, toDate, section, test, detail, loginName, printer, dir, printstat;
+        String fromDate, toDate, section, test, detail, userName, printer, dir, printstat;
 
         /*
          * push status into session so we can query it while the report is
@@ -204,7 +206,7 @@ public class QASummaryReportBean implements QASummaryReportRemote {
         else
             test = "";        
 
-        loginName = EJBFactory.getUserCache().getName();
+        userName = userCache.getName();
         /*
          * start the report
          */
@@ -225,7 +227,7 @@ public class QASummaryReportBean implements QASummaryReportRemote {
             jparam.put("TEST", test);
             jparam.put("STYLE", detail);
             jparam.put("SUBREPORT_DIR", dir);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
 
             status.setMessage("Loading report");
 

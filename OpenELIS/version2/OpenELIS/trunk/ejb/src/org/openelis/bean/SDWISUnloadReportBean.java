@@ -86,7 +86,6 @@ import org.openelis.remote.SDWISUnloadReportRemote;
 import org.openelis.report.Prompt;
 import org.openelis.report.sdwisunload.StatusDataSource;
 import org.openelis.utils.Counter;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -374,7 +373,7 @@ public class SDWISUnloadReportBean implements SDWISUnloadReportRemote {
              * Print the status report
              */
             jparam = new HashMap<String, Object>();
-            jparam.put("LOGIN_NAME", EJBFactory.getUserCache().getName());
+            jparam.put("USER_NAME", userCache.getName());
             jparam.put("BEGIN_RELEASED", ReportUtil.toString(beginReleased, "yyyy-MM-dd HH:mm"));
             jparam.put("END_RELEASED", ReportUtil.toString(endReleased, "yyyy-MM-dd HH:mm"));
             jparam.put("SAMPLE_COUNTS", sampleCounts);

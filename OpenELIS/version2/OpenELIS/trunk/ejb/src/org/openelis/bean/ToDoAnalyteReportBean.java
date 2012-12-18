@@ -63,9 +63,9 @@ import org.openelis.local.PrinterCacheLocal;
 import org.openelis.local.SectionCacheLocal;
 import org.openelis.local.SessionCacheLocal;
 import org.openelis.local.TestLocal;
+import org.openelis.local.UserCacheLocal;
 import org.openelis.remote.ToDoAnalyteReportRemote;
 import org.openelis.report.Prompt;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
@@ -75,22 +75,25 @@ import org.openelis.utils.ReportUtil;
 public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
 
     @Resource
-    private SessionContext       ctx;
+    private SessionContext      ctx;
 
     @EJB
-    private SessionCacheLocal    session;
+    private SessionCacheLocal   session;
 
     @EJB
-    private TestLocal            test;
+    private TestLocal           test;
 
     @EJB
-    private SectionCacheLocal    section;
+    private SectionCacheLocal   section;
 
     @EJB
-    private DictionaryLocal      dictionary;
+    private DictionaryLocal     dictionary;
 
     @EJB
-    private PrinterCacheLocal    printers;
+    private PrinterCacheLocal   printers;
+    
+    @EJB
+    private UserCacheLocal      userCache;
     
     private static final Logger log = Logger.getLogger("openelis");
     
@@ -180,7 +183,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
         JasperReport jreport;
         JasperPrint jprint;
         JRExporter jexport;
-        String fromDate, toDate, section, test, prepTest, analysisStatus, loginName,
+        String fromDate, toDate, section, test, prepTest, analysisStatus, userName,
                orderBy, printer, printstat, dir;
 
         /*
@@ -232,7 +235,8 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
         else
             prepTest = "";
 
-        loginName = EJBFactory.getUserCache().getName();
+        userName = userCache.getName();
+
         /*
          * start the report
          */
@@ -245,7 +249,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
             dir = ReportUtil.getResourcePath(url);
 
             tempFile = File.createTempFile("todoAnalyte", ".pdf", new File("/tmp"));
-
+            
             jparam = new HashMap<String, Object>();
             jparam.put("FROM", fromDate);
             jparam.put("TO", toDate);
@@ -254,7 +258,7 @@ public class ToDoAnalyteReportBean implements ToDoAnalyteReportRemote {
             jparam.put("PREP_TEST", prepTest);
             jparam.put("STATUS", analysisStatus);
             jparam.put("ORDER_BY", orderBy);
-            jparam.put("LOGIN_NAME", loginName);
+            jparam.put("USER_NAME", userName);
             jparam.put("SUBREPORT_DIR", dir);
 
             status.setMessage("Loading report");
