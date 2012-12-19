@@ -30,11 +30,13 @@ import java.util.HashMap;
 
 import javax.ejb.Local;
 
+import org.openelis.domain.AnalysisDO;
 import org.openelis.domain.AnalyteDO;
 import org.openelis.domain.ResultDO;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.TestResultDO;
 import org.openelis.manager.AnalysisResultManager.TestAnalyteListItem;
+import org.openelis.manager.TestManager;
 import org.openelis.utilcommon.ResultValidator;
 
 @Local
@@ -74,9 +76,12 @@ public interface ResultLocal {
 	
 	public ArrayList<ResultDO> fetchForBillingByAnalysisId(Integer analysisId) throws Exception;
 	
-	public ResultDO add(ResultDO data);
+	public ResultDO add(ResultDO data) throws Exception;
 
-	public ResultDO update(ResultDO data);
+	public ResultDO update(ResultDO data) throws Exception;
 
-	public void delete(ResultDO data);
+	public void delete(ResultDO data) throws Exception;
+	
+	public void validate(ResultDO data, TestManager tm, Integer accession,
+                         AnalysisDO item, boolean ignoreWarning) throws Exception;
 }

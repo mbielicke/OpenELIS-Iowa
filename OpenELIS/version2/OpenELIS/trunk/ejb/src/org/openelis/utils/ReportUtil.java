@@ -343,20 +343,11 @@ public class ReportUtil {
     /**
      * Convenience method to get the value of a system variable
      */
-    public static String getSystemVariableValue(String variableName) {
-        String value;
+    public static String getSystemVariableValue(String variableName) throws Exception {
         SystemVariableDO data;
 
-        value = null;
-        try {
-            data = EJBFactory.getSystemVariable().fetchByName(variableName);
-            value = data.getValue();
-        } catch (Exception e) {
-            System.out.println("Could not find one System Variable with name="+variableName);
-            e.printStackTrace();
-        }
-
-        return value;
+        data = EJBFactory.getSystemVariable().fetchByName(variableName);
+        return data.getValue();
     }
         
     /**

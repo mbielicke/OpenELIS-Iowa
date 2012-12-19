@@ -48,4 +48,6 @@ public interface SampleLocal {
 	public SampleDO add(SampleDO data) throws Exception;
 
 	public SampleDO update(SampleDO data) throws Exception;
+	
+	public void validate(SampleDO data, Integer maxAccession, boolean ignoreWarning) throws Exception;
  }
