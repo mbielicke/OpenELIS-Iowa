@@ -26,9 +26,9 @@
 package org.openelis.bean;
 
 import static org.openelis.manager.SampleManager1Accessor.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.HashMap;
 
@@ -54,11 +54,9 @@ import org.openelis.domain.SampleQaEventViewDO;
 import org.openelis.domain.SampleSDWISViewDO;
 import org.openelis.domain.StorageViewDO;
 import org.openelis.domain.SystemVariableDO;
-import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
-import org.openelis.gwt.common.FieldErrorWarning;
 import org.openelis.gwt.common.FormErrorException;
-import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.Query;
@@ -81,6 +79,7 @@ import org.openelis.local.StorageLocal;
 import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.SampleManager1;
+import org.openelis.manager.TestManager;
 import org.openelis.meta.SampleMeta;
 import org.openelis.remote.SampleManager1Remote;
 
@@ -500,7 +499,8 @@ public class SampleManager1Bean implements SampleManager1Remote {
      * Returns a sample manager for specified accession number and requested
      * load elements
      */
-    public SampleManager1 fetchByAccession(Integer accessionNumber, SampleManager1.Load... elements) throws Exception {
+    public SampleManager1 fetchByAccession(Integer accessionNumber,
+                                           SampleManager1.Load... elements) throws Exception {
         return null;
     }
 
@@ -508,7 +508,8 @@ public class SampleManager1Bean implements SampleManager1Remote {
      * Returns a sample manager based on the specified query and requested load
      * elements
      */
-    public ArrayList<SampleManager1> fetchByQuery(Query query, SampleManager1.Load... elements) throws Exception {
+    public ArrayList<SampleManager1> fetchByQuery(Query query,
+                                                  SampleManager1.Load... elements) throws Exception {
         return null;
     }
 
@@ -531,7 +532,8 @@ public class SampleManager1Bean implements SampleManager1Remote {
      * Returns a locked sample manager with specified sample id and requested
      * load elements
      */
-    public SampleManager1 fetchForUpdate(Integer sampleId, SampleManager1.Load... elements) throws Exception {
+    public SampleManager1 fetchForUpdate(Integer sampleId,
+                                         SampleManager1.Load... elements) throws Exception {
         ArrayList<Integer> ids;
         ArrayList<SampleManager1> sms;
 
@@ -669,26 +671,27 @@ public class SampleManager1Bean implements SampleManager1Remote {
      * Adds the sample and all related records into the database. All the
      * records within the manager are validated before the insertion.
      */
-    public ValidationErrorsList add(SampleManager1 sm, boolean ignoreWarnings) {
-        return null;
+    public SampleManager1 add(SampleManager1 sm, boolean ignoreWarnings) throws Exception {
+        return sm;
     }
 
     /**
-     * Validates the sample manager and returns a possible list of
-     * errors/warnings
+     * Validates the sample manager for add or update. The routine throws a list
+     * of exceptions/warnings listing all the problems for each sample.
      */
-    protected ValidationErrorsList validate(ArrayList<SampleManager1> sms, boolean ignoreWarnings) throws Exception {
-        boolean valid;
-        Datetime dt, now, minReceived;
-        Calendar cal;
-        Integer maxAccession;
+    protected void validate(ArrayList<SampleManager1> sms,
+                            HashMap<Integer, TestManager> tms, boolean ignoreWarning) throws Exception {
+        int cnt;
+        AnalysisViewDO ana;
         SystemVariableDO sys;
         ValidationErrorsList e;
+        Integer accession, maxAccession;
+        HashMap<Integer, SampleItemViewDO> si;
+        HashMap<Integer, AnalysisViewDO> av;
 
         e = new ValidationErrorsList();
-        cal = Calendar.getInstance();
-        now = Datetime.getInstance(Datetime.YEAR, Datetime.SECOND);
-        minReceived = now.add( -180);
+        si = new HashMap<Integer, SampleItemViewDO>();
+        av = new HashMap<Integer, AnalysisViewDO>();
 
         /*
          * see what was the last accession number we have given out
@@ -698,62 +701,102 @@ public class SampleManager1Bean implements SampleManager1Remote {
             maxAccession = Integer.valueOf(sys.getValue());
         } catch (Exception any) {
             // TODO log the error
-            throw new FormErrorException("Missing or invalid system variable 'last_accession_number'");
+            throw new FormErrorException("Missing/invalid system variable 'last_accession_number'");
         }
 
         for (SampleManager1 sm : sms) {
             /*
              * sample level
              */
-            if (getSample(sm).isChanged()) {
-                // accession number must be > 0, previously issued. we don't
-                // want to check the duplicate again since it will not guarantee
-                // that by the time we insert it will still be unique, and will
-                // slow us down.
-                if (getSample(sm).getAccessionNumber() == null ||
-                    getSample(sm).getAccessionNumber() <= 0)
-                    throw new FormErrorException("accessionNumberNotPositiveException",
-                                                 getSample(sm).getAccessionNumber());
-
-                if (maxAccession.compareTo(getSample(sm).getAccessionNumber()) < 0)
-                    throw new FormErrorException("accessionNumberNotInUse",
-                                                 getSample(sm).getAccessionNumber());
-
-                // domain
-                valid = false;
-                for (Constants.Domain d : Constants.Domain.values())
-                    if (d.getValue().equals(getSample(sm).getDomain())) {
-                        valid = true;
-                        break;
+            accession = null;
+            if (getSample(sm) != null) {
+                accession = getSample(sm).getAccessionNumber();
+                if (getSample(sm).isChanged())
+                    try {
+                        sample.validate(getSample(sm), maxAccession, ignoreWarning);
+                    } catch (Exception err) {
+                        DataBaseUtil.mergeException(e, err);
                     }
-                if ( !valid)
-                    e.add(new FormErrorException("noDomainException",
-                                                 getSample(sm).getAccessionNumber()));
-                // dates
-                dt = getSample(sm).getCollectionDate();
-                if (getSample(sm).getCollectionTime() != null) {
-                    cal.setTime(dt.getDate());
-                    cal.add(Calendar.HOUR_OF_DAY, dt.get(Datetime.HOUR));
-                    cal.add(Calendar.MINUTE, dt.get(Datetime.MINUTE));
-                    dt = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
+            }
+            
+            /*
+             * additional domain sample validation for sdwis, private well, ...
+             * samples should go here after checking to see if the VO/DO has
+             * changed.
+             */
+
+            /*
+             * samples have to have one report to.
+             */
+            cnt = 0;
+            if (getOrganizations(sm) != null) {
+                for (SampleOrganizationViewDO data : getOrganizations(sm))
+                    if (Constants.dictionary().ORG_REPORT_TO.equals(data.getTypeId()))
+                        cnt++ ;
+            }
+            if (cnt != 1 && !ignoreWarning)
+                e.add(new FormErrorException("must have one report to", accession));
+
+            /*
+             * at least one sample item and items must have sample type
+             */
+            si.clear();
+            if (getItems(sm) == null || getItems(sm).size() < 1) {
+                e.add(new FormErrorException("minOneSampleItemException", accession));
+            } else {
+                for (SampleItemViewDO data : getItems(sm)) {
+                    si.put(data.getId(), data);
+                    if (data.isChanged())
+                        try {
+                            item.validate(data, accession);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
                 }
-                if (dt != null && dt.after(getSample(sm).getReceivedDate()) && !ignoreWarnings)
-                    e.add(new FormErrorException("collectedDateInvalidError",
-                                                 getSample(sm).getAccessionNumber()));
-
-                if (getSample(sm).getReceivedDate() == null ||
-                    getSample(sm).getReceivedDate().after(now))
-                    e.add(new FormErrorException("receivedDateRequiredException",
-                                                 getSample(sm).getAccessionNumber()));
-                else if (getSample(sm).getReceivedDate().before(minReceived) && !ignoreWarnings)
-                    e.add(new FormErrorWarning("receivedTooOldWarning",
-                                               getSample(sm).getAccessionNumber()));
-
-                
             }
 
+            /*
+             * each analysis must be valid for sample item type
+             */
+            av.clear();
+            if (getAnalyses(sm) != null) {
+                for (AnalysisViewDO data : getAnalyses(sm)) {
+                    av.put(data.getId(), data);
+                    if (data.isChanged() || si.get(data.getSampleItemId()).isChanged())
+                        try {
+                            analysis.validate(data,
+                                              tms.get(data.getTestId()),
+                                              accession,
+                                              si.get(data.getSampleItemId()),
+                                              ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                }
+            }
+
+            /*
+             * results must be valid for the group
+             */
+            if (getResults(sm) != null) {
+                for (ResultViewDO data : getResults(sm)) {
+                    ana = av.get(data.getAnalysisId());
+                    if (data.isChanged() || ana.isChanged())
+                        try {
+                            result.validate(data,
+                                            tms.get(ana.getTestId()),
+                                            accession,
+                                            av.get(data.getAnalysisId()),
+                                            ignoreWarning);
+                        } catch (Exception err) {
+                            DataBaseUtil.mergeException(e, err);
+                        }
+                }
+            }
         }
-        return e.size() == 0 ? null : e;
+
+        if (e.size() > 0)
+            throw e;
     }
 
     /**

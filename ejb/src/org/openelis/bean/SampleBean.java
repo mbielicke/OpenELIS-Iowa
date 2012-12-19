@@ -45,6 +45,7 @@ import javax.persistence.Query;
 
 import org.jboss.ejb3.annotation.SecurityDomain;
 import org.openelis.domain.ClientNotificationVO;
+import org.openelis.domain.Constants;
 import org.openelis.domain.FinalReportVO;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.domain.SampleDO;
@@ -52,8 +53,12 @@ import org.openelis.domain.SampleStatusWebReportVO;
 import org.openelis.entity.Sample;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
+import org.openelis.gwt.common.Datetime;
+import org.openelis.gwt.common.FormErrorException;
+import org.openelis.gwt.common.FormErrorWarning;
 import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.gwt.widget.QueryFieldUtil;
 import org.openelis.local.DictionaryLocal;
@@ -65,22 +70,22 @@ import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
-
 public class SampleBean implements SampleLocal, SampleRemote {
 
     @PersistenceContext(unitName = "openelis")
-    private EntityManager                  manager;
-    
-    @EJB
-    private DictionaryLocal                dictionary;
+    private EntityManager           manager;
 
-    private static final SampleMeta       meta = new SampleMeta();
-    
-    private static final Logger           log = Logger.getLogger("openelis");
-    
+    @EJB
+    private DictionaryLocal         dictionary;
+
+    private static final SampleMeta meta = new SampleMeta();
+
+    private static final Logger     log  = Logger.getLogger("openelis");
+
     private static HashMap<String, String> wellOrgFieldMap, reportToAddressFieldMap;
-    
-    private static Integer                 reportToTypeId, sampleErrorStatusId, analysisReleasedStatusId;
+
+    private static Integer                 reportToTypeId, sampleErrorStatusId,
+                    analysisReleasedStatusId;
 
     static {
         wellOrgFieldMap = new HashMap<String, String>();
@@ -108,24 +113,31 @@ public class SampleBean implements SampleLocal, SampleRemote {
                                     SampleMeta.getAddressMultipleUnit());
         reportToAddressFieldMap.put(SampleMeta.getAddressStreetAddress(),
                                     SampleMeta.getAddressStreetAddress());
-        reportToAddressFieldMap.put(SampleMeta.getAddressCity(), SampleMeta.getAddressCity());
-        reportToAddressFieldMap.put(SampleMeta.getAddressState(), SampleMeta.getAddressState());
-        reportToAddressFieldMap.put(SampleMeta.getAddressZipCode(), SampleMeta.getAddressZipCode());
+        reportToAddressFieldMap.put(SampleMeta.getAddressCity(),
+                                    SampleMeta.getAddressCity());
+        reportToAddressFieldMap.put(SampleMeta.getAddressState(),
+                                    SampleMeta.getAddressState());
+        reportToAddressFieldMap.put(SampleMeta.getAddressZipCode(),
+                                    SampleMeta.getAddressZipCode());
         reportToAddressFieldMap.put(SampleMeta.getAddressWorkPhone(),
                                     SampleMeta.getAddressWorkPhone());
         reportToAddressFieldMap.put(SampleMeta.getAddressFaxPhone(),
                                     SampleMeta.getAddressFaxPhone());
-    }    
-    
+    }
+
     @PostConstruct
     public void init() {
         if (reportToTypeId == null) {
             try {
                 reportToTypeId = dictionary.fetchBySystemName("org_report_to").getId();
-                sampleErrorStatusId = dictionary.fetchBySystemName("sample_error").getId();
-                analysisReleasedStatusId = dictionary.fetchBySystemName("analysis_released").getId();
+                sampleErrorStatusId = dictionary.fetchBySystemName("sample_error")
+                                                .getId();
+                analysisReleasedStatusId = dictionary.fetchBySystemName("analysis_released")
+                                                     .getId();
             } catch (Throwable e) {
-                log.log(Level.SEVERE, "Failed to lookup constants for dictionary entries", e);
+                log.log(Level.SEVERE,
+                        "Failed to lookup constants for dictionary entries",
+                        e);
             }
         }
     }
@@ -139,8 +151,9 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
-                          "," + SampleMeta.getAccessionNumber() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
+                          SampleMeta.getId() + "," + SampleMeta.getAccessionNumber() +
+                          ") ");
         builder.constructWhere(fields);
         builder.setOrderBy(SampleMeta.getAccessionNumber());
 
@@ -183,8 +196,7 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
         return (ArrayList<IdAccessionVO>)list;
     }
-    
-    
+
     public ArrayList<IdAccessionVO> dataExchangeQuery(ArrayList<QueryData> fields) throws Exception {
         boolean orgPresent;
         Query query;
@@ -193,13 +205,15 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
-                          "," + SampleMeta.getAccessionNumber() + ") ");
-        builder.constructWhere(fields);     
-        
-        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" + analysisReleasedStatusId);
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
+                          SampleMeta.getId() + "," + SampleMeta.getAccessionNumber() +
+                          ") ");
+        builder.constructWhere(fields);
+
+        builder.addWhere(SampleWebMeta.getAnalysisStatusId() + "=" +
+                         analysisReleasedStatusId);
         builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleErrorStatusId);
-        
+
         orgPresent = false;
         for (QueryData f : fields) {
             if (SampleMeta.getOrgId().equals(f.key)) {
@@ -207,10 +221,10 @@ public class SampleBean implements SampleLocal, SampleRemote {
                 continue;
             }
         }
-        
+
         if (orgPresent)
-            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" +reportToTypeId);
-        
+            builder.addWhere(SampleMeta.getSampleOrgTypeId() + "=" + reportToTypeId);
+
         builder.setOrderBy(SampleMeta.getAccessionNumber());
         query = manager.createQuery(builder.getEJBQL());
 
@@ -222,7 +236,7 @@ public class SampleBean implements SampleLocal, SampleRemote {
             throw new NotFoundException();
 
         return DataBaseUtil.toArrayList(results);
-    }   
+    }
 
     public SampleDO fetchById(Integer sampleId) throws Exception {
         Query query = manager.createNamedQuery("Sample.FetchById");
@@ -238,13 +252,13 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
     public ArrayList<SampleDO> fetchByIds(ArrayList<Integer> ids) {
         Query query;
-        
+
         query = manager.createNamedQuery("Sample.FetchByIds");
         query.setParameter("ids", ids);
 
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     public SampleDO fetchByAccessionNumber(Integer accessionNumber) throws Exception {
         Query query;
 
@@ -266,11 +280,11 @@ public class SampleBean implements SampleLocal, SampleRemote {
         query = manager.createNamedQuery("Sample.FetchSDWISByReleased");
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
-        
+
         list = query.getResultList();
         if (list.isEmpty())
             throw new NotFoundException();
-        
+
         return DataBaseUtil.toArrayList(list);
     }
 
@@ -281,19 +295,24 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
         query = manager.createNamedQuery("Sample.FetchForFinalReportBatch");
         list = query.getResultList();
-        
+
         returnList = new ArrayList<FinalReportVO>();
-        for (Object[] result : list) 
-            returnList.add(new FinalReportVO((Integer)result[0], (Integer)result[1],
-                                             (Integer)result[2], (String)result[3],
-                                             (Integer)result[4], (Integer)result[5],
-                                             (String)result[6], (String)result[7],
+        for (Object[] result : list)
+            returnList.add(new FinalReportVO((Integer)result[0],
+                                             (Integer)result[1],
+                                             (Integer)result[2],
+                                             (String)result[3],
+                                             (Integer)result[4],
+                                             (Integer)result[5],
+                                             (String)result[6],
+                                             (String)result[7],
                                              (Integer)result[8]));
-        
+
         return returnList;
     }
 
-    public ArrayList<FinalReportVO> fetchForFinalReportBatchReprint(Date beginPrinted, Date endPrinted) throws Exception {
+    public ArrayList<FinalReportVO> fetchForFinalReportBatchReprint(Date beginPrinted,
+                                                                    Date endPrinted) throws Exception {
         Query query;
         List<Object[]> list;
         ArrayList<FinalReportVO> returnList;
@@ -302,15 +321,19 @@ public class SampleBean implements SampleLocal, SampleRemote {
         query.setParameter("beginPrinted", beginPrinted);
         query.setParameter("endPrinted", endPrinted);
         list = query.getResultList();
-        
+
         returnList = new ArrayList<FinalReportVO>();
-        for (Object[] result : list) 
-            returnList.add(new FinalReportVO((Integer)result[0], (Integer)result[1],
-                                             (Integer)result[2], (String)result[3],
-                                             (Integer)result[4], (Integer)result[5],
-                                             (String)result[6], (String)result[7],
+        for (Object[] result : list)
+            returnList.add(new FinalReportVO((Integer)result[0],
+                                             (Integer)result[1],
+                                             (Integer)result[2],
+                                             (String)result[3],
+                                             (Integer)result[4],
+                                             (Integer)result[5],
+                                             (String)result[6],
+                                             (String)result[7],
                                              (Integer)result[8]));
-        
+
         return returnList;
     }
 
@@ -322,14 +345,19 @@ public class SampleBean implements SampleLocal, SampleRemote {
         query = manager.createNamedQuery("Sample.FetchForFinalReportSingle");
         query.setParameter("accessionNumber", accessionNumber);
         list = query.getResultList();
-        
+
         returnList = new ArrayList<FinalReportVO>();
-        for (Object[] result : list) 
-            returnList.add(new FinalReportVO((Integer)result[0], (Integer)result[1],
-                                             (Integer)result[2], (String)result[3],
-                                             (Integer)result[4], (Integer)result[5],
-                                             (String)result[6], null, null));
-        
+        for (Object[] result : list)
+            returnList.add(new FinalReportVO((Integer)result[0],
+                                             (Integer)result[1],
+                                             (Integer)result[2],
+                                             (String)result[3],
+                                             (Integer)result[4],
+                                             (Integer)result[5],
+                                             (String)result[6],
+                                             null,
+                                             null));
+
         return returnList;
     }
 
@@ -341,15 +369,22 @@ public class SampleBean implements SampleLocal, SampleRemote {
         query.setParameter("accessionNumber", accessionNumber);
         try {
             result = (Object[])query.getSingleResult();
-            return new FinalReportVO((Integer)result[0], (Integer)result[1], (Integer)result[2],
-                                     (String)result[3], (Integer)result[4], null,
-                                     null, null, null);
+            return new FinalReportVO((Integer)result[0],
+                                     (Integer)result[1],
+                                     (Integer)result[2],
+                                     (String)result[3],
+                                     (Integer)result[4],
+                                     null,
+                                     null,
+                                     null,
+                                     null);
         } catch (NoResultException e) {
             throw new NotFoundException("noRecordsFound");
         }
     }
-    
-    public ArrayList<ClientNotificationVO> fetchForClientEmailReceivedReport(Date stDate, Date endDate) throws Exception {
+
+    public ArrayList<ClientNotificationVO> fetchForClientEmailReceivedReport(Date stDate,
+                                                                             Date endDate) throws Exception {
         Query query;
         ClientNotificationVO notificationVo;
         ArrayList<Object[]> resultList;
@@ -359,26 +394,27 @@ public class SampleBean implements SampleLocal, SampleRemote {
         query.setParameter("start_entered_date", stDate);
         query.setParameter("end_entered_date", endDate);
 
-        resultList =  DataBaseUtil.toArrayList(query.getResultList());
+        resultList = DataBaseUtil.toArrayList(query.getResultList());
         returnList = new ArrayList<ClientNotificationVO>();
         for (Object[] result : resultList) {
             notificationVo = new ClientNotificationVO((Integer)result[0],
-                                                              (Date)result[1],
-                                                              (Date)result[2],
-                                                              (Date)result[3],
-                                                              (String)result[4],
-                                                              (Integer)result[5],
-                                                              (Integer)result[6],
-                                                              (String)result[7],
-                                                              (String)result[8],
-                                                              (String)result[9],
-                                                              (String)result[10]);
+                                                      (Date)result[1],
+                                                      (Date)result[2],
+                                                      (Date)result[3],
+                                                      (String)result[4],
+                                                      (Integer)result[5],
+                                                      (Integer)result[6],
+                                                      (String)result[7],
+                                                      (String)result[8],
+                                                      (String)result[9],
+                                                      (String)result[10]);
             returnList.add(notificationVo);
         }
         return returnList;
-    } 
-    
-    public ArrayList<ClientNotificationVO> fetchForClientEmailReleasedReport(Date stDate, Date endDate) throws Exception {
+    }
+
+    public ArrayList<ClientNotificationVO> fetchForClientEmailReleasedReport(Date stDate,
+                                                                             Date endDate) throws Exception {
         Query query;
         ClientNotificationVO notificationVo;
         ArrayList<Object[]> resultList;
@@ -392,30 +428,30 @@ public class SampleBean implements SampleLocal, SampleRemote {
         returnList = new ArrayList<ClientNotificationVO>();
         for (Object[] result : resultList) {
             notificationVo = new ClientNotificationVO((Integer)result[0],
-                                                              (Date)result[1],
-                                                              (Date)result[2],
-                                                              (Date)result[3],
-                                                              (String)result[4],
-                                                              null,
-                                                              null,
-                                                              (String)result[5],
-                                                              (String)result[6],
-                                                              (String)result[7],
-                                                              (String)result[8]);
+                                                      (Date)result[1],
+                                                      (Date)result[2],
+                                                      (Date)result[3],
+                                                      (String)result[4],
+                                                      null,
+                                                      null,
+                                                      (String)result[5],
+                                                      (String)result[6],
+                                                      (String)result[7],
+                                                      (String)result[8]);
             returnList.add(notificationVo);
         }
         return returnList;
-    } 
-    
+    }
+
     public ArrayList<Object[]> fetchForBillingReport(Date stDate, Date endDate) throws Exception {
         Query query;
-        
-        query = manager.createNamedQuery("Sample.FetchForBillingReport");     
+
+        query = manager.createNamedQuery("Sample.FetchForBillingReport");
         query.setParameter("startDate", stDate);
         query.setParameter("endDate", endDate);
-        
+
         return DataBaseUtil.toArrayList(query.getResultList());
-    } 
+    }
 
     public ArrayList<SampleStatusWebReportVO> fetchForSampleStatusReport(ArrayList<Integer> sampleIds) throws Exception {
         Query query;
@@ -444,23 +480,23 @@ public class SampleBean implements SampleLocal, SampleRemote {
         }
         return returnList;
     }
-    
+
     public ArrayList<Object[]> fetchForTurnaroundMaximumReport() throws Exception {
         Query query;
-        
-        query = manager.createNamedQuery("Sample.FetchForTurnaroundMaximumReport");     
-        
+
+        query = manager.createNamedQuery("Sample.FetchForTurnaroundMaximumReport");
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     public ArrayList<Object[]> fetchForTurnaroundWarningReport() throws Exception {
         Query query;
-        
-        query = manager.createNamedQuery("Sample.FetchForTurnaroundWarningReport");     
-        
+
+        query = manager.createNamedQuery("Sample.FetchForTurnaroundWarningReport");
+
         return DataBaseUtil.toArrayList(query.getResultList());
     }
-    
+
     public ArrayList<IdAccessionVO> fetchSamplesByLastRunDate(ArrayList<QueryData> fields,
                                                               Date lastRunDate) throws Exception {
         boolean orgPresent;
@@ -476,8 +512,9 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
         builder = new QueryBuilderV2();
         builder.setMeta(meta);
-        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" + SampleMeta.getId() +
-                          "," + SampleMeta.getAccessionNumber() + ") ");
+        builder.setSelect("distinct new org.openelis.domain.IdAccessionVO(" +
+                          SampleMeta.getId() + "," + SampleMeta.getAccessionNumber() +
+                          ") ");
 
         builder.constructWhere(fields);
         builder.addWhere(SampleWebMeta.getStatusId() + "!=" + sampleErrorStatusId);
@@ -496,10 +533,10 @@ public class SampleBean implements SampleLocal, SampleRemote {
         dateClause = new ArrayList<String>();
 
         /*
-         * create the clause for restricting the list of accession numbers to the 
-         * samples that were released between the last run date and the current 
-         * time minus one minute or that have at least one analysis that was released
-         * during that time 
+         * create the clause for restricting the list of accession numbers to
+         * the samples that were released between the last run date and the
+         * current time minus one minute or that have at least one analysis that
+         * was released during that time
          */
         dateClause.add("(");
         dateClause.add(SampleMeta.getReleasedDate());
@@ -544,11 +581,11 @@ public class SampleBean implements SampleLocal, SampleRemote {
         field.key = "dt1";
         field.query = queryStr;
         field.type = QueryData.Type.DATE;
-        
+
         /*
-         * these fields were not added to the list passed to constructWhere() because
-         * they aren't part of the where clause but only added to specify the values
-         * of the parameters
+         * these fields were not added to the list passed to constructWhere()
+         * because they aren't part of the where clause but only added to
+         * specify the values of the parameters
          */
         fields.add(field);
 
@@ -564,7 +601,7 @@ public class SampleBean implements SampleLocal, SampleRemote {
 
         return DataBaseUtil.toArrayList(results);
     }
-    
+
     public SampleDO add(SampleDO data) {
         Sample entity;
 
@@ -619,6 +656,71 @@ public class SampleBean implements SampleLocal, SampleRemote {
         return data;
     }
 
+    public void validate(SampleDO data, Integer maxAccession, boolean ignoreWarning) throws Exception {
+        String d;
+        Calendar cal;
+        ValidationErrorsList e;
+        Datetime minEnt, rec, ent, col;
+
+        e = new ValidationErrorsList();
+
+        // accession number must be > 0, previously issued. we don't
+        // want to check the duplicate again since it will not guarantee
+        // that by the time we insert it will still be unique, and will
+        // slow us down.
+        if (data.getAccessionNumber() == null || data.getAccessionNumber() <= 0)
+            e.add(new FormErrorException("accessionNumberNotPositiveException",
+                                         data.getAccessionNumber()));
+
+        if (maxAccession.compareTo(data.getAccessionNumber()) < 0)
+            e.add(new FormErrorException("accessionNumberNotInUse",
+                                         data.getAccessionNumber()));
+
+        // domain
+        d = data.getDomain();
+        if (d == null ||
+            ( !Constants.domain().ANIMAL.equals(d) &&
+             !Constants.domain().ENVIRONMENTAL.equals(d) &&
+             !Constants.domain().HUMAN.equals(d) &&
+             !Constants.domain().NEWBORN.equals(d) &&
+             !Constants.domain().PRIVATEWELL.equals(d) &&
+             !Constants.domain().PT.equals(d) && !Constants.domain().QUICKENTRY.equals(d) && !Constants.domain().SDWIS.equals(d)))
+            e.add(new FormErrorException("noDomainException", data.getAccessionNumber()));
+        // dates
+        ent = data.getEnteredDate();
+        rec = data.getReceivedDate();
+        minEnt = null;
+        if (ent == null)
+            e.add(new FormErrorException("enteredDateRequiredException",
+                                         data.getAccessionNumber()));
+        else
+            minEnt = ent.add( -180);
+        if (rec == null)
+            e.add(new FormErrorException("receivedDateRequiredException",
+                                         data.getAccessionNumber()));
+        else if (rec.before(minEnt) && !ignoreWarning)
+            e.add(new FormErrorWarning("receivedTooOldWarning", data.getAccessionNumber()));
+        col = data.getCollectionDate();
+        if (data.getCollectionTime() != null) {
+            cal = Calendar.getInstance();
+            cal.setTime(col.getDate());
+            cal.add(Calendar.HOUR_OF_DAY, data.getCollectionTime().get(Datetime.HOUR));
+            cal.add(Calendar.MINUTE, data.getCollectionTime().get(Datetime.MINUTE));
+            col = new Datetime(Datetime.YEAR, Datetime.MINUTE, cal.getTime());
+        }
+        if (col != null) {
+            if (col.after(rec))
+                e.add(new FormErrorException("collectedDateInvalidError",
+                                             data.getAccessionNumber()));
+            if (col.before(minEnt) && !ignoreWarning)
+                e.add(new FormErrorException("collectedTooOldWarning",
+                                             data.getAccessionNumber()));
+        }
+
+        if (e.size() > 0)
+            throw e;
+    }
+
     private String createWhereFromWellFields(ArrayList<QueryData> fields,
                                              ArrayList<QueryData> wellFields) {
         int i;
@@ -658,9 +760,12 @@ public class SampleBean implements SampleLocal, SampleRemote {
             qField.parse(field.query);
 
             if (i % 2 == 0) {
-                whereClause += " and ( " + QueryBuilderV2.getQueryNoOperand(qField, field.key);
+                whereClause += " and ( " +
+                               QueryBuilderV2.getQueryNoOperand(qField, field.key);
             } else {
-                whereClause += " or " + QueryBuilderV2.getQueryNoOperand(qField, field.key) + " ) ";
+                whereClause += " or " +
+                               QueryBuilderV2.getQueryNoOperand(qField, field.key) +
+                               " ) ";
             }
         }
         return whereClause;
