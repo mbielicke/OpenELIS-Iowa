@@ -142,7 +142,7 @@ public class SampleManagerProxy {
 
         if (data.getEnteredDate() != null && data.getCollectionDate() != null &&
             data.getCollectionDate().before(data.getEnteredDate().add(-180)))
-            errorsList.add(new FieldErrorException("collectedTooOldException",
+            errorsList.add(new FieldErrorException("collectedTooOldWarning",
                                                    SampleMeta.getCollectionDate()));
 
         if (data.getCollectionDate() != null && data.getReceivedDate() != null &&
