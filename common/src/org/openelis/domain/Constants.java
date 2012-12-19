@@ -33,7 +33,41 @@ import org.openelis.gwt.common.RPC;
  * start-up which makes some of these variables not immutable.
  */
 public class Constants implements RPC {
-    private static final long serialVersionUID = 1L;
+    private static final long      serialVersionUID = 1L;
+
+    private static final Constants constants        = new Constants();
+    protected Table                table            = new Table();
+    protected Domain               domain           = new Domain();
+    protected Audit                audit            = new Audit();
+    protected Dictionary           dictionary       = new Dictionary();
+
+    /**
+     * Table reference
+     */
+    public static Table table() {
+        return constants.table;
+    }
+
+    /**
+     * Domain reference
+     */
+    public static Domain domain() {
+        return constants.domain;
+    }
+
+    /**
+     * Audit reference
+     */
+    public static Audit audit() {
+        return constants.audit;
+    }
+
+    /**
+     * Dictionary reference
+     */
+    public static Dictionary dictionary() {
+        return constants.dictionary;
+    }
 
     /**
      * The class is used for table reference id. Table reference ids are used
@@ -85,8 +119,8 @@ public class Constants implements RPC {
      * The class represents all the sample domains that can be used in sample
      * record
      */
-    public static class Domain {
-        public final static String QUICKENTRY = "Q", ENVIRONMENTAL = "E", SDWIS = "S",
+    public class Domain {
+        public final String QUICKENTRY = "Q", ENVIRONMENTAL = "E", SDWIS = "S",
                         PRIVATEWELL = "W", NEWBORN = "N", HUMAN = "H", ANIMAL = "A",
                         PT = "P";
     }
@@ -95,8 +129,8 @@ public class Constants implements RPC {
      * The class represents all the operations that can be performed for
      * auditing.
      */
-    public static class Audit {
-        public final static Integer ADD = 1, UPDATE = 2, DELETE = 3, VIEW = 4;
+    public class Audit {
+        public final Integer ADD = 1, UPDATE = 2, DELETE = 3, VIEW = 4;
     }
 
     /**
@@ -104,25 +138,24 @@ public class Constants implements RPC {
      * the program. The constants are not final; they are loaded at server load
      * time because the value is the dictionary entry id.
      */
-    public static class Dictionary {
-        public static Integer ANALYSIS_CANCELLED, ANALYSIS_COMPLETED,
-                        ANALYSIS_ERROR_COMPLETED, ANALYSIS_ERROR_INITIATED,
-                        ANALYSIS_ERROR_INPREP, ANALYSIS_ERROR_LOGGED_IN,
-                        ANALYSIS_INITIATED, ANALYSIS_INPREP, ANALYSIS_LOGGED_IN,
-                        ANALYSIS_ON_HOLD, ANALYSIS_RELEASED, ANALYSIS_REQUEUE,
-                        AN_USER_AC_COMPLETED, AN_USER_AC_RELEASED, AUX_ALPHA_LOWER,
-                        AUX_ALPHA_MIXED, AUX_ALPHA_UPPER, AUX_DATE, AUX_DATE_TIME,
-                        AUX_DEFAULT, AUX_DICTIONARY, AUX_NUMERIC, AUX_TIME,
-                        CHART_TYPE_DYNAMIC, CHART_TYPE_FIXED, INSTRUMENT_LOG_COMPLETED,
-                        INSTRUMENT_LOG_PENDING, LOG_LEVEL_ERROR, LOG_LEVEL_INFO,
-                        LOG_TYPE_DATA_TRANSMISSION, ORDER_RECURRENCE_UNIT_DAYS,
-                        ORDER_RECURRENCE_UNIT_MONTHS, ORDER_RECURRENCE_UNIT_YEARS,
-                        ORDER_STATUS_BACK_ORDERED, ORDER_STATUS_PENDING,
-                        ORDER_STATUS_PROCESSED, ORG_BILL_TO, ORG_FINALREP_FAX_NUMBER,
-                        ORG_NO_FINALREPORT, ORG_REPORT_TO, ORG_SECOND_REPORT_TO,
-                        POS_DUPLICATE, POS_FIXED, POS_FIXED_ALWAYS, PT_SAMPLE,
-                        QAEVENT_INTERNAL, QAEVENT_OVERRIDE, QAEVENT_WARNING, QC_BLANK,
-                        QC_DUPLICATE, QC_SPIKE, RECEIVABLE_REPORTTO_EMAIL,
+    public class Dictionary {
+        public Integer ANALYSIS_CANCELLED, ANALYSIS_COMPLETED, ANALYSIS_ERROR_COMPLETED,
+                        ANALYSIS_ERROR_INITIATED, ANALYSIS_ERROR_INPREP,
+                        ANALYSIS_ERROR_LOGGED_IN, ANALYSIS_INITIATED, ANALYSIS_INPREP,
+                        ANALYSIS_LOGGED_IN, ANALYSIS_ON_HOLD, ANALYSIS_RELEASED,
+                        ANALYSIS_REQUEUE, AN_USER_AC_COMPLETED, AN_USER_AC_RELEASED,
+                        AUX_ALPHA_LOWER, AUX_ALPHA_MIXED, AUX_ALPHA_UPPER, AUX_DATE,
+                        AUX_DATE_TIME, AUX_DEFAULT, AUX_DICTIONARY, AUX_NUMERIC,
+                        AUX_TIME, CHART_TYPE_DYNAMIC, CHART_TYPE_FIXED,
+                        INSTRUMENT_LOG_COMPLETED, INSTRUMENT_LOG_PENDING,
+                        LOG_LEVEL_ERROR, LOG_LEVEL_INFO, LOG_TYPE_DATA_TRANSMISSION,
+                        ORDER_RECURRENCE_UNIT_DAYS, ORDER_RECURRENCE_UNIT_MONTHS,
+                        ORDER_RECURRENCE_UNIT_YEARS, ORDER_STATUS_BACK_ORDERED,
+                        ORDER_STATUS_PENDING, ORDER_STATUS_PROCESSED, ORG_BILL_TO,
+                        ORG_FINALREP_FAX_NUMBER, ORG_NO_FINALREPORT, ORG_REPORT_TO,
+                        ORG_SECOND_REPORT_TO, POS_DUPLICATE, POS_FIXED, POS_FIXED_ALWAYS,
+                        PT_SAMPLE, QAEVENT_INTERNAL, QAEVENT_OVERRIDE, QAEVENT_WARNING,
+                        QC_BLANK, QC_DUPLICATE, QC_SPIKE, RECEIVABLE_REPORTTO_EMAIL,
                         RELEASED_REPORTTO_EMAIL, ROUND_INT, ROUND_INT_SIG_FIG,
                         ROUND_INT_SIG_FIG_NOE, ROUND_SIG_FIG, ROUND_SIG_FIG_NOE,
                         SAMPLE_COMPLETED, SAMPLE_ERROR, SAMPLE_LOGGED_IN,
