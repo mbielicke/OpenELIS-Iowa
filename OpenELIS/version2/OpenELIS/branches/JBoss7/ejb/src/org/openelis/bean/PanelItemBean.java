@@ -43,24 +43,21 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AuxFieldGroupLocal;
-import org.openelis.local.PanelItemLocal;
-import org.openelis.local.TestLocal;
 import org.openelis.meta.PanelMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class PanelItemBean implements PanelItemLocal {
+public class PanelItemBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
     
     @EJB 
-    private TestLocal                  test;
+    private TestBean                   test;
     
     @EJB
-    private AuxFieldGroupLocal         auxFieldGroup;
+    private AuxFieldGroupBean          auxFieldGroup;
     
     @SuppressWarnings("unchecked")
     public ArrayList<PanelItemDO> fetchByPanelId(Integer id) throws Exception {

@@ -52,10 +52,6 @@ import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.LockLocal;
-import org.openelis.local.OrderManagerLocal;
-import org.openelis.local.UserCacheLocal;
 import org.openelis.manager.AuxDataManager;
 import org.openelis.manager.NoteManager;
 import org.openelis.manager.OrderContainerManager;
@@ -66,26 +62,24 @@ import org.openelis.manager.OrderOrganizationManager;
 import org.openelis.manager.OrderReceiptManager;
 import org.openelis.manager.OrderTestAnalyteManager;
 import org.openelis.manager.OrderTestManager;
-import org.openelis.remote.OrderManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
+public class OrderManagerBean {
 
     @Resource
     private SessionContext      ctx;
 
     @EJB
-    private LockLocal           lock;
+    private LockBean           lock;
 
     @EJB
-    private DictionaryLocal     dictionary;
+    private DictionaryBean     dictionary;
     
     @EJB
-    private UserCacheLocal      userCache;
+    private UserCacheBean      userCache;
 
     private static final Logger log = Logger.getLogger(OrderManagerBean.class);
 
@@ -259,7 +253,7 @@ public class OrderManagerBean implements OrderManagerRemote, OrderManagerLocal {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("order", flag);
+        userCache.applyPermission("order", flag);
     }
     
     private void duplicateOrder(OrderManager oldMan, OrderManager newMan, boolean forRecurrence) throws Exception {

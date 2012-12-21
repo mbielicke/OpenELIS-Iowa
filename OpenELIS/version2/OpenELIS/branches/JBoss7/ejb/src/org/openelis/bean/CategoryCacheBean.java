@@ -36,8 +36,6 @@ import net.sf.ehcache.Element;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.CategoryCacheVO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.local.CategoryCacheLocal;
-import org.openelis.remote.CategoryCacheRemote;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -46,7 +44,7 @@ import org.openelis.utils.EJBFactory;
 
 @SecurityDomain("openelis")
 @Singleton
-public class CategoryCacheBean implements CategoryCacheLocal, CategoryCacheRemote {
+public class CategoryCacheBean {
 
     private Cache           cache, dictCache;
 

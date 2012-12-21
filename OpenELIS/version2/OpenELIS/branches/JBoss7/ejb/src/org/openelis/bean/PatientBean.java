@@ -11,13 +11,11 @@ import javax.persistence.Query;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.PatientDO;
-import org.openelis.local.PatientLocal;
-import org.openelis.remote.PatientRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class PatientBean implements PatientRemote, PatientLocal {
+public class PatientBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    

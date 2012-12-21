@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.InventoryLocationBean;
 import org.openelis.domain.InventoryLocationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryLocationLocal;
 import org.openelis.utils.EJBFactory;
 
 public class InventoryLocationManagerProxy {
@@ -48,7 +48,7 @@ public class InventoryLocationManagerProxy {
     }
 
     public InventoryLocationManager add(InventoryLocationManager man) throws Exception {
-        InventoryLocationLocal cl;
+        InventoryLocationBean cl;
         InventoryLocationViewDO data;
 
         cl = EJBFactory.getInventoryLocation();
@@ -63,7 +63,7 @@ public class InventoryLocationManagerProxy {
 
     public InventoryLocationManager update(InventoryLocationManager man) throws Exception {
         int i;
-        InventoryLocationLocal cl;
+        InventoryLocationBean cl;
         InventoryLocationViewDO location;
 
         cl = EJBFactory.getInventoryLocation();
@@ -86,7 +86,7 @@ public class InventoryLocationManagerProxy {
     
     public void validate(InventoryLocationManager man) throws Exception {
         ValidationErrorsList list;
-        InventoryLocationLocal cl;
+        InventoryLocationBean cl;
 
         cl = EJBFactory.getInventoryLocation();
         list = new ValidationErrorsList();

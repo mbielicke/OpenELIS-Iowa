@@ -89,17 +89,6 @@ import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SectionPermission;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AnalyteLocal;
-import org.openelis.local.AnalyteParameterLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.QcAnalyteLocal;
-import org.openelis.local.QcLotLocal;
-import org.openelis.local.SampleManagerLocal;
-import org.openelis.local.SectionLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.SystemVariableLocal;
-import org.openelis.local.WorksheetAnalysisLocal;
 import org.openelis.manager.AnalysisManager;
 import org.openelis.manager.AnalysisResultManager;
 import org.openelis.manager.AnalysisUserManager;
@@ -115,36 +104,37 @@ import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
-import org.openelis.remote.WorksheetCompletionRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class WorksheetCompletionBean implements WorksheetCompletionRemote {
+public class WorksheetCompletionBean {
 
     @EJB
-    AnalyteLocal analyteLocal;
+    AnalyteBean analyteLocal;
     @EJB
-    AnalyteParameterLocal analyteParameterLocal;
+    AnalyteParameterBean analyteParameterLocal;
     @EJB
-    DictionaryLocal dictionaryLocal;
+    DictionaryBean  dictionaryLocal;
     @EJB
-    DictionaryCacheLocal dictionaryCacheLocal;
+    DictionaryCacheBean dictionaryCacheLocal;
     @EJB
-    QcLotLocal qcLotLocal;
+    QcLotBean qcLotLocal;
     @EJB
-    QcAnalyteLocal qcAnalyteLocal;
+    QcAnalyteBean qcAnalyteLocal;
     @EJB
-    SampleManagerLocal sampleManagerLocal;
+    SampleManagerBean sampleManagerLocal;
     @EJB
-    SectionLocal sectionLocal;
+    SectionBean sectionLocal;
     @EJB
-    SessionCacheLocal session;    
+    SessionCacheBean session;    
     @EJB
-    SystemVariableLocal systemVariableLocal;
+    SystemVariableBean systemVariableLocal;
     @EJB
-    WorksheetAnalysisLocal worksheetAnalysisLocal;
+    WorksheetAnalysisBean worksheetAnalysisLocal;
+    @EJB
+    UserCacheBean userCache;
+
 
     private static final Logger       log  = Logger.getLogger(WorksheetCompletionBean.class);
 
@@ -533,7 +523,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                     cell = oRow.createCell(5);
                     cell.setCellStyle(styles.get("row_edit"));
                     try {
-                        userVO = EJBFactory.getUserCache().getSystemUser(waDO.getQcSystemUserId());
+                        userVO = userCache.getSystemUser(waDO.getQcSystemUserId());
                         if (userVO != null)
                             cell.setCellValue(userVO.getLoginName());
                     } catch (Exception anyE) {
@@ -731,7 +721,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         statusLocked = false;
 
                     sectionVDO = sectionLocal.fetchById(aVDO.getSectionId());
-                    perm = EJBFactory.getUserCache().getPermission().getSection(sectionVDO.getName());
+                    perm = userCache.getPermission().getSection(sectionVDO.getName());
                     if (perm == null || !perm.hasCompletePermission())
                         permLocked = true;
                     else
@@ -767,7 +757,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             while (tokenizer.hasMoreTokens()) {
                                 userToken = tokenizer.nextToken();
                                 try {
-                                    userVO = EJBFactory.getUserCache().getSystemUser(userToken);
+                                    userVO = userCache.getSystemUser(userToken);
                                     if (userVO != null) {
                                         if (auManager.addCompleteRecord(userVO) != -1)
                                             anaModified = true;
@@ -911,7 +901,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                             if (tokenizer.hasMoreTokens()) {
                                 userToken = tokenizer.nextToken();
                                 try {
-                                    userVO = EJBFactory.getUserCache().getSystemUser(userToken);
+                                    userVO = userCache.getSystemUser(userToken);
                                     if (userVO != null) {
                                         waDO.setQcSystemUserId(userVO.getId());
                                     } else {
@@ -924,7 +914,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
                         }
                     } else if (waDO.getQcSystemUserId() == null) {
                         try {
-                            userVO = EJBFactory.getUserCache().getSystemUser();
+                            userVO = userCache.getSystemUser();
                             waDO.setQcSystemUserId(userVO.getId());
                         } catch (Exception anyE) {
                             errorList.add(new FormErrorException("defaultWorksheetQcUserFormException", String.valueOf(wiDO.getPosition()), String.valueOf(a+1)));
@@ -1414,7 +1404,7 @@ public class WorksheetCompletionBean implements WorksheetCompletionRemote {
 
         userVO = null;
         try {
-            userVO = EJBFactory.getUserCache().getSystemUser(userId);
+            userVO = userCache.getSystemUser(userId);
         } catch (Exception anyE) {
             throw new Exception("Error retrieving username for worksheet: "+anyE.getMessage());
         }

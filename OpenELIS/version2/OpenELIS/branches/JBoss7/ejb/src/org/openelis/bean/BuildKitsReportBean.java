@@ -38,40 +38,34 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OptionListItem;
-import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.LabelReportLocal;
-import org.openelis.local.OrderLocal;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.remote.BuildKitsReportRemote;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-public class BuildKitsReportBean implements BuildKitsReportRemote {
+public class BuildKitsReportBean {
     
     @EJB
-    private SessionCacheLocal session;
+    private SessionCacheBean session;
     
     @EJB
-    private PrinterCacheLocal printer;
+    private PrinterCacheBean  printer;
     
     @EJB
-    private DictionaryLocal   dictionary;
+    private DictionaryBean    dictionary;
      
     @EJB   
-    private LabelReportLocal labelReport;
+    private LabelReportBean labelReport;
     
     @EJB
-    private OrderLocal        order;  
+    private OrderBean         order;  
     
     private static final Logger log = Logger.getLogger(BuildKitsReportBean.class);
 

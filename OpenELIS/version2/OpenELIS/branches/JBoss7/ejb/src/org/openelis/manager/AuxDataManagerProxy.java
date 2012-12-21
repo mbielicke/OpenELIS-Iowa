@@ -27,14 +27,14 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.AuxDataBean;
+import org.openelis.bean.AuxFieldBean;
+import org.openelis.bean.AuxFieldValueBean;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.AuxFieldValueViewDO;
 import org.openelis.domain.AuxFieldViewDO;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.AuxDataLocal;
-import org.openelis.local.AuxFieldLocal;
-import org.openelis.local.AuxFieldValueLocal;
 import org.openelis.utils.EJBFactory;
 
 public class AuxDataManagerProxy {
@@ -46,8 +46,8 @@ public class AuxDataManagerProxy {
         AuxDataManager                 man;
         AuxDataViewDO                  dataDO;
         AuxFieldViewDO                 fieldDO;       
-        AuxFieldLocal                  fl;
-        AuxFieldValueLocal             vl;
+        AuxFieldBean                   fl;
+        AuxFieldValueBean             vl;
 
         man = AuxDataManager.getInstance();
         
@@ -75,7 +75,7 @@ public class AuxDataManagerProxy {
     }
     
     public AuxDataManager add(AuxDataManager man) throws Exception {
-        AuxDataLocal l;
+        AuxDataBean l;
         AuxDataViewDO data;
 
         l = EJBFactory.getAuxData();
@@ -93,7 +93,7 @@ public class AuxDataManagerProxy {
     
     public AuxDataManager update(AuxDataManager man) throws Exception {
         int i;
-        AuxDataLocal l;
+        AuxDataBean l;
         AuxDataViewDO data;
 
         l = EJBFactory.getAuxData();

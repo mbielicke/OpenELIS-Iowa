@@ -27,11 +27,11 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.TestTypeOfSampleBean;
 import org.openelis.domain.TestTypeOfSampleDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.TestTypeOfSampleLocal;
 import org.openelis.utils.EJBFactory;
 
 public class TestTypeOfSampleManagerProxy {   
@@ -50,7 +50,7 @@ public class TestTypeOfSampleManagerProxy {
     
     public TestTypeOfSampleManager add(TestTypeOfSampleManager man) throws Exception {
         int i;
-        TestTypeOfSampleLocal tl; 
+        TestTypeOfSampleBean tl; 
         TestTypeOfSampleDO data;
         
         tl = EJBFactory.getTestTypeOfSample();         
@@ -66,7 +66,7 @@ public class TestTypeOfSampleManagerProxy {
     
     public TestTypeOfSampleManager update(TestTypeOfSampleManager man) throws Exception {
         int i;
-        TestTypeOfSampleLocal tl; 
+        TestTypeOfSampleBean tl; 
         TestTypeOfSampleDO data;
         
         tl = EJBFactory.getTestTypeOfSample(); 
@@ -91,7 +91,7 @@ public class TestTypeOfSampleManagerProxy {
         int count;
         ValidationErrorsList list;
         TestTypeOfSampleDO data;
-        TestTypeOfSampleLocal sl;
+        TestTypeOfSampleBean sl;
 
         list = new ValidationErrorsList();
         sl = EJBFactory.getTestTypeOfSample();

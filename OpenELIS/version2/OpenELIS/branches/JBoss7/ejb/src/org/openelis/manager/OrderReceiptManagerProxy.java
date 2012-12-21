@@ -27,14 +27,14 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.InventoryXPutBean;
 import org.openelis.domain.InventoryXPutViewDO;
-import org.openelis.local.InventoryXPutLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrderReceiptManagerProxy {
 
     public OrderReceiptManager fetchByOrderId(Integer id) throws Exception {
-        InventoryXPutLocal pl;
+        InventoryXPutBean pl;
         OrderReceiptManager m;
         ArrayList<InventoryXPutViewDO> list;
 
@@ -48,7 +48,7 @@ public class OrderReceiptManagerProxy {
     }
 
     public OrderReceiptManager add(OrderReceiptManager man) throws Exception {
-        InventoryXPutLocal pl;
+        InventoryXPutBean pl;
         InventoryXPutViewDO data;        
 
         pl = EJBFactory.getInventoryXPut();
@@ -61,7 +61,7 @@ public class OrderReceiptManagerProxy {
     }
 
     public OrderReceiptManager update(OrderReceiptManager man) throws Exception {
-        InventoryXPutLocal pl;
+        InventoryXPutBean pl;
         InventoryXPutViewDO data;        
 
         pl = EJBFactory.getInventoryXPut();

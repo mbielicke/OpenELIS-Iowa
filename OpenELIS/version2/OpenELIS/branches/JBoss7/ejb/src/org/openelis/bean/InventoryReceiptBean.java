@@ -60,44 +60,36 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.InventoryItemLocal;
-import org.openelis.local.InventoryLocationLocal;
-import org.openelis.local.InventoryReceiptLocal;
-import org.openelis.local.InventoryXPutLocal;
-import org.openelis.local.LockLocal;
-import org.openelis.local.OrganizationLocal;
 import org.openelis.manager.InventoryReceiptManager;
 import org.openelis.manager.OrderManager;
 import org.openelis.meta.InventoryReceiptMeta;
-import org.openelis.remote.InventoryReceiptRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InventoryReceiptBean implements InventoryReceiptRemote, InventoryReceiptLocal {
+public class InventoryReceiptBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                     manager;
 
     @EJB
-    private LockLocal                         lock;
+    private LockBean                         lock;
 
     @EJB
-    private DictionaryLocal                   dictionary;
+    private DictionaryBean                    dictionary;
 
     @EJB
-    private OrganizationLocal                 organization;
+    private OrganizationBean                  organization;
 
     @EJB
-    private InventoryItemLocal                inventoryItem;
+    private InventoryItemBean                inventoryItem;
 
     @EJB
-    private InventoryLocationLocal            inventoryLocation;
+    private InventoryLocationBean            inventoryLocation;
 
     @EJB
-    private InventoryXPutLocal                inventoryXPut;
+    private InventoryXPutBean                inventoryXPut;
 
     private static int                        statusPending, statusBackOrdered;
 

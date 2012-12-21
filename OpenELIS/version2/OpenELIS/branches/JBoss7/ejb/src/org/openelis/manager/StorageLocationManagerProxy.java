@@ -25,12 +25,9 @@
 */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
 import org.openelis.domain.StorageLocationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.StorageLocationLocal;
 import org.openelis.utils.EJBFactory;
 
 public class StorageLocationManagerProxy {

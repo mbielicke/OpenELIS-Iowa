@@ -46,20 +46,18 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.OrderRecurrenceLocal;
 import org.openelis.meta.OrderMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderRecurrenceBean implements OrderRecurrenceLocal {
+public class OrderRecurrenceBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
     
     @EJB
-    private DictionaryLocal dictionary;
+    private DictionaryBean dictionary;
     
     private static Integer monthId, yearId;
     

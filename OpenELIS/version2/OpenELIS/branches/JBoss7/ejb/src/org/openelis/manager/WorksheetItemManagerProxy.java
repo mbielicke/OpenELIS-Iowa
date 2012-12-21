@@ -29,15 +29,14 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.openelis.bean.SessionCacheBean;
+import org.openelis.bean.WorksheetItemBean;
 import org.openelis.domain.WorksheetItemDO;
 import org.openelis.domain.WorksheetViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FormErrorException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.WorksheetItemLocal;
-import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetItemManager.WorksheetItemListItem;
 import org.openelis.utils.EJBFactory;
 
@@ -63,7 +62,7 @@ public class WorksheetItemManagerProxy {
         int                      i, lastUnresolved, unresolved;
         HashMap<Integer,Integer> idHash;
         WorksheetItemDO          item;
-        WorksheetItemLocal       local;
+        WorksheetItemBean       local;
 
         local = EJBFactory.getWorksheetItem();
         for (i = 0; i < manager.count(); i++) {
@@ -95,9 +94,9 @@ public class WorksheetItemManagerProxy {
     public WorksheetItemManager update(WorksheetItemManager manager) throws Exception {
         int                i, j;
         ReportStatus       status;
-        SessionCacheLocal  session;
+        SessionCacheBean  session;
         WorksheetItemDO    item;
-        WorksheetItemLocal local;
+        WorksheetItemBean local;
         
         local = EJBFactory.getWorksheetItem();
         session = EJBFactory.getSessionCache();
@@ -128,7 +127,7 @@ public class WorksheetItemManagerProxy {
     public void validate(WorksheetItemManager manager, ValidationErrorsList errorList) throws Exception {
         int                   i;
         WorksheetItemListItem listItem;
-        WorksheetItemLocal    local;
+        WorksheetItemBean    local;
 
         local = EJBFactory.getWorksheetItem();
         for (i = 0; i < manager.count(); i++) {

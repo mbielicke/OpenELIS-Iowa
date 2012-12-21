@@ -41,8 +41,6 @@ import org.openelis.gwt.common.PermissionException;
 import org.openelis.gwt.common.SectionPermission.SectionFlags;
 import org.openelis.gwt.common.SystemUserPermission;
 import org.openelis.gwt.common.SystemUserVO;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.remote.UserCacheRemote;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -52,7 +50,7 @@ import org.openelis.utils.EJBFactory;
 @SecurityDomain("openelis")
 @Singleton
 
-public class UserCacheBean implements UserCacheLocal, UserCacheRemote {
+public class UserCacheBean  {
 
     @Resource
     private SessionContext ctx;

@@ -44,7 +44,6 @@ import org.openelis.domain.AnalysisQaEventDO;
 import org.openelis.domain.AnalyteViewDO;
 import org.openelis.domain.AuxDataViewDO;
 import org.openelis.domain.MCLViolationReportVO;
-import org.openelis.domain.Prompt;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.domain.ResultViewDO;
 import org.openelis.domain.SampleQaEventDO;
@@ -52,44 +51,34 @@ import org.openelis.domain.SectionParameterDO;
 import org.openelis.domain.SystemVariableDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.AnalyteLocal;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.MCLViolationReportLocal;
-import org.openelis.local.ResultLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.SectionParameterLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.SystemVariableLocal;
 import org.openelis.manager.AuxDataManager;
-import org.openelis.remote.MCLViolationReportRemote;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class MCLViolationReportBean implements MCLViolationReportLocal, MCLViolationReportRemote {
+public class MCLViolationReportBean {
     @EJB
-    private SessionCacheLocal       session;
+    private SessionCacheBean       session;
     @EJB
-    private AnalysisLocal           analysisBean;
+    private AnalysisBean            analysisBean;
     @EJB
-    private AnalysisQAEventLocal    analysisQAEventBean;
+    private AnalysisQAEventBean     analysisQAEventBean;
     @EJB
-    private AnalyteLocal            analyteBean;
+    private AnalyteBean             analyteBean;
     @EJB
-    DictionaryCacheLocal            dictionaryCache;
+    DictionaryCacheBean            dictionaryCache;
     @EJB
-    private ResultLocal             resultBean;
+    private ResultBean              resultBean;
     @EJB
-    private SampleQAEventLocal      sampleQAEventBean;
+    private SampleQAEventBean      sampleQAEventBean;
     @EJB
-    private SectionParameterLocal   sectParamBean;
+    private SectionParameterBean   sectParamBean;
     @EJB
-    private SystemVariableLocal     sysVarBean;
+    private SystemVariableBean      sysVarBean;
 
     private static final Logger     log  = Logger.getLogger(MCLViolationReportBean.class);
 

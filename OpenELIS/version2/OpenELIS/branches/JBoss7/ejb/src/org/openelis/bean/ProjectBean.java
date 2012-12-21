@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -49,20 +50,20 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.ProjectLocal;
 import org.openelis.meta.ProjectMeta;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.remote.ProjectRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ProjectBean implements ProjectLocal, ProjectRemote {
+public class ProjectBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;
+    
+    @EJB
+    private UserCacheBean       userCache;
 
     private static ProjectMeta  meta = new ProjectMeta();
     
@@ -88,7 +89,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         try {
             data = (ProjectViewDO)query.getSingleResult();
             if (data.getOwnerId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(data.getOwnerId());
+                user = userCache.getSystemUser(data.getOwnerId());
                 if (user != null)
                     data.setOwnerName(user.getLoginName());
             }
@@ -112,7 +113,7 @@ public class ProjectBean implements ProjectLocal, ProjectRemote {
         
         for (ProjectViewDO data :list) {
             if (data.getOwnerId() != null) {
-                user = EJBFactory.getUserCache().getSystemUser(data.getOwnerId());
+                user = userCache.getSystemUser(data.getOwnerId());
                 if (user != null)
                     data.setOwnerName(user.getLoginName());
             }

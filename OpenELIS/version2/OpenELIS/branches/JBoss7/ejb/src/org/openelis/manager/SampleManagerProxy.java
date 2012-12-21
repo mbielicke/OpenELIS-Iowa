@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
+import org.openelis.bean.DictionaryBean;
 import org.openelis.domain.AnalysisViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
@@ -38,7 +39,6 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
 import org.openelis.meta.SampleMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -49,7 +49,7 @@ public class SampleManagerProxy {
                              samCompletedId, samReleasedId, samErrorId;
 
     public SampleManagerProxy() {
-        DictionaryLocal l;
+        DictionaryBean l;
         if (anLoggedInId == null) {
             l = EJBFactory.getDictionary();
 

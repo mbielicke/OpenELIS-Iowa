@@ -36,23 +36,23 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.CategoryManager;
 import org.openelis.manager.DictionaryManager;
-import org.openelis.remote.CategoryManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class CategoryManagerBean implements CategoryManagerRemote {
+public class CategoryManagerBean {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
+    
+    @EJB
+    private UserCacheBean  userCache;
 
     public CategoryManagerBean() {       
     }
@@ -134,6 +134,6 @@ public class CategoryManagerBean implements CategoryManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("dictionary", flag);
+        userCache.applyPermission("dictionary", flag);
     }
 }

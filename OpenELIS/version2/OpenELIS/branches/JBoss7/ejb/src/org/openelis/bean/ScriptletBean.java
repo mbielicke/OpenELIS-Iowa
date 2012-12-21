@@ -35,12 +35,11 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdNameVO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.remote.ScriptletRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class ScriptletBean implements ScriptletRemote {
+public class ScriptletBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

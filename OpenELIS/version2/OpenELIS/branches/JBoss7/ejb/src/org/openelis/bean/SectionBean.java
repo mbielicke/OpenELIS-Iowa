@@ -50,27 +50,25 @@ import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.LockLocal;
-import org.openelis.local.SectionCacheLocal;
-import org.openelis.local.SectionLocal;
 import org.openelis.meta.SectionMeta;
-import org.openelis.remote.SectionRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SectionBean implements SectionRemote, SectionLocal {
+public class SectionBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;    
     
     @EJB
-    private LockLocal                   lock;
+    private LockBean                   lock;
     
     @EJB
-    private SectionCacheLocal           secCache;
+    private SectionCacheBean           secCache;
+    
+    @EJB
+    private UserCacheBean               userCache;
        
     private static final SectionMeta    meta = new SectionMeta();
 
@@ -247,6 +245,6 @@ public class SectionBean implements SectionRemote, SectionLocal {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("section", flag);
+        userCache.applyPermission("section", flag);
     }
 }

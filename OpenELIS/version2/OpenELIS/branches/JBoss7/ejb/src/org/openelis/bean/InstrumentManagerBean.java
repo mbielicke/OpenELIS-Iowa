@@ -36,23 +36,23 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.InstrumentLogManager;
 import org.openelis.manager.InstrumentManager;
-import org.openelis.remote.InstrumentManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class InstrumentManagerBean implements InstrumentManagerRemote {
+public class InstrumentManagerBean {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
+    
+    @EJB
+    private UserCacheBean  userCache;
     
     public InstrumentManager fetchById(Integer id) throws Exception {
         return InstrumentManager.fetchById(id);
@@ -131,7 +131,7 @@ public class InstrumentManagerBean implements InstrumentManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("instrument", flag);
+        userCache.applyPermission("instrument", flag);
     }
 
 }

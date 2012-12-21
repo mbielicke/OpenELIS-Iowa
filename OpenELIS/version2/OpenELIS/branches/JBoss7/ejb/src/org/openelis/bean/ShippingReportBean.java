@@ -25,61 +25,51 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.AddressDO;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OptionListItem;
 import org.openelis.domain.OrderItemViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.OrganizationDO;
 import org.openelis.domain.OrganizationViewDO;
-import org.openelis.domain.Prompt;
 import org.openelis.domain.ShippingViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.DictionaryCacheLocal;
-import org.openelis.local.LabelReportLocal;
-import org.openelis.local.OrderItemLocal;
-import org.openelis.local.OrderLocal;
-import org.openelis.local.OrganizationLocal;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.RequestformReportLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.ShippingLocal;
-import org.openelis.remote.ShippingReportRemote;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
-public class ShippingReportBean implements ShippingReportRemote {
+public class ShippingReportBean {
 
     @EJB
-    private SessionCacheLocal       session;
+    private SessionCacheBean       session;
 
     @EJB
-    private ShippingLocal           shipping;
+    private ShippingBean            shipping;
 
     @EJB
-    private OrderLocal              order;
+    private OrderBean               order;
     
     @EJB
-    private OrderItemLocal          orderItem;
+    private OrderItemBean          orderItem;
 
     @EJB
-    private RequestformReportLocal  requestFormReport;
+    private RequestformReportBean  requestFormReport;
 
     @EJB
-    private LabelReportLocal        labelReport;
+    private LabelReportBean        labelReport;
 
     @EJB
-    private DictionaryCacheLocal    dictionaryCache;
+    private DictionaryCacheBean     dictionaryCache;
 
     @EJB
-    private PrinterCacheLocal       printer;
+    private PrinterCacheBean        printer;
     
     @EJB
-    private OrganizationLocal       organization;
+    private OrganizationBean        organization;
 
     private final static String     PRN_PREFIX = "print://";
 

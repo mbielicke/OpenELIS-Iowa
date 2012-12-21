@@ -29,14 +29,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.TestAnalyteBean;
 import org.openelis.domain.DictionaryDO;
 import org.openelis.domain.TestAnalyteViewDO;
 import org.openelis.domain.TestResultViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.GridFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.TestAnalyteLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -46,7 +46,7 @@ public class TestAnalyteManagerProxy {
 
     public TestAnalyteManagerProxy() {
         DictionaryDO data;
-        DictionaryLocal dl;
+        DictionaryBean dl;
 
         dl = EJBFactory.getDictionary();
 
@@ -76,7 +76,7 @@ public class TestAnalyteManagerProxy {
     public TestAnalyteManager add(TestAnalyteManager man, HashMap<Integer, Integer> idMap)
                                                                                           throws Exception {
         int i, j, so, negId;
-        TestAnalyteLocal al;
+        TestAnalyteBean al;
         ArrayList<TestAnalyteViewDO> list;
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
         TestAnalyteViewDO data;        
@@ -108,7 +108,7 @@ public class TestAnalyteManagerProxy {
     public TestAnalyteManager update(TestAnalyteManager man, HashMap<Integer, Integer> idMap)
                                                                                              throws Exception {
         int i, j, so, negId;
-        TestAnalyteLocal al;
+        TestAnalyteBean al;
         ArrayList<TestAnalyteViewDO> list;
         ArrayList<ArrayList<TestAnalyteViewDO>> grid;
         TestAnalyteViewDO data;
@@ -149,7 +149,7 @@ public class TestAnalyteManagerProxy {
                          TestResultManager trm,
                          HashMap<Integer, Integer> anaResGrpMap) throws Exception {
         int i, j;
-        TestAnalyteLocal al;
+        TestAnalyteBean al;
         ValidationErrorsList list;        
         List<TestAnalyteViewDO> analist;
         TestAnalyteViewDO data;

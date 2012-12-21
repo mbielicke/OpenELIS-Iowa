@@ -48,22 +48,19 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.InventoryItemCacheLocal;
-import org.openelis.local.InventoryItemLocal;
 import org.openelis.meta.InventoryItemMeta;
-import org.openelis.remote.InventoryItemRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InventoryItemBean implements InventoryItemRemote, InventoryItemLocal {
+public class InventoryItemBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;
     
     @EJB
-    private InventoryItemCacheLocal  itemCache; 
+    private InventoryItemCacheBean  itemCache; 
     
     private static InventoryItemMeta meta = new InventoryItemMeta();
     

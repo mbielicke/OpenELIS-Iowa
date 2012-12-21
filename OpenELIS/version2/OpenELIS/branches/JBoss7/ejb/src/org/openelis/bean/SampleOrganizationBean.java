@@ -42,12 +42,11 @@ import org.openelis.entity.SampleOrganization;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.SampleOrganizationLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleOrganizationBean implements SampleOrganizationLocal {
+public class SampleOrganizationBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
    

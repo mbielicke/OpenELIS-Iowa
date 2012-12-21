@@ -50,22 +50,22 @@ import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.LockLocal;
 import org.openelis.meta.StorageUnitMeta;
-import org.openelis.remote.StorageUnitRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class StorageUnitBean implements StorageUnitRemote {
+public class StorageUnitBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                   manager;
 
     @EJB
-    private LockLocal                       lock;
+    private LockBean                       lock;
+    
+    @EJB
+    private UserCacheBean                   userCache;
 
     private static final StorageUnitMeta meta = new StorageUnitMeta();
 
@@ -244,7 +244,7 @@ public class StorageUnitBean implements StorageUnitRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("storageunit", flag);
+        userCache.applyPermission("storageunit", flag);
     }
 
 }

@@ -48,13 +48,11 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AnalysisLocal;
-import org.openelis.remote.AnalysisRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class AnalysisBean implements AnalysisLocal, AnalysisRemote {
+public class AnalysisBean { //implements AnalysisLocal, AnalysisRemote {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

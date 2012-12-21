@@ -53,22 +53,21 @@ import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalyteLocal;
-import org.openelis.local.LockLocal;
 import org.openelis.meta.AnalyteMeta;
-import org.openelis.remote.AnalyteRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
-public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
-
+public class AnalyteBean {
+    
     @PersistenceContext(unitName = "openelis")
     private EntityManager               manager;   
 
     @EJB
-    private LockLocal                   lock;
+    private LockBean                   lock;
+    
+    @EJB
+    private UserCacheBean               userCache;
 
     private static final AnalyteMeta    meta = new AnalyteMeta();
 
@@ -301,6 +300,6 @@ public class AnalyteBean implements AnalyteLocal, AnalyteRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("analyte", flag);
+        userCache.applyPermission("analyte", flag);
     }
 }

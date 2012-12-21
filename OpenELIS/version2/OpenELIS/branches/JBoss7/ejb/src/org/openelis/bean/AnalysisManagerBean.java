@@ -29,12 +29,11 @@ import javax.ejb.Stateless;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.manager.AnalysisManager;
-import org.openelis.remote.AnalysisManagerRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class AnalysisManagerBean implements AnalysisManagerRemote {
+public class AnalysisManagerBean { //implements AnalysisManagerRemote {
     
     public AnalysisManager fetchBySampleItemId(Integer sampleItemId) throws Exception {
         return AnalysisManager.fetchBySampleItemId(sampleItemId);   

@@ -44,13 +44,12 @@ import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InstrumentLogLocal;
 import org.openelis.meta.InstrumentMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InstrumentLogBean implements InstrumentLogLocal {
+public class InstrumentLogBean {
     
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;

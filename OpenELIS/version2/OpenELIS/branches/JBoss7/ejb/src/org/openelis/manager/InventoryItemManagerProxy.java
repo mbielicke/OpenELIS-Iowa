@@ -25,17 +25,17 @@
  */
 package org.openelis.manager;
 
+import org.openelis.bean.InventoryItemBean;
 import org.openelis.domain.InventoryItemViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.InventoryItemLocal;
 import org.openelis.utils.EJBFactory;
 
 public class InventoryItemManagerProxy {
 
     public InventoryItemManager fetchById(Integer id) throws Exception {
-        InventoryItemLocal ol;
+        InventoryItemBean ol;
         InventoryItemViewDO data;
         InventoryItemManager m;
 
@@ -86,7 +86,7 @@ public class InventoryItemManagerProxy {
 
     public InventoryItemManager add(InventoryItemManager man) throws Exception {
         Integer id;
-        InventoryItemLocal ol;
+        InventoryItemBean ol;
 
         ol = EJBFactory.getInventoryItem();
         ol.add(man.getInventoryItem());
@@ -116,7 +116,7 @@ public class InventoryItemManagerProxy {
 
     public InventoryItemManager update(InventoryItemManager man) throws Exception {
         Integer id;
-        InventoryItemLocal ol;
+        InventoryItemBean ol;
 
         ol = EJBFactory.getInventoryItem();
         ol.update(man.getInventoryItem());

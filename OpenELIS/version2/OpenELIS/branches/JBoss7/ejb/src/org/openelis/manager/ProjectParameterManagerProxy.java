@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.ProjectParameterBean;
 import org.openelis.domain.ProjectParameterDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ProjectParameterLocal;
 import org.openelis.utils.EJBFactory;
 
 public class ProjectParameterManagerProxy {
@@ -48,7 +48,7 @@ public class ProjectParameterManagerProxy {
     }
 
     public ProjectParameterManager add(ProjectParameterManager man) throws Exception {
-        ProjectParameterLocal pm;
+        ProjectParameterBean pm;
         ProjectParameterDO parameter;
 
         pm = EJBFactory.getProjectParameter();
@@ -62,7 +62,7 @@ public class ProjectParameterManagerProxy {
     }
 
     public ProjectParameterManager update(ProjectParameterManager man) throws Exception {
-        ProjectParameterLocal pm;
+        ProjectParameterBean pm;
         ProjectParameterDO parameter;
 
         pm = EJBFactory.getProjectParameter();
@@ -85,7 +85,7 @@ public class ProjectParameterManagerProxy {
     
     public void validate(ProjectParameterManager man) throws Exception {
         ValidationErrorsList list;
-        ProjectParameterLocal pm;
+        ProjectParameterBean pm;
 
         pm = EJBFactory.getProjectParameter();
         list = new ValidationErrorsList();

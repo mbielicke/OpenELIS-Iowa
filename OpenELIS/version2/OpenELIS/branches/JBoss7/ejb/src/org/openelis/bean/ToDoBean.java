@@ -41,9 +41,6 @@ import org.openelis.domain.AnalysisViewVO;
 import org.openelis.domain.ToDoSampleViewVO;
 import org.openelis.domain.ToDoWorksheetVO;
 import org.openelis.gwt.common.DataBaseUtil;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.WorksheetAnalysisLocal;
-import org.openelis.remote.ToDoRemote;
 
 /**
  * This class provides data for todo lists corresponding to analyses and samples
@@ -53,16 +50,16 @@ import org.openelis.remote.ToDoRemote;
 @Stateless
 @SecurityDomain("openelis")
 
-public class ToDoBean implements ToDoRemote {
+public class ToDoBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager          manager;
 
     @EJB
-    private DictionaryLocal        dictionary;
+    private DictionaryBean         dictionary;
 
     @EJB
-    private WorksheetAnalysisLocal worksheetAnalysis;
+    private WorksheetAnalysisBean worksheetAnalysis;
 
     private static Integer         loggedInStatusId, initiatedStatusId, completedStatusId,
                                    notVerifiedStatusId;

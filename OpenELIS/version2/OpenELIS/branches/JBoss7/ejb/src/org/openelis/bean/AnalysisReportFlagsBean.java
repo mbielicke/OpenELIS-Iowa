@@ -42,19 +42,17 @@ import org.openelis.entity.AnalysisReportFlags;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.AnalysisReportFlagsLocal;
-import org.openelis.local.LockLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class AnalysisReportFlagsBean implements AnalysisReportFlagsLocal {
+public class AnalysisReportFlagsBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
 
     @EJB
-    private LockLocal     lock;
+    private LockBean     lock;
 
     public AnalysisReportFlagsDO fetchByAnalysisId(Integer analysisId) throws Exception {
         Query query;

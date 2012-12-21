@@ -45,13 +45,12 @@ import org.openelis.manager.SampleItemManager;
 import org.openelis.manager.SampleManager;
 import org.openelis.meta.CompleteReleaseMeta;
 import org.openelis.meta.SampleMeta;
-import org.openelis.remote.CompleteReleaseRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class CompleteReleaseBean implements CompleteReleaseRemote {
+public class CompleteReleaseBean {
 
 	@PersistenceContext(unitName = "openelis")
 	private EntityManager manager;

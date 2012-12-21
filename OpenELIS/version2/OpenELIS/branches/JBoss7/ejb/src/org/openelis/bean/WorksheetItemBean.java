@@ -43,13 +43,12 @@ import org.openelis.gwt.common.DatabaseException;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.WorksheetItemLocal;
 import org.openelis.meta.WorksheetCompletionMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class WorksheetItemBean implements WorksheetItemLocal {
+public class WorksheetItemBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

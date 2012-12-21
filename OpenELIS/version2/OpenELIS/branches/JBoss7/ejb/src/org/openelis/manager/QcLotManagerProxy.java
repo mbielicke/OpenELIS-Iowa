@@ -28,13 +28,13 @@ package org.openelis.manager;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.openelis.bean.QcLotBean;
 import org.openelis.domain.QcLotDO;
 import org.openelis.domain.QcLotViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.TableFieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.QcLotLocal;
 import org.openelis.meta.QcMeta;
 import org.openelis.utils.EJBFactory;
 
@@ -53,7 +53,7 @@ public class QcLotManagerProxy {
     }
 
     public QcLotManager add(QcLotManager man) throws Exception {
-        QcLotLocal cl;
+        QcLotBean cl;
         QcLotViewDO lot;
 
         cl = EJBFactory.getQcLot();
@@ -67,7 +67,7 @@ public class QcLotManagerProxy {
     }
 
     public QcLotManager update(QcLotManager man) throws Exception {
-        QcLotLocal cl;
+        QcLotBean cl;
         QcLotViewDO lot;
 
         cl = EJBFactory.getQcLot();
@@ -93,7 +93,7 @@ public class QcLotManagerProxy {
         QcLotViewDO data;
         QcLotDO lot;
         ValidationErrorsList list;
-        QcLotLocal cl;
+        QcLotBean cl;
         HashSet<String> lotNums;
 
         cl = EJBFactory.getQcLot();

@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.OrganizationContactBean;
 import org.openelis.domain.OrganizationContactDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrganizationContactLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrganizationContactManagerProxy {
@@ -48,7 +48,7 @@ public class OrganizationContactManagerProxy {
     }
 
     public OrganizationContactManager add(OrganizationContactManager man) throws Exception {
-        OrganizationContactLocal cl;
+        OrganizationContactBean cl;
         OrganizationContactDO data;
 
         cl = EJBFactory.getOrganizationContact();
@@ -63,7 +63,7 @@ public class OrganizationContactManagerProxy {
 
     public OrganizationContactManager update(OrganizationContactManager man) throws Exception {
         int i;
-        OrganizationContactLocal cl;
+        OrganizationContactBean cl;
         OrganizationContactDO data;
 
         cl = EJBFactory.getOrganizationContact();
@@ -86,7 +86,7 @@ public class OrganizationContactManagerProxy {
     
     public void validate(OrganizationContactManager man) throws Exception {
         ValidationErrorsList list;
-        OrganizationContactLocal cl;
+        OrganizationContactBean cl;
 
         cl = EJBFactory.getOrganizationContact();
         list = new ValidationErrorsList();

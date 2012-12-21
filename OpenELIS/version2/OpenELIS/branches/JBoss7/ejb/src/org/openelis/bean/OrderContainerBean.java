@@ -41,13 +41,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.OrderContainerLocal;
 import org.openelis.meta.OrderMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrderContainerBean implements OrderContainerLocal {
+public class OrderContainerBean {
 
     @PersistenceContext(unitName = "openelis")
     private              EntityManager manager;

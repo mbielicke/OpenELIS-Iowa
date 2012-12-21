@@ -48,15 +48,13 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.InstrumentLocal;
 import org.openelis.meta.InstrumentMeta;
-import org.openelis.remote.InstrumentRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InstrumentBean implements InstrumentRemote , InstrumentLocal{
+public class InstrumentBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

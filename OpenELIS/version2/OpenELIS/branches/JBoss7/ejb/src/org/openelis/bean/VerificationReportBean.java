@@ -23,33 +23,31 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.OptionListItem;
-import org.openelis.domain.Prompt;
 import org.openelis.gwt.common.DataBaseUtil;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.UserCacheLocal;
-import org.openelis.remote.VerificationReportRemote;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
 
-public class VerificationReportBean implements VerificationReportRemote {
+public class VerificationReportBean {
 
     @Resource
     private SessionContext  ctx;
 
     @EJB
-    private SessionCacheLocal session; 
+    private SessionCacheBean session; 
     
     @EJB
-    private PrinterCacheLocal printers;
+    private PrinterCacheBean printers;
+    
+    @EJB
+    private UserCacheBean    userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -114,7 +112,6 @@ public class VerificationReportBean implements VerificationReportRemote {
                dir, printstat, loginName, token;
         StringTokenizer tokenizer;
         SystemUserVO  sysUserVO;
-        UserCacheLocal ucl;
 
         /*
          * push status into session so we can query it while the report is
@@ -127,8 +124,7 @@ public class VerificationReportBean implements VerificationReportRemote {
          * recover all the params and build a specific where clause
          */
         param = ReportUtil.getMapParameter(paramList);
-        ucl = EJBFactory.getUserCache();
-        loginName = ucl.getName();
+        loginName = userCache.getName();
         
 //        beginEntered = ReportUtil.getSingleParameter(param, "BEGIN_ENTERED");
 //        if (beginEntered != null && beginEntered.length() > 0)
@@ -147,7 +143,7 @@ public class VerificationReportBean implements VerificationReportRemote {
                 try {
                     while (tokenizer.hasMoreTokens()) {
                         token = tokenizer.nextToken();
-                        sysUserVO = ucl.getSystemUser(Integer.valueOf(token));
+                        sysUserVO = userCache.getSystemUser(Integer.valueOf(token));
                         if (userNames.length() > 0)
                             userNames += ", ";
                         userNames += sysUserVO.getLoginName();
@@ -159,7 +155,7 @@ public class VerificationReportBean implements VerificationReportRemote {
             } else if (userWhere.startsWith(" = ")) {
                 userIds = userWhere.substring(3);
                 try {
-                    sysUserVO = ucl.getSystemUser(Integer.valueOf(userIds));
+                    sysUserVO = userCache.getSystemUser(Integer.valueOf(userIds));
                     userNames = sysUserVO.getLoginName();
                 } catch (Exception e) {
                     userNames = "ERROR LOADING NAMES";
@@ -169,7 +165,7 @@ public class VerificationReportBean implements VerificationReportRemote {
             userWhere = " and h.system_user_id " + userWhere;
         } else {
             userNames = loginName;
-            userWhere = " and h.system_user_id = " + ucl.getId();
+            userWhere = " and h.system_user_id = " + userCache.getId();
         }
         
         /*
@@ -238,7 +234,7 @@ public class VerificationReportBean implements VerificationReportRemote {
         l = new ArrayList<OptionListItem>();
         l.add(new OptionListItem("", ""));
         try {
-            s = EJBFactory.getUserCache().getEmployees("%", 500);
+            s = userCache.getEmployees("%", 500);
             for (SystemUserVO n : s)
                 l.add(new OptionListItem(n.getId().toString(), n.getLoginName()));
         } catch (Exception e) {

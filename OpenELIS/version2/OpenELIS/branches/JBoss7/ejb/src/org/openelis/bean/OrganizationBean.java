@@ -50,26 +50,22 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AddressLocal;
-import org.openelis.local.OrganizationLocal;
-import org.openelis.local.OrganizationParameterLocal;
 import org.openelis.meta.OrganizationMeta;
-import org.openelis.remote.OrganizationRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class OrganizationBean implements OrganizationRemote, OrganizationLocal {
-
+public class OrganizationBean {
+    
     @PersistenceContext(unitName = "openelis")
     private EntityManager                 manager;
 
     @EJB
-    private AddressLocal                  address;
+    private AddressBean                  address;
     
     @EJB
-    private OrganizationParameterLocal    organizationParameter;
+    private OrganizationParameterBean    organizationParameter;
 
     private static final OrganizationMeta meta = new OrganizationMeta();
 

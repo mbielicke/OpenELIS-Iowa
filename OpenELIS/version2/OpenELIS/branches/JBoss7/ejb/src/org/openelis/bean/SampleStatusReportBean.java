@@ -47,35 +47,31 @@ import org.openelis.domain.SampleStatusWebReportVO.QAEventType;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.ProjectLocal;
-import org.openelis.local.SampleLocal;
-import org.openelis.local.SampleQAEventLocal;
 import org.openelis.meta.SampleWebMeta;
-import org.openelis.remote.SampleStatusReportRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class SampleStatusReportBean implements SampleStatusReportRemote {
+public class SampleStatusReportBean {
 
     @EJB
-    private SampleLocal                sample;
+    private SampleBean                sample;
 
     @EJB
-    private ProjectLocal               project;
+    private ProjectBean                project;
 
     @EJB
-    private DictionaryLocal            dictionary;
+    private DictionaryBean             dictionary;
 
     @EJB
-    private SampleQAEventLocal         sampleQa;
+    private SampleQAEventBean         sampleQa;
 
     @EJB
-    private AnalysisQAEventLocal       analysisQa;
+    private AnalysisQAEventBean        analysisQa;
+    
+    @EJB
+    private UserCacheBean              userCache;
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager              manager;
@@ -117,7 +113,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * Retrieve the sql clause that limits what the user can access. Don't
          * allow an empty clause
          */
-        clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
+        clause = userCache.getPermission().getModule("w_status").getClause();
         if (clause == null)
             return returnList;
 
@@ -203,7 +199,7 @@ public class SampleStatusReportBean implements SampleStatusReportRemote {
          * Retrieve the sql clause that limits what the user can access. Don't
          * allow an empty clause
          */
-        clause = EJBFactory.getUserCache().getPermission().getModule("w_status").getClause();
+        clause = userCache.getPermission().getModule("w_status").getClause();
         if (clause == null)
             return new ArrayList<IdNameVO>();
 

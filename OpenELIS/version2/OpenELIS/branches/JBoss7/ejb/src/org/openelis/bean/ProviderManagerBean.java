@@ -11,23 +11,23 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.ProviderLocationManager;
 import org.openelis.manager.ProviderManager;
-import org.openelis.remote.ProviderManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class ProviderManagerBean implements ProviderManagerRemote {
+public class ProviderManagerBean {
 	
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
+    
+    @EJB
+    private UserCacheBean  userCache;
 
     public ProviderManager fetchById(Integer id) throws Exception {
         return ProviderManager.fetchById(id);
@@ -112,6 +112,6 @@ public class ProviderManagerBean implements ProviderManagerRemote {
     }
 
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("provider", flag);
+        userCache.applyPermission("provider", flag);
     }
 }

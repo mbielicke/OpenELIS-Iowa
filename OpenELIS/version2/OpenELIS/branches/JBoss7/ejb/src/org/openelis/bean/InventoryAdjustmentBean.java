@@ -28,6 +28,7 @@ package org.openelis.bean;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
@@ -47,19 +48,19 @@ import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.SystemUserVO;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.InventoryAdjustmentLocal;
 import org.openelis.meta.InventoryAdjustmentMeta;
-import org.openelis.remote.InventoryAdjustmentRemote;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, InventoryAdjustmentLocal{
+public class InventoryAdjustmentBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
+    
+    @EJB
+    private UserCacheBean userCache;
        
     private static final InventoryAdjustmentMeta meta = new InventoryAdjustmentMeta();
     
@@ -72,7 +73,7 @@ public class InventoryAdjustmentBean implements InventoryAdjustmentRemote, Inven
         query.setParameter("id", id);
         try {
             data = (InventoryAdjustmentViewDO)query.getSingleResult();            
-            user = EJBFactory.getUserCache().getSystemUser(data.getSystemUserId());
+            user = userCache.getSystemUser(data.getSystemUserId());
             data.setSystemUserName(user.getLoginName());
         } catch (NoResultException e) {
             throw new NotFoundException();

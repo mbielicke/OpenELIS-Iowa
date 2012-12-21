@@ -33,8 +33,6 @@ import net.sf.ehcache.Element;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.InventoryItemDO;
-import org.openelis.local.InventoryItemCacheLocal;
-import org.openelis.remote.InventoryItemCacheRemote;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -44,7 +42,7 @@ import org.openelis.utils.EJBFactory;
 @SecurityDomain("openelis")
 @Singleton
 
-public class InventoryItemCacheBean implements InventoryItemCacheLocal, InventoryItemCacheRemote {
+public class InventoryItemCacheBean {
 
     private Cache              cache;
 

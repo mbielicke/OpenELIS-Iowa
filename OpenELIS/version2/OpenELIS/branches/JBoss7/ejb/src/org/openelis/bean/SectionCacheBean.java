@@ -35,8 +35,6 @@ import net.sf.ehcache.Element;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SectionViewDO;
-import org.openelis.local.SectionCacheLocal;
-import org.openelis.remote.SectionCacheRemote;
 import org.openelis.utils.EJBFactory;
 
 /**
@@ -46,7 +44,7 @@ import org.openelis.utils.EJBFactory;
 @SecurityDomain("openelis")
 @Singleton
 
-public class SectionCacheBean implements SectionCacheLocal, SectionCacheRemote {
+public class SectionCacheBean {
 
     private Cache        cache;
 

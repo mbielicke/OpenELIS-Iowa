@@ -27,9 +27,9 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.SampleProjectBean;
 import org.openelis.domain.SampleProjectViewDO;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.SampleProjectLocal;
 import org.openelis.utils.EJBFactory;
 
 public class SampleProjectManagerProxy {
@@ -48,7 +48,7 @@ public class SampleProjectManagerProxy {
     
     public SampleProjectManager add(SampleProjectManager man) throws Exception {
         SampleProjectViewDO data;
-        SampleProjectLocal l;
+        SampleProjectBean l;
         
         l = EJBFactory.getSampleProject();
         for(int i=0; i<man.count(); i++){
@@ -64,7 +64,7 @@ public class SampleProjectManagerProxy {
     public SampleProjectManager update(SampleProjectManager man) throws Exception {
         int i;
         SampleProjectViewDO data;
-        SampleProjectLocal l;
+        SampleProjectBean l;
         
         l = EJBFactory.getSampleProject();
         for(i=0; i<man.deleteCount(); i++){

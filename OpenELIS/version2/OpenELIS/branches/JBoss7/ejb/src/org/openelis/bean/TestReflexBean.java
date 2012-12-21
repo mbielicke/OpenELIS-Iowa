@@ -44,20 +44,18 @@ import org.openelis.entity.TestReflex;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.TestReflexLocal;
 import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestReflexBean implements TestReflexLocal {
+public class TestReflexBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager   manager;
 
     @EJB
-    private DictionaryLocal dictionary;
+    private DictionaryBean  dictionary;
 
     private static Integer  typeDict;
 

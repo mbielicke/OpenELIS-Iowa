@@ -38,26 +38,25 @@ import org.openelis.domain.InventoryReceiptViewDO;
 import org.openelis.domain.OrderViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.InventoryReceiptLocal;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.InventoryReceiptManager;
-import org.openelis.remote.InventoryReceiptManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class InventoryReceiptManagerBean implements InventoryReceiptManagerRemote {   
+public class InventoryReceiptManagerBean {   
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
     
     @EJB
-    private InventoryReceiptLocal inventoryReceipt;
+    private UserCacheBean  userCache;
+    
+    @EJB
+    private InventoryReceiptBean inventoryReceipt;
     
     public InventoryReceiptManager add(InventoryReceiptManager man) throws Exception {
         UserTransaction ut;
@@ -133,6 +132,6 @@ public class InventoryReceiptManagerBean implements InventoryReceiptManagerRemot
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("inventoryreceipt", flag);
+        userCache.applyPermission("inventoryreceipt", flag);
     }
 }

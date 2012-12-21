@@ -48,52 +48,47 @@ import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.DictionaryDO;
-import org.openelis.domain.OptionListItem;
 import org.openelis.domain.ProjectDO;
-import org.openelis.domain.Prompt;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.domain.TestMethodVO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.ProjectLocal;
-import org.openelis.local.SectionCacheLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.local.TestLocal;
-import org.openelis.remote.SampleInhouseReportRemote;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
 
-public class SampleInhouseReportBean implements SampleInhouseReportRemote {
+public class SampleInhouseReportBean {
 
     @Resource
     private SessionContext  ctx;
 
     @EJB
-    private SessionCacheLocal session;
+    private SessionCacheBean session;
 
     @EJB
-    private TestLocal       test;
+    private TestBean        test;
 
     @EJB
-    private SectionCacheLocal section;
+    private SectionCacheBean section;
 
     @EJB
-    private DictionaryLocal dictionary;
+    private DictionaryBean  dictionary;
 
     @EJB
-    private ProjectLocal    project;
+    private ProjectBean     project;
     
     @EJB
-    private PrinterCacheLocal printers;
+    private PrinterCacheBean printers;
+    
+    @EJB
+    private UserCacheBean    userCache;
 
     /*
      * Returns the prompt for a single re-print
@@ -244,7 +239,7 @@ public class SampleInhouseReportBean implements SampleInhouseReportRemote {
         else
             orgId = "";
 
-        loginName = EJBFactory.getUserCache().getName();
+        loginName = userCache.getName();
         /*
          * start the report
          */

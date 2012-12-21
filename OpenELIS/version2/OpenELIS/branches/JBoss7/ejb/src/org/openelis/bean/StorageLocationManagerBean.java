@@ -36,23 +36,23 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.StorageLocationChildManager;
 import org.openelis.manager.StorageLocationManager;
-import org.openelis.remote.StorageLocationManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class StorageLocationManagerBean implements StorageLocationManagerRemote {
+public class StorageLocationManagerBean {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
+    
+    @EJB
+    private UserCacheBean  userCache;
     
     public StorageLocationManager fetchById(Integer id) throws Exception {        
         return StorageLocationManager.fetchById(id);
@@ -131,7 +131,7 @@ public class StorageLocationManagerBean implements StorageLocationManagerRemote 
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("storagelocation", flag);
+        userCache.applyPermission("storagelocation", flag);
     }
 
 }

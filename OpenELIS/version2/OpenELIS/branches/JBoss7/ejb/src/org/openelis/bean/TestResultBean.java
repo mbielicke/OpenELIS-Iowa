@@ -45,21 +45,19 @@ import org.openelis.entity.TestResult;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.TestResultLocal;
 import org.openelis.meta.TestMeta;
 import org.openelis.utilcommon.ResultValidator.Type;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestResultBean implements TestResultLocal {
+public class TestResultBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager   manager;
 
     @EJB
-    private DictionaryLocal dictionary;
+    private DictionaryBean dictionary;
 
     private static HashMap<Integer, Type> types;
     

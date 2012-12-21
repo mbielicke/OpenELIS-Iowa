@@ -14,16 +14,13 @@ import javax.persistence.Query;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.SampleHumanDO;
 import org.openelis.entity.SampleHuman;
-import org.openelis.local.LockLocal;
-import org.openelis.local.SampleHumanLocal;
 import org.openelis.manager.SampleDomainInt;
 import org.openelis.manager.SampleHumanManager;
-import org.openelis.remote.SampleHumanRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleHumanBean implements SampleHumanRemote, SampleHumanLocal {
+public class SampleHumanBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;
@@ -32,7 +29,7 @@ public class SampleHumanBean implements SampleHumanRemote, SampleHumanLocal {
     private SessionContext ctx;
 
     //declare the locals
-    @EJB private LockLocal lockBean;
+    @EJB private LockBean lockBean;
     
     public SampleHumanDO getHumanBySampleId(Integer sampleId) {
         Query query = manager.createNamedQuery("SampleHuman.SampleHumanBySampleId");

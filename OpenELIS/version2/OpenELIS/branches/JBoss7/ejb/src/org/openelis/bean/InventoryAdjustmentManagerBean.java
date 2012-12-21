@@ -36,23 +36,23 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.InventoryAdjustmentManager;
 import org.openelis.manager.InventoryXAdjustManager;
-import org.openelis.remote.InventoryAdjustmentManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class InventoryAdjustmentManagerBean implements InventoryAdjustmentManagerRemote {
+public class InventoryAdjustmentManagerBean {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
+    
+    @EJB
+    private UserCacheBean  userCache;
 
     public InventoryAdjustmentManager fetchById(Integer id) throws Exception {
         return InventoryAdjustmentManager.fetchById(id);
@@ -131,6 +131,6 @@ public class InventoryAdjustmentManagerBean implements InventoryAdjustmentManage
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("inventoryadjustment", flag);
+        userCache.applyPermission("inventoryadjustment", flag);
     }
 }

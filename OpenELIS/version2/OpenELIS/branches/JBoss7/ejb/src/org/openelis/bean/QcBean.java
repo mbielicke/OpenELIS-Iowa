@@ -49,22 +49,19 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.QcLocal;
-import org.openelis.local.QcLotLocal;
 import org.openelis.meta.QcMeta;
-import org.openelis.remote.QcRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class QcBean implements QcRemote, QcLocal {
+public class QcBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager       manager;
 
     @EJB
-    private QcLotLocal          qcLot;
+    private QcLotBean           qcLot;
 
     private static final QcMeta meta = new QcMeta();
 

@@ -9,16 +9,14 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.IdAccessionVO;
 import org.openelis.gwt.common.data.QueryData;
 import org.openelis.manager.SampleManager;
-import org.openelis.remote.SampleRemote;
-import org.openelis.remote.SampleTrackingRemote;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class SampleTrackingBean implements SampleTrackingRemote {
+public class SampleTrackingBean {
 
 	@EJB 
-	private SampleRemote sb;
+	private SampleBean sb;
 
 	@SuppressWarnings("unchecked")
 	public ArrayList<SampleManager> query(ArrayList<QueryData> fields, int first, int max) throws Exception {

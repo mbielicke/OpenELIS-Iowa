@@ -27,10 +27,10 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.SectionParameterBean;
 import org.openelis.domain.SectionParameterDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.SectionParameterLocal;
 import org.openelis.utils.EJBFactory;
 
 public class SectionParameterManagerProxy {
@@ -48,7 +48,7 @@ public class SectionParameterManagerProxy {
     }
 
     public SectionParameterManager add(SectionParameterManager man) throws Exception {
-        SectionParameterLocal pl;
+        SectionParameterBean pl;
         SectionParameterDO data;
 
         pl = EJBFactory.getSectionParameter();
@@ -63,7 +63,7 @@ public class SectionParameterManagerProxy {
 
     public SectionParameterManager update(SectionParameterManager man) throws Exception {
         int i;
-        SectionParameterLocal pl;
+        SectionParameterBean pl;
         SectionParameterDO data;        
 
         pl = EJBFactory.getSectionParameter();
@@ -86,7 +86,7 @@ public class SectionParameterManagerProxy {
 
     public void validate(SectionParameterManager man) throws Exception {
         ValidationErrorsList list;
-        SectionParameterLocal pl;
+        SectionParameterBean pl;
 
         pl = EJBFactory.getSectionParameter();
         list = new ValidationErrorsList();

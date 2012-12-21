@@ -42,13 +42,12 @@ import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.TestAnalyteLocal;
 import org.openelis.meta.TestMeta;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestAnalyteBean implements TestAnalyteLocal {
+public class TestAnalyteBean  {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;

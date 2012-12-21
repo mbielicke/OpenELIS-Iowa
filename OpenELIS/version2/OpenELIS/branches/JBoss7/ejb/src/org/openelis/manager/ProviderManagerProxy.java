@@ -25,19 +25,17 @@
  */
 package org.openelis.manager;
 
-import javax.naming.InitialContext;
-
+import org.openelis.bean.ProviderBean;
 import org.openelis.domain.ProviderDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.ProviderLocal;
 import org.openelis.utils.EJBFactory;
 
 public class ProviderManagerProxy {
 
     public ProviderManager fetchById(Integer id) throws Exception {
-        ProviderLocal ol;
+        ProviderBean ol;
         ProviderDO data;
         ProviderManager m;
 
@@ -70,7 +68,7 @@ public class ProviderManagerProxy {
 
     public ProviderManager add(ProviderManager man) throws Exception {
         Integer id;
-        ProviderLocal ol;
+        ProviderBean ol;
 
         ol = EJBFactory.getProvider();
         ol.add(man.getProvider());
@@ -90,7 +88,7 @@ public class ProviderManagerProxy {
 
     public ProviderManager update(ProviderManager man) throws Exception {
         Integer id;
-        ProviderLocal ol;
+        ProviderBean ol;
 
         ol = EJBFactory.getProvider();
         ol.update(man.getProvider());

@@ -26,6 +26,7 @@
 package org.openelis.bean;
 
 import javax.annotation.Resource;
+import javax.ejb.EJB;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionManagement;
@@ -35,17 +36,18 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.manager.BuildKitManager;
-import org.openelis.remote.BuildKitManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class BuildKitManagerBean implements BuildKitManagerRemote {
+public class BuildKitManagerBean {// implements BuildKitManagerRemote {
 
     @Resource
     private SessionContext ctx;
+    
+    @EJB
+    private UserCacheBean  userCache;
     
     public BuildKitManager add(BuildKitManager man) throws Exception {
         UserTransaction ut;
@@ -69,7 +71,7 @@ public class BuildKitManagerBean implements BuildKitManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("buildkits", flag);
+        userCache.applyPermission("buildkits", flag);
     }
 
 }

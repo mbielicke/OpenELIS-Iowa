@@ -36,25 +36,25 @@ import javax.transaction.UserTransaction;
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
-import org.openelis.local.LockLocal;
 import org.openelis.manager.ShippingItemManager;
 import org.openelis.manager.ShippingManager;
 import org.openelis.manager.ShippingTrackingManager;
-import org.openelis.remote.ShippingManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class ShippingManagerBean implements ShippingManagerRemote {
+public class ShippingManagerBean {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
 
+    @EJB
+    private UserCacheBean  userCache;
+    
     public ShippingManager fetchById(Integer id) throws Exception {
         return ShippingManager.fetchById(id);
     }   
@@ -140,6 +140,6 @@ public class ShippingManagerBean implements ShippingManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("shipping", flag);
+        userCache.applyPermission("shipping", flag);
     }
 }

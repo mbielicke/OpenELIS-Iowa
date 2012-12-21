@@ -27,13 +27,13 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.EventLogBean;
 import org.openelis.domain.EventLogDO;
 import org.openelis.domain.ExchangeCriteriaViewDO;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.EventLogLocal;
 import org.openelis.utils.EJBFactory;
 
 public class ExchangeCriteriaManagerProxy {
@@ -110,7 +110,7 @@ public class ExchangeCriteriaManagerProxy {
     
     public void delete(ExchangeCriteriaManager man) throws Exception {
         ExchangeCriteriaViewDO data;
-        EventLogLocal el;
+        EventLogBean el;
         ArrayList<EventLogDO> logs;
         
         man.getProfiles().delete();

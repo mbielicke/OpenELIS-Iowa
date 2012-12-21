@@ -39,12 +39,11 @@ import org.openelis.domain.PWSAddressDO;
 import org.openelis.entity.PWSAddress;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.NotFoundException;
-import org.openelis.local.PWSAddressLocal;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class PWSAddressBean implements PWSAddressLocal {
+public class PWSAddressBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager                    manager;

@@ -47,39 +47,36 @@ import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.util.JRLoader;
 
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.OptionListItem;
-import org.openelis.domain.Prompt;
 import org.openelis.domain.SectionViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.Datetime;
 import org.openelis.gwt.common.InconsistencyException;
+import org.openelis.gwt.common.OptionListItem;
+import org.openelis.gwt.common.Prompt;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.local.SectionLocal;
-import org.openelis.local.SessionCacheLocal;
-import org.openelis.remote.TurnaroundReportRemote;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
 @Resource(name = "jdbc/OpenELISDB", type = DataSource.class, authenticationType = javax.annotation.Resource.AuthenticationType.CONTAINER, mappedName = "java:/OpenELISDS")
 
-public class TurnaroundReportBean implements TurnaroundReportRemote {
+public class TurnaroundReportBean {
 
     @Resource
     private SessionContext  ctx;
 
     @EJB
-    private SessionCacheLocal session;
+    private SessionCacheBean session;
 
     @EJB
-    private SectionLocal    section;
+    private SectionBean     section;
     
     @EJB
-    private PrinterCacheLocal printers;
+    private PrinterCacheBean printers;
 
+    @EJB
+    private UserCacheBean     userCache;
     /*
      * Returns the prompt for a single re-print
      */
@@ -154,7 +151,7 @@ public class TurnaroundReportBean implements TurnaroundReportRemote {
          */
         param = ReportUtil.getMapParameter(paramList);
 
-        loginName = EJBFactory.getUserCache().getName();
+        loginName = userCache.getName();
 
         frDate = ReportUtil.getSingleParameter(param, "FROM_RELEASED");
         tDate = ReportUtil.getSingleParameter(param, "TO_RELEASED");

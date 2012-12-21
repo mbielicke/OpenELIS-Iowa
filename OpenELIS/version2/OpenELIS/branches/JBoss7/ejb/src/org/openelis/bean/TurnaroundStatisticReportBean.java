@@ -42,35 +42,32 @@ import org.openelis.gwt.common.InconsistencyException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ReportStatus;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.AnalysisQAEventLocal;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.SampleQAEventLocal;
-import org.openelis.local.SessionCacheLocal;
 import org.openelis.meta.SampleMeta;
-import org.openelis.remote.TurnaroundStatisticReportRemote;
 import org.openelis.report.turnaroundstatistic.TurnaroundDataSource;
 import org.openelis.util.QueryBuilderV2;
-import org.openelis.utils.EJBFactory;
 import org.openelis.utils.JasperUtil;
 import org.openelis.utils.ReportUtil;
 
 @Stateless
 @SecurityDomain("openelis")
-public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportRemote {
+public class TurnaroundStatisticReportBean {
     @PersistenceContext(unitName = "openelis")
     private EntityManager           manager;
     
     @EJB
-    private SessionCacheLocal       session;
+    private SessionCacheBean       session;
 
     @EJB
-    private DictionaryLocal         dictionary;
+    private DictionaryBean          dictionary;
     
     @EJB
-    private SampleQAEventLocal      sampleQAEvent;
+    private SampleQAEventBean      sampleQAEvent;
 
     @EJB
-    private AnalysisQAEventLocal    analysisQAEvent;
+    private AnalysisQAEventBean     analysisQAEvent;
+    
+    @EJB
+    private UserCacheBean           userCache;
 
     private static Integer          releasedStatusId, ptSampleTypeId;
     
@@ -639,7 +636,7 @@ public class TurnaroundStatisticReportBean implements TurnaroundStatisticReportR
 
         tempFile = File.createTempFile("turnaroundstatisticreport", ".pdf", new File("/tmp"));
         jparam = new HashMap<String, Object>();
-        jparam.put("LOGNAME", EJBFactory.getUserCache().getName());
+        jparam.put("LOGNAME", userCache.getName());
         jparam.put("SUBREPORT_DIR", dir);
         jparam.put("FROM_DATE", fromDate);
         jparam.put("TO_DATE", toDate);

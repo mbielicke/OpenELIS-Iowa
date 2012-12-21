@@ -27,12 +27,12 @@ package org.openelis.manager;
 
 import java.util.ArrayList;
 
+import org.openelis.bean.DictionaryBean;
+import org.openelis.bean.OrderOrganizationBean;
 import org.openelis.domain.OrderOrganizationViewDO;
 import org.openelis.gwt.common.DataBaseUtil;
 import org.openelis.gwt.common.FieldErrorException;
 import org.openelis.gwt.common.ValidationErrorsList;
-import org.openelis.local.DictionaryLocal;
-import org.openelis.local.OrderOrganizationLocal;
 import org.openelis.utils.EJBFactory;
 
 public class OrderOrganizationManagerProxy {
@@ -40,7 +40,7 @@ public class OrderOrganizationManagerProxy {
     protected static Integer orgBillToId, orgReportToId;
 
     public OrderOrganizationManagerProxy() {
-        DictionaryLocal l;
+        DictionaryBean l;
         
         if (orgBillToId == null) {
             l = EJBFactory.getDictionary();
@@ -70,7 +70,7 @@ public class OrderOrganizationManagerProxy {
 
     public OrderOrganizationManager add(OrderOrganizationManager man) throws Exception {
         OrderOrganizationViewDO data;
-        OrderOrganizationLocal l;
+        OrderOrganizationBean l;
 
         l = EJBFactory.getOrderOrganization();
         for (int i = 0; i < man.count(); i++ ) {
@@ -86,7 +86,7 @@ public class OrderOrganizationManagerProxy {
     public OrderOrganizationManager update(OrderOrganizationManager man) throws Exception {
         int i;
         OrderOrganizationViewDO data;
-        OrderOrganizationLocal l;
+        OrderOrganizationBean l;
 
         l = EJBFactory.getOrderOrganization();
         for (i = 0; i < man.deleteCount(); i++ ) {
@@ -116,7 +116,7 @@ public class OrderOrganizationManagerProxy {
         int numBillTo, numReportTo;
         OrderOrganizationViewDO data;
         ValidationErrorsList list;
-        OrderOrganizationLocal ol;
+        OrderOrganizationBean ol;
 
         ol = EJBFactory.getOrderOrganization();
         numReportTo = 0;

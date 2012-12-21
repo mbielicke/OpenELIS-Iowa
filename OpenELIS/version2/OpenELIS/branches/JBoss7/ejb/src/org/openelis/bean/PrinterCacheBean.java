@@ -12,9 +12,7 @@ import javax.print.PrintServiceLookup;
 import org.apache.log4j.Logger;
 import org.jboss.ejb3.annotation.TransactionTimeout;
 import org.jboss.security.annotation.SecurityDomain;
-import org.openelis.domain.OptionListItem;
-import org.openelis.local.PrinterCacheLocal;
-import org.openelis.remote.PrinterCacheRemote;
+import org.openelis.gwt.common.OptionListItem;
 import org.openelis.utils.Printer;
 
 /**
@@ -22,7 +20,7 @@ import org.openelis.utils.Printer;
  */
 @Singleton
 @SecurityDomain("openelis")
-public class PrinterCacheBean implements PrinterCacheLocal, PrinterCacheRemote {
+public class PrinterCacheBean {
 
     protected ArrayList<Printer>       printerList;
     protected HashMap<String, Printer> printerHash;

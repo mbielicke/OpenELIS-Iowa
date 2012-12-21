@@ -51,15 +51,13 @@ import org.openelis.gwt.common.LastPageException;
 import org.openelis.gwt.common.NotFoundException;
 import org.openelis.gwt.common.ValidationErrorsList;
 import org.openelis.gwt.common.data.QueryData;
-import org.openelis.local.TestLocal;
 import org.openelis.meta.TestMeta;
-import org.openelis.remote.TestRemote;
 import org.openelis.util.QueryBuilderV2;
 
 @Stateless
 @SecurityDomain("openelis")
 
-public class TestBean implements TestRemote, TestLocal {
+public class TestBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager            manager;

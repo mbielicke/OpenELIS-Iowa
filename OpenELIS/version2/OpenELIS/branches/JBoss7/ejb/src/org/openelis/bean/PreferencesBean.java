@@ -32,7 +32,6 @@ import javax.persistence.PersistenceContext;
 
 import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.entity.Preferences;
-import org.openelis.local.PreferencesLocal;
 
 /**
  * Stateless bean used to persist and retrieve Preferences from the database
@@ -41,7 +40,7 @@ import org.openelis.local.PreferencesLocal;
 @Stateless
 @SecurityDomain("openelis")
 
-public class PreferencesBean implements PreferencesLocal {
+public class PreferencesBean {
 
     @PersistenceContext(unitName = "openelis")
     private EntityManager manager;

@@ -39,32 +39,31 @@ import org.jboss.security.annotation.SecurityDomain;
 import org.openelis.domain.ReferenceTable;
 import org.openelis.gwt.common.ModulePermission.ModuleFlags;
 import org.openelis.gwt.common.ReportStatus;
-import org.openelis.local.LockLocal;
-import org.openelis.local.SessionCacheLocal;
 import org.openelis.manager.SampleManager;
 import org.openelis.manager.WorksheetAnalysisManager;
 import org.openelis.manager.WorksheetItemManager;
 import org.openelis.manager.WorksheetManager;
 import org.openelis.manager.WorksheetQcResultManager;
 import org.openelis.manager.WorksheetResultManager;
-import org.openelis.remote.WorksheetManagerRemote;
-import org.openelis.utils.EJBFactory;
 
 @Stateless
 @SecurityDomain("openelis")
 
 @TransactionManagement(TransactionManagementType.BEAN)
 
-public class WorksheetManagerBean implements WorksheetManagerRemote {
+public class WorksheetManagerBean {
 
     @Resource
     private SessionContext ctx;
 
     @EJB
-    private SessionCacheLocal session;    
+    private SessionCacheBean session;    
 
     @EJB
-    private LockLocal      lockBean;
+    private LockBean      lockBean;
+    
+    @EJB
+    private UserCacheBean  userCache;
 
     public WorksheetManagerBean() {
     }
@@ -205,6 +204,6 @@ public class WorksheetManagerBean implements WorksheetManagerRemote {
     }
     
     private void checkSecurity(ModuleFlags flag) throws Exception {
-        EJBFactory.getUserCache().applyPermission("worksheet", flag);
+        userCache.applyPermission("worksheet", flag);
     }
 }
