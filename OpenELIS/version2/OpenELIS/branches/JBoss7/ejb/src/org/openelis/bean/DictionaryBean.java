@@ -167,6 +167,16 @@ public class DictionaryBean {
         return dictDO;
     }
 
+    public ArrayList<DictionaryDO> fetchBySystemNames(Collection<String> systemNames) throws Exception {
+        Query query;
+        DictionaryDO dictDO;
+
+        query = manager.createNamedQuery("Dictionary.FetchBySystemNames");
+        query.setParameter("names", systemNames);
+        
+        return DataBaseUtil.toArrayList(query.getResultList());
+    }
+
     public DictionaryDO add(DictionaryDO data) throws Exception {
         Dictionary entity;
 
